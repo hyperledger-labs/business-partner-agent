@@ -1,9 +1,0 @@
-trigger:
-- master
-
-pool:
-  vmImage: 'ubuntu-latest'
-
-steps:
-- script: echo Just a dummy pipeline.
-  displayName: 'Dummy pipeline'
