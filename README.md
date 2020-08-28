@@ -1,6 +1,8 @@
 # Lab Name
 Business Partner Agent
 
+[![Build Status](https://dev.azure.com/economy-of-things/Hyperlegder%20Labs%20public/_apis/build/status/hyperledger-labs.business-partner-agent?branchName=master)](https://dev.azure.com/economy-of-things/Hyperlegder%20Labs%20public/_build/latest?definitionId=79&branchName=master)
+
 # Short Description
 The Business Partner Agent allows to manage and exchange master data between organizations.
 
