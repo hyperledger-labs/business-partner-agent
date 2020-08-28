@@ -1,0 +1,3 @@
+# -Dmicronaut.environments=dev
+mongodb:
+  uri: "mongodb://localhost"
