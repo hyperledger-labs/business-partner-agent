@@ -1,0 +1,35 @@
+# Compose file for backend developers, that run the backend manually
+# Only works when running in web-only mode
+
+version: '3'
+
+services:
+  postgres:
+    image: "postgres"
+    environment:
+      - POSTGRES_USER=alice
+      - POSTGRES_PASSWORD=alice1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  aca-py:
+    image: bcgovimages/aries-cloudagent:py36-1.15-0_0.5.4
+    ports:
+      - 8031:8031
+    depends_on:
+      - postgres
+    entrypoint: /bin/bash
+    command: [
+        "-c",
+        "sleep 1;
+        aca-py start \
+        -it http '0.0.0.0' 8030
+        -ot http \
+        --admin '0.0.0.0' 8031 \
+        --admin-insecure-mode \
+        --plugin aries_cloudagent.messaging.jsonld \
+        --log-level debug"
+      ]
+volumes:
+  postgres-data:
