@@ -1,31 +1,27 @@
-# Build and push images to Azure Container Registry
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
-
 trigger:
   batch: true
   branches:
     include:
-    - oss-prepare # later when we are oss, we use master again (adjust also container Tag and condition in deploy stage!)
+    - master
     - feature/*
     - releases/*
   paths:
     include:
     - manifests/*
     - backend/*
+    - frontend/*
     - Dockerfile
     - azure-pipelines.yml
 
 variables:
-  dockerRegistryServiceConnection: 'EconomyOfThingsDockerRegistryConnection'
-  imageRepositorySsiCompanyAgent: 'ssi-company-agent'
-  containerRegistry: 'economyofthings.azurecr.io'
-  tag: '$(Build.SourceBranchName)'  #'$(Build.BuildId)'
-  imagePullSecret: 'acrcred'
-  k8connection: 'ssiCompanyAgentKubernetesConnection'
-  namespace: 'ssi-company-agent'
-
-  # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+#  Define the following variables in a variable group "my-variable-group":  
+#     dockerRegistryServiceConnection, imageRepositorySsiCompanyAgent, containerRegistry,
+#     imagePullSecret, k8connection, namespace
+  - group: my-variable-group
+  - name: tag
+    value: '$(Build.SourceBranchName)'  #'$(Build.BuildId)'
+  - name: vmImageName   # Agent VM image name
+    value: 'ubuntu-latest'
 
 stages:
 - stage: Test
