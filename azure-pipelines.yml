@@ -6,12 +6,9 @@ trigger:
     - feature/*
     - releases/*
   paths:
-    include:
-    - manifests/*
-    - backend/*
-    - frontend/*
-    - Dockerfile
-    - azure-pipelines.yml
+    exclude:
+    - CONTRIBUTING.md
+    - README.md
 
 variables:
 #  Define the following variables in a variable group "my-variable-group":  
