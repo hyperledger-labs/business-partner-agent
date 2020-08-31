@@ -45,6 +45,7 @@ public class PartnerAPI {
     private Boolean incoming;
     private String state;
     private String alias;
+    private String did;
     private List<PartnerCredential> credential;
 
     @JsonIgnore // internal use only
