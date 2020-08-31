@@ -1,6 +1,9 @@
 # Lab Name
 Business Partner Agent
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Build Status](https://dev.azure.com/economy-of-things/Business-Partner-Agent/_apis/build/status/hyperledger-labs.business-partner-agent?branchName=master)](https://dev.azure.com/economy-of-things/Business-Partner-Agent/_build/latest?definitionId=79&branchName=master)
+
 # Short Description
 The Business Partner Agent allows to manage and exchange master data between organizations.
 
