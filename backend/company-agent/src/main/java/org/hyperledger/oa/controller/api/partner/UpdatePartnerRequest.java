@@ -15,28 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.oa.client;
+package org.hyperledger.oa.controller.api.partner;
 
-import java.util.List;
-import java.util.Optional;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import org.hyperledger.oa.BaseTest;
-import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
-class LedgerClientTest extends BaseTest {
-
-    @Test
-    @Disabled
-    // TODO migrate to okhttp mock
-    void test() {
-        LedgerClient c = new LedgerClient();
-        c.setUrl("https://indy-test.bosch-digital.de");
-        c.setMapper(mapper);
-
-        final Optional<List<PartnerCredentialType>> credDefIds = c.getCredentialDefinitionIdsForDid(
-                "CHysca6fY8n8ytCDLAJGZj");
-        System.err.println(credDefIds.get());
-    }
+@Data
+@NoArgsConstructor
+public class UpdatePartnerRequest {
+    private String alias;
 }

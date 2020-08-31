@@ -46,6 +46,7 @@ import okhttp3.Response;
 @Singleton
 public class LedgerClient {
 
+    @Setter(AccessLevel.PROTECTED)
     @Value("${oagent.ledger.browser}")
     private String url;
 

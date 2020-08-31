@@ -29,6 +29,7 @@ import org.hyperledger.oa.controller.api.partner.AddPartnerRequest;
 import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.oa.controller.api.partner.RequestCredentialRequest;
 import org.hyperledger.oa.controller.api.partner.RequestProofRequest;
+import org.hyperledger.oa.controller.api.partner.UpdatePartnerRequest;
 import org.hyperledger.oa.impl.PartnerManager;
 import org.hyperledger.oa.impl.aries.AriesCredentialManager;
 import org.hyperledger.oa.impl.aries.ProofManager;
@@ -40,6 +41,7 @@ import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.Put;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
@@ -82,6 +84,23 @@ public class PartnerController {
     @Get("/{id}")
     public HttpResponse<PartnerAPI> getPartnerbyId(@PathVariable String id) {
         Optional<PartnerAPI> partner = pm.getPartnerById(UUID.fromString(id));
+        if (partner.isPresent()) {
+            return HttpResponse.ok(partner.get());
+        }
+        return HttpResponse.notFound();
+    }
+
+    /**
+     * Update partner
+     *
+     * @param update {@link UpdatePartnerRequest}
+     * @return {@link PartnerAPI}
+     */
+    @Put("/{id}")
+    public HttpResponse<PartnerAPI> updatePartner(
+            @PathVariable String id,
+            @Body UpdatePartnerRequest update) {
+        Optional<PartnerAPI> partner = pm.updatePartner(UUID.fromString(id), update.getAlias());
         if (partner.isPresent()) {
             return HttpResponse.ok(partner.get());
         }

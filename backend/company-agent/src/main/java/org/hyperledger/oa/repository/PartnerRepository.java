@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.hyperledger.oa.model.Partner;
 
 import io.micronaut.data.annotation.Id;
@@ -34,6 +36,8 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
     void updateVerifiablePresentation(@Id UUID id, Map<String, Object> verifiablePresentation);
 
     void updateState(@Id UUID id, String state);
+
+    int updateAlias(@Id UUID id, @Nullable String alias);
 
     int updateByConnectionId(String connectionId, String state);
 
