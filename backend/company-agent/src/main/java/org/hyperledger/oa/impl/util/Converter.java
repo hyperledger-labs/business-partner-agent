@@ -51,24 +51,23 @@ public class Converter {
     @Setter
     private ObjectMapper mapper;
 
-    public PartnerAPI toAPIObject(@NonNull Partner partner) {
+    public PartnerAPI toAPIObject(@NonNull Partner p) {
         PartnerAPI result;
-        if (partner.getVerifiablePresentation() == null) {
+        if (p.getVerifiablePresentation() == null) {
             result = new PartnerAPI();
         } else {
-            result = toAPIObject(fromMap(partner.getVerifiablePresentation(), VerifiablePresentation.class));
+            result = toAPIObject(fromMap(p.getVerifiablePresentation(), VerifiablePresentation.class));
         }
-        result
-                .setCreatedAt(Long.valueOf(partner.getCreatedAt().toEpochMilli()))
-                .setUpdatedAt(Long.valueOf(partner.getUpdatedAt().toEpochMilli()))
-                .setId(partner.getId().toString())
-                .setValid(partner.getValid())
-                .setAriesSupport(partner.getAriesSupport())
-                .setState(partner.getState())
-                .setAlias(partner.getAlias())
-                .setIncoming(partner.getIncoming() != null ? partner.getIncoming() : Boolean.FALSE);
-
-        return result;
+        return result
+                .setCreatedAt(Long.valueOf(p.getCreatedAt().toEpochMilli()))
+                .setUpdatedAt(Long.valueOf(p.getUpdatedAt().toEpochMilli()))
+                .setId(p.getId().toString())
+                .setValid(p.getValid())
+                .setAriesSupport(p.getAriesSupport())
+                .setState(p.getState())
+                .setAlias(p.getAlias())
+                .setDid(p.getDid())
+                .setIncoming(p.getIncoming() != null ? p.getIncoming() : Boolean.FALSE);
     }
 
     public PartnerAPI toAPIObject(@NonNull VerifiablePresentation partner) {
