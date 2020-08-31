@@ -22,6 +22,8 @@ variables:
     value: '$(Build.SourceBranchName)'  #'$(Build.BuildId)'
   - name: vmImageName   # Agent VM image name
     value: 'ubuntu-latest'
+  - name: buildImageOnAnyBranch 
+    value: false # Set to true to build and push docker images on other branches than "master"
 
 stages:
 - stage: Test
@@ -48,6 +50,7 @@ stages:
           goals: 'test spotbugs:check pmd:check'
 
 - stage: BuildAndDeploy
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['buildImageOnAnyBranch'], 'true')))
   displayName: Build and Deploy
   jobs:  
   - job: BuildAndDeploy
