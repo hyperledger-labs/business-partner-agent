@@ -48,7 +48,6 @@ stages:
           goals: 'test spotbugs:check pmd:check'
 
 - stage: BuildAndDeploy
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/oss-prepare'), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: Build and Deploy
   jobs:  
   - job: BuildAndDeploy
