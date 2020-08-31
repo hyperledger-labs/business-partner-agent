@@ -107,6 +107,18 @@ public class PartnerManager {
         return converter.toAPIObject(result);
     }
 
+    public Optional<PartnerAPI> updatePartner(@NonNull UUID id, @Nullable String alias) {
+        Optional<PartnerAPI> result = Optional.empty();
+        int count = repo.updateAlias(id, alias);
+        if (count > 0) {
+            final Optional<Partner> dbP = repo.findById(id);
+            if (dbP.isPresent()) {
+                result = Optional.of(converter.toAPIObject(dbP.get()));
+            }
+        }
+        return result;
+    }
+
     /**
      * Same as add partner, with the difference that refresh only works on existing
      * partners
