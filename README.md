@@ -23,7 +23,7 @@ where you could try it out. The frontend is under construction.
 
 # Getting Started
 
-The Business Partner Agent supports to modes
+The Business Partner Agent supports two modes
 1. Web mode: Serves a did:web identity and allows to publish a public organizational profile.
 2. Aries mode (default): Utilizes an identity on an Hyperledger Indy ledger (default: https://indy-test.bosch-digital.de/) and enables Aries interaction protocols.
 
