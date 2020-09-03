@@ -12,8 +12,8 @@
         <router-link tag="span" :to="{ name: 'Home' }">
           <v-list-item two-line class="pl-3 mt-n2">
             <v-list-item-content>
-              <v-list-item-title>IIL Network</v-list-item-title>
-              <v-list-item-subtitle>Business Partner Agent</v-list-item-subtitle>
+              <v-list-item-title>Business Partner Agent</v-list-item-title>
+              <!-- <v-list-item-subtitle>Business Partner Agent</v-list-item-subtitle> -->
             </v-list-item-content>
           </v-list-item>
         </router-link>
