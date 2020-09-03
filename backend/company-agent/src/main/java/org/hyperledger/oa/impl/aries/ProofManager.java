@@ -27,13 +27,17 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.proof.PresentProofConfig;
+import org.hyperledger.aries.api.credential.Credential;
+import org.hyperledger.aries.api.proof.PresentProofProposal;
+import org.hyperledger.aries.api.proof.PresentProofProposalBuilder;
 import org.hyperledger.aries.api.proof.PresentProofRequest;
 import org.hyperledger.aries.api.proof.PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions;
+import org.hyperledger.aries.api.proof.PresentProofRequestConfig;
 import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.aries.AriesProof;
+import org.hyperledger.oa.api.aries.AriesProof.ProofRole;
 import org.hyperledger.oa.api.aries.BankAccount;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.api.exception.PartnerException;
@@ -43,6 +47,7 @@ import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.impl.util.TimeUtil;
 import org.hyperledger.oa.model.Partner;
 import org.hyperledger.oa.model.PartnerProof;
+import org.hyperledger.oa.repository.MyCredentialRepository;
 import org.hyperledger.oa.repository.PartnerProofRepository;
 import org.hyperledger.oa.repository.PartnerRepository;
 
@@ -52,7 +57,9 @@ import io.micronaut.context.annotation.Value;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Singleton
 @RequiresAries
 public class ProofManager {
@@ -70,6 +77,9 @@ public class ProofManager {
     private PartnerProofRepository pProofRepo;
 
     @Inject
+    private MyCredentialRepository credRepo;
+
+    @Inject
     private Converter conv;
 
     // request proof from partner
@@ -83,7 +93,7 @@ public class ProofManager {
                     if (p.isPresent()) {
                         // only when aries partner
                         if (p.get().getConnectionId() != null) {
-                            PresentProofConfig config = PresentProofConfig.builder()
+                            PresentProofRequestConfig config = PresentProofRequestConfig.builder()
                                     .connectionId(p.get().getConnectionId())
                                     .appendAttribute(BankAccount.class, ProofRestrictions.builder()
                                             .schemaId(schema.get().getId())
@@ -108,7 +118,7 @@ public class ProofManager {
         }
     }
 
-    // partner sent a proof to me
+    // handle all verified received or sent proof events
     // connectionless proofs are currently not handled
     public void handleProofEvent(PresentationExchangeRecord proof) {
         partnerRepo.findByConnectionId(proof.getConnectionId()).ifPresent(p -> {
@@ -132,6 +142,7 @@ public class ProofManager {
                             .presentationExchangeId(proof.getPresentationExchangeId())
                             .schemaId(schemaId)
                             .issuer(issuer)
+                            .role(proof.getRole())
                             .proof(conv.toMap(proof.from(BankAccount.class)))
                             .build();
                     pProofRepo.save(pp);
@@ -140,15 +151,29 @@ public class ProofManager {
         });
     }
 
-    public List<AriesProof> listPartnerProofs(UUID partnerId) {
+    public void sendProofProposal(@NonNull UUID partnerId, @NonNull UUID myCredentialId) {
+        partnerRepo.findById(partnerId).ifPresent(p -> {
+            credRepo.findById(myCredentialId).ifPresent(c -> {
+                Credential cred = conv.fromMap(c.getCredential(), Credential.class);
+                final PresentProofProposal req = PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred);
+                try {
+                    ac.presentProofSendProposal(req);
+                } catch (IOException e) {
+                    log.error("aca-py not reachable.", e);
+                }
+            });
+        });
+    }
+
+    public List<AriesProof> listPartnerProofs(@NonNull UUID partnerId, ProofRole role) {
         List<AriesProof> result = new ArrayList<>();
-        pProofRepo.findByPartnerId(partnerId).forEach(p -> {
+        pProofRepo.findByPartnerIdAndRole(partnerId, role.getValue()).forEach(p -> {
             result.add(AriesProof.from(p, conv.fromMap(p.getProof(), JsonNode.class)));
         });
         return result;
     }
 
-    public Optional<AriesProof> getPartnerProofById(UUID id) {
+    public Optional<AriesProof> getPartnerProofById(@NonNull UUID id) {
         Optional<AriesProof> result = Optional.empty();
         final Optional<PartnerProof> proof = pProofRepo.findById(id);
         if (proof.isPresent()) {

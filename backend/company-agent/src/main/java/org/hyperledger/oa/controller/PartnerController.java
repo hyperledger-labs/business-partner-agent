@@ -25,10 +25,12 @@ import javax.inject.Inject;
 
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.api.aries.AriesProof;
+import org.hyperledger.oa.api.aries.AriesProof.ProofRole;
 import org.hyperledger.oa.controller.api.partner.AddPartnerRequest;
 import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.oa.controller.api.partner.RequestCredentialRequest;
 import org.hyperledger.oa.controller.api.partner.RequestProofRequest;
+import org.hyperledger.oa.controller.api.partner.SendProofRequest;
 import org.hyperledger.oa.controller.api.partner.UpdatePartnerRequest;
 import org.hyperledger.oa.impl.PartnerManager;
 import org.hyperledger.oa.impl.aries.AriesCredentialManager;
@@ -42,6 +44,7 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Put;
+import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
@@ -167,10 +170,14 @@ public class PartnerController {
     public HttpResponse<Void> requestCredential(
             @PathVariable String id,
             @Body RequestCredentialRequest credReq) {
-        credM.ifPresent(mgmt -> mgmt.sendCredentialRequest(
-                UUID.fromString(id),
-                UUID.fromString(credReq.getDocumentId())));
-        return HttpResponse.ok();
+        if (credM.isPresent()) {
+
+            credM.get().sendCredentialRequest(
+                    UUID.fromString(id),
+                    UUID.fromString(credReq.getDocumentId()));
+            return HttpResponse.ok();
+        }
+        return HttpResponse.notFound();
     }
 
     /**
@@ -202,21 +209,44 @@ public class PartnerController {
     public HttpResponse<Void> requestProof(
             @PathVariable String id,
             @Body RequestProofRequest req) {
-        proofM.ifPresent(mgmt -> mgmt.sendPresentProofRequest(UUID.fromString(id), req.getCredentialDefinitionId()));
-        return HttpResponse.ok();
+        if (proofM.isPresent()) {
+            proofM.get().sendPresentProofRequest(UUID.fromString(id), req.getCredentialDefinitionId());
+            return HttpResponse.ok();
+        }
+        return HttpResponse.notFound();
+    }
+
+    /**
+     * Aries: Send proof to partner
+     *
+     * @param id  the partner id
+     * @param req {@link SendProofRequest}
+     * @return HTTP status
+     */
+    @Post("/{id}/proof-send")
+    public HttpResponse<Void> sendProof(
+            @PathVariable String id,
+            @Body SendProofRequest req) {
+        if (proofM.isPresent()) {
+            proofM.get().sendProofProposal(UUID.fromString(id), req.getMyCredentialId());
+            return HttpResponse.ok();
+        }
+        return HttpResponse.notFound();
     }
 
     /**
      * Aries: List proofs that the partner sent to me
      *
      * @param id the partner id
+     * @param q {@link ProofRole}
      * @return HTTP status
      */
     @Get("/{id}/proof")
     public HttpResponse<List<AriesProof>> getPartnerProofs(
-            @PathVariable String id) {
+            @PathVariable String id,
+            @QueryValue ProofRole q) {
         if (proofM.isPresent()) {
-            return HttpResponse.ok(proofM.get().listPartnerProofs(UUID.fromString(id)));
+            return HttpResponse.ok(proofM.get().listPartnerProofs(UUID.fromString(id), q));
         }
         return HttpResponse.notFound();
     }

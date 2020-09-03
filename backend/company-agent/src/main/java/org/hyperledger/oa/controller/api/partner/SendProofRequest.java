@@ -15,21 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.oa.repository;
+package org.hyperledger.oa.controller.api.partner;
 
-import java.util.List;
 import java.util.UUID;
 
-import org.hyperledger.oa.model.PartnerProof;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import io.micronaut.data.jdbc.annotation.JdbcRepository;
-import io.micronaut.data.model.query.builder.sql.Dialect;
-import io.micronaut.data.repository.CrudRepository;
-
-@JdbcRepository(dialect = Dialect.POSTGRES)
-public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUID> {
-
-    List<PartnerProof> findByPartnerId(UUID partnerId);
-
-    List<PartnerProof> findByPartnerIdAndRole(UUID partnerId, String role);
+@Data
+@NoArgsConstructor
+public class SendProofRequest {
+    private UUID myCredentialId;
 }

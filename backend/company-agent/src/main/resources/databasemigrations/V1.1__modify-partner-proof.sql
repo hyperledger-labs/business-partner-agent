@@ -1,0 +1,1 @@
+ALTER TABLE partner_proof ADD COLUMN role character varying(255);
