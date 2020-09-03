@@ -181,4 +181,15 @@ public class ProofManager {
         }
         return result;
     }
+
+    public void deletePartnerProof(@NonNull UUID id) {
+        pProofRepo.findById(id).ifPresent(pp -> {
+            try {
+                ac.presentProofRecordsRemove(pp.getPresentationExchangeId());
+            } catch (IOException e) {
+                log.error("aca-py not reachable", e);
+            }
+            pProofRepo.deleteById(id);
+        });
+    }
 }

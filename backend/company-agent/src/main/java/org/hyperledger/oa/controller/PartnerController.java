@@ -235,7 +235,7 @@ public class PartnerController {
     }
 
     /**
-     * Aries: List proofs that the partner sent to me
+     * Aries: List proof exchange records
      *
      * @param id the partner id
      * @param q  {@link ProofRole}
@@ -252,7 +252,7 @@ public class PartnerController {
     }
 
     /**
-     * Aries: Get a partners proof by id
+     * Aries: Get a proof exchange by id
      *
      * @param id      the partner id
      * @param proofId the proof id
@@ -269,5 +269,22 @@ public class PartnerController {
             }
         }
         return HttpResponse.notFound();
+    }
+
+    /**
+     * Aries: Deletes a partners proof by id
+     *
+     * @param id the partner id
+     * @param proofId the proof id
+     * @return HTTP status
+     */
+    @Delete("/{id}/proof/{proofId}")
+    public HttpResponse<AriesProof> deletePartnerProofById(
+            @PathVariable String id,
+            @PathVariable String proofId) {
+        proofM.ifPresent(pMgmt -> {
+            pMgmt.deletePartnerProof(UUID.fromString(proofId));
+        });
+        return HttpResponse.ok();
     }
 }

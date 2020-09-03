@@ -50,6 +50,7 @@ public class AriesProof {
 
     private String issuer;
     private String schemaId;
+    private String role;
     private JsonNode proofData;
 
     public static AriesProof from(PartnerProof p, JsonNode poofData) {
@@ -69,6 +70,7 @@ public class AriesProof {
                 .issuer(p.getIssuer())
                 .schemaId(p.getSchemaId())
                 .proofData(poofData)
+                .role(p.getRole())
                 .build();
     }
 
