@@ -55,7 +55,7 @@ public class AriesProof {
     public static AriesProof from(PartnerProof p, JsonNode poofData) {
         final AriesProofBuilder b = AriesProof.builder();
         final Long created = Long.valueOf(p.getCreatedAt().toEpochMilli());
-        if(ProofRole.PROVER.getValue().equals(p.getRole())) {
+        if (ProofRole.PROVER.getValue().equals(p.getRole())) {
             b.sentAt(created);
         } else {
             b.receivedAt(created);
@@ -63,7 +63,7 @@ public class AriesProof {
         return b
                 .id(p.getId())
                 .partnerId(p.getPartnerId())
-                //.issuedAt(Long.valueOf(p.getIssuedAt().toEpochMilli()))
+                // .issuedAt(Long.valueOf(p.getIssuedAt().toEpochMilli()))
                 .type(p.getType())
                 .state(p.getState())
                 .issuer(p.getIssuer())

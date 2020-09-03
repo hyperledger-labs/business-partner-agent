@@ -238,7 +238,7 @@ public class PartnerController {
      * Aries: List proofs that the partner sent to me
      *
      * @param id the partner id
-     * @param q {@link ProofRole}
+     * @param q  {@link ProofRole}
      * @return HTTP status
      */
     @Get("/{id}/proof")
