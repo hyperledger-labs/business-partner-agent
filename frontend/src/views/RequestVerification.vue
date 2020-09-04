@@ -14,6 +14,7 @@
         Select Business Partner
     </v-card-title>
     <v-card-text>
+        <h4 class="pt-4">Select the business partner you would like to request a verififcation from</h4>
         <PartnerList v-bind:selectable="true" ref="partnerList" v-bind:onlyAries="true"></PartnerList>
     </v-card-text>
 

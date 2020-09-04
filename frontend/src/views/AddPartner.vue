@@ -142,11 +142,15 @@ export default {
                 });
         },
         addPartner() {
+            let partnerToAdd = {
+                 did: `${this.didMethod}:${this.did}`
+            }
+
+            if (this.alias && this.alias !== "") {
+                partnerToAdd.alias = this.alias
+            }
             this.$axios
-                .post(`${this.$apiBaseUrl}/partners`, {
-                    did: `${this.didMethod}:${this.did}`,
-                    alias: this.alias
-                })
+                .post(`${this.$apiBaseUrl}/partners`, partnerToAdd)
                 .then((result) => {
                     console.log(result);
 
