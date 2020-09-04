@@ -84,7 +84,7 @@
             </v-row>
           </v-col>
           <v-col cols="8">
-            <CredentialList v-if="isReady" v-bind:credentials="[]" v-bind:headers="headersSent"></CredentialList>
+            <CredentialList v-if="isReady" v-bind:credentials="presentationsSent" v-bind:headers="headersSent"></CredentialList>
           </v-col>
         </v-row>
       </v-card-text>
@@ -124,6 +124,7 @@ export default {
   },
   created() {
     this.getPartner();
+    this.getPresentationRecords();
   },
   data: () => {
     return {
@@ -134,21 +135,25 @@ export default {
       partner: {},
       rawData: {},
       credentials: [],
+      presentationsSent: [],
+      presentationsReceived: [],
       rules: {
           required: value => !!value || "Can't be empty"
       },
       headersSent: [
         {
+          text: "Name",
+          value: "name"
+        },
+        {
           text: "Type",
           value: "type"
         },
         {
-          text: "Issuer",
-          value: "issuer"
-        },
-        {
           text: "Sent at",
           value: "sentAt"
+        },{
+
         }
       ]
     };
@@ -159,6 +164,28 @@ export default {
     }
   },
   methods: {
+    getPresentationRecords() {
+      console.log("Getting presentation records...");
+      this.$axios
+        .get(`${this.$apiBaseUrl}/partners/${this.id}/proof`)
+        .then(result => {
+          if ({}.hasOwnProperty.call(result, "data")) {
+            let data  = result.data;
+            console.log(data);
+            this.presentationsSent = data.filter( item => {
+              item.role === "PROVER"
+            })
+            this.presentationsReceived = data.filter( item => {
+              item.role === "VERIFIER"
+            })
+          }
+
+        })
+        .catch(e => {
+          console.error(e);
+          // EventBus.$emit("error", e);
+        });
+    },
     getPartner() {
       console.log("Getting partner...");
       this.$axios
