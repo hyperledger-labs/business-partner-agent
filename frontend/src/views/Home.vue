@@ -6,17 +6,15 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
-  <v-container fill-height fluid text-center>
-    <v-row align="center" justify="center">
-      <v-col>
-        <h1 v-bind:style="{ fontSize: `700%` }" class="grey--text text--lighten-2">Welcome</h1>
-        <p  v-bind:style="{ fontSize: `180%` }" class="grey--text text--darken-2 font-weight-medium">What do you want to do?</p>
-        <br />
-        <v-btn color="primary" :to="{ name: 'Wallet' }">Setup your Profile</v-btn>
-        <br />
-        <v-btn  :to="{ name: 'Partners' }" text>Connect with Business Partners</v-btn>
-      </v-col>
-    </v-row>
+  <v-container text-center>
+        <div v-if="isWelcome">
+            <!-- Image from undraw.co -->
+            <v-img class="mx-auto" src="../assets/undraw_welcome_3gvl.png" max-width="50%" aspect-ratio="1"></v-img>
+            <p  v-bind:style="{ fontSize: `180%` }" class="grey--text text--darken-2 font-weight-medium">Hi, we've already set up an identity for you!</p>
+            <p  v-bind:style="{ fontSize: `140%` }" class="grey--text text--darken-2 font-weight-medium">Start by adding a public profile that your business partners will see</p>
+            <br />
+            <v-btn color="primary" :to="{ name: 'Profile', params: { add: true} }">Setup your Profile</v-btn>
+        </div>
   </v-container>
 </template>
 
@@ -27,6 +25,11 @@ export default {
   created() {
     EventBus.$emit("title", "");
   },
+  data: () => {
+        return {
+            isWelcome: true
+        };
+    },
 };
 </script>
 
