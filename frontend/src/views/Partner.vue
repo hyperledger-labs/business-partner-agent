@@ -20,6 +20,7 @@
           append-icon="mdi-done"
           v-model="alias"
           outlined
+          :rules="[rules.required]"
           dense
         >
           <template v-slot:append>
@@ -133,6 +134,9 @@ export default {
       partner: {},
       rawData: {},
       credentials: [],
+      rules: {
+          required: value => !!value || "Can't be empty"
+      },
       headersSent: [
         {
           text: "Type",
@@ -229,23 +233,29 @@ export default {
     },
     submitNameUpdate() {
       this.isBusy = true;
-      this.$axios
-        .put(`${this.$apiBaseUrl}/partners/${this.id}`, {
-          alias: this.alias
-        })
-        .then(result => {
-          if (result.status === 200) {
+      if (this.alias && this.alias !== "") {
+        this.$axios
+          .put(`${this.$apiBaseUrl}/partners/${this.id}`, {
+            alias: this.alias
+          })
+          .then(result => {
+            if (result.status === 200) {
+              this.isBusy = false;
+              this.partner.name = this.alias;
+              this.isUpdatingName = false;
+            }
+          })
+          .catch(e => {
             this.isBusy = false;
-            this.partner.name = this.alias;
             this.isUpdatingName = false;
-          }
-        })
-        .catch(e => {
-          this.isBusy = false;
-          this.isUpdatingName = false;
-          console.error(e);
-          EventBus.$emit("error", e);
-        });
+            console.error(e);
+            EventBus.$emit("error", e);
+          });
+      } else {
+        this.isBusy = false
+        console.log('blub')
+
+      }
     }
   }
 };

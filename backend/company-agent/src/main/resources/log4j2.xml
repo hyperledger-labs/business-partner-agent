@@ -13,6 +13,8 @@
         <Logger name="com.zaxxer.hikari" level="warn"/>
         <Logger name="org.flywaydb.core" level="info"/>
         <Logger name="org.hyperledger.oa" level="debug"/>
+        <Logger name="org.hyperledger.aries" level="trace"/>
+        <logger name="org.hyperledger.oa.impl.aries" level="trace"/>
         <Root level="warn">
             <AppenderRef ref="STDOUT"/>
         </Root>

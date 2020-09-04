@@ -88,6 +88,7 @@ public class AriesEventHandler extends EventHandler {
 
     @Override
     public void handleRaw(String eventType, String json) {
+        log.trace(json);
         broadcaster.broadcast(json);
     }
 

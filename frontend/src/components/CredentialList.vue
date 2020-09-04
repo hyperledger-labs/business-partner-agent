@@ -7,7 +7,7 @@
 -->
 
 <template>
-<v-data-table hide-default-footer  :headers="headers" :items="credentialsWithIndex" :expanded.sync="expanded" item-key="index" show-expand>
+<v-data-table hide-default-footer v-model="selected" :show-select="selectable" single-select :headers="headers" :items="credentialsWithIndex" :expanded.sync="expanded" item-key="index" show-expand>
     <template v-slot:[`item.type`]="{ item }">
         {{ ( item.type ? item.type : CredentialTypes.OTHER.name ) | credentialLabel }}
     </template>
@@ -30,6 +30,10 @@ import {
 export default {
     props: {
         credentials: Array,
+         selectable: {
+            type: Boolean,
+            default: false
+        },
         headers: {
             type: Array,
             default: () => [{
@@ -57,6 +61,7 @@ export default {
     },
     data: () => {
         return {
+            selected: [],
             CredentialTypes: CredentialTypes,
             expanded: []
         };
