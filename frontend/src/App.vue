@@ -19,6 +19,7 @@
           <v-list-item v-else two-line class="pl-3 mt-n2">
               <v-list-item-avatar>
               <v-img v-if="logo" :src="logo"></v-img>
+              <!-- Default logo from https://logodust.com/ -->
               <v-img src="@/assets/logo_default.svg"></v-img>
             </v-list-item-avatar>
             <v-list-item-content>
