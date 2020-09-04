@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import org.hyperledger.oa.api.MyDocumentAPI;
 import org.hyperledger.oa.api.aries.AriesCredential;
+import org.hyperledger.oa.controller.api.wallet.WalletCredentialRequest;
 import org.hyperledger.oa.controller.api.wallet.WalletDocumentRequest;
 import org.hyperledger.oa.impl.MyDocumentManager;
 import org.hyperledger.oa.impl.aries.AriesCredentialManager;
@@ -155,6 +156,27 @@ public class WalletController {
             final Optional<AriesCredential> cred = credMgmt.get().getAriesCredentialById(UUID.fromString(id));
             if (cred.isPresent()) {
                 return HttpResponse.ok(cred.get());
+            }
+        }
+        return HttpResponse.notFound();
+    }
+
+    /**
+     * Aries: Set/update a credentials label
+     *
+     * @param id  the credential id
+     * @param req {@link WalletCredentialRequest}
+     * @return HTTP status
+     */
+    @Put("/credential/{id}")
+    public HttpResponse<Void> updateCredential(
+            @PathVariable String id,
+            @Body WalletCredentialRequest req) {
+        if (credMgmt.isPresent()) {
+            final Optional<AriesCredential> apiCred = credMgmt.get()
+                    .updateCredentialById(UUID.fromString(id), req.getLabel());
+            if (apiCred.isPresent()) {
+                return HttpResponse.ok();
             }
         }
         return HttpResponse.notFound();

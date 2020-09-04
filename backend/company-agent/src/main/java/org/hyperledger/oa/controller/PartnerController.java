@@ -274,7 +274,7 @@ public class PartnerController {
     /**
      * Aries: Deletes a partners proof by id
      *
-     * @param id the partner id
+     * @param id      the partner id
      * @param proofId the proof id
      * @return HTTP status
      */

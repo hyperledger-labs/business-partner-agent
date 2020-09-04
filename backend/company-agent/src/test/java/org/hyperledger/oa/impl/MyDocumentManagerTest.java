@@ -33,6 +33,7 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.oa.RunWithAries;
@@ -191,7 +192,7 @@ class MyDocumentManagerTest extends RunWithAries {
     void testRecreateVPDefault() throws Exception {
         vpMgmt.recreateVerifiablePresentation();
         waitForVP(false);
-        final Optional<VerifiablePresentation> vp = vpMgmt.getVerifiablePresentation();
+        final Optional<VerifiablePresentation<VerifiableIndyCredential>> vp = vpMgmt.getVerifiablePresentation();
         assertTrue(vp.isPresent());
         assertNull(vp.get().getVerifiableCredential());
         assertNotNull(vp.get().getProof());
@@ -200,7 +201,7 @@ class MyDocumentManagerTest extends RunWithAries {
 
     @Test
     void testRecreateVPDefaultAddRemoveCredential() throws Exception {
-        Optional<VerifiablePresentation> vp = vpMgmt.getVerifiablePresentation();
+        Optional<VerifiablePresentation<VerifiableIndyCredential>> vp = vpMgmt.getVerifiablePresentation();
         assertFalse(vp.isPresent());
 
         final MyDocumentAPI vc = createAndSavePublicDummyCredential();

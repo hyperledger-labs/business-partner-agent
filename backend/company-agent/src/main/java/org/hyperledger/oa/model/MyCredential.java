@@ -74,6 +74,9 @@ public class MyCredential {
     private String threadId;
 
     @Nullable
+    private String label;
+
+    @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> credential;
 }

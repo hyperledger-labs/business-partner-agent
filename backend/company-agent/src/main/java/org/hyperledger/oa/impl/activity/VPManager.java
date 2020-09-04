@@ -26,8 +26,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.hyperledger.aries.api.credential.Credential;
-import org.hyperledger.aries.api.jsonld.VerifiableCredential;
-import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableCredentialBuilder;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential.VerifiableIndyCredentialBuilder;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation.VerifiablePresentationBuilder;
 import org.hyperledger.aries.config.GsonConfig;
@@ -79,7 +79,7 @@ public class VPManager {
     private Converter converter;
 
     public void recreateVerifiablePresentation() {
-        List<VerifiableCredential> vcs = new ArrayList<>();
+        List<VerifiableIndyCredential> vcs = new ArrayList<>();
 
         String myDid = id.getMyDid();
 
@@ -97,14 +97,14 @@ public class VPManager {
     }
 
     @Async(value = TaskExecutors.SCHEDULED)
-    public void signVP(List<VerifiableCredential> vcs) {
-        final VerifiablePresentationBuilder vpBuilder = VerifiablePresentation.builder();
+    public void signVP(List<VerifiableIndyCredential> vcs) {
+        final VerifiablePresentationBuilder<VerifiableIndyCredential> vpBuilder = VerifiablePresentation.builder();
         if (vcs.size() > 0) {
             vpBuilder.verifiableCredential(vcs);
         } else {
             vpBuilder.verifiableCredential(null);
         }
-        Optional<VerifiablePresentation> vp = crypto.sign(vpBuilder.build());
+        Optional<VerifiablePresentation<VerifiableIndyCredential>> vp = crypto.sign(vpBuilder.build());
         getVerifiablePresentationInternal().ifPresentOrElse(didWeb -> {
             didRepo.updateProfileJson(didWeb.getId(), converter.toMap(vp));
         }, () -> {
@@ -115,7 +115,7 @@ public class VPManager {
         });
     }
 
-    protected VerifiableCredential buildFromDocument(@NonNull MyDocument doc, @NonNull String myDid) {
+    protected VerifiableIndyCredential buildFromDocument(@NonNull MyDocument doc, @NonNull String myDid) {
         Object subj;
         if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(doc.getType())) {
             BankAccount ba = converter.fromMap(doc.getDocument(), BankAccount.class);
@@ -128,18 +128,19 @@ public class VPManager {
             // and cannot handle Jackson ObjectNode
             subj = GsonConfig.defaultConfig().fromJson(on.toString(), Object.class);
         }
-        return VerifiableCredential
+        return VerifiableIndyCredential
                 .builder()
                 .id("urn:" + doc.getId().toString())
                 .type(doc.getType().getType())
                 .context(doc.getType().getContext())
                 .issuanceDate(TimeUtil.currentTimeFormatted())
                 .issuer(myDid)
+                .label(doc.getLabel())
                 .credentialSubject(subj)
                 .build();
     }
 
-    private VerifiableCredential buildFromCredential(@NonNull MyCredential cred, @NonNull String myDid) {
+    private VerifiableIndyCredential buildFromCredential(@NonNull MyCredential cred, @NonNull String myDid) {
         final ArrayList<String> type = new ArrayList<>(cred.getType().getType());
         type.add("IndyCredential");
 
@@ -155,22 +156,25 @@ public class VPManager {
         } else {
             credSubj = converter.fromMap(cred.getCredential(), Object.class);
         }
-        VerifiableCredentialBuilder builder = VerifiableCredential.builder()
+
+        @SuppressWarnings("rawtypes")
+        VerifiableIndyCredentialBuilder builder = VerifiableIndyCredential.builder()
                 .id("urn:" + cred.getId().toString())
                 .type(type)
                 .context(context)
                 .issuanceDate(TimeUtil.currentTimeFormatted(cred.getIssuedAt()))
                 .schemaId(ariesCred.getSchemaId())
                 .credDefId(ariesCred.getCredentialDefinitionId())
+                .label(cred.getLabel())
                 .credentialSubject(credSubj);
         partnerRepo.findByConnectionId(cred.getConnectionId()).ifPresent(p -> builder.indyIssuer(p.getDid()));
         return builder.build();
     }
 
-    public Optional<VerifiablePresentation> getVerifiablePresentation() {
+    public Optional<VerifiablePresentation<VerifiableIndyCredential>> getVerifiablePresentation() {
         final Optional<DidDocWeb> dbVP = getVerifiablePresentationInternal();
         if (dbVP.isPresent() && dbVP.get().getProfileJson() != null) {
-            return Optional.of(converter.fromMap(dbVP.get().getProfileJson(), VerifiablePresentation.class));
+            return Optional.of(converter.fromMap(dbVP.get().getProfileJson(), Converter.VP_TYPEREF));
         }
         return Optional.empty();
     }
