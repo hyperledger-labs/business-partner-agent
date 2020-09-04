@@ -15,14 +15,14 @@
     </v-card-title>
     
     <v-card-text>
-         <MyCredentialList v-bind:headers="credHeaders" type="credential" selectable></MyCredentialList>
-         <h3>Sorry, this is not implemented yet yet</h3>
+         <h4 class="pt-4">Select a credential to send</h4>
+         <MyCredentialList v-bind:headers="credHeaders" type="credential" ref="credentialList" selectable></MyCredentialList>
     </v-card-text>
 
     <v-card-actions>
         <v-layout align-end justify-end>
             <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
-            <v-btn :loading="this.isBusy" color="primary" disabled text @click="submitRequest()">Submit</v-btn>
+            <v-btn :loading="this.isBusy" color="primary" text @click="sendPresentation()">Submit</v-btn>
         </v-layout>
     </v-card-actions>
 </v-card>
@@ -73,6 +73,42 @@ export default {
     },
     computed: {},
     methods: {
+        sendPresentation() {
+            this.isBusy = true;
+            if (this.$refs.credentialList.selected !== '') {
+
+                if (this.$refs.credentialList.selected[0].id) {
+
+                    let selectedCredential = this.$refs.credentialList.selected[0].id;
+                    this.$axios
+                        .post(`${this.$apiBaseUrl}/partners/${this.id}/proof-send`, {
+                            myCredentialId: selectedCredential
+                        })
+                        .then((res) => {
+                            console.log(res)
+                            this.isBusy = false;
+                            EventBus.$emit('success', 'Presentation sent')
+                            this.$router.push({
+                                name: 'Partner',
+                                params: { id: this.id}
+                            });
+                        })
+                        .catch((e) => {
+                            this.isBusy = false;
+                            console.error(e);
+                            EventBus.$emit("error", e);
+                        });
+
+                } else {
+                    this.isBusy = false;
+                }
+
+            } else {
+                this.isBusy = false;
+                EventBus.$emit("error", 'No credential selected');
+            }
+
+        },
         
         cancel() {
             this.$router.go(-1);
