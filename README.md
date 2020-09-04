@@ -23,9 +23,22 @@ where you could try it out. The frontend is under construction.
 
 # Getting Started
 
-The Business Partner Agent supports to modes
+The Business Partner Agent supports two modes
 1. Web mode: Serves a did:web identity and allows to publish a public organizational profile.
-2. Aries mode (default): Utilizes an identity on an Hyperledger Indy ledger (default: https://indy-test.bosch-digital.de/) and enables Aries interaction protocols.
+2. Aries mode: Utilizes an identity on an Hyperledger Indy ledger (default: https://indy-test.bosch-digital.de/) and enables Aries interaction protocols.
+
+Following this turorial, the agent will be started in Aries mode.
+
+## Prerequistes
+
+The following tools should be installed on your developer machine:
+- docker
+- docker-compose (>= version 3)
+- [ngrok](https://ngrok.com/)
+
+As well, make sure you are not sitting behind a restrictive company firewall.
+If so, at least the setup has to be adopted (e.g. configure proxy configuration in the maven settings in the [Dockerfile](./Dockerfile)).
+Furthermore the firewall might block traffic to other agents depending on its endpoint configuration (if e.g. in the firewall other ports than 443 are blocked).
 
 ## Register a new DID
 
