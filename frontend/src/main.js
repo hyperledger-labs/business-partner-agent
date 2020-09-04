@@ -42,6 +42,8 @@ Vue.filter('credentialLabel', function (name) {
 
 const EventBus = new Vue();
 export { EventBus, axios, apiBaseUrl };
+  
+console.log(Vue.prototype)
 
 new Vue({
   vuetify,
