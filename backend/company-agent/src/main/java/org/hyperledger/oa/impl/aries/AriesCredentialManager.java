@@ -164,7 +164,6 @@ public class AriesCredentialManager {
                     MyCredential dbCred = MyCredential
                             .builder()
                             .isPublic(Boolean.FALSE)
-                            .type(CredentialType.fromSchemaId(credEx.getSchemaId()))
                             .connectionId(credEx.getConnectionId())
                             .state(credEx.getState())
                             .threadId(credEx.getThreadId())
@@ -194,6 +193,7 @@ public class AriesCredentialManager {
                     cred
                             .setReferent(credEx.getCredential().getReferent())
                             .setCredential(conv.toMap(credEx.getCredential()))
+                            .setType(CredentialType.fromSchemaId(credEx.getSchemaId()))
                             .setState(credEx.getState())
                             .setIssuedAt(Instant.now());
                     credRepo.update(cred);
