@@ -31,13 +31,13 @@ Following this turorial, the agent will be started in Aries mode.
 
 ## Prerequistes
 
-The following tools should be installed on you developer machine:
+The following tools should be installed on your developer machine:
 - docker
 - docker-compose (>= version 3)
 - [ngrok](https://ngrok.com/)
 
 As well, make sure you are not sitting behind a restrictive company firewall.
-If so, at least the setup has to be adopted (e.g. add proxy configuration to the maven setting in the [Dockerfile](./Dockerfile)).
+If so, at least the setup has to be adopted (e.g. configure proxy configuration in the maven settings in the [Dockerfile](./Dockerfile)).
 Furthermore the firewall might block traffic to other agents depending on its endpoint configuration (if e.g. in the firewall other ports than 443 are blocked).
 
 ## Register a new DID
