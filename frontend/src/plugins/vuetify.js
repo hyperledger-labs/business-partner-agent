@@ -7,7 +7,6 @@ Vue.use(Vuetify);
 
 // Theming
 let primaryColor = '#4A148C';
-console.log(process.env)
 if (process.env.VUE_APP_UI_COLOR) {
   primaryColor = process.env.VUE_APP_UI_COLOR;
 }

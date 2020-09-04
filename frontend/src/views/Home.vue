@@ -9,7 +9,7 @@
   <v-container text-center>
         <div v-if="isWelcome">
             <!-- Image from undraw.co -->
-            <v-img class="mx-auto" src="../assets/undraw_welcome_3gvl.png" max-width="50%" aspect-ratio="1"></v-img>
+            <v-img class="mx-auto" src="@/assets/undraw_welcome_3gvl_grey.png" max-width="50%" aspect-ratio="1"></v-img>
             <p  v-bind:style="{ fontSize: `180%` }" class="grey--text text--darken-2 font-weight-medium">Hi, we've already set up an identity for you!</p>
             <p  v-bind:style="{ fontSize: `140%` }" class="grey--text text--darken-2 font-weight-medium">Start by adding a public profile that your business partners will see</p>
             <br />
