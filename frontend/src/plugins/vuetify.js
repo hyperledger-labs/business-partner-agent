@@ -5,6 +5,13 @@ import 'vuetify/dist/vuetify.min.css';
 
 Vue.use(Vuetify);
 
+// Theming
+let primaryColor = '#4A148C';
+console.log(process.env)
+if (process.env.VUE_APP_UI_COLOR) {
+  primaryColor = process.env.VUE_APP_UI_COLOR;
+}
+
 export default new Vuetify({
   icons: {
     iconfont: 'mdiSvg',
@@ -12,9 +19,8 @@ export default new Vuetify({
   theme: {
     themes: {
       light: {
-        primary: '#4A148C'
+        primary: primaryColor
       }
-
     }
   }
 });
