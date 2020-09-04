@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -37,27 +38,50 @@ public class AriesProof {
 
     private UUID id;
     private UUID partnerId;
+
+    // depends on the role
     private Long receivedAt;
+    private Long sentAt;
+    // probably not available
     private Long issuedAt;
+
     private CredentialType type;
     private String state;
 
     private String issuer;
     private String schemaId;
+    private String role;
     private JsonNode proofData;
 
     public static AriesProof from(PartnerProof p, JsonNode poofData) {
-        return AriesProof
-                .builder()
+        final AriesProofBuilder b = AriesProof.builder();
+        final Long created = Long.valueOf(p.getCreatedAt().toEpochMilli());
+        if (ProofRole.PROVER.getValue().equals(p.getRole())) {
+            b.sentAt(created);
+        } else {
+            b.receivedAt(created);
+        }
+        return b
                 .id(p.getId())
                 .partnerId(p.getPartnerId())
-                .receivedAt(Long.valueOf(p.getCreatedAt().toEpochMilli()))
-                .issuedAt(Long.valueOf(p.getIssuedAt().toEpochMilli()))
+                // .issuedAt(Long.valueOf(p.getIssuedAt().toEpochMilli()))
                 .type(p.getType())
                 .state(p.getState())
                 .issuer(p.getIssuer())
                 .schemaId(p.getSchemaId())
                 .proofData(poofData)
+                .role(p.getRole())
                 .build();
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public enum ProofRole {
+        /** Proofs that I received */
+        VERIFIER("verifier"),
+        /** Proofs that I have sent */
+        PROVER("prover");
+
+        private String value;
     }
 }

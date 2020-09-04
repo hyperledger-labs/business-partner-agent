@@ -73,6 +73,9 @@ public class PartnerProof {
     @Nullable
     private String schemaId;
 
+    @Nullable
+    private String role;
+
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> proof;
 }

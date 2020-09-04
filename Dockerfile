@@ -2,6 +2,10 @@ FROM maven:3-amazoncorretto-11
 
 WORKDIR /home/maven/backend
 COPY backend/pom.xml backend/formatter.xml ./
+COPY backend/company-agent/pom.xml/ company-agent/pom.xml
+COPY backend/registry/pom.xml/ registry/pom.xml
+RUN mvn dependency:go-offline
+
 COPY backend/company-agent ./company-agent
 COPY frontend ../frontend
 

@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.oa.client.api.LedgerQueryResult;
 import org.hyperledger.oa.client.api.LedgerQueryResult.DomainTransaction;
 import org.hyperledger.oa.client.api.LedgerQueryResult.DomainTransaction.TxnMetadata;
@@ -58,6 +59,12 @@ public class LedgerClient {
 
     public Optional<List<PartnerCredentialType>> getCredentialDefinitionIdsForDid(@NonNull String did) {
         Optional<List<PartnerCredentialType>> result = Optional.empty();
+
+        if (StringUtils.isEmpty(url)) {
+            log.error("The system property: 'oagent.ledger.browser' is not set");
+            return result;
+        }
+
         try {
             HttpUrl b = HttpUrl.parse(url + "/ledger/domain")
                     .newBuilder()

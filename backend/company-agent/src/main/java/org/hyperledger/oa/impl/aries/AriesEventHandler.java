@@ -65,7 +65,8 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleProof(PresentationExchangeRecord proof) {
         log.debug("Present Proof Event: {}", proof);
-        if (proof.isVerified() && "verifier".equals(proof.getRole())) {
+        if (proof.isVerified() && "verifier".equals(proof.getRole())
+                || "presentation_acked".equals(proof.getState()) && "prover".equals(proof.getRole())) {
             proofMgmt.ifPresent(mgmt -> mgmt.handleProofEvent(proof));
         }
     }
@@ -87,6 +88,7 @@ public class AriesEventHandler extends EventHandler {
 
     @Override
     public void handleRaw(String eventType, String json) {
+        log.trace(json);
         broadcaster.broadcast(json);
     }
 
