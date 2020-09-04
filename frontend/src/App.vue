@@ -10,10 +10,21 @@
     <v-navigation-drawer v-model="drawer" app>
       <v-list dense>
         <router-link tag="span" :to="{ name: 'Home' }">
-          <v-list-item two-line class="pl-3 mt-n2">
+          <v-list-item v-if="logo" two-line class="pl-3 mt-n2">
+            <v-list-item-content>
+              <v-list-item-title><v-img v-if="logo" :src="logo"></v-img></v-list-item-title>
+              <v-list-item-subtitle>Business Partner Agent</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item v-else two-line class="pl-3 mt-n2">
+              <v-list-item-avatar>
+              <v-img v-if="logo" :src="logo"></v-img>
+              <!-- Default logo from https://logodust.com/ -->
+              <v-img src="@/assets/logo_default.svg"></v-img>
+            </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title>Business Partner Agent</v-list-item-title>
-              <!-- <v-list-item-subtitle>Business Partner Agent</v-list-item-subtitle> -->
+              <!-- <v-list-item-subtitle></v-list-item-subtitle> -->
             </v-list-item-content>
           </v-list-item>
         </router-link>
@@ -72,7 +83,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar color="purple darken-4" app flat dark>
+    <v-app-bar color="primary" app flat dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title>{{ title }}</v-toolbar-title>
 
@@ -135,6 +146,7 @@ export default {
   data: () => ({
     title: "",
     drawer: null,
+    logo: process.env.VUE_APP_LOGO_URL,
 
     // snackbar stuff
     snackbar: false,
