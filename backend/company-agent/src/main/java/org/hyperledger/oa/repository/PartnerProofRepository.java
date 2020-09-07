@@ -35,7 +35,7 @@ public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUI
 
     List<PartnerProof> findByPartnerId(UUID partnerId);
 
-    List<PartnerProof> findByPartnerIdAndRole(UUID partnerId, String role);
+    List<PartnerProof> findByPartnerIdOrderByRole(UUID partnerId);
 
     void updateState(@Id UUID id, String state);
 }

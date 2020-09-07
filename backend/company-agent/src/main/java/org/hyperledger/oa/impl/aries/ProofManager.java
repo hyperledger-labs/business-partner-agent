@@ -37,7 +37,6 @@ import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.aries.AriesProof;
-import org.hyperledger.oa.api.aries.AriesProof.ProofRole;
 import org.hyperledger.oa.api.aries.BankAccount;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.api.exception.PartnerException;
@@ -178,9 +177,9 @@ public class ProofManager {
         });
     }
 
-    public List<AriesProof> listPartnerProofs(@NonNull UUID partnerId, ProofRole role) {
+    public List<AriesProof> listPartnerProofs(@NonNull UUID partnerId) {
         List<AriesProof> result = new ArrayList<>();
-        pProofRepo.findByPartnerIdAndRole(partnerId, role.getValue()).forEach(p -> {
+        pProofRepo.findByPartnerIdOrderByRole(partnerId).forEach(p -> {
             result.add(AriesProof.from(p, conv.fromMap(p.getProof(), JsonNode.class)));
         });
         return result;
