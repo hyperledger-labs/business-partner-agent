@@ -35,6 +35,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * Aries proof that I received from a partner (aka connection).
@@ -44,6 +45,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
+@Accessors(chain = true)
 public class PartnerProof {
 
     @Id
@@ -55,8 +57,10 @@ public class PartnerProof {
     @DateCreated
     private Instant createdAt;
 
+    @Nullable
     private Instant issuedAt;
 
+    @Nullable
     private CredentialType type;
 
     @Nullable
@@ -76,6 +80,7 @@ public class PartnerProof {
     @Nullable
     private String role;
 
+    @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> proof;
 }

@@ -67,6 +67,8 @@ public class AriesEventHandler extends EventHandler {
         log.debug("Present Proof Event: {}", proof);
         if (proof.isVerified() && "verifier".equals(proof.getRole())
                 || "presentation_acked".equals(proof.getState()) && "prover".equals(proof.getRole())) {
+            proofMgmt.ifPresent(mgmt -> mgmt.handleAckedOrVerifiedProofEvent(proof));
+        } else {
             proofMgmt.ifPresent(mgmt -> mgmt.handleProofEvent(proof));
         }
     }

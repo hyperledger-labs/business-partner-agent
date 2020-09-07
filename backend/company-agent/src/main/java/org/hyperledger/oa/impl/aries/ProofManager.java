@@ -118,10 +118,28 @@ public class ProofManager {
         }
     }
 
-    // handle all verified received or sent proof events
-    // connectionless proofs are currently not handled
+    // handles all proof events to track state changes
     public void handleProofEvent(PresentationExchangeRecord proof) {
         partnerRepo.findByConnectionId(proof.getConnectionId()).ifPresent(p -> {
+            pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId()).ifPresentOrElse(pp -> {
+                pProofRepo.updateState(pp.getId(), proof.getState());
+            }, () -> {
+                final PartnerProof pp = PartnerProof
+                        .builder()
+                        .partnerId(p.getId())
+                        .state(proof.getState())
+                        .presentationExchangeId(proof.getPresentationExchangeId())
+                        .role(proof.getRole())
+                        .build();
+                pProofRepo.save(pp);
+            });
+        });
+    }
+
+    // handle all acked or verified proof events
+    // connectionless proofs are currently not handled
+    public void handleAckedOrVerifiedProofEvent(PresentationExchangeRecord proof) {
+        pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId()).ifPresent(pp -> {
             if (CollectionUtils.isNotEmpty(proof.getIdentifiers())) {
                 // TODO first schema id for now
                 String schemaId = proof.getIdentifiers().get(0).getSchemaId();
@@ -132,20 +150,15 @@ public class ProofManager {
                 }
                 CredentialType type = CredentialType.fromSchemaId(schemaId);
                 if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(type)) {
-                    final PartnerProof pp = PartnerProof
-                            .builder()
-                            .partnerId(p.getId())
-                            .issuedAt(TimeUtil.parseZonedTimestamp(proof.getCreatedAt()))
-                            .type(type)
-                            .valid(Boolean.valueOf(proof.isVerified()))
-                            .state(proof.getState())
-                            .presentationExchangeId(proof.getPresentationExchangeId())
-                            .schemaId(schemaId)
-                            .issuer(issuer)
-                            .role(proof.getRole())
-                            .proof(conv.toMap(proof.from(BankAccount.class)))
-                            .build();
-                    pProofRepo.save(pp);
+                    pp
+                            .setIssuedAt(TimeUtil.parseZonedTimestamp(proof.getCreatedAt()))
+                            .setType(type)
+                            .setValid(Boolean.valueOf(proof.isVerified()))
+                            .setState(proof.getState())
+                            .setSchemaId(schemaId)
+                            .setIssuer(issuer)
+                            .setProof(conv.toMap(proof.from(BankAccount.class)));
+                    pProofRepo.update(pp);
                 }
             }
         });
