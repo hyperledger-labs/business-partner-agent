@@ -6,6 +6,7 @@ services:
   company-agent:
     build:
       context: .
+    image: ${BPA_DOCKER_IMAGE}
     depends_on:
       - aca-py
     environment:
