@@ -45,7 +45,7 @@ stages:
           goals: 'test spotbugs:check pmd:check'
 
 - stage: BuildAndDeploy
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), contains(variables['System.PullRequest.SourceRepository'], "hyperledger-labs"))
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), contains(variables['System.PullRequest.SourceRepository'], 'hyperledger-labs'))
   displayName: Build and Deploy
   jobs:  
   - job: BuildAndDeploy
