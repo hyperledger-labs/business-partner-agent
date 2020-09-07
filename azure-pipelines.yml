@@ -19,8 +19,6 @@ variables:
     value: '$(Build.SourceBranchName)'  #'$(Build.BuildId)'
   - name: vmImageName   # Agent VM image name
     value: 'ubuntu-latest'
-  - name: buildImageOnAnyBranch 
-    value: false # Set to true to build and push docker images on other branches than "master"
 
 stages:
 - stage: Test
