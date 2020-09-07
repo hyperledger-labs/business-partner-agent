@@ -64,7 +64,6 @@ public class AriesProof {
         return b
                 .id(p.getId())
                 .partnerId(p.getPartnerId())
-                // .issuedAt(Long.valueOf(p.getIssuedAt().toEpochMilli()))
                 .type(p.getType())
                 .state(p.getState())
                 .issuer(p.getIssuer())

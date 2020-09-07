@@ -233,7 +233,16 @@ public class AriesCredentialManager {
         return Optional.empty();
     }
 
-    public void deleteCredentialById(UUID id) {
+    public Optional<AriesCredential> updateCredentialById(@NonNull UUID id, @NonNull String label) {
+        final Optional<AriesCredential> cred = getAriesCredentialById(id);
+        if (cred.isPresent()) {
+            credRepo.updateLabel(id, label);
+            cred.get().setLabel(label);
+        }
+        return cred;
+    }
+
+    public void deleteCredentialById(@NonNull UUID id) {
         credRepo.findById(id).ifPresent(c -> {
             try {
                 if (c.getReferent() != null) {

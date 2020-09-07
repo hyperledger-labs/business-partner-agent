@@ -19,6 +19,7 @@ package org.hyperledger.oa.api;
 
 import java.util.List;
 
+import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -49,7 +50,7 @@ public class PartnerAPI {
     private List<PartnerCredential> credential;
 
     @JsonIgnore // internal use only
-    private transient VerifiablePresentation verifiablePresentation;
+    private transient VerifiablePresentation<VerifiableIndyCredential> verifiablePresentation;
 
     @Data
     @Builder

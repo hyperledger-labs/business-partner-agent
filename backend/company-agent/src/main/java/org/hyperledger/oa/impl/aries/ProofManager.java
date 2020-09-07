@@ -37,7 +37,6 @@ import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.aries.AriesProof;
-import org.hyperledger.oa.api.aries.AriesProof.ProofRole;
 import org.hyperledger.oa.api.aries.BankAccount;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.api.exception.PartnerException;
@@ -118,10 +117,28 @@ public class ProofManager {
         }
     }
 
-    // handle all verified received or sent proof events
-    // connectionless proofs are currently not handled
+    // handles all proof events to track state changes
     public void handleProofEvent(PresentationExchangeRecord proof) {
         partnerRepo.findByConnectionId(proof.getConnectionId()).ifPresent(p -> {
+            pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId()).ifPresentOrElse(pp -> {
+                pProofRepo.updateState(pp.getId(), proof.getState());
+            }, () -> {
+                final PartnerProof pp = PartnerProof
+                        .builder()
+                        .partnerId(p.getId())
+                        .state(proof.getState())
+                        .presentationExchangeId(proof.getPresentationExchangeId())
+                        .role(proof.getRole())
+                        .build();
+                pProofRepo.save(pp);
+            });
+        });
+    }
+
+    // handle all acked or verified proof events
+    // connectionless proofs are currently not handled
+    public void handleAckedOrVerifiedProofEvent(PresentationExchangeRecord proof) {
+        pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId()).ifPresent(pp -> {
             if (CollectionUtils.isNotEmpty(proof.getIdentifiers())) {
                 // TODO first schema id for now
                 String schemaId = proof.getIdentifiers().get(0).getSchemaId();
@@ -132,20 +149,15 @@ public class ProofManager {
                 }
                 CredentialType type = CredentialType.fromSchemaId(schemaId);
                 if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(type)) {
-                    final PartnerProof pp = PartnerProof
-                            .builder()
-                            .partnerId(p.getId())
-                            .issuedAt(TimeUtil.parseZonedTimestamp(proof.getCreatedAt()))
-                            .type(type)
-                            .valid(Boolean.valueOf(proof.isVerified()))
-                            .state(proof.getState())
-                            .presentationExchangeId(proof.getPresentationExchangeId())
-                            .schemaId(schemaId)
-                            .issuer(issuer)
-                            .role(proof.getRole())
-                            .proof(conv.toMap(proof.from(BankAccount.class)))
-                            .build();
-                    pProofRepo.save(pp);
+                    pp
+                            .setIssuedAt(TimeUtil.parseZonedTimestamp(proof.getCreatedAt()))
+                            .setType(type)
+                            .setValid(Boolean.valueOf(proof.isVerified()))
+                            .setState(proof.getState())
+                            .setSchemaId(schemaId)
+                            .setIssuer(issuer)
+                            .setProof(conv.toMap(proof.from(BankAccount.class)));
+                    pProofRepo.update(pp);
                 }
             }
         });
@@ -165,9 +177,9 @@ public class ProofManager {
         });
     }
 
-    public List<AriesProof> listPartnerProofs(@NonNull UUID partnerId, ProofRole role) {
+    public List<AriesProof> listPartnerProofs(@NonNull UUID partnerId) {
         List<AriesProof> result = new ArrayList<>();
-        pProofRepo.findByPartnerIdAndRole(partnerId, role.getValue()).forEach(p -> {
+        pProofRepo.findByPartnerIdOrderByRole(partnerId).forEach(p -> {
             result.add(AriesProof.from(p, conv.fromMap(p.getProof(), JsonNode.class)));
         });
         return result;

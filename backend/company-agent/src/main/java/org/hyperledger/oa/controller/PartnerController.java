@@ -25,7 +25,6 @@ import javax.inject.Inject;
 
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.api.aries.AriesProof;
-import org.hyperledger.oa.api.aries.AriesProof.ProofRole;
 import org.hyperledger.oa.controller.api.partner.AddPartnerRequest;
 import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.oa.controller.api.partner.RequestCredentialRequest;
@@ -44,7 +43,6 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Put;
-import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
@@ -238,15 +236,13 @@ public class PartnerController {
      * Aries: List proof exchange records
      *
      * @param id the partner id
-     * @param q  {@link ProofRole}
      * @return HTTP status
      */
     @Get("/{id}/proof")
     public HttpResponse<List<AriesProof>> getPartnerProofs(
-            @PathVariable String id,
-            @QueryValue ProofRole q) {
+            @PathVariable String id) {
         if (proofM.isPresent()) {
-            return HttpResponse.ok(proofM.get().listPartnerProofs(UUID.fromString(id), q));
+            return HttpResponse.ok(proofM.get().listPartnerProofs(UUID.fromString(id)));
         }
         return HttpResponse.notFound();
     }
@@ -274,7 +270,7 @@ public class PartnerController {
     /**
      * Aries: Deletes a partners proof by id
      *
-     * @param id the partner id
+     * @param id      the partner id
      * @param proofId the proof id
      * @return HTTP status
      */

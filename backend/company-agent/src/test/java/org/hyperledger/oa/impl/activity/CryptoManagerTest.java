@@ -26,8 +26,9 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.hyperledger.aries.api.jsonld.VerifiableCredential;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.api.jsonld.VerifiablePresentation.VerifiablePresentationBuilder;
 import org.hyperledger.oa.RunWithAries;
 import org.hyperledger.oa.client.CachingAriesClient;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,14 +57,14 @@ class CryptoManagerTest extends RunWithAries {
 
     @Test
     void testSignEmptyDefault() throws Exception {
-        VerifiableCredential vc = VerifiableCredential
+        VerifiableIndyCredential vc = VerifiableIndyCredential
                 .builder()
                 .build();
-        VerifiablePresentation vp = VerifiablePresentation
-                .builder()
+        final VerifiablePresentationBuilder<VerifiableIndyCredential> builder = VerifiablePresentation.builder();
+        VerifiablePresentation<VerifiableIndyCredential> vp = builder
                 .verifiableCredential(List.of(vc))
                 .build();
-        final Optional<VerifiablePresentation> signed = mgmt.sign(vp);
+        final Optional<VerifiablePresentation<VerifiableIndyCredential>> signed = mgmt.sign(vp);
         assertTrue(signed.isPresent());
         assertNotNull(signed.get().getProof());
         assertEquals("authentication", signed.get().getProof().getProofPurpose());
@@ -71,12 +72,13 @@ class CryptoManagerTest extends RunWithAries {
 
     @Test
     void testSignWithMasterdata() throws Exception {
-        VerifiableCredential vc = loadAndConvertTo("files/verifiableCredential.json", VerifiableCredential.class);
-        VerifiablePresentation vp = VerifiablePresentation
-                .builder()
+        VerifiableIndyCredential vc = loadAndConvertTo(
+                "files/verifiableCredential.json", VerifiableIndyCredential.class);
+        final VerifiablePresentationBuilder<VerifiableIndyCredential> builder = VerifiablePresentation.builder();
+        VerifiablePresentation<VerifiableIndyCredential> vp = builder
                 .verifiableCredential(List.of(vc))
                 .build();
-        final Optional<VerifiablePresentation> signed = mgmt.sign(vp);
+        final Optional<VerifiablePresentation<VerifiableIndyCredential>> signed = mgmt.sign(vp);
         assertTrue(signed.isPresent());
         assertNotNull(signed.get().getProof());
         assertEquals("authentication", signed.get().getProof().getProofPurpose());

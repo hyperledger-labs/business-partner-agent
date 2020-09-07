@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
 
+import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.MyDocumentAPI;
@@ -47,6 +48,9 @@ public class Converter {
     public static final TypeReference<Map<String, Object>> MAP_TYPEREF = new TypeReference<>() {
     };
 
+    public static final TypeReference<VerifiablePresentation<VerifiableIndyCredential>> VP_TYPEREF = new TypeReference<>() {
+    };
+
     @Inject
     @Setter
     private ObjectMapper mapper;
@@ -56,7 +60,7 @@ public class Converter {
         if (p.getVerifiablePresentation() == null) {
             result = new PartnerAPI();
         } else {
-            result = toAPIObject(fromMap(p.getVerifiablePresentation(), VerifiablePresentation.class));
+            result = toAPIObject(fromMap(p.getVerifiablePresentation(), VP_TYPEREF));
         }
         return result
                 .setCreatedAt(Long.valueOf(p.getCreatedAt().toEpochMilli()))
@@ -70,7 +74,7 @@ public class Converter {
                 .setIncoming(p.getIncoming() != null ? p.getIncoming() : Boolean.FALSE);
     }
 
-    public PartnerAPI toAPIObject(@NonNull VerifiablePresentation partner) {
+    public PartnerAPI toAPIObject(@NonNull VerifiablePresentation<VerifiableIndyCredential> partner) {
         List<PartnerCredential> pc = new ArrayList<>();
         if (partner.getVerifiableCredential() != null) {
             partner.getVerifiableCredential().forEach(c -> {
@@ -124,10 +128,11 @@ public class Converter {
      */
     public MyDocument updateMyCredential(@NonNull MyDocumentAPI apiDoc, @NonNull MyDocument myDoc) {
         Map<String, Object> data = toMap(apiDoc.getDocumentData());
-        myDoc.setDocument(data);
-        myDoc.setIsPublic(apiDoc.getIsPublic());
-        myDoc.setType(apiDoc.getType());
-
+        myDoc
+                .setDocument(data)
+                .setIsPublic(apiDoc.getIsPublic())
+                .setType(apiDoc.getType())
+                .setLabel(apiDoc.getLabel());
         return myDoc;
     }
 
@@ -139,6 +144,7 @@ public class Converter {
                 .documentData(fromMap(myDoc.getDocument(), JsonNode.class))
                 .isPublic(myDoc.getIsPublic())
                 .type(myDoc.getType())
+                .label(myDoc.getLabel())
                 .build();
     }
 
@@ -147,6 +153,10 @@ public class Converter {
     }
 
     public <T> T fromMap(@NonNull Map<String, Object> fromValue, @NotNull Class<T> type) {
+        return mapper.convertValue(fromValue, type);
+    }
+
+    public <T> T fromMap(@NonNull Map<String, Object> fromValue, @NotNull TypeReference<T> type) {
         return mapper.convertValue(fromValue, type);
     }
 

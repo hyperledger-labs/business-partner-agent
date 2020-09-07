@@ -42,6 +42,7 @@ public class AriesCredential {
 
     private String issuer;
     private String schemaId;
+    private String label;
     private Map<String, String> credentialData;
 
     public static class AriesCredentialBuilder {
@@ -54,6 +55,7 @@ public class AriesCredential {
                 .issuedAt(c.getIssuedAt() != null ? Long.valueOf(c.getIssuedAt().toEpochMilli()) : null)
                 .type(c.getType())
                 .state(c.getState())
-                .isPublic(c.getIsPublic());
+                .isPublic(c.getIsPublic())
+                .label(c.getLabel());
     }
 }

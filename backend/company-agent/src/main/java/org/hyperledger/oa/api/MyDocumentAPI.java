@@ -39,6 +39,7 @@ public class MyDocumentAPI {
     private Long updatedDate;
     private CredentialType type;
     private Boolean isPublic;
+    private String label;
     @Schema(example = "{}")
     private JsonNode documentData; // TODO rename to document
 
@@ -47,6 +48,7 @@ public class MyDocumentAPI {
                 // never set id or createdDate here!
                 .type(req.getType())
                 .isPublic(req.getIsPublic())
+                .label(req.getLabel())
                 .documentData(req.getDocument())
                 .build();
     }
