@@ -36,4 +36,6 @@ public class Schema {
     private CredentialType type;
 
     private String schemaId;
+
+    private Integer seqNo;
 }

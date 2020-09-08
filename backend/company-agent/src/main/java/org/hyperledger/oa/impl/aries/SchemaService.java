@@ -17,8 +17,10 @@
  */
 package org.hyperledger.oa.impl.aries;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -26,6 +28,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.aries.AriesClient;
+import org.hyperledger.oa.api.ApiConstants;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.aries.SchemaAPI;
 import org.hyperledger.oa.api.exception.WrongApiUsageException;
@@ -44,23 +48,34 @@ public class SchemaService {
     @Inject
     SchemaRepository schemaRepo;
 
+    @Inject
+    AriesClient ac;
+
     // CRUD Methods
 
     public SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label) {
         SchemaAPI result = null;
         String sId = StringUtils.strip(schemaId);
-        if (schemaRepo.findBySchemaId(sId).isPresent()) {
-            throw new WrongApiUsageException("Schema with id: " + sId + " already exists.");
+        final CredentialType credType = CredentialType.fromSchemaId(sId);
+        if (schemaRepo.findByType(credType).isPresent()) {
+            throw new WrongApiUsageException("Schema with type: " + credType + " already exists.");
         }
-        if (StringUtils.isNotEmpty(sId)) {
-            Schema dbS = Schema
-                .builder()
-                .label(label)
-                .type(CredentialType.fromSchemaId(sId))
-                .schemaId(sId)
-                .build();
-            Schema saved = schemaRepo.save(dbS);
-            result = SchemaAPI.from(saved);
+
+        try {
+            Optional<org.hyperledger.aries.api.schema.SchemaSendResponse.Schema> ariesSchema = ac.schemasGetById(sId);
+            if (ariesSchema.isPresent()) {
+                Schema dbS = Schema
+                        .builder()
+                        .label(label)
+                        .type(credType)
+                        .schemaId(sId)
+                        .seqNo(ariesSchema.get().getSeqNo())
+                        .build();
+                Schema saved = schemaRepo.save(dbS);
+                result = SchemaAPI.from(saved);
+            }
+        } catch (IOException e) {
+            log.error("aca-py not reachable", e);
         }
         return result;
     }
@@ -73,5 +88,21 @@ public class SchemaService {
 
     public void deleteSchema(@NonNull UUID id) {
         schemaRepo.deleteById(id);
+    }
+
+    public @Nullable Schema getSchemaFor(CredentialType type) {
+        Schema result = null;
+        final Optional<Schema> dbSchema = schemaRepo.findByType(type);
+        if (dbSchema.isPresent()) {
+            result = dbSchema.get();
+        } else if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(type)) {
+            // falling back to defaults
+            result = Schema
+                    .builder()
+                    .schemaId(ApiConstants.BANK_ACCOUNT_SCHEMA_ID)
+                    .seqNo(ApiConstants.BANK_ACCOUNT_SCHEMA_SEQ)
+                    .build();
+        }
+        return result;
     }
 }

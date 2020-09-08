@@ -17,7 +17,6 @@
  */
 package org.hyperledger.oa.controller.api.admin;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import lombok.Data;
@@ -28,6 +27,5 @@ import lombok.NoArgsConstructor;
 public class AddSchemaRequest {
     @Nullable
     private String label;
-    @Nonnull
     private String schemaId;
 }
