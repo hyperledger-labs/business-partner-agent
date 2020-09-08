@@ -15,17 +15,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.oa.repository;
+package org.hyperledger.oa.api.aries;
 
 import java.util.UUID;
 
-import org.hyperledger.oa.model.BPAState;
+import org.hyperledger.oa.model.Schema;
 
-import io.micronaut.data.jdbc.annotation.JdbcRepository;
-import io.micronaut.data.model.query.builder.sql.Dialect;
-import io.micronaut.data.repository.CrudRepository;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@JdbcRepository(dialect = Dialect.POSTGRES)
-public interface BPAStateRepository extends CrudRepository<BPAState, UUID> {
-    //
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class SchemaAPI {
+
+    private UUID id;
+
+    private String label;
+
+    private String schemaId;
+
+    public static SchemaAPI from(Schema s) {
+        return SchemaAPI
+                .builder()
+                .id(s.getId())
+                .label(s.getLabel())
+                .schemaId(s.getSchemaId())
+                .build();
+    }
 }
