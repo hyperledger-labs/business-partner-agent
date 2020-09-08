@@ -15,17 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.oa.repository;
+package org.hyperledger.oa.controller.api.admin;
 
-import java.util.UUID;
+import javax.annotation.Nullable;
 
-import org.hyperledger.oa.model.BPAState;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import io.micronaut.data.jdbc.annotation.JdbcRepository;
-import io.micronaut.data.model.query.builder.sql.Dialect;
-import io.micronaut.data.repository.CrudRepository;
-
-@JdbcRepository(dialect = Dialect.POSTGRES)
-public interface BPAStateRepository extends CrudRepository<BPAState, UUID> {
-    //
+@Data
+@NoArgsConstructor
+public class AddSchemaRequest {
+    @Nullable
+    private String label;
+    private String schemaId;
 }
