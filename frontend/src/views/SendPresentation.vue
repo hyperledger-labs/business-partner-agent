@@ -62,10 +62,6 @@ export default {
                 {
                     text: "Issued at",
                     value: "issuedAt"
-                },
-                {
-                    text: "Public",
-                    value: "isPublic"
                 }
 
             ],

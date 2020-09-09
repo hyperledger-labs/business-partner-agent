@@ -79,7 +79,7 @@
               <p class="grey--text text--darken-2 font-weight-medium">Shared Credentials</p>
             </v-row>
             <v-row>The credentials you share with your partner</v-row>
-            <v-row v-if="expertMode" class="mt-4">
+            <v-row class="mt-4">
               <v-btn small :to="{ name: 'SendPresentation', params: { id: id }  }">Send Presentation</v-btn>
             </v-row>
           </v-col>
