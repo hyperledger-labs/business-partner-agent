@@ -171,7 +171,7 @@ public class AriesCredentialManager {
     // credential signed, but not in wallet yet
     public void handleStroreCredential(CredentialExchange credEx) {
         credRepo.findByThreadId(credEx.getThreadId())
-                .ifPresent(cred -> {
+                .ifPresentOrElse(cred -> {
                     try {
                         credRepo.updateState(cred.getId(), credEx.getState());
                         // TODO should not be necessary with --auto-store-credential set
@@ -179,13 +179,13 @@ public class AriesCredentialManager {
                     } catch (IOException e) {
                         log.error("aca-py not reachable", e);
                     }
-                });
+                }, () -> log.error("Received store credential event without matching therad id"));
     }
 
     // credential, signed and stored in wallet
     public void handleCredentialAcked(CredentialExchange credEx) {
         credRepo.findByThreadId(credEx.getThreadId())
-                .ifPresent(cred -> {
+                .ifPresentOrElse(cred -> {
                     cred
                             .setReferent(credEx.getCredential().getReferent())
                             .setCredential(conv.toMap(credEx.getCredential()))
@@ -193,7 +193,7 @@ public class AriesCredentialManager {
                             .setState(credEx.getState())
                             .setIssuedAt(Instant.now());
                     credRepo.update(cred);
-                });
+                },() -> log.error("Received credential without matching thread id, credential is not stored."));
     }
 
     @SuppressWarnings("boxing")
