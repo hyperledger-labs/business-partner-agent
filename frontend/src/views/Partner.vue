@@ -141,10 +141,10 @@ export default {
           required: value => !!value || "Can't be empty"
       },
       headersSent: [
-        {
-          text: "Name",
-          value: "name"
-        },
+        // {
+        //   text: "Name",
+        //   value: "name"
+        // },
         {
           text: "Type",
           value: "type"
@@ -153,6 +153,8 @@ export default {
           text: "Sent at",
           value: "sentAt"
         },{
+          text: "State",
+          value: "state"
 
         }
       ]
@@ -173,11 +175,13 @@ export default {
             let data  = result.data;
             console.log(data);
             this.presentationsSent = data.filter( item => {
-              item.role === "PROVER"
+              console.log(item)
+              return item.role === "prover"
             })
             this.presentationsReceived = data.filter( item => {
-              item.role === "VERIFIER"
+              return item.role === "verifier"
             })
+            console.log(this.presentationsSent)
           }
 
         })
