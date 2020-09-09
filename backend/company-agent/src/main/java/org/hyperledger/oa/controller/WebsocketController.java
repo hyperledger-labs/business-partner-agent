@@ -19,6 +19,8 @@ package org.hyperledger.oa.controller;
 
 import javax.inject.Singleton;
 
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.websocket.WebSocketBroadcaster;
 import io.micronaut.websocket.WebSocketSession;
 import io.micronaut.websocket.annotation.OnClose;
@@ -32,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @Singleton
 @ServerWebSocket("/events")
 @Tag(name = "Websocket")
+@Secured(SecurityRule.IS_AUTHENTICATED)
 public class WebsocketController {
 
     @SuppressWarnings("unused")
