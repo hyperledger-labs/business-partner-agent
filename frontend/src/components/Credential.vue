@@ -75,7 +75,7 @@ export default {
             } else {
                 s = {
                     type: this.document.type,
-                    fields: Object.entries(this.document.credentialData).map((key) => {
+                    fields: Object.keys(this.document.credentialData).map((key) => {
                         return {
                             type: key,
                             label: key
