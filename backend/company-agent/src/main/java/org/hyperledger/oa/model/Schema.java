@@ -3,24 +3,25 @@ package org.hyperledger.oa.model;
 import java.time.Instant;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+
+import org.hyperledger.oa.api.CredentialType;
 
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * BPA internal states, never exposed to the outside world.
- *
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
-public class BPAState {
+public class Schema {
 
     @Id
     @AutoPopulated
@@ -29,10 +30,12 @@ public class BPAState {
     @DateCreated
     private Instant createdAt;
 
-    private Boolean webOnly;
+    @Nullable
+    private String label;
 
-    public BPAState(Boolean webOnly) {
-        super();
-        this.webOnly = webOnly;
-    }
+    private CredentialType type;
+
+    private String schemaId;
+
+    private Integer seqNo;
 }

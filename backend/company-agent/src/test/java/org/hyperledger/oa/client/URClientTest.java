@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.oa.api.DidDocAPI;
 import org.junit.jupiter.api.Disabled;
@@ -50,7 +51,7 @@ class URClientTest {
     void testGetMasterdata() {
         String url = "https://ipfs.test.evan.network/ipfs/QmQGGjnY88gwvD6xSKXKbxz6n1Vdk9Q5WAMtar3WdEXmun";
         // String url2 = "https://acme.iil.network/md.json";
-        Optional<VerifiablePresentation> masterdata = c.getPublicProfile(url);
+        Optional<VerifiablePresentation<VerifiableIndyCredential>> masterdata = c.getPublicProfile(url);
         assertTrue(masterdata.isPresent());
         System.err.println(masterdata.get());
     }

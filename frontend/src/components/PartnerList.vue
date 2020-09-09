@@ -8,7 +8,7 @@
 
 <template>
 <v-container>
-    <v-data-table v-model="selected" :loading="isBusy" :headers="headers" :items="data" :show-select="selectable" single-select>
+    <v-data-table hide-default-footer v-model="selected" :loading="isBusy" :headers="headers" :items="data" :show-select="selectable" single-select>
     </v-data-table>
 </v-container>
 </template>
@@ -33,9 +33,6 @@ export default {
             default: () => [{
                 text: "Name",
                 value: "name"
-            }, {
-                text: "DID",
-                value: "did"
             }]
         },
         onlyAries: {

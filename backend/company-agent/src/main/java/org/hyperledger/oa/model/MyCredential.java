@@ -60,6 +60,7 @@ public class MyCredential {
 
     // No update date here, if a credential needs to change a new one is issued
 
+    @Nullable
     private CredentialType type;
 
     private Boolean isPublic;
@@ -72,6 +73,9 @@ public class MyCredential {
     private String state;
 
     private String threadId;
+
+    @Nullable
+    private String label;
 
     @Nullable
     @TypeDef(type = DataType.JSON)

@@ -65,9 +65,13 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleProof(PresentationExchangeRecord proof) {
         log.debug("Present Proof Event: {}", proof);
-        if (proof.isVerified() && "verifier".equals(proof.getRole())
-                || "presentation_acked".equals(proof.getState()) && "prover".equals(proof.getRole())) {
-            proofMgmt.ifPresent(mgmt -> mgmt.handleProofEvent(proof));
+        synchronized (this) {
+            if (proof.isVerified() && "verifier".equals(proof.getRole())
+                    || "presentation_acked".equals(proof.getState()) && "prover".equals(proof.getRole())) {
+                proofMgmt.ifPresent(mgmt -> mgmt.handleAckedOrVerifiedProofEvent(proof));
+            } else {
+                proofMgmt.ifPresent(mgmt -> mgmt.handleProofEvent(proof));
+            }
         }
     }
 
@@ -76,12 +80,14 @@ public class AriesEventHandler extends EventHandler {
         log.debug("Issue Credential Event: {}", credential);
         // holder events, because I could also be an issuer
         if ("holder".equals(credential.getRole())) {
-            if ("credential_received".equals(credential.getState())) {
-                credMgmt.ifPresent(mgmt -> mgmt.handleStroreCredential(credential));
-            } else if ("credential_acked".equals(credential.getState())) {
-                credMgmt.ifPresent(mgmt -> mgmt.handleCredentialAcked(credential));
-            } else {
-                credMgmt.ifPresent(mgmt -> mgmt.handleCredentialEvent(credential));
+            synchronized (this) {
+                if ("credential_received".equals(credential.getState())) {
+                    credMgmt.ifPresent(mgmt -> mgmt.handleStroreCredential(credential));
+                } else if ("credential_acked".equals(credential.getState())) {
+                    credMgmt.ifPresent(mgmt -> mgmt.handleCredentialAcked(credential));
+                } else {
+                    credMgmt.ifPresent(mgmt -> mgmt.handleCredentialEvent(credential));
+                }
             }
         }
     }

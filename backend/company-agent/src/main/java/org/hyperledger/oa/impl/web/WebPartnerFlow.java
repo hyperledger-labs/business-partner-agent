@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.oa.api.ApiConstants;
 import org.hyperledger.oa.api.DidDocAPI.PublicKey;
@@ -51,7 +52,7 @@ public class WebPartnerFlow {
     private CryptoManager crypto;
 
     public PartnerAPI lookupPartner(@NonNull String endpoint, List<PublicKey> publicKey) {
-        Optional<VerifiablePresentation> profile = ur.getPublicProfile(endpoint);
+        Optional<VerifiablePresentation<VerifiableIndyCredential>> profile = ur.getPublicProfile(endpoint);
         if (profile.isPresent()) {
             String verificationMethod = profile.get().getProof() != null
                     ? profile.get().getProof().getVerificationMethod()
@@ -71,7 +72,7 @@ public class WebPartnerFlow {
     /**
      * Tries to find the the public key in the did document that matches the proofs
      * verification method
-     * 
+     *
      * @param verificationMethod the proof verification method
      * @param publicKey          list of {@link PublicKey} from the did document
      * @return matching public key in Base58
@@ -93,7 +94,7 @@ public class WebPartnerFlow {
 
     /**
      * Fallback method to find at least one matching default key in the did document
-     * 
+     *
      * @param publicKey list of {@link PublicKey} from the did document
      * @return matching {@link PublicKey}
      */

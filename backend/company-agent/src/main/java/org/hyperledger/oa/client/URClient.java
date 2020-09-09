@@ -28,10 +28,12 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.oa.api.DidDocAPI;
 import org.hyperledger.oa.api.exception.PartnerException;
 import org.hyperledger.oa.client.api.DidDocument;
+import org.hyperledger.oa.impl.util.Converter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -88,8 +90,8 @@ public class URClient {
         return Optional.ofNullable(doc);
     }
 
-    public Optional<VerifiablePresentation> getPublicProfile(String url) {
-        Optional<VerifiablePresentation> result = Optional.empty();
+    public Optional<VerifiablePresentation<VerifiableIndyCredential>> getPublicProfile(String url) {
+        Optional<VerifiablePresentation<VerifiableIndyCredential>> result = Optional.empty();
         try {
             URL url2 = new URL(url);
             Request request = new Request.Builder()
@@ -97,7 +99,7 @@ public class URClient {
                     .build();
             try (Response response = okClient.newCall(request).execute()) {
                 String body = response.body().string();
-                VerifiablePresentation md = mapper.readValue(body, VerifiablePresentation.class);
+                VerifiablePresentation<VerifiableIndyCredential> md = mapper.readValue(body, Converter.VP_TYPEREF);
                 result = Optional.of(md);
             }
         } catch (MalformedURLException e) {

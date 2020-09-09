@@ -26,6 +26,7 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.oa.BaseTest;
 import org.hyperledger.oa.api.CredentialType;
@@ -68,7 +69,8 @@ class ConverterTest extends BaseTest {
 
     @Test
     void testConvertVPToPartnerApi() throws Exception {
-        VerifiablePresentation vp = loadAndConvertTo("files/verifiablePresentation.json", VerifiablePresentation.class);
+        VerifiablePresentation<VerifiableIndyCredential> vp = loadAndConvertTo("files/verifiablePresentation.json",
+                Converter.VP_TYPEREF);
         final PartnerAPI partner = conv.toAPIObject(vp);
         assertEquals(2, partner.getCredential().size());
         assertEquals(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL, partner.getCredential().get(0).getType());
@@ -77,11 +79,12 @@ class ConverterTest extends BaseTest {
 
     @Test
     void testConvertVPToPartnerModel() throws Exception {
-        VerifiablePresentation vp = loadAndConvertTo("files/verifiablePresentation.json", VerifiablePresentation.class);
+        VerifiablePresentation<VerifiableIndyCredential> vp = loadAndConvertTo("files/verifiablePresentation.json",
+                Converter.VP_TYPEREF);
         final PartnerAPI partner = conv.toAPIObject(vp);
         final Partner model = conv.toModelObject("did:web:test.foo", partner);
         assertTrue(model.getDid().startsWith("did"));
-        assertEquals(vp, conv.fromMap(model.getVerifiablePresentation(), VerifiablePresentation.class));
+        assertEquals(vp, conv.fromMap(model.getVerifiablePresentation(), Converter.VP_TYPEREF));
     }
 
     @Test

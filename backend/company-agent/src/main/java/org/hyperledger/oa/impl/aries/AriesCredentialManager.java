@@ -35,8 +35,6 @@ import org.hyperledger.aries.api.credential.CredentialAttributes;
 import org.hyperledger.aries.api.credential.CredentialExchange;
 import org.hyperledger.aries.api.credential.CredentialProposalRequest;
 import org.hyperledger.aries.api.credential.CredentialProposalRequest.CredentialPreview;
-import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
-import org.hyperledger.oa.api.ApiConstants;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.aries.AriesCredential;
 import org.hyperledger.oa.api.aries.AriesCredential.AriesCredentialBuilder;
@@ -80,6 +78,9 @@ public class AriesCredentialManager {
     private VPManager vpMgmt;
 
     @Inject
+    SchemaService schemaService;
+
+    @Inject
     private Converter conv;
 
     @Inject
@@ -94,14 +95,14 @@ public class AriesCredentialManager {
         return result;
     }
 
-    private Optional<String> findBACredentialDefinitionId(@NonNull UUID partnerId) {
+    private Optional<String> findBACredentialDefinitionId(@NonNull UUID partnerId, @NonNull Integer seqNo) {
         Optional<String> result = Optional.empty();
 
         final Optional<List<PartnerCredentialType>> pct = getPartnerCredDefs(partnerId);
         if (pct.isPresent()) {
             final List<PartnerCredentialType> baCreds = pct.get().stream()
                     .filter(cred -> AriesStringUtil.credDefIdGetSquenceNo(
-                            cred.getCredentialDefinitionId()).equals(ApiConstants.BANK_ACCOUNT_SCHEMA_SEQ))
+                            cred.getCredentialDefinitionId()).equals(seqNo.toString()))
                     .collect(Collectors.toList());
             if (baCreds.size() > 0) {
                 result = Optional.of(baCreds.get(baCreds.size() - 1).getCredentialDefinitionId());
@@ -112,7 +113,6 @@ public class AriesCredentialManager {
 
     // request credential from issuer (partner)
     public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId) {
-
         final Optional<Partner> dbPartner = partnerRepo.findById(partnerId);
         if (dbPartner.isPresent()) {
             final Optional<MyDocument> dbDoc = docRepo.findById(myDocId);
@@ -120,19 +120,15 @@ public class AriesCredentialManager {
                 if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(dbDoc.get().getType())) {
                     final BankAccount bankAccount = conv.fromMap(dbDoc.get().getDocument(), BankAccount.class);
                     try {
-                        final Optional<String> baCredDefId = findBACredentialDefinitionId(partnerId);
+                        final org.hyperledger.oa.model.Schema s = schemaService
+                                .getSchemaFor(CredentialType.BANK_ACCOUNT_CREDENTIAL);
+                        final Optional<String> baCredDefId = findBACredentialDefinitionId(partnerId, s.getSeqNo());
                         if (baCredDefId.isPresent()) {
-                            String schemaId = null;
-                            Optional<Schema> schema = ac.schemasGetById(AriesStringUtil.credDefIdGetSquenceNo(
-                                    baCredDefId.get()));
-                            if (schema.isPresent()) {
-                                schemaId = schema.get().getId();
-                            }
                             ac.issueCredentialSendProposal(
                                     CredentialProposalRequest
                                             .builder()
                                             .connectionId(dbPartner.get().getConnectionId())
-                                            .schemaId(schemaId)
+                                            .schemaId(s.getSchemaId())
                                             .credentialProposal(
                                                     new CredentialPreview(
                                                             CredentialAttributes.from(bankAccount)))
@@ -175,7 +171,7 @@ public class AriesCredentialManager {
     // credential signed, but not in wallet yet
     public void handleStroreCredential(CredentialExchange credEx) {
         credRepo.findByThreadId(credEx.getThreadId())
-                .ifPresent(cred -> {
+                .ifPresentOrElse(cred -> {
                     try {
                         credRepo.updateState(cred.getId(), credEx.getState());
                         // TODO should not be necessary with --auto-store-credential set
@@ -183,13 +179,13 @@ public class AriesCredentialManager {
                     } catch (IOException e) {
                         log.error("aca-py not reachable", e);
                     }
-                });
+                }, () -> log.error("Received store credential event without matching therad id"));
     }
 
     // credential, signed and stored in wallet
     public void handleCredentialAcked(CredentialExchange credEx) {
         credRepo.findByThreadId(credEx.getThreadId())
-                .ifPresent(cred -> {
+                .ifPresentOrElse(cred -> {
                     cred
                             .setReferent(credEx.getCredential().getReferent())
                             .setCredential(conv.toMap(credEx.getCredential()))
@@ -197,7 +193,7 @@ public class AriesCredentialManager {
                             .setState(credEx.getState())
                             .setIssuedAt(Instant.now());
                     credRepo.update(cred);
-                });
+                },() -> log.error("Received credential without matching thread id, credential is not stored."));
     }
 
     @SuppressWarnings("boxing")
@@ -233,7 +229,16 @@ public class AriesCredentialManager {
         return Optional.empty();
     }
 
-    public void deleteCredentialById(UUID id) {
+    public Optional<AriesCredential> updateCredentialById(@NonNull UUID id, @NonNull String label) {
+        final Optional<AriesCredential> cred = getAriesCredentialById(id);
+        if (cred.isPresent()) {
+            credRepo.updateLabel(id, label);
+            cred.get().setLabel(label);
+        }
+        return cred;
+    }
+
+    public void deleteCredentialById(@NonNull UUID id) {
         credRepo.findById(id).ifPresent(c -> {
             try {
                 if (c.getReferent() != null) {

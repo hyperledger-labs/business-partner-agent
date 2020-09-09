@@ -17,20 +17,11 @@
  */
 package org.hyperledger.oa.controller.api.wallet;
 
-import org.hyperledger.oa.api.CredentialType;
-
-import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.databind.JsonNode;
-
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class WalletDocumentRequest {
-    private CredentialType type;
-    private Boolean isPublic;
+@NoArgsConstructor
+public class WalletCredentialRequest {
     private String label;
-    @JsonRawValue
-    @Schema(example = "{}")
-    private JsonNode document;
 }

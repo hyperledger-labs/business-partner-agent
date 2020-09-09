@@ -64,6 +64,9 @@ public class MyDocument {
     private Boolean isPublic = Boolean.FALSE;
 
     @Nullable
+    private String label;
+
+    @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> document;
 

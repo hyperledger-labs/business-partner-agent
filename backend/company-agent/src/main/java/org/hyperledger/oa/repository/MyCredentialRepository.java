@@ -36,6 +36,8 @@ public interface MyCredentialRepository extends CrudRepository<MyCredential, UUI
 
     void updateState(@Id UUID id, String state);
 
+    void updateLabel(@Id UUID id, String label);
+
     Optional<MyCredential> findByThreadId(String threadId);
 
     List<MyCredential> findByIsPublicTrue();

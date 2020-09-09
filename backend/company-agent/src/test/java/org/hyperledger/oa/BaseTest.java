@@ -21,6 +21,7 @@ import org.hyperledger.oa.util.FileLoader;
 import org.junit.jupiter.api.BeforeEach;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -39,6 +40,11 @@ public abstract class BaseTest {
     }
 
     public <T> T loadAndConvertTo(String file, Class<T> type) throws JsonProcessingException {
+        String didDocument = loader.load(file);
+        return mapper.readValue(didDocument, type);
+    }
+
+    public <T> T loadAndConvertTo(String file, TypeReference<T> type) throws JsonProcessingException {
         String didDocument = loader.load(file);
         return mapper.readValue(didDocument, type);
     }

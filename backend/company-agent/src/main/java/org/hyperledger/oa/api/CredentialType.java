@@ -36,17 +36,21 @@ public enum CredentialType {
     ORGANIZATIONAL_PROFILE_CREDENTIAL(
             List.of(
                     ApiConstants.CREDENTIALS_V1,
-                    "https://raw.githubusercontent.com/iil-network/contexts/master/masterdata.jsonld"),
+                    "https://raw.githubusercontent.com/iil-network/contexts/master/masterdata.jsonld",
+                    "https://raw.githubusercontent.com/iil-network/contexts/master/labeled-credential.jsonld"),
             List.of(
                     "VerifiableCredential",
+                    "LabeledCredential",
                     "OrganizationalProfileCredential"),
             "masterdata"),
     BANK_ACCOUNT_CREDENTIAL(
             List.of(
                     ApiConstants.CREDENTIALS_V1,
-                    "https://raw.githubusercontent.com/iil-network/contexts/master/bankaccount.json"),
+                    "https://raw.githubusercontent.com/iil-network/contexts/master/bankaccount.json",
+                    "https://raw.githubusercontent.com/iil-network/contexts/master/labeled-credential.jsonld"),
             List.of(
                     "VerifiableCredential",
+                    "LabeledCredential",
                     "BankAccountCredential"),
             "bank_account"),
     OTHER(

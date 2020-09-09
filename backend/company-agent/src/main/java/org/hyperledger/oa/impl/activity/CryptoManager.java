@@ -26,6 +26,7 @@ import javax.inject.Singleton;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.jsonld.SignRequest;
 import org.hyperledger.aries.api.jsonld.SignRequest.SignDocument.Options;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.jsonld.VerifyResponse;
 import org.hyperledger.oa.api.exception.NetworkException;
@@ -51,8 +52,9 @@ public class CryptoManager {
      * @param inputVp {@link VerifiablePresentation}
      * @return the signed {@link VerifiablePresentation} including the proof
      */
-    public Optional<VerifiablePresentation> sign(@NonNull VerifiablePresentation inputVp) {
-        Optional<VerifiablePresentation> result = Optional.empty();
+    public Optional<VerifiablePresentation<VerifiableIndyCredential>> sign(
+            @NonNull VerifiablePresentation<VerifiableIndyCredential> inputVp) {
+        Optional<VerifiablePresentation<VerifiableIndyCredential>> result = Optional.empty();
         try {
             final Optional<String> verkey = id.getVerkey();
             String myDid = id.getMyDid();
@@ -64,7 +66,8 @@ public class CryptoManager {
                         Options.builderWithDefaults()
                                 .verificationMethod(myVerkey)
                                 .build());
-                final Optional<VerifiablePresentation> signedVp = acaPy.jsonldSign(sr, VerifiablePresentation.class);
+                final Optional<VerifiablePresentation<VerifiableIndyCredential>> signedVp = acaPy.jsonldSign(
+                        sr, VerifiablePresentation.INDY_CREDENTIAL_TYPE);
                 result = signedVp;
             }
         } catch (IOException e) {
@@ -81,7 +84,7 @@ public class CryptoManager {
      * @param inputVp {@link VerifiablePresentation}
      * @return verification success or failure
      */
-    public Boolean verify(String verkey, VerifiablePresentation inputVp) {
+    public Boolean verify(String verkey, VerifiablePresentation<VerifiableIndyCredential> inputVp) {
         Boolean result = Boolean.FALSE;
         try {
             Optional<VerifyResponse> state = acaPy.jsonldVerify(verkey, inputVp);

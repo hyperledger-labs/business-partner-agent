@@ -17,27 +17,33 @@
  */
 package org.hyperledger.oa.api.aries;
 
-import java.util.Optional;
+import java.util.UUID;
 
-public enum SchemaType {
+import org.hyperledger.oa.model.Schema;
 
-    BANK_ACCOUNT("M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0");
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class SchemaAPI {
+
+    private UUID id;
+
+    private String label;
 
     private String schemaId;
 
-    SchemaType(String schemaId) {
-        this.schemaId = schemaId;
-    }
-
-    public String getSchemaId() {
-        return schemaId;
-    }
-
-    public static Optional<SchemaType> fromString(String id) {
-        SchemaType result = null;
-        if (BANK_ACCOUNT.getSchemaId().equals(id)) {
-            result = BANK_ACCOUNT;
-        }
-        return Optional.ofNullable(result);
+    public static SchemaAPI from(Schema s) {
+        return SchemaAPI
+                .builder()
+                .id(s.getId())
+                .label(s.getLabel())
+                .schemaId(s.getSchemaId())
+                .build();
     }
 }

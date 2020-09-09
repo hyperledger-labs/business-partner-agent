@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
+import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.oa.api.DidDocAPI;
 import org.hyperledger.oa.impl.DidDocManager;
@@ -50,8 +51,8 @@ public class PublicProfileController {
     private DidDocManager didDocManager;
 
     @Get("/profile.jsonld")
-    public HttpResponse<VerifiablePresentation> getMasterdata() {
-        Optional<VerifiablePresentation> vp = vpMgmt.getVerifiablePresentation();
+    public HttpResponse<VerifiablePresentation<VerifiableIndyCredential>> getMasterdata() {
+        Optional<VerifiablePresentation<VerifiableIndyCredential>> vp = vpMgmt.getVerifiablePresentation();
         if (vp.isPresent()) {
             return HttpResponse.ok(vp.get());
         }

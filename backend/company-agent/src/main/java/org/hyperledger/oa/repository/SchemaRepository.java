@@ -17,25 +17,19 @@
  */
 package org.hyperledger.oa.repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.hyperledger.oa.model.PartnerProof;
+import org.hyperledger.oa.api.CredentialType;
+import org.hyperledger.oa.model.Schema;
 
-import io.micronaut.data.annotation.Id;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUID> {
+public interface SchemaRepository extends CrudRepository<Schema, UUID> {
+    Optional<Schema> findBySchemaId(String schemaId);
 
-    Optional<PartnerProof> findByPresentationExchangeId(String presentationExchangeId);
-
-    List<PartnerProof> findByPartnerId(UUID partnerId);
-
-    List<PartnerProof> findByPartnerIdOrderByRole(UUID partnerId);
-
-    void updateState(@Id UUID id, String state);
+    Optional<Schema> findByType(CredentialType type);
 }

@@ -15,22 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.oa.controller.api.wallet;
+package org.hyperledger.oa.controller.api.admin;
 
-import org.hyperledger.oa.api.CredentialType;
+import javax.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.databind.JsonNode;
-
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class WalletDocumentRequest {
-    private CredentialType type;
-    private Boolean isPublic;
+@NoArgsConstructor
+public class AddSchemaRequest {
+    @Nullable
     private String label;
-    @JsonRawValue
-    @Schema(example = "{}")
-    private JsonNode document;
+    private String schemaId;
 }
