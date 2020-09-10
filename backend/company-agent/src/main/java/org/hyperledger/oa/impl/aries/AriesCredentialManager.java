@@ -193,7 +193,7 @@ public class AriesCredentialManager {
                             .setState(credEx.getState())
                             .setIssuedAt(Instant.now());
                     credRepo.update(cred);
-                },() -> log.error("Received credential without matching thread id, credential is not stored."));
+                }, () -> log.error("Received credential without matching thread id, credential is not stored."));
     }
 
     @SuppressWarnings("boxing")
@@ -221,9 +221,8 @@ public class AriesCredentialManager {
             final Credential ariesCred = conv.fromMap(dbCred.get().getCredential(), Credential.class);
             myCred
                     .schemaId(ariesCred.getSchemaId())
+                    .issuer(ariesCred.getCredentialDefinitionId())
                     .credentialData(ariesCred.getAttrs());
-            partnerRepo.findByConnectionId(dbCred.get().getConnectionId())
-                    .ifPresent(p -> myCred.issuer(p.getDid()));
             return Optional.of(myCred.build());
         }
         return Optional.empty();

@@ -19,8 +19,10 @@ package org.hyperledger.oa.impl.aries;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -102,6 +104,21 @@ public class SchemaService {
                     .schemaId(ApiConstants.BANK_ACCOUNT_SCHEMA_ID)
                     .seqNo(ApiConstants.BANK_ACCOUNT_SCHEMA_SEQ)
                     .build();
+        }
+        return result;
+    }
+
+    // TODO cache forever
+    public Set<String> getSchemaAttributeNames(@NonNull String schemaId) {
+        Set<String> result = new LinkedHashSet<>();
+        try {
+            final Optional<org.hyperledger.aries.api.schema.SchemaSendResponse.Schema> schema = ac
+                    .schemasGetById(schemaId);
+            if (schema.isPresent()) {
+                result = new LinkedHashSet<>(schema.get().getAttrNames());
+            }
+        } catch (IOException e) {
+            log.error("aca-py not reachable", e);
         }
         return result;
     }

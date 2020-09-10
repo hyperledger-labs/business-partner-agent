@@ -81,6 +81,9 @@ public class ProofManager {
     @Inject
     private Converter conv;
 
+    @Inject
+    SchemaService schemaService;
+
     // request proof from partner
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull String credDefId) {
         try {
@@ -148,17 +151,15 @@ public class ProofManager {
                     issuer = didPrefix + AriesStringUtil.credDefIdGetDid(credDefId);
                 }
                 CredentialType type = CredentialType.fromSchemaId(schemaId);
-                if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(type)) {
-                    pp
-                            .setIssuedAt(TimeUtil.parseZonedTimestamp(proof.getCreatedAt()))
-                            .setType(type)
-                            .setValid(Boolean.valueOf(proof.isVerified()))
-                            .setState(proof.getState())
-                            .setSchemaId(schemaId)
-                            .setIssuer(issuer)
-                            .setProof(conv.toMap(proof.from(BankAccount.class)));
-                    pProofRepo.update(pp);
-                }
+                pp
+                        .setIssuedAt(TimeUtil.parseZonedTimestamp(proof.getCreatedAt()))
+                        .setType(type)
+                        .setValid(Boolean.valueOf(proof.isVerified()))
+                        .setState(proof.getState())
+                        .setSchemaId(schemaId)
+                        .setIssuer(issuer)
+                        .setProof(proof.from(schemaService.getSchemaAttributeNames(schemaId)));
+                pProofRepo.update(pp);
             }
         });
     }
