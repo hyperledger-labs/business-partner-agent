@@ -1,5 +1,4 @@
-# Lab Name
-Business Partner Agent [![join the chat][rocketchat-image]][rocketchat-url]
+# Business Partner Agent [![join the chat][rocketchat-image]][rocketchat-url]
 
 [rocketchat-url]: https://chat.hyperledger.org/channel/business-partner-agent
 [rocketchat-image]: https://open.rocket.chat/images/join-chat.svg
