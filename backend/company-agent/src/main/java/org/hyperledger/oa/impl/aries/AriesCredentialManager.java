@@ -214,26 +214,30 @@ public class AriesCredentialManager {
 
     public List<AriesCredential> listCredentials() {
         List<AriesCredential> result = new ArrayList<>();
-        credRepo.findAll().forEach(c -> result.add(AriesCredential.fromMyCredential(c).build()));
+        credRepo.findAll().forEach(c -> result.add(buildAriesCredential(c)));
         return result;
     }
 
     public Optional<AriesCredential> getAriesCredentialById(@NonNull UUID id) {
         final Optional<MyCredential> dbCred = credRepo.findById(id);
         if (dbCred.isPresent()) {
-            final AriesCredentialBuilder myCred = AriesCredential.fromMyCredential(dbCred.get());
-            final Credential ariesCred = conv.fromMap(dbCred.get().getCredential(), Credential.class);
-            String issuer = null;
-            if (StringUtils.isNotEmpty(ariesCred.getCredentialDefinitionId())) {
-                issuer = didPrefix + AriesStringUtil.credDefIdGetDid(ariesCred.getCredentialDefinitionId());
-            }
-            myCred
-                    .schemaId(ariesCred.getSchemaId())
-                    .issuer(issuer)
-                    .credentialData(ariesCred.getAttrs());
-            return Optional.of(myCred.build());
+            return Optional.of(buildAriesCredential(dbCred.get()));
         }
         return Optional.empty();
+    }
+
+    private AriesCredential buildAriesCredential(MyCredential dbCred) {
+        final AriesCredentialBuilder myCred = AriesCredential.fromMyCredential(dbCred);
+        final Credential ariesCred = conv.fromMap(dbCred.getCredential(), Credential.class);
+        String issuer = null;
+        if (StringUtils.isNotEmpty(ariesCred.getCredentialDefinitionId())) {
+            issuer = didPrefix + AriesStringUtil.credDefIdGetDid(ariesCred.getCredentialDefinitionId());
+        }
+        myCred
+                .schemaId(ariesCred.getSchemaId())
+                .issuer(issuer)
+                .credentialData(ariesCred.getAttrs());
+        return myCred.build();
     }
 
     public Optional<AriesCredential> updateCredentialById(@NonNull UUID id, @NonNull String label) {
