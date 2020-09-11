@@ -87,7 +87,9 @@ public class VPManager {
             vcs.add(buildFromDocument(doc, myDid));
         });
         credRepo.findByIsPublicTrue().forEach(cred -> {
-            vcs.add(buildFromCredential(cred, myDid));
+            if (!CredentialType.OTHER.equals(cred.getType())) {
+                vcs.add(buildFromCredential(cred, myDid));
+            }
         });
 
         // only split up into own method, because of a weird issue that the second
