@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.model.MyDocument;
 
 import io.micronaut.data.annotation.Id;
@@ -39,4 +40,6 @@ public interface MyDocumentRepository extends CrudRepository<MyDocument, UUID> {
      * @return list of public credentials
      */
     List<MyDocument> findByIsPublicTrue();
+
+    boolean existsByTypeEqualsAndIsPublicTrue(CredentialType type);
 }

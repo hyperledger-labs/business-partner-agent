@@ -42,7 +42,7 @@ import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Controller("/api/admin")
-@Tag(name = "BPA Configuration")
+@Tag(name = "Configuration")
 @Validated
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @ExecuteOn(TaskExecutors.IO)
@@ -53,7 +53,7 @@ public class AdminController {
 
     /**
      * Aries: List configured schemas
-     * 
+     *
      * @return list of {@link SchemaAPI}
      */
     @Get("/schema")
@@ -66,7 +66,7 @@ public class AdminController {
 
     /**
      * Aries: Add a schema configuration
-     * 
+     *
      * @param req {@link AddSchemaRequest}
      * @return {@link HttpResponse}
      */
@@ -81,7 +81,7 @@ public class AdminController {
     /**
      * Aries: Removes a schema configuration. Doing so means the BPA will not
      * process requests containing this schema id any more.
-     * 
+     *
      * @param id the schema id
      * @return {@link HttpResponse}
      */
