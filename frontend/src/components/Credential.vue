@@ -39,7 +39,7 @@ export default {
     created() {
         console.log(this.document)
         // New created document
-        if (!{}.hasOwnProperty.call(this.document, 'documentData') && !{}.hasOwnProperty.call(this.document, 'credentialData')) {
+        if (!{}.hasOwnProperty.call(this.document, 'documentData') && !{}.hasOwnProperty.call(this.document, 'credentialData') && !{}.hasOwnProperty.call(this.document, 'proofData')) {
 
             this.documentData = Object.fromEntries(this.schema.fields.map(field => {
                 return [field.type, '']
@@ -47,7 +47,15 @@ export default {
         // Existing document or credential
         } else {
             // Check if document or credential data is here. This needs to be improved
-            let documentData = this.document.documentData ? this.document.documentData : this.document.credentialData
+            let documentData
+            if (this.document.documentData) {
+                documentData = this.document.documentData
+            } else if (this.document.credentialData) {
+                documentData = this.document.credentialData
+            } else if (this.document.proofData) {
+                documentData = this.document.proofData
+
+            }
 
             // Only support one nested node for now
             let nestedData = Object.values(documentData).find(value => {
@@ -57,7 +65,6 @@ export default {
             this.documentData = nestedData ? nestedData : documentData
         }
 
-        console.log(this.documentData)
     },
     data: () => {
         return {
@@ -75,7 +82,7 @@ export default {
             } else {
                 s = {
                     type: this.document.type,
-                    fields: Object.entries(this.document.credentialData).map((key) => {
+                    fields: Object.keys(this.document.credentialData).map((key) => {
                         return {
                             type: key,
                             label: key

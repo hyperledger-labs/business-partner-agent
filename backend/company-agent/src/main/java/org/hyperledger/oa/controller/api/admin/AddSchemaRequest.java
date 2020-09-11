@@ -15,35 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.oa.repository;
+package org.hyperledger.oa.controller.api.admin;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import javax.annotation.Nullable;
 
-import java.util.Optional;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.inject.Inject;
-
-import org.hyperledger.oa.model.BPAUser;
-import org.junit.jupiter.api.Test;
-
-import io.micronaut.test.annotation.MicronautTest;
-
-@MicronautTest
-class UserRepositoryTest {
-
-    @Inject
-    private UserRepository userRepo;
-
-    @Test
-    void test() {
-        userRepo.save(BPAUser.builder()
-                .username("testuser123")
-                .password("dummy")
-                .roles("ROLE_USER,ROLE_ADMIN")
-                .build());
-
-        Optional<BPAUser> user = userRepo.findByUsername("testuser123");
-        assertTrue(user.isPresent());
-    }
-
+@Data
+@NoArgsConstructor
+public class AddSchemaRequest {
+    @Nullable
+    private String label;
+    private String schemaId;
 }

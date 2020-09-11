@@ -15,29 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.oa.api.aries;
+package org.hyperledger.oa.repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
-public enum SchemaType {
+import org.hyperledger.oa.api.CredentialType;
+import org.hyperledger.oa.model.BPASchema;
 
-    BANK_ACCOUNT("M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0");
+import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.query.builder.sql.Dialect;
+import io.micronaut.data.repository.CrudRepository;
 
-    private String schemaId;
+@JdbcRepository(dialect = Dialect.POSTGRES)
+public interface SchemaRepository extends CrudRepository<BPASchema, UUID> {
+    Optional<BPASchema> findBySchemaId(String schemaId);
 
-    SchemaType(String schemaId) {
-        this.schemaId = schemaId;
-    }
-
-    public String getSchemaId() {
-        return schemaId;
-    }
-
-    public static Optional<SchemaType> fromString(String id) {
-        SchemaType result = null;
-        if (BANK_ACCOUNT.getSchemaId().equals(id)) {
-            result = BANK_ACCOUNT;
-        }
-        return Optional.ofNullable(result);
-    }
+    Optional<BPASchema> findByType(CredentialType type);
 }

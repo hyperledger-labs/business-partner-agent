@@ -35,8 +35,6 @@ import org.hyperledger.aries.api.credential.CredentialAttributes;
 import org.hyperledger.aries.api.credential.CredentialExchange;
 import org.hyperledger.aries.api.credential.CredentialProposalRequest;
 import org.hyperledger.aries.api.credential.CredentialProposalRequest.CredentialPreview;
-import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
-import org.hyperledger.oa.api.ApiConstants;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.aries.AriesCredential;
 import org.hyperledger.oa.api.aries.AriesCredential.AriesCredentialBuilder;
@@ -56,6 +54,7 @@ import org.hyperledger.oa.repository.MyCredentialRepository;
 import org.hyperledger.oa.repository.MyDocumentRepository;
 import org.hyperledger.oa.repository.PartnerRepository;
 
+import io.micronaut.context.annotation.Value;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,6 +62,9 @@ import lombok.extern.slf4j.Slf4j;
 @Singleton
 @RequiresAries
 public class AriesCredentialManager {
+
+    @Value("${oagent.did.prefix}")
+    private String didPrefix;
 
     @Inject
     private AriesClient ac;
@@ -80,6 +82,9 @@ public class AriesCredentialManager {
     private VPManager vpMgmt;
 
     @Inject
+    SchemaService schemaService;
+
+    @Inject
     private Converter conv;
 
     @Inject
@@ -94,14 +99,14 @@ public class AriesCredentialManager {
         return result;
     }
 
-    private Optional<String> findBACredentialDefinitionId(@NonNull UUID partnerId) {
+    private Optional<String> findBACredentialDefinitionId(@NonNull UUID partnerId, @NonNull Integer seqNo) {
         Optional<String> result = Optional.empty();
 
         final Optional<List<PartnerCredentialType>> pct = getPartnerCredDefs(partnerId);
         if (pct.isPresent()) {
             final List<PartnerCredentialType> baCreds = pct.get().stream()
                     .filter(cred -> AriesStringUtil.credDefIdGetSquenceNo(
-                            cred.getCredentialDefinitionId()).equals(ApiConstants.BANK_ACCOUNT_SCHEMA_SEQ))
+                            cred.getCredentialDefinitionId()).equals(seqNo.toString()))
                     .collect(Collectors.toList());
             if (baCreds.size() > 0) {
                 result = Optional.of(baCreds.get(baCreds.size() - 1).getCredentialDefinitionId());
@@ -112,7 +117,6 @@ public class AriesCredentialManager {
 
     // request credential from issuer (partner)
     public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId) {
-
         final Optional<Partner> dbPartner = partnerRepo.findById(partnerId);
         if (dbPartner.isPresent()) {
             final Optional<MyDocument> dbDoc = docRepo.findById(myDocId);
@@ -120,19 +124,15 @@ public class AriesCredentialManager {
                 if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(dbDoc.get().getType())) {
                     final BankAccount bankAccount = conv.fromMap(dbDoc.get().getDocument(), BankAccount.class);
                     try {
-                        final Optional<String> baCredDefId = findBACredentialDefinitionId(partnerId);
+                        final org.hyperledger.oa.model.BPASchema s = schemaService
+                                .getSchemaFor(CredentialType.BANK_ACCOUNT_CREDENTIAL);
+                        final Optional<String> baCredDefId = findBACredentialDefinitionId(partnerId, s.getSeqNo());
                         if (baCredDefId.isPresent()) {
-                            String schemaId = null;
-                            Optional<Schema> schema = ac.schemasGetById(AriesStringUtil.credDefIdGetSquenceNo(
-                                    baCredDefId.get()));
-                            if (schema.isPresent()) {
-                                schemaId = schema.get().getId();
-                            }
                             ac.issueCredentialSendProposal(
                                     CredentialProposalRequest
                                             .builder()
                                             .connectionId(dbPartner.get().getConnectionId())
-                                            .schemaId(schemaId)
+                                            .schemaId(s.getSchemaId())
                                             .credentialProposal(
                                                     new CredentialPreview(
                                                             CredentialAttributes.from(bankAccount)))
@@ -175,7 +175,7 @@ public class AriesCredentialManager {
     // credential signed, but not in wallet yet
     public void handleStroreCredential(CredentialExchange credEx) {
         credRepo.findByThreadId(credEx.getThreadId())
-                .ifPresent(cred -> {
+                .ifPresentOrElse(cred -> {
                     try {
                         credRepo.updateState(cred.getId(), credEx.getState());
                         // TODO should not be necessary with --auto-store-credential set
@@ -183,13 +183,13 @@ public class AriesCredentialManager {
                     } catch (IOException e) {
                         log.error("aca-py not reachable", e);
                     }
-                });
+                }, () -> log.error("Received store credential event without matching therad id"));
     }
 
     // credential, signed and stored in wallet
     public void handleCredentialAcked(CredentialExchange credEx) {
         credRepo.findByThreadId(credEx.getThreadId())
-                .ifPresent(cred -> {
+                .ifPresentOrElse(cred -> {
                     cred
                             .setReferent(credEx.getCredential().getReferent())
                             .setCredential(conv.toMap(credEx.getCredential()))
@@ -197,7 +197,7 @@ public class AriesCredentialManager {
                             .setState(credEx.getState())
                             .setIssuedAt(Instant.now());
                     credRepo.update(cred);
-                });
+                }, () -> log.error("Received credential without matching thread id, credential is not stored."));
     }
 
     @SuppressWarnings("boxing")
@@ -214,23 +214,30 @@ public class AriesCredentialManager {
 
     public List<AriesCredential> listCredentials() {
         List<AriesCredential> result = new ArrayList<>();
-        credRepo.findAll().forEach(c -> result.add(AriesCredential.fromMyCredential(c).build()));
+        credRepo.findAll().forEach(c -> result.add(buildAriesCredential(c)));
         return result;
     }
 
     public Optional<AriesCredential> getAriesCredentialById(@NonNull UUID id) {
         final Optional<MyCredential> dbCred = credRepo.findById(id);
         if (dbCred.isPresent()) {
-            final AriesCredentialBuilder myCred = AriesCredential.fromMyCredential(dbCred.get());
-            final Credential ariesCred = conv.fromMap(dbCred.get().getCredential(), Credential.class);
-            myCred
-                    .schemaId(ariesCred.getSchemaId())
-                    .credentialData(ariesCred.getAttrs());
-            partnerRepo.findByConnectionId(dbCred.get().getConnectionId())
-                    .ifPresent(p -> myCred.issuer(p.getDid()));
-            return Optional.of(myCred.build());
+            return Optional.of(buildAriesCredential(dbCred.get()));
         }
         return Optional.empty();
+    }
+
+    private AriesCredential buildAriesCredential(MyCredential dbCred) {
+        final AriesCredentialBuilder myCred = AriesCredential.fromMyCredential(dbCred);
+        final Credential ariesCred = conv.fromMap(dbCred.getCredential(), Credential.class);
+        String issuer = null;
+        if (StringUtils.isNotEmpty(ariesCred.getCredentialDefinitionId())) {
+            issuer = didPrefix + AriesStringUtil.credDefIdGetDid(ariesCred.getCredentialDefinitionId());
+        }
+        myCred
+                .schemaId(ariesCred.getSchemaId())
+                .issuer(issuer)
+                .credentialData(ariesCred.getAttrs());
+        return myCred.build();
     }
 
     public Optional<AriesCredential> updateCredentialById(@NonNull UUID id, @NonNull String label) {

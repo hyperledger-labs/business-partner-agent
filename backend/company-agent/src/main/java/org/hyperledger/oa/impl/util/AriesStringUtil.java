@@ -17,6 +17,8 @@
  */
 package org.hyperledger.oa.impl.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import lombok.NonNull;
 
 public class AriesStringUtil {
@@ -34,7 +36,8 @@ public class AriesStringUtil {
     }
 
     public static String schemaGetName(@NonNull String schemaId) {
-        final String[] parts = schemaId.split(":");
+        String sId = StringUtils.strip(schemaId);
+        final String[] parts = sId.split(":");
         if (parts.length != 4) {
             throw new IllegalArgumentException("Not a valid schema id");
         }

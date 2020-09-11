@@ -36,12 +36,16 @@ micronaut:
         paths: classpath:public
         mapping: /**
   caches:
+    '*':
+      maximum-size: 5000
     ur-cache:
       expire-after-write: 300s
     partner-lookup-cache:
       expire-after-write: 180s
     did-lookup-cache:
       expire-after-write: 3600s
+    schema-cache:
+      expire-after-write: 1d
   executors:
     io:
       type: fixed
@@ -57,6 +61,7 @@ datasources:
     username: ${oagent.pg.username}
     password: ${oagent.pg.password}
     dialect: POSTGRES
+    schema: ${oagent.pg.schema}
     initialization-fail-timeout: -1 # wait forever until the db is ready
 
 flyway:
@@ -95,6 +100,7 @@ oagent:
     url: jdbc:postgresql://${oagent.docker.host}/alice
     username: alice
     password: alice1234
+    schema: public
   bootstrap:
     username: ${BPA_BOOTSTRAP_UN:admin}
     password: ${BPA_BOOTSTRAP_PW:changeme}

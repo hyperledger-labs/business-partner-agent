@@ -15,35 +15,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.oa.repository;
+package org.hyperledger.oa.api.aries;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.UUID;
 
-import java.util.Optional;
+import org.hyperledger.oa.model.BPASchema;
 
-import javax.inject.Inject;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import org.hyperledger.oa.model.BPAUser;
-import org.junit.jupiter.api.Test;
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class SchemaAPI {
 
-import io.micronaut.test.annotation.MicronautTest;
+    private UUID id;
 
-@MicronautTest
-class UserRepositoryTest {
+    private String label;
 
-    @Inject
-    private UserRepository userRepo;
+    private String schemaId;
 
-    @Test
-    void test() {
-        userRepo.save(BPAUser.builder()
-                .username("testuser123")
-                .password("dummy")
-                .roles("ROLE_USER,ROLE_ADMIN")
-                .build());
-
-        Optional<BPAUser> user = userRepo.findByUsername("testuser123");
-        assertTrue(user.isPresent());
+    public static SchemaAPI from(BPASchema s) {
+        return SchemaAPI
+                .builder()
+                .id(s.getId())
+                .label(s.getLabel())
+                .schemaId(s.getSchemaId())
+                .build();
     }
-
 }

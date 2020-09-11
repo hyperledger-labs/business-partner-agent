@@ -14,6 +14,9 @@
     <template v-slot:[`item.verified`]="{ item }">
         <v-btn v-if="item.indyCredential" color="primary" text>verify</v-btn>
     </template>
+    <template v-slot:[`item.sentAt`]="{ item }">
+       {{item.sentAt | moment("MMMM Do YYYY HH:MM") }}
+    </template>
     <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length">
             <Credential v-bind:document="item" isReadOnly showOnlyContent></Credential>

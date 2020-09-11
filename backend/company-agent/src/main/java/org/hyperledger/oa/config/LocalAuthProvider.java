@@ -24,7 +24,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.hyperledger.oa.model.User;
+import org.hyperledger.oa.model.BPAUser;
 import org.hyperledger.oa.repository.UserRepository;
 import org.reactivestreams.Publisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -52,7 +52,7 @@ public class LocalAuthProvider implements AuthenticationProvider {
             HttpRequest<?> httpRequest,
             AuthenticationRequest<?, ?> authenticationRequest) {
 
-        Optional<User> dbUser = userRepo.findByUsername(String.valueOf(authenticationRequest.getIdentity()));
+        Optional<BPAUser> dbUser = userRepo.findByUsername(String.valueOf(authenticationRequest.getIdentity()));
 
         return Maybe.<AuthenticationResponse>create(emitter -> {
             if (dbUser.isPresent()

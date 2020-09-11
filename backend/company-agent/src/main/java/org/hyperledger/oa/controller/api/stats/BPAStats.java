@@ -15,35 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.oa.repository;
+package org.hyperledger.oa.controller.api.stats;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.Optional;
-
-import javax.inject.Inject;
-
-import org.hyperledger.oa.model.BPAUser;
-import org.junit.jupiter.api.Test;
-
-import io.micronaut.test.annotation.MicronautTest;
-
-@MicronautTest
-class UserRepositoryTest {
-
-    @Inject
-    private UserRepository userRepo;
-
-    @Test
-    void test() {
-        userRepo.save(BPAUser.builder()
-                .username("testuser123")
-                .password("dummy")
-                .roles("ROLE_USER,ROLE_ADMIN")
-                .build());
-
-        Optional<BPAUser> user = userRepo.findByUsername("testuser123");
-        assertTrue(user.isPresent());
-    }
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class BPAStats {
+    /** my DID */
+    private String did;
+    /** If organization profile is already there */
+    private Boolean profile;
+    /** Number of partners */
+    private Long partners;
+    /** Number of credentials */
+    private Long credentials;
 }
