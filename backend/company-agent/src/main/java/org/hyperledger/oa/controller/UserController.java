@@ -24,7 +24,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.hyperledger.oa.model.User;
+import org.hyperledger.oa.model.BPAUser;
 import org.hyperledger.oa.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -80,8 +80,8 @@ public class UserController {
 
     @Secured({ "ROLE_ADMIN" })
     @Post(value = "/register", consumes = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED })
-    public HttpResponse<?> registerUser(@Body User user, HttpRequest<?> request) {
-        Optional<User> existing = userRepo.findByUsername(user.getUsername());
+    public HttpResponse<?> registerUser(@Body BPAUser user, HttpRequest<?> request) {
+        Optional<BPAUser> existing = userRepo.findByUsername(user.getUsername());
         if (existing.isPresent()) {
             log.warn("User with name: {} already exists.", user.getUsername());
             return HttpResponse
@@ -89,7 +89,7 @@ public class UserController {
                     .header("Location", "/user/registerFailed");
         }
 
-        User dbUser = User
+        BPAUser dbUser = BPAUser
                 .builder()
                 .username(user.getUsername())
                 .password(enc.encode(user.getPassword()))
@@ -104,8 +104,8 @@ public class UserController {
     }
 
     @Put(value = "/authenticate", consumes = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED })
-    public HttpResponse<String> authenticateUser(@Body User user) {
-        Optional<User> dbUser = userRepo.findByUsername(user.getUsername());
+    public HttpResponse<String> authenticateUser(@Body BPAUser user) {
+        Optional<BPAUser> dbUser = userRepo.findByUsername(user.getUsername());
         if (dbUser.isPresent()) {
             boolean match = enc.matches(user.getPassword(), dbUser.get().getPassword());
             if (match) {

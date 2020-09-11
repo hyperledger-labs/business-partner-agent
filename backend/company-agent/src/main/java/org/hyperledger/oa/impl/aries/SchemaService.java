@@ -36,7 +36,7 @@ import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.aries.SchemaAPI;
 import org.hyperledger.oa.api.exception.WrongApiUsageException;
 import org.hyperledger.oa.config.runtime.RequiresAries;
-import org.hyperledger.oa.model.Schema;
+import org.hyperledger.oa.model.BPASchema;
 import org.hyperledger.oa.repository.SchemaRepository;
 
 import io.micronaut.cache.annotation.Cacheable;
@@ -67,14 +67,14 @@ public class SchemaService {
         try {
             Optional<org.hyperledger.aries.api.schema.SchemaSendResponse.Schema> ariesSchema = ac.schemasGetById(sId);
             if (ariesSchema.isPresent()) {
-                Schema dbS = Schema
+                BPASchema dbS = BPASchema
                         .builder()
                         .label(label)
                         .type(credType)
                         .schemaId(sId)
                         .seqNo(ariesSchema.get().getSeqNo())
                         .build();
-                Schema saved = schemaRepo.save(dbS);
+                BPASchema saved = schemaRepo.save(dbS);
                 result = SchemaAPI.from(saved);
             }
         } catch (IOException e) {
@@ -93,14 +93,14 @@ public class SchemaService {
         schemaRepo.deleteById(id);
     }
 
-    public @Nullable Schema getSchemaFor(CredentialType type) {
-        Schema result = null;
-        final Optional<Schema> dbSchema = schemaRepo.findByType(type);
+    public @Nullable BPASchema getSchemaFor(CredentialType type) {
+        BPASchema result = null;
+        final Optional<BPASchema> dbSchema = schemaRepo.findByType(type);
         if (dbSchema.isPresent()) {
             result = dbSchema.get();
         } else if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(type)) {
             // falling back to defaults
-            result = Schema
+            result = BPASchema
                     .builder()
                     .schemaId(ApiConstants.BANK_ACCOUNT_SCHEMA_ID)
                     .seqNo(ApiConstants.BANK_ACCOUNT_SCHEMA_SEQ)

@@ -20,7 +20,7 @@ package org.hyperledger.oa.repository;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.hyperledger.oa.model.User;
+import org.hyperledger.oa.model.BPAUser;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import io.micronaut.context.annotation.Requires;
@@ -54,7 +54,7 @@ public class DBOperations {
         userRepo.findByUsername(username).ifPresentOrElse(u -> {
             log.info("Bootstrap user already exists, skipping creation");
         }, () -> {
-            userRepo.save(User.builder()
+            userRepo.save(BPAUser.builder()
                     .username(username)
                     .password(new BCryptPasswordEncoder().encode(password))
                     .roles("ROLE_USER,ROLE_ADMIN")

@@ -20,14 +20,14 @@ package org.hyperledger.oa.repository;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.hyperledger.oa.model.User;
+import org.hyperledger.oa.model.BPAUser;
 
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface UserRepository extends CrudRepository<User, UUID> {
+public interface UserRepository extends CrudRepository<BPAUser, UUID> {
 
-    Optional<User> findByUsername(String username);
+    Optional<BPAUser> findByUsername(String username);
 }

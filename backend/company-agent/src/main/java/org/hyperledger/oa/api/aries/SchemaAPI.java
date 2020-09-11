@@ -19,7 +19,7 @@ package org.hyperledger.oa.api.aries;
 
 import java.util.UUID;
 
-import org.hyperledger.oa.model.Schema;
+import org.hyperledger.oa.model.BPASchema;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,7 +38,7 @@ public class SchemaAPI {
 
     private String schemaId;
 
-    public static SchemaAPI from(Schema s) {
+    public static SchemaAPI from(BPASchema s) {
         return SchemaAPI
                 .builder()
                 .id(s.getId())

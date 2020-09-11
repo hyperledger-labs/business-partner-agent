@@ -39,7 +39,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-public class User {
+public class BPAUser {
 
     @Id
     @AutoPopulated

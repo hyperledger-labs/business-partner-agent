@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Entity
-public class Schema {
+public class BPASchema {
 
     @Id
     @AutoPopulated
