@@ -19,6 +19,8 @@ package org.hyperledger.oa.api.aries;
 
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.model.PartnerProof;
 
@@ -29,6 +31,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Data
 @NoArgsConstructor
@@ -53,7 +56,7 @@ public class AriesProof {
     private String role;
     private JsonNode proofData;
 
-    public static AriesProof from(PartnerProof p, JsonNode poofData) {
+    public static AriesProof from(@NonNull PartnerProof p, @Nullable JsonNode poofData) {
         final AriesProofBuilder b = AriesProof.builder();
         final Long created = Long.valueOf(p.getCreatedAt().toEpochMilli());
         if (ProofRole.PROVER.getValue().equals(p.getRole())) {

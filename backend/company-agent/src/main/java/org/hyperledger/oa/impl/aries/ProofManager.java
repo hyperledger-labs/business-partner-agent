@@ -181,7 +181,8 @@ public class ProofManager {
     public List<AriesProof> listPartnerProofs(@NonNull UUID partnerId) {
         List<AriesProof> result = new ArrayList<>();
         pProofRepo.findByPartnerIdOrderByRole(partnerId).forEach(p -> {
-            result.add(AriesProof.from(p, conv.fromMap(p.getProof(), JsonNode.class)));
+            result.add(AriesProof.from(p, p.getProof() != null ? conv.fromMap(p.getProof(), JsonNode.class)
+                    : null));
         });
         return result;
     }

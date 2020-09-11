@@ -39,6 +39,7 @@ import org.hyperledger.oa.config.runtime.RequiresAries;
 import org.hyperledger.oa.model.Schema;
 import org.hyperledger.oa.repository.SchemaRepository;
 
+import io.micronaut.cache.annotation.Cacheable;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -108,7 +109,7 @@ public class SchemaService {
         return result;
     }
 
-    // TODO cache forever
+    @Cacheable("schema-cache")
     public Set<String> getSchemaAttributeNames(@NonNull String schemaId) {
         Set<String> result = new LinkedHashSet<>();
         try {

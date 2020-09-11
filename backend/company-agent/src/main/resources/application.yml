@@ -36,12 +36,16 @@ micronaut:
         paths: classpath:public
         mapping: /**
   caches:
+    '*':
+      maximum-size: 5000
     ur-cache:
       expire-after-write: 300s
     partner-lookup-cache:
       expire-after-write: 180s
     did-lookup-cache:
       expire-after-write: 3600s
+    schema-cache:
+      expire-after-write: 1d
   executors:
     io:
       type: fixed
