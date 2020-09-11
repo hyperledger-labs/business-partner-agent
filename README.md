@@ -1,5 +1,8 @@
 # Lab Name
-Business Partner Agent
+Business Partner Agent [![join the chat][rocketchat-image]][rocketchat-url]
+
+[rocketchat-url]: https://chat.hyperledger.org/channel/business-partner-agent
+[rocketchat-image]: https://open.rocket.chat/images/join-chat.svg
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Build Status](https://dev.azure.com/economy-of-things/Business-Partner-Agent/_apis/build/status/hyperledger-labs.business-partner-agent?branchName=master)](https://dev.azure.com/economy-of-things/Business-Partner-Agent/_build/latest?definitionId=79&branchName=master)
