@@ -54,6 +54,7 @@ import org.hyperledger.oa.repository.MyCredentialRepository;
 import org.hyperledger.oa.repository.MyDocumentRepository;
 import org.hyperledger.oa.repository.PartnerRepository;
 
+import io.micronaut.context.annotation.Value;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,6 +62,9 @@ import lombok.extern.slf4j.Slf4j;
 @Singleton
 @RequiresAries
 public class AriesCredentialManager {
+
+    @Value("${oagent.did.prefix}")
+    private String didPrefix;
 
     @Inject
     private AriesClient ac;
@@ -193,7 +197,7 @@ public class AriesCredentialManager {
                             .setState(credEx.getState())
                             .setIssuedAt(Instant.now());
                     credRepo.update(cred);
-                },() -> log.error("Received credential without matching thread id, credential is not stored."));
+                }, () -> log.error("Received credential without matching thread id, credential is not stored."));
     }
 
     @SuppressWarnings("boxing")
@@ -219,11 +223,14 @@ public class AriesCredentialManager {
         if (dbCred.isPresent()) {
             final AriesCredentialBuilder myCred = AriesCredential.fromMyCredential(dbCred.get());
             final Credential ariesCred = conv.fromMap(dbCred.get().getCredential(), Credential.class);
+            String issuer = null;
+            if (StringUtils.isNotEmpty(ariesCred.getCredentialDefinitionId())) {
+                issuer = didPrefix + AriesStringUtil.credDefIdGetDid(ariesCred.getCredentialDefinitionId());
+            }
             myCred
                     .schemaId(ariesCred.getSchemaId())
+                    .issuer(issuer)
                     .credentialData(ariesCred.getAttrs());
-            partnerRepo.findByConnectionId(dbCred.get().getConnectionId())
-                    .ifPresent(p -> myCred.issuer(p.getDid()));
             return Optional.of(myCred.build());
         }
         return Optional.empty();
