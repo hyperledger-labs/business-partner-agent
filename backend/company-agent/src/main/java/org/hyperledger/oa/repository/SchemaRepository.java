@@ -21,15 +21,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.hyperledger.oa.api.CredentialType;
-import org.hyperledger.oa.model.Schema;
+import org.hyperledger.oa.model.BPASchema;
 
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface SchemaRepository extends CrudRepository<Schema, UUID> {
-    Optional<Schema> findBySchemaId(String schemaId);
+public interface SchemaRepository extends CrudRepository<BPASchema, UUID> {
+    Optional<BPASchema> findBySchemaId(String schemaId);
 
-    Optional<Schema> findByType(CredentialType type);
+    Optional<BPASchema> findByType(CredentialType type);
 }

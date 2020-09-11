@@ -1,4 +1,4 @@
-CREATE TABLE public.did_doc_web (
+CREATE TABLE did_doc_web (
     id uuid PRIMARY KEY,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
@@ -6,28 +6,30 @@ CREATE TABLE public.did_doc_web (
     profile_json jsonb
 );
 
-CREATE TABLE public.my_credential (
+CREATE TABLE my_credential (
     id uuid PRIMARY KEY,
     issued_at timestamp without time zone,
-    type character varying(255) NOT NULL,
+    type character varying(255),
     is_public boolean NOT NULL,
     referent character varying(255),
     connection_id character varying(255) NOT NULL,
     state character varying(255) NOT NULL,
     thread_id character varying(255) NOT NULL,
+    label character varying(255),
     credential jsonb
 );
 
-CREATE TABLE public.my_document (
+CREATE TABLE my_document (
     id uuid PRIMARY KEY,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     type character varying(255) NOT NULL,
     is_public boolean NOT NULL,
+    label character varying(255),
     document jsonb
 );
 
-CREATE TABLE public.partner (
+CREATE TABLE partner (
     id uuid PRIMARY KEY,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
@@ -42,21 +44,22 @@ CREATE TABLE public.partner (
     verifiable_presentation jsonb
 );
 
-CREATE TABLE public.partner_proof (
+CREATE TABLE partner_proof (
     id uuid PRIMARY KEY,
     partner_id uuid NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    issued_at timestamp without time zone NOT NULL,
-    type character varying(255) NOT NULL,    
+    issued_at timestamp without time zone,
+    type character varying(255),    
     valid boolean,
     state character varying(255),
     presentation_exchange_id character varying(255) NOT NULL,
     issuer character varying(255),
     schema_id character varying(255),
-    proof jsonb NOT NULL
+    role character varying(255),
+    proof jsonb
 );
 
-CREATE TABLE public."user" (
+CREATE TABLE bpauser (
     id uuid PRIMARY KEY,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
@@ -65,8 +68,17 @@ CREATE TABLE public."user" (
     roles character varying(255) NOT NULL
 );
 
-CREATE TABLE public."bpastate" (
+CREATE TABLE bpastate (
     id uuid PRIMARY KEY,
     created_at timestamp without time zone,
     web_only boolean
+);
+
+CREATE TABLE bpaschema (
+    id uuid PRIMARY KEY,
+    created_at timestamp without time zone,
+    label character varying(255),
+    type character varying(255) UNIQUE,
+    schema_id character varying(255) UNIQUE,
+    seq_no bigint NOT NULL
 );
