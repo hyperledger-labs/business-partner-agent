@@ -23,7 +23,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.hyperledger.oa.model.User;
+import org.hyperledger.oa.model.BPAUser;
 import org.junit.jupiter.api.Test;
 
 import io.micronaut.test.annotation.MicronautTest;
@@ -36,13 +36,13 @@ class UserRepositoryTest {
 
     @Test
     void test() {
-        userRepo.save(User.builder()
+        userRepo.save(BPAUser.builder()
                 .username("testuser123")
                 .password("dummy")
                 .roles("ROLE_USER,ROLE_ADMIN")
                 .build());
 
-        Optional<User> user = userRepo.findByUsername("testuser123");
+        Optional<BPAUser> user = userRepo.findByUsername("testuser123");
         assertTrue(user.isPresent());
     }
 

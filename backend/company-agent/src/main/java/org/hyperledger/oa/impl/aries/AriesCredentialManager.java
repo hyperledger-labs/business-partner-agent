@@ -124,7 +124,7 @@ public class AriesCredentialManager {
                 if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(dbDoc.get().getType())) {
                     final BankAccount bankAccount = conv.fromMap(dbDoc.get().getDocument(), BankAccount.class);
                     try {
-                        final org.hyperledger.oa.model.Schema s = schemaService
+                        final org.hyperledger.oa.model.BPASchema s = schemaService
                                 .getSchemaFor(CredentialType.BANK_ACCOUNT_CREDENTIAL);
                         final Optional<String> baCredDefId = findBACredentialDefinitionId(partnerId, s.getSeqNo());
                         if (baCredDefId.isPresent()) {
