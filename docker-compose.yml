@@ -25,6 +25,8 @@ services:
       BPA_DID_PREFIX: ${BPA_DID_PREFIX}
       BPA_BOOTSTRAP_UN: ${BPA_BOOTSTRAP_UN}
       BPA_BOOTSTRAP_PW: ${BPA_BOOTSTRAP_PW}
+      ACAPY_ADMIN_URL: http://aca-py:${AGENT_ADMIN_PORT}
+      ACAPY_AGENT_URL: http://aca-py:${AGENT_HTTP_PORT}
     ports:
       - ${BPA_PORT}:${BPA_PORT}
     restart: always
@@ -55,8 +57,8 @@ services:
         --plugin aries_cloudagent.messaging.jsonld \
         --inbound-transport http '0.0.0.0' ${AGENT_HTTP_PORT} \
         --outbound-transport http \
-        --endpoint ${AGENT_ENDPOINT} \
-        --profile-endpoint ${BPA_PROFILE_ENDPOINT} \
+        --endpoint http://${BPA_HOST}:${AGENT_HTTP_PORT} \
+        --profile-endpoint https://${BPA_HOST}/profile.jsonld \
         --webhook-url http://company-agent:${BPA_PORT}/log \
         --genesis-url '${LEDGER_URL}/genesis' \
         --wallet-type 'indy' \
