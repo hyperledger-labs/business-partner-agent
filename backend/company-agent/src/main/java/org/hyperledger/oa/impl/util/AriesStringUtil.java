@@ -54,6 +54,11 @@ public class AriesStringUtil {
         return parts[0];
     }
 
+    public static String credDefIdGetTag(@NonNull String credDefId) {
+        final String[] parts = credDefIdSplit(credDefId);
+        return parts[4];
+    }
+
     private static String[] credDefIdSplit(String credDefId) {
         final String[] parts = credDefId.split(":");
         if (parts.length != 5) {

@@ -21,7 +21,9 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.oa.api.CredentialType;
+import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.model.PartnerProof;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -48,7 +50,7 @@ public class AriesProof {
     // probably not available
     private Long issuedAt;
 
-    private CredentialType type;
+    private String type;
     private String state;
 
     private String issuer;
@@ -64,10 +66,14 @@ public class AriesProof {
         } else {
             b.receivedAt(created);
         }
+        String type = p.getType().toString();
+        if (CredentialType.OTHER.equals(p.getType()) && StringUtils.isNotBlank(p.getCredentialDefinitionId())) {
+            type = AriesStringUtil.credDefIdGetTag(p.getCredentialDefinitionId());
+        }
         return b
                 .id(p.getId())
                 .partnerId(p.getPartnerId())
-                .type(p.getType())
+                .type(type)
                 .state(p.getState())
                 .issuer(p.getIssuer())
                 .schemaId(p.getSchemaId())

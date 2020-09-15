@@ -18,9 +18,11 @@
 package org.hyperledger.oa.impl.aries;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -111,5 +113,27 @@ public class PingManager {
 
     int getReceivedSize() {
         return received.size();
+    }
+
+    @Scheduled(fixedRate = "30m", initialDelay = "1m")
+    public void deleteStaleConnections() {
+        List<String> bpaConIds = new ArrayList<>();
+        repo.findAll().forEach(p -> bpaConIds.add(p.getConnectionId()));
+
+        try {
+            List<String> acaConIds = aries.connectionIds();
+            List<String> stale = acaConIds
+                    .stream()
+                    .filter(acaId -> bpaConIds
+                            .stream()
+                            .noneMatch(bpaId -> bpaId.equals(acaId)))
+                    .collect(Collectors.toList());
+            for (String conId : stale) {
+                aries.connectionsRemove(conId);
+            }
+        } catch (IOException e) {
+            log.error("aca-py not reachable.", e);
+        }
+
     }
 }

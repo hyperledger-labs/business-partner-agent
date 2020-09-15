@@ -34,6 +34,7 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.message.PingRequest;
 import org.hyperledger.aries.api.message.PingResponse;
+import org.hyperledger.oa.model.Partner;
 import org.hyperledger.oa.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -103,6 +104,49 @@ class PingManagerTest {
         verify(repo, never()).updateByConnectionId(anyString(), anyString());
 
         assertEquals(0, ping.getSentSize());
+    }
+
+    @Test
+    void testRemoveStale() throws Exception {
+        when(aries.connectionIds()).thenReturn(List.of("1", "2", "3"));
+        when(repo.findAll()).thenReturn(List.of(Partner.builder().connectionId("1").build()));
+
+        ping.deleteStaleConnections();
+
+        verify(aries, times(1)).connectionsRemove("2");
+        verify(aries, times(1)).connectionsRemove("3");
+    }
+
+    @Test
+    void testRemoveStaleOnlyBpa() throws Exception {
+        when(aries.connectionIds()).thenReturn(List.of());
+        when(repo.findAll()).thenReturn(List.of(Partner.builder().connectionId("1").build()));
+
+        ping.deleteStaleConnections();
+
+        verify(aries, never()).connectionsRemove(anyString());
+    }
+
+    @Test
+    void testRemoveStaleBothEmpty() throws Exception {
+        when(aries.connectionIds()).thenReturn(List.of());
+        when(repo.findAll()).thenReturn(List.of());
+
+        ping.deleteStaleConnections();
+
+        verify(aries, never()).connectionsRemove(anyString());
+    }
+
+    @Test
+    void testRemoveStaleBothSame() throws Exception {
+        when(aries.connectionIds()).thenReturn(List.of("1", "2"));
+        when(repo.findAll()).thenReturn(List.of(
+                Partner.builder().connectionId("1").build(),
+                Partner.builder().connectionId("2").build()));
+
+        ping.deleteStaleConnections();
+
+        verify(aries, never()).connectionsRemove(anyString());
     }
 
 }
