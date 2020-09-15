@@ -157,6 +157,7 @@ public class ProofManager {
                         .setValid(Boolean.valueOf(proof.isVerified()))
                         .setState(proof.getState())
                         .setSchemaId(schemaId)
+                        .setCredentialDefinitionId(credDefId)
                         .setIssuer(issuer)
                         .setProof(proof.from(schemaService.getSchemaAttributeNames(schemaId)));
                 pProofRepo.update(pp);

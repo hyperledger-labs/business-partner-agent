@@ -94,6 +94,7 @@ public class PartnerController {
     /**
      * Update partner
      *
+     * @param id the partner id
      * @param update {@link UpdatePartnerRequest}
      * @return {@link PartnerAPI}
      */
@@ -275,7 +276,7 @@ public class PartnerController {
      * @return HTTP status
      */
     @Delete("/{id}/proof/{proofId}")
-    public HttpResponse<AriesProof> deletePartnerProofById(
+    public HttpResponse<Void> deletePartnerProofById(
             @PathVariable String id,
             @PathVariable String proofId) {
         proofM.ifPresent(pMgmt -> {

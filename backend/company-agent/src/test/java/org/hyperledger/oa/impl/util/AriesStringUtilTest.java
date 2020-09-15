@@ -39,4 +39,10 @@ class AriesStringUtilTest {
         assertEquals("44XuhwdnXMqxbQw9tFMQAp", AriesStringUtil.didGetLastSegment("44XuhwdnXMqxbQw9tFMQAp"));
     }
 
+    @Test
+    void testGetTag() {
+        assertEquals("IATF Certificate", AriesStringUtil
+                .credDefIdGetTag("nJvGcV7hBSLRSUvwGk2hT:3:CL:734:IATF Certificate"));
+    }
+
 }

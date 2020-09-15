@@ -116,12 +116,12 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>4.8.1</version>
+            <version>4.9.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>5.3.4.RELEASE</version>
+            <version>5.4.0</version>
         </dependency>
 
         <!-- database -->
@@ -132,7 +132,6 @@
         <dependency>
             <groupId>io.micronaut.flyway</groupId>
             <artifactId>micronaut-flyway</artifactId>
-            <version>2.0.2</version>
         </dependency>
 
         <!-- Scope Test -->
@@ -286,8 +285,8 @@
                                 </goals>
                                 <configuration>
                                     <!-- See https://nodejs.org/en/download/ -->
-                                    <nodeVersion>v12.18.2</nodeVersion>
-                                    <npmVersion>6.14.5</npmVersion>
+                                    <nodeVersion>v12.18.3</nodeVersion>
+                                    <npmVersion>6.14.6</npmVersion>
                                 </configuration>
                             </execution>
                             <execution>

@@ -78,6 +78,9 @@ public class PartnerProof {
     private String schemaId;
 
     @Nullable
+    private String credentialDefinitionId;
+
+    @Nullable
     private String role;
 
     @Nullable
