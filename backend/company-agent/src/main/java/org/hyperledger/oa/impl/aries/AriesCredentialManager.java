@@ -230,17 +230,13 @@ public class AriesCredentialManager {
         final AriesCredentialBuilder myCred = AriesCredential.fromMyCredential(dbCred);
         final Credential ariesCred = conv.fromMap(dbCred.getCredential(), Credential.class);
         String issuer = null;
-        String type = dbCred.getType().toString();
         if (StringUtils.isNotEmpty(ariesCred.getCredentialDefinitionId())) {
             issuer = didPrefix + AriesStringUtil.credDefIdGetDid(ariesCred.getCredentialDefinitionId());
-            if (CredentialType.OTHER.equals(dbCred.getType())) {
-                type = AriesStringUtil.credDefIdGetTag(ariesCred.getCredentialDefinitionId());
-            }
         }
         myCred
                 .schemaId(ariesCred.getSchemaId())
+                .credentialDefinitionId(ariesCred.getCredentialDefinitionId())
                 .issuer(issuer)
-                .type(type)
                 .credentialData(ariesCred.getAttrs());
         return myCred.build();
     }
