@@ -9,7 +9,8 @@
 <template>
 <v-data-table hide-default-footer v-model="selected" :show-select="selectable" single-select :headers="headers" :items="credentialsWithIndex" :expanded.sync="expanded" item-key="index" show-expand>
     <template v-slot:[`item.type`]="{ item }">
-        {{ ( item.type ? item.type : CredentialTypes.OTHER.name ) | credentialLabel }}
+        <div v-if="item.type === CredentialTypes.OTHER.name">{{ item.credentialDefinitionId | credentialTag }}</div>
+        <div v-else>{{ item.type | credentialLabel }}</div>
     </template>
     <template v-slot:[`item.verified`]="{ item }">
         <v-btn v-if="item.indyCredential" color="primary" text>verify</v-btn>

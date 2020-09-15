@@ -11,7 +11,8 @@
       <v-btn depressed color="secondary" icon @click="$router.push({ name: 'Wallet' })">
         <v-icon dark>mdi-chevron-left</v-icon>
       </v-btn>
-      {{ type | credentialLabel}}
+      <div v-if="credential.type === CredentialTypes.OTHER.name" >{{ credential.credentialDefinitionId | credentialTag }}</div>
+      <div v-else>{{ credential.type | credentialLabel }}</div>
       <v-layout align-end justify-end>
         <v-btn depressed color="red" icon @click="deleteCredential()">
           <v-icon dark>mdi-delete</v-icon>
@@ -59,6 +60,7 @@ import { EventBus } from "../main";
 
 import Cred from "@/components/Credential";
 import VueJsonPretty from "vue-json-pretty";
+import { CredentialTypes } from "../constants";
 
 export default {
   name: "Credential",
@@ -74,7 +76,8 @@ export default {
     return {
       document: {},
       isBusy: false,
-      isReady: false
+      isReady: false,
+      CredentialTypes: CredentialTypes
     };
   },
   computed: {
