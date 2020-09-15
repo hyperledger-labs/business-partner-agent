@@ -40,6 +40,13 @@ Vue.filter('credentialLabel', function (name) {
   return itemOfName.label
 })
 
+Vue.filter('credentialTag', function (credDefId) {
+  if (!credDefId) return ''
+  let pos = credDefId.lastIndexOf(':')
+  return credDefId.substring(pos+1)
+
+})
+
 const EventBus = new Vue();
 export { EventBus, axios, apiBaseUrl };
   
