@@ -1,0 +1,1 @@
+ALTER TABLE my_credential ADD COLUMN issuer character varying(255);

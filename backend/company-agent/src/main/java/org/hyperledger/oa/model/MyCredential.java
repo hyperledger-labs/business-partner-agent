@@ -78,6 +78,9 @@ public class MyCredential {
     private String label;
 
     @Nullable
+    private String issuer;
+
+    @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> credential;
 }
