@@ -155,7 +155,9 @@ export default {
         },{
           text: "State",
           value: "state"
-
+        },{
+          text: "Actions",
+          value: "actions"
         }
       ]
     };

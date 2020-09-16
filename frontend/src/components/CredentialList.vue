@@ -23,6 +23,14 @@
             <Credential v-bind:document="item" isReadOnly showOnlyContent></Credential>
         </td>
     </template>
+    <template v-slot:[`item.actions`]="{ item }">
+      <v-icon
+        small
+        @click="deleteItem(item)"
+      >
+        mdi-delete
+      </v-icon>
+    </template>
 </v-data-table>
 </template>
 
