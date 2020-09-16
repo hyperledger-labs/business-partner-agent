@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -35,10 +36,13 @@ import org.hyperledger.aries.api.credential.CredentialAttributes;
 import org.hyperledger.aries.api.credential.CredentialExchange;
 import org.hyperledger.aries.api.credential.CredentialProposalRequest;
 import org.hyperledger.aries.api.credential.CredentialProposalRequest.CredentialPreview;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
+import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.aries.AriesCredential;
 import org.hyperledger.oa.api.aries.AriesCredential.AriesCredentialBuilder;
 import org.hyperledger.oa.api.aries.BankAccount;
+import org.hyperledger.oa.api.aries.ProfileVC;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.api.exception.PartnerException;
 import org.hyperledger.oa.client.LedgerClient;
@@ -54,6 +58,8 @@ import org.hyperledger.oa.repository.MyCredentialRepository;
 import org.hyperledger.oa.repository.MyDocumentRepository;
 import org.hyperledger.oa.repository.PartnerRepository;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.micronaut.context.annotation.Value;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -64,31 +70,34 @@ import lombok.extern.slf4j.Slf4j;
 public class AriesCredentialManager {
 
     @Value("${oagent.did.prefix}")
-    private String didPrefix;
+    String didPrefix;
 
     @Inject
-    private AriesClient ac;
+    AriesClient ac;
 
     @Inject
-    private PartnerRepository partnerRepo;
+    PartnerRepository partnerRepo;
 
     @Inject
-    private MyDocumentRepository docRepo;
+    MyDocumentRepository docRepo;
 
     @Inject
-    private MyCredentialRepository credRepo;
+    MyCredentialRepository credRepo;
 
     @Inject
-    private VPManager vpMgmt;
+    VPManager vpMgmt;
 
     @Inject
     SchemaService schemaService;
 
     @Inject
-    private Converter conv;
+    Converter conv;
 
     @Inject
-    private LedgerClient ledger;
+    LedgerClient ledger;
+
+    @Inject
+    ObjectMapper mapper;
 
     public Optional<List<PartnerCredentialType>> getPartnerCredDefs(@NonNull UUID partnerId) {
         Optional<List<PartnerCredentialType>> result = Optional.empty();
@@ -195,6 +204,7 @@ public class AriesCredentialManager {
                             .setCredential(conv.toMap(credEx.getCredential()))
                             .setType(CredentialType.fromSchemaId(credEx.getSchemaId()))
                             .setState(credEx.getState())
+                            .setIssuer(resolveIssuer(credEx.getCredential()))
                             .setIssuedAt(Instant.now());
                     credRepo.update(cred);
                 }, () -> log.error("Received credential without matching thread id, credential is not stored."));
@@ -228,16 +238,17 @@ public class AriesCredentialManager {
 
     private AriesCredential buildAriesCredential(MyCredential dbCred) {
         final AriesCredentialBuilder myCred = AriesCredential.fromMyCredential(dbCred);
-        final Credential ariesCred = conv.fromMap(dbCred.getCredential(), Credential.class);
-        String issuer = null;
-        if (StringUtils.isNotEmpty(ariesCred.getCredentialDefinitionId())) {
-            issuer = didPrefix + AriesStringUtil.credDefIdGetDid(ariesCred.getCredentialDefinitionId());
+        if (dbCred.getCredential() != null) {
+            final Credential ariesCred = conv.fromMap(dbCred.getCredential(), Credential.class);
+            myCred
+                    .schemaId(ariesCred.getSchemaId())
+                    .credentialDefinitionId(ariesCred.getCredentialDefinitionId())
+                    .credentialData(ariesCred.getAttrs());
+            // TODO only for backwards compatibility, can be removed at some point
+            if (dbCred.getIssuer() == null) {
+                myCred.issuer(resolveIssuer(ariesCred));
+            }
         }
-        myCred
-                .schemaId(ariesCred.getSchemaId())
-                .credentialDefinitionId(ariesCred.getCredentialDefinitionId())
-                .issuer(issuer)
-                .credentialData(ariesCred.getAttrs());
         return myCred.build();
     }
 
@@ -261,5 +272,44 @@ public class AriesCredentialManager {
             }
             credRepo.deleteById(id);
         });
+    }
+
+    /**
+     * Tries to resolve the issuers DID into a human readable name. Resolution order
+     * is: 1. Partner alias the user gave 2. Legal name from the partners public
+     * profile 3. ACA-PY Label 4. DID
+     * 
+     * @param ariesCred {@link Credential}
+     * @return the issuer or null when the credential or the credential definition
+     *         id is null
+     */
+    @Nullable
+    String resolveIssuer(@Nullable Credential ariesCred) {
+        String issuer = null;
+        if (ariesCred != null && StringUtils.isNotEmpty(ariesCred.getCredentialDefinitionId())) {
+            String did = didPrefix + AriesStringUtil.credDefIdGetDid(ariesCred.getCredentialDefinitionId());
+            Optional<Partner> p = partnerRepo.findByDid(did);
+            if (p.isPresent()) {
+                if (StringUtils.isNotEmpty(p.get().getAlias())) {
+                    issuer = p.get().getAlias();
+                } else if (p.get().getVerifiablePresentation() != null) {
+                    VerifiablePresentation<VerifiableIndyCredential> vp = conv
+                            .fromMap(p.get().getVerifiablePresentation(), Converter.VP_TYPEREF);
+                    Optional<VerifiableIndyCredential> profile = vp.getVerifiableCredential()
+                            .stream().filter(ic -> ic.getType().contains("OrganizationalProfileCredential")).findAny();
+                    if (profile.isPresent() && profile.get().getCredentialSubject() != null) {
+                        ProfileVC pVC = mapper.convertValue(profile.get().getCredentialSubject(), ProfileVC.class);
+                        issuer = pVC.getLegalName();
+                    }
+                }
+                if (issuer == null && p.get().getIncoming() != null && p.get().getIncoming().booleanValue()) {
+                    issuer = p.get().getLabel();
+                }
+            }
+            if (issuer == null) {
+                issuer = did;
+            }
+        }
+        return issuer;
     }
 }

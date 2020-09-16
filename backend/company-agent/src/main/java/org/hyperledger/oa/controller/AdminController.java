@@ -24,6 +24,7 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 import org.hyperledger.oa.api.aries.SchemaAPI;
+import org.hyperledger.oa.config.RuntimeConfig;
 import org.hyperledger.oa.controller.api.admin.AddSchemaRequest;
 import org.hyperledger.oa.impl.aries.SchemaService;
 
@@ -50,6 +51,9 @@ public class AdminController {
 
     @Inject
     Optional<SchemaService> schemaService;
+
+    @Inject
+    RuntimeConfig config;
 
     /**
      * Aries: List configured schemas
@@ -93,4 +97,15 @@ public class AdminController {
         }
         return HttpResponse.notFound();
     }
+
+    /**
+     * Get runtime configuration
+     *
+     * @return {@link RuntimeConfig}
+     */
+    @Get("/config")
+    public HttpResponse<RuntimeConfig> getRuntimeConfig() {
+        return HttpResponse.ok(config);
+    }
+
 }

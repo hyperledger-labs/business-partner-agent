@@ -58,6 +58,7 @@ public class AriesCredential {
                 .type(c.getType())
                 .state(c.getState())
                 .isPublic(c.getIsPublic())
+                .issuer(c.getIssuer())
                 .label(c.getLabel());
     }
 }
