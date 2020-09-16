@@ -68,6 +68,7 @@ public class MyCredential {
     @Nullable
     private String referent;
 
+    @Nullable
     private String connectionId;
 
     private String state;
