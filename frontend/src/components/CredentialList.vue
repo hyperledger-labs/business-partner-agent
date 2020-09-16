@@ -7,7 +7,7 @@
 -->
 
 <template>
-<v-data-table hide-default-footer v-model="selected" :show-select="selectable" single-select :headers="headers" :items="credentialsWithIndex" :expanded.sync="expanded" item-key="index" show-expand>
+<v-data-table hide-default-footer v-model="selected" :show-select="selectable" single-select :headers="headers" :items="credentialsWithIndex" :expanded.sync="expanded" item-key="index" :show-expand="expandable">
     <template v-slot:[`item.type`]="{ item }">
         <div v-if="item.type === CredentialTypes.OTHER.name">{{ item.credentialDefinitionId | credentialTag }}</div>
         <div v-else>{{ item.type | credentialLabel }}</div>
@@ -37,6 +37,10 @@ export default {
          selectable: {
             type: Boolean,
             default: false
+        },
+        expandable: {
+            type: Boolean,
+            default: true
         },
         headers: {
             type: Array,

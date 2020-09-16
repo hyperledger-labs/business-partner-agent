@@ -66,7 +66,7 @@
           </v-col>
           <v-col cols="8">
             <v-card flat>
-              <CredentialList v-if="isReady" v-bind:credentials="credentials"></CredentialList>
+              <CredentialList v-if="isReady" v-bind:credentials="credentials" :expandable="false"></CredentialList>
             </v-card>
           </v-col>
         </v-row>
@@ -84,7 +84,7 @@
             </v-row>
           </v-col>
           <v-col cols="8">
-            <CredentialList v-if="isReady" v-bind:credentials="presentationsSent" v-bind:headers="headersSent"></CredentialList>
+            <CredentialList v-if="isReady" v-bind:credentials="presentationsSent" v-bind:headers="headersSent" :expandable="false"></CredentialList>
           </v-col>
         </v-row>
       </v-card-text>
