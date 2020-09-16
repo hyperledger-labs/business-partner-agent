@@ -68,6 +68,7 @@ public class MyCredential {
     @Nullable
     private String referent;
 
+    @Nullable
     private String connectionId;
 
     private String state;
@@ -76,6 +77,9 @@ public class MyCredential {
 
     @Nullable
     private String label;
+
+    @Nullable
+    private String issuer;
 
     @Nullable
     @TypeDef(type = DataType.JSON)

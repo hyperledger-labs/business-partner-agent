@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import org.hyperledger.oa.model.MyCredential;
 
 import io.micronaut.data.annotation.Id;
@@ -38,7 +40,13 @@ public interface MyCredentialRepository extends CrudRepository<MyCredential, UUI
 
     void updateLabel(@Id UUID id, String label);
 
+    Number updateByConnectionId(String id, @Nullable String connectionId);
+
+    Number updateByConnectionId(String id, String connectionId, @Nullable String issuer);
+
     Optional<MyCredential> findByThreadId(String threadId);
+
+    List<MyCredential> findByConnectionId(String connectionId);
 
     List<MyCredential> findByIsPublicTrue();
 

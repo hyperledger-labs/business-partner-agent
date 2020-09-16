@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.ledger.EndpointType;
 import org.hyperledger.oa.api.DidDocAPI;
 import org.hyperledger.oa.api.DidDocAPI.Service;
@@ -38,6 +39,7 @@ import org.hyperledger.oa.impl.aries.ConnectionManager;
 import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.impl.web.WebPartnerFlow;
 import org.hyperledger.oa.model.Partner;
+import org.hyperledger.oa.repository.MyCredentialRepository;
 import org.hyperledger.oa.repository.PartnerRepository;
 
 import io.micronaut.cache.annotation.Cacheable;
@@ -47,19 +49,22 @@ import lombok.NonNull;
 public class PartnerManager {
 
     @Inject
-    private PartnerRepository repo;
+    PartnerRepository repo;
 
     @Inject
-    private Converter converter;
+    Converter converter;
 
     @Inject
-    private URClient ur;
+    URClient ur;
 
     @Inject // conditional bean
-    private Optional<ConnectionManager> cm;
+    Optional<ConnectionManager> cm;
 
     @Inject
-    private WebPartnerFlow webFlow;
+    WebPartnerFlow webFlow;
+
+    @Inject
+    MyCredentialRepository myCredRepo;
 
     public List<PartnerAPI> getPartners() {
         List<PartnerAPI> result = new ArrayList<>();
@@ -114,6 +119,9 @@ public class PartnerManager {
             final Optional<Partner> dbP = repo.findById(id);
             if (dbP.isPresent()) {
                 result = Optional.of(converter.toAPIObject(dbP.get()));
+                if (StringUtils.isNotBlank(alias)) {
+                    myCredRepo.updateByConnectionId(dbP.get().getConnectionId(), dbP.get().getConnectionId(), alias);
+                }
             }
         }
         return result;

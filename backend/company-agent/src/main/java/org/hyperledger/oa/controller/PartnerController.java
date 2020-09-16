@@ -94,7 +94,7 @@ public class PartnerController {
     /**
      * Update partner
      *
-     * @param id the partner id
+     * @param id     the partner id
      * @param update {@link UpdatePartnerRequest}
      * @return {@link PartnerAPI}
      */

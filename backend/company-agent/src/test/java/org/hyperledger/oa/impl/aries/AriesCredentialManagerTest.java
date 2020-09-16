@@ -1,15 +1,22 @@
 package org.hyperledger.oa.impl.aries;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.inject.Inject;
 
+import org.hyperledger.aries.api.credential.Credential;
 import org.hyperledger.aries.api.credential.CredentialExchange;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
+import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.oa.BaseTest;
 import org.hyperledger.oa.api.CredentialType;
+import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.model.MyCredential;
+import org.hyperledger.oa.model.Partner;
 import org.hyperledger.oa.repository.MyCredentialRepository;
+import org.hyperledger.oa.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
 
 import io.micronaut.test.annotation.MicronautTest;
@@ -17,11 +24,20 @@ import io.micronaut.test.annotation.MicronautTest;
 @MicronautTest
 class AriesCredentialManagerTest extends BaseTest {
 
-    @Inject
-    private AriesCredentialManager mgmt;
+    private static final String CRED_DEF_ID = "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:ba";
+    private static final String DID = "did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt";
 
     @Inject
-    private MyCredentialRepository credRepo;
+    AriesCredentialManager mgmt;
+
+    @Inject
+    MyCredentialRepository credRepo;
+
+    @Inject
+    PartnerRepository partnerRepo;
+
+    @Inject
+    Converter conv;
 
     @Test
     void testSaveNewCredential() throws Exception {
@@ -36,6 +52,72 @@ class AriesCredentialManagerTest extends BaseTest {
         final CredentialExchange credEx = GsonConfig.defaultConfig().fromJson(ex, CredentialExchange.class);
         mgmt.handleCredentialAcked(credEx);
         assertEquals(1, credRepo.count());
+    }
+
+    @Test
+    void testResolveIssuerDidOnly() {
+        Credential c = new Credential();
+        c.setCredentialDefinitionId(CRED_DEF_ID);
+        String iss = mgmt.resolveIssuer(c);
+        assertEquals(DID, iss);
+    }
+
+    @Test
+    void testResolveIssuerByAlias() {
+        Credential c = new Credential();
+        c.setCredentialDefinitionId(CRED_DEF_ID);
+
+        partnerRepo.save(Partner
+                .builder()
+                .alias("My Bank")
+                .did(DID)
+                .ariesSupport(Boolean.TRUE)
+                .build());
+
+        String iss = mgmt.resolveIssuer(c);
+        assertEquals("My Bank", iss);
+    }
+
+    @Test
+    void testResolveIssuerByVP() throws Exception {
+        Credential c = new Credential();
+        c.setCredentialDefinitionId(CRED_DEF_ID);
+
+        final String json = loader.load("files/verifiablePresentation.json");
+        final VerifiablePresentation<VerifiableIndyCredential> vp = mapper.readValue(json, Converter.VP_TYPEREF);
+
+        partnerRepo.save(Partner
+                .builder()
+                .did(DID)
+                .ariesSupport(Boolean.TRUE)
+                .verifiablePresentation(conv.toMap(vp))
+                .build());
+
+        String iss = mgmt.resolveIssuer(c);
+        assertEquals("Bosch Healthcare Solutions GmbH", iss);
+    }
+
+    @Test
+    void testResolveIssuerByLabel() throws Exception {
+        Credential c = new Credential();
+        c.setCredentialDefinitionId(CRED_DEF_ID);
+
+        partnerRepo.save(Partner
+                .builder()
+                .did(DID)
+                .ariesSupport(Boolean.TRUE)
+                .incoming(Boolean.TRUE)
+                .label("Their Label")
+                .build());
+
+        String iss = mgmt.resolveIssuer(c);
+        assertEquals("Their Label", iss);
+    }
+
+    @Test
+    void testResolveIssuerNull() throws Exception {
+        String iss = mgmt.resolveIssuer(null);
+        assertNull(iss);
     }
 
 }
