@@ -42,6 +42,8 @@ public interface MyCredentialRepository extends CrudRepository<MyCredential, UUI
 
     Number updateByConnectionId(String id, @Nullable String connectionId);
 
+    Number updateByConnectionId(String id, String connectionId, @Nullable String issuer);
+
     Optional<MyCredential> findByThreadId(String threadId);
 
     List<MyCredential> findByConnectionId(String connectionId);

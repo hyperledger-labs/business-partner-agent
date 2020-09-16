@@ -84,6 +84,13 @@ class MyCredentialRepositoryTest extends BaseTest {
 
         updated = repo.updateByConnectionId("some", null);
         assertEquals(0, updated.intValue());
+
+        updated = repo.updateByConnectionId("other", "something", "My Bank");
+        assertEquals(1, updated.intValue());
+
+        final List<MyCredential> cred = repo.findByConnectionId("something");
+        assertEquals(1, cred.size());
+        assertEquals("My Bank", cred.get(0).getIssuer());
     }
 
     private static MyCredential createDummyCredential(String connectionId) {
