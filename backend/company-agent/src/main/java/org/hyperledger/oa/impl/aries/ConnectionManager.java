@@ -33,6 +33,7 @@ import org.hyperledger.oa.config.runtime.RequiresAries;
 import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.model.Partner;
 import org.hyperledger.oa.model.PartnerProof;
+import org.hyperledger.oa.repository.MyCredentialRepository;
 import org.hyperledger.oa.repository.PartnerProofRepository;
 import org.hyperledger.oa.repository.PartnerRepository;
 
@@ -48,16 +49,19 @@ import lombok.extern.slf4j.Slf4j;
 public class ConnectionManager {
 
     @Value("${oagent.did.prefix}")
-    private String didPrefix;
+    String didPrefix;
 
     @Inject
-    private AriesClient ac;
+    AriesClient ac;
 
     @Inject
-    private PartnerRepository partnerRepo;
+    PartnerRepository partnerRepo;
 
     @Inject
-    private PartnerProofRepository partnerPrepo;
+    PartnerProofRepository partnerPrepo;
+
+    @Inject
+    MyCredentialRepository myCredRepo;
 
     @Async
     public void createConnection(@NonNull String did, @NonNull String label, @Nullable String alias) {
@@ -123,6 +127,9 @@ public class ConnectionManager {
                     }
                 });
             });
+
+            myCredRepo.updateByConnectionId(connectionId, null);
+
         } catch (IOException e) {
             log.error("Could not delete connection: {}", connectionId, e);
         }

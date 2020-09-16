@@ -21,8 +21,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Representation of a Public Profile VC Payload
- * Currently only used to resolve the legal name
+ * Representation of a Public Profile VC Payload Currently only used to resolve
+ * the legal name
  *
  */
 @Data

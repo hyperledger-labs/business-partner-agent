@@ -43,6 +43,7 @@ public class AriesCredential {
     private String issuer;
     private String schemaId;
     private String credentialDefinitionId;
+    private String connectionId;
 
     private String label;
     private Map<String, String> credentialData;
@@ -59,6 +60,7 @@ public class AriesCredential {
                 .state(c.getState())
                 .isPublic(c.getIsPublic())
                 .issuer(c.getIssuer())
+                .connectionId(c.getConnectionId())
                 .label(c.getLabel());
     }
 }

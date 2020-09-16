@@ -21,6 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -44,7 +45,7 @@ class MyCredentialRepositoryTest extends BaseTest {
     private Converter conv;
 
     @Test
-    void test() throws Exception {
+    void testSaveCredential() throws Exception {
         String schemaId = "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0";
         String credDefId = "VoSfM3eGaPxduty34ySygw:3:CL:571:sparta_bank";
 
@@ -66,6 +67,33 @@ class MyCredentialRepositoryTest extends BaseTest {
         assertFalse(credLoaded.isEmpty());
         assertEquals(1, credLoaded.size());
         assertEquals(saved.getId(), credLoaded.get(0).getId());
+    }
+
+    @Test
+    void testUpdateByConnectionId() {
+        String connectionId = UUID.randomUUID().toString();
+        repo.save(createDummyCredential(connectionId));
+        repo.save(createDummyCredential(connectionId));
+        repo.save(createDummyCredential("other"));
+
+        final List<MyCredential> findByConnectionId = repo.findByConnectionId(connectionId);
+        assertEquals(2, findByConnectionId.size());
+
+        Number updated = repo.updateByConnectionId(connectionId, null);
+        assertEquals(2, updated.intValue());
+
+        updated = repo.updateByConnectionId("some", null);
+        assertEquals(0, updated.intValue());
+    }
+
+    private static MyCredential createDummyCredential(String connectionId) {
+        return MyCredential
+                .builder()
+                .connectionId(connectionId)
+                .threadId(UUID.randomUUID().toString())
+                .state("acked")
+                .isPublic(Boolean.FALSE)
+                .build();
     }
 
 }
