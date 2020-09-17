@@ -28,6 +28,7 @@ import javax.inject.Singleton;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.connection.ReceiveInvitationRequest;
+import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
 import org.hyperledger.oa.config.runtime.RequiresAries;
 import org.hyperledger.oa.impl.util.AriesStringUtil;
@@ -110,7 +111,11 @@ public class ConnectionManager {
     public boolean removeConnection(String connectionId) {
         log.debug("Removing connection: {}", connectionId);
         try {
-            ac.connectionsRemove(connectionId);
+            try {
+                ac.connectionsRemove(connectionId);
+            } catch (IOException | AriesException e) {
+                log.warn("Could not delete aries connection.", e);
+            }
 
             partnerRepo.findByConnectionId(connectionId).ifPresent(p -> {
                 final List<PartnerProof> proofs = partnerPrepo.findByPartnerId(p.getId());
@@ -128,7 +133,7 @@ public class ConnectionManager {
                 toDelete.forEach(presExId -> {
                     try {
                         ac.presentProofRecordsRemove(presExId);
-                    } catch (IOException e) {
+                    } catch (IOException | AriesException e) {
                         log.error("Could not delete presentation exchange record: {}", presExId, e);
                     }
                 });
