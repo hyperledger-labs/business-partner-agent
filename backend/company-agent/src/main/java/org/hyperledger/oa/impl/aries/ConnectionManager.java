@@ -78,28 +78,33 @@ public class ConnectionManager {
     }
 
     public synchronized void handleConnectionEvent(ConnectionRecord connection) {
-        partnerRepo.findByLabel(connection.getTheirLabel()).ifPresentOrElse(dbP -> {
-            if (dbP.getConnectionId() == null) {
-                dbP.setConnectionId(connection.getConnectionId());
-                dbP.setState(connection.getState());
-                partnerRepo.update(dbP);
-            } else {
+        if (connection.isIncomingConnection()) {
+            partnerRepo.findByConnectionId(connection.getConnectionId()).ifPresentOrElse(dbP -> {
                 partnerRepo.updateState(dbP.getId(), connection.getState());
-            }
-        }, () -> {
-            // new incoming connetion
-            Partner p = Partner
-                    .builder()
-                    .ariesSupport(Boolean.TRUE)
-                    .alias(connection.getTheirLabel())
-                    .connectionId(connection.getConnectionId())
-                    .did(didPrefix + connection.getTheirDid())
-                    .label(connection.getTheirLabel())
-                    .state(connection.getState())
-                    .incoming(Boolean.TRUE)
-                    .build();
-            partnerRepo.save(p);
-        });
+            }, () -> {
+                Partner p = Partner
+                        .builder()
+                        .ariesSupport(Boolean.TRUE)
+                        .alias(connection.getTheirLabel()) // event has no alias in this case
+                        .connectionId(connection.getConnectionId())
+                        .did(didPrefix + connection.getTheirDid())
+                        .label(connection.getTheirLabel())
+                        .state(connection.getState())
+                        .incoming(Boolean.TRUE)
+                        .build();
+                partnerRepo.save(p);
+            });
+        } else {
+            partnerRepo.findByLabel(connection.getTheirLabel()).ifPresent(dbP -> {
+                if (dbP.getConnectionId() == null) {
+                    dbP.setConnectionId(connection.getConnectionId());
+                    dbP.setState(connection.getState());
+                    partnerRepo.update(dbP);
+                } else {
+                    partnerRepo.updateState(dbP.getId(), connection.getState());
+                }
+            });
+        }
     }
 
     public boolean removeConnection(String connectionId) {
@@ -114,9 +119,10 @@ public class ConnectionManager {
                 }
             });
 
+            // TODO extend client to directly filter by connection_id
             ac.presentProofRecords().ifPresent(records -> {
                 final List<String> toDelete = records.stream()
-                        .filter(r -> r.getConnectionId().equals(connectionId))
+                        .filter(r -> r.getConnectionId() != null && r.getConnectionId().equals(connectionId))
                         .map(PresentationExchangeRecord::getPresentationExchangeId)
                         .collect(Collectors.toList());
                 toDelete.forEach(presExId -> {
