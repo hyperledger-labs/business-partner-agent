@@ -69,15 +69,15 @@ class PingManagerTest {
 
         ping.checkConnections();
 
-        verify(repo, never()).updateByConnectionId(anyString(), anyString());
+        verify(repo, never()).updateStateByConnectionId(anyString(), anyString());
 
         assertEquals(2, ping.getSentSize());
         assertEquals(0, ping.getReceivedSize());
 
         ping.checkConnections();
 
-        verify(repo, times(1)).updateByConnectionId("1", ConnectionState.inactive.toString());
-        verify(repo, times(1)).updateByConnectionId("2", ConnectionState.inactive.toString());
+        verify(repo, times(1)).updateStateByConnectionId("1", ConnectionState.inactive.toString());
+        verify(repo, times(1)).updateStateByConnectionId("2", ConnectionState.inactive.toString());
 
         assertEquals(2, ping.getSentSize());
         assertEquals(0, ping.getReceivedSize());
@@ -90,8 +90,8 @@ class PingManagerTest {
 
         ping.checkConnections();
 
-        verify(repo, times(1)).updateByConnectionId("1", ConnectionState.active.toString());
-        verify(repo, times(1)).updateByConnectionId("2", ConnectionState.active.toString());
+        verify(repo, times(1)).updateStateByConnectionId("1", ConnectionState.active.toString());
+        verify(repo, times(1)).updateStateByConnectionId("2", ConnectionState.active.toString());
 
         assertEquals(2, ping.getSentSize());
     }
@@ -101,7 +101,7 @@ class PingManagerTest {
         when(aries.connectionIds(any(ConnectionFilter.class))).thenReturn(List.of("1", "2"));
 
         ping.checkConnections();
-        verify(repo, never()).updateByConnectionId(anyString(), anyString());
+        verify(repo, never()).updateStateByConnectionId(anyString(), anyString());
 
         assertEquals(0, ping.getSentSize());
     }

@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import org.hyperledger.oa.model.Partner;
 
 import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
@@ -39,11 +40,12 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     int updateAlias(@Id UUID id, @Nullable String alias);
 
-    int updateByConnectionId(String connectionId, String state);
-
     Optional<Partner> findByDid(String did);
 
     Optional<Partner> findByLabel(String label);
 
     Optional<Partner> findByConnectionId(String connectionId);
+
+    @Query("UPDATE partner SET state = :state WHERE connection_id = :connectionId AND state IS NULL OR state != :state")
+    void updateStateByConnectionId(String connectionId, String state);
 }
