@@ -16,26 +16,33 @@
         <v-btn color="primary" :to="{ name: 'Profile', params: { add: true} }">Setup your Profile</v-btn>
     </div>
     <v-row v-else>
-        <v-col>
-            <v-card class="mx-auto" max-width="400" :to="{ name: 'Wallet' }">
-                <v-img class="align-end" height="300px" src="@/assets/undraw_certification_aif8.png">
-                    
-                </v-img>
-                 <v-card-title style="font-size:400%" class="justify-center">{{ status.credentials }}</v-card-title>
-                <v-card-title  class="justify-center">Verified Credentials</v-card-title>
+        <v-row>
+            <v-col>
+                {{ status.did }}
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col>
+                <v-card class="mx-auto" max-width="400" :to="{ name: 'Wallet' }">
+                    <v-img class="align-end" height="300px" src="@/assets/undraw_certification_aif8.png">
+                        
+                    </v-img>
+                    <v-card-title style="font-size:400%" class="justify-center">{{ status.credentials }}</v-card-title>
+                    <v-card-title  class="justify-center">Verified Credentials222</v-card-title>
 
-            </v-card>
-        </v-col>
-        <v-col>
-          <v-card class="mx-auto" max-width="400" :to="{ name: 'Partners' }">
-                <v-img class="align-end" height="300px" src="@/assets/undraw_agreement_aajr.png">
-                    
-                </v-img>
-                 <v-card-title style="font-size:400%" class="justify-center">{{ status.partners }}</v-card-title>
-                <v-card-title  class="justify-center">Business Partners</v-card-title>
+                </v-card>
+            </v-col>
+            <v-col>
+            <v-card class="mx-auto" max-width="400" :to="{ name: 'Partners' }">
+                    <v-img class="align-end" height="300px" src="@/assets/undraw_agreement_aajr.png">
+                        
+                    </v-img>
+                    <v-card-title style="font-size:400%" class="justify-center">{{ status.partners }}</v-card-title>
+                    <v-card-title  class="justify-center">Business Partners</v-card-title>
 
-            </v-card>
-        </v-col>
+                </v-card>
+            </v-col>
+        </v-row>
 
     </v-row>
 </v-container>
