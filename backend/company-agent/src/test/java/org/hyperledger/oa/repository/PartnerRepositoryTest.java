@@ -52,4 +52,34 @@ class PartnerRepositoryTest {
         assertEquals(0, nonExistingP);
     }
 
+    @Test
+    void testUpdateStateWithoutAffectingTimestamp() throws Exception {
+        final String connectionId = "id-123";
+        repo.save(Partner
+                .builder()
+                .ariesSupport(Boolean.FALSE)
+                .did("did:fit:123")
+                .connectionId(connectionId)
+                .build());
+
+        Optional<Partner> reload = repo.findByConnectionId(connectionId);
+        assertTrue(reload.isPresent());
+
+        repo.updateStateByConnectionId(connectionId, "custom");
+
+        Optional<Partner> mod = repo.findByConnectionId(connectionId);
+
+        assertTrue(mod.isPresent());
+        assertEquals(0, reload.get().getUpdatedAt().compareTo(mod.get().getUpdatedAt()));
+        assertEquals("custom", mod.get().getState());
+
+        repo.updateStateByConnectionId(connectionId, "custom2");
+
+        mod = repo.findByConnectionId(connectionId);
+
+        assertTrue(mod.isPresent());
+        assertEquals(0, reload.get().getUpdatedAt().compareTo(mod.get().getUpdatedAt()));
+        assertEquals("custom2", mod.get().getState());
+    }
+
 }
