@@ -15,35 +15,33 @@
         <br />
         <v-btn color="primary" :to="{ name: 'Profile', params: { add: true} }">Setup your Profile</v-btn>
     </div>
-    <v-row v-else>
-        <v-row>
-            <v-col>
-                {{ status.did }}
+    <v-row v-else justify="center">
+            <v-col cols="12">
+                <v-text-field
+                    id="did"
+                    v-model="status.did"
+                    readonly
+                    outlined
+                    label="DID"
+                    :append-icon="'mdi-content-copy'"
+                    @click:append="copyDid"
+                ></v-text-field>
             </v-col>
-        </v-row>
-        <v-row>
             <v-col>
                 <v-card class="mx-auto" max-width="400" :to="{ name: 'Wallet' }">
-                    <v-img class="align-end" height="300px" src="@/assets/undraw_certification_aif8.png">
-                        
-                    </v-img>
+                    <v-img class="align-end" height="300px" src="@/assets/undraw_certification_aif8.png"></v-img>
                     <v-card-title style="font-size:400%" class="justify-center">{{ status.credentials }}</v-card-title>
-                    <v-card-title  class="justify-center">Verified Credentials222</v-card-title>
+                    <v-card-title  class="justify-center">Verified Credentials</v-card-title>
 
                 </v-card>
             </v-col>
             <v-col>
-            <v-card class="mx-auto" max-width="400" :to="{ name: 'Partners' }">
-                    <v-img class="align-end" height="300px" src="@/assets/undraw_agreement_aajr.png">
-                        
-                    </v-img>
+                <v-card class="mx-auto" max-width="400" :to="{ name: 'Partners' }">
+                    <v-img class="align-end" height="300px" src="@/assets/undraw_agreement_aajr.png"></v-img>
                     <v-card-title style="font-size:400%" class="justify-center">{{ status.partners }}</v-card-title>
                     <v-card-title  class="justify-center">Business Partners</v-card-title>
-
                 </v-card>
             </v-col>
-        </v-row>
-
     </v-row>
 </v-container>
 </template>
@@ -77,8 +75,20 @@ export default {
                     console.error(e)
                     EventBus.$emit('error', e)
                 });
+        },
+        copyDid() {
+            let didEl = document.querySelector('#did')
+            didEl.select();
+            let successfull;
+            try {
+                successfull = document.execCommand('copy');
+            } catch (err) {
+                successfull = false;
+            }
+            successfull ? EventBus.$emit("success", "DID copied") : EventBus.$emit("error", "Can't copy DID");
+            didEl.blur();
+            window.getSelection().removeAllRanges();
         }
-
     }
 };
 </script>
