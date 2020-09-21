@@ -13,15 +13,11 @@
         </v-card-title>
         <v-container>
             <v-row>
-                <v-col cols="4">
-                    <v-select prepend-icon="mdi-fingerprint" label="DID Method" v-model="didMethod" :items="didMethods" @change="partnerLoaded = false" outlined dense></v-select>
-                </v-col>
-                <v-col cols="8">
-                    <v-text-field label="Decentralized Identifier (DID)" placeholder="" v-model="did" @change="partnerLoaded = false" outlined dense>
+                <v-col cols="12">
+                    <v-text-field prepend-icon="mdi-fingerprint" label="Decentralized Identifier (DID)" placeholder="" v-model="did" @change="partnerLoaded = false" outlined dense>
                     </v-text-field>
                 </v-col>
             </v-row>
-
             <v-row>
                 <v-layout justify-center>
                     <v-progress-circular v-if="partnerLoading" indeterminate color="primary"></v-progress-circular>
@@ -30,11 +26,8 @@
 
             <v-row>
                 <v-layout justify-center>
-
                     <div class="font-weight-medium">{{ msg }}</div>
-
                 </v-layout>
-
             </v-row>
             <v-row class="mx-2" v-if="partnerLoaded">
                 <v-col cols="4">
@@ -82,12 +75,10 @@ export default {
             partnerLoading: false,
             partnerLoaded: false,
             msg: "",
-            didMethod: "did:web",
             did: "",
             alias: "",
             partnerProfile: null,
-            publicCredentials: [],
-            didMethods: ["did:web", "did:sov", "did:sov:iil", "did:evan"],
+            publicCredentials: []
         };
     },
     methods: {
@@ -96,14 +87,13 @@ export default {
             this.partnerLoading = true;
             this.$axios
                 .get(
-                    `${this.$apiBaseUrl}/partners/lookup/${this.didMethod}:${this.did}`
+                    `${this.$apiBaseUrl}/partners/lookup/${this.did}`
                 )
                 .then((result) => {
                     this.partnerLoading = false;
                     console.log(result);
                     if ({}.hasOwnProperty.call(result, "status") &&
                         result.status === 200
-
                     ) {
                         let partner = result.data
                         if ({}.hasOwnProperty.call(partner, "credential")) {
@@ -130,20 +120,18 @@ export default {
                         } else {
                             this.msg = 'Partner has no public profile and no Aries support.'
                         }
-
                     }
-
                 })
                 .catch((e) => {
                     console.error(e);
-                    this.msg = `Could not resolve ${this.didMethod}:${this.did}.`;
+                    this.msg = `Could not resolve ${this.did}.`;
                     this.partnerLoading = false;
                     // EventBus.$emit("error", e);
                 });
         },
         addPartner() {
             let partnerToAdd = {
-                 did: `${this.didMethod}:${this.did}`
+                 did: `${this.did}`
             }
 
             if (this.alias && this.alias !== "") {
@@ -167,19 +155,15 @@ export default {
                         this.$router.push({
                             name: 'Partners'
                         });
-
                     }
                 })
                 .catch((e) => {
                     if (e.response.status === 412) {
-                        EventBus.$emit("error", 'Partner already exists');
+                        EventBus.$emit("error", "Partner already exists");
                     } else {
-
                         console.error(e);
                         EventBus.$emit("error", e);
-
                     }
-
                 });
         },
     },
