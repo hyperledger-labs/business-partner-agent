@@ -78,16 +78,15 @@ public class PingManager {
         }
     }
 
-    // TODO only sent changes to the state, not always the same state
     private void setNewState() {
         sent.forEach((k, v) -> {
             String state;
             if (received.containsKey(k)) {
                 state = ConnectionState.active.toString();
-                repo.updateByConnectionId(v, state);
+                repo.updateStateByConnectionId(v, state);
             } else {
                 state = ConnectionState.inactive.toString();
-                repo.updateByConnectionId(v, state);
+                repo.updateStateByConnectionId(v, state);
             }
         });
         sent.clear();

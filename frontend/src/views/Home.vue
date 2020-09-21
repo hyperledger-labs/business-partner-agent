@@ -31,8 +31,7 @@
                 <v-card class="mx-auto" max-width="400" :to="{ name: 'Wallet' }">
                     <v-img class="align-end" height="300px" src="@/assets/undraw_certification_aif8.png"></v-img>
                     <v-card-title style="font-size:400%" class="justify-center">{{ status.credentials }}</v-card-title>
-                    <v-card-title  class="justify-center">Verified Credentials</v-card-title>
-
+                    <v-card-title  class="justify-center">Verified Credentials</v-card-title
                 </v-card>
             </v-col>
             <v-col>
