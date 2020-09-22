@@ -11,8 +11,8 @@
       <v-btn depressed color="secondary" icon @click="$router.go(-1)">
         <v-icon dark>mdi-chevron-left</v-icon>
       </v-btn>
-      <div v-if="credential.type === CredentialTypes.OTHER.name" >{{ credential.credentialDefinitionId | credentialTag }}</div>
-      <div v-else>{{ credential.type | credentialLabel }}</div>
+      <div v-if="presentation.type === CredentialTypes.OTHER.name" >{{ presentation.credentialDefinitionId | credentialTag }}</div>
+      <div v-else>{{ presentation.type | credentialLabel }}</div>
       <v-layout align-end justify-end>
         <v-btn depressed color="red" icon @click="deletePresentation()">
           <v-icon dark>mdi-delete</v-icon>
@@ -20,7 +20,7 @@
       </v-layout>
     </v-card-title>
     <v-card-text>
-      <Cred v-bind:document="credential" isReadOnly></Cred>
+      <Cred v-bind:document="presentation" isReadOnly></Cred>
       <v-divider></v-divider>
       
     </v-card-text>
@@ -31,7 +31,7 @@
             class="grey--text text--darken-2 font-weight-medium bg-light"
           >Show raw data</v-expansion-panel-header>
           <v-expansion-panel-content class="bg-light">
-            <vue-json-pretty :data="credential"></vue-json-pretty>
+            <vue-json-pretty :data="presentation"></vue-json-pretty>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -62,9 +62,6 @@ export default {
   created() {
     EventBus.$emit("title", "Presentation");
     this.getPresentation();
-
-    console.log(this.id)
-    console.log(this.presentationId)
   },
   data: () => {
     return {
@@ -81,13 +78,11 @@ export default {
   },
   methods: {
     getPresentation() {
-      console.log(this.id);
       this.$axios
         .get(`${this.$apiBaseUrl}/partners/${this.id}/proof/${this.presentationId}`)
         .then(result => {
           if ({}.hasOwnProperty.call(result, "data")) {
-            this.credential = result.data;
-            this.isPublic = this.credential.isPublic;
+            this.presentation = result.data;
             this.isReady = true;
           }
         })

@@ -66,7 +66,7 @@
           </v-col>
           <v-col cols="8">
             <v-card flat>
-              <PresentationList v-if="isReady" v-bind:credentials="[...credentials, ...presentationsReceived]" v-bind:headers="headersReceived" :expandable="true"></PresentationList>
+              <PresentationList v-if="isReady" v-bind:credentials="[...credentials, ...presentationsReceived]" :expandable="true"></PresentationList>
             </v-card>
           </v-col>
         </v-row>
