@@ -7,27 +7,52 @@
 -->
 
 <template>
-<v-data-table hide-default-footer v-model="selected" :show-select="selectable" single-select :headers="headers" :items="credentialsWithIndex" :expanded.sync="expanded" item-key="index" show-expand>
+<v-data-table 
+    hide-default-footer v-model="selected" 
+    :show-select="selectable" 
+    single-select 
+    :headers="headers" 
+    :items="credentialsWithIndex" 
+    :expanded.sync="expanded" 
+    item-key="index" 
+    :show-expand="expandable"
+    @click:row="openPresentation"
+>
     <template v-slot:[`item.type`]="{ item }">
         <div v-if="item.type === CredentialTypes.OTHER.name">{{ item.credentialDefinitionId | credentialTag }}</div>
         <div v-else>{{ item.type | credentialLabel }}</div>
     </template>
     <template v-slot:[`item.verified`]="{ item }">
-        <v-btn v-if="item.indyCredential" color="primary" text>verify</v-btn>
+        <v-icon v-if="item.state === 'verified'" color="green">mdi-check</v-icon>
+        <!-- <v-btn v-if="item.indyCredential" color="primary" text>verify</v-btn> -->
     </template>
     <template v-slot:[`item.sentAt`]="{ item }">
        {{item.sentAt | moment("MMMM Do YYYY HH:MM") }}
+    </template>
+    <template v-slot:[`item.receivedAt`]="{ item }">
+       {{item.receivedAt | moment("MMMM Do YYYY HH:MM") }}
     </template>
     <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length">
             <Credential v-bind:document="item" isReadOnly showOnlyContent></Credential>
         </td>
     </template>
+    <template v-slot:[`item.actions`]="{ item }">
+      <v-icon
+        small
+        @click="deleteItem(item)"
+      >
+        mdi-delete
+      </v-icon>
+    </template>
 </v-data-table>
 </template>
 
 <script>
 import Credential from "@/components/Credential";
+import {
+    EventBus
+} from "../main";
 import {
     CredentialTypes
 } from "../constants"
@@ -37,6 +62,10 @@ export default {
          selectable: {
             type: Boolean,
             default: false
+        },
+        expandable: {
+            type: Boolean,
+            default: true
         },
         headers: {
             type: Array,
@@ -50,12 +79,16 @@ export default {
                 },
                 {
                     text: "Received at",
-                    // value: "createdDate"
+                    value: "receivedAt"
                 },
                 {
                     text: "Verified",
                     value: "verified"
-                }
+                },
+                // {
+                //     text: "Actions",
+                //     value: "actions"
+                // }
 
             ]
         }
@@ -71,7 +104,7 @@ export default {
         };
     },
     computed: {
-        // Add an unique index, because elements to not have unique id
+        // Add an unique index, because elements do not have unique id
         credentialsWithIndex: function () {
             return this.credentials
                 .map(
@@ -86,6 +119,14 @@ export default {
 
     },
     methods: {
+         openPresentation(presentation) {
+            if (presentation.id) {
+                this.$router.push({ path: `presentation/${presentation.id}`, append: true})
+            } else {
+                EventBus.$emit('error', 'No details view available for presentations in public profile.')
+
+            }
+        }
 
     },
     components: {

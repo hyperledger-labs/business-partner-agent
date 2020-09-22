@@ -9,7 +9,7 @@
   <v-container>
     <div v-if="document">
         <OganizationalProfile v-bind:document="document" isReadOnly></OganizationalProfile>
-        <CredentialList v-if="!isBusy" v-bind:credentials="publicDocumentsAndCredentials" isReadOnly showOnlyContent></CredentialList>
+        <PresentationList v-if="!isBusy" v-bind:credentials="publicDocumentsAndCredentials" isReadOnly showOnlyContent></PresentationList>
     </div>
       <v-container v-else fill-height fluid text-center>
       <v-row align="center" justify="center">
@@ -25,14 +25,14 @@
 
 <script>
 import OganizationalProfile from "@/components/OrganizationalProfile";
-import CredentialList from "@/components/CredentialList";
+import PresentationList from "@/components/PresentationList";
 import { EventBus } from "../main";
 export default {
   name: "PublicProfile",
   props: {},
   components: {
     OganizationalProfile,
-    CredentialList
+    PresentationList
   },
   computed: {
     document() {

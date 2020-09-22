@@ -19,6 +19,7 @@ import RequestVerification from '../views/RequestVerification.vue'
 import RequestPresentation from '../views/RequestPresentation.vue'
 import SendPresentation from '../views/SendPresentation.vue'
 import Credential from '../views/Credential.vue'
+import Presentation from '../views/Presentation.vue'
 import Partners from '../views/Partners.vue'
 import Partner from '../views/Partner.vue'
 import AddPartner from '../views/AddPartner.vue'
@@ -76,6 +77,12 @@ const routes = [
     path: '/app/wallet/credential/:id',
     name: 'Credential',
     component: Credential,
+    props: true
+  },
+  {
+    path: '/app/partners/:id/presentation/:presentationId',
+    name: 'Presentation',
+    component: Presentation,
     props: true
   },
   {
