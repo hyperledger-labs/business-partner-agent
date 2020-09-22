@@ -16,7 +16,7 @@
     
     <v-card-text>
          <h4 class="pt-4">Select a credential to send</h4>
-         <MyCredentialList v-bind:headers="credHeaders" type="credential" ref="credentialList" selectable></MyCredentialList>
+         <MyCredentialList v-bind:headers="credHeaders" type="credential" ref="PresentationList" selectable></MyCredentialList>
     </v-card-text>
 
     <v-card-actions>
@@ -71,11 +71,11 @@ export default {
     methods: {
         sendPresentation() {
             this.isBusy = true;
-            if (this.$refs.credentialList.selected !== '') {
+            if (this.$refs.PresentationList.selected !== '') {
 
-                if (this.$refs.credentialList.selected[0].id) {
+                if (this.$refs.PresentationList.selected[0].id) {
 
-                    let selectedCredential = this.$refs.credentialList.selected[0].id;
+                    let selectedCredential = this.$refs.PresentationList.selected[0].id;
                     this.$axios
                         .post(`${this.$apiBaseUrl}/partners/${this.id}/proof-send`, {
                             myCredentialId: selectedCredential

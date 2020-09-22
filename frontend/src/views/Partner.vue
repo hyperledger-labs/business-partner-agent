@@ -66,7 +66,7 @@
           </v-col>
           <v-col cols="8">
             <v-card flat>
-              <CredentialList v-if="isReady" v-bind:credentials="credentials" :expandable="false"></CredentialList>
+              <PresentationList v-if="isReady" v-bind:credentials="[...credentials, ...presentationsReceived]" v-bind:headers="headersReceived" :expandable="true"></PresentationList>
             </v-card>
           </v-col>
         </v-row>
@@ -76,15 +76,15 @@
         <v-row class="mx-4">
           <v-col cols="4">
             <v-row>
-              <p class="grey--text text--darken-2 font-weight-medium">Shared Credentials</p>
+              <p class="grey--text text--darken-2 font-weight-medium">Sent Presentations</p>
             </v-row>
-            <v-row>The credentials you share with your partner</v-row>
+            <v-row>The presentations you sent to your partner</v-row>
             <v-row class="mt-4">
               <v-btn small :to="{ name: 'SendPresentation', params: { id: id }  }">Send Presentation</v-btn>
             </v-row>
           </v-col>
           <v-col cols="8">
-            <CredentialList v-if="isReady" v-bind:credentials="presentationsSent" v-bind:headers="headersSent" :expandable="false"></CredentialList>
+            <PresentationList v-if="isReady" v-bind:credentials="presentationsSent" v-bind:headers="headersSent" :expandable="false"></PresentationList>
           </v-col>
         </v-row>
       </v-card-text>
@@ -108,7 +108,7 @@
 <script>
 import VueJsonPretty from "vue-json-pretty";
 import OganizationalProfile from "@/components/OrganizationalProfile";
-import CredentialList from "@/components/CredentialList";
+import PresentationList from "@/components/PresentationList";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import { CredentialTypes } from "../constants";
 import { getPartnerProfile, getPartnerName } from "../utils/partnerUtils";
@@ -119,7 +119,7 @@ export default {
   components: {
     VueJsonPretty,
     OganizationalProfile,
-    CredentialList,
+    PresentationList,
     PartnerStateIndicator
   },
   created() {
@@ -155,10 +155,11 @@ export default {
         },{
           text: "State",
           value: "state"
-        },{
-          text: "Actions",
-          value: "actions"
         }
+        // ,{
+        //   text: "Actions",
+        //   value: "actions"
+        // }
       ]
     };
   },
@@ -256,6 +257,18 @@ export default {
                   profile: getPartnerProfile(result.data)
                 }
               };
+              if ({}.hasOwnProperty.call(this.partner, "credential")) {
+              // Show only creds other than OrgProfile in credential list
+              this.credentials = this.partner.credential.filter(cred => {
+                return cred.type !== CredentialTypes.PROFILE.name;
+              });
+            }
+
+            // Hacky way to define a partner name
+            // Todo: Make this consistent. Probalby in backend
+            this.partner.name = getPartnerName(this.partner);
+            this.alias = this.partner.name;
+            this.isReady = true;
             }
           }
         })

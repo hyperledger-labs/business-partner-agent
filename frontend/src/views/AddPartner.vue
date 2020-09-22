@@ -39,7 +39,7 @@
                 </v-col>
             </v-row>
             <OganizationalProfile v-if="msg === '' && partnerProfile !== null" v-bind:document="partnerProfile" isReadOnly></OganizationalProfile>
-            <CredentialList v-if="publicCredentials.length > 0" v-bind:credentials="publicCredentials"></CredentialList>
+            <PresentationList v-if="publicCredentials.length > 0" v-bind:credentials="publicCredentials"></PresentationList>
 
         </v-container>
         <v-card-actions>
@@ -56,7 +56,7 @@
 
 <script>
 import OganizationalProfile from "@/components/OrganizationalProfile";
-import CredentialList from "@/components/CredentialList";
+import PresentationList from "@/components/PresentationList";
 import {
     EventBus
 } from "../main";
@@ -67,7 +67,7 @@ export default {
     name: "AddPartner",
     components: {
         OganizationalProfile,
-        CredentialList
+        PresentationList
     },
     created: () => {},
     data: () => {
