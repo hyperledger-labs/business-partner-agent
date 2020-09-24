@@ -57,7 +57,7 @@ export default {
     methods: {
         submitRequest() {
             this.isBusy = true;
-            if (this.$refs.partnerList.selected !== '') {
+            if (this.$refs.partnerList.selected.length === 1) {
 
                 if (this.$refs.partnerList.selected[0].id) {
 

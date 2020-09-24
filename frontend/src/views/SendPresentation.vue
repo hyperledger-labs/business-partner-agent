@@ -71,7 +71,7 @@ export default {
     methods: {
         sendPresentation() {
             this.isBusy = true;
-            if (this.$refs.PresentationList.selected !== '') {
+            if (this.$refs.PresentationList.selected.length === 1) {
 
                 if (this.$refs.PresentationList.selected[0].id) {
 
