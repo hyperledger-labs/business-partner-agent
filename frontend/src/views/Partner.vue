@@ -72,45 +72,113 @@
                 </v-layout>
             </v-card-title>
 
-      <v-card-text>
-        <OganizationalProfile v-if="partner.profile" v-bind:document="partner.profile" isReadOnly></OganizationalProfile>
-        <v-row class="mx-4">
-          <v-col cols="4">
-            <v-row>
-              <p class="grey--text text--darken-2 font-weight-medium">Received Presentations</p>
-            </v-row>
-            <v-row>The presentations you received from your partner</v-row>
-            <v-row class="mt-4">
-              <v-btn
-                small
-                :to="{ name: 'RequestPresentation', params: { id: id }  }"
-              >Request Presentation</v-btn>
-            </v-row>
-          </v-col>
-          <v-col cols="8">
-            <v-card flat>
-              <PresentationList v-if="isReady" v-bind:credentials="[...credentials, ...presentationsReceived]" :expandable="true"></PresentationList>
-            </v-card>
-          </v-col>
-        </v-row>
-        <v-row class="mx-4">
-          <v-divider></v-divider>
-        </v-row>
-        <v-row class="mx-4">
-          <v-col cols="4">
-            <v-row>
-              <p class="grey--text text--darken-2 font-weight-medium">Sent Presentations</p>
-            </v-row>
-            <v-row>The presentations you sent to your partner</v-row>
-            <v-row class="mt-4">
-              <v-btn small :to="{ name: 'SendPresentation', params: { id: id }  }">Send Presentation</v-btn>
-            </v-row>
-          </v-col>
-          <v-col cols="8">
-            <PresentationList v-if="isReady" v-bind:credentials="presentationsSent" v-bind:headers="headersSent" :expandable="false"></PresentationList>
-          </v-col>
-        </v-row>
-      </v-card-text>
+            <v-card-text>
+                <OganizationalProfile
+                    v-if="partner.profile"
+                    v-bind:document="partner.profile"
+                    isReadOnly
+                ></OganizationalProfile>
+                <DocumentCredentialList
+                    v-if="isReady"
+                    v-bind:credentials="credentials"
+                ></DocumentCredentialList>
+                <v-row class="mx-4">
+                    <v-col cols="4">
+                        <v-row>
+                            <p
+                                class="grey--text text--darken-2 font-weight-medium"
+                            >
+                                Received Presentations
+                            </p>
+                        </v-row>
+                        <v-row
+                            >The presentations you received from your
+                            partner</v-row
+                        >
+                        <v-row class="mt-4">
+                            <v-btn small @click="requestPresentation"
+                                >Request Presentation</v-btn
+                            >
+                        </v-row>
+                    </v-col>
+                    <v-col cols="8">
+                        <v-card flat>
+                            <PresentationList
+                                v-if="isReady"
+                                v-bind:credentials="presentationsReceived"
+                                :expandable="false"
+                            ></PresentationList>
+                        </v-card>
+                    </v-col>
+                </v-row>
+                <v-row class="mx-4">
+                    <v-divider></v-divider>
+                </v-row>
+                <v-row class="mx-4">
+                    <v-col cols="4">
+                        <v-row>
+                            <p
+                                class="grey--text text--darken-2 font-weight-medium"
+                            >
+                                Sent Presentations
+                            </p>
+                        </v-row>
+                        <v-row
+                            >The presentations you sent to your partner</v-row
+                        >
+                        <v-row class="mt-4">
+                            <v-btn small @click="sendPresentation">
+                                Send Presentation</v-btn
+                            >
+                        </v-row>
+                    </v-col>
+                    <v-col cols="8">
+                        <PresentationList
+                            v-if="isReady"
+                            v-bind:credentials="presentationsSent"
+                            v-bind:headers="headersSent"
+                            :expandable="false"
+                        ></PresentationList>
+                    </v-col>
+                </v-row>
+            </v-card-text>
+
+            <v-card-actions>
+                <v-expansion-panels v-if="expertMode" accordion flat>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header
+                            class="grey--text text--darken-2 font-weight-medium bg-light"
+                            >Show raw data</v-expansion-panel-header
+                        >
+                        <v-expansion-panel-content class="bg-light">
+                            <vue-json-pretty :data="rawData"></vue-json-pretty>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                </v-expansion-panels>
+            </v-card-actions>
+        </v-card>
+
+        <v-dialog v-model="attentionPartnerStateDialog" max-width="500">
+            <v-card>
+                <v-card-title class="headline"
+                    >Connection State {{ partner.state }}
+                </v-card-title>
+
+                <v-card-text>
+                    The connection with your Business Partner is marked as
+                    {{ partner.state }}. This could mean that your request will
+                    fail. Do you want to try anyways?
+                </v-card-text>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                        color="secondary"
+                        text
+                        @click="attentionPartnerStateDialog = false"
+                        >No</v-btn
+                    >
 
                     <v-btn color="primary" text @click="proceed">Yes</v-btn>
                 </v-card-actions>
@@ -184,7 +252,6 @@ export default {
             return this.$store.state.expertMode;
         },
     },
-<<<<<<< HEAD
     methods: {
         proceed() {
             this.attentionPartnerStateDialog = false;
@@ -222,28 +289,6 @@ export default {
                     name: "SendPresentation",
                     params: { id: this.id },
                 };
-=======
-    refreshPartner() {
-      this.$axios
-        .get(`${this.$apiBaseUrl}/partners/${this.id}/refresh`)
-        .then(result => {
-          if (result.status === 200) {
-            EventBus.$emit("success", "Partner updated");
-            if ({}.hasOwnProperty.call(result, "data")) {
-              console.log(result.data)
-              this.rawData = result.data;
-              this.partner = {
-                ...result.data,
-                ...{
-                  profile: getPartnerProfile(result.data)
-                }
-              };
-              if ({}.hasOwnProperty.call(this.partner, "credential")) {
-              // Show only creds other than OrgProfile in credential list
-              this.credentials = this.partner.credential.filter(cred => {
-                return cred.type !== CredentialTypes.PROFILE.name;
-              });
->>>>>>> a579982... Feature/118 request presentation (#119)
             }
         },
         getPresentationRecords() {
@@ -298,7 +343,6 @@ export default {
                         }
                         console.log("PARTNER");
                         console.log(this.credentials);
-
                         // Hacky way to define a partner name
                         // Todo: Make this consistent. Probalby in backend
                         this.partner.name = getPartnerName(this.partner);
@@ -359,7 +403,6 @@ export default {
                                     }
                                 );
                             }
-
                             // Hacky way to define a partner name
                             // Todo: Make this consistent. Probalby in backend
                             this.partner.name = getPartnerName(this.partner);
@@ -406,7 +449,6 @@ export default {
 .bg-light {
     background-color: #fafafa;
 }
-
 .bg-light-2 {
     background-color: #ececec;
 }
