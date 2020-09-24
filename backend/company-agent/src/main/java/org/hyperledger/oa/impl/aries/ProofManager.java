@@ -88,7 +88,6 @@ public class ProofManager {
         try {
             final Optional<Schema> schema = ac.schemasGetById(AriesStringUtil.credDefIdGetSquenceNo(credDefId));
             if (schema.isPresent()) {
-                CredentialType type = CredentialType.fromSchemaId(schema.get().getId());
                 final Optional<Partner> p = partnerRepo.findById(partnerId);
                 if (p.isPresent()) {
                     // only when aries partner
