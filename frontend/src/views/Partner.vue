@@ -250,6 +250,7 @@ export default {
           if (result.status === 200) {
             EventBus.$emit("success", "Partner updated");
             if ({}.hasOwnProperty.call(result, "data")) {
+              console.log(result.data)
               this.rawData = result.data;
               this.partner = {
                 ...result.data,
