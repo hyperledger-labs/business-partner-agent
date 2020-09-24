@@ -100,8 +100,10 @@ export default {
     },
     computed: {},
     methods: {
-        checkRequest() {
+        submitRequest() {
+            this.isBusy = true;
             if (this.$refs.partnerList.selected.length === 1) {
+
                 if (this.$refs.partnerList.selected[0].id) {
                     this.partner = this.$refs.partnerList.selected[0];
 

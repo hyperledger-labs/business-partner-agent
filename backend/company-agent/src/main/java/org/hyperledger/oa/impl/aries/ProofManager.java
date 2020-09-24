@@ -104,20 +104,7 @@ public class ProofManager {
                                         .credentialDefinitionId(credDefId)
                                         .build())
                                 .build();
-                        ac.presentProofSendRequest(PresentProofRequest.build(config)).ifPresent(proof -> {
-                            final PartnerProof pp = PartnerProof
-                                    .builder()
-                                    .partnerId(partnerId)
-                                    .state(proof.getState())
-                                    .presentationExchangeId(proof.getPresentationExchangeId())
-                                    .role(proof.getRole())
-                                    .credentialDefinitionId(credDefId)
-                                    .schemaId(schema.get().getId())
-                                    .type(CredentialType.fromSchemaId(schema.get().getId()))
-                                    .issuer(resolveIssuer(credDefId))
-                                    .build();
-                            pProofRepo.save(pp);
-                        });
+                        ac.presentProofSendRequest(PresentProofRequest.build(config));
                     } else {
                         throw new PartnerException("Partner has no aca-py connection");
                     }

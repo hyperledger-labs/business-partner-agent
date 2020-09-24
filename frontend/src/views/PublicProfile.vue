@@ -22,30 +22,6 @@
 </template>
 
 <script>
-<<<<<<< HEAD
-import OrganizationalProfile from "@/components/OrganizationalProfile";
-import DocumentCredentialList from "@/components/credentials/DocumentCredentialList";
-
-import { EventBus } from "../main";
-export default {
-    name: "PublicProfile",
-    props: {},
-    components: {
-        OrganizationalProfile,
-        DocumentCredentialList,
-    },
-    computed: {
-        document() {
-            return this.$store.getters.organizationalProfile;
-        },
-        isBusy() {
-            return this.$store.getters.isBusy;
-        },
-        publicDocumentsAndCredentials() {
-            console.log(this.$store.getters.publicDocumentsAndCredentials);
-            return this.$store.getters.publicDocumentsAndCredentials;
-        },
-=======
 import OganizationalProfile from "@/components/OrganizationalProfile";
 import DocumentCredentialList from "@/components/profile/DocumentCredentialList";
 
@@ -60,7 +36,6 @@ export default {
   computed: {
     document() {
       return this.$store.getters.organizationalProfile;
->>>>>>> 42a77aa... feture/017 Public Profile List. Datetime Format
     },
     created() {
         EventBus.$emit("title", "Public Profile");

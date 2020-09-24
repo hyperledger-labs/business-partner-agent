@@ -25,11 +25,7 @@
             item-key="credentialDefinitionId" 
         >
             <template v-slot:[`item.credentialDefinitionId`]="{ item }">
-                <span v-if="item.label"> {{ item.label }} </span>
-                <span v-else
-                >
                 {{ item.credentialDefinitionId | credentialTag }}
-                </span>
             </template>
         </v-data-table>
         <h4 class="pt-4">Or enter a custom Credential Definition ID</h4>
@@ -73,28 +69,19 @@ export default {
             headers: [{
                 text: "Type",
                 value: "credentialDefinitionId"
-            }, {
-                text: "Issuer",
-                value: "issuer"
             }],
             templates: [
                 {
-                    credentialDefinitionId: "nJvGcV7hBSLRSUvwGk2hT:3:CL:734:IATF Certificate",
-                    issuer: "IATF Proxy Issuer"
+                    credentialDefinitionId: "nJvGcV7hBSLRSUvwGk2hT:3:CL:734:IATF Certificate"
                 },
                 {
-                    credentialDefinitionId: "5mwQSWnRePrZ3oF67C4KqD:3:CL:1077:commercial register entry",
-                    label: "Commercial Registry Entry",
-                    issuer: "Commercial Registry"
+                    credentialDefinitionId: "4QybVurJnPDTHcmcbiGUnU:3:CL:894:commercial register entry"
                 },
-                // {
-                //     credentialDefinitionId: "8faozNpSjFfPJXYtgcPtmJ:3:CL:1041:Commercial Registry Entry (Open Corporates)",
-                //     issuer: "Commercial Registry"
-                // },
                 {
-                    credentialDefinitionId: "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc",
-                    label: "Bank Account",
-                    issuer: "Contoso LP"
+                    credentialDefinitionId: "8faozNpSjFfPJXYtgcPtmJ:3:CL:618:poc"
+                },
+                {
+                    credentialDefinitionId: "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc"
                 }
             ]
         };
