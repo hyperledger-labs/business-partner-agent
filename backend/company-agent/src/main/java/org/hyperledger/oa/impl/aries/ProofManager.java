@@ -37,7 +37,6 @@ import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.aries.AriesProof;
-import org.hyperledger.oa.api.aries.BankAccount;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.api.exception.PartnerException;
 import org.hyperledger.oa.config.runtime.RequiresAries;
