@@ -37,7 +37,6 @@ import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.aries.AriesProof;
-import org.hyperledger.oa.api.aries.BankAccount;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.api.exception.PartnerException;
 import org.hyperledger.oa.config.runtime.RequiresAries;
@@ -89,7 +88,6 @@ public class ProofManager {
         try {
             final Optional<Schema> schema = ac.schemasGetById(AriesStringUtil.credDefIdGetSquenceNo(credDefId));
             if (schema.isPresent()) {
-                CredentialType type = CredentialType.fromSchemaId(schema.get().getId());
                 final Optional<Partner> p = partnerRepo.findById(partnerId);
                 if (p.isPresent()) {
                     // only when aries partner
