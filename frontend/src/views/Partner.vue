@@ -39,9 +39,15 @@
           <v-btn if="depressed" icon @click="isUpdatingName = !isUpdatingName">
             <v-icon dark>mdi-pencil</v-icon>
           </v-btn>
-          <v-btn depressed color="primary" icon @click="refreshPartner()">
+          <v-tooltip top>
+        <template v-slot:activator="{ on, attrs }">
+            <v-btn depressed color="primary" v-bind="attrs" v-on="on" icon @click="refreshPartner()">
             <v-icon dark>mdi-refresh</v-icon>
           </v-btn>
+        </template>
+        <span>Refresh profile from source</span>
+    </v-tooltip>
+          
 
           <v-btn depressed color="red" icon @click="deletePartner()">
             <v-icon dark>mdi-delete</v-icon>
@@ -66,7 +72,7 @@
           </v-col>
           <v-col cols="8">
             <v-card flat>
-              <PresentationList v-if="isReady" v-bind:credentials="[...credentials, ...presentationsReceived]" :expandable="true"></PresentationList>
+              <PresentationList v-if="isReady" v-bind:credentials="presentationsReceived" :expandable="true"></PresentationList>
             </v-card>
           </v-col>
         </v-row>
