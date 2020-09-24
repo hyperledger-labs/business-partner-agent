@@ -57,7 +57,7 @@
               <p class="grey--text text--darken-2 font-weight-medium">Received Presentations</p>
             </v-row>
             <v-row>The presentations you received from your partner</v-row>
-            <v-row v-if="expertMode" class="mt-4">
+            <v-row class="mt-4">
               <v-btn
                 small
                 :to="{ name: 'RequestPresentation', params: { id: id }  }"
