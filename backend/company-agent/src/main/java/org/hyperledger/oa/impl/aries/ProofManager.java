@@ -37,7 +37,6 @@ import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.aries.AriesProof;
-import org.hyperledger.oa.api.aries.BankAccount;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.api.exception.PartnerException;
 import org.hyperledger.oa.config.runtime.RequiresAries;
@@ -89,28 +88,23 @@ public class ProofManager {
         try {
             final Optional<Schema> schema = ac.schemasGetById(AriesStringUtil.credDefIdGetSquenceNo(credDefId));
             if (schema.isPresent()) {
-                CredentialType type = CredentialType.fromSchemaId(schema.get().getId());
-                if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(type)) {
-                    final Optional<Partner> p = partnerRepo.findById(partnerId);
-                    if (p.isPresent()) {
-                        // only when aries partner
-                        if (p.get().getConnectionId() != null) {
-                            PresentProofRequestConfig config = PresentProofRequestConfig.builder()
-                                    .connectionId(p.get().getConnectionId())
-                                    .appendAttribute(BankAccount.class, ProofRestrictions.builder()
-                                            .schemaId(schema.get().getId())
-                                            .credentialDefinitionId(credDefId)
-                                            .build())
-                                    .build();
-                            ac.presentProofSendRequest(PresentProofRequest.build(config));
-                        } else {
-                            throw new PartnerException("Partner has no aca-py connection");
-                        }
+                final Optional<Partner> p = partnerRepo.findById(partnerId);
+                if (p.isPresent()) {
+                    // only when aries partner
+                    if (p.get().getConnectionId() != null) {
+                        PresentProofRequestConfig config = PresentProofRequestConfig.builder()
+                                .connectionId(p.get().getConnectionId())
+                                .appendAttribute(schema.get().getAttrNames(), ProofRestrictions.builder()
+                                        .schemaId(schema.get().getId())
+                                        .credentialDefinitionId(credDefId)
+                                        .build())
+                                .build();
+                        ac.presentProofSendRequest(PresentProofRequest.build(config));
                     } else {
-                        throw new PartnerException("Partner not found");
+                        throw new PartnerException("Partner has no aca-py connection");
                     }
                 } else {
-                    throw new PartnerException("Currently only BANK_ACCOUNT is supported");
+                    throw new PartnerException("Partner not found");
                 }
             } else {
                 throw new PartnerException("Could not resolve schema for credential definition id");
