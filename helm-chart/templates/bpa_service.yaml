@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "bpa.fullname" . }}
+  labels:
+    {{- include "bpa.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.bpa.service.type }}
+  ports:
+    - port: {{ .Values.bpa.service.PORT }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "bpa.selectorLabels" . | nindent 4 }}
