@@ -39,9 +39,15 @@
           <v-btn if="depressed" icon @click="isUpdatingName = !isUpdatingName">
             <v-icon dark>mdi-pencil</v-icon>
           </v-btn>
-          <v-btn depressed color="primary" icon @click="refreshPartner()">
+          <v-tooltip top>
+        <template v-slot:activator="{ on, attrs }">
+            <v-btn depressed color="primary" v-bind="attrs" v-on="on" icon @click="refreshPartner()">
             <v-icon dark>mdi-refresh</v-icon>
           </v-btn>
+        </template>
+        <span>Refresh profile from source</span>
+    </v-tooltip>
+          
 
           <v-btn depressed color="red" icon @click="deletePartner()">
             <v-icon dark>mdi-delete</v-icon>
@@ -57,7 +63,7 @@
               <p class="grey--text text--darken-2 font-weight-medium">Received Presentations</p>
             </v-row>
             <v-row>The presentations you received from your partner</v-row>
-            <v-row v-if="expertMode" class="mt-4">
+            <v-row class="mt-4">
               <v-btn
                 small
                 :to="{ name: 'RequestPresentation', params: { id: id }  }"
@@ -66,7 +72,7 @@
           </v-col>
           <v-col cols="8">
             <v-card flat>
-              <PresentationList v-if="isReady" v-bind:credentials="[...credentials, ...presentationsReceived]" :expandable="true"></PresentationList>
+              <PresentationList v-if="isReady" v-bind:credentials="presentationsReceived" :expandable="true"></PresentationList>
             </v-card>
           </v-col>
         </v-row>
@@ -250,6 +256,7 @@ export default {
           if (result.status === 200) {
             EventBus.$emit("success", "Partner updated");
             if ({}.hasOwnProperty.call(result, "data")) {
+              console.log(result.data)
               this.rawData = result.data;
               this.partner = {
                 ...result.data,
