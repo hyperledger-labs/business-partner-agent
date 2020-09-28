@@ -23,8 +23,8 @@
         <div v-if="item.type === CredentialTypes.OTHER.name">{{ item.credentialDefinitionId | credentialTag }}</div>
         <div v-else>{{ item.type | credentialLabel }}</div>
     </template>
-    <template v-slot:[`item.verified`]="{ item }">
-        <v-icon v-if="item.state === 'verified'" color="green">mdi-check</v-icon>
+    <template v-slot:[`item.state`]="{ item }">
+        <v-icon v-if="item.state === 'verified' || item.state== 'presentation_acked'" color="green">mdi-check</v-icon>
         <!-- <v-btn v-if="item.indyCredential" color="primary" text>verify</v-btn> -->
     </template>
     <template v-slot:[`item.sentAt`]="{ item }">
@@ -81,7 +81,11 @@ export default {
                 },
                 {
                     text: "State",
+<<<<<<< HEAD
                     value: "state",
+=======
+                    value: "state"
+>>>>>>> ae74268... Fix/xxx unify presentations lists (#127)
                 },
                 // {
                 //     text: "Actions",

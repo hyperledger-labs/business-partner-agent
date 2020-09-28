@@ -56,106 +56,45 @@
                 </v-layout>
             </v-card-title>
 
-            <v-card-text>
-                <OganizationalProfile
-                    v-if="partner.profile"
-                    v-bind:document="partner.profile"
-                    isReadOnly
-                ></OganizationalProfile>
-                <DocumentCredentialList
-                    v-if="isReady"
-                    v-bind:credentials="credentials"
-                ></DocumentCredentialList>
-                <v-row class="mx-4">
-                    <v-col cols="4">
-                        <v-row>
-                            <p
-                                class="grey--text text--darken-2 font-weight-medium"
-                            >
-                                Received Presentations
-                            </p>
-                        </v-row>
-                        <v-row
-                            >The presentations you received from your
-                            partner</v-row
-                        >
-                        <v-row class="mt-4">
-                            <v-btn small @click="requestPresentation"
-                                >Request Presentation</v-btn
-                            >
-                        </v-row>
-                    </v-col>
-                    <v-col cols="8">
-                        <v-card flat>
-                            <PresentationList
-                                v-if="isReady"
-                                v-bind:credentials="presentationsReceived"
-                                :expandable="false"
-                            ></PresentationList>
-                        </v-card>
-                    </v-col>
-                </v-row>
-                <v-row class="mx-4">
-                    <v-divider></v-divider>
-                </v-row>
-                <v-row class="mx-4">
-                    <v-col cols="4">
-                        <v-row>
-                            <p
-                                class="grey--text text--darken-2 font-weight-medium"
-                            >
-                                Sent Presentations
-                            </p>
-                        </v-row>
-                        <v-row
-                            >The presentations you sent to your partner</v-row
-                        >
-                        <v-row class="mt-4">
-                            <v-btn small @click="sendPresentation">
-                                Send Presentation</v-btn
-                            >
-                        </v-row>
-                    </v-col>
-                    <v-col cols="8">
-                        <PresentationList
-                            v-if="isReady"
-                            v-bind:credentials="presentationsSent"
-                            v-bind:headers="headersSent"
-                            :expandable="false"
-                        ></PresentationList>
-                    </v-col>
-                </v-row>
-            </v-card-text>
-
-            <v-card-actions>
-                <v-expansion-panels v-if="expertMode" accordion flat>
-                    <v-expansion-panel>
-                        <v-expansion-panel-header
-                            class="grey--text text--darken-2 font-weight-medium bg-light"
-                            >Show raw data</v-expansion-panel-header
-                        >
-                        <v-expansion-panel-content class="bg-light">
-                            <vue-json-pretty :data="rawData"></vue-json-pretty>
-                        </v-expansion-panel-content>
-                    </v-expansion-panel>
-                </v-expansion-panels>
-            </v-card-actions>
-        </v-card>
-
-        <v-dialog v-model="attentionPartnerStateDialog" max-width="500">
-            <v-card>
-                <v-card-title class="headline"
-                    >Connection State {{ partner.state }}
-                </v-card-title>
-
-                <v-card-text>
-                    The connection with your Business Partner is marked as
-                    {{ partner.state }}. This could mean that your request will
-                    fail. Do you want to try anyways?
-                </v-card-text>
-
-                <v-card-actions>
-                    <v-spacer></v-spacer>
+      <v-card-text>
+        <OganizationalProfile v-if="partner.profile" v-bind:document="partner.profile" isReadOnly></OganizationalProfile>
+        <v-row class="mx-4">
+          <v-col cols="4">
+            <v-row>
+              <p class="grey--text text--darken-2 font-weight-medium">Received Presentations</p>
+            </v-row>
+            <v-row>The presentations you received from your partner</v-row>
+            <v-row class="mt-4">
+              <v-btn
+                small
+                :to="{ name: 'RequestPresentation', params: { id: id }  }"
+              >Request Presentation</v-btn>
+            </v-row>
+          </v-col>
+          <v-col cols="8">
+            <v-card flat>
+              <PresentationList v-if="isReady" v-bind:credentials="presentationsReceived" :expandable="false"></PresentationList>
+            </v-card>
+          </v-col>
+        </v-row>
+        <v-row class="mx-4">
+          <v-divider></v-divider>
+        </v-row>
+        <v-row class="mx-4">
+          <v-col cols="4">
+            <v-row>
+              <p class="grey--text text--darken-2 font-weight-medium">Sent Presentations</p>
+            </v-row>
+            <v-row>The presentations you sent to your partner</v-row>
+            <v-row class="mt-4">
+              <v-btn small :to="{ name: 'SendPresentation', params: { id: id }  }">Send Presentation</v-btn>
+            </v-row>
+          </v-col>
+          <v-col cols="8">
+            <PresentationList v-if="isReady" v-bind:credentials="presentationsSent" v-bind:headers="headersSent" :expandable="false"></PresentationList>
+          </v-col>
+        </v-row>
+      </v-card-text>
 
                     <v-btn
                         color="secondary"
@@ -181,14 +120,80 @@ import { CredentialTypes } from "../constants";
 import { getPartnerProfile, getPartnerName } from "../utils/partnerUtils";
 import { EventBus } from "../main";
 export default {
-    name: "Partner",
-    props: ["id"],
-    components: {
-        VueJsonPretty,
-        OganizationalProfile,
-        PresentationList,
-        PartnerStateIndicator,
-        DocumentCredentialList,
+  name: "Partner",
+  props: ["id"],
+  components: {
+    VueJsonPretty,
+    OganizationalProfile,
+    PresentationList,
+    PartnerStateIndicator
+  },
+  created() {
+    this.getPartner();
+    this.getPresentationRecords();
+  },
+  data: () => {
+    return {
+      isReady: false,
+      isBusy: false,
+      isUpdatingName: false,
+      alias: "",
+      partner: {},
+      rawData: {},
+      credentials: [],
+      presentationsSent: [],
+      presentationsReceived: [],
+      rules: {
+          required: value => !!value || "Can't be empty"
+      },
+      headersSent: [
+        {
+          text: "Type",
+          value: "type"
+        },
+        {
+          text: "Issuer",
+          value: "issuer"
+        },
+        {
+          text: "Sent at",
+          value: "sentAt"
+        },{
+          text: "State",
+          value: "state"
+        }
+      ]
+    };
+  },
+  computed: {
+    expertMode() {
+      return this.$store.state.expertMode;
+    }
+  },
+  methods: {
+    getPresentationRecords() {
+      console.log("Getting presentation records...");
+      this.$axios
+        .get(`${this.$apiBaseUrl}/partners/${this.id}/proof`)
+        .then(result => {
+          if ({}.hasOwnProperty.call(result, "data")) {
+            let data  = result.data;
+            console.log(data);
+            this.presentationsSent = data.filter( item => {
+              console.log(item)
+              return item.role === "prover"
+            })
+            this.presentationsReceived = data.filter( item => {
+              return item.role === "verifier"
+            })
+            console.log(this.presentationsSent)
+          }
+
+        })
+        .catch(e => {
+          console.error(e);
+          // EventBus.$emit("error", e);
+        });
     },
     created() {
         EventBus.$emit("title", "Partner");
