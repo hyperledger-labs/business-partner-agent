@@ -7,64 +7,48 @@
 -->
 
 <template>
-    <v-container>
-        <v-card class="mx-auto">
-            <v-card-title class="bg-light">
-                <v-btn depressed color="secondary" icon @click="$router.go(-1)">
-                    <v-icon dark>mdi-chevron-left</v-icon>
-                </v-btn>
-                <span v-if="!isUpdatingName">{{ partner.name }}</span>
-                <v-text-field
-                    class="mt-8"
-                    v-else
-                    label="Name"
-                    append-icon="mdi-done"
-                    v-model="alias"
-                    outlined
-                    :rules="[rules.required]"
-                    dense
-                >
-                    <template v-slot:append>
-                        <v-btn class="pb-1" text @click="isUpdatingName = false"
-                            >Cancel</v-btn
-                        >
-                        <v-btn
-                            class="pb-1"
-                            text
-                            color="primary"
-                            :loading="isBusy"
-                            @click="submitNameUpdate()"
-                            >Save</v-btn
-                        >
-                    </template>
-                </v-text-field>
-                <PartnerStateIndicator
-                    v-if="partner.state"
-                    v-bind:state="partner.state"
-                ></PartnerStateIndicator>
-                <v-layout align-end justify-end>
-                    <v-btn
-                        if="depressed"
-                        icon
-                        @click="isUpdatingName = !isUpdatingName"
-                    >
-                        <v-icon dark>mdi-pencil</v-icon>
-                    </v-btn>
-                    <v-tooltip top>
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-btn
-                                depressed
-                                color="primary"
-                                v-bind="attrs"
-                                v-on="on"
-                                icon
-                                @click="refreshPartner()"
-                            >
-                                <v-icon dark>mdi-refresh</v-icon>
-                            </v-btn>
-                        </template>
-                        <span>Refresh profile from source</span>
-                    </v-tooltip>
+  <v-container>
+    <v-card class="mx-auto">
+      <v-card-title class="bg-light">
+        <v-btn depressed color="secondary" icon @click="$router.push({ name: 'Partners' })">
+          <v-icon dark>mdi-chevron-left</v-icon>
+        </v-btn>
+        <span v-if="!isUpdatingName">{{ partner.name }}</span>
+        <v-text-field
+          class="mt-8"
+          v-else
+          label="Name"
+          append-icon="mdi-done"
+          v-model="alias"
+          outlined
+          :rules="[rules.required]"
+          dense
+        >
+          <template v-slot:append>
+            <v-btn class="pb-1" text @click="isUpdatingName=false">Cancel</v-btn>
+            <v-btn
+              class="pb-1"
+              text
+              color="primary"
+              :loading="isBusy"
+              @click="submitNameUpdate()"
+            >Save</v-btn>
+          </template>
+        </v-text-field>
+        <PartnerStateIndicator v-if="expertMode && partner.state" v-bind:state="partner.state"></PartnerStateIndicator>
+        <v-layout align-end justify-end>
+          <v-btn if="depressed" icon @click="isUpdatingName = !isUpdatingName">
+            <v-icon dark>mdi-pencil</v-icon>
+          </v-btn>
+          <v-tooltip top>
+        <template v-slot:activator="{ on, attrs }">
+            <v-btn depressed color="primary" v-bind="attrs" v-on="on" icon @click="refreshPartner()">
+            <v-icon dark>mdi-refresh</v-icon>
+          </v-btn>
+        </template>
+        <span>Refresh profile from source</span>
+    </v-tooltip>
+          
 
                     <v-btn depressed color="red" icon @click="deletePartner()">
                         <v-icon dark>mdi-delete</v-icon>
