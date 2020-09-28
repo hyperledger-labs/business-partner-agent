@@ -34,7 +34,7 @@
             >Save</v-btn>
           </template>
         </v-text-field>
-        <PartnerStateIndicator v-if="partner.state" v-bind:state="partner.state"></PartnerStateIndicator>
+        <PartnerStateIndicator v-if="expertMode && partner.state" v-bind:state="partner.state"></PartnerStateIndicator>
         <v-layout align-end justify-end>
           <v-btn if="depressed" icon @click="isUpdatingName = !isUpdatingName">
             <v-icon dark>mdi-pencil</v-icon>
