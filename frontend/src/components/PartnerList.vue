@@ -8,7 +8,14 @@
 
 <template>
 <v-container>
-    <v-data-table hide-default-footer v-model="selected" :loading="isBusy" :headers="headers" :items="data" :show-select="selectable" single-select>
+    <v-data-table
+    :hide-default-footer="data.length < 10" 
+    v-model="selected" 
+    :loading="isBusy" 
+    :headers="headers" 
+    :items="data" 
+    :show-select="selectable" 
+    single-select>
     </v-data-table>
 </v-container>
 </template>
