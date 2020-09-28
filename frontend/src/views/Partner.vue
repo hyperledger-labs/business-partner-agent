@@ -155,6 +155,7 @@ export default {
     DocumentCredentialList
   },
   created() {
+    EventBus.$emit("title", "Partner");
     this.getPartner();
     this.getPresentationRecords();
   },
