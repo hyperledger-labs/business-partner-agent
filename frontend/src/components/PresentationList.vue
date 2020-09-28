@@ -8,7 +8,8 @@
 
 <template>
 <v-data-table 
-    hide-default-footer v-model="selected" 
+    :hide-default-footer="credentialsWithIndex.length < 10" 
+    v-model="selected" 
     :show-select="selectable" 
     single-select 
     :headers="headers" 
@@ -82,14 +83,6 @@ export default {
                     text: "State",
                     value: "state",
                 },
-<<<<<<< HEAD
-                {
-                    text: " ",
-                    value: "actions",
-                },
-            ],
-        },
-=======
                 // {
                 //     text: "Actions",
                 //     value: "actions"
@@ -98,7 +91,6 @@ export default {
         }
     },
     created() {
->>>>>>> 42a77aa... feture/017 Public Profile List. Datetime Format
     },
     created() {},
     data: () => {
@@ -118,11 +110,7 @@ export default {
             // .map(credential => {
             //   credential.verified = true
             // })
-<<<<<<< HEAD
-        },
-=======
         }
->>>>>>> 42a77aa... feture/017 Public Profile List. Datetime Format
     },
     methods: {
         deletePresentation(presentation) {
@@ -161,16 +149,9 @@ export default {
                     );
                 }
             } else {
-<<<<<<< HEAD
-                // Do nothing for now. Presentation is not ready
-                // Need to fix Presentation.vue for unfinished presentations
-            }
-        },
-=======
                 EventBus.$emit('error', 'No details view available for presentations in public profile.')
             }
         }
->>>>>>> 42a77aa... feture/017 Public Profile List. Datetime Format
     },
     components: {
         Credential,

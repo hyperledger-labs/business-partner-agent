@@ -7,34 +7,17 @@
 -->
 
 <template>
-    <v-container>
-        <v-data-table
-            :hide-default-footer="data.length < 10"
-            v-model="selected"
-            :loading="isBusy"
-            :headers="headers"
-            :items="data"
-            :show-select="selectable"
-            single-select
-            @click:row="open"
-        >
-            <template v-slot:[`item.name`]="{ item }">
-                <PartnerStateIndicator
-                    v-if="item.state"
-                    v-bind:state="item.state"
-                ></PartnerStateIndicator>
-                <span class="font-weight-medium"> {{ item.name }}</span>
-            </template>
-
-            <template v-slot:[`item.createdAt`]="{ item }">
-                {{ item.createdAt | moment("YYYY-MM-DD HH:mm") }}
-            </template>
-
-            <template v-slot:[`item.updatedAt`]="{ item }">
-                {{ item.updatedAt | moment("YYYY-MM-DD HH:mm") }}
-            </template>
-        </v-data-table>
-    </v-container>
+<v-container>
+    <v-data-table
+    :hide-default-footer="data.length < 10" 
+    v-model="selected" 
+    :loading="isBusy" 
+    :headers="headers" 
+    :items="data" 
+    :show-select="selectable" 
+    single-select>
+    </v-data-table>
+</v-container>
 </template>
 
 <script>
