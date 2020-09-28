@@ -72,7 +72,7 @@
           </v-col>
           <v-col cols="8">
             <v-card flat>
-              <PresentationList v-if="isReady" v-bind:credentials="presentationsReceived" :expandable="true"></PresentationList>
+              <PresentationList v-if="isReady" v-bind:credentials="presentationsReceived" :expandable="false"></PresentationList>
             </v-card>
           </v-col>
         </v-row>
@@ -147,13 +147,13 @@ export default {
           required: value => !!value || "Can't be empty"
       },
       headersSent: [
-        // {
-        //   text: "Name",
-        //   value: "name"
-        // },
         {
           text: "Type",
           value: "type"
+        },
+        {
+          text: "Issuer",
+          value: "issuer"
         },
         {
           text: "Sent at",
@@ -162,10 +162,6 @@ export default {
           text: "State",
           value: "state"
         }
-        // ,{
-        //   text: "Actions",
-        //   value: "actions"
-        // }
       ]
     };
   },
