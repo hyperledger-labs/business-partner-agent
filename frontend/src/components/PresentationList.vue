@@ -8,7 +8,8 @@
 
 <template>
 <v-data-table 
-    hide-default-footer v-model="selected" 
+    :hide-default-footer="credentialsWithIndex.length < 10" 
+    v-model="selected" 
     :show-select="selectable" 
     single-select 
     :headers="headers" 

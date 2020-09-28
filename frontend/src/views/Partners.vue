@@ -13,7 +13,7 @@
             <v-text-field v-model="search" prepend-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
         </v-card-title>
         -->
-        <v-data-table hide-default-footer  :headers="headers" :items="partners" :search="search" :loading="isBusy">
+        <v-data-table :hide-default-footer="partners.length < 10"  :headers="headers" :items="partners" :search="search" :loading="isBusy">
             <template v-slot:item="{ item }">
                 <router-link tag="tr" :to="`/app/partners/${item.id}`">
                     <td class="font-weight-medium">{{ item.name }}</td>

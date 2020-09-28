@@ -8,7 +8,7 @@
 
 <template>
 <v-container>
-    <v-data-table hide-default-footer :loading="isBusy" v-model="selected" :headers="headers" :items="data" :show-select="selectable" single-select @click:row="open">
+    <v-data-table :hide-default-footer="data.length < 10" :loading="isBusy" v-model="selected" :headers="headers" :items="data" :show-select="selectable" single-select @click:row="open">
 
         <template v-slot:[`item.type`]="{ item }">
             <div v-if="item.type === CredentialTypes.OTHER.name" class="font-weight-medium">{{ item.credentialDefinitionId | credentialTag }}</div>
