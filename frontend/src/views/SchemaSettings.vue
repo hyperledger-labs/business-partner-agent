@@ -119,8 +119,12 @@ export default {
              this.$router.push({
                     name: 'Schema',
                     params: {
+<<<<<<< HEAD
                         id: schema.id,
                         schema: schema
+=======
+                        id: schema.id
+>>>>>>> schema
                     }
                 });
             

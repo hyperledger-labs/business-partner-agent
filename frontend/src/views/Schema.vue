@@ -7,12 +7,17 @@
 -->
 <template>
 <v-container justify-center>
+<<<<<<< HEAD
     <v-card v-if="!isLoading" class="mx-auto" flat>
+=======
+    <v-card class="mx-auto" flat>
+>>>>>>> schema
         <v-card-title class="bg-light">
             <v-btn depressed color="secondary" icon @click="$router.go(-1)">
                 <v-icon dark>mdi-chevron-left</v-icon>
             </v-btn>
             <span>{{data.label}}</span>
+<<<<<<< HEAD
             <v-layout align-end justify-end>
                 <!-- <v-btn depressed icon @click="isUpdatingName = !isUpdatingName">
                     <v-icon dark>mdi-pencil</v-icon>
@@ -43,6 +48,15 @@
 
         </v-list-item>
 
+=======
+            <v-btn icon @click="deleteSchema">
+                <v-icon>
+                    mdi-delete
+                </v-icon>
+            </v-btn>
+        </v-card-title>
+
+>>>>>>> schema
     </v-card>
 </v-container>
 </template>
@@ -53,6 +67,7 @@ import {
 } from "../main";
 export default {
     name: "Schema",
+<<<<<<< HEAD
     props: {
         id: String, //schema ID
         schema: Object
@@ -66,12 +81,25 @@ export default {
         } else {
             this.fetch();
         }
+=======
+     props: {
+        id: String, //schema ID
+    },
+    created() {
+        EventBus.$emit("title", "Schema");
+        this.fetch()
+>>>>>>> schema
     },
     data: () => {
         return {
             data: [],
+<<<<<<< HEAD
             isLoading: true,
 
+=======
+            isBusy: true,
+            
+>>>>>>> schema
         };
     },
     computed: {
@@ -79,20 +107,34 @@ export default {
     },
     methods: {
         fetch() {
+<<<<<<< HEAD
             this.isLoading = true;
             this.$axios.get(`${this.$apiBaseUrl}/admin/schema/${this.id}`)
+=======
+            this.$axios.get(`${this.$apiBaseUrl}/schema/${this.id}`)
+>>>>>>> schema
                 .then((result) => {
                     console.log(result);
                     if ({}.hasOwnProperty.call(result, 'data')) {
 
+<<<<<<< HEAD
                         this.data = result.data;
                         this.isLoading = false;
+=======
+                        this.isBusy = false
+
+                        this.data = result.data
+>>>>>>> schema
 
                     }
                 })
                 .catch((e) => {
 
+<<<<<<< HEAD
                     this.isLoading = false
+=======
+                    this.isBusy = false
+>>>>>>> schema
                     if (e.response.status === 404) {
 
                         this.data = []
@@ -104,7 +146,11 @@ export default {
 
                 });
         },
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> schema
         deleteSchema() {
             this.$axios
                 .delete(`${this.$apiBaseUrl}/admin/schema/${this.id}`)
@@ -112,9 +158,13 @@ export default {
                     console.log(result);
                     if (result.status === 200) {
                         EventBus.$emit("success", "Schema deleted");
+<<<<<<< HEAD
                         this.$router.push({
                             name: "SchemaSettings"
                         })
+=======
+                        this.$router.push({ name: "SchemaSettings"})
+>>>>>>> schema
                     }
                 })
                 .catch(e => {
