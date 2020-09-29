@@ -16,6 +16,11 @@ if (uiColor) {
     primaryColor = uiColor;
 }
 
+const uiColor = localStorage.getItem("uiColor");
+if (uiColor) {
+  primaryColor = uiColor
+}
+
 export default new Vuetify({
     icons: {
         iconfont: "mdiSvg",
