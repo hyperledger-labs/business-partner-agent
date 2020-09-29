@@ -18,6 +18,44 @@
                 <v-switch v-model="expertMode"></v-switch>
             </v-list-item-action>
         </v-list-item>
+        <v-list-item>
+          <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
+            Frontend Color
+          </v-list-item-title>
+          <v-list-item-subtitle align="end">
+          <v-text-field
+            v-if="isEditingColor"
+            class="mt-1"
+            x-small 
+            align-end justify-end
+            :placeholder="$vuetify.theme.themes.light.primary" 
+            v-model="uiColor"
+            outlined
+            dense
+          >
+            <template v-slot:append>
+            <v-btn class="pt-1" x-small text @click="isEditingColor=false">Cancel</v-btn>
+            <v-btn
+              class="pt-1"
+              x-small
+              text
+              color="primary"
+              @click="setUiColor()"
+            >Save</v-btn>
+          </template>
+          </v-text-field>
+          <span v-else>{{$vuetify.theme.themes.light.primary}}</span>
+
+          
+        </v-list-item-subtitle>
+        
+        <v-list-item-action>
+          <v-btn v-if="!isEditingColor" icon x-small @click="isEditingColor = !isEditingColor">
+            <v-icon dark>mdi-pencil</v-icon>
+          </v-btn>
+        </v-list-item-action>
+        
+        </v-list-item>
         <v-list-item v-for="setting in settings" :key="setting.text">
            <!-- <v-list-item-content> -->
             <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
@@ -63,7 +101,9 @@ export default {
                 text: "Aries API Key",
                 value: "acaPyApiKey"
             }],
-            settings: []
+            settings: [],
+            isEditingColor: false,
+            uiColor: ''
         }
     },
     computed: {
@@ -80,6 +120,13 @@ export default {
         }
     },
     methods: {
+        setUiColor() {
+
+          this.$vuetify.theme.themes.light.primary = this.uiColor;
+          localStorage.setItem("uiColor", this.uiColor);
+          this.isEditingColor = false
+
+        },
         fetch() {
             this.$axios
                 .get(`${this.$apiBaseUrl}/admin/config`)
