@@ -27,7 +27,8 @@
           <v-list-item-subtitle>Visible in Public Profile</v-list-item-subtitle>
         </v-list-item-content>
         <v-list-item-action>
-          <v-switch v-model="document.isPublic"></v-switch>
+          <v-switch :disabled="document.type === CredentialTypes.OTHER.name" 
+            v-model="document.isPublic"></v-switch>
         </v-list-item-action>
       </v-list-item>
       <v-divider></v-divider>
@@ -67,7 +68,7 @@
 
 <script>
 import { EventBus } from "../main";
-// import { CredentialTypes } from "../constants";
+import { CredentialTypes } from "../constants";
 // import OganizationalProfile from "@/components/OrganizationalProfile";
 import Credential from "@/components/Credential";
 import VueJsonPretty from "vue-json-pretty";
@@ -93,7 +94,8 @@ export default {
     return {
       document: {},
       isBusy: false,
-      isReady: false
+      isReady: false,
+      CredentialTypes
     };
   },
   computed: {
