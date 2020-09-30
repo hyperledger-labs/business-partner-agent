@@ -28,7 +28,8 @@
           <v-list-item-subtitle>Visible in Public Profile</v-list-item-subtitle>
         </v-list-item-content>
         <v-list-item-action>
-          <v-switch v-model="isPublic"></v-switch>
+           <v-switch :disabled="credential.type === CredentialTypes.OTHER.name" 
+            v-model="isPublic"></v-switch>
         </v-list-item-action>
       </v-list-item>
       <v-divider></v-divider>
