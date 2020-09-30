@@ -71,6 +71,7 @@ export default {
   created() {
     EventBus.$emit("title", "Credential");
     this.getCredential();
+    console.log('BLA BLA')
   },
   data: () => {
     return {

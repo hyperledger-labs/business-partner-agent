@@ -7,55 +7,47 @@
 -->
 
 <template>
-<v-data-table 
-    hide-default-footer v-model="selected" 
-    :show-select="selectable" 
-    single-select 
-    :headers="headers" 
-    :items="credentialsWithIndex" 
-    :expanded.sync="expanded" 
-    item-key="index" 
-    :show-expand="expandable"
-    @click:row="openPresentation"
->
-    <template v-slot:[`item.type`]="{ item }">
-        <div v-if="item.type === CredentialTypes.OTHER.name">{{ item.credentialDefinitionId | credentialTag }}</div>
-        <div v-else>{{ item.type | credentialLabel }}</div>
-    </template>
-    <template v-slot:[`item.verified`]="{ item }">
-        <v-icon v-if="item.state === 'verified'" color="green">mdi-check</v-icon>
-        <!-- <v-btn v-if="item.indyCredential" color="primary" text>verify</v-btn> -->
-    </template>
-    <template v-slot:[`item.sentAt`]="{ item }">
-       {{item.sentAt | moment("YYYY-MM-DD HH:mm") }}
-    </template>
-    <template v-slot:[`item.receivedAt`]="{ item }">
-       {{item.receivedAt | moment("YYYY-MM-DD HH:mm") }}
-    </template>
-    <template v-slot:expanded-item="{ headers, item }">
-        <td :colspan="headers.length">
-            <Credential v-bind:document="item" isReadOnly showOnlyContent></Credential>
-        </td>
-    </template>
-    <template v-slot:[`item.actions`]="{ item }">
-      <v-icon
-        small
-        @click="deleteItem(item)"
-      >
-        mdi-delete
-      </v-icon>
-    </template>
-</v-data-table>
+    <div>
+        <div v-for="(item, index) in credentials" v-bind:key="index">
+            <v-row>
+                <v-col cols="4">
+                    <span  class="grey--text text--darken-2 font-weight-medium">
+                        <span v-if="item.type === CredentialTypes.OTHER.name">{{ item.credentialDefinitionId | credentialTag }}</span>
+                        <span v-else>{{ item.type | credentialLabel }}</span>
+                    </span>
+                    <v-icon v-if="item.state === 'verified'" color="green">mdi-check</v-icon>
+                    <v-icon v-if="item.actions" small @click="deleteItem(item)">mdi-delete</v-icon>
+                </v-col>
+                <v-col>
+                    <DocumentCredential v-bind:document="item" isReadOnly showOnlyContent></DocumentCredential>
+                    
+                    <!-- TODO Timestamp Component -->
+                    <h4 v-if="(item.sentAt || item.receivedAt)" class="grey--text text--darken-2">Timestamp</h4>
+                    <v-row v-if="item.sentAt">
+                        <v-col class="pb-0">
+                            <v-text-field label="Sent at" :placeholder="$options.filters.moment(item.sentAt, 'YYYY-MM-DD HH:mm')" disabled outlined dense></v-text-field>
+                        </v-col>
+                    </v-row>
+                    <v-row v-if="item.receivedAt">
+                        <v-col class="py-0">
+                            <v-text-field label="Received at" :placeholder="$options.filters.moment(item.receivedAt, 'YYYY-MM-DD HH:mm')" disabled outlined dense></v-text-field>
+                        </v-col>
+                    </v-row>
+                </v-col>
+            </v-row>
+            <v-divider></v-divider>
+        </div>
+    </div>
 </template>
 
 <script>
-import Credential from "@/components/Credential";
+import DocumentCredential from "@/components/profile/DocumentCredential";
 import {
     EventBus
-} from "../main";
+} from "../../main";
 import {
     CredentialTypes
-} from "../constants"
+} from "../../constants"
 export default {
     props: {
         credentials: Array,
@@ -89,6 +81,7 @@ export default {
                 //     text: "Actions",
                 //     value: "actions"
                 // }
+
             ]
         }
     },
@@ -114,6 +107,7 @@ export default {
             //   credential.verified = true
             // })
         }
+
     },
     methods: {
          openPresentation(presentation) {
@@ -121,11 +115,13 @@ export default {
                 this.$router.push({ path: `presentation/${presentation.id}`, append: true})
             } else {
                 EventBus.$emit('error', 'No details view available for presentations in public profile.')
+
             }
         }
+
     },
     components: {
-        Credential
+        DocumentCredential
     }
 };
 </script>

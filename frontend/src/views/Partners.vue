@@ -17,8 +17,8 @@
             <template v-slot:item="{ item }">
                 <router-link tag="tr" :to="`/app/partners/${item.id}`">
                     <td class="font-weight-medium">{{ item.name }}</td>
-                    <td> {{ item.createdAt | moment("dddd, MMMM Do YYYY") }}</td>
-                    <td>{{ item.updatedAt ? item.updatedAt : item.createdAt | moment("dddd, MMMM Do YYYY") }}</td>
+                    <td> {{ item.createdAt | moment("YYYY-MM-DD HH:mm") }}</td>
+                    <td>{{ item.updatedAt ? item.updatedAt : item.createdAt | moment("YYYY-MM-DD HH:mm") }}</td>
                 </router-link>
             </template>
         </v-data-table>

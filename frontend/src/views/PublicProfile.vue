@@ -9,13 +9,12 @@
   <v-container>
     <div v-if="document">
         <OganizationalProfile v-bind:document="document" isReadOnly></OganizationalProfile>
-        <PresentationList v-if="!isBusy" v-bind:credentials="publicDocumentsAndCredentials" isReadOnly showOnlyContent></PresentationList>
+        <DocumentCredentialList v-if="!isBusy" v-bind:credentials="publicDocumentsAndCredentials" isReadOnly showOnlyContent></DocumentCredentialList>
     </div>
       <v-container v-else fill-height fluid text-center>
       <v-row align="center" justify="center">
         <v-col>
           <h1 class="grey--text text--lighten-2">You don't have set up a public profile yet</h1>
-
           <v-btn color="primary" :to="{ name: 'Wallet' }" text>Setup your Profile</v-btn>
         </v-col>
       </v-row>
@@ -25,14 +24,15 @@
 
 <script>
 import OganizationalProfile from "@/components/OrganizationalProfile";
-import PresentationList from "@/components/PresentationList";
+import DocumentCredentialList from "@/components/profile/DocumentCredentialList";
+
 import { EventBus } from "../main";
 export default {
   name: "PublicProfile",
   props: {},
   components: {
     OganizationalProfile,
-    PresentationList
+    DocumentCredentialList
   },
   computed: {
     document() {

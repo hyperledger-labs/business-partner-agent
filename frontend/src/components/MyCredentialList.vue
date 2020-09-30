@@ -16,15 +16,15 @@
         </template>
 
         <template v-slot:[`item.createdDate`]="{ item }">
-            {{ item.createdDate | moment("dddd, MMMM Do YYYY") }}
+            {{ item.createdDate | moment("YYYY-MM-DD HH:mm") }}
         </template>
 
         <template v-slot:[`item.updatedDate`]="{ item }">
-            {{ item.updatedDate | moment("dddd, MMMM Do YYYY") }}
+            {{ item.updatedDate | moment("YYYY-MM-DD HH:mm") }}
         </template>
 
         <template v-slot:[`item.issuedAt`]="{ item }">
-            {{ item.issuedAt | moment("dddd, MMMM Do YYYY") }}
+            {{ item.issuedAt | moment("YYYY-MM-DD HH:mm") }}
         </template>
 
         <template v-slot:[`item.isPublic`]="{ item }">
