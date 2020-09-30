@@ -6,6 +6,7 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
+<<<<<<< HEAD
     <v-card v-if="isReady" class="mx-auto">
         <v-card-title class="bg-light">
             <v-btn
@@ -79,6 +80,58 @@
             </v-list-item>
             <v-divider></v-divider>
         </v-card-text>
+=======
+  <v-card v-if="isReady" class="mx-auto">
+    <v-card-title class="bg-light">
+      <v-btn depressed color="secondary" icon @click="$router.push({ name: 'Wallet' })">
+        <v-icon dark>mdi-chevron-left</v-icon>
+      </v-btn>
+      {{ type | credentialLabel}}
+      <v-layout align-end justify-end>
+        <v-btn depressed color="red" icon @click="deleteDocument()">
+          <v-icon dark>mdi-delete</v-icon>
+        </v-btn>
+      </v-layout>
+    </v-card-title>
+    <v-card-text>
+      <Credential v-bind:document="document" ref="doc"></Credential>
+      <v-divider></v-divider>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title>Public Profile</v-list-item-title>
+          <v-list-item-subtitle>Visible in Public Profile</v-list-item-subtitle>
+        </v-list-item-content>
+        <v-list-item-action>
+          <v-switch :disabled="document.type === CredentialTypes.OTHER.name" 
+            v-model="document.isPublic"></v-switch>
+        </v-list-item-action>
+      </v-list-item>
+      <v-divider></v-divider>
+      <v-list-item v-if="this.id">
+        <v-list-item-content>
+          <v-list-item-title>Verification</v-list-item-title>
+          <v-list-item-subtitle>Request a verification</v-list-item-subtitle>
+        </v-list-item-content>
+        <v-list-item-action>
+          <v-btn icon :to="{ name: 'RequestVerification', params: { documentId: id} }">
+            <v-icon color="grey">mdi-chevron-right</v-icon>
+          </v-btn>
+        </v-list-item-action>
+      </v-list-item>
+      <v-divider></v-divider>
+    </v-card-text>
+    <v-card-actions></v-card-actions>
+    <v-expansion-panels v-if="expertMode" accordion flat>
+      <v-expansion-panel>
+        <v-expansion-panel-header
+          class="grey--text text--darken-2 font-weight-medium bg-light"
+        >Show raw data</v-expansion-panel-header>
+        <v-expansion-panel-content class="bg-light">
+          <vue-json-pretty :data="document"></vue-json-pretty>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
+>>>>>>> f47c467... Disable 'add to public profile' of credentials of type 'OTHER' (#134)
 
         <v-card-actions>
             <v-layout align-end justify-end>
@@ -110,11 +163,16 @@
 <script>
 import { EventBus } from "../main";
 import { CredentialTypes } from "../constants";
+<<<<<<< HEAD
 import OganizationalProfile from "@/components/OrganizationalProfile";
+=======
+// import OganizationalProfile from "@/components/OrganizationalProfile";
+>>>>>>> f47c467... Disable 'add to public profile' of credentials of type 'OTHER' (#134)
 import Credential from "@/components/Credential";
 import VueJsonPretty from "vue-json-pretty";
 
 export default {
+<<<<<<< HEAD
     name: "Document",
     props: {
         id: String,
@@ -127,6 +185,45 @@ export default {
         } else {
             EventBus.$emit("title", "Create new Document");
             this.document.type = this.type;
+=======
+  name: "Document",
+  props: {
+    id: String,
+    type: String
+  },
+  created() {
+    if (this.id) {
+      EventBus.$emit("title", "Edit Document");
+      this.getDocument();
+    } else {
+      EventBus.$emit("title", "Create new Document");
+      this.document.type = this.type;
+      this.isReady = true;
+      this.document.isPublic = false;
+    }
+  },
+  data: () => {
+    return {
+      document: {},
+      isBusy: false,
+      isReady: false,
+      CredentialTypes
+    };
+  },
+  computed: {
+    expertMode() {
+      return this.$store.state.expertMode;
+    }
+  },
+  methods: {
+    getDocument() {
+      console.log(this.id);
+      this.$axios
+        .get(`${this.$apiBaseUrl}/wallet/document/${this.id}`)
+        .then(result => {
+          if ({}.hasOwnProperty.call(result, "data")) {
+            this.document = result.data;
+>>>>>>> f47c467... Disable 'add to public profile' of credentials of type 'OTHER' (#134)
             this.isReady = true;
             if (this.document.type === CredentialTypes.PROFILE.name) {
                 this.document.isPublic = true;

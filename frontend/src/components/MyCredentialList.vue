@@ -71,9 +71,7 @@ export default {
         },
     },
     created() {
-
         this.fetch(this.type)
-
     },
     data: () => {
         return {
@@ -84,8 +82,6 @@ export default {
         };
     },
     computed: {
-
-
     },
     methods: {
         fetch(type) {
@@ -93,7 +89,6 @@ export default {
                 .then((result) => {
                     console.log(result);
                     if ({}.hasOwnProperty.call(result, 'data')) {
-
                         this.isBusy = false 
                         
                         if (type === 'credential') {
@@ -104,28 +99,21 @@ export default {
                             this.data = result.data
                         }
                         
-
                         console.log(this.data)
-
                     }
                 })
                 .catch((e) => {
-
                     this.isBusy = false
                     if (e.response.status === 404) {
-
                         this.data = []
-
                     } else {
                         console.error(e)
                         EventBus.$emit('error', e)
                     }
-
                 });
         },
         open(doc) {
             console.log(doc)
-
             if (this.type === 'document') {
                 console.log(doc)
                 this.$router.push({
@@ -143,11 +131,8 @@ export default {
                         type: doc.type
                     }
                 });
-
             }
-
         }
-
     }
 };
 </script>
