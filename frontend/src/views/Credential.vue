@@ -84,10 +84,45 @@ import VueJsonPretty from "vue-json-pretty";
 import { CredentialTypes } from "../constants";
 
 export default {
-    name: "Credential",
-    props: {
-        id: String,
-        type: String,
+  name: "Credential",
+  props: {
+    id: String,
+    type: String
+  },
+  created() {
+    EventBus.$emit("title", "Credential");
+    this.getCredential();
+    console.log('BLA BLA')
+  },
+  data: () => {
+    return {
+      document: {},
+      isBusy: false,
+      isReady: false,
+      CredentialTypes: CredentialTypes
+    };
+  },
+  computed: {
+    expertMode() {
+      return this.$store.state.expertMode;
+    }
+  },
+  methods: {
+    getCredential() {
+      console.log(this.id);
+      this.$axios
+        .get(`${this.$apiBaseUrl}/wallet/credential/${this.id}`)
+        .then(result => {
+          if ({}.hasOwnProperty.call(result, "data")) {
+            this.credential = result.data;
+            this.isPublic = this.credential.isPublic;
+            this.isReady = true;
+          }
+        })
+        .catch(e => {
+          console.error(e);
+          EventBus.$emit("error", e);
+        });
     },
     created() {
         EventBus.$emit("title", "Credential");

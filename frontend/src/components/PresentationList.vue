@@ -7,58 +7,45 @@
 -->
 
 <template>
-    <v-data-table
-        :hide-default-footer="credentialsWithIndex.length < 10"
-        v-model="selected"
-        :show-select="selectable"
-        single-select
-        :headers="headers"
-        :items="credentialsWithIndex"
-        :expanded.sync="expanded"
-        item-key="index"
-        :show-expand="expandable"
-        @click:row="openPresentation"
-    >
-        <template v-slot:[`item.type`]="{ item }">
-            <div v-if="item.type === CredentialTypes.OTHER.name">
-                {{ item.credentialDefinitionId | credentialTag | capitalize  }}
-            </div>
-            <div v-else>{{ item.type | credentialLabel }}</div>
-        </template>
-        <template v-slot:[`item.state`]="{ item }">
-            <v-icon
-                v-if="
-                    item.state === 'verified' ||
-                    item.state == 'presentation_acked'
-                "
-                color="green"
-                >mdi-check</v-icon
-            >
-            <span v-else>
-                {{ item.state.replace("_", " ") }}
-            </span>
-        </template>
-        <template v-slot:[`item.sentAt`]="{ item }">
-            {{ item.sentAt | moment("YYYY-MM-DD HH:mm") }}
-        </template>
-        <template v-slot:[`item.receivedAt`]="{ item }">
-            {{ item.receivedAt | moment("YYYY-MM-DD HH:mm") }}
-        </template>
-        <template v-slot:expanded-item="{ headers, item }">
-            <td :colspan="headers.length">
-                <Credential
-                    v-bind:document="item"
-                    isReadOnly
-                    showOnlyContent
-                ></Credential>
-            </td>
-        </template>
-        <template v-slot:[`item.actions`]="{ item }">
-            <v-icon small @click="deletePresentation(item)">
-                mdi-delete
-            </v-icon>
-        </template>
-    </v-data-table>
+<v-data-table 
+    hide-default-footer v-model="selected" 
+    :show-select="selectable" 
+    single-select 
+    :headers="headers" 
+    :items="credentialsWithIndex" 
+    :expanded.sync="expanded" 
+    item-key="index" 
+    :show-expand="expandable"
+    @click:row="openPresentation"
+>
+    <template v-slot:[`item.type`]="{ item }">
+        <div v-if="item.type === CredentialTypes.OTHER.name">{{ item.credentialDefinitionId | credentialTag }}</div>
+        <div v-else>{{ item.type | credentialLabel }}</div>
+    </template>
+    <template v-slot:[`item.verified`]="{ item }">
+        <v-icon v-if="item.state === 'verified'" color="green">mdi-check</v-icon>
+        <!-- <v-btn v-if="item.indyCredential" color="primary" text>verify</v-btn> -->
+    </template>
+    <template v-slot:[`item.sentAt`]="{ item }">
+       {{item.sentAt | moment("YYYY-MM-DD HH:mm") }}
+    </template>
+    <template v-slot:[`item.receivedAt`]="{ item }">
+       {{item.receivedAt | moment("YYYY-MM-DD HH:mm") }}
+    </template>
+    <template v-slot:expanded-item="{ headers, item }">
+        <td :colspan="headers.length">
+            <Credential v-bind:document="item" isReadOnly showOnlyContent></Credential>
+        </td>
+    </template>
+    <template v-slot:[`item.actions`]="{ item }">
+      <v-icon
+        small
+        @click="deleteItem(item)"
+      >
+        mdi-delete
+      </v-icon>
+    </template>
+</v-data-table>
 </template>
 
 <script>
@@ -95,12 +82,23 @@ export default {
                     text: "State",
                     value: "state",
                 },
+<<<<<<< HEAD
                 {
                     text: " ",
                     value: "actions",
                 },
             ],
         },
+=======
+                // {
+                //     text: "Actions",
+                //     value: "actions"
+                // }
+            ]
+        }
+    },
+    created() {
+>>>>>>> 42a77aa... feture/017 Public Profile List. Datetime Format
     },
     created() {},
     data: () => {
@@ -120,7 +118,11 @@ export default {
             // .map(credential => {
             //   credential.verified = true
             // })
+<<<<<<< HEAD
         },
+=======
+        }
+>>>>>>> 42a77aa... feture/017 Public Profile List. Datetime Format
     },
     methods: {
         deletePresentation(presentation) {
@@ -159,10 +161,16 @@ export default {
                     );
                 }
             } else {
+<<<<<<< HEAD
                 // Do nothing for now. Presentation is not ready
                 // Need to fix Presentation.vue for unfinished presentations
             }
         },
+=======
+                EventBus.$emit('error', 'No details view available for presentations in public profile.')
+            }
+        }
+>>>>>>> 42a77aa... feture/017 Public Profile List. Datetime Format
     },
     components: {
         Credential,

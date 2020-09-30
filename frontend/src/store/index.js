@@ -187,35 +187,60 @@ const store = new Vuex.Store({
         //   }
         // }
     },
+    async completeEditDocument({ state }) {
+      if (state.editedDocument.add) {
+        axios
+          .post(`${apiBaseUrl}/wallet/document`, {
+            document: state.editedDocument.document,
+            isPublic: true, //TODO 
+            type: state.editedDocument.type
+          })
+          .then(() => {
+            this.dispatch('loadDocuments')
+            EventBus.$emit("success", "Success");
+          })
+          .catch((e) => {
+            console.error(e);
+            EventBus.$emit("error", e);
+          });
+      }
+      else {
+        axios
+          .put(`${apiBaseUrl}/wallet/document/${state.editedDocument.id}`, {
+            document: state.editedDocument.document,
+            isPublic: true, //TODO 
+            type: state.editedDocument.type
+          })
+          .then(() => {
+            this.dispatch('loadDocuments')
+            EventBus.$emit("success", "Success");
+          })
+          .catch((e) => {
+            console.error(e);
+            EventBus.$emit("error", e);
+          });
+      }
+    }
+  },
 
-    mutations: {
-        // initEditDocument(state, payload) {
-        //   state.editedDocument.type = payload.documentType
-        //   state.editedDocument.add = payload.add
-        //   if (payload.add) {
-        //     state.editedDocument.document = { ...emptyDocument };
-        //   }
-        //   else {
-        //     state.editedDocument.id = payload.id
-        //     var documents = state.documents.filter(d => d.id == payload.id)
-        //     if (documents.length == 1) state.editedDocument.document = documents[0].documentData
-        //   }
-        // },
-        loadDocumentsFinished(state, payload) {
-            state.documents = payload.documents;
-        },
-        loadCredentialsFinished(state, payload) {
-            state.credentials = payload.credentials;
-        },
-        loadPartnersFinished(state, payload) {
-            state.partners = payload.partners;
-        },
-        loadSchemasFinished(state, payload) {
-            state.schemas = payload.schemas;
-        },
-        setSettings(state, payload) {
-            state.expertMode = payload.isExpert;
-        },
+  mutations: {
+    initEditDocument(state, payload) {
+      state.editedDocument.type = payload.documentType
+      state.editedDocument.add = payload.add
+      if (payload.add) {
+        state.editedDocument.document = { ...emptyDocument };
+      }
+      else {
+        state.editedDocument.id = payload.id
+        var documents = state.documents.filter(d => d.id == payload.id)
+        if (documents.length == 1) state.editedDocument.document = documents[0].documentData
+      }
+    },
+    loadDocumentsFinished(state, payload) {
+      state.documents = payload.documents;
+    },
+    loadCredentialsFinished(state, payload) {
+      state.credentials = payload.credentials;
     },
 });
 
