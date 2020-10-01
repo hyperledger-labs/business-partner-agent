@@ -15,13 +15,12 @@
                         <span v-if="item.type === CredentialTypes.OTHER.name">{{ item.credentialDefinitionId | credentialTag }}</span>
                         <span v-else>{{ item.type | credentialLabel }}</span>
                     </span>
-                    <v-icon v-if="item.state === 'verified'" color="green">mdi-check</v-icon>
                     <v-icon v-if="item.actions" small @click="deleteItem(item)">mdi-delete</v-icon>
                 </v-col>
                 <v-col>
                     <DocumentCredential v-bind:document="item" isReadOnly showOnlyContent></DocumentCredential>
                     
-                    <!-- TODO Timestamp Component -->
+                    <!-- TODO own component -->
                     <h4 v-if="(item.sentAt || item.receivedAt)" class="grey--text text--darken-2">Timestamp</h4>
                     <v-row v-if="item.sentAt">
                         <v-col class="pb-0">
@@ -41,7 +40,7 @@
 </template>
 
 <script>
-import DocumentCredential from "@/components/profile/DocumentCredential";
+import DocumentCredential from "@/components/credentials/DocumentCredential";
 import {
     EventBus
 } from "../../main";
@@ -50,40 +49,7 @@ import {
 } from "../../constants"
 export default {
     props: {
-        credentials: Array,
-         selectable: {
-            type: Boolean,
-            default: false
-        },
-        expandable: {
-            type: Boolean,
-            default: true
-        },
-        headers: {
-            type: Array,
-            default: () => [{
-                    text: "Type",
-                    value: "type"
-                },
-                {
-                    text: "Issuer",
-                    value: "issuer"
-                },
-                {
-                    text: "Received at",
-                    value: "receivedAt"
-                },
-                {
-                    text: "Verified",
-                    value: "verified"
-                },
-                // {
-                //     text: "Actions",
-                //     value: "actions"
-                // }
-
-            ]
-        }
+        credentials: Array
     },
     created() {
     },

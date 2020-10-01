@@ -9,7 +9,7 @@
 <template>
 <v-card-text>
     <v-form ref="mdForm">
-        <h3 v-if="!showOnlyContent && (document.issuer || docuemnt.issueAt)">Issuer</h3>
+        <h3 v-if="!showOnlyContent && (document.issuer || document.issuedAt)">Issuer</h3>
         <v-row v-if="!showOnlyContent">
             <v-col>
                 <v-text-field v-if="document.issuer" label="Issuer" v-model="document.issuer" disabled outlined dense></v-text-field>

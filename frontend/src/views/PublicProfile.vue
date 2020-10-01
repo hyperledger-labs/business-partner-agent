@@ -24,7 +24,7 @@
 
 <script>
 import OganizationalProfile from "@/components/OrganizationalProfile";
-import DocumentCredentialList from "@/components/profile/DocumentCredentialList";
+import DocumentCredentialList from "@/components/credentials/DocumentCredentialList";
 
 import { EventBus } from "../main";
 export default {
@@ -42,6 +42,7 @@ export default {
       return this.$store.getters.isBusy;
     },
     publicDocumentsAndCredentials() {
+      console.log(this.$store.getters.publicDocumentsAndCredentials);
       return this.$store.getters.publicDocumentsAndCredentials;
     }
   },

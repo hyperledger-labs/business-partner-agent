@@ -50,6 +50,9 @@ export default {
     },
     created() {
         console.log(this.document)
+        if(!this.document) {
+            return;
+        }
         // New created document
         if (!{}.hasOwnProperty.call(this.document, 'documentData') && !{}.hasOwnProperty.call(this.document, 'credentialData') && !{}.hasOwnProperty.call(this.document, 'proofData')) {
 
