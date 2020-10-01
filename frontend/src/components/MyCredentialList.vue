@@ -16,7 +16,6 @@
         </template>
 
         <template v-slot:[`item.createdDate`]="{ item }">
-<<<<<<< HEAD
             {{ item.createdDate | moment("YYYY-MM-DD HH:mm") }}
         </template>
 
@@ -26,17 +25,6 @@
 
         <template v-slot:[`item.issuedAt`]="{ item }">
             {{ item.issuedAt | moment("YYYY-MM-DD HH:mm") }}
-=======
-            {{ item.createdDate | moment("MMMM Do YYYY HH:MM") }}
-        </template>
-
-        <template v-slot:[`item.updatedDate`]="{ item }">
-            {{ item.updatedDate | moment("MMMM Do YYYY HH:MM") }}
-        </template>
-
-        <template v-slot:[`item.issuedAt`]="{ item }">
-            {{ item.issuedAt | moment("MMMM Do YYYY HH:MM") }}
->>>>>>> e9ca310... Disable 'add to public profile' of credentials of type 'OTHER' (#134)
         </template>
 
         <template v-slot:[`item.isPublic`]="{ item }">
