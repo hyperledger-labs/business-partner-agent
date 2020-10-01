@@ -7,40 +7,15 @@
 -->
 
 <template>
-    <v-card-text>
-        <v-form ref="mdForm">
-            <h3
-                v-if="
-                    !showOnlyContent && (document.issuer || document.issuedAt)
-                "
-            >
-                Issuer
-            </h3>
-            <v-row v-if="!showOnlyContent">
-                <v-col>
-                    <v-text-field
-                        v-if="document.issuer"
-                        label="Issuer"
-                        v-model="document.issuer"
-                        disabled
-                        outlined
-                        dense
-                    ></v-text-field>
-                    <v-text-field
-                        v-if="document.issuedAt"
-                        label="Issued at"
-                        :placeholder="
-                            $options.filters.moment(
-                                document.issuedAt,
-                                'YYYY-MM-DD HH:mm'
-                            )
-                        "
-                        disabled
-                        outlined
-                        dense
-                    ></v-text-field>
-                </v-col>
-            </v-row>
+<v-card-text>
+    <v-form ref="mdForm">
+        <h3 v-if="!showOnlyContent && (document.issuer || document.issuedAt)">Issuer</h3>
+        <v-row v-if="!showOnlyContent">
+            <v-col>
+                <v-text-field v-if="document.issuer" label="Issuer" v-model="document.issuer" disabled outlined dense></v-text-field>
+                <v-text-field v-if="document.issuedAt" label="Issued at" :placeholder="$options.filters.moment(document.issuedAt, 'YYYY-MM-DD HH:mm')" disabled outlined dense></v-text-field>
+            </v-col>
+        </v-row>
 
             <h3 v-if="document.credentialData && !showOnlyContent">
                 Credential Content

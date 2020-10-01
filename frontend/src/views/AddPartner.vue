@@ -6,73 +6,44 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
-    <v-container>
-        <v-card max-width="600" class="mx-auto" flat>
-            <v-card-title class="grey--text text--darken-2">
-                Add new Business Partner
-            </v-card-title>
-            <v-container>
-                <v-row>
-                    <v-col cols="12">
-                        <v-text-field
-                            prepend-icon="mdi-fingerprint"
-                            label="Decentralized Identifier (DID)"
-                            placeholder=""
-                            v-model="did"
-                            @change="partnerLoaded = false"
-                            outlined
-                            dense
-                        >
-                        </v-text-field>
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-layout justify-center>
-                        <v-progress-circular
-                            v-if="partnerLoading"
-                            indeterminate
-                            color="primary"
-                        ></v-progress-circular>
-                    </v-layout>
-                </v-row>
+<v-container>
+    <v-card max-width="600" class="mx-auto" flat>
+        <v-card-title class="grey--text text--darken-2">
+            Add new Business Partner
+        </v-card-title>
+        <v-container>
+            <v-row>
+                <v-col cols="12">
+                    <v-text-field prepend-icon="mdi-fingerprint" label="Decentralized Identifier (DID)" placeholder="" v-model="did" @change="partnerLoaded = false" outlined dense>
+                    </v-text-field>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-layout justify-center>
+                    <v-progress-circular v-if="partnerLoading" indeterminate color="primary"></v-progress-circular>
+                </v-layout>
+            </v-row>
 
-                <v-row>
-                    <v-layout justify-center>
-                        <div class="font-weight-medium">{{ msg }}</div>
-                    </v-layout>
-                </v-row>
-                <v-row class="mx-2" v-if="partnerLoaded">
-                    <v-col cols="4">
-                        <p class="grey--text text--darken-2 font-weight-medium">
-                            Set a name
-                        </p>
-                    </v-col>
-                    <v-col cols="8">
-                        <v-text-field
-                            label="Name"
-                            placeholder=""
-                            v-model="alias"
-                            outlined
-                            dense
-                        >
-                        </v-text-field>
-                    </v-col>
-                </v-row>
-                <OganizationalProfile
-                    v-if="msg === '' && partnerProfile !== null"
-                    v-bind:document="partnerProfile"
-                    isReadOnly
-                ></OganizationalProfile>
-                <DocumentCredentialList
-                    v-if="publicCredentials.length > 0"
-                    v-bind:credentials="publicCredentials"
-                ></DocumentCredentialList>
-            </v-container>
-            <v-card-actions>
-                <v-layout justify-space-between>
-                    <v-btn color="secondary" text to="/app/partners"
-                        >Cancel</v-btn
-                    >
+            <v-row>
+                <v-layout justify-center>
+                    <div class="font-weight-medium">{{ msg }}</div>
+                </v-layout>
+            </v-row>
+            <v-row class="mx-2" v-if="partnerLoaded">
+                <v-col cols="4">
+                   <p class="grey--text text--darken-2 font-weight-medium">Set a name</p>
+                </v-col>
+                <v-col cols="8">
+                    <v-text-field label="Name" placeholder="" v-model="alias" outlined dense>
+                    </v-text-field>
+                </v-col>
+            </v-row>
+            <OganizationalProfile v-if="msg === '' && partnerProfile !== null" v-bind:document="partnerProfile" isReadOnly></OganizationalProfile>
+            <DocumentCredentialList v-if="publicCredentials.length > 0" v-bind:credentials="publicCredentials"></DocumentCredentialList>
+        </v-container>
+        <v-card-actions>
+            <v-layout justify-space-between>
+                <v-btn color="secondary" text to="/app/partners">Cancel</v-btn>
 
                     <v-btn
                         v-if="!partnerLoaded"
@@ -91,14 +62,18 @@
 
 <script>
 import OganizationalProfile from "@/components/OrganizationalProfile";
-import DocumentCredentialList from "@/components/credentials/DocumentCredentialList";
-import { EventBus } from "../main";
-import { CredentialTypes } from "../constants";
+import DocumentCredentialList from "@/components/credentials/DocumentCredentialList"
+import {
+    EventBus
+} from "../main";
+import {
+    CredentialTypes
+} from "../constants";
 export default {
     name: "AddPartner",
     components: {
         OganizationalProfile,
-        DocumentCredentialList,
+        DocumentCredentialList
     },
     created: () => {},
     data: () => {

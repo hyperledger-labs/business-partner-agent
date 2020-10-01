@@ -58,6 +58,7 @@
 
       <v-card-text>
         <OganizationalProfile v-if="partner.profile" v-bind:document="partner.profile" isReadOnly></OganizationalProfile>
+        <DocumentCredentialList v-if="isReady" v-bind:credentials="credentials"></DocumentCredentialList>
         <v-row class="mx-4">
           <v-col cols="4">
             <v-row>
@@ -126,7 +127,8 @@ export default {
     VueJsonPretty,
     OganizationalProfile,
     PresentationList,
-    PartnerStateIndicator
+    PartnerStateIndicator,
+    DocumentCredentialList
   },
   created() {
     this.getPartner();
@@ -195,10 +197,47 @@ export default {
           // EventBus.$emit("error", e);
         });
     },
+<<<<<<< HEAD
     created() {
         EventBus.$emit("title", "Partner");
         this.getPartner();
         this.getPresentationRecords();
+=======
+    getPartner() {
+      console.log("Getting partner...");
+      this.$axios
+        .get(`${this.$apiBaseUrl}/partners/${this.id}`)
+        .then(result => {
+          console.log(result);
+          if ({}.hasOwnProperty.call(result, "data")) {
+            this.rawData = result.data;
+            this.partner = {
+              ...result.data,
+              ...{
+                profile: getPartnerProfile(result.data)
+              }
+            };
+            if ({}.hasOwnProperty.call(this.partner, "credential")) {
+              // Show only creds other than OrgProfile in credential list
+              this.credentials = this.partner.credential.filter(cred => {
+                return cred.type !== CredentialTypes.PROFILE.name;
+              });
+            }
+            console.log("PARTNER");
+            console.log(this.credentials);
+
+            // Hacky way to define a partner name
+            // Todo: Make this consistent. Probalby in backend
+            this.partner.name = getPartnerName(this.partner);
+            this.alias = this.partner.name;
+            this.isReady = true;
+          }
+        })
+        .catch(e => {
+          console.error(e);
+          EventBus.$emit("error", e);
+        });
+>>>>>>> 2b74dc7... feature/017 AddPartner, Partner View
     },
     data: () => {
         return {

@@ -23,7 +23,7 @@
 
 <script>
 import OganizationalProfile from "@/components/OrganizationalProfile";
-import DocumentCredentialList from "@/components/profile/DocumentCredentialList";
+import DocumentCredentialList from "@/components/credentials/DocumentCredentialList";
 
 import { EventBus } from "../main";
 export default {
@@ -42,5 +42,18 @@ export default {
         this.$store.dispatch("loadDocuments");
         this.$store.dispatch("loadCredentials");
     },
+<<<<<<< HEAD
+=======
+    publicDocumentsAndCredentials() {
+      console.log(this.$store.getters.publicDocumentsAndCredentials);
+      return this.$store.getters.publicDocumentsAndCredentials;
+    }
+  },
+  created() {
+    EventBus.$emit("title", "Public Profile");
+    this.$store.dispatch("loadDocuments");
+    this.$store.dispatch("loadCredentials");
+  }
+>>>>>>> 2b74dc7... feature/017 AddPartner, Partner View
 };
 </script>
