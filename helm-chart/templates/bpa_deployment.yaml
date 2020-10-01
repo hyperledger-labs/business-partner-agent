@@ -56,11 +56,11 @@ spec:
                 -Doagent.acapy.url=http://{{ include "acapy.fullname" . }}:{{ .Values.acapy.service.ADMIN_PORT }} 
                 -Doagent.acapy.apiKey={{ .Values.acapy.ADMIN_URL_API_KEY }}
                 -Dmicronaut.security.enabled={{ .Values.bpa.SECURITY_ENABLED }} 
-                -Dmicronaut.server.port={{ .Values.bpa.service.PORT }}
+                -Dmicronaut.server.port=8080
                 -Doagent.pg.url=jdbc:postgresql://{{ include "global.postgresql.fullname" . }}/{{ .Values.postgresql.postgresqlUsername }}
                 -Doagent.pg.username={{ .Values.postgresql.postgresqlUsername }}
                 -Doagent.pg.password=$(POSTGRES_PASSWORD)
-                -Doagent.host={{ include "bpa.fullname" . }}          
+                -Doagent.host={{ include "bpa.fullname" . }} 
           resources:
             {{- toYaml .Values.bpa.resources | nindent 12 }}
       {{- with .Values.bpa.nodeSelector }}
