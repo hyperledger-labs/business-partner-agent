@@ -99,6 +99,20 @@ public class AdminController {
     }
 
     /**
+     * Aries: Get a schema configuration
+     *
+     * @param id the schema id
+     * @return {@link HttpResponse}
+     */
+    @Get("/schema/{id}")
+    public HttpResponse<SchemaAPI> getSchema(@PathVariable UUID id) {
+        if (schemaService.isPresent()) {
+            return HttpResponse.ok(schemaService.get().getSchema(id));
+        }
+        return HttpResponse.notFound();
+    }
+
+    /**
      * Get runtime configuration
      *
      * @return {@link RuntimeConfig}

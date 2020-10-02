@@ -67,13 +67,8 @@ public class SchemaService {
         try {
             Optional<org.hyperledger.aries.api.schema.SchemaSendResponse.Schema> ariesSchema = ac.schemasGetById(sId);
             if (ariesSchema.isPresent()) {
-                BPASchema dbS = BPASchema
-                        .builder()
-                        .label(label)
-                        .type(credType)
-                        .schemaId(sId)
-                        .seqNo(ariesSchema.get().getSeqNo())
-                        .build();
+                BPASchema dbS = BPASchema.builder().label(label).type(credType).schemaId(sId)
+                        .seqNo(ariesSchema.get().getSeqNo()).build();
                 BPASchema saved = schemaRepo.save(dbS);
                 result = SchemaAPI.from(saved);
             }
@@ -87,7 +82,7 @@ public class SchemaService {
         List<SchemaAPI> result = new ArrayList<>();
         schemaRepo.findAll().forEach(dbS -> {
             SchemaAPI schemaAPI = SchemaAPI.from(dbS);
-            schemaAPI.addSchemaAttributes(getSchemaAttributeNames(dbS.getId().toString()));
+            schemaAPI.addSchemaAttributes(getSchemaAttributeNames(dbS.getSchemaId()));
             result.add(schemaAPI);
         });
         return result;
@@ -97,6 +92,16 @@ public class SchemaService {
         schemaRepo.deleteById(id);
     }
 
+    public @Nullable SchemaAPI getSchema(@NonNull UUID id) {
+        Optional<BPASchema> schema = schemaRepo.findById(id);
+        if (schema.isPresent()) {
+            SchemaAPI schemaAPI = SchemaAPI.from(schema.get());
+            schemaAPI.addSchemaAttributes(getSchemaAttributeNames(schema.get().getSchemaId()));
+            return schemaAPI;
+        } else
+            return null;
+    }
+
     public @Nullable BPASchema getSchemaFor(CredentialType type) {
         BPASchema result = null;
         final Optional<BPASchema> dbSchema = schemaRepo.findByType(type);
@@ -104,11 +109,8 @@ public class SchemaService {
             result = dbSchema.get();
         } else if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(type)) {
             // falling back to defaults
-            result = BPASchema
-                    .builder()
-                    .schemaId(ApiConstants.BANK_ACCOUNT_SCHEMA_ID)
-                    .seqNo(ApiConstants.BANK_ACCOUNT_SCHEMA_SEQ)
-                    .build();
+            result = BPASchema.builder().schemaId(ApiConstants.BANK_ACCOUNT_SCHEMA_ID)
+                    .seqNo(ApiConstants.BANK_ACCOUNT_SCHEMA_SEQ).build();
         }
         return result;
     }
