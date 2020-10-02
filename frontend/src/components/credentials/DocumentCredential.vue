@@ -9,7 +9,7 @@
 <template>
     <v-form ref="mdForm">
         <span v-if="(document.issuer || document.issuedAt)">
-            <h4  class="grey--text text--darken-2">Issuer</h4>
+            <!-- <h4  class="grey--text text--darken-2">Issuer</h4> -->
             <v-row>
                 <v-col class="pb-0">
                     <v-text-field v-if="document.issuer" label="Issuer" v-model="document.issuer" disabled outlined dense></v-text-field>
@@ -18,8 +18,10 @@
             </v-row>
         </span>
 
+         <v-divider v-if="(document.issuer || document.issuedAt)"/>
+
         <span v-if="documentData">
-            <h4 class="grey--text text--darken-2">Credential Content</h4>
+            <!-- <h4  v-if="(document.issuer || document.issuedAt)" class="grey--text text--darken-2">Credential Content</h4> -->
             <v-row>
                 <v-col class="pb-0">
                     <v-text-field v-for="field in schema.fields" 
