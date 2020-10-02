@@ -85,7 +85,11 @@ public class SchemaService {
 
     public List<SchemaAPI> listSchemas() {
         List<SchemaAPI> result = new ArrayList<>();
-        schemaRepo.findAll().forEach(dbS -> result.add(SchemaAPI.from(dbS)));
+        schemaRepo.findAll().forEach(dbS -> {
+            SchemaAPI schemaAPI = SchemaAPI.from(dbS);
+            schemaAPI.addSchemaAttributes(getSchemaAttributeNames(dbS.getId().toString()));
+            result.add(schemaAPI);
+        });
         return result;
     }
 

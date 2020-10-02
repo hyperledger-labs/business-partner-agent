@@ -17,6 +17,7 @@
  */
 package org.hyperledger.oa.api.aries;
 
+import java.util.Set;
 import java.util.UUID;
 
 import org.hyperledger.oa.model.BPASchema;
@@ -38,6 +39,8 @@ public class SchemaAPI {
 
     private String schemaId;
 
+    private Set<String> schemaAttributeNames;
+
     public static SchemaAPI from(BPASchema s) {
         return SchemaAPI
                 .builder()
@@ -45,5 +48,9 @@ public class SchemaAPI {
                 .label(s.getLabel())
                 .schemaId(s.getSchemaId())
                 .build();
+    }
+
+    public void addSchemaAttributes(Set<String> schemaAttributeNames) {
+        this.schemaAttributeNames = schemaAttributeNames;
     }
 }
