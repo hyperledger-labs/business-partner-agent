@@ -104,6 +104,7 @@ export default {
 
                 });
         },
+
         deleteSchema() {
             this.$axios
                 .delete(`${this.$apiBaseUrl}/admin/schema/${this.id}`)
