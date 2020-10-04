@@ -15,7 +15,20 @@
     :headers="headers" 
     :items="data" 
     :show-select="selectable" 
-    single-select>
+    single-select
+    @click:row="open"
+    >
+        <template v-slot:[`item.name`]="{ item }">
+            <div class="font-weight-medium"> {{ item.name }}</div>
+        </template>
+
+        <template v-slot:[`item.createdAt`]="{ item }">
+            {{ item.createdAt | moment("YYYY-MM-DD HH:mm") }}
+        </template>
+
+        <template v-slot:[`item.updatedAt`]="{ item }">
+            {{ item.updatedAt | moment("YYYY-MM-DD HH:mm") }}
+        </template>
     </v-data-table>
 </v-container>
 </template>
@@ -29,7 +42,7 @@ import {
     getPartnerName
 } from "../utils/partnerUtils"
 export default {
-    name: "RequestVerification",
+    name: "PartnerList",
     props: {
         selectable: {
             type: Boolean,
@@ -63,6 +76,16 @@ export default {
 
     },
     methods: {
+        open(partner) {
+
+            this.$router.push({
+                    name: 'Partner',
+                    params: {
+                        id: partner.id,
+                    }
+                });
+
+        },
         fetch() {
             this.$axios.get(`${this.$apiBaseUrl}/partners`)
                 .then((result) => {
