@@ -7,21 +7,9 @@
 -->
 <template>
 <v-container>
+
     <v-card class="mx-auto px-8">
-        <!--
-        <v-card-title>
-            <v-text-field v-model="search" prepend-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
-        </v-card-title>
-        -->
-        <v-data-table :hide-default-footer="partners.length < 10"  :headers="headers" :items="partners" :search="search" :loading="isBusy">
-            <template v-slot:item="{ item }">
-                <router-link tag="tr" :to="`/app/partners/${item.id}`">
-                    <td class="font-weight-medium">{{ item.name }}</td>
-                    <td> {{ item.createdAt | moment("YYYY-MM-DD HH:mm") }}</td>
-                    <td>{{ item.updatedAt ? item.updatedAt : item.createdAt | moment("YYYY-MM-DD HH:mm") }}</td>
-                </router-link>
-            </template>
-        </v-data-table>
+        <PartnerList :headers="headers"/>
          <v-card-actions>
         <v-btn color="primary" small dark absolute bottom left fab :to="{ name: 'AddPartner' }">
             <v-icon>mdi-plus</v-icon>
@@ -32,17 +20,15 @@
 </template>
 
 <script>
-import {
-    EventBus
-} from '../main'
-import {
-    getPartnerProfile, getPartnerName
-} from '../utils/partnerUtils'
+import { EventBus } from '../main';
+import PartnerList from "@/components/PartnerList"; 
 export default {
     name: "Partners",
+    components: {
+        PartnerList
+    },
     created() {
         EventBus.$emit('title', 'Business Partners')
-        this.getPartners();
     },
     data: () => {
         return {
@@ -50,15 +36,15 @@ export default {
             search: '',
             headers: [{
                     text: "Name",
-                    // value: "subject.companyName"
+                    value: "name"
                 },
                 {
                     text: "Created",
-                    // value: "createdDate"
+                    value: "createdAt"
                 },
                 {
                     text: "Last Updated",
-                    // value: "createdDate"
+                    value: "updatedAt"
                 }
 
             ],
@@ -66,28 +52,6 @@ export default {
         };
     },
     methods: {
-        getPartners() {
-            this.$axios.get(`${this.$apiBaseUrl}/partners`)
-                .then((result) => {
-                    console.log(result);
-                    if ({}.hasOwnProperty.call(result, 'data')) {
-
-                        this.isBusy = false
-
-                        this.partners = result.data.map(partner => {
-                            partner.profile = getPartnerProfile(partner)
-                            partner.name = getPartnerName(partner)
-                            return partner
-                        })
-
-                    }
-                })
-                .catch((e) => {
-                    console.error(e)
-                    this.isBusy = false
-                    EventBus.$emit('error', e)
-                });
-        },
     }
 };
 </script>

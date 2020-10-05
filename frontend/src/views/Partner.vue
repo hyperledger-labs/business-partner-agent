@@ -10,7 +10,7 @@
   <v-container>
     <v-card class="mx-auto">
       <v-card-title class="bg-light">
-        <v-btn depressed color="secondary" icon @click="$router.push({ name: 'Partners' })">
+        <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>mdi-chevron-left</v-icon>
         </v-btn>
         <span v-if="!isUpdatingName">{{ partner.name }}</span>
