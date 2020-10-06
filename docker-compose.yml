@@ -55,7 +55,7 @@ services:
         --plugin aries_cloudagent.messaging.jsonld \
         --inbound-transport http '0.0.0.0' ${AGENT_HTTP_PORT} \
         --outbound-transport http \
-        --endpoint http://${BPA_HOST}:${AGENT_HTTP_PORT} \
+        --endpoint ${AGENT_ENDPOINT} \
         --profile-endpoint https://${BPA_HOST}/profile.jsonld \
         --webhook-url http://company-agent:${BPA_PORT}/log \
         --genesis-url '${LEDGER_URL}/genesis' \
