@@ -35,7 +35,7 @@
             >Save</v-btn>
           </template>
         </v-text-field>
-        <PartnerStateIndicator v-if="expertMode && partner.state" v-bind:state="partner.state"></PartnerStateIndicator>
+        <PartnerStateIndicator v-if="partner.state" v-bind:state="partner.state"></PartnerStateIndicator>
         <v-layout align-end justify-end>
           <v-btn if="depressed" icon @click="isUpdatingName = !isUpdatingName">
             <v-icon dark>mdi-pencil</v-icon>
@@ -68,7 +68,7 @@
             <v-row class="mt-4">
               <v-btn
                 small
-                :to="{ name: 'RequestPresentation', params: { id: id }  }"
+                @click="requestPresentation"
               >Request Presentation</v-btn>
             </v-row>
           </v-col>
@@ -88,7 +88,11 @@
             </v-row>
             <v-row>The presentations you sent to your partner</v-row>
             <v-row class="mt-4">
-              <v-btn small :to="{ name: 'SendPresentation', params: { id: id }  }">Send Presentation</v-btn>
+              <v-btn 
+                small 
+                @click="sendPresentation"
+              >
+              Send Presentation</v-btn>
             </v-row>
           </v-col>
           <v-col cols="8">
@@ -110,6 +114,24 @@
         </v-expansion-panels>
       </v-card-actions>
     </v-card>
+
+    <v-dialog v-model="attentionPartnerStateDialog" max-width="500">
+      <v-card>
+        <v-card-title class="headline">Connection State {{partner.state}} </v-card-title>
+
+        <v-card-text>
+          The connection with your Business Partner is marked as {{partner.state}}. This could mean that your request will fail. Do you want to try anyways?
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn color="secondary" text @click="attentionPartnerStateDialog = false">No</v-btn>
+
+          <v-btn color="primary" text @click="proceed">Yes</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -141,6 +163,8 @@ export default {
       isReady: false,
       isBusy: false,
       isUpdatingName: false,
+      attentionPartnerStateDialog: false,
+      goTo: {},
       alias: "",
       partner: {},
       rawData: {},
@@ -175,6 +199,31 @@ export default {
     }
   },
   methods: {
+    proceed() {
+      this.attentionPartnerStateDialog = false;
+      this.$router.push(this.goTo);
+
+    },
+    requestPresentation() {
+
+      if (this.partner.state === ('response' || 'active')) {
+        this.$router.push({name: 'RequestPresentation', params: { id: this.id } });
+      } else {
+        this.attentionPartnerStateDialog = true;
+        this.goTo = {name: 'RequestPresentation', params: { id: this.id } };
+      }
+
+    },
+    sendPresentation() {
+
+      if (this.partner.state === ('response' || 'active')) {
+        this.$router.push({name: 'SendPresentation', params: { id: this.id } });
+      } else {
+        this.attentionPartnerStateDialog = true;
+        this.goTo = {name: 'SendPresentation', params: { id: this.id } };
+      }
+
+    },
     getPresentationRecords() {
       console.log("Getting presentation records...");
       this.$axios

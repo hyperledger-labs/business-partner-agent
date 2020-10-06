@@ -179,8 +179,15 @@ export default {
           case 401:
             this.sessionDialog = true;
         }
-      }
 
+        if (
+          {}.hasOwnProperty.call(msg.response, "data") &&
+          {}.hasOwnProperty.call(msg.response.data, "message")
+        ) {       
+          msg = msg.response.data.message;      
+        }
+      }
+      
       (this.snackbarMsg = msg), (this.color = "red"), (this.snackbar = true);
     });
   },

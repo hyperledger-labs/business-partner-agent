@@ -19,7 +19,8 @@
     @click:row="open"
     >
         <template v-slot:[`item.name`]="{ item }">
-            <div class="font-weight-medium"> {{ item.name }}</div>
+            <PartnerStateIndicator v-if="item.state" v-bind:state="item.state"></PartnerStateIndicator>
+            <span class="font-weight-medium"> {{ item.name }}</span>
         </template>
 
         <template v-slot:[`item.createdAt`]="{ item }">
@@ -34,15 +35,14 @@
 </template>
 
 <script>
-import {
-    EventBus
-} from "../main";
-import {
-    getPartnerProfile,
-    getPartnerName
-} from "../utils/partnerUtils"
+import { EventBus } from "../main";
+import { getPartnerProfile, getPartnerName } from "../utils/partnerUtils";
+import PartnerStateIndicator from "@/components/PartnerStateIndicator"; 
 export default {
     name: "PartnerList",
+    components: {
+        PartnerStateIndicator
+    },
     props: {
         selectable: {
             type: Boolean,
@@ -73,7 +73,9 @@ export default {
         }
     },
     computed: {
-
+        expertMode() {
+            return this.$store.state.expertMode;
+        }
     },
     methods: {
         open(partner) {
