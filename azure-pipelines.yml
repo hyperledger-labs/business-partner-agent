@@ -16,7 +16,7 @@ variables:
 #     imagePullSecret, k8connection, namespace
   - group: my-variable-group
   - name: tag
-    value: '0.1.$(Build.BuildId) #'$(Build.SourceBranchName)' 
+    value: '0.1.$(Build.BuildId)' #'$(Build.SourceBranchName)' 
   - name: vmImageName   # Agent VM image name
     value: 'ubuntu-latest'
 
