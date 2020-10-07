@@ -1,0 +1,192 @@
+# Default values for helm-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+
+  nameOverride: ""
+  fullnameOverride: ""
+
+    ## Persistence configuration
+  persistence:
+    WALLET_TYPE: postgres_storage
+    WALLET_ENCRYPTION_KEY: key
+
+    # If true, the Postgres chart is deployed
+    deployPostgres: true
+
+bpa:
+  name: bpacore
+ 
+  image:
+    repository: myrepo
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+
+  # Security Config
+  SECURITY_ENABLED: false
+  # Default username and password, set if running in production like environments
+  BOOTSTRAP_UN: admin
+  BOOTSTRAP_PW: changeme
+
+  # Run in web only mode without any ledger dependency and aries functionality
+  WEB_MODE: false
+
+  # Uni Resolver URL
+  RESOLVER_URL: https://resolver.dev.economyofthings.io
+  # The ledger prefix that is configured with the Uni Resolver
+  DID_PREFIX: "did:sov:iil:"
+
+  # The Ledger Explorer
+  LEDGER_URL: https://indy-test.bosch-digital.de
+  LEDGER_BROWSER: https://indy-test.bosch-digital.de
+
+  imagePullSecrets: []
+ 
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  service:
+    type: ClusterIP
+    PORT: 80
+
+  ingress:
+    enabled: false
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: my-bpa.local
+        paths: []
+    tls: []
+    #  - secretName: my-bpa-tls
+    #    hosts:
+    #      - my-bpa.local
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+acapy:
+  name: acapy
+
+  image:
+    repository: bcgovimages/aries-cloudagent
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: py36-1.15-0_0.5.5-beta1
+
+  # Enter wallet seed here:
+  AGENT_SEED: 0dcb2d7b444a4de591316231527aea1f
+
+  BUILD_CONTEXT: https://github.com/hyperledger/aries-cloudagent-python.git
+  BUILD_DOCKERFILE_PATH: docker/Dockerfile.run
+
+  ADMIN_URL_API_KEY: 2f9729eef0be49608c1cffd49ee3cc4a
+
+  AGENT_NAME: ca-aca-py
+
+  imagePullSecrets: [] 
+  nameOverride: ""
+  fullnameOverride: ""
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  service:
+    type: ClusterIP
+    ADMIN_PORT: 8031
+    HTTP_PORT: 8030
+
+  ingress:
+    enabled: false
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: my-acapy.local
+        paths: []
+    tls: []
+    #  - secretName: my-acapy-tls
+    #    hosts:
+    #      - my-acapy.local
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+postgresql:
+  ## PostgreSQL service configuration
+  service:
+    port: 5432
+
+  ### PostgreSQL User to create.
+  ##
+  postgresqlUsername: bpa
+
+  ## PostgreSQL Password for the new user.
+  ## If not set, a random 10 characters password will be used.
+  ##
+  #postgresPassword: ""
+
+  ## PostgreSQL Database to create.
+  ##
+  postgresqlDatabase: bpa
+
+  ## Persistent Volume Storage configuration.
+  ## ref: https://kubernetes.io/docs/user-guide/persistent-volumes
+  ##
+  persistence:
+    ## Enable PostgreSQL persistence using Persistent Volume Claims.
+    ##
+    enabled: false
+
