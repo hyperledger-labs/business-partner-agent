@@ -206,7 +206,7 @@ export default {
     },
     requestPresentation() {
 
-      if (this.partner.state === ('response' || 'active')) {
+      if (this.partner.state === 'response' || this.partner.state === 'active') {
         this.$router.push({name: 'RequestPresentation', params: { id: this.id } });
       } else {
         this.attentionPartnerStateDialog = true;
@@ -216,7 +216,7 @@ export default {
     },
     sendPresentation() {
 
-      if (this.partner.state === ('response' || 'active')) {
+      if (this.partner.state === 'response' || this.partner.state === 'active') {
         this.$router.push({name: 'SendPresentation', params: { id: this.id } });
       } else {
         this.attentionPartnerStateDialog = true;
