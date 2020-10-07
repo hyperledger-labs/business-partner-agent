@@ -17,12 +17,18 @@
  */
 package org.hyperledger.oa.repository;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.hyperledger.oa.impl.aries.SchemaService;
 import org.hyperledger.oa.model.BPAUser;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.env.Environment;
@@ -39,18 +45,36 @@ public class DBOperations {
     @Inject
     private UserRepository userRepo;
 
+    @Inject
+    Optional<SchemaService> schemaService;
+
     @Value("${oagent.bootstrap.username}")
     private String username;
 
     @Value("${oagent.bootstrap.password}")
     private String password;
 
+    @Property(name = "oagent.schemes")
+    List<Map<String, String>> schemes;
+
     @Async
     @EventListener
     public void onServiceStartedEvent(StartupEvent startupEvent) {
         log.info("Running startup database operations.", startupEvent);
 
-        // create default user
+        createDefaultUser();
+        createDefaultSchemes();
+
+        log.debug("Done running database operations.");
+    }
+    
+    private void createDefaultSchemes() {
+    	log.debug("Purging and re-setting default schemes.");
+    	
+        schemaService.get().setWriteOnlySchemes(schemes);
+    }
+
+    private void createDefaultUser() {
         userRepo.findByUsername(username).ifPresentOrElse(u -> {
             log.info("Bootstrap user already exists, skipping creation");
         }, () -> {
@@ -60,7 +84,5 @@ public class DBOperations {
                     .roles("ROLE_USER,ROLE_ADMIN")
                     .build());
         });
-
-        log.debug("Done running database operations.");
     }
 }

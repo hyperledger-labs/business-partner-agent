@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -57,18 +58,29 @@ public class SchemaService {
     // CRUD Methods
 
     public SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label) {
+    	return addSchema(schemaId, label, false); 
+    }
+    
+    public SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label, boolean isReadOnly) {
         SchemaAPI result = null;
         String sId = StringUtils.strip(schemaId);
         final CredentialType credType = CredentialType.fromSchemaId(sId);
-        if (schemaRepo.findByType(credType).isPresent()) {
-            throw new WrongApiUsageException("Schema with type: " + credType + " already exists.");
+
+        // schemes of type other than OTHER should only exist once
+        if (!credType.equals(CredentialType.OTHER) && schemaRepo.findByType(credType).isPresent()) {
+            throw new WrongApiUsageException("Scheme with type: " + credType + " already exists.");
         }
 
         try {
             Optional<org.hyperledger.aries.api.schema.SchemaSendResponse.Schema> ariesSchema = ac.schemasGetById(sId);
             if (ariesSchema.isPresent()) {
-                BPASchema dbS = BPASchema.builder().label(label).type(credType).schemaId(sId)
-                        .seqNo(ariesSchema.get().getSeqNo()).build();
+                BPASchema dbS = BPASchema.builder()
+                		.label(label)
+                		.type(credType)
+                		.schemaId(sId)
+                        .seqNo(ariesSchema.get().getSeqNo())
+                        .isReadOnly(isReadOnly)
+                        .build();
                 BPASchema saved = schemaRepo.save(dbS);
                 result = SchemaAPI.from(saved);
             }
@@ -128,5 +140,13 @@ public class SchemaService {
             log.error("aca-py not reachable", e);
         }
         return result;
+    }
+
+    public void setWriteOnlySchemes(List<Map<String,String>> schemes) {
+        schemaRepo.deleteByIsReadOnly(true);  
+        
+        for (Map<String, String> scheme : schemes) {
+        	  addSchema(scheme.get("id"), scheme.get("label"), true);
+        }
     }
 }

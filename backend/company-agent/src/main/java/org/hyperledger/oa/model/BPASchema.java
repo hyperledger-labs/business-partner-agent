@@ -33,6 +33,8 @@ public class BPASchema {
     @Nullable
     private String label;
 
+    private Boolean isReadOnly;
+
     private CredentialType type;
 
     private String schemaId;
