@@ -6,6 +6,7 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
+<div>
 <v-card class="mx-auto">
     <v-card-title class="bg-light">
         <v-btn depressed color="secondary" icon @click="$router.go(-1);">
@@ -21,10 +22,28 @@
     <v-card-actions>
         <v-layout align-end justify-end>
             <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
-            <v-btn :loading="this.isBusy" color="primary" text @click="submitRequest()">Submit</v-btn>
+            <v-btn :loading="this.isBusy" color="primary" text @click="checkRequest">Submit</v-btn>
         </v-layout>
     </v-card-actions>
 </v-card>
+<v-dialog v-model="attentionPartnerStateDialog" max-width="500">
+      <v-card>
+        <v-card-title class="headline">Connection State {{partner.state}} </v-card-title>
+
+        <v-card-text>
+          The connection with your Business Partner is marked as {{partner.state}}. This could mean that your request will fail. Do you want to try anyways?
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn color="secondary" text @click="attentionPartnerStateDialog = false">No</v-btn>
+
+          <v-btn color="primary" text @click="submitRequest">Yes</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+</div>
 </template>
 
 <script>
@@ -50,21 +69,31 @@ export default {
         return {
             document: {},
             isBusy: false,
-            isReady: false
+            isReady: false,
+            attentionPartnerStateDialog: false,
+            partner: {}
         };
     },
     computed: {},
     methods: {
-        submitRequest() {
-            this.isBusy = true;
+        checkRequest() {
             if (this.$refs.partnerList.selected.length === 1) {
-
                 if (this.$refs.partnerList.selected[0].id) {
 
-                    let selectedPartner = this.$refs.partnerList.selected[0].id;
-                    console.log(this.documentId)
+                    this.partner = this.$refs.partnerList.selected[0]
+
+                    this.attentionPartnerStateDialog = true;
+                }
+            } else {
+                EventBus.$emit("error", 'No partner for verification request selected');
+            }
+
+        },
+        submitRequest() {
+             this.attentionPartnerStateDialog = false;
+            this.isBusy = true;
                     this.$axios
-                        .post(`${this.$apiBaseUrl}/partners/${selectedPartner}/credential-request`, {
+                        .post(`${this.$apiBaseUrl}/partners/${this.partner.id}/credential-request`, {
                             documentId: this.documentId
                         })
                         .then((res) => {
@@ -80,15 +109,6 @@ export default {
                             console.error(e);
                             EventBus.$emit("error", e);
                         });
-
-                } else {
-                    this.isBusy = false;
-                }
-
-            } else {
-                this.isBusy = false;
-                EventBus.$emit("error", 'No partner for verification request selected');
-            }
         },
         cancel() {
             this.$router.go(-1);

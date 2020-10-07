@@ -8,7 +8,7 @@
 
 <template>
 <v-container>
-    <v-data-table hide-default-footer :loading="isBusy" v-model="selected" :headers="headers" :items="data" :show-select="selectable" single-select @click:row="open">
+    <v-data-table :hide-default-footer="data.length < 10" :loading="isBusy" v-model="selected" :headers="headers" :items="data" :show-select="selectable" single-select @click:row="open">
 
         <template v-slot:[`item.type`]="{ item }">
             <div v-if="item.type === CredentialTypes.OTHER.name" class="font-weight-medium">{{ item.credentialDefinitionId | credentialTag }}</div>
@@ -16,19 +16,21 @@
         </template>
 
         <template v-slot:[`item.createdDate`]="{ item }">
-            {{ item.createdDate | moment("dddd, MMMM Do YYYY") }}
+            {{ item.createdDate | moment("YYYY-MM-DD HH:mm") }}
         </template>
 
         <template v-slot:[`item.updatedDate`]="{ item }">
-            {{ item.updatedDate | moment("dddd, MMMM Do YYYY") }}
+            {{ item.updatedDate | moment("YYYY-MM-DD HH:mm") }}
         </template>
 
         <template v-slot:[`item.issuedAt`]="{ item }">
-            {{ item.issuedAt | moment("dddd, MMMM Do YYYY") }}
+            {{ item.issuedAt | moment("YYYY-MM-DD HH:mm") }}
         </template>
 
         <template v-slot:[`item.isPublic`]="{ item }">
-            <v-icon v-if="item.isPublic" color="green">mdi-eye</v-icon>
+            <v-icon v-if="item.isPublic" color="green">
+                mdi-eye
+            </v-icon>
             <template v-else>
                 <v-icon>mdi-eye-off</v-icon>
             </template>

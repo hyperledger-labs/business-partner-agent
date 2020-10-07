@@ -9,7 +9,7 @@
   <v-app>
     <v-navigation-drawer v-model="drawer" app>
       <v-list dense>
-        <router-link tag="span" :to="{ name: 'Home' }">
+        <router-link tag="span" :to="{ name: 'Dashboard' }">
           <v-list-item v-if="logo" two-line class="pl-3 mt-n2">
             <v-list-item-content>
               <v-list-item-title><v-img v-if="logo" :src="logo"></v-img></v-list-item-title>
@@ -36,26 +36,20 @@
             <v-list-item-title>Identity</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <!-- <v-list-group > -->
-        <!-- <template v-slot:activator> -->
+         <v-list-item link :to="{ name: 'Dashboard' }" exact>
+          <v-list-item-action>
+            <v-icon>mdi-view-dashboard</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Dashboard</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <v-list-item link :to="{ name: 'PublicProfile' }">
           <v-list-item-action>
             <v-icon>mdi-globe-model</v-icon>
           </v-list-item-action>
           <v-list-item-title>Public Profile</v-list-item-title>
         </v-list-item>
-        <!-- </template> -->
-        <!-- <v-list-item link :to="{ path: '/masterdata#base-information' }">
-           <v-list-item-title>Base Information</v-list-item-title>
-        </v-list-item>
-        
-          <v-list-item link :to="{ path: '/masterdata#registration-address' }">
-             <v-list-item-title>Registration Address</v-list-item-title>
-          </v-list-item>
-          <v-list-item>
-             <v-list-item-title>Contact Persons</v-list-item-title>
-        </v-list-item>-->
-        <!-- </v-list-group> -->
         <v-list-item link :to="{ name: 'Wallet' }">
           <v-list-item-action>
             <v-icon>mdi-cards-outline</v-icon>
@@ -95,9 +89,7 @@
     </v-app-bar>
 
     <v-content>
-      <keep-alive include="MasterData">
         <router-view></router-view>
-      </keep-alive>
     </v-content>
 
     <v-snackbar
@@ -187,8 +179,15 @@ export default {
           case 401:
             this.sessionDialog = true;
         }
-      }
 
+        if (
+          {}.hasOwnProperty.call(msg.response, "data") &&
+          {}.hasOwnProperty.call(msg.response.data, "message")
+        ) {       
+          msg = msg.response.data.message;      
+        }
+      }
+      
       (this.snackbarMsg = msg), (this.color = "red"), (this.snackbar = true);
     });
   },

@@ -122,7 +122,6 @@ const store = new Vuex.Store({
           EventBus.$emit("error", e);
         })
     },
-
     async completeEditDocument({ state }) {
       if (state.editedDocument.add) {
         axios

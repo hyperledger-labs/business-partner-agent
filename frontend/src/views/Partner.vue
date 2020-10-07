@@ -5,11 +5,12 @@
  
  SPDX-License-Identifier: Apache-2.0
 -->
+
 <template>
   <v-container>
     <v-card class="mx-auto">
       <v-card-title class="bg-light">
-        <v-btn depressed color="secondary" icon @click="$router.push({ name: 'Partners' })">
+        <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>mdi-chevron-left</v-icon>
         </v-btn>
         <span v-if="!isUpdatingName">{{ partner.name }}</span>
@@ -57,6 +58,7 @@
 
       <v-card-text>
         <OganizationalProfile v-if="partner.profile" v-bind:document="partner.profile" isReadOnly></OganizationalProfile>
+        <DocumentCredentialList v-if="isReady" v-bind:credentials="credentials"></DocumentCredentialList>
         <v-row class="mx-4">
           <v-col cols="4">
             <v-row>
@@ -66,13 +68,13 @@
             <v-row class="mt-4">
               <v-btn
                 small
-                :to="{ name: 'RequestPresentation', params: { id: id }  }"
+                @click="requestPresentation"
               >Request Presentation</v-btn>
             </v-row>
           </v-col>
           <v-col cols="8">
             <v-card flat>
-              <PresentationList v-if="isReady" v-bind:credentials="presentationsReceived" :expandable="true"></PresentationList>
+              <PresentationList v-if="isReady" v-bind:credentials="presentationsReceived" :expandable="false"></PresentationList>
             </v-card>
           </v-col>
         </v-row>
@@ -86,7 +88,11 @@
             </v-row>
             <v-row>The presentations you sent to your partner</v-row>
             <v-row class="mt-4">
-              <v-btn small :to="{ name: 'SendPresentation', params: { id: id }  }">Send Presentation</v-btn>
+              <v-btn 
+                small 
+                @click="sendPresentation"
+              >
+              Send Presentation</v-btn>
             </v-row>
           </v-col>
           <v-col cols="8">
@@ -108,12 +114,31 @@
         </v-expansion-panels>
       </v-card-actions>
     </v-card>
+
+    <v-dialog v-model="attentionPartnerStateDialog" max-width="500">
+      <v-card>
+        <v-card-title class="headline">Connection State {{partner.state}} </v-card-title>
+
+        <v-card-text>
+          The connection with your Business Partner is marked as {{partner.state}}. This could mean that your request will fail. Do you want to try anyways?
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn color="secondary" text @click="attentionPartnerStateDialog = false">No</v-btn>
+
+          <v-btn color="primary" text @click="proceed">Yes</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
 import VueJsonPretty from "vue-json-pretty";
 import OganizationalProfile from "@/components/OrganizationalProfile";
+import DocumentCredentialList from "@/components/credentials/DocumentCredentialList";
 import PresentationList from "@/components/PresentationList";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import { CredentialTypes } from "../constants";
@@ -126,7 +151,8 @@ export default {
     VueJsonPretty,
     OganizationalProfile,
     PresentationList,
-    PartnerStateIndicator
+    PartnerStateIndicator,
+    DocumentCredentialList
   },
   created() {
     this.getPartner();
@@ -137,6 +163,8 @@ export default {
       isReady: false,
       isBusy: false,
       isUpdatingName: false,
+      attentionPartnerStateDialog: false,
+      goTo: {},
       alias: "",
       partner: {},
       rawData: {},
@@ -147,13 +175,13 @@ export default {
           required: value => !!value || "Can't be empty"
       },
       headersSent: [
-        // {
-        //   text: "Name",
-        //   value: "name"
-        // },
         {
           text: "Type",
           value: "type"
+        },
+        {
+          text: "Issuer",
+          value: "issuer"
         },
         {
           text: "Sent at",
@@ -162,10 +190,6 @@ export default {
           text: "State",
           value: "state"
         }
-        // ,{
-        //   text: "Actions",
-        //   value: "actions"
-        // }
       ]
     };
   },
@@ -175,6 +199,31 @@ export default {
     }
   },
   methods: {
+    proceed() {
+      this.attentionPartnerStateDialog = false;
+      this.$router.push(this.goTo);
+
+    },
+    requestPresentation() {
+
+      if (this.partner.state === ('response' || 'active')) {
+        this.$router.push({name: 'RequestPresentation', params: { id: this.id } });
+      } else {
+        this.attentionPartnerStateDialog = true;
+        this.goTo = {name: 'RequestPresentation', params: { id: this.id } };
+      }
+
+    },
+    sendPresentation() {
+
+      if (this.partner.state === ('response' || 'active')) {
+        this.$router.push({name: 'SendPresentation', params: { id: this.id } });
+      } else {
+        this.attentionPartnerStateDialog = true;
+        this.goTo = {name: 'SendPresentation', params: { id: this.id } };
+      }
+
+    },
     getPresentationRecords() {
       console.log("Getting presentation records...");
       this.$axios
@@ -219,6 +268,8 @@ export default {
                 return cred.type !== CredentialTypes.PROFILE.name;
               });
             }
+            console.log("PARTNER");
+            console.log(this.credentials);
 
             // Hacky way to define a partner name
             // Todo: Make this consistent. Probalby in backend

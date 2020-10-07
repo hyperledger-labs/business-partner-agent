@@ -8,7 +8,8 @@
 
 <template>
 <v-data-table 
-    hide-default-footer v-model="selected" 
+    :hide-default-footer="credentialsWithIndex.length < 10" 
+    v-model="selected" 
     :show-select="selectable" 
     single-select 
     :headers="headers" 
@@ -22,15 +23,15 @@
         <div v-if="item.type === CredentialTypes.OTHER.name">{{ item.credentialDefinitionId | credentialTag }}</div>
         <div v-else>{{ item.type | credentialLabel }}</div>
     </template>
-    <template v-slot:[`item.verified`]="{ item }">
-        <v-icon v-if="item.state === 'verified'" color="green">mdi-check</v-icon>
+    <template v-slot:[`item.state`]="{ item }">
+        <v-icon v-if="item.state === 'verified' || item.state== 'presentation_acked'" color="green">mdi-check</v-icon>
         <!-- <v-btn v-if="item.indyCredential" color="primary" text>verify</v-btn> -->
     </template>
     <template v-slot:[`item.sentAt`]="{ item }">
-       {{item.sentAt | moment("MMMM Do YYYY HH:MM") }}
+       {{item.sentAt | moment("YYYY-MM-DD HH:mm") }}
     </template>
     <template v-slot:[`item.receivedAt`]="{ item }">
-       {{item.receivedAt | moment("MMMM Do YYYY HH:MM") }}
+       {{item.receivedAt | moment("YYYY-MM-DD HH:mm") }}
     </template>
     <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length">
@@ -82,19 +83,17 @@ export default {
                     value: "receivedAt"
                 },
                 {
-                    text: "Verified",
-                    value: "verified"
+                    text: "State",
+                    value: "state"
                 },
                 // {
                 //     text: "Actions",
                 //     value: "actions"
                 // }
-
             ]
         }
     },
     created() {
-
     },
     data: () => {
         return {
@@ -116,7 +115,6 @@ export default {
             //   credential.verified = true
             // })
         }
-
     },
     methods: {
          openPresentation(presentation) {
@@ -124,10 +122,8 @@ export default {
                 this.$router.push({ path: `presentation/${presentation.id}`, append: true})
             } else {
                 EventBus.$emit('error', 'No details view available for presentations in public profile.')
-
             }
         }
-
     },
     components: {
         Credential

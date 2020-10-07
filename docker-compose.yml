@@ -56,7 +56,7 @@ services:
         --inbound-transport http '0.0.0.0' ${AGENT_HTTP_PORT} \
         --outbound-transport http \
         --endpoint ${AGENT_ENDPOINT} \
-        --profile-endpoint ${BPA_PROFILE_ENDPOINT} \
+        --profile-endpoint https://${BPA_HOST}/profile.jsonld \
         --webhook-url http://company-agent:${BPA_PORT}/log \
         --genesis-url '${LEDGER_URL}/genesis' \
         --wallet-type 'indy' \

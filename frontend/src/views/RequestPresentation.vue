@@ -69,19 +69,26 @@ export default {
             headers: [{
                 text: "Type",
                 value: "credentialDefinitionId"
+            }, {
+                text: "Issuer",
+                value: "issuer"
             }],
             templates: [
                 {
-                    credentialDefinitionId: "nJvGcV7hBSLRSUvwGk2hT:3:CL:734:IATF Certificate"
+                    credentialDefinitionId: "nJvGcV7hBSLRSUvwGk2hT:3:CL:734:IATF Certificate",
+                    issuer: "IATF Proxy Issuer"
                 },
                 {
-                    credentialDefinitionId: "4QybVurJnPDTHcmcbiGUnU:3:CL:894:commercial register entry"
+                    credentialDefinitionId: "4QybVurJnPDTHcmcbiGUnU:3:CL:894:commercial register entry",
+                    issuer: "did:sov:iil:4QybVurJnPDTHcmcbiGUnU"
                 },
                 {
-                    credentialDefinitionId: "8faozNpSjFfPJXYtgcPtmJ:3:CL:618:poc"
+                    credentialDefinitionId: "8faozNpSjFfPJXYtgcPtmJ:3:CL:894:Commercial Registry Entry",
+                    issuer: "Commercial Registry (Open Corporates Proxy)"
                 },
                 {
-                    credentialDefinitionId: "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc"
+                    credentialDefinitionId: "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc",
+                    issuer: "did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt"
                 }
             ]
         };
