@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "acapy.fullname" . }}
+  labels:
+    {{- include "acapy.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "acapy.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.acapy.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "acapy.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.acapy.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.acapy.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.acapy.securityContext | nindent 12 }}
+          image: "{{ .Values.acapy.image.repository }}:{{ .Values.acapy.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.acapy.image.pullPolicy }}
+          args: [
+           "-c",
+           "sleep 5; \
+           aca-py start \
+           --inbound-transport http '0.0.0.0' {{ .Values.acapy.service.HTTP_PORT }} \ 
+           --outbound-transport http \ 
+           --admin '0.0.0.0' {{ .Values.acapy.service.ADMIN_PORT }} \
+           --endpoint https://{{ (index .Values.acapy.ingress.hosts 0).host }} \ 
+           --profile-endpoint https://{{ (index .Values.bpa.ingress.hosts 0).host }}/profile.jsonld \
+           --wallet-type indy \
+           --seed '{{ .Values.acapy.AGENT_SEED }}' \
+           --webhook-url http://{{ include "bpa.fullname" . }}:{{ .Values.bpa.service.PORT }}/log \
+           --genesis-url '{{ .Values.bpa.LEDGER_URL }}/genesis' \
+           --admin-api-key '{{ .Values.acapy.ADMIN_URL_API_KEY }}' \
+           --label {{ .Values.acapy.AGENT_NAME }} \
+           --auto-accept-invites --auto-accept-requests --auto-respond-messages --auto-respond-credential-proposal --auto-respond-credential-offer --auto-respond-credential-request --auto-respond-presentation-proposal --auto-respond-presentation-request --auto-store-credential --auto-verify-presentation --auto-ping-connection --public-invites --plugin aries_cloudagent.messaging.jsonld  \
+           --log-level info \
+           --wallet-storage-type postgres_storage \
+           --wallet-storage-config '{\"url\":\"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.service.port }}\",\"max_connections\":5}' \
+           --wallet-storage-creds '{\"account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"password\":\"$(POSTGRES_PASSWORD)\",\"admin_account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"admin_password\":\"$(POSTGRES_PASSWORD)\"}' \     ", 
+          ]
+          command:
+          - /bin/bash
+          ports:
+            - name: http
+              containerPort: 8030
+              protocol: TCP
+            - name: admin
+              containerPort: 8031
+              protocol: TCP              
+          env:   
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "global.postgresql.fullname" . }}
+                  key: postgresql-password        
+          resources:
+            {{- toYaml .Values.acapy.resources | nindent 12 }}
+      {{- with .Values.acapy.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.acapy.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.acapy.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
