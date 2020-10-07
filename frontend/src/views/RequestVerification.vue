@@ -82,8 +82,14 @@ export default {
 
                     this.partner = this.$refs.partnerList.selected[0]
 
-                    this.attentionPartnerStateDialog = true;
+                    if (this.partner.state === 'response' || this.partner.state === 'active') {
+                        this.submitRequest();
+                    } else {
+                        this.attentionPartnerStateDialog = true;
+                    }
                 }
+
+                    
             } else {
                 EventBus.$emit("error", 'No partner for verification request selected');
             }
