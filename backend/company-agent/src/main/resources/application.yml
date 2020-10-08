@@ -105,7 +105,7 @@ oagent:
   bootstrap:
     username: ${BPA_BOOTSTRAP_UN:admin}
     password: ${BPA_BOOTSTRAP_PW:changeme}   
-  schemes:
+  schemas:
     - id: "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
       label: "Bank Account"
     - id: "M6Mbe3qx7vB4wpZF4sBRjt:2:foo:1.0"

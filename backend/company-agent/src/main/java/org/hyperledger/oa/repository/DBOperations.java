@@ -54,8 +54,8 @@ public class DBOperations {
     @Value("${oagent.bootstrap.password}")
     private String password;
 
-    @Property(name = "oagent.schemes")
-    List<Map<String, String>> schemes;
+    @Property(name = "oagent.schemas")
+    List<Map<String, String>> schemas;
 
     @Async
     @EventListener
@@ -63,15 +63,15 @@ public class DBOperations {
         log.info("Running startup database operations.", startupEvent);
 
         createDefaultUser();
-        createDefaultSchemes();
+        createDefaultSchemas();
 
         log.debug("Done running database operations.");
     }
 
-    private void createDefaultSchemes() {
-        log.debug("Purging and re-setting default schemes.");
+    private void createDefaultSchemas() {
+        log.debug("Purging and re-setting default schemas.");
 
-        schemaService.ifPresent(s -> s.resetWriteOnlySchemes(schemes));
+        schemaService.ifPresent(s -> s.resetWriteOnlySchemas(schemas));
     }
 
     private void createDefaultUser() {
