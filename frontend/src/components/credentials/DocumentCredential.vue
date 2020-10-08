@@ -7,39 +7,43 @@
 -->
 
 <template>
-<v-card-text>
     <v-form ref="mdForm">
-        <h3 v-if="!showOnlyContent && (document.issuer || document.issuedAt)">Issuer</h3>
-        <v-row v-if="!showOnlyContent">
-            <v-col>
-                <v-text-field v-if="document.issuer" label="Issuer" v-model="document.issuer" disabled outlined dense></v-text-field>
-                <v-text-field v-if="document.issuedAt" label="Issued at" :placeholder="$options.filters.moment(document.issuedAt, 'YYYY-MM-DD HH:mm')" disabled outlined dense></v-text-field>
-            </v-col>
-        </v-row>
+        <span v-if="(document.issuer || document.issuedAt)">
+            <!-- <h4  class="grey--text text--darken-2">Issuer</h4> -->
+            <v-row>
+                <v-col class="pb-0">
+                    <v-text-field v-if="document.issuer" label="Issuer" v-model="document.issuer" disabled outlined dense></v-text-field>
+                    <v-text-field v-if="document.issuedAt" label="Issued at" :placeholder="$options.filters.moment(document.issuedAt, 'YYYY-MM-DD HH:mm')" disabled outlined dense></v-text-field>
+                </v-col>
+            </v-row>
+        </span>
 
-        <h3 v-if="document.credentialData && !showOnlyContent">Credential Content</h3>
-        <v-row>
-            <v-col>
-                <v-text-field v-for="field in schema.fields" 
-                :key="field.type" 
-                :label="field.label" 
-                placeholder 
-                v-model="documentData[field.type]" 
-                :disabled="isReadOnly" 
-                :rules="[v => !!v || 'Item is required']" 
-                :required="field.required" 
-                outlined 
-                dense></v-text-field>
-            </v-col>
-        </v-row>
+         <v-divider v-if="(document.issuer || document.issuedAt)"/>
+
+        <span v-if="documentData">
+            <!-- <h4  v-if="(document.issuer || document.issuedAt)" class="grey--text text--darken-2">Credential Content</h4> -->
+            <v-row>
+                <v-col class="pb-0">
+                    <v-text-field v-for="field in schema.fields" 
+                    :key="field.type" 
+                    :label="field.label" 
+                    placeholder 
+                    v-model="documentData[field.type]" 
+                    :disabled="isReadOnly" 
+                    :rules="[v => !!v || 'Item is required']" 
+                    :required="field.required" 
+                    outlined 
+                    dense></v-text-field>
+                </v-col>
+            </v-row>
+        </span>
     </v-form>
-</v-card-text>
 </template>
 
 <script>
 import {
     getSchema
-} from "../constants";
+} from "../../constants";
 export default {
     props: {
         isReadOnly: Boolean,
@@ -48,8 +52,12 @@ export default {
     },
     created() {
         console.log(this.document)
+        if(!this.document) {
+            return;
+        }
         // New created document
         if (!{}.hasOwnProperty.call(this.document, 'documentData') && !{}.hasOwnProperty.call(this.document, 'credentialData') && !{}.hasOwnProperty.call(this.document, 'proofData')) {
+
             this.documentData = Object.fromEntries(this.schema.fields.map(field => {
                 return [field.type, '']
             }))
@@ -63,16 +71,21 @@ export default {
                 documentData = this.document.credentialData
             } else if (this.document.proofData) {
                 documentData = this.document.proofData
+
             }
+
             // Only support one nested node for now
             let nestedData = Object.values(documentData).find(value => {
               return typeof value === 'object' && value !== null
             })
+
             this.documentData = nestedData ? nestedData : documentData
         }
+
     },
     data: () => {
         return {
+
         };
     },
     computed: {
@@ -80,6 +93,7 @@ export default {
             let s = getSchema(this.document.type);
             if (s && {}.hasOwnProperty.call(s, 'fields')) {
                 return s
+
                 // No known schema. Generate one from data
                 // Todo: Support arrays and objects as fields
             } else {
@@ -90,14 +104,18 @@ export default {
                             type: key,
                             label: key
                         }
+
                     })
                 }
                 console.log(s)
                 return s
+
             }
         }
+
     },
     methods: {
+
     }
 };
 </script>

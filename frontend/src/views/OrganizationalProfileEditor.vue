@@ -7,7 +7,9 @@
 -->
 <template>
 <AbstractDocumentEditor v-slot:default="slotProps" v-bind:type="PROFILE" v-bind:id="this.id" v-bind:add="this.add">
-    <OganizationalProfile v-bind:document="slotProps.document" />
+    <v-card-text>
+        <OganizationalProfile v-bind:document="slotProps.document" />
+    </v-card-text>
 </AbstractDocumentEditor>
 </template>
 

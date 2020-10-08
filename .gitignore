@@ -42,11 +42,12 @@ formatter-maven-cache.properties
 .classpath
 .factorypath
 .externalToolBuilders
-
+**/application-dev-**.yml
 .vscode
 
 # Build
 **/target/**
+/docker-compose-backend.yml
 
 # Ignore dynamically added frontend files
 backend/company-agent/src/main/resources/public/**
@@ -61,4 +62,7 @@ backend/company-agent/src/main/resources/public/**
 frontend/node/**
 frontend/node_modules/**
 frontend/dist/**
+
+# Kubernetes
+/my-values.yaml
 

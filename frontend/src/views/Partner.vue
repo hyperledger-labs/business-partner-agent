@@ -58,6 +58,7 @@
 
       <v-card-text>
         <OganizationalProfile v-if="partner.profile" v-bind:document="partner.profile" isReadOnly></OganizationalProfile>
+        <DocumentCredentialList v-if="isReady" v-bind:credentials="credentials"></DocumentCredentialList>
         <v-row class="mx-4">
           <v-col cols="4">
             <v-row>
@@ -115,6 +116,7 @@
 <script>
 import VueJsonPretty from "vue-json-pretty";
 import OganizationalProfile from "@/components/OrganizationalProfile";
+import DocumentCredentialList from "@/components/credentials/DocumentCredentialList";
 import PresentationList from "@/components/PresentationList";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import { CredentialTypes } from "../constants";
@@ -127,9 +129,11 @@ export default {
     VueJsonPretty,
     OganizationalProfile,
     PresentationList,
-    PartnerStateIndicator
+    PartnerStateIndicator,
+    DocumentCredentialList
   },
   created() {
+    EventBus.$emit("title", "Partner");
     this.getPartner();
     this.getPresentationRecords();
   },
@@ -216,6 +220,8 @@ export default {
                 return cred.type !== CredentialTypes.PROFILE.name;
               });
             }
+            console.log("PARTNER");
+            console.log(this.credentials);
 
             // Hacky way to define a partner name
             // Todo: Make this consistent. Probalby in backend

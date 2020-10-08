@@ -28,10 +28,10 @@
         <!-- <v-btn v-if="item.indyCredential" color="primary" text>verify</v-btn> -->
     </template>
     <template v-slot:[`item.sentAt`]="{ item }">
-       {{item.sentAt | moment("MMMM Do YYYY HH:MM") }}
+       {{item.sentAt | moment("YYYY-MM-DD HH:mm") }}
     </template>
     <template v-slot:[`item.receivedAt`]="{ item }">
-       {{item.receivedAt | moment("MMMM Do YYYY HH:MM") }}
+       {{item.receivedAt | moment("YYYY-MM-DD HH:mm") }}
     </template>
     <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length">
@@ -90,12 +90,10 @@ export default {
                 //     text: "Actions",
                 //     value: "actions"
                 // }
-
             ]
         }
     },
     created() {
-
     },
     data: () => {
         return {
@@ -117,7 +115,6 @@ export default {
             //   credential.verified = true
             // })
         }
-
     },
     methods: {
          openPresentation(presentation) {
@@ -125,10 +122,8 @@ export default {
                 this.$router.push({ path: `presentation/${presentation.id}`, append: true})
             } else {
                 EventBus.$emit('error', 'No details view available for presentations in public profile.')
-
             }
         }
-
     },
     components: {
         Credential

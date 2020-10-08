@@ -16,15 +16,15 @@
         </template>
 
         <template v-slot:[`item.createdDate`]="{ item }">
-            {{ item.createdDate | moment("MMMM Do YYYY HH:MM") }}
+            {{ item.createdDate | moment("YYYY-MM-DD HH:mm") }}
         </template>
 
         <template v-slot:[`item.updatedDate`]="{ item }">
-            {{ item.updatedDate | moment("MMMM Do YYYY HH:MM") }}
+            {{ item.updatedDate | moment("YYYY-MM-DD HH:mm") }}
         </template>
 
         <template v-slot:[`item.issuedAt`]="{ item }">
-            {{ item.issuedAt | moment("MMMM Do YYYY HH:MM") }}
+            {{ item.issuedAt | moment("YYYY-MM-DD HH:mm") }}
         </template>
 
         <template v-slot:[`item.isPublic`]="{ item }">
@@ -94,9 +94,16 @@ export default {
                     console.log(result);
                     if ({}.hasOwnProperty.call(result, 'data')) {
 
-                        this.isBusy = false
-
-                        this.data = result.data
+                        this.isBusy = false 
+                        
+                        if (type === 'credential') {
+                            this.data = result.data.filter(item => {
+                                return item.issuer
+                            })
+                        } else {
+                            this.data = result.data
+                        }
+                        
 
                         console.log(this.data)
 
