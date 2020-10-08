@@ -98,10 +98,11 @@ public class AdminController {
                 sService.deleteSchema(UUID.fromString(id));
                 return HttpResponse.ok();
             } else {
-                HttpResponse.notAllowed();
+                return HttpResponse.notAllowed();
             }
+        } else {
+            return HttpResponse.notFound();
         }
-        return HttpResponse.notFound();
     }
 
     /**
