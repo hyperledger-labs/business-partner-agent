@@ -140,11 +140,11 @@ public class SchemaService {
         return result;
     }
 
-    public void resetWriteOnlySchemes(List<Map<String, String>> schemes) {
+    public void resetWriteOnlySchemas(List<Map<String, String>> schemas) {
         schemaRepo.deleteByIsReadOnly(true);
 
-        for (Map<String, String> scheme : schemes) {
-            addSchema(scheme.get("id"), scheme.get("label"), true);
+        for (Map<String, String> schema : schemas) {
+            addSchema(schema.get("id"), schema.get("label"), true);
         }
     }
 }
