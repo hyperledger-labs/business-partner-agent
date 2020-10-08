@@ -34,19 +34,19 @@ import org.hyperledger.oa.client.CachingAriesClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import io.micronaut.test.annotation.MicronautTest;
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 
 @MicronautTest
 class CryptoManagerTest extends RunWithAries {
 
     @Inject
-    private CryptoManager mgmt;
+    CryptoManager mgmt;
 
     @Inject
-    private Identity id;
+    Identity id;
 
     @Inject
-    private CachingAriesClient cAC;
+    CachingAriesClient cAC;
 
     @BeforeEach
     public void setupCryptoManager() {

@@ -29,6 +29,7 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.connection.ReceiveInvitationRequest;
 import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.aries.api.proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
 import org.hyperledger.oa.config.runtime.RequiresAries;
 import org.hyperledger.oa.impl.util.AriesStringUtil;
@@ -124,20 +125,21 @@ public class ConnectionManager {
                 }
             });
 
-            // TODO extend client to directly filter by connection_id
-            ac.presentProofRecords().ifPresent(records -> {
-                final List<String> toDelete = records.stream()
-                        .filter(r -> r.getConnectionId() != null && r.getConnectionId().equals(connectionId))
-                        .map(PresentationExchangeRecord::getPresentationExchangeId)
-                        .collect(Collectors.toList());
-                toDelete.forEach(presExId -> {
-                    try {
-                        ac.presentProofRecordsRemove(presExId);
-                    } catch (IOException | AriesException e) {
-                        log.error("Could not delete presentation exchange record: {}", presExId, e);
-                    }
-                });
-            });
+            ac.presentProofRecords(PresentProofRecordsFilter
+                    .builder()
+                    .connectionId(connectionId)
+                    .build()).ifPresent(records -> {
+                        final List<String> toDelete = records.stream()
+                                .map(PresentationExchangeRecord::getPresentationExchangeId)
+                                .collect(Collectors.toList());
+                        toDelete.forEach(presExId -> {
+                            try {
+                                ac.presentProofRecordsRemove(presExId);
+                            } catch (IOException | AriesException e) {
+                                log.error("Could not delete presentation exchange record: {}", presExId, e);
+                            }
+                        });
+                    });
 
             myCredRepo.updateByConnectionId(connectionId, null);
 

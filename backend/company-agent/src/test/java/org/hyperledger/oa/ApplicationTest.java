@@ -19,7 +19,7 @@ package org.hyperledger.oa;
 
 import org.junit.jupiter.api.Test;
 
-import io.micronaut.test.annotation.MicronautTest;
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 
 @MicronautTest
 public class ApplicationTest {

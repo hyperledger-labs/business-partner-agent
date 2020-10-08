@@ -40,13 +40,13 @@ import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import io.micronaut.test.annotation.MicronautTest;
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 
 @MicronautTest
 class ConverterTest extends BaseTest {
 
     @Inject
-    private Converter conv;
+    Converter conv;
 
     private CredentialTestUtils utils;
 

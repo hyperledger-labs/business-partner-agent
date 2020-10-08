@@ -36,6 +36,7 @@ import org.hyperledger.aries.api.credential.CredentialAttributes;
 import org.hyperledger.aries.api.credential.CredentialExchange;
 import org.hyperledger.aries.api.credential.CredentialProposalRequest;
 import org.hyperledger.aries.api.credential.CredentialProposalRequest.CredentialPreview;
+import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.oa.api.CredentialType;
@@ -62,6 +63,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.micronaut.context.annotation.Value;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -73,6 +75,7 @@ public class AriesCredentialManager {
     String didPrefix;
 
     @Inject
+    @Setter
     AriesClient ac;
 
     @Inject
@@ -263,14 +266,19 @@ public class AriesCredentialManager {
 
     public void deleteCredentialById(@NonNull UUID id) {
         credRepo.findById(id).ifPresent(c -> {
+            boolean isPublic = c.getIsPublic().booleanValue();
             try {
                 if (c.getReferent() != null) {
                     ac.credentialRemove(c.getReferent());
                 }
-            } catch (IOException e) {
-                throw new NetworkException("aca-py not reachable", e);
+            } catch (AriesException | IOException e) {
+                // if we fail here its not good, but also no deal breaker, so log and continue
+                log.error("Could not delete aca-py credential for referent: {}", c.getReferent(), e);
             }
             credRepo.deleteById(id);
+            if (isPublic) {
+                vpMgmt.recreateVerifiablePresentation();
+            }
         });
     }
 
@@ -278,7 +286,7 @@ public class AriesCredentialManager {
      * Tries to resolve the issuers DID into a human readable name. Resolution order
      * is: 1. Partner alias the user gave 2. Legal name from the partners public
      * profile 3. ACA-PY Label 4. DID
-     * 
+     *
      * @param ariesCred {@link Credential}
      * @return the issuer or null when the credential or the credential definition
      *         id is null

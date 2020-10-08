@@ -17,6 +17,11 @@
  */
 package org.hyperledger.oa;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.time.Instant;
+
+import org.hyperledger.oa.impl.activity.VPManager;
 import org.hyperledger.oa.util.FileLoader;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -24,6 +29,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.NonNull;
 
 /**
  * Base Class for none Micronaut Tests
@@ -49,4 +56,25 @@ public abstract class BaseTest {
         return mapper.readValue(didDocument, type);
     }
 
+    public static void waitForVP(@NonNull VPManager vpMgmt, boolean waitForVC) throws Exception {
+        Instant timeout = Instant.now().plusSeconds(30);
+        while (vpMgmt.getVerifiablePresentation().isEmpty()
+                || (waitForVC && vpMgmt.getVerifiablePresentation().get().getVerifiableCredential() == null)) {
+            Thread.sleep(15);
+            if (Instant.now().isAfter(timeout)) {
+                fail("Timeout reached while waiting for the VP to be created");
+            }
+        }
+    }
+
+    public static void waitForVCDeletion(@NonNull VPManager vpMgmt) throws Exception {
+        Instant timeout = Instant.now().plusSeconds(30);
+        while (vpMgmt.getVerifiablePresentation().isPresent()
+                && vpMgmt.getVerifiablePresentation().get().getVerifiableCredential() != null) {
+            Thread.sleep(15);
+            if (Instant.now().isAfter(timeout)) {
+                fail("Timeout reached while waiting for the VP to be created");
+            }
+        }
+    }
 }

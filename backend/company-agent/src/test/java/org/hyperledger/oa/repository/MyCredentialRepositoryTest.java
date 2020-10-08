@@ -33,16 +33,16 @@ import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.model.MyCredential;
 import org.junit.jupiter.api.Test;
 
-import io.micronaut.test.annotation.MicronautTest;
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 
 @MicronautTest
 class MyCredentialRepositoryTest extends BaseTest {
 
     @Inject
-    private MyCredentialRepository repo;
+    MyCredentialRepository repo;
 
     @Inject
-    private Converter conv;
+    Converter conv;
 
     @Test
     void testSaveCredential() throws Exception {

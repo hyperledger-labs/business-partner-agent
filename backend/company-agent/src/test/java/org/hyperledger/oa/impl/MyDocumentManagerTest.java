@@ -24,7 +24,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -54,7 +53,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.gson.Gson;
 
 import io.micronaut.context.env.Environment;
-import io.micronaut.test.annotation.MicronautTest;
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -64,22 +63,22 @@ class MyDocumentManagerTest extends RunWithAries {
     private static final Gson PRETTY = GsonConfig.prettyPrinter();
 
     @Inject
-    private MyDocumentManager mgmt;
+    MyDocumentManager mgmt;
 
     @Inject
-    private CryptoManager cryptoMgmt;
+    CryptoManager cryptoMgmt;
 
     @Inject
-    private Identity id;
+    Identity id;
 
     @Inject
-    private CachingAriesClient cAC;
+    CachingAriesClient cAC;
 
     @Inject
-    private VPManager vpMgmt;
+    VPManager vpMgmt;
 
     @Inject
-    private DidDocWebRepository didDocRepo;
+    DidDocWebRepository didDocRepo;
 
     private CredentialTestUtils utils;
 
@@ -191,7 +190,7 @@ class MyDocumentManagerTest extends RunWithAries {
     @Test
     void testRecreateVPDefault() throws Exception {
         vpMgmt.recreateVerifiablePresentation();
-        waitForVP(false);
+        waitForVP(vpMgmt, false);
         final Optional<VerifiablePresentation<VerifiableIndyCredential>> vp = vpMgmt.getVerifiablePresentation();
         assertTrue(vp.isPresent());
         assertNull(vp.get().getVerifiableCredential());
@@ -205,7 +204,7 @@ class MyDocumentManagerTest extends RunWithAries {
         assertFalse(vp.isPresent());
 
         final MyDocumentAPI vc = createAndSavePublicDummyCredential();
-        waitForVP(false);
+        waitForVP(vpMgmt, false);
 
         vp = vpMgmt.getVerifiablePresentation();
         assertTrue(vp.isPresent());
@@ -216,7 +215,7 @@ class MyDocumentManagerTest extends RunWithAries {
         vc.setIsPublic(Boolean.FALSE);
         mgmt.updateDocument(vc.getId(), vc);
 
-        waitForVP(true);
+        waitForVCDeletion(vpMgmt);
         vp = vpMgmt.getVerifiablePresentation();
         assertNull(vp.get().getVerifiableCredential());
     }
@@ -232,16 +231,5 @@ class MyDocumentManagerTest extends RunWithAries {
     private MyDocumentAPI createAndSaveDummyCredential(CredentialType credType, Boolean isPublic)
             throws JsonMappingException, JsonProcessingException {
         return mgmt.saveNewDocument(utils.createDummyCred(credType, isPublic));
-    }
-
-    private void waitForVP(boolean waitForVC) throws Exception {
-        Instant timeout = Instant.now().plusSeconds(30);
-        while (vpMgmt.getVerifiablePresentation().isEmpty()
-                || (waitForVC && vpMgmt.getVerifiablePresentation().get().getVerifiableCredential() != null)) {
-            Thread.sleep(15);
-            if (Instant.now().isAfter(timeout)) {
-                fail("Timeout reached while waiting for the VP to be created");
-            }
-        }
     }
 }
