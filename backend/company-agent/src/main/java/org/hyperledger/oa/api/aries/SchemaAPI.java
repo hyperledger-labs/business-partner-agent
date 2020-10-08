@@ -39,6 +39,8 @@ public class SchemaAPI {
 
     private String schemaId;
 
+    private Boolean isReadOnly;
+
     private Set<String> schemaAttributeNames;
 
     public static SchemaAPI from(BPASchema s) {
@@ -48,6 +50,7 @@ public class SchemaAPI {
                 .label(s.getLabel())
                 .schemaId(s.getSchemaId())
                 .schemaAttributeNames(s.getSchemaAttributeNames())
+                .isReadOnly(s.getIsReadOnly())
                 .build();
     }
 }

@@ -92,8 +92,14 @@ public class AdminController {
     @Delete("/schema/{id}")
     public HttpResponse<Void> removeSchema(@PathVariable String id) {
         if (schemaService.isPresent()) {
-            schemaService.get().deleteSchema(UUID.fromString(id));
-            return HttpResponse.ok();
+            SchemaService sService = schemaService.get();
+            SchemaAPI schema = sService.getSchema(UUID.fromString(id));
+            if (!schema.getIsReadOnly()) {
+                sService.deleteSchema(UUID.fromString(id));
+                return HttpResponse.ok();
+            } else {
+                HttpResponse.notAllowed();
+            }
         }
         return HttpResponse.notFound();
     }
