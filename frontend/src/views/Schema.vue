@@ -104,10 +104,6 @@ export default {
 
                 });
         },
-<<<<<<< HEAD
-=======
-
->>>>>>> cr/feature/055-configurable-schemas
         deleteSchema() {
             this.$axios
                 .delete(`${this.$apiBaseUrl}/admin/schema/${this.id}`)
