@@ -66,9 +66,8 @@ public class SchemaService {
         String sId = StringUtils.strip(schemaId);
         final CredentialType credType = CredentialType.fromSchemaId(sId);
 
-        // schemes of type other than OTHER should only exist once
-        if (!credType.equals(CredentialType.OTHER) && schemaRepo.findByType(credType).isPresent()) {
-            throw new WrongApiUsageException("Scheme with type: " + credType + " already exists.");
+        if (schemaRepo.findBySchemaId(sId).isPresent()) {
+            throw new WrongApiUsageException("Scheme with id: " + sId + " already exists.");
         }
 
         try {
@@ -78,6 +77,7 @@ public class SchemaService {
                         .label(label)
                         .type(credType)
                         .schemaId(sId)
+                        .schemaAttributeNames(getSchemaAttributeNames(sId))
                         .seqNo(ariesSchema.get().getSeqNo())
                         .isReadOnly(isReadOnly)
                         .build();
@@ -94,7 +94,6 @@ public class SchemaService {
         List<SchemaAPI> result = new ArrayList<>();
         schemaRepo.findAll().forEach(dbS -> {
             SchemaAPI schemaAPI = SchemaAPI.from(dbS);
-            schemaAPI.addSchemaAttributes(getSchemaAttributeNames(dbS.getSchemaId()));
             result.add(schemaAPI);
         });
         return result;
@@ -108,7 +107,6 @@ public class SchemaService {
         Optional<BPASchema> schema = schemaRepo.findById(id);
         if (schema.isPresent()) {
             SchemaAPI schemaAPI = SchemaAPI.from(schema.get());
-            schemaAPI.addSchemaAttributes(getSchemaAttributeNames(schema.get().getSchemaId()));
             return schemaAPI;
         } else
             return null;
@@ -142,7 +140,7 @@ public class SchemaService {
         return result;
     }
 
-    public void setWriteOnlySchemes(List<Map<String, String>> schemes) {
+    public void resetWriteOnlySchemes(List<Map<String, String>> schemes) {
         schemaRepo.deleteByIsReadOnly(true);
 
         for (Map<String, String> scheme : schemes) {

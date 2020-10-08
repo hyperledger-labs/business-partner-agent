@@ -33,5 +33,5 @@ public interface SchemaRepository extends CrudRepository<BPASchema, UUID> {
 
     Optional<BPASchema> findByType(CredentialType type);
 
-    void deleteByIsReadOnly(Boolean isReadOnly); 
+    void deleteByIsReadOnly(Boolean isReadOnly);
 }

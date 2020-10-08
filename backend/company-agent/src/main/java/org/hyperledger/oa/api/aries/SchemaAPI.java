@@ -47,10 +47,7 @@ public class SchemaAPI {
                 .id(s.getId())
                 .label(s.getLabel())
                 .schemaId(s.getSchemaId())
+                .schemaAttributeNames(s.getSchemaAttributeNames())
                 .build();
-    }
-
-    public void addSchemaAttributes(Set<String> schemaAttributeNames) {
-        this.schemaAttributeNames = schemaAttributeNames;
     }
 }
