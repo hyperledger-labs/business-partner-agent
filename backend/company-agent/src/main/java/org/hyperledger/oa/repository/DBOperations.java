@@ -67,11 +67,11 @@ public class DBOperations {
 
         log.debug("Done running database operations.");
     }
-    
+
     private void createDefaultSchemes() {
-    	log.debug("Purging and re-setting default schemes.");
-    	
-        schemaService.get().setWriteOnlySchemes(schemes);
+        log.debug("Purging and re-setting default schemes.");
+
+        schemaService.ifPresent(s -> s.resetWriteOnlySchemes(schemes));
     }
 
     private void createDefaultUser() {
