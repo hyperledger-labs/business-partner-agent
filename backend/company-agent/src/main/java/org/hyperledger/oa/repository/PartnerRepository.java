@@ -46,6 +46,6 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     Optional<Partner> findByConnectionId(String connectionId);
 
-    @Query("UPDATE partner SET state = :state WHERE connection_id = :connectionId AND state IS NULL OR state != :state")
-    void updateStateByConnectionId(String connectionId, String state);
+    @Query("UPDATE partner SET state = :newState WHERE connection_id = :connectionId AND (state IS NULL OR state != :newState)")
+    void updateStateByConnectionId(String connectionId, String newState);
 }
