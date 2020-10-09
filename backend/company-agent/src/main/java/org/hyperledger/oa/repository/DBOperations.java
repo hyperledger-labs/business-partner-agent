@@ -17,18 +17,12 @@
  */
 package org.hyperledger.oa.repository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.hyperledger.oa.impl.aries.SchemaService;
 import org.hyperledger.oa.model.BPAUser;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.env.Environment;
@@ -45,17 +39,11 @@ public class DBOperations {
     @Inject
     private UserRepository userRepo;
 
-    @Inject
-    Optional<SchemaService> schemaService;
-
     @Value("${oagent.bootstrap.username}")
     private String username;
 
     @Value("${oagent.bootstrap.password}")
     private String password;
-
-    @Property(name = "oagent.schemas")
-    List<Map<String, String>> schemas;
 
     @Async
     @EventListener
@@ -63,15 +51,8 @@ public class DBOperations {
         log.info("Running startup database operations.", startupEvent);
 
         createDefaultUser();
-        createDefaultSchemas();
 
         log.debug("Done running database operations.");
-    }
-
-    private void createDefaultSchemas() {
-        log.debug("Purging and re-setting default schemas.");
-
-        schemaService.ifPresent(s -> s.resetWriteOnlySchemas(schemas));
     }
 
     private void createDefaultUser() {

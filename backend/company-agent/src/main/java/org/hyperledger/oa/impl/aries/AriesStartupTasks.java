@@ -18,6 +18,8 @@
 package org.hyperledger.oa.impl.aries;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -31,6 +33,7 @@ import org.hyperledger.aries.api.wallet.SetDidEndpointRequest;
 import org.hyperledger.oa.config.runtime.RequiresAries;
 import org.hyperledger.oa.impl.activity.VPManager;
 
+import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.env.Environment;
@@ -52,11 +55,19 @@ public class AriesStartupTasks {
     @Value("${oagent.host}")
     private String host;
 
+    @Property(name = "oagent.schemas")
+    List<Map<String, String>> schemas;
+
+    @Inject
+    Optional<SchemaService> schemaService;
+
     @Async
     public void onServiceStartedEvent() {
         log.debug("Running aries startup tasks...");
 
         ac.statusWaitUntilReady(Duration.ofSeconds(60));
+
+        createDefaultSchemas();
 
         vpMgmt.getVerifiablePresentation().ifPresentOrElse(vp -> {
             log.info("VP already exists, skipping: {}", host);
@@ -67,6 +78,12 @@ public class AriesStartupTasks {
 
         // currently done by aca-py --profile-endpoint option
         // registerProfileEndpoint();
+    }
+
+    private void createDefaultSchemas() {
+        log.debug("Purging and re-setting default schemas.");
+
+        schemaService.ifPresent(s -> s.resetWriteOnlySchemas(schemas));
     }
 
     void registerProfileEndpoint() {
