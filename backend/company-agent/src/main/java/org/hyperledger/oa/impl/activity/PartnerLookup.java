@@ -15,10 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.oa.impl.web;
+package org.hyperledger.oa.impl.activity;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -26,21 +28,24 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.api.ledger.EndpointType;
 import org.hyperledger.oa.api.ApiConstants;
+import org.hyperledger.oa.api.DidDocAPI;
 import org.hyperledger.oa.api.DidDocAPI.PublicKey;
+import org.hyperledger.oa.api.DidDocAPI.Service;
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.api.exception.PartnerException;
 import org.hyperledger.oa.client.URClient;
-import org.hyperledger.oa.impl.activity.CryptoManager;
 import org.hyperledger.oa.impl.util.Converter;
 
+import io.micronaut.cache.annotation.Cacheable;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Singleton
-public class WebPartnerFlow {
+public class PartnerLookup {
 
     @Inject
     private Converter converter;
@@ -51,7 +56,42 @@ public class WebPartnerFlow {
     @Inject
     private CryptoManager crypto;
 
-    public PartnerAPI lookupPartner(@NonNull String endpoint, List<PublicKey> publicKey) {
+    @Cacheable(cacheNames = { "partner-lookup-cache" })
+    public PartnerAPI lookupPartner(@NonNull String did) {
+        Optional<DidDocAPI> didDocument = ur.getDidDocument(did);
+        if (didDocument.isPresent()) {
+            Optional<Map<String, String>> services = filterServices(didDocument.get());
+            if (services.isPresent()) {
+                PartnerAPI partner = new PartnerAPI();
+                if (services.get().containsKey(EndpointType.Profile.getLedgerName())) {
+                    partner = lookupPartner(
+                            services.get().get(EndpointType.Profile.getLedgerName()),
+                            didDocument.get().getPublicKey());
+                }
+                if (services.get().containsKey(EndpointType.Endpoint.getLedgerName())) {
+                    partner.setAriesSupport(Boolean.TRUE);
+                } else {
+                    partner.setAriesSupport(Boolean.FALSE);
+                }
+                return partner;
+            }
+            throw new PartnerException("Could not resolve profile and/or aries endpoint from did document");
+        }
+        throw new PartnerException("Could not retreive did document from universal resolver");
+    }
+
+    static Optional<Map<String, String>> filterServices(@NonNull DidDocAPI doc) {
+        Map<String, String> result = null;
+        if (doc.getService() != null) {
+            result = doc.getService().stream()
+                    .filter(s -> EndpointType.Profile.getLedgerName().equals(s.getType())
+                            || EndpointType.Endpoint.getLedgerName().equals(s.getType()))
+                    .collect(Collectors.toMap(Service::getType, Service::getServiceEndpoint));
+        }
+        return Optional.ofNullable(result);
+    }
+
+    PartnerAPI lookupPartner(@NonNull String endpoint, List<PublicKey> publicKey) {
         Optional<VerifiablePresentation<VerifiableIndyCredential>> profile = ur.getPublicProfile(endpoint);
         if (profile.isPresent()) {
             String verificationMethod = profile.get().getProof() != null
