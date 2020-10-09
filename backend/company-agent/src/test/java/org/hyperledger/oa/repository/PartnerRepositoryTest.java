@@ -18,6 +18,7 @@
 package org.hyperledger.oa.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
@@ -80,6 +81,49 @@ class PartnerRepositoryTest {
         assertTrue(mod.isPresent());
         assertEquals(0, reload.get().getUpdatedAt().compareTo(mod.get().getUpdatedAt()));
         assertEquals("custom2", mod.get().getState());
+    }
+
+    @Test
+    void testUpdateStateShouldNotChangeStateOfOtherConnections() throws Exception {
+        final String p1CId = "id-1";
+        repo.save(Partner
+                .builder()
+                .ariesSupport(Boolean.FALSE)
+                .did("did:fit:123")
+                .connectionId(p1CId)
+                .state("state-1")
+                .build());
+
+        final String p2Cid = "id-2";
+        repo.save(Partner
+                .builder()
+                .ariesSupport(Boolean.FALSE)
+                .did("did:bit:321")
+                .connectionId(p2Cid)
+                .state("state-2")
+                .build());
+
+        final String p3Cid = "id-3";
+        repo.save(Partner
+                .builder()
+                .ariesSupport(Boolean.FALSE)
+                .did("did:foo:321")
+                .connectionId(p3Cid)
+                .build());
+
+        repo.updateStateByConnectionId(p1CId, "custom");
+
+        Optional<Partner> p1 = repo.findByConnectionId(p1CId);
+        assertTrue(p1.isPresent());
+        assertEquals("custom", p1.get().getState());
+
+        Optional<Partner> p2 = repo.findByConnectionId(p2Cid);
+        assertTrue(p2.isPresent());
+        assertEquals("state-2", p2.get().getState());
+
+        Optional<Partner> p3 = repo.findByConnectionId(p3Cid);
+        assertTrue(p3.isPresent());
+        assertNull(p3.get().getState());
     }
 
 }
