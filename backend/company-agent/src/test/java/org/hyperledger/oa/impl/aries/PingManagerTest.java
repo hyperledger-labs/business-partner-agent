@@ -47,6 +47,7 @@ class PingManagerTest {
 
     @Mock
     private AriesClient aries;
+
     @Mock
     private PartnerRepository repo;
 

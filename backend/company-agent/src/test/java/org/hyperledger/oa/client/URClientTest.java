@@ -29,7 +29,7 @@ import org.hyperledger.oa.api.DidDocAPI;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import io.micronaut.test.annotation.MicronautTest;
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 
 @MicronautTest
 class URClientTest {

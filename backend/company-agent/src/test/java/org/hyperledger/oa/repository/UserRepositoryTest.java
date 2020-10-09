@@ -26,13 +26,13 @@ import javax.inject.Inject;
 import org.hyperledger.oa.model.BPAUser;
 import org.junit.jupiter.api.Test;
 
-import io.micronaut.test.annotation.MicronautTest;
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 
 @MicronautTest
 class UserRepositoryTest {
 
     @Inject
-    private UserRepository userRepo;
+    UserRepository userRepo;
 
     @Test
     void test() {

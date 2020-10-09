@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -57,26 +58,26 @@ import lombok.Setter;
 public class VPManager {
 
     @Inject
-    private Identity id;
+    Identity id;
 
     @Inject
-    private MyDocumentRepository docRepo;
+    MyDocumentRepository docRepo;
 
     @Inject
-    private MyCredentialRepository credRepo;
+    MyCredentialRepository credRepo;
 
     @Inject
-    private DidDocWebRepository didRepo;
+    DidDocWebRepository didRepo;
 
     @Inject
-    private PartnerRepository partnerRepo;
+    PartnerRepository partnerRepo;
 
     @Inject
-    private CryptoManager crypto;
+    CryptoManager crypto;
 
     @Inject
     @Setter(AccessLevel.PROTECTED)
-    private Converter converter;
+    Converter converter;
 
     public void recreateVerifiablePresentation() {
         List<VerifiableIndyCredential> vcs = new ArrayList<>();
@@ -106,14 +107,15 @@ public class VPManager {
         } else {
             vpBuilder.verifiableCredential(null);
         }
-        Optional<VerifiablePresentation<VerifiableIndyCredential>> vp = crypto.sign(vpBuilder.build());
-        getVerifiablePresentationInternal().ifPresentOrElse(didWeb -> {
-            didRepo.updateProfileJson(didWeb.getId(), converter.toMap(vp));
-        }, () -> {
-            didRepo.save(DidDocWeb
-                    .builder()
-                    .profileJson(converter.toMap(vp))
-                    .build());
+        crypto.sign(vpBuilder.build()).ifPresent(vp -> {
+            getVerifiablePresentationInternal().ifPresentOrElse(didWeb -> {
+                didRepo.updateProfileJson(didWeb.getId(), converter.toMap(vp));
+            }, () -> {
+                didRepo.save(DidDocWeb
+                        .builder()
+                        .profileJson(converter.toMap(vp))
+                        .build());
+            });
         });
     }
 
@@ -142,7 +144,7 @@ public class VPManager {
                 .build();
     }
 
-    private VerifiableIndyCredential buildFromCredential(@NonNull MyCredential cred, @NonNull String myDid) {
+    private VerifiableIndyCredential buildFromCredential(@NonNull MyCredential cred, @Nullable String myDid) {
         final ArrayList<String> type = new ArrayList<>(cred.getType().getType());
         type.add("IndyCredential");
 

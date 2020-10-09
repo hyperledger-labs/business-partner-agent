@@ -27,7 +27,7 @@ import javax.inject.Inject;
 
 import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventParser;
-import org.hyperledger.oa.RunWithAries;
+import org.hyperledger.oa.BaseTest;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.model.Partner;
 import org.hyperledger.oa.model.PartnerProof;
@@ -35,19 +35,19 @@ import org.hyperledger.oa.repository.PartnerProofRepository;
 import org.hyperledger.oa.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
 
-import io.micronaut.test.annotation.MicronautTest;
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 
 @MicronautTest
-class AriesEventHandlerTest extends RunWithAries {
+class AriesEventHandlerTest extends BaseTest {
 
     @Inject
-    private AriesEventHandler aeh;
+    AriesEventHandler aeh;
 
     @Inject
-    private PartnerProofRepository pRepo;
+    PartnerProofRepository pRepo;
 
     @Inject
-    private PartnerRepository partnerRepo;
+    PartnerRepository partnerRepo;
 
     private EventParser ep = new EventParser();
 

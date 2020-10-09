@@ -22,6 +22,8 @@ micronaut:
         pattern: /**
         access:
           - isAuthenticated()
+  session:
+    max-inactive-interval: 12h
   router:
     # note also check the AppController
     static-resources:

@@ -24,8 +24,11 @@ import org.hyperledger.oa.RunWithAries;
 import org.mockito.Mockito;
 
 import io.micronaut.context.annotation.Factory;
+import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.env.Environment;
 
 @Factory
+@Requires(env = Environment.TEST)
 public class TestBeans {
 
     /**

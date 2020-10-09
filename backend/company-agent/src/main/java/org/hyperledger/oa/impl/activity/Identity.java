@@ -43,21 +43,21 @@ import lombok.extern.slf4j.Slf4j;
 public class Identity {
 
     @Value("${oagent.host}")
-    private String host;
+    String host;
 
     @Value("${oagent.web.only}")
-    private boolean webOnly;
+    boolean webOnly;
 
     @Value("${oagent.did.prefix}")
-    private String didPrefix;
+    String didPrefix;
 
     @Inject
     @Setter
-    private AriesClient acaPy;
+    AriesClient acaPy;
 
     @Inject
     @Setter
-    private CachingAriesClient acaCache;
+    CachingAriesClient acaCache;
 
     @Inject
     private URClient ur;

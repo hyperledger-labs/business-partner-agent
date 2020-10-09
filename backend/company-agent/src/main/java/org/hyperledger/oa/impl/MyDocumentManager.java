@@ -101,7 +101,7 @@ public class MyDocumentManager {
         if (doc.getType().equals(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL)) {
             docRepo.findAll().forEach(d -> {
                 if (d.getType().equals(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL)) {
-                    throw new WrongApiUsageException("Use updateCredential() instead");
+                    throw new WrongApiUsageException("Organizational profile already exists, use update instead");
                 }
             });
         }
