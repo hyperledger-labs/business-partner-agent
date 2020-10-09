@@ -118,7 +118,7 @@ class MyDocumentManagerTest extends RunWithAries {
             createAndSaveDummyCredential(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL, Boolean.TRUE);
         });
 
-        String expectedMessage = "updateCredential";
+        String expectedMessage = "Organizational profile already exists";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
