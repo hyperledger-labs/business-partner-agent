@@ -40,6 +40,7 @@ import org.hyperledger.oa.api.aries.AriesProof;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.api.exception.PartnerException;
 import org.hyperledger.oa.config.runtime.RequiresAries;
+import org.hyperledger.oa.impl.activity.DidResolver;
 import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.impl.util.TimeUtil;
@@ -63,25 +64,28 @@ import lombok.extern.slf4j.Slf4j;
 public class ProofManager {
 
     @Value("${oagent.did.prefix}")
-    private String didPrefix;
+    String didPrefix;
 
     @Inject
-    private AriesClient ac;
+    AriesClient ac;
 
     @Inject
-    private PartnerRepository partnerRepo;
+    PartnerRepository partnerRepo;
 
     @Inject
-    private PartnerProofRepository pProofRepo;
+    PartnerProofRepository pProofRepo;
 
     @Inject
-    private MyCredentialRepository credRepo;
+    MyCredentialRepository credRepo;
 
     @Inject
-    private Converter conv;
+    Converter conv;
 
     @Inject
     SchemaService schemaService;
+
+    @Inject
+    DidResolver didRes;
 
     // request proof from partner
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull String credDefId) {
@@ -154,7 +158,8 @@ public class ProofManager {
                         .setCredentialDefinitionId(credDefId)
                         .setIssuer(issuer)
                         .setProof(proof.from(schemaService.getSchemaAttributeNames(schemaId)));
-                pProofRepo.update(pp);
+                final PartnerProof savedProof = pProofRepo.update(pp);
+                didRes.resolveDid(savedProof);
             }
         });
     }

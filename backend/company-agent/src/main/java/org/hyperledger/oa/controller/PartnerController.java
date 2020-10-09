@@ -32,6 +32,7 @@ import org.hyperledger.oa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.oa.controller.api.partner.SendProofRequest;
 import org.hyperledger.oa.controller.api.partner.UpdatePartnerRequest;
 import org.hyperledger.oa.impl.PartnerManager;
+import org.hyperledger.oa.impl.activity.PartnerLookup;
 import org.hyperledger.oa.impl.aries.AriesCredentialManager;
 import org.hyperledger.oa.impl.aries.ProofManager;
 
@@ -58,13 +59,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class PartnerController {
 
     @Inject
-    private PartnerManager pm;
+    PartnerManager pm;
 
     @Inject
-    private Optional<AriesCredentialManager> credM;
+    Optional<AriesCredentialManager> credM;
 
     @Inject
-    private Optional<ProofManager> proofM;
+    Optional<ProofManager> proofM;
+
+    @Inject
+    PartnerLookup partnerLookup;
 
     /**
      * Get known partners
@@ -140,7 +144,7 @@ public class PartnerController {
      */
     @Get("/lookup/{did}")
     public HttpResponse<PartnerAPI> lookupPartner(@PathVariable String did) {
-        return HttpResponse.ok(pm.lookupPartner(did));
+        return HttpResponse.ok(partnerLookup.lookupPartner(did));
     }
 
     /**
