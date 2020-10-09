@@ -108,5 +108,3 @@ oagent:
   schemas:
     - id: "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
       label: "Bank Account"
-    - id: "M6Mbe3qx7vB4wpZF4sBRjt:2:foo:1.0"
-      label: "Foo"   
