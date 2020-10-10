@@ -7,7 +7,7 @@
 -->
 <template>
 <v-container justify-center>
-    <v-card v-if="!isLoading" class="mx-auto" flat>
+    <v-card v-if="!isLoading" max-width="600" class="mx-auto">
         <v-card-title class="bg-light">
             <v-btn depressed color="secondary" icon @click="$router.go(-1)">
                 <v-icon dark>mdi-chevron-left</v-icon>
@@ -17,16 +17,17 @@
                 <!-- <v-btn depressed icon @click="isUpdatingName = !isUpdatingName">
                     <v-icon dark>mdi-pencil</v-icon>
                 </v-btn> -->
-                <v-btn depressed color="red" icon @click="deleteSchema">
+                <v-btn depressed color="red" icon :disabled="data.isReadOnly" @click="deleteSchema">
                     <v-icon dark>mdi-delete</v-icon>
                 </v-btn>
             </v-layout>
 
         </v-card-title>
+        <v-container>
 
         <v-list-item class="mt-4">
             <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
-                Schema ID
+                Schema ID:
             </v-list-item-title>
         <v-list-item-subtitle>
             {{data.schemaId}}
@@ -42,6 +43,7 @@
             </p>
 
         </v-list-item>
+        </v-container>
 
     </v-card>
 </v-container>

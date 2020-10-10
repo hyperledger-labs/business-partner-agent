@@ -21,7 +21,7 @@
         <v-list-item>
             <v-list-item-content>
                 <v-list-item-title class="grey--text text--darken-2 font-weight-medium">Schema Settings</v-list-item-title>
-                <v-list-item-subtitle>List and add credential schemas</v-list-item-subtitle>
+                <v-list-item-subtitle>List and add schemas</v-list-item-subtitle>
             </v-list-item-content>
             <v-list-item-action>
                 <v-btn icon :to="{ name: 'SchemaSettings' }">

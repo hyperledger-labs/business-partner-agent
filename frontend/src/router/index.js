@@ -26,6 +26,7 @@ import AddPartner from '../views/AddPartner.vue'
 import Settings from '../views/Settings.vue'
 import SchemaSettings from '../views/SchemaSettings.vue'
 import Schema from '../views/Schema.vue'
+import AddSchema from '../views/AddSchema.vue'
 
 Vue.use(VueRouter)
 
@@ -130,6 +131,11 @@ const routes = [
     path: '/app/settings/schema',
     name: 'SchemaSettings',
     component: SchemaSettings
+  },
+  {
+    path: '/app/schema/add',
+    name: 'AddSchema',
+    component: AddSchema
   },
   {
     path: '/app/schema/:id',

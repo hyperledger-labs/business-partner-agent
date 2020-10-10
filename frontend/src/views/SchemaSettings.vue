@@ -7,47 +7,29 @@
 -->
 <template>
 <v-container justify-center>
-    <v-card class="mx-auto" flat>
+    <v-card max-width="600" class="mx-auto">
         <v-card-title class="bg-light">
             <v-btn depressed color="secondary" icon @click="$router.go(-1)">
                 <v-icon dark>mdi-chevron-left</v-icon>
             </v-btn>
             <span>Schemas</span>
         </v-card-title>
-        <v-data-table 
+        <v-data-table
+            class="mb-4" 
             :hide-default-footer="data.length < 10"
             :headers="headers" 
             :items="data" 
             :loading="isBusy"
             @click:row="open"    
         >
-            <template v-slot:[`item.actions`]="{ item }">
-                <v-icon small @click="deleteSchema(item.id)">
-                    mdi-delete
-                </v-icon>
-            </template>
         </v-data-table>
-
-        <v-card-title class="grey--text text--darken-2">Add Schema</v-card-title>
-
-        <v-row>
-
-            <v-col cols="4">
-                <v-text-field placeholder="Name" v-model="newSchema.label" outlined dense required></v-text-field>
-            </v-col>
-            <v-col cols="6">
-                <v-text-field placeholder="Schema ID" v-model="newSchema.schemaId" outlined dense required>
-                </v-text-field>
-            </v-col>
-            <v-col cols="2">
-                <v-btn :loading="this.isBusyAddSchema" color="primary" class="" @click="addSchema">
-                    Submit
-                </v-btn>
-            </v-col>
-
-        </v-row>
-
+        <v-card-actions>
+        <v-btn color="primary" small dark absolute bottom left fab :to="{ name: 'AddSchema' }">
+            <v-icon>mdi-plus</v-icon>
+        </v-btn>
+        </v-card-actions>
     </v-card>
+    
 </v-container>
 </template>
 
@@ -76,9 +58,6 @@ export default {
             }, {
                 text: 'Schema ID',
                 value: 'schemaId'
-            }, {
-                text: 'Actions',
-                value: 'actions'
             }]
         };
     },
@@ -124,32 +103,6 @@ export default {
                     }
                 });
             
-        },
-        addSchema() {
-
-            this.isBusyAddSchema = true
-
-            this.$axios
-                .post(`${this.$apiBaseUrl}/admin/schema`, this.newSchema)
-                .then((result) => {
-                    console.log(result);
-                    this.isBusyAddSchema = false
-
-                    if (result.status === 200 || result.status === 200   ) {
-                        
-                        EventBus.$emit("success", "Schema added successfully");
-                        this.fetch();
-                    }
-                })
-                .catch((e) => {
-                    this.isBusyAddSchema = false
-                    if (e.response.status === 400) {
-                        EventBus.$emit("error", "Schema already exists");
-                    } else {
-                        console.error(e);
-                        EventBus.$emit("error", e);
-                    }
-                });
         },
         deleteSchema(schemaId) {
             this.$axios
