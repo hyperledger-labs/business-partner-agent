@@ -126,14 +126,7 @@ export default {
         open(doc) {
             console.log(doc)
 
-            if (doc.type === CredentialTypes.PROFILE.name) {
-                this.$router.push({
-                    name: 'Profile',
-                    params: {
-                        id: doc.id
-                    }
-                });
-            } else if (this.type === 'document') {
+            if (this.type === 'document') {
                 console.log(doc)
                 this.$router.push({
                     name: 'Document',
