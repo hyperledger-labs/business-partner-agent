@@ -12,5 +12,13 @@ SEED=$(cat /dev/urandom | env LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 32 | head 
 
 PAYLOAD='{"alias":"'"$ALIAS"'","seed":"'"$SEED"'","role":"ENDORSER"}'
 
-
-curl -S -d $PAYLOAD  -H "Content-Type: application/json" -X POST ${URL}/register
+if curl --fail -s -d $PAYLOAD  -H "Content-Type: application/json" -X POST ${URL}/register; then
+    # Registration (probably) successfull
+    echo ""
+    echo Registration on $URL successful
+    echo Please copy AGENT_SEED=$SEED to your .env file
+else
+    # Something went wrong
+    echo ""
+    echo Something went wrong
+fi;

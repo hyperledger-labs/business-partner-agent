@@ -35,14 +35,36 @@ Following this turorial, the agent will be started in Aries mode.
 
 The following tools should be installed on your developer machine:
 - docker
-- docker-compose (>= version 3)
+- docker-compose
 - [ngrok](https://ngrok.com/)
 
 As well, make sure you are not sitting behind a restrictive company firewall.
 If so, at least the setup has to be adopted (e.g. configure proxy configuration in the maven settings in the [Dockerfile](./Dockerfile)).
 Furthermore the firewall might block traffic to other agents depending on its endpoint configuration (if e.g. in the firewall other ports than 443 are blocked).
 
-## Register a new DID
+## Register a new DID before starting an Business Partner Agent
+
+You can use the `./scripts/register-did.sh` script to register a new DID on our test network.
+Just run:
+
+```s
+./scripts/register-did.sh
+```
+
+You should see the following outpout:
+```s
+{
+  "did": "W3KMxGKUmajhiJzGmqVcAM",
+  "seed": "rxg9SAfvJsdQZjcsguSQCJofuPMmK4Ke",
+  "verkey": "Gq1ZuUcU4mwkdinNjwovDMgYhNq2Z6gVdbf9WgFFbQEb"
+}
+Registration on https://indy-test.bosch-digital.de successfull
+Please copy AGENT_SEED=rxg9SAfvJsdQZjcsguSQCJofuPMmK4Ke to your .env file
+```
+
+Make a copy of the provided [.env-example file](.env-example) with the name `.env`. Set the `AGENT_SEED` to the seed in the output.
+
+Alternatively, you can register a DID manually:
 
 1. Go to https://indy-test.bosch-digital.de/
 2. Provide a 32 characterer wallet seed on the right side under "Authenticate a new DID" and click on "Register DID"
