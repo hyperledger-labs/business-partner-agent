@@ -58,11 +58,9 @@ You should see the following outpout:
   "seed": "rxg9SAfvJsdQZjcsguSQCJofuPMmK4Ke",
   "verkey": "Gq1ZuUcU4mwkdinNjwovDMgYhNq2Z6gVdbf9WgFFbQEb"
 }
-Registration on https://indy-test.bosch-digital.de successfull
-Please copy AGENT_SEED=rxg9SAfvJsdQZjcsguSQCJofuPMmK4Ke to your .env file
+Registration on https://indy-test.bosch-digital.de successful
+Setting AGENT_SEED in .env file
 ```
-
-Make a copy of the provided [.env-example file](.env-example) with the name `.env`. Set the `AGENT_SEED` to the seed in the output.
 
 Alternatively, you can register a DID manually:
 
