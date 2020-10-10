@@ -36,7 +36,7 @@ const store = new Vuex.Store({
     },
     organizationalProfile: state => {
       var documents = state.documents.filter(d => d.type == CredentialTypes.PROFILE.name)
-      if (documents.length == 1) return documents[0].documentData
+      if (documents.length == 1) return documents[0]
       else return undefined
     },
     getPartnerByDID: (state) => (did) => {
@@ -93,6 +93,7 @@ const store = new Vuex.Store({
       axios
         .get(`${apiBaseUrl}/wallet/document`)
         .then(result => {
+          console.log(result)
           if ({}.hasOwnProperty.call(result, "data")) {
             var documents = result.data
             documents.map(documentIn => {
@@ -141,55 +142,55 @@ const store = new Vuex.Store({
           EventBus.$emit("error", e);
         })
     },
-    async completeEditDocument({ state }) {
-      if (state.editedDocument.add) {
-        axios
-          .post(`${apiBaseUrl}/wallet/document`, {
-            document: state.editedDocument.document,
-            isPublic: true, //TODO 
-            type: state.editedDocument.type
-          })
-          .then(() => {
-            this.dispatch('loadDocuments')
-            EventBus.$emit("success", "Success");
-          })
-          .catch((e) => {
-            console.error(e);
-            EventBus.$emit("error", e);
-          });
-      }
-      else {
-        axios
-          .put(`${apiBaseUrl}/wallet/document/${state.editedDocument.id}`, {
-            document: state.editedDocument.document,
-            isPublic: true, //TODO 
-            type: state.editedDocument.type
-          })
-          .then(() => {
-            this.dispatch('loadDocuments')
-            EventBus.$emit("success", "Success");
-          })
-          .catch((e) => {
-            console.error(e);
-            EventBus.$emit("error", e);
-          });
-      }
-    }
+    // async completeEditDocument({ state }) {
+    //   if (state.editedDocument.add) {
+    //     axios
+    //       .post(`${apiBaseUrl}/wallet/document`, {
+    //         document: state.editedDocument.document,
+    //         isPublic: true, //TODO 
+    //         type: state.editedDocument.type
+    //       })
+    //       .then(() => {
+    //         this.dispatch('loadDocuments')
+    //         EventBus.$emit("success", "Success");
+    //       })
+    //       .catch((e) => {
+    //         console.error(e);
+    //         EventBus.$emit("error", e);
+    //       });
+    //   }
+    //   else {
+    //     axios
+    //       .put(`${apiBaseUrl}/wallet/document/${state.editedDocument.id}`, {
+    //         document: state.editedDocument.document,
+    //         isPublic: true, //TODO 
+    //         type: state.editedDocument.type
+    //       })
+    //       .then(() => {
+    //         this.dispatch('loadDocuments')
+    //         EventBus.$emit("success", "Success");
+    //       })
+    //       .catch((e) => {
+    //         console.error(e);
+    //         EventBus.$emit("error", e);
+    //       });
+    //   }
+    // }
   },
 
   mutations: {
-    initEditDocument(state, payload) {
-      state.editedDocument.type = payload.documentType
-      state.editedDocument.add = payload.add
-      if (payload.add) {
-        state.editedDocument.document = { ...emptyDocument };
-      }
-      else {
-        state.editedDocument.id = payload.id
-        var documents = state.documents.filter(d => d.id == payload.id)
-        if (documents.length == 1) state.editedDocument.document = documents[0].documentData
-      }
-    },
+    // initEditDocument(state, payload) {
+    //   state.editedDocument.type = payload.documentType
+    //   state.editedDocument.add = payload.add
+    //   if (payload.add) {
+    //     state.editedDocument.document = { ...emptyDocument };
+    //   }
+    //   else {
+    //     state.editedDocument.id = payload.id
+    //     var documents = state.documents.filter(d => d.id == payload.id)
+    //     if (documents.length == 1) state.editedDocument.document = documents[0].documentData
+    //   }
+    // },
     loadDocumentsFinished(state, payload) {
       state.documents = payload.documents;
     },
@@ -216,45 +217,5 @@ store.subscribeAction({
     state.busyStack = state.busyStack - 1
   }
 })
-
-// function sleep(ms) {
-//   return new Promise(resolve => setTimeout(resolve, ms));
-// }
-
-const emptyDocument = {
-  type: "Legal Entity",
-
-  legalName: "",
-  altName: "",
-
-  identifier: [
-    {
-      id: "",
-      type: ""
-    }
-  ],
-
-  registeredSite: {
-    id: "",
-    address: {
-      streetAddress: "",
-      zipCode: "",
-      city: "",
-      region: "",
-      country: ""
-    }
-  },
-
-  ulimateParent: "",
-
-  // contactPerson: [
-  //     {
-  //       id: "",
-  //       firstName: "",
-  //       lastName: "",
-  //       role: ""
-  //     }
-  // ]
-}
 
 export default store
