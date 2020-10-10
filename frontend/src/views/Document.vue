@@ -19,7 +19,7 @@
       </v-layout>
     </v-card-title>
     <v-card-text>
-      <OganizationalProfile v-if="type === CredentialTypes.PROFILE.name" v-bind:document="document" ref="doc"></OganizationalProfile>
+      <OganizationalProfile v-if="type === CredentialTypes.PROFILE.name" v-bind:document="document.documentData" ref="doc"></OganizationalProfile>
       <Credential v-else v-bind:document="document" ref="doc"></Credential>
       <v-divider></v-divider>
       <v-list-item>
@@ -116,8 +116,10 @@ export default {
       this.$axios
         .get(`${this.$apiBaseUrl}/wallet/document/${this.id}`)
         .then(result => {
+          console.log(result)
           if ({}.hasOwnProperty.call(result, "data")) {
             this.document = result.data;
+            this.type = this.document.type;
             this.isReady = true;
           }
         })
