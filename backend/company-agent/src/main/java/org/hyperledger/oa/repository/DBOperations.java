@@ -50,7 +50,12 @@ public class DBOperations {
     public void onServiceStartedEvent(StartupEvent startupEvent) {
         log.info("Running startup database operations.", startupEvent);
 
-        // create default user
+        createDefaultUser();
+
+        log.debug("Done running database operations.");
+    }
+
+    private void createDefaultUser() {
         userRepo.findByUsername(username).ifPresentOrElse(u -> {
             log.info("Bootstrap user already exists, skipping creation");
         }, () -> {
@@ -60,7 +65,5 @@ public class DBOperations {
                     .roles("ROLE_USER,ROLE_ADMIN")
                     .build());
         });
-
-        log.debug("Done running database operations.");
     }
 }

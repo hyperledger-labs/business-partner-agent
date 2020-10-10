@@ -1,6 +1,7 @@
 package org.hyperledger.oa.model;
 
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -11,6 +12,8 @@ import org.hyperledger.oa.api.CredentialType;
 
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
+import io.micronaut.data.annotation.TypeDef;
+import io.micronaut.data.model.DataType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,9 +36,14 @@ public class BPASchema {
     @Nullable
     private String label;
 
+    private Boolean isReadOnly;
+
     private CredentialType type;
 
     private String schemaId;
+
+    @TypeDef(type = DataType.JSON)
+    private Set<String> schemaAttributeNames;
 
     private Integer seqNo;
 }

@@ -21,6 +21,7 @@ const store = new Vuex.Store({
     editedDocument: {}, //document currently being edited
     documents: [],
     credentials: [],
+    schemas:  [],
     busyStack: 0,
     expertMode: false
   },
@@ -47,6 +48,24 @@ const store = new Vuex.Store({
 
   actions: {
 
+    async loadSchemas({ commit }) {
+      axios
+        .get(`${apiBaseUrl}/admin/schema`)
+        .then(result => {
+          if ({}.hasOwnProperty.call(result, "data")) {
+            let schemas = result.data
+            commit({
+              type: "loadSchemasFinished",
+              schemas: schemas
+
+            })
+          }
+        })
+        .catch(e => {
+          console.error(e);
+          EventBus.$emit("error", e);
+        })
+    },     
     async loadPartners({ commit }) {
       axios
         .get(`${apiBaseUrl}/partners`)
@@ -179,6 +198,9 @@ const store = new Vuex.Store({
     },
     loadPartnersFinished(state, payload) {
       state.partners = payload.partners;
+    },
+    loadSchemasFinished(state, payload) {
+      state.schemas = payload.schemas;
     },
     setSettings(state, payload) {
       state.expertMode = payload.isExpert;

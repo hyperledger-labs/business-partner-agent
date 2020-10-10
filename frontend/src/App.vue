@@ -206,3 +206,8 @@ export default {
   }
 };
 </script>
+<style>
+  .bg-light {
+      background-color: #fafafa;
+  }
+</style>

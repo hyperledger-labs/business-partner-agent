@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -57,22 +58,28 @@ public class SchemaService {
     // CRUD Methods
 
     public SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label) {
+    	return addSchema(schemaId, label, false); 
+    }
+    
+    public SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label, boolean isReadOnly) {
         SchemaAPI result = null;
         String sId = StringUtils.strip(schemaId);
         final CredentialType credType = CredentialType.fromSchemaId(sId);
-        if (schemaRepo.findByType(credType).isPresent()) {
-            throw new WrongApiUsageException("Schema with type: " + credType + " already exists.");
+
+        if (schemaRepo.findBySchemaId(sId).isPresent()) {
+            throw new WrongApiUsageException("Scheme with id: " + sId + " already exists.");
         }
 
         try {
             Optional<org.hyperledger.aries.api.schema.SchemaSendResponse.Schema> ariesSchema = ac.schemasGetById(sId);
             if (ariesSchema.isPresent()) {
-                BPASchema dbS = BPASchema
-                        .builder()
+                BPASchema dbS = BPASchema.builder()
                         .label(label)
                         .type(credType)
                         .schemaId(sId)
+                        .schemaAttributeNames(getSchemaAttributeNames(sId))
                         .seqNo(ariesSchema.get().getSeqNo())
+                        .isReadOnly(isReadOnly)
                         .build();
                 BPASchema saved = schemaRepo.save(dbS);
                 result = SchemaAPI.from(saved);
@@ -85,12 +92,24 @@ public class SchemaService {
 
     public List<SchemaAPI> listSchemas() {
         List<SchemaAPI> result = new ArrayList<>();
-        schemaRepo.findAll().forEach(dbS -> result.add(SchemaAPI.from(dbS)));
+        schemaRepo.findAll().forEach(dbS -> {
+            SchemaAPI schemaAPI = SchemaAPI.from(dbS);
+            result.add(schemaAPI);
+        });
         return result;
     }
 
     public void deleteSchema(@NonNull UUID id) {
         schemaRepo.deleteById(id);
+    }
+
+    public @Nullable SchemaAPI getSchema(@NonNull UUID id) {
+        Optional<BPASchema> schema = schemaRepo.findById(id);
+        if (schema.isPresent()) {
+            SchemaAPI schemaAPI = SchemaAPI.from(schema.get());
+            return schemaAPI;
+        } else
+            return null;
     }
 
     public @Nullable BPASchema getSchemaFor(CredentialType type) {
@@ -100,11 +119,8 @@ public class SchemaService {
             result = dbSchema.get();
         } else if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(type)) {
             // falling back to defaults
-            result = BPASchema
-                    .builder()
-                    .schemaId(ApiConstants.BANK_ACCOUNT_SCHEMA_ID)
-                    .seqNo(ApiConstants.BANK_ACCOUNT_SCHEMA_SEQ)
-                    .build();
+            result = BPASchema.builder().schemaId(ApiConstants.BANK_ACCOUNT_SCHEMA_ID)
+                    .seqNo(ApiConstants.BANK_ACCOUNT_SCHEMA_SEQ).build();
         }
         return result;
     }
@@ -122,5 +138,13 @@ public class SchemaService {
             log.error("aca-py not reachable", e);
         }
         return result;
+    }
+
+    public void resetWriteOnlySchemas(List<Map<String, String>> schemas) {
+        schemaRepo.deleteByIsReadOnly(true);
+
+        for (Map<String, String> schema : schemas) {
+            addSchema(schema.get("id"), schema.get("label"), true);
+        }
     }
 }

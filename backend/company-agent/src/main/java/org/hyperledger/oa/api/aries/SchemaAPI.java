@@ -17,6 +17,7 @@
  */
 package org.hyperledger.oa.api.aries;
 
+import java.util.Set;
 import java.util.UUID;
 
 import org.hyperledger.oa.model.BPASchema;
@@ -38,12 +39,18 @@ public class SchemaAPI {
 
     private String schemaId;
 
+    private Boolean isReadOnly;
+
+    private Set<String> schemaAttributeNames;
+
     public static SchemaAPI from(BPASchema s) {
         return SchemaAPI
                 .builder()
                 .id(s.getId())
                 .label(s.getLabel())
                 .schemaId(s.getSchemaId())
+                .schemaAttributeNames(s.getSchemaAttributeNames())
+                .isReadOnly(s.getIsReadOnly())
                 .build();
     }
 }

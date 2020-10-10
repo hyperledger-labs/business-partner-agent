@@ -92,8 +92,29 @@ public class AdminController {
     @Delete("/schema/{id}")
     public HttpResponse<Void> removeSchema(@PathVariable String id) {
         if (schemaService.isPresent()) {
-            schemaService.get().deleteSchema(UUID.fromString(id));
-            return HttpResponse.ok();
+            SchemaService sService = schemaService.get();
+            SchemaAPI schema = sService.getSchema(UUID.fromString(id));
+            if (!schema.getIsReadOnly()) {
+                sService.deleteSchema(UUID.fromString(id));
+                return HttpResponse.ok();
+            } else {
+                return HttpResponse.notAllowed();
+            }
+        } else {
+            return HttpResponse.notFound();
+        }
+    }
+
+    /**
+     * Aries: Get a schema configuration
+     *
+     * @param id the schema id
+     * @return {@link HttpResponse}
+     */
+    @Get("/schema/{id}")
+    public HttpResponse<SchemaAPI> getSchema(@PathVariable UUID id) {
+        if (schemaService.isPresent()) {
+            return HttpResponse.ok(schemaService.get().getSchema(id));
         }
         return HttpResponse.notFound();
     }
