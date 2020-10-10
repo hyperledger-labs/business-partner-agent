@@ -16,7 +16,7 @@
                 <v-text-field label="Organization Type" placeholder v-model="documentData.type" outlined disabled dense></v-text-field>
                 <v-text-field label="Company Legal Name" placeholder v-model="documentData.legalName" :disabled="isReadOnly" :rules="[v => !!v || 'Item is required']" required outlined dense></v-text-field>
                 <v-text-field label="Company Alternative Name" placeholder v-model="documentData.altName" :disabled="isReadOnly" required outlined dense></v-text-field>
-                <v-row v-for="(identifier, index) in documentData.identifier" v-bind:key="identifier.id">
+                <v-row v-for="(identifier, index) in documentData.identifier" v-bind:key="identifier.type">
                     <v-col cols="4" class="py-0">
                         <v-select label="Identifier" v-model="identifier.type" :items="identifierTypes" :disabled="isReadOnly" outlined dense></v-select>
                     </v-col>
@@ -69,10 +69,16 @@ export default {
         document: Object
     },
     created() {
-        if (this.document.documentData) {
-            this.documentData = this.document.documentData;
-        } else {
-            this.documentData = {
+        console.log(this.document)
+        if (this.document.legalName) {
+            this.documentData = this.document;
+        }
+    },
+    data: () => {
+        return {
+            identifierTypes: ["LEI", "D-U-N-S", "VAT", "USCC"],
+            orgTypes: ["Legal Entity", "Business Unit", "Site"],
+            documentData: {
                 type: 'Legal Entity',
                 legalName: '',
                 altName: '',
@@ -91,12 +97,6 @@ export default {
 
                 }
             }
-        }
-    },
-    data: () => {
-        return {
-            identifierTypes: ["LEI", "D-U-N-S", "VAT", "USCC"],
-            orgTypes: ["Legal Entity", "Business Unit", "Site"]
         };
     },
     computed: {},
