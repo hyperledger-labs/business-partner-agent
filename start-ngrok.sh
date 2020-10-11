@@ -25,10 +25,7 @@ else
     NGROK_TUNNELS="acapyendpoint businesspartner"
 fi
 
- ngrok start --config ngrok.yml $NGROK_TUNNELS >/dev/null 2>&1 &
-
 # Get public ip
-
 function getTunnels () {
 
     TUNNELS=$(curl --silent http://127.0.0.1:4040/api/tunnels  | jq -c .tunnels[])
@@ -39,18 +36,24 @@ function getTunnels () {
 
 }
 
-getTunnels
+echo "Starting ngrok..."
 
-for TUNNEL in $TUNNELS
-do
-    TUNNEL_NAME=$( echo $TUNNEL | jq -r .name)
-    if [[ "$TUNNEL_NAME" == "acapyendpoint" ]]; then
-        ACA_PY_ENDPOINT=$( echo $TUNNEL | jq -r .public_url )
-    fi
-    if [[ "$TUNNEL_NAME" == "businesspartner" ]]; then
-        BPA_HOST=$( echo $TUNNEL | jq -r .public_url | sed 's/.*https:\/\///')
-    fi    
-done
+if ngrok start --config ngrok.yml $NGROK_TUNNELS >/dev/null 2>&1 & then
+    echo "ngrok started successfully"
+    getTunnels
+    for TUNNEL in $TUNNELS
+        do
+            TUNNEL_NAME=$( echo $TUNNEL | jq -r .name)
+            if [[ "$TUNNEL_NAME" == "acapyendpoint" ]]; then
+                ACA_PY_ENDPOINT=$( echo $TUNNEL | jq -r .public_url )
+            fi
+            if [[ "$TUNNEL_NAME" == "businesspartner" ]]; then
+                BPA_HOST=$( echo $TUNNEL | jq -r .public_url | sed 's/.*https:\/\///')
+            fi    
+        done
+else
+    echo "Could not start ngrok."
+fi
 
 
 # Generate random API Key
