@@ -36,11 +36,22 @@ Following this turorial, the agent will be started in Aries mode.
 The following tools should be installed on your developer machine:
 - docker
 - docker-compose
-- [ngrok](https://ngrok.com/)
+- [ngrok](https://ngrok.com/) (optional) to have public endpoint to communicate with other Business Partner Agents
 
 As well, make sure you are not sitting behind a restrictive company firewall.
 If so, at least the setup has to be adopted (e.g. configure proxy configuration in the maven settings in the [Dockerfile](./Dockerfile)).
 Furthermore the firewall might block traffic to other agents depending on its endpoint configuration (if e.g. in the firewall other ports than 443 are blocked).
+
+## Quickstart
+
+```s
+git clone https://github.com/hyperledger-labs/business-partner-agent
+cd ./business-partner-agent
+./scripts/register-did.sh
+./start-ngrok.sh
+```
+The frontend will be served at `http://localhost:8080`.
+
 
 ## Register a new DID before starting an Business Partner Agent
 
@@ -58,11 +69,9 @@ You should see the following outpout:
   "seed": "rxg9SAfvJsdQZjcsguSQCJofuPMmK4Ke",
   "verkey": "Gq1ZuUcU4mwkdinNjwovDMgYhNq2Z6gVdbf9WgFFbQEb"
 }
-Registration on https://indy-test.bosch-digital.de successfull
-Please copy AGENT_SEED=rxg9SAfvJsdQZjcsguSQCJofuPMmK4Ke to your .env file
+Registration on https://indy-test.bosch-digital.de successful
+Setting AGENT_SEED in .env file
 ```
-
-Make a copy of the provided [.env-example file](.env-example) with the name `.env`. Set the `AGENT_SEED` to the seed in the output.
 
 Alternatively, you can register a DID manually:
 
