@@ -52,6 +52,13 @@ public class PingManager {
     @Inject
     private PartnerRepository repo;
 
+    private boolean firstRun;
+
+    public PingManager() {
+        super();
+        this.firstRun = true;
+    }
+
     // threadId, connectionId
     private Map<String, String> sent = new ConcurrentHashMap<>();
 
@@ -70,8 +77,13 @@ public class PingManager {
             List<String> activeConnections = aries.connectionIds(
                     ConnectionFilter.builder().state(ConnectionState.active).build());
             if (CollectionUtils.isNotEmpty(activeConnections)) {
-                setNewState();
+                if (!firstRun) {
+                    setNewState();
+                }
                 sendPingToActiveConnections(activeConnections);
+            }
+            if (firstRun) {
+                firstRun = false;
             }
         } catch (Exception e) {
             log.error("Trust ping job failed.", e);
