@@ -51,6 +51,7 @@ services:
         --auto-store-credential \
         --auto-verify-presentation \
         --auto-ping-connection \
+        --monitor-ping \
         --public-invites \
         --plugin aries_cloudagent.messaging.jsonld \
         --inbound-transport http '0.0.0.0' ${AGENT_HTTP_PORT} \

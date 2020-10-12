@@ -20,11 +20,13 @@ package org.hyperledger.oa.impl.aries;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,6 +58,8 @@ class PingManagerTest {
 
     @Test
     void testHappyFlow() throws Exception {
+        ping.checkConnections();
+
         when(aries.connectionIds(any(ConnectionFilter.class))).thenReturn(List.of("1", "2"));
         when(aries.connectionsSendPing(anyString(), any(PingRequest.class)))
                 .thenReturn(Optional.of(new PingResponse("a")))
@@ -71,6 +75,7 @@ class PingManagerTest {
         ping.checkConnections();
 
         verify(repo, never()).updateStateByConnectionId(anyString(), anyString());
+        verify(repo, never()).updateStateAndLastSeenByConnectionId(any(), any(), any());
 
         assertEquals(2, ping.getSentSize());
         assertEquals(0, ping.getReceivedSize());
@@ -79,6 +84,7 @@ class PingManagerTest {
 
         verify(repo, times(1)).updateStateByConnectionId("1", ConnectionState.inactive.toString());
         verify(repo, times(1)).updateStateByConnectionId("2", ConnectionState.inactive.toString());
+        verify(repo, never()).updateStateAndLastSeenByConnectionId(any(), any(), any());
 
         assertEquals(2, ping.getSentSize());
         assertEquals(0, ping.getReceivedSize());
@@ -91,8 +97,14 @@ class PingManagerTest {
 
         ping.checkConnections();
 
-        verify(repo, times(1)).updateStateByConnectionId("1", ConnectionState.active.toString());
-        verify(repo, times(1)).updateStateByConnectionId("2", ConnectionState.active.toString());
+        verify(repo, times(1)).updateStateAndLastSeenByConnectionId(
+                argThat(a -> a.equals("1")),
+                argThat(a -> a.equals(ConnectionState.active.toString())),
+                argThat(a -> a.isBefore(Instant.now())));
+        verify(repo, times(1)).updateStateAndLastSeenByConnectionId(
+                argThat(a -> a.equals("2")),
+                argThat(a -> a.equals(ConnectionState.active.toString())),
+                argThat(a -> a.isBefore(Instant.now())));
 
         assertEquals(2, ping.getSentSize());
     }

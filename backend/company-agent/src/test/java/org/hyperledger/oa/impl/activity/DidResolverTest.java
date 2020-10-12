@@ -1,0 +1,100 @@
+package org.hyperledger.oa.impl.activity;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Map;
+import java.util.Optional;
+
+import org.hyperledger.oa.BaseTest;
+import org.hyperledger.oa.api.DidDocAPI;
+import org.hyperledger.oa.api.PartnerAPI;
+import org.hyperledger.oa.client.URClient;
+import org.hyperledger.oa.impl.util.Converter;
+import org.hyperledger.oa.model.Partner;
+import org.hyperledger.oa.model.PartnerProof;
+import org.hyperledger.oa.repository.PartnerRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
+class DidResolverTest extends BaseTest {
+
+    private final String baSchemaId = "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0";
+    private final String crSchemaId = "8faozNpSjFfPJXYtgcPtmJ:2:commercialregister:1.2";
+
+    @Mock
+    PartnerRepository partnerRepo;
+
+    @Mock
+    PartnerLookup partnerLookup;
+
+    @Mock
+    URClient ur;
+
+    @Mock
+    Converter converter;
+
+    @InjectMocks
+    DidResolver didResolver;
+
+    @Test
+    void testIgnoreWrongSchema() {
+        PartnerProof pp = PartnerProof.builder().schemaId(baSchemaId).build();
+        didResolver.resolveDid(pp);
+        verify(partnerRepo, never()).findById(any());
+    }
+
+    @Test
+    void testIgnoreOutgoingConnection() {
+        PartnerProof pp = PartnerProof.builder().schemaId(crSchemaId).build();
+        when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.FALSE).build()));
+        didResolver.resolveDid(pp);
+        verify(ur, never()).getDidDocument(any());
+    }
+
+    @Test
+    void testIgnoreIncomingConnectionWithPublicDid() {
+        PartnerProof pp = PartnerProof.builder().schemaId(crSchemaId).build();
+        when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.TRUE).build()));
+        when(ur.getDidDocument(any())).thenReturn(Optional.of(new DidDocAPI()));
+        didResolver.resolveDid(pp);
+        verify(partnerLookup, never()).lookupPartner(any());
+    }
+
+    @Test
+    void testIgnoreMissingDid() {
+        PartnerProof pp = PartnerProof.builder()
+                .schemaId(crSchemaId)
+                .proof(Map.of("other", "not-a-did"))
+                .build();
+        when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.TRUE).build()));
+        when(ur.getDidDocument(any())).thenReturn(Optional.of(new DidDocAPI()));
+        didResolver.resolveDid(pp);
+        verify(partnerLookup, never()).lookupPartner(any());
+    }
+
+    @Test
+    void testResolveDidAndUpdatePartner() {
+        PartnerProof pp = PartnerProof.builder()
+                .schemaId(crSchemaId)
+                .proof(Map.of("did", "did:dummy"))
+                .build();
+        when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.TRUE).build()));
+        when(ur.getDidDocument(any())).thenReturn(Optional.empty());
+        when(partnerLookup.lookupPartner(any())).thenReturn(new PartnerAPI());
+        didResolver.resolveDid(pp);
+
+        verify(partnerRepo, times(1)).findById(any());
+        verify(partnerRepo, times(1)).update(any());
+        verify(ur, times(1)).getDidDocument(any());
+        verify(partnerLookup, times(1)).lookupPartner(any());
+    }
+
+}
