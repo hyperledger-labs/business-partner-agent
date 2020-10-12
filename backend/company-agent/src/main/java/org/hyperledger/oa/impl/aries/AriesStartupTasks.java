@@ -18,8 +18,6 @@
 package org.hyperledger.oa.impl.aries;
 
 import java.time.Duration;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -33,7 +31,6 @@ import org.hyperledger.aries.api.wallet.SetDidEndpointRequest;
 import org.hyperledger.oa.config.runtime.RequiresAries;
 import org.hyperledger.oa.impl.activity.VPManager;
 
-import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.env.Environment;
@@ -54,9 +51,6 @@ public class AriesStartupTasks {
 
     @Value("${oagent.host}")
     private String host;
-
-    @Property(name = "oagent.schemas")
-    List<Map<String, String>> schemas;
 
     @Inject
     Optional<SchemaService> schemaService;
@@ -83,7 +77,7 @@ public class AriesStartupTasks {
     private void createDefaultSchemas() {
         log.debug("Purging and re-setting default schemas.");
 
-        schemaService.ifPresent(s -> s.resetWriteOnlySchemas(schemas));
+        schemaService.ifPresent(s -> s.resetWriteOnlySchemas());
     }
 
     void registerProfileEndpoint() {
