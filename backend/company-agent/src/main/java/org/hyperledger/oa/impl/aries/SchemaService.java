@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -55,12 +54,15 @@ public class SchemaService {
     @Inject
     AriesClient ac;
 
+    @Inject
+    List<Schema> schemas;
+
     // CRUD Methods
 
     public SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label) {
-    	return addSchema(schemaId, label, false); 
+        return addSchema(schemaId, label, false);
     }
-    
+
     public SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label, boolean isReadOnly) {
         SchemaAPI result = null;
         String sId = StringUtils.strip(schemaId);
@@ -140,11 +142,11 @@ public class SchemaService {
         return result;
     }
 
-    public void resetWriteOnlySchemas(List<Map<String, String>> schemas) {
+    public void resetWriteOnlySchemas() {
         schemaRepo.deleteByIsReadOnly(true);
 
-        for (Map<String, String> schema : schemas) {
-            addSchema(schema.get("id"), schema.get("label"), true);
+        for (Schema schema : schemas) {
+            addSchema(schema.getId(), schema.getLabel(), true);
         }
     }
 }

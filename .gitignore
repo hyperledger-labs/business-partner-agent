@@ -42,11 +42,12 @@ formatter-maven-cache.properties
 .classpath
 .factorypath
 .externalToolBuilders
-
+**/application-dev-**.yml
 .vscode
 
 # Build
 **/target/**
+/docker-compose-backend.yml
 
 # Ignore dynamically added frontend files
 backend/company-agent/src/main/resources/public/**
@@ -62,5 +63,11 @@ frontend/node/**
 frontend/node_modules/**
 frontend/dist/**
 
+<<<<<<< HEAD
+# Kubernetes
+/my-values.yaml
+
+=======
 # K8s / helm
 my-values.yaml
+>>>>>>> refs/remotes/cr/feature/055-configurable-schemas
