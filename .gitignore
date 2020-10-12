@@ -63,11 +63,5 @@ frontend/node/**
 frontend/node_modules/**
 frontend/dist/**
 
-<<<<<<< HEAD
-# Kubernetes
-/my-values.yaml
-
-=======
 # K8s / helm
 my-values.yaml
->>>>>>> refs/remotes/cr/feature/055-configurable-schemas
