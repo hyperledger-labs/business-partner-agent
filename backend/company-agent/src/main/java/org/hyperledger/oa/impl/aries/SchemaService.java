@@ -58,9 +58,9 @@ public class SchemaService {
     // CRUD Methods
 
     public SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label) {
-    	return addSchema(schemaId, label, false); 
+        return addSchema(schemaId, label, false);
     }
-    
+
     public SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label, boolean isReadOnly) {
         SchemaAPI result = null;
         String sId = StringUtils.strip(schemaId);

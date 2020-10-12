@@ -17,6 +17,7 @@
  */
 package org.hyperledger.oa.repository;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -46,6 +47,13 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     Optional<Partner> findByConnectionId(String connectionId);
 
+    // The queries below are native queries to prevent changes to the last_updated
+    // timestamp. As this timestamp indicates user interaction, whereas the queries
+    // below indicate changes made by jobs.
+
     @Query("UPDATE partner SET state = :newState WHERE connection_id = :connectionId AND (state IS NULL OR state != :newState)")
     void updateStateByConnectionId(String connectionId, String newState);
+
+    @Query("UPDATE partner SET state = :newState, last_seen = :lastSeen WHERE connection_id = :connectionId")
+    void updateStateAndLastSeenByConnectionId(String connectionId, String newState, Instant lastSeen);
 }

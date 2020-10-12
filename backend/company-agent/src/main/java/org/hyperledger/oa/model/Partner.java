@@ -63,6 +63,9 @@ public class Partner {
     @DateUpdated
     private Instant updatedAt;
 
+    @Nullable
+    private Instant lastSeen; // last time a ping response was received from the partner
+
     /** The fully qualified did like did:sov:123 */
     private String did;
 

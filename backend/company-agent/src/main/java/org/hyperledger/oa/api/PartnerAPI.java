@@ -41,6 +41,7 @@ public class PartnerAPI {
     private String id;
     private Long createdAt;
     private Long updatedAt;
+    private Long lastSeen;
     private Boolean valid;
     private Boolean ariesSupport;
     private Boolean incoming;

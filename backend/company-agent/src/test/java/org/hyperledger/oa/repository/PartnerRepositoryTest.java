@@ -21,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -124,6 +126,38 @@ class PartnerRepositoryTest {
         Optional<Partner> p3 = repo.findByConnectionId(p3Cid);
         assertTrue(p3.isPresent());
         assertNull(p3.get().getState());
+    }
+
+    @Test
+    void testUpdateLastSeen() {
+        final String p1CId = "id-1";
+        repo.save(Partner
+                .builder()
+                .ariesSupport(Boolean.FALSE)
+                .did("did:fit:123")
+                .connectionId(p1CId)
+                .build());
+
+        final String p2Cid = "id-2";
+        repo.save(Partner
+                .builder()
+                .ariesSupport(Boolean.FALSE)
+                .did("did:bit:321")
+                .connectionId(p2Cid)
+                .build());
+
+        Instant now = Instant.now().truncatedTo(ChronoUnit.MILLIS);
+        repo.updateStateAndLastSeenByConnectionId(p1CId, "state-1", now);
+
+        Optional<Partner> p1 = repo.findByConnectionId(p1CId);
+        assertTrue(p1.isPresent());
+        assertEquals("state-1", p1.get().getState());
+        assertEquals(now, p1.get().getLastSeen());
+
+        Optional<Partner> p2 = repo.findByConnectionId(p2Cid);
+        assertTrue(p2.isPresent());
+        assertNull(p2.get().getLastSeen());
+        assertNull(p2.get().getState());
     }
 
 }
