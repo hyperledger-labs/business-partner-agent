@@ -19,8 +19,6 @@ services:
         -Doagent.pg.username=${POSTGRESQL_WALLET_USER} 
         -Doagent.pg.password=${POSTGRESQL_WALLET_PASSWORD} 
         -Doagent.host=${BPA_HOST}
-        -Doagent.schemas.bank-account.id=M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0
-        -Doagent.schemas.bank-account.label=BankAccount
       BPA_WEB_MODE: ${BPA_WEB_MODE}
       BPA_RESOLVER_URL: ${BPA_RESOLVER_URL}
       BPA_LEDGER_BROWSER: ${BPA_LEDGER_BROWSER}
