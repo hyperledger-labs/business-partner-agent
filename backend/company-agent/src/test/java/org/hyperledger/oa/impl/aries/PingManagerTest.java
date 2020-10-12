@@ -56,6 +56,8 @@ class PingManagerTest {
 
     @Test
     void testHappyFlow() throws Exception {
+        ping.checkConnections();
+
         when(aries.connectionIds(any(ConnectionFilter.class))).thenReturn(List.of("1", "2"));
         when(aries.connectionsSendPing(anyString(), any(PingRequest.class)))
                 .thenReturn(Optional.of(new PingResponse("a")))
