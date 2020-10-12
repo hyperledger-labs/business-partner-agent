@@ -18,6 +18,7 @@
 package org.hyperledger.oa.impl.aries;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -95,7 +96,7 @@ public class PingManager {
             String state;
             if (received.containsKey(k)) {
                 state = ConnectionState.active.toString();
-                repo.updateStateByConnectionId(v, state);
+                repo.updateStateAndLastSeenByConnectionId(v, state, Instant.now());
             } else {
                 state = ConnectionState.inactive.toString();
                 repo.updateStateByConnectionId(v, state);
