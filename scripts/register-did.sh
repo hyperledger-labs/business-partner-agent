@@ -6,6 +6,25 @@
 
 #!/bin/bash
 
+
+# Check the system the script is running on
+# This is taken from https://stackoverflow.com/questions/3466166/how-to-check-if-running-in-cygwin-mac-or-linux
+case "$(uname -s)" in
+    Linux*)     machine=Linux;;
+    Darwin*)    machine=Mac;;
+    *)          machine=${unameOut}
+esac
+
+if [ "$machine" != "Linux" ] && [ "$machine" != "Mac" ]; then
+    echo "No Linux or Mac OSX detected. You might need to do some steps manually."
+fi
+
+if [ ! -x "$(which curl)" ] ; then
+    echo "Couldn't find curl. Please make sure that curl is installed."
+    exit 1
+fi
+
+
 # Set URL
 URL=https://indy-test.bosch-digital.de
 
@@ -27,10 +46,17 @@ if curl --fail -s -d $PAYLOAD  -H "Content-Type: application/json" -X POST ${URL
         echo ""Creating .env from .env-example""
         cp .env-example .env
     fi
-    #sed -i "" 's/AGENT_SEED .*$/AGENT_SEED="$SEED"/' .env
-    sed -i '' '/AGENT_SEED=/c\
-    AGENT_SEED='"${SEED}"'
-    ' .env
+    # sed on Mac and Linux work differently
+    if [ "$machine" = "Mac" ]; then
+        sed -i '' '/AGENT_SEED=/c\
+        AGENT_SEED='"${SEED}"'
+        ' .env
+    else
+         sed -i '/AGENT_SEED=/c\
+        AGENT_SEED='"${SEED}"'
+        ' .env
+    fi 
+    
 else
     # Something went wrong
     echo ""
