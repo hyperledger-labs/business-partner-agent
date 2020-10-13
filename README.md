@@ -36,7 +36,7 @@ Following this turorial, the agent will be started in Aries mode.
 The following tools should be installed on your developer machine:
 - docker
 - docker-compose
-- [ngrok](https://ngrok.com/) (optional) to have public endpoint to communicate with other Business Partner Agents
+- (optional) [ngrok](https://ngrok.com/) or [diode](https://support.diode.io/) to have a public endpoint to communicate with other Business Partner Agents
 
 As well, make sure you are not sitting behind a restrictive company firewall.
 If so, at least the setup has to be adopted (e.g. configure proxy configuration in the maven settings in the [Dockerfile](./Dockerfile)).
@@ -48,7 +48,7 @@ Furthermore the firewall might block traffic to other agents depending on its en
 git clone https://github.com/hyperledger-labs/business-partner-agent
 cd ./business-partner-agent
 ./scripts/register-did.sh
-./start-ngrok.sh
+./start-with-tunnels.sh
 ```
 The frontend will be served at `http://localhost:8080`.
 
@@ -122,13 +122,13 @@ docker-compose down -v
 If you did not deploy your agent on a server with a public ip it won't have public endpoints to communicate with other agents.
 A simple way to get public endpoints for your agent is to setup [ngrok](https://ngrok.com/).
 
-If you have setup ngrok you can use the `start-ngrok.sh` script to start your agent with public endpoints.
+If you have setup ngrok you can use the `start-with-tunnels.sh` script to start your agent with public endpoints.
 ```s
-./start-ngrok.sh
+./start-with-tunnels.sh
 ```
 To terminate all ngrok tunnels you can use
 ```s
-./kill-ngrok.sh
+./kill-tunnels.sh
 ```
 
 ***BE AWARE:*** If you don't have any security enabled the Business Partner API and and the frontend will be publicly available. This is in particular important when running in Aries mode where the public IP is written to the ledger. 
