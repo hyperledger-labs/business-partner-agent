@@ -28,7 +28,6 @@ import javax.inject.Inject;
 import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventParser;
 import org.hyperledger.oa.BaseTest;
-import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.model.Partner;
 import org.hyperledger.oa.model.PartnerProof;
 import org.hyperledger.oa.repository.PartnerProofRepository;
@@ -65,7 +64,14 @@ class AriesEventHandlerTest extends BaseTest {
                 .did("did:sov:iil:dummy")
                 .ariesSupport(Boolean.TRUE)
                 .build();
-        partnerRepo.save(p);
+        p = partnerRepo.save(p);
+
+        PartnerProof pp = PartnerProof
+                .builder()
+                .partnerId(p.getId())
+                .presentationExchangeId(exReqSent.getPresentationExchangeId())
+                .build();
+        pRepo.save(pp);
 
         aeh.handleProof(exReqSent);
         aeh.handleProof(exPresRec);
@@ -73,7 +79,8 @@ class AriesEventHandlerTest extends BaseTest {
 
         Optional<PartnerProof> dbProof = pRepo.findByPresentationExchangeId(exVerified.getPresentationExchangeId());
         assertTrue(dbProof.isPresent());
-        assertEquals(CredentialType.BANK_ACCOUNT_CREDENTIAL, dbProof.get().getType());
+        assertEquals(Boolean.TRUE, dbProof.get().getValid());
+        assertNotNull(dbProof.get().getProof());
         assertEquals("verified", dbProof.get().getState());
         assertNotNull(dbProof.get().getProof());
     }
@@ -94,7 +101,14 @@ class AriesEventHandlerTest extends BaseTest {
                 .did("did:sov:iil:dummy")
                 .ariesSupport(Boolean.TRUE)
                 .build();
-        partnerRepo.save(p);
+        p = partnerRepo.save(p);
+
+        PartnerProof pp = PartnerProof
+                .builder()
+                .partnerId(p.getId())
+                .presentationExchangeId(exPropSent.getPresentationExchangeId())
+                .build();
+        pRepo.save(pp);
 
         aeh.handleProof(exPropSent);
         aeh.handleProof(exReqRec);
@@ -103,7 +117,7 @@ class AriesEventHandlerTest extends BaseTest {
 
         Optional<PartnerProof> dbProof = pRepo.findByPresentationExchangeId(exPresSent.getPresentationExchangeId());
         assertTrue(dbProof.isPresent());
-        assertEquals(CredentialType.BANK_ACCOUNT_CREDENTIAL, dbProof.get().getType());
+        assertEquals(Boolean.FALSE, dbProof.get().getValid());
         assertEquals("presentation_acked", dbProof.get().getState());
         assertNotNull(dbProof.get().getProof());
     }

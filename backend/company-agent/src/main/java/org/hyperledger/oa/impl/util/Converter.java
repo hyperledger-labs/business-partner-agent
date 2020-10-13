@@ -65,6 +65,7 @@ public class Converter {
         return result
                 .setCreatedAt(Long.valueOf(p.getCreatedAt().toEpochMilli()))
                 .setUpdatedAt(Long.valueOf(p.getUpdatedAt().toEpochMilli()))
+                .setLastSeen(p.getLastSeen() != null ? Long.valueOf(p.getLastSeen().toEpochMilli()) : null)
                 .setId(p.getId().toString())
                 .setValid(p.getValid())
                 .setAriesSupport(p.getAriesSupport())

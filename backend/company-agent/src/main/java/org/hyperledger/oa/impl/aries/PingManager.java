@@ -18,6 +18,7 @@
 package org.hyperledger.oa.impl.aries;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,13 @@ public class PingManager {
     @Inject
     private PartnerRepository repo;
 
+    private boolean firstRun;
+
+    public PingManager() {
+        super();
+        this.firstRun = true;
+    }
+
     // threadId, connectionId
     private Map<String, String> sent = new ConcurrentHashMap<>();
 
@@ -70,8 +78,13 @@ public class PingManager {
             List<String> activeConnections = aries.connectionIds(
                     ConnectionFilter.builder().state(ConnectionState.active).build());
             if (CollectionUtils.isNotEmpty(activeConnections)) {
-                setNewState();
+                if (!firstRun) {
+                    setNewState();
+                }
                 sendPingToActiveConnections(activeConnections);
+            }
+            if (firstRun) {
+                firstRun = false;
             }
         } catch (Exception e) {
             log.error("Trust ping job failed.", e);
@@ -83,7 +96,7 @@ public class PingManager {
             String state;
             if (received.containsKey(k)) {
                 state = ConnectionState.active.toString();
-                repo.updateStateByConnectionId(v, state);
+                repo.updateStateAndLastSeenByConnectionId(v, state, Instant.now());
             } else {
                 state = ConnectionState.inactive.toString();
                 repo.updateStateByConnectionId(v, state);

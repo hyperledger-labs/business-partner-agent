@@ -19,8 +19,8 @@ import io.micronaut.scheduling.annotation.Async;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Special usecase to resolve a partners public did and profile
- * in case of an incoming connection where the partners public did is not known.
+ * Special usecase to resolve a partners public did and profile in case of an
+ * incoming connection where the partners public did is not known.
  */
 @Slf4j
 @Singleton

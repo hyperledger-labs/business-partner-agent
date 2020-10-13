@@ -17,7 +17,9 @@
  */
 package org.hyperledger.oa.repository;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,4 +40,6 @@ public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUI
     List<PartnerProof> findByPartnerIdOrderByRole(UUID partnerId);
 
     void updateState(@Id UUID id, String state);
+
+    long updateReceivedProof(@Id UUID id, Instant issuedAt, Boolean valid, String state, Map<String, Object> proof);
 }

@@ -36,11 +36,22 @@ Following this turorial, the agent will be started in Aries mode.
 The following tools should be installed on your developer machine:
 - docker
 - docker-compose
-- [ngrok](https://ngrok.com/)
+- (optional) [ngrok](https://ngrok.com/) or [diode](https://support.diode.io/) to have a public endpoint to communicate with other Business Partner Agents
 
 As well, make sure you are not sitting behind a restrictive company firewall.
 If so, at least the setup has to be adopted (e.g. configure proxy configuration in the maven settings in the [Dockerfile](./Dockerfile)).
 Furthermore the firewall might block traffic to other agents depending on its endpoint configuration (if e.g. in the firewall other ports than 443 are blocked).
+
+## Quickstart
+
+```s
+git clone https://github.com/hyperledger-labs/business-partner-agent
+cd ./business-partner-agent
+./scripts/register-did.sh
+./start-with-tunnels.sh
+```
+The frontend will be served at `http://localhost:8080`.
+
 
 ## Register a new DID before starting an Business Partner Agent
 
@@ -58,11 +69,9 @@ You should see the following outpout:
   "seed": "rxg9SAfvJsdQZjcsguSQCJofuPMmK4Ke",
   "verkey": "Gq1ZuUcU4mwkdinNjwovDMgYhNq2Z6gVdbf9WgFFbQEb"
 }
-Registration on https://indy-test.bosch-digital.de successfull
-Please copy AGENT_SEED=rxg9SAfvJsdQZjcsguSQCJofuPMmK4Ke to your .env file
+Registration on https://indy-test.bosch-digital.de successful
+Setting AGENT_SEED in .env file
 ```
-
-Make a copy of the provided [.env-example file](.env-example) with the name `.env`. Set the `AGENT_SEED` to the seed in the output.
 
 Alternatively, you can register a DID manually:
 
@@ -113,13 +122,13 @@ docker-compose down -v
 If you did not deploy your agent on a server with a public ip it won't have public endpoints to communicate with other agents.
 A simple way to get public endpoints for your agent is to setup [ngrok](https://ngrok.com/).
 
-If you have setup ngrok you can use the `start-ngrok.sh` script to start your agent with public endpoints.
+If you have setup ngrok you can use the `start-with-tunnels.sh` script to start your agent with public endpoints.
 ```s
-./start-ngrok.sh
+./start-with-tunnels.sh
 ```
 To terminate all ngrok tunnels you can use
 ```s
-./kill-ngrok.sh
+./kill-tunnels.sh
 ```
 
 ***BE AWARE:*** If you don't have any security enabled the Business Partner API and and the frontend will be publicly available. This is in particular important when running in Aries mode where the public IP is written to the ledger. 
