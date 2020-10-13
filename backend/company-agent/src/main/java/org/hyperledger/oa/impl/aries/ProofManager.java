@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -103,7 +104,20 @@ public class ProofManager {
                                         .credentialDefinitionId(credDefId)
                                         .build())
                                 .build();
-                        ac.presentProofSendRequest(PresentProofRequest.build(config));
+                        ac.presentProofSendRequest(PresentProofRequest.build(config)).ifPresent(proof -> {
+                            final PartnerProof pp = PartnerProof
+                                    .builder()
+                                    .partnerId(partnerId)
+                                    .state(proof.getState())
+                                    .presentationExchangeId(proof.getPresentationExchangeId())
+                                    .role(proof.getRole())
+                                    .credentialDefinitionId(credDefId)
+                                    .schemaId(schema.get().getId())
+                                    .type(CredentialType.fromSchemaId(schema.get().getId()))
+                                    .issuer(resolveIssuer(credDefId))
+                                    .build();
+                            pProofRepo.save(pp);
+                        });
                     } else {
                         throw new PartnerException("Partner has no aca-py connection");
                     }
@@ -120,20 +134,14 @@ public class ProofManager {
 
     // handles all proof events to track state changes
     public void handleProofEvent(PresentationExchangeRecord proof) {
-        partnerRepo.findByConnectionId(proof.getConnectionId()).ifPresent(p -> {
+        //partnerRepo.findByConnectionId(proof.getConnectionId()).ifPresent(p -> {
             pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId()).ifPresentOrElse(pp -> {
                 pProofRepo.updateState(pp.getId(), proof.getState());
             }, () -> {
-                final PartnerProof pp = PartnerProof
-                        .builder()
-                        .partnerId(p.getId())
-                        .state(proof.getState())
-                        .presentationExchangeId(proof.getPresentationExchangeId())
-                        .role(proof.getRole())
-                        .build();
-                pProofRepo.save(pp);
+                // this can happen when the event is faster than the save action above or below
+                log.warn("Received proof without matching record in DB.");
             });
-        });
+        //});
     }
 
     // handle all acked or verified proof events
@@ -143,23 +151,14 @@ public class ProofManager {
             if (CollectionUtils.isNotEmpty(proof.getIdentifiers())) {
                 // TODO first schema id for now
                 String schemaId = proof.getIdentifiers().get(0).getSchemaId();
-                String credDefId = proof.getIdentifiers().get(0).getCredentialDefinitionId();
-                String issuer = null;
-                if (StringUtils.isNotEmpty(credDefId)) {
-                    issuer = didPrefix + AriesStringUtil.credDefIdGetDid(credDefId);
-                }
-                CredentialType type = CredentialType.fromSchemaId(schemaId);
                 pp
                         .setIssuedAt(TimeUtil.parseZonedTimestamp(proof.getCreatedAt()))
-                        .setType(type)
                         .setValid(Boolean.valueOf(proof.isVerified()))
                         .setState(proof.getState())
-                        .setSchemaId(schemaId)
-                        .setCredentialDefinitionId(credDefId)
-                        .setIssuer(issuer)
                         .setProof(proof.from(schemaService.getSchemaAttributeNames(schemaId)));
-                final PartnerProof savedProof = pProofRepo.update(pp);
-                didRes.resolveDid(savedProof);
+                pProofRepo.updateReceivedProof(pp.getId(),
+                        pp.getIssuedAt(), pp.getValid(), pp.getState(), pp.getProof());
+                didRes.resolveDid(pp);
             }
         });
     }
@@ -170,7 +169,20 @@ public class ProofManager {
                 Credential cred = conv.fromMap(c.getCredential(), Credential.class);
                 final PresentProofProposal req = PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred);
                 try {
-                    ac.presentProofSendProposal(req);
+                    ac.presentProofSendProposal(req).ifPresent(proof -> {
+                        final PartnerProof pp = PartnerProof
+                                .builder()
+                                .partnerId(partnerId)
+                                .state(proof.getState())
+                                .presentationExchangeId(proof.getPresentationExchangeId())
+                                .role(proof.getRole())
+                                .credentialDefinitionId(cred.getCredentialDefinitionId())
+                                .schemaId(cred.getSchemaId())
+                                .type(CredentialType.fromSchemaId(cred.getSchemaId()))
+                                .issuer(resolveIssuer(cred.getCredentialDefinitionId()))
+                                .build();
+                        pProofRepo.save(pp);
+                    });
                 } catch (IOException e) {
                     log.error("aca-py not reachable.", e);
                 }
@@ -181,8 +193,7 @@ public class ProofManager {
     public List<AriesProof> listPartnerProofs(@NonNull UUID partnerId) {
         List<AriesProof> result = new ArrayList<>();
         pProofRepo.findByPartnerIdOrderByRole(partnerId).forEach(p -> {
-            result.add(AriesProof.from(p, p.getProof() != null ? conv.fromMap(p.getProof(), JsonNode.class)
-                    : null));
+            result.add(toApiProof(p));
         });
         return result;
     }
@@ -191,7 +202,7 @@ public class ProofManager {
         Optional<AriesProof> result = Optional.empty();
         final Optional<PartnerProof> proof = pProofRepo.findById(id);
         if (proof.isPresent()) {
-            result = Optional.of(AriesProof.from(proof.get(), conv.fromMap(proof.get().getProof(), JsonNode.class)));
+            result = Optional.of(toApiProof(proof.get()));
         }
         return result;
     }
@@ -205,5 +216,17 @@ public class ProofManager {
             }
             pProofRepo.deleteById(id);
         });
+    }
+
+    private @Nullable String resolveIssuer(String credDefId) {
+        String issuer = null;
+        if (StringUtils.isNotEmpty(credDefId)) {
+            issuer = didPrefix + AriesStringUtil.credDefIdGetDid(credDefId);
+        }
+        return issuer;
+    }
+
+    private AriesProof toApiProof(@NonNull PartnerProof p) {
+        return AriesProof.from(p, p.getProof() != null ? conv.fromMap(p.getProof(), JsonNode.class) : null);
     }
 }
