@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - feature/fixCleanBranches
 jobs:
   housekeeping:
     name: Cleanup old branches
