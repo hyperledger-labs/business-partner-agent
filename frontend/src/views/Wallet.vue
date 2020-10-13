@@ -125,21 +125,13 @@ export default {
         },
         createDocument: function (type) {
             console.log(type);
-            if (type === CredentialTypes.PROFILE.name) {
-                this.$router.push({
-                    name: "Profile",
-                    params: {
-                        add: true
-                    }
-                });
-            } else {
+           
                 this.$router.push({
                     name: "DocumentAdd",
                     params: {
                         type: type
                     }
                 });
-            }
         },
 
     },

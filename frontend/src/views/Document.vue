@@ -13,13 +13,14 @@
       </v-btn>
       {{ type | credentialLabel}}
       <v-layout align-end justify-end>
-        <v-btn depressed color="red" icon @click="deleteDocument()">
+        <v-btn v-if="this.id" depressed color="red" icon @click="deleteDocument()">
           <v-icon dark>mdi-delete</v-icon>
         </v-btn>
       </v-layout>
     </v-card-title>
     <v-card-text>
-      <Credential v-bind:document="document" ref="doc"></Credential>
+      <OganizationalProfile v-if="type === CredentialTypes.PROFILE.name" v-bind:document="document.documentData" ref="doc"></OganizationalProfile>
+      <Credential v-else v-bind:document="document" ref="doc"></Credential>
       <v-divider></v-divider>
       <v-list-item>
         <v-list-item-content>
@@ -32,20 +33,31 @@
         </v-list-item-action>
       </v-list-item>
       <v-divider></v-divider>
-      <v-list-item v-if="this.id">
+      <v-list-item v-if="this.id && document.type !== CredentialTypes.PROFILE.name">
         <v-list-item-content>
           <v-list-item-title>Verification</v-list-item-title>
           <v-list-item-subtitle>Request a verification</v-list-item-subtitle>
         </v-list-item-content>
         <v-list-item-action>
-          <v-btn icon :to="{ name: 'RequestVerification', params: { documentId: id} }">
+          <v-btn 
+            icon
+            :to="{ name: 'RequestVerification', 
+            params: { documentId: id} }"
+          >
             <v-icon color="grey">mdi-chevron-right</v-icon>
           </v-btn>
         </v-list-item-action>
       </v-list-item>
       <v-divider></v-divider>
     </v-card-text>
-    <v-card-actions></v-card-actions>
+ 
+    <v-card-actions>
+      <v-layout align-end justify-end>
+        <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
+        <v-btn :loading="this.isBusy" color="primary" text @click="saveDocument()">Save</v-btn>
+      </v-layout>
+    </v-card-actions>
+
     <v-expansion-panels v-if="expertMode" accordion flat>
       <v-expansion-panel>
         <v-expansion-panel-header
@@ -57,19 +69,13 @@
       </v-expansion-panel>
     </v-expansion-panels>
 
-    <v-card-actions>
-      <v-layout align-end justify-end>
-        <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
-        <v-btn :loading="this.isBusy" color="primary" text @click="saveDocument()">Save</v-btn>
-      </v-layout>
-    </v-card-actions>
   </v-card>
 </template>
 
 <script>
 import { EventBus } from "../main";
 import { CredentialTypes } from "../constants";
-// import OganizationalProfile from "@/components/OrganizationalProfile";
+import OganizationalProfile from "@/components/OrganizationalProfile";
 import Credential from "@/components/Credential";
 import VueJsonPretty from "vue-json-pretty";
 
@@ -87,7 +93,12 @@ export default {
       EventBus.$emit("title", "Create new Document");
       this.document.type = this.type;
       this.isReady = true;
-      this.document.isPublic = false;
+      if (this.document.type === CredentialTypes.PROFILE.name) {
+        this.document.isPublic = true;
+      } else {
+        this.document.isPublic = false;
+      }
+      
     }
   },
   data: () => {
@@ -109,8 +120,10 @@ export default {
       this.$axios
         .get(`${this.$apiBaseUrl}/wallet/document/${this.id}`)
         .then(result => {
+          console.log(result)
           if ({}.hasOwnProperty.call(result, "data")) {
             this.document = result.data;
+            this.type = this.document.type;
             this.isReady = true;
           }
         })
@@ -122,6 +135,7 @@ export default {
     saveDocument() {
       this.isBusy = true;
       console.log(this.$refs.doc.document);
+      console.log(this.$refs.doc.documentData);
       // update document
       if (this.id) {
         this.$axios
@@ -191,7 +205,7 @@ export default {
     }
   },
   components: {
-    // OganizationalProfile,
+    OganizationalProfile,
     Credential,
     VueJsonPretty
   }

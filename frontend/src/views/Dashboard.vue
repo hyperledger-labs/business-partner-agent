@@ -7,43 +7,27 @@
 -->
 <template>
 <v-container text-center>
+    <v-card flat v v-if="!isLoading" class="mx-auto">
+                <v-text-field
+                    id="did"
+                    v-model="status.did"
+                    readonly
+                    outlined
+                    dense
+                    label="DID"
+                    :append-icon="'mdi-content-copy'"
+                    @click:append="copyDid"
+                ></v-text-field>
+    </v-card>
     <div v-if="isWelcome && !isLoading">
         <!-- Image from undraw.co -->
-        <v-img class="mx-auto" src="@/assets/undraw_welcome_3gvl_grey.png" max-width="50%" aspect-ratio="1"></v-img>
+        <v-img class="mx-auto" src="@/assets/undraw_welcome_3gvl_grey.png" max-width="300" aspect-ratio="1"></v-img>
         <p v-bind:style="{ fontSize: `180%` }" class="grey--text text--darken-2 font-weight-medium">Hi, we've already set up an identity for you!</p>
-         <v-row justify="center">
-            <v-col cols="12">
-                <v-text-field
-                    id="did"
-                    v-model="status.did"
-                    readonly
-                    outlined
-                    dense
-                    label="DID"
-                    :append-icon="'mdi-content-copy'"
-                    @click:append="copyDid"
-                ></v-text-field>
-            </v-col>
-        </v-row>
-        <p v-bind:style="{ fontSize: `140%` }" class="grey--text text--darken-2 font-weight-medium">Start by adding a public profile that your business partners will see</p>
+        <!-- <p v-bind:style="{ fontSize: `140%` }" class="grey--text text--darken-2 font-weight-medium">Start by adding a public profile that your business partners will see</p> -->
         <br />
-        <v-btn color="primary" :to="{ name: 'Profile', params: { add: true} }">Setup your Profile</v-btn>
+        <v-btn color="primary" :to="{ name: 'DocumentAdd', params: { type: 'ORGANIZATIONAL_PROFILE_CREDENTIAL'} }">Setup your Profile</v-btn>
     </div>
     <div v-if="!isWelcome && !isLoading"> 
-        <v-row justify="center">
-            <v-col cols="12">
-                <v-text-field
-                    id="did"
-                    v-model="status.did"
-                    readonly
-                    outlined
-                    dense
-                    label="DID"
-                    :append-icon="'mdi-content-copy'"
-                    @click:append="copyDid"
-                ></v-text-field>
-            </v-col>
-        </v-row>
         <v-row>
             <v-col class="col-sm-6">
                 <v-card class="mx-auto" :to="{ name: 'Wallet' }">

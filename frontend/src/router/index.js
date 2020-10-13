@@ -13,7 +13,6 @@ import Identity from '../views/Identity.vue'
 import PublicProfile from '../views/PublicProfile.vue'
 import ContactPerson from '../views/ContactPerson.vue'
 import Wallet from '../views/Wallet.vue'
-import OrganizationalProfileEditor from '../views/OrganizationalProfileEditor.vue'
 import Document from '../views/Document.vue'
 import RequestVerification from '../views/RequestVerification.vue'
 import RequestPresentation from '../views/RequestPresentation.vue'
@@ -86,12 +85,6 @@ const routes = [
     path: '/app/partners/:id/presentation/:presentationId',
     name: 'Presentation',
     component: Presentation,
-    props: true
-  },
-  {
-    path: '/app/wallet/profile',
-    name: 'Profile',
-    component: OrganizationalProfileEditor,
     props: true
   },
   {
