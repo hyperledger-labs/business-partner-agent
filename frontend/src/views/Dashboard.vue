@@ -25,7 +25,7 @@
         <p v-bind:style="{ fontSize: `180%` }" class="grey--text text--darken-2 font-weight-medium">Hi, we've already set up an identity for you!</p>
         <!-- <p v-bind:style="{ fontSize: `140%` }" class="grey--text text--darken-2 font-weight-medium">Start by adding a public profile that your business partners will see</p> -->
         <br />
-        <v-btn color="primary" :to="{ name: 'Profile', params: { add: true} }">Setup your Profile</v-btn>
+        <v-btn color="primary" :to="{ name: 'DocumentAdd', params: { type: 'ORGANIZATIONAL_PROFILE_CREDENTIAL'} }">Setup your Profile</v-btn>
     </div>
     <div v-if="!isWelcome && !isLoading"> 
         <v-row>

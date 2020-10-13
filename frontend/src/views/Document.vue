@@ -33,13 +33,17 @@
         </v-list-item-action>
       </v-list-item>
       <v-divider></v-divider>
-      <v-list-item v-if="this.id">
+      <v-list-item v-if="this.id && document.type !== CredentialTypes.PROFILE.name">
         <v-list-item-content>
           <v-list-item-title>Verification</v-list-item-title>
           <v-list-item-subtitle>Request a verification</v-list-item-subtitle>
         </v-list-item-content>
         <v-list-item-action>
-          <v-btn icon :to="{ name: 'RequestVerification', params: { documentId: id} }">
+          <v-btn 
+            icon
+            :to="{ name: 'RequestVerification', 
+            params: { documentId: id} }"
+          >
             <v-icon color="grey">mdi-chevron-right</v-icon>
           </v-btn>
         </v-list-item-action>
