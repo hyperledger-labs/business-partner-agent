@@ -1,0 +1,19 @@
+name: Cleanup old branches
+on:
+  push:
+    branches:
+      - master
+jobs:
+  housekeeping:
+    name: Cleanup old branches
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Run delete-old-branches-action
+        uses: beatlabs/delete-old-branches-action@v0.0.1
+        with:
+          repo_token: ${{ github.token }}
+          date: '1 months ago'
+          dry_run: true
+          delete_tags: false
