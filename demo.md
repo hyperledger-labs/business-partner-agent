@@ -3,7 +3,7 @@
 In this scenario you will setup a public profile and get your bank account verified by your bank.
 
 ## Prerequisites 
-We assume that you started the Business Partner Agent in Aries mode and your Agent is publicly available (e.g. by using ngrok).
+We assume that you started the Business Partner Agent in Aries mode and your Agent is publicly available (e.g. by using ngrok / diode).
 
 ## Setup a public profile for your organization
 
