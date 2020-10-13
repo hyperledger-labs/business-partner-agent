@@ -48,7 +48,7 @@ Furthermore the firewall might block traffic to other agents depending on its en
 git clone https://github.com/hyperledger-labs/business-partner-agent
 cd ./business-partner-agent
 ./scripts/register-did.sh
-./start-ngrok.sh
+./start-with-tunnels.sh
 ```
 The frontend will be served at `http://localhost:8080`.
 
