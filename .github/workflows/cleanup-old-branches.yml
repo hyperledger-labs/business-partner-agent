@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - feature/addCleanupBranchAction
 jobs:
   housekeeping:
     name: Cleanup old branches
@@ -15,6 +14,6 @@ jobs:
         uses: beatlabs/delete-old-branches-action@v0.0.1
         with:
           repo_token: ${{ github.token }}
-          date: '1 months ago'
-          dry_run: true
+          date: '2 months ago'
+          dry_run: false
           delete_tags: false
