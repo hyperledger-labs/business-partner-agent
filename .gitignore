@@ -67,4 +67,4 @@ frontend/dist/**
 my-values.yaml
 
 /docker-compose-backend.yml
-**/application-dev-frank.yml
+**/application-dev-*.yml
