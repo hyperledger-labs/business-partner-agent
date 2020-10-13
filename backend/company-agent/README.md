@@ -43,10 +43,10 @@ From the project root follow the general setup steps and then run:
 docker-compose -f docker-compose.yml up
 ```
 
-To be able to also test aries connections and webhooks you have to run with ngrok:
+To be able to also test aries connections and webhooks you have to run with ngrok (or diode):
 
 ```s
-./start-ngrok.sh
+./start-with-tunnels.sh
 ```
 
 ### Web Mode
