@@ -64,3 +64,6 @@ frontend/dist/**
 
 # K8s / helm
 my-values.yaml
+
+/docker-compose-backend.yml
+**/application-dev-frank.yml
