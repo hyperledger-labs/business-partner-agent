@@ -6,35 +6,44 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
-<v-container>
-
-    <v-card class="mx-auto px-8">
-        <PartnerList :headers="headers"/>
-         <v-card-actions>
-        <v-btn color="primary" small dark absolute bottom left fab :to="{ name: 'AddPartner' }">
-            <v-icon>mdi-plus</v-icon>
-        </v-btn>
-        </v-card-actions>
-    </v-card>
-</v-container>
+    <v-container>
+        <v-card class="mx-auto px-8">
+            <PartnerList :headers="headers" />
+            <v-card-actions>
+                <v-btn
+                    color="primary"
+                    small
+                    dark
+                    absolute
+                    bottom
+                    left
+                    fab
+                    :to="{ name: 'AddPartner' }"
+                >
+                    <v-icon>mdi-plus</v-icon>
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-container>
 </template>
 
 <script>
-import { EventBus } from '../main';
-import PartnerList from "@/components/PartnerList"; 
+import { EventBus } from "../main";
+import PartnerList from "@/components/PartnerList";
 export default {
     name: "Partners",
     components: {
         PartnerList
     },
     created() {
-        EventBus.$emit('title', 'Business Partners')
+        EventBus.$emit("title", "Business Partners");
     },
     data: () => {
         return {
             isBusy: true,
-            search: '',
-            headers: [{
+            search: "",
+            headers: [
+                {
                     text: "Name",
                     value: "name"
                 },
@@ -46,12 +55,10 @@ export default {
                     text: "Last Updated",
                     value: "updatedAt"
                 }
-
             ],
             partners: []
         };
     },
-    methods: {
-    }
+    methods: {}
 };
 </script>
