@@ -9,27 +9,30 @@
 import { CredentialTypes } from "../constants";
 
 export const getPartnerProfile = (partner) => {
-    if ({}.hasOwnProperty.call(partner, 'credential')) {
+    if ({}.hasOwnProperty.call(partner, "credential")) {
+        let partnerProfile = partner.credential.find((cred) => {
+            return cred.type === CredentialTypes.PROFILE.name;
+        });
 
-        let partnerProfile = partner.credential.find(cred => {
-            return cred.type === CredentialTypes.PROFILE.name
-        })
-
-        return partnerProfile && {}.hasOwnProperty.call(partnerProfile, "credentialData") ? partnerProfile.credentialData : null
-
-    } else return null
-    
-}
+        return partnerProfile &&
+            {}.hasOwnProperty.call(partnerProfile, "credentialData")
+            ? partnerProfile.credentialData
+            : null;
+    } else return null;
+};
 
 export const getPartnerName = (partner) => {
-    if (typeof partner !== 'object') {
-        return ""
-    } else if ({}.hasOwnProperty.call(partner, 'alias')) {
-        return partner.alias
-    } else if ({}.hasOwnProperty.call(partner, 'profile') && partner.profile !== null && {}.hasOwnProperty.call(partner.profile, 'legalName')) {
-        return partner.profile.legalName
+    if (typeof partner !== "object") {
+        return "";
+    } else if ({}.hasOwnProperty.call(partner, "alias")) {
+        return partner.alias;
+    } else if (
+        {}.hasOwnProperty.call(partner, "profile") &&
+        partner.profile !== null &&
+        {}.hasOwnProperty.call(partner.profile, "legalName")
+    ) {
+        return partner.profile.legalName;
     } else {
-        return partner.id
+        return partner.id;
     }
-    
-}
+};
