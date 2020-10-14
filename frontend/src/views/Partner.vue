@@ -7,48 +7,64 @@
 -->
 
 <template>
-  <v-container>
-    <v-card class="mx-auto">
-      <v-card-title class="bg-light">
-        <v-btn depressed color="secondary" icon @click="$router.push({ name: 'Partners' })">
-          <v-icon dark>mdi-chevron-left</v-icon>
-        </v-btn>
-        <span v-if="!isUpdatingName">{{ partner.name }}</span>
-        <v-text-field
-          class="mt-8"
-          v-else
-          label="Name"
-          append-icon="mdi-done"
-          v-model="alias"
-          outlined
-          :rules="[rules.required]"
-          dense
-        >
-          <template v-slot:append>
-            <v-btn class="pb-1" text @click="isUpdatingName=false">Cancel</v-btn>
-            <v-btn
-              class="pb-1"
-              text
-              color="primary"
-              :loading="isBusy"
-              @click="submitNameUpdate()"
-            >Save</v-btn>
-          </template>
-        </v-text-field>
-        <PartnerStateIndicator v-if="expertMode && partner.state" v-bind:state="partner.state"></PartnerStateIndicator>
-        <v-layout align-end justify-end>
-          <v-btn if="depressed" icon @click="isUpdatingName = !isUpdatingName">
-            <v-icon dark>mdi-pencil</v-icon>
-          </v-btn>
-          <v-tooltip top>
-        <template v-slot:activator="{ on, attrs }">
-            <v-btn depressed color="primary" v-bind="attrs" v-on="on" icon @click="refreshPartner()">
-            <v-icon dark>mdi-refresh</v-icon>
-          </v-btn>
-        </template>
-        <span>Refresh profile from source</span>
-    </v-tooltip>
-          
+    <v-container>
+        <v-card class="mx-auto">
+            <v-card-title class="bg-light">
+                <v-btn depressed color="secondary" icon @click="$router.go(-1)">
+                    <v-icon dark>mdi-chevron-left</v-icon>
+                </v-btn>
+                <span v-if="!isUpdatingName">{{ partner.name }}</span>
+                <v-text-field
+                    class="mt-8"
+                    v-else
+                    label="Name"
+                    append-icon="mdi-done"
+                    v-model="alias"
+                    outlined
+                    :rules="[rules.required]"
+                    dense
+                >
+                    <template v-slot:append>
+                        <v-btn class="pb-1" text @click="isUpdatingName = false"
+                            >Cancel</v-btn
+                        >
+                        <v-btn
+                            class="pb-1"
+                            text
+                            color="primary"
+                            :loading="isBusy"
+                            @click="submitNameUpdate()"
+                            >Save</v-btn
+                        >
+                    </template>
+                </v-text-field>
+                <PartnerStateIndicator
+                    v-if="partner.state"
+                    v-bind:state="partner.state"
+                ></PartnerStateIndicator>
+                <v-layout align-end justify-end>
+                    <v-btn
+                        if="depressed"
+                        icon
+                        @click="isUpdatingName = !isUpdatingName"
+                    >
+                        <v-icon dark>mdi-pencil</v-icon>
+                    </v-btn>
+                    <v-tooltip top>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                                depressed
+                                color="primary"
+                                v-bind="attrs"
+                                v-on="on"
+                                icon
+                                @click="refreshPartner()"
+                            >
+                                <v-icon dark>mdi-refresh</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Refresh profile from source</span>
+                    </v-tooltip>
 
                     <v-btn depressed color="red" icon @click="deletePartner()">
                         <v-icon dark>mdi-delete</v-icon>
@@ -56,46 +72,106 @@
                 </v-layout>
             </v-card-title>
 
-      <v-card-text>
-        <OganizationalProfile v-if="partner.profile" v-bind:document="partner.profile" isReadOnly></OganizationalProfile>
-        <DocumentCredentialList v-if="isReady" v-bind:credentials="credentials"></DocumentCredentialList>
-        <v-row class="mx-4">
-          <v-col cols="4">
-            <v-row>
-              <p class="grey--text text--darken-2 font-weight-medium">Received Presentations</p>
-            </v-row>
-            <v-row>The presentations you received from your partner</v-row>
-            <v-row class="mt-4">
-              <v-btn
-                small
-                :to="{ name: 'RequestPresentation', params: { id: id }  }"
-              >Request Presentation</v-btn>
-            </v-row>
-          </v-col>
-          <v-col cols="8">
-            <v-card flat>
-              <PresentationList v-if="isReady" v-bind:credentials="presentationsReceived" :expandable="false"></PresentationList>
-            </v-card>
-          </v-col>
-        </v-row>
-        <v-row class="mx-4">
-          <v-divider></v-divider>
-        </v-row>
-        <v-row class="mx-4">
-          <v-col cols="4">
-            <v-row>
-              <p class="grey--text text--darken-2 font-weight-medium">Sent Presentations</p>
-            </v-row>
-            <v-row>The presentations you sent to your partner</v-row>
-            <v-row class="mt-4">
-              <v-btn small :to="{ name: 'SendPresentation', params: { id: id }  }">Send Presentation</v-btn>
-            </v-row>
-          </v-col>
-          <v-col cols="8">
-            <PresentationList v-if="isReady" v-bind:credentials="presentationsSent" v-bind:headers="headersSent" :expandable="false"></PresentationList>
-          </v-col>
-        </v-row>
-      </v-card-text>
+            <v-card-text>
+                <OganizationalProfile
+                    v-if="partner.profile"
+                    v-bind:document="partner.profile"
+                    isReadOnly
+                ></OganizationalProfile>
+                <DocumentCredentialList
+                    v-if="isReady"
+                    v-bind:credentials="credentials"
+                ></DocumentCredentialList>
+                <v-row class="mx-4">
+                    <v-col cols="4">
+                        <v-row>
+                            <p
+                                class="grey--text text--darken-2 font-weight-medium"
+                            >
+                                Received Presentations
+                            </p>
+                        </v-row>
+                        <v-row
+                            >The presentations you received from your
+                            partner</v-row
+                        >
+                        <v-row class="mt-4">
+                            <v-btn small @click="requestPresentation"
+                                >Request Presentation</v-btn
+                            >
+                        </v-row>
+                    </v-col>
+                    <v-col cols="8">
+                        <v-card flat>
+                            <PresentationList
+                                v-if="isReady"
+                                v-bind:credentials="presentationsReceived"
+                                :expandable="false"
+                            ></PresentationList>
+                        </v-card>
+                    </v-col>
+                </v-row>
+                <v-row class="mx-4">
+                    <v-divider></v-divider>
+                </v-row>
+                <v-row class="mx-4">
+                    <v-col cols="4">
+                        <v-row>
+                            <p
+                                class="grey--text text--darken-2 font-weight-medium"
+                            >
+                                Sent Presentations
+                            </p>
+                        </v-row>
+                        <v-row
+                            >The presentations you sent to your partner</v-row
+                        >
+                        <v-row class="mt-4">
+                            <v-btn small @click="sendPresentation">
+                                Send Presentation</v-btn
+                            >
+                        </v-row>
+                    </v-col>
+                    <v-col cols="8">
+                        <PresentationList
+                            v-if="isReady"
+                            v-bind:credentials="presentationsSent"
+                            v-bind:headers="headersSent"
+                            :expandable="false"
+                        ></PresentationList>
+                    </v-col>
+                </v-row>
+            </v-card-text>
+
+            <v-card-actions>
+                <v-expansion-panels v-if="expertMode" accordion flat>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header
+                            class="grey--text text--darken-2 font-weight-medium bg-light"
+                            >Show raw data</v-expansion-panel-header
+                        >
+                        <v-expansion-panel-content class="bg-light">
+                            <vue-json-pretty :data="rawData"></vue-json-pretty>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                </v-expansion-panels>
+            </v-card-actions>
+        </v-card>
+
+        <v-dialog v-model="attentionPartnerStateDialog" max-width="500">
+            <v-card>
+                <v-card-title class="headline"
+                    >Connection State {{ partner.state }}
+                </v-card-title>
+
+                <v-card-text>
+                    The connection with your Business Partner is marked as
+                    {{ partner.state }}. This could mean that your request will
+                    fail. Do you want to try anyways?
+                </v-card-text>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
 
                     <v-btn
                         color="secondary"
@@ -121,123 +197,19 @@ import { CredentialTypes } from "../constants";
 import { getPartnerProfile, getPartnerName } from "../utils/partnerUtils";
 import { EventBus } from "../main";
 export default {
-  name: "Partner",
-  props: ["id"],
-  components: {
-    VueJsonPretty,
-    OganizationalProfile,
-    PresentationList,
-    PartnerStateIndicator,
-    DocumentCredentialList
-  },
-  created() {
-    this.getPartner();
-    this.getPresentationRecords();
-  },
-  data: () => {
-    return {
-      isReady: false,
-      isBusy: false,
-      isUpdatingName: false,
-      alias: "",
-      partner: {},
-      rawData: {},
-      credentials: [],
-      presentationsSent: [],
-      presentationsReceived: [],
-      rules: {
-          required: value => !!value || "Can't be empty"
-      },
-      headersSent: [
-        {
-          text: "Type",
-          value: "type"
-        },
-        {
-          text: "Issuer",
-          value: "issuer"
-        },
-        {
-          text: "Sent at",
-          value: "sentAt"
-        },{
-          text: "State",
-          value: "state"
-        }
-      ]
-    };
-  },
-  computed: {
-    expertMode() {
-      return this.$store.state.expertMode;
-    }
-  },
-  methods: {
-    getPresentationRecords() {
-      console.log("Getting presentation records...");
-      this.$axios
-        .get(`${this.$apiBaseUrl}/partners/${this.id}/proof`)
-        .then(result => {
-          if ({}.hasOwnProperty.call(result, "data")) {
-            let data  = result.data;
-            console.log(data);
-            this.presentationsSent = data.filter( item => {
-              console.log(item)
-              return item.role === "prover"
-            })
-            this.presentationsReceived = data.filter( item => {
-              return item.role === "verifier"
-            })
-            console.log(this.presentationsSent)
-          }
-
-        })
-        .catch(e => {
-          console.error(e);
-          // EventBus.$emit("error", e);
-        });
+    name: "Partner",
+    props: ["id"],
+    components: {
+        VueJsonPretty,
+        OganizationalProfile,
+        PresentationList,
+        PartnerStateIndicator,
+        DocumentCredentialList,
     },
-<<<<<<< HEAD
     created() {
         EventBus.$emit("title", "Partner");
         this.getPartner();
         this.getPresentationRecords();
-=======
-    getPartner() {
-      console.log("Getting partner...");
-      this.$axios
-        .get(`${this.$apiBaseUrl}/partners/${this.id}`)
-        .then(result => {
-          console.log(result);
-          if ({}.hasOwnProperty.call(result, "data")) {
-            this.rawData = result.data;
-            this.partner = {
-              ...result.data,
-              ...{
-                profile: getPartnerProfile(result.data)
-              }
-            };
-            if ({}.hasOwnProperty.call(this.partner, "credential")) {
-              // Show only creds other than OrgProfile in credential list
-              this.credentials = this.partner.credential.filter(cred => {
-                return cred.type !== CredentialTypes.PROFILE.name;
-              });
-            }
-            console.log("PARTNER");
-            console.log(this.credentials);
-
-            // Hacky way to define a partner name
-            // Todo: Make this consistent. Probalby in backend
-            this.partner.name = getPartnerName(this.partner);
-            this.alias = this.partner.name;
-            this.isReady = true;
-          }
-        })
-        .catch(e => {
-          console.error(e);
-          EventBus.$emit("error", e);
-        });
->>>>>>> 2b74dc7... feature/017 AddPartner, Partner View
     },
     data: () => {
         return {

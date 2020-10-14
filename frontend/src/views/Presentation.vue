@@ -50,11 +50,9 @@
 
 <script>
 import { EventBus } from "../main";
-
 import Cred from "@/components/Credential";
 import VueJsonPretty from "vue-json-pretty";
 import { CredentialTypes } from "../constants";
-
 export default {
     name: "Presentation",
     props: {
@@ -96,7 +94,6 @@ export default {
                 });
         },
         // saveChanges() {
-
         // },
         deletePresentation() {
             this.$axios
@@ -130,7 +127,6 @@ export default {
 .bg-light {
     background-color: #fafafa;
 }
-
 .bg-light-2 {
     background-color: #ececec;
 }
