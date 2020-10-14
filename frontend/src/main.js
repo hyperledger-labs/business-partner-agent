@@ -33,24 +33,25 @@ Vue.prototype.$apiBaseUrl = apiBaseUrl;
 Vue.config.productionTip = false;
 
 Vue.filter('credentialLabel', function (name) {
-  if (!name) return ''
+  if (!name) return '';
   let itemOfName = Object.values(CredentialTypes).find(item => {
-    return item.name === name
-  })
-  return itemOfName.label
-})
+    return item.name === name;
+  });
+  return itemOfName.label;
+});
 
 Vue.filter('credentialTag', function (credDefId) {
-  if (!credDefId) return ''
-  let pos = credDefId.lastIndexOf(':')
-  return credDefId.substring(pos+1)
+  if (!credDefId) return '';
+  let pos = credDefId.lastIndexOf(':');
+  return credDefId.substring(pos + 1);
+});
 
-})
+Vue.filter('capitalize', function (string) {
+  return string.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
+});
 
 const EventBus = new Vue();
 export { EventBus, axios, apiBaseUrl };
-  
-console.log(Vue.prototype)
 
 new Vue({
   vuetify,
