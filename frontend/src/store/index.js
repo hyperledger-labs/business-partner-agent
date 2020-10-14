@@ -6,14 +6,14 @@
  SPDX-License-Identifier: Apache-2.0
 */
 
-import Vue from 'vue'
-import Vuex from 'vuex'
-import moment from 'moment'
-import { EventBus, axios, apiBaseUrl } from "../main"
-import { CredentialTypes } from "../constants"
-import { getPartnerProfile } from "../utils/partnerUtils"
+import Vue from "vue";
+import Vuex from "vuex";
+import moment from "moment";
+import { EventBus, axios, apiBaseUrl } from "../main";
+import { CredentialTypes } from "../constants";
+import { getPartnerProfile } from "../utils/partnerUtils";
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
@@ -21,133 +21,135 @@ const store = new Vuex.Store({
     editedDocument: {}, //document currently being edited
     documents: [],
     credentials: [],
-    schemas:  [],
+    schemas: [],
     busyStack: 0,
-    expertMode: false
+    expertMode: false,
   },
 
   getters: {
-    isBusy: state => {
-      return state.busyStack > 0
+    isBusy: (state) => {
+      return state.busyStack > 0;
     },
-    publicDocumentsAndCredentials: state => {
-      var retval = state.credentials.concat(state.documents.filter(d => d.type != CredentialTypes.PROFILE.name)).filter(d => d.isPublic == true)
-      return retval
+    publicDocumentsAndCredentials: (state) => {
+      var retval = state.credentials
+        .concat(
+          state.documents.filter((d) => d.type != CredentialTypes.PROFILE.name)
+        )
+        .filter((d) => d.isPublic == true);
+      return retval;
     },
-    organizationalProfile: state => {
-      var documents = state.documents.filter(d => d.type == CredentialTypes.PROFILE.name)
-      if (documents.length == 1) return documents[0]
-      else return undefined
+    organizationalProfile: (state) => {
+      var documents = state.documents.filter(
+        (d) => d.type == CredentialTypes.PROFILE.name
+      );
+      if (documents.length == 1) return documents[0];
+      else return undefined;
     },
     getPartnerByDID: (state) => (did) => {
-      return state.partners.find(partner => {
-        partner.did === did
-      })
+      return state.partners.find((partner) => {
+        partner.did === did;
+      });
     },
   },
 
   actions: {
-
     async loadSchemas({ commit }) {
       axios
         .get(`${apiBaseUrl}/admin/schema`)
-        .then(result => {
+        .then((result) => {
           if ({}.hasOwnProperty.call(result, "data")) {
-            let schemas = result.data
+            let schemas = result.data;
             commit({
               type: "loadSchemasFinished",
-              schemas: schemas
-
-            })
+              schemas: schemas,
+            });
           }
         })
-        .catch(e => {
+        .catch((e) => {
           console.error(e);
           EventBus.$emit("error", e);
-        })
-    },     
+        });
+    },
     async loadPartners({ commit }) {
       axios
         .get(`${apiBaseUrl}/partners`)
-        .then(result => {
+        .then((result) => {
           if ({}.hasOwnProperty.call(result, "data")) {
-            let partners = result.data
-            partners = partners.map(partner => {
-              partner.profile = getPartnerProfile(partner)
-              return partner
-            })
+            let partners = result.data;
+            partners = partners.map((partner) => {
+              partner.profile = getPartnerProfile(partner);
+              return partner;
+            });
 
             commit({
               type: "loadPartnersFinished",
-              partners: partners
-
-            })
+              partners: partners,
+            });
           }
         })
-        .catch(e => {
+        .catch((e) => {
           console.error(e);
           EventBus.$emit("error", e);
-        })
+        });
     },
     async loadDocuments({ commit }) {
       axios
         .get(`${apiBaseUrl}/wallet/document`)
-        .then(result => {
-          console.log(result)
+        .then((result) => {
+          console.log(result);
           if ({}.hasOwnProperty.call(result, "data")) {
-            var documents = result.data
-            documents.map(documentIn => {
-              documentIn.createdDate = moment(documentIn.createdDate)
-              documentIn.updatedDate = moment(documentIn.updatedDate)
+            var documents = result.data;
+            documents.map((documentIn) => {
+              documentIn.createdDate = moment(documentIn.createdDate);
+              documentIn.updatedDate = moment(documentIn.updatedDate);
             });
 
             commit({
               type: "loadDocumentsFinished",
-              documents: documents
+              documents: documents,
             });
           }
         })
-        .catch(e => {
+        .catch((e) => {
           console.error(e);
           EventBus.$emit("error", e);
-        })
+        });
     },
 
     async loadCredentials({ commit }) {
       axios
         .get(`${apiBaseUrl}/wallet/credential`)
-        .then(result => {
+        .then((result) => {
           if ({}.hasOwnProperty.call(result, "data")) {
             var credentials = [];
-            result.data.forEach(credentialRef => {
+            result.data.forEach((credentialRef) => {
               axios
                 .get(`${apiBaseUrl}/wallet/credential/${credentialRef.id}`)
-                .then(result => {
-                  credentials.push(result.data)
+                .then((result) => {
+                  credentials.push(result.data);
                 })
-                .catch(e => {
+                .catch((e) => {
                   console.error(e);
                   EventBus.$emit("error", e);
-                })
-
+                });
             });
             commit({
               type: "loadCredentialsFinished",
-              credentials: credentials
+              credentials: credentials,
             });
           }
         })
-        .catch(e => {
+        .catch((e) => {
           console.error(e);
           EventBus.$emit("error", e);
-        })
+        });
     },
     // async completeEditDocument({ state }) {
     //   if (state.editedDocument.add) {
     //     axios
     //       .post(`${apiBaseUrl}/wallet/document`, {
     //         document: state.editedDocument.document,
-    //         isPublic: true, //TODO 
+    //         isPublic: true, //TODO
     //         type: state.editedDocument.type
     //       })
     //       .then(() => {
@@ -163,7 +165,7 @@ const store = new Vuex.Store({
     //     axios
     //       .put(`${apiBaseUrl}/wallet/document/${state.editedDocument.id}`, {
     //         document: state.editedDocument.document,
-    //         isPublic: true, //TODO 
+    //         isPublic: true, //TODO
     //         type: state.editedDocument.type
     //       })
     //       .then(() => {
@@ -205,17 +207,17 @@ const store = new Vuex.Store({
     },
     setSettings(state, payload) {
       state.expertMode = payload.isExpert;
-    }
-  }
-})
+    },
+  },
+});
 
 store.subscribeAction({
   before: (action, state) => {
-    state.busyStack = state.busyStack + 1
+    state.busyStack = state.busyStack + 1;
   },
   after: (action, state) => {
-    state.busyStack = state.busyStack - 1
-  }
-})
+    state.busyStack = state.busyStack - 1;
+  },
+});
 
-export default store
+export default store;

@@ -2,7 +2,8 @@
 
 In this scenario you will setup a public profile and get your bank account verified by your bank.
 
-## Prerequisites 
+## Prerequisites
+
 We assume that you started the Business Partner Agent in Aries mode and your Agent is publicly available (e.g. by using ngrok / diode).
 
 ## Setup a public profile for your organization
@@ -26,10 +27,9 @@ This information is currently self-attested, but we like to have this informatio
 ## Add our bank as a business partner
 
 1. Go to `Business Partners` and click the `+ button`
-2. Select `did:sov:iil` and paste `M6Mbe3qx7vB4wpZF4sBRjt`  in the DID Box. This is the DID of your bank
+2. Select `did:sov:iil` and paste `M6Mbe3qx7vB4wpZF4sBRjt` in the DID Box. This is the DID of your bank
 3. Click on `Lookup Partner`. You'll see the public profile of your partner.
 4. Click on `Add Partner`. Now you have a connection with your bank.
-
 
 ## Get your bank account verified by your bank
 

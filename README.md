@@ -7,9 +7,11 @@
 [![Build Status](https://dev.azure.com/economy-of-things/Business-Partner-Agent/_apis/build/status/hyperledger-labs.business-partner-agent?branchName=master)](https://dev.azure.com/economy-of-things/Business-Partner-Agent/_build/latest?definitionId=79&branchName=master)
 
 # Short Description
+
 The Business Partner Agent allows to manage and exchange master data between organizations.
 
 # Scope of Lab
+
 The Business Partner Agent is a domain-specific controller and extension for Aries Cloud Agent Python. It allows to manage and to publish public organizational master data tied to a decentralized identifier (DID) as well as to share and to request business partner specific master data and certifications.
 
 The project consists of a backend written in Java that provides domain-specific APIs for integration in enterprise systems, as well as a simple reference user interface.
@@ -26,6 +28,7 @@ where you could try it out. The frontend is under construction.
 # Getting Started
 
 The Business Partner Agent supports two modes
+
 1. Web mode: Serves a did:web identity and allows to publish a public organizational profile.
 2. Aries mode: Utilizes an identity on an Hyperledger Indy ledger (default: https://indy-test.bosch-digital.de/) and enables Aries interaction protocols.
 
@@ -34,6 +37,7 @@ Following this turorial, the agent will be started in Aries mode.
 ## Prerequistes
 
 The following tools should be installed on your developer machine:
+
 - docker
 - docker-compose
 - (optional) [ngrok](https://ngrok.com/) or [diode](https://support.diode.io/) to have a public endpoint to communicate with other Business Partner Agents
@@ -50,8 +54,8 @@ cd ./business-partner-agent
 ./scripts/register-did.sh
 ./start-with-tunnels.sh
 ```
-The frontend will be served at `http://localhost:8080`.
 
+The frontend will be served at `http://localhost:8080`.
 
 ## Register a new DID before starting an Business Partner Agent
 
@@ -63,6 +67,7 @@ Just run:
 ```
 
 You should see the following outpout:
+
 ```s
 {
   "did": "W3KMxGKUmajhiJzGmqVcAM",
@@ -82,19 +87,22 @@ Alternatively, you can register a DID manually:
 ## Start a Business Partner Agent instance
 
 You can start an instance of the Business Partner Agent with docker compose. It will start the following
+
 - Frontend (Vue.js)
 - Controller Backend (Java Micronaut)
 - Aries Cloud Agent Python
 - Postgres
-  
-with a default configuration. 
+
+with a default configuration.
 
 ### Build and run
+
 ```s
 docker-compose up
 ```
 
 ### Rebuild
+
 ```s
 docker-compose build
 ```
@@ -108,50 +116,58 @@ Access the swagger-ui:
 http://localhost:8080/swagger-ui
 
 ### Stopping the instance
+
 ```s
 docker-compose down
 ```
 
-If you want to wipe the database as well you can use 
+If you want to wipe the database as well you can use
 
 ```s
 docker-compose down -v
 ```
 
 ## Getting a public IP
+
 If you did not deploy your agent on a server with a public ip it won't have public endpoints to communicate with other agents.
 A simple way to get public endpoints for your agent is to setup [ngrok](https://ngrok.com/).
 
 If you have setup ngrok you can use the `start-with-tunnels.sh` script to start your agent with public endpoints.
+
 ```s
 ./start-with-tunnels.sh
 ```
+
 To terminate all ngrok tunnels you can use
+
 ```s
 ./kill-tunnels.sh
 ```
 
-***BE AWARE:*** If you don't have any security enabled the Business Partner API and and the frontend will be publicly available. This is in particular important when running in Aries mode where the public IP is written to the ledger. 
+**_BE AWARE:_** If you don't have any security enabled the Business Partner API and and the frontend will be publicly available. This is in particular important when running in Aries mode where the public IP is written to the ledger.
 
 ### Setup Security
 
 In your `.env` under `Security config` file set
+
 ```s
 BPA_SECURITY_ENABLED=true
 ```
-and a user name and password.
 
+and a user name and password.
 
 ## Play a demo scenario
 
 See [demo](./demo.md)
 
 # Initial Committers
+
 - https://github.com/etschelp
 - https://github.com/frank-bee
 - https://github.com/domwoe
 
 # Sponsor
+
 - https://github.com/swcurran Co-Chair of the Aries Working Group
 
 # License

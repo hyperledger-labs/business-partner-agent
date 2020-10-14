@@ -11,30 +11,30 @@ avoid frustration later on.
 
 ## Contribution Guideline
 
-* We use the GitHub [issue
+- We use the GitHub [issue
   tracker](https://github.com/hyperledger-labs/organizational-agent/issues).
 
-* When you want to submit a patch, you must [sign your
+- When you want to submit a patch, you must [sign your
   commits](#sign-your-work).
 
-* Your contribution must be licensed under the Apache-2.0 license, the
+- Your contribution must be licensed under the Apache-2.0 license, the
   license used by this project.
 
-* When submitting a pull-request to the project, please note / ensure
+- When submitting a pull-request to the project, please note / ensure
   the following:
 
-    0. [Update](#maintain-copyright-holder-contributor-list) the
-       [NOTICE](NOTICE) file as part of your first pull-request.
-    1. If possible, keep the changes small and simple which makes the
-       review process easier.
-    2. [Add / retain copyright notices](#add-retain-copyright-notices).
-    5. Verify that the code builds cleanly and passes all unit tests.
-    6. Ensure good test coverage by including unit tests when adding
-       significant amount of functionalities.
-    7. Follow these [guidelines](https://chris.beams.io/posts/git-commit/)
-       on how to write a good **commit** message. If available, include the
-       ticket number. And don't forget the [Signed-Off-By](#sign-your-work) line.
-    8. Create a pull request against the master branch.
+  0. [Update](#maintain-copyright-holder-contributor-list) the
+     [NOTICE](NOTICE) file as part of your first pull-request.
+  1. If possible, keep the changes small and simple which makes the
+     review process easier.
+  2. [Add / retain copyright notices](#add-retain-copyright-notices).
+  3. Verify that the code builds cleanly and passes all unit tests.
+  4. Ensure good test coverage by including unit tests when adding
+     significant amount of functionalities.
+  5. Follow these [guidelines](https://chris.beams.io/posts/git-commit/)
+     on how to write a good **commit** message. If available, include the
+     ticket number. And don't forget the [Signed-Off-By](#sign-your-work) line.
+  6. Create a pull request against the master branch.
 
 ## Legal stuff
 
@@ -105,7 +105,7 @@ email address.
 
 If you have set your `user.name` and `user.email` git configs you can
 automatically sign the commit by running the git-commit command with the
-`-s` option.  There may be multiple sign-offs if more than one developer
+`-s` option. There may be multiple sign-offs if more than one developer
 was involved in authoring the contribution.
 
 For a more detailed description of this procedure, please see
@@ -140,5 +140,4 @@ certified (a), (b) or (c) and I have not modified it", please add the
 appropriate copyright holder(s) to the NOTICE file as part of your
 contribution.
 
-[SubmittingPatches]:
-https://github.com/wking/signed-off-by/blob/7d71be37194df05c349157a2161c7534feaf86a4/Documentation/SubmittingPatches
+[submittingpatches]: https://github.com/wking/signed-off-by/blob/7d71be37194df05c349157a2161c7534feaf86a4/Documentation/SubmittingPatches
