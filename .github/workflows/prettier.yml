@@ -22,4 +22,5 @@ jobs:
       uses: creyD/prettier_action@v3.0
       with:
         dry: true
+        prettier_version: 2.1.2
         prettier_options: --write **/*.{js,vue}
