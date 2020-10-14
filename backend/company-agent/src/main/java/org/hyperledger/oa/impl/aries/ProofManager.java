@@ -104,7 +104,21 @@ public class ProofManager {
                                         .credentialDefinitionId(credDefId)
                                         .build())
                                 .build();
-                        ac.presentProofSendRequest(PresentProofRequest.build(config));
+                        ac.presentProofSendRequest(PresentProofRequest.build(config)).ifPresent(proof -> {
+                            final PartnerProof pp = PartnerProof
+                                    .builder()
+                                    .partnerId(partnerId)
+                                    .state(proof.getState())
+                                    .presentationExchangeId(proof.getPresentationExchangeId())
+                                    .role(proof.getRole())
+                                    .credentialDefinitionId(credDefId)
+                                    .schemaId(schema.get().getId())
+                                    .type(CredentialType.fromSchemaId(schema.get().getId()))
+                                    .issuer(resolveIssuer(credDefId))
+                                    .build();
+                            pProofRepo.save(pp);
+                        });
+
                     } else {
                         throw new PartnerException("Partner has no aca-py connection");
                     }
@@ -125,14 +139,16 @@ public class ProofManager {
             pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId()).ifPresentOrElse(pp -> {
                 pProofRepo.updateState(pp.getId(), proof.getState());
             }, () -> {
-                final PartnerProof pp = PartnerProof
-                        .builder()
-                        .partnerId(p.getId())
-                        .state(proof.getState())
-                        .presentationExchangeId(proof.getPresentationExchangeId())
-                        .role(proof.getRole())
-                        .build();
-                pProofRepo.save(pp);
+                if ("proposal_received".equals(proof.getState())) {
+                    final PartnerProof pp = PartnerProof
+                            .builder()
+                            .partnerId(p.getId())
+                            .state(proof.getState())
+                            .presentationExchangeId(proof.getPresentationExchangeId())
+                            .role(proof.getRole())
+                            .build();
+                    pProofRepo.save(pp);
+                }
             });
         });
     }
@@ -168,7 +184,21 @@ public class ProofManager {
                 Credential cred = conv.fromMap(c.getCredential(), Credential.class);
                 final PresentProofProposal req = PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred);
                 try {
-                    ac.presentProofSendProposal(req);
+                    ac.presentProofSendProposal(req).ifPresent(proof -> {
+                        final PartnerProof pp = PartnerProof
+                                .builder()
+                                .partnerId(partnerId)
+                                .state(proof.getState())
+                                .presentationExchangeId(proof.getPresentationExchangeId())
+                                .role(proof.getRole())
+                                .credentialDefinitionId(cred.getCredentialDefinitionId())
+                                .schemaId(cred.getSchemaId())
+                                .type(CredentialType.fromSchemaId(cred.getSchemaId()))
+                                .issuer(resolveIssuer(cred.getCredentialDefinitionId()))
+                                .build();
+                        pProofRepo.save(pp);
+                    });
+
                 } catch (IOException e) {
                     log.error("aca-py not reachable.", e);
                 }

@@ -37,6 +37,7 @@ import org.hyperledger.oa.model.Partner;
 import org.hyperledger.oa.repository.MyCredentialRepository;
 import org.hyperledger.oa.repository.PartnerRepository;
 
+import io.micronaut.cache.annotation.CacheInvalidate;
 import lombok.NonNull;
 
 @Singleton
@@ -128,6 +129,8 @@ public class PartnerManager {
      * @param id the id
      * @return {@link PartnerAPI}
      */
+    // TODO use partner UUID as cache key
+    @CacheInvalidate(cacheNames = { "partner-lookup-cache" }, all = true)
     public Optional<PartnerAPI> refreshPartner(@NonNull UUID id) {
         Optional<PartnerAPI> result = Optional.empty();
         final Optional<Partner> dbPartner = repo.findById(id);
