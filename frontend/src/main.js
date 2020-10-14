@@ -19,13 +19,13 @@ Vue.use(require("vue-moment"));
 
 var apiBaseUrl;
 if (process.env.NODE_ENV === "development") {
-    apiBaseUrl = "http://localhost:8080/api";
-    store.commit({
-        type: "setSettings",
-        isExpert: true,
-    });
+  apiBaseUrl = "http://localhost:8080/api";
+  store.commit({
+    type: "setSettings",
+    isExpert: true,
+  });
 } else {
-    apiBaseUrl = "/api";
+  apiBaseUrl = "/api";
 }
 
 Vue.prototype.$axios = axios;
@@ -33,17 +33,17 @@ Vue.prototype.$apiBaseUrl = apiBaseUrl;
 Vue.config.productionTip = false;
 
 Vue.filter("credentialLabel", function (name) {
-    if (!name) return "";
-    let itemOfName = Object.values(CredentialTypes).find((item) => {
-        return item.name === name;
-    });
-    return itemOfName.label;
+  if (!name) return "";
+  let itemOfName = Object.values(CredentialTypes).find((item) => {
+    return item.name === name;
+  });
+  return itemOfName.label;
 });
 
 Vue.filter("credentialTag", function (credDefId) {
-    if (!credDefId) return "";
-    let pos = credDefId.lastIndexOf(":");
-    return credDefId.substring(pos + 1);
+  if (!credDefId) return "";
+  let pos = credDefId.lastIndexOf(":");
+  return credDefId.substring(pos + 1);
 });
 
 const EventBus = new Vue();
@@ -52,8 +52,8 @@ export { EventBus, axios, apiBaseUrl };
 console.log(Vue.prototype);
 
 new Vue({
-    vuetify,
-    router,
-    store,
-    render: (h) => h(App),
+  vuetify,
+  router,
+  store,
+  render: (h) => h(App),
 }).$mount("#app");
