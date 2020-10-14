@@ -83,9 +83,14 @@ export default {
                     issuer: "IATF Proxy Issuer"
                 },
                 {
-                    credentialDefinitionId: "8faozNpSjFfPJXYtgcPtmJ:3:CL:1041:Commercial Registry Entry (Open Corporates)",
+                    credentialDefinitionId: "5mwQSWnRePrZ3oF67C4KqD:3:CL:1077:commercial register entry",
+                    label: "Commercial Registry Entry",
                     issuer: "Commercial Registry"
                 },
+                // {
+                //     credentialDefinitionId: "8faozNpSjFfPJXYtgcPtmJ:3:CL:1041:Commercial Registry Entry (Open Corporates)",
+                //     issuer: "Commercial Registry"
+                // },
                 {
                     credentialDefinitionId: "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc",
                     label: "Bank Account",
