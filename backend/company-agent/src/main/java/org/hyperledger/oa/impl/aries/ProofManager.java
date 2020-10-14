@@ -121,14 +121,20 @@ public class ProofManager {
 
     // handles all proof events to track state changes
     public void handleProofEvent(PresentationExchangeRecord proof) {
-        //partnerRepo.findByConnectionId(proof.getConnectionId()).ifPresent(p -> {
+        partnerRepo.findByConnectionId(proof.getConnectionId()).ifPresent(p -> {
             pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId()).ifPresentOrElse(pp -> {
                 pProofRepo.updateState(pp.getId(), proof.getState());
             }, () -> {
-                // this can happen when the event is faster than the save action above or below
-                log.warn("Received proof without matching record in DB.");
+                final PartnerProof pp = PartnerProof
+                        .builder()
+                        .partnerId(p.getId())
+                        .state(proof.getState())
+                        .presentationExchangeId(proof.getPresentationExchangeId())
+                        .role(proof.getRole())
+                        .build();
+                pProofRepo.save(pp);
             });
-        //});
+        });
     }
 
     // handle all acked or verified proof events
@@ -138,14 +144,20 @@ public class ProofManager {
             if (CollectionUtils.isNotEmpty(proof.getIdentifiers())) {
                 // TODO first schema id for now
                 String schemaId = proof.getIdentifiers().get(0).getSchemaId();
+                String credDefId = proof.getIdentifiers().get(0).getCredentialDefinitionId();
+                String issuer = resolveIssuer(credDefId);
+                CredentialType type = CredentialType.fromSchemaId(schemaId);
                 pp
                         .setIssuedAt(TimeUtil.parseZonedTimestamp(proof.getCreatedAt()))
+                        .setType(type)
                         .setValid(Boolean.valueOf(proof.isVerified()))
                         .setState(proof.getState())
+                        .setSchemaId(schemaId)
+                        .setCredentialDefinitionId(credDefId)
+                        .setIssuer(issuer)
                         .setProof(proof.from(schemaService.getSchemaAttributeNames(schemaId)));
-                pProofRepo.updateReceivedProof(pp.getId(),
-                        pp.getIssuedAt(), pp.getValid(), pp.getState(), pp.getProof());
-                didRes.resolveDid(pp);
+                final PartnerProof savedProof = pProofRepo.update(pp);
+                didRes.resolveDid(savedProof);
             }
         });
     }
@@ -156,20 +168,7 @@ public class ProofManager {
                 Credential cred = conv.fromMap(c.getCredential(), Credential.class);
                 final PresentProofProposal req = PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred);
                 try {
-                    ac.presentProofSendProposal(req).ifPresent(proof -> {
-                        final PartnerProof pp = PartnerProof
-                                .builder()
-                                .partnerId(partnerId)
-                                .state(proof.getState())
-                                .presentationExchangeId(proof.getPresentationExchangeId())
-                                .role(proof.getRole())
-                                .credentialDefinitionId(cred.getCredentialDefinitionId())
-                                .schemaId(cred.getSchemaId())
-                                .type(CredentialType.fromSchemaId(cred.getSchemaId()))
-                                .issuer(resolveIssuer(cred.getCredentialDefinitionId()))
-                                .build();
-                        pProofRepo.save(pp);
-                    });
+                    ac.presentProofSendProposal(req);
                 } catch (IOException e) {
                     log.error("aca-py not reachable.", e);
                 }
