@@ -6,64 +6,73 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
-<v-card class="mx-auto">
-    <v-card-title class="bg-light">
-        <v-btn depressed color="secondary" icon @click="$router.go(-1);">
-            <v-icon dark>mdi-chevron-left</v-icon>
-        </v-btn>
-       Send a Credential Presentation
-    </v-card-title>
-    
-    <v-card-text>
-         <h4 class="pt-4">Select a credential to send</h4>
-         <MyCredentialList v-bind:headers="credHeaders" type="credential" ref="PresentationList" selectable></MyCredentialList>
-    </v-card-text>
+    <v-card class="mx-auto">
+        <v-card-title class="bg-light">
+            <v-btn depressed color="secondary" icon @click="$router.go(-1)">
+                <v-icon dark>mdi-chevron-left</v-icon>
+            </v-btn>
+            Send a Credential Presentation
+        </v-card-title>
 
-    <v-card-actions>
-        <v-layout align-end justify-end>
-            <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
-            <v-btn :loading="this.isBusy" color="primary" text @click="sendPresentation()">Submit</v-btn>
-        </v-layout>
-    </v-card-actions>
-</v-card>
+        <v-card-text>
+            <h4 class="pt-4">Select a credential to send</h4>
+            <MyCredentialList
+                v-bind:headers="credHeaders"
+                type="credential"
+                ref="PresentationList"
+                selectable
+            ></MyCredentialList>
+        </v-card-text>
+
+        <v-card-actions>
+            <v-layout align-end justify-end>
+                <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
+                <v-btn
+                    :loading="this.isBusy"
+                    color="primary"
+                    text
+                    @click="sendPresentation()"
+                    >Submit</v-btn
+                >
+            </v-layout>
+        </v-card-actions>
+    </v-card>
 </template>
 
 <script>
-import {
-    EventBus
-} from '../main'
+import { EventBus } from "../main";
 
 // import { CredentialTypes } from "../constants";
 // import VueJsonPretty from "vue-json-pretty"
-import MyCredentialList from "@/components/MyCredentialList"
+import MyCredentialList from "@/components/MyCredentialList";
 
 export default {
     name: "SendPresentation",
     components: {
-        MyCredentialList
+        MyCredentialList,
     },
     props: {
         id: String,
     },
     created() {
-        EventBus.$emit('title', 'Send Presentation')
+        EventBus.$emit("title", "Send Presentation");
     },
     data: () => {
         return {
             isBusy: false,
-            credHeaders: [{
+            credHeaders: [
+                {
                     text: "Type",
-                    value: "type"
+                    value: "type",
                 },
                 {
                     text: "Issuer",
-                    value: "issuer"
+                    value: "issuer",
                 },
                 {
                     text: "Issued at",
-                    value: "issuedAt"
-                }
-
+                    value: "issuedAt",
+                },
             ],
         };
     },
@@ -72,21 +81,23 @@ export default {
         sendPresentation() {
             this.isBusy = true;
             if (this.$refs.PresentationList.selected.length === 1) {
-
                 if (this.$refs.PresentationList.selected[0].id) {
-
-                    let selectedCredential = this.$refs.PresentationList.selected[0].id;
+                    let selectedCredential = this.$refs.PresentationList
+                        .selected[0].id;
                     this.$axios
-                        .post(`${this.$apiBaseUrl}/partners/${this.id}/proof-send`, {
-                            myCredentialId: selectedCredential
-                        })
+                        .post(
+                            `${this.$apiBaseUrl}/partners/${this.id}/proof-send`,
+                            {
+                                myCredentialId: selectedCredential,
+                            }
+                        )
                         .then((res) => {
-                            console.log(res)
+                            console.log(res);
                             this.isBusy = false;
-                            EventBus.$emit('success', 'Presentation sent')
+                            EventBus.$emit("success", "Presentation sent");
                             this.$router.push({
-                                name: 'Partner',
-                                params: { id: this.id}
+                                name: "Partner",
+                                params: { id: this.id },
                             });
                         })
                         .catch((e) => {
@@ -94,23 +105,19 @@ export default {
                             console.error(e);
                             EventBus.$emit("error", e);
                         });
-
                 } else {
                     this.isBusy = false;
                 }
-
             } else {
                 this.isBusy = false;
-                EventBus.$emit("error", 'No credential selected');
+                EventBus.$emit("error", "No credential selected");
             }
-
         },
-        
+
         cancel() {
             this.$router.go(-1);
-        }
-
-    }
+        },
+    },
 };
 </script>
 

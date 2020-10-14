@@ -9,34 +9,38 @@
 export const CredentialTypes = Object.freeze({
     PROFILE: {
         name: "ORGANIZATIONAL_PROFILE_CREDENTIAL",
-        label: "Organizational Profile"
+        label: "Organizational Profile",
     },
     BANK_ACCOUNT: {
         name: "BANK_ACCOUNT_CREDENTIAL",
-        label: "Bank Account"
+        label: "Bank Account",
     },
     OTHER: {
         name: "OTHER",
-        label: "Unkown"
-    }
-})
+        label: "Unkown",
+    },
+});
 
-const Schemas = [{
-    type: 'BANK_ACCOUNT_CREDENTIAL',
-    fields: [{
-        type: 'iban',
-        label: 'IBAN',
-        required: true
-    }, {
-        type: 'bic',
-        label: 'BIC',
-        required: true
-    }]
-
-}]
+const Schemas = [
+    {
+        type: "BANK_ACCOUNT_CREDENTIAL",
+        fields: [
+            {
+                type: "iban",
+                label: "IBAN",
+                required: true,
+            },
+            {
+                type: "bic",
+                label: "BIC",
+                required: true,
+            },
+        ],
+    },
+];
 
 export const getSchema = (type) => {
-    return Schemas.find(schema => {
-        return schema.type === type
-    })
-}
+    return Schemas.find((schema) => {
+        return schema.type === type;
+    });
+};

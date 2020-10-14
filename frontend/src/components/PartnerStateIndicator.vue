@@ -7,45 +7,46 @@
 -->
 
 <template>
-<span>
-
-    <v-tooltip right>
-        <template v-slot:activator="{ on, attrs }">
-            <v-icon small class="ml-2" :color="color" v-bind="attrs" v-on="on">mdi-brightness-1</v-icon>
-        </template>
-        <span>Aries connection state: {{ this.state }}</span>
-    </v-tooltip>
-</span>
+    <span>
+        <v-tooltip right>
+            <template v-slot:activator="{ on, attrs }">
+                <v-icon
+                    small
+                    class="ml-2"
+                    :color="color"
+                    v-bind="attrs"
+                    v-on="on"
+                    >mdi-brightness-1</v-icon
+                >
+            </template>
+            <span>Aries connection state: {{ this.state }}</span>
+        </v-tooltip>
+    </span>
 </template>
 
 <script>
 export default {
     name: "PartnerStateIndicator",
     props: {
-        state: String
+        state: String,
     },
     created() {},
     data: () => {
-        return {}
+        return {};
     },
     computed: {
         color: function () {
-            if (this.state === 'request') {
-                return 'yellow'
-            } else if (this.state === 'inactive') {
-                return 'red'
-            } else if (this.state === 'active' || this.state === 'response') {
-                return 'green'
+            if (this.state === "request") {
+                return "yellow";
+            } else if (this.state === "inactive") {
+                return "red";
+            } else if (this.state === "active" || this.state === "response") {
+                return "green";
             } else {
-                return 'grey'
+                return "grey";
             }
-
-        }
-
+        },
     },
-    methods: {
-
-    }
-
+    methods: {},
 };
 </script>
