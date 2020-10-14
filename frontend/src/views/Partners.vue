@@ -33,7 +33,7 @@ import PartnerList from "@/components/PartnerList";
 export default {
     name: "Partners",
     components: {
-        PartnerList
+        PartnerList,
     },
     created() {
         EventBus.$emit("title", "Business Partners");
@@ -45,20 +45,20 @@ export default {
             headers: [
                 {
                     text: "Name",
-                    value: "name"
+                    value: "name",
                 },
                 {
                     text: "Created",
-                    value: "createdAt"
+                    value: "createdAt",
                 },
                 {
                     text: "Last Updated",
-                    value: "updatedAt"
-                }
+                    value: "updatedAt",
+                },
             ],
-            partners: []
+            partners: [],
         };
     },
-    methods: {}
+    methods: {},
 };
 </script>

@@ -43,9 +43,7 @@
             </template>
 
             <template v-slot:[`item.isPublic`]="{ item }">
-                <v-icon v-if="item.isPublic" color="green">
-                    mdi-eye
-                </v-icon>
+                <v-icon v-if="item.isPublic" color="green"> mdi-eye </v-icon>
                 <template v-else>
                     <v-icon>mdi-eye-off</v-icon>
                 </template>
@@ -78,8 +76,8 @@ export default {
         headers: Array,
         selectable: {
             type: Boolean,
-            default: false
-        }
+            default: false,
+        },
     },
     created() {
         this.fetch(this.type);
@@ -89,7 +87,7 @@ export default {
             data: [],
             isBusy: true,
             selected: [],
-            CredentialTypes: CredentialTypes
+            CredentialTypes: CredentialTypes,
         };
     },
     computed: {},
@@ -97,13 +95,13 @@ export default {
         fetch(type) {
             this.$axios
                 .get(`${this.$apiBaseUrl}/wallet/${type}`)
-                .then(result => {
+                .then((result) => {
                     console.log(result);
                     if ({}.hasOwnProperty.call(result, "data")) {
                         this.isBusy = false;
 
                         if (type === "credential") {
-                            this.data = result.data.filter(item => {
+                            this.data = result.data.filter((item) => {
                                 return item.issuer;
                             });
                         } else {
@@ -113,7 +111,7 @@ export default {
                         console.log(this.data);
                     }
                 })
-                .catch(e => {
+                .catch((e) => {
                     this.isBusy = false;
                     if (e.response.status === 404) {
                         this.data = [];
@@ -132,19 +130,19 @@ export default {
                     name: "Document",
                     params: {
                         id: doc.id,
-                        type: doc.type
-                    }
+                        type: doc.type,
+                    },
                 });
             } else {
                 this.$router.push({
                     name: "Credential",
                     params: {
                         id: doc.id,
-                        type: doc.type
-                    }
+                        type: doc.type,
+                    },
                 });
             }
-        }
-    }
+        },
+    },
 };
 </script>

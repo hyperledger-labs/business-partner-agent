@@ -145,7 +145,7 @@
 import { EventBus } from "./main";
 export default {
     props: {
-        source: String
+        source: String,
     },
 
     data: () => ({
@@ -158,13 +158,13 @@ export default {
         color: "",
         snackbarMsg: "",
 
-        sessionDialog: false
+        sessionDialog: false,
     }),
 
     computed: {
         expertMode() {
             return this.$store.state.expertMode;
-        }
+        },
     },
 
     created() {
@@ -173,17 +173,17 @@ export default {
         // Global Error handling
         // Todo: Put in extra component
 
-        EventBus.$on("title", title => {
+        EventBus.$on("title", (title) => {
             this.title = title;
         });
 
-        EventBus.$on("success", msg => {
+        EventBus.$on("success", (msg) => {
             (this.snackbarMsg = msg),
                 (this.color = "green"),
                 (this.snackbar = true);
         });
 
-        EventBus.$on("error", msg => {
+        EventBus.$on("error", (msg) => {
             console.log(msg.response);
 
             if (
@@ -215,12 +215,12 @@ export default {
                 .then(() => {
                     location.reload();
                 })
-                .catch(e => {
+                .catch((e) => {
                     console.error(e);
                     location.reload();
                 });
-        }
-    }
+        },
+    },
 };
 </script>
 <style>

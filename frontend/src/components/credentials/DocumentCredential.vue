@@ -50,7 +50,7 @@
                         placeholder
                         v-model="documentData[field.type]"
                         :disabled="isReadOnly"
-                        :rules="[v => !!v || 'Item is required']"
+                        :rules="[(v) => !!v || 'Item is required']"
                         :required="field.required"
                         outlined
                         dense
@@ -67,7 +67,7 @@ export default {
     props: {
         isReadOnly: Boolean,
         document: Object,
-        showOnlyContent: Boolean
+        showOnlyContent: Boolean,
     },
     created() {
         console.log(this.document);
@@ -81,7 +81,7 @@ export default {
             !{}.hasOwnProperty.call(this.document, "proofData")
         ) {
             this.documentData = Object.fromEntries(
-                this.schema.fields.map(field => {
+                this.schema.fields.map((field) => {
                     return [field.type, ""];
                 })
             );
@@ -98,7 +98,7 @@ export default {
             }
 
             // Only support one nested node for now
-            let nestedData = Object.values(documentData).find(value => {
+            let nestedData = Object.values(documentData).find((value) => {
                 return typeof value === "object" && value !== null;
             });
 
@@ -109,7 +109,7 @@ export default {
         return {};
     },
     computed: {
-        schema: function() {
+        schema: function () {
             let s = getSchema(this.document.type);
             if (s && {}.hasOwnProperty.call(s, "fields")) {
                 return s;
@@ -119,18 +119,18 @@ export default {
             } else {
                 s = {
                     type: this.document.type,
-                    fields: Object.keys(this.documentData).map(key => {
+                    fields: Object.keys(this.documentData).map((key) => {
                         return {
                             type: key,
-                            label: key
+                            label: key,
                         };
-                    })
+                    }),
                 };
                 console.log(s);
                 return s;
             }
-        }
+        },
     },
-    methods: {}
+    methods: {},
 };
 </script>

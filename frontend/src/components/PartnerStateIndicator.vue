@@ -28,14 +28,14 @@
 export default {
     name: "PartnerStateIndicator",
     props: {
-        state: String
+        state: String,
     },
     created() {},
     data: () => {
         return {};
     },
     computed: {
-        color: function() {
+        color: function () {
             if (this.state === "request") {
                 return "yellow";
             } else if (this.state === "inactive") {
@@ -45,8 +45,8 @@ export default {
             } else {
                 return "grey";
             }
-        }
+        },
     },
-    methods: {}
+    methods: {},
 };
 </script>

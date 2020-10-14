@@ -23,51 +23,51 @@ const store = new Vuex.Store({
         credentials: [],
         schemas: [],
         busyStack: 0,
-        expertMode: false
+        expertMode: false,
     },
 
     getters: {
-        isBusy: state => {
+        isBusy: (state) => {
             return state.busyStack > 0;
         },
-        publicDocumentsAndCredentials: state => {
+        publicDocumentsAndCredentials: (state) => {
             var retval = state.credentials
                 .concat(
                     state.documents.filter(
-                        d => d.type != CredentialTypes.PROFILE.name
+                        (d) => d.type != CredentialTypes.PROFILE.name
                     )
                 )
-                .filter(d => d.isPublic == true);
+                .filter((d) => d.isPublic == true);
             return retval;
         },
-        organizationalProfile: state => {
+        organizationalProfile: (state) => {
             var documents = state.documents.filter(
-                d => d.type == CredentialTypes.PROFILE.name
+                (d) => d.type == CredentialTypes.PROFILE.name
             );
             if (documents.length == 1) return documents[0];
             else return undefined;
         },
-        getPartnerByDID: state => did => {
-            return state.partners.find(partner => {
+        getPartnerByDID: (state) => (did) => {
+            return state.partners.find((partner) => {
                 partner.did === did;
             });
-        }
+        },
     },
 
     actions: {
         async loadSchemas({ commit }) {
             axios
                 .get(`${apiBaseUrl}/admin/schema`)
-                .then(result => {
+                .then((result) => {
                     if ({}.hasOwnProperty.call(result, "data")) {
                         let schemas = result.data;
                         commit({
                             type: "loadSchemasFinished",
-                            schemas: schemas
+                            schemas: schemas,
                         });
                     }
                 })
-                .catch(e => {
+                .catch((e) => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
@@ -75,21 +75,21 @@ const store = new Vuex.Store({
         async loadPartners({ commit }) {
             axios
                 .get(`${apiBaseUrl}/partners`)
-                .then(result => {
+                .then((result) => {
                     if ({}.hasOwnProperty.call(result, "data")) {
                         let partners = result.data;
-                        partners = partners.map(partner => {
+                        partners = partners.map((partner) => {
                             partner.profile = getPartnerProfile(partner);
                             return partner;
                         });
 
                         commit({
                             type: "loadPartnersFinished",
-                            partners: partners
+                            partners: partners,
                         });
                     }
                 })
-                .catch(e => {
+                .catch((e) => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
@@ -97,11 +97,11 @@ const store = new Vuex.Store({
         async loadDocuments({ commit }) {
             axios
                 .get(`${apiBaseUrl}/wallet/document`)
-                .then(result => {
+                .then((result) => {
                     console.log(result);
                     if ({}.hasOwnProperty.call(result, "data")) {
                         var documents = result.data;
-                        documents.map(documentIn => {
+                        documents.map((documentIn) => {
                             documentIn.createdDate = moment(
                                 documentIn.createdDate
                             );
@@ -112,11 +112,11 @@ const store = new Vuex.Store({
 
                         commit({
                             type: "loadDocumentsFinished",
-                            documents: documents
+                            documents: documents,
                         });
                     }
                 })
-                .catch(e => {
+                .catch((e) => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
@@ -125,33 +125,33 @@ const store = new Vuex.Store({
         async loadCredentials({ commit }) {
             axios
                 .get(`${apiBaseUrl}/wallet/credential`)
-                .then(result => {
+                .then((result) => {
                     if ({}.hasOwnProperty.call(result, "data")) {
                         var credentials = [];
-                        result.data.forEach(credentialRef => {
+                        result.data.forEach((credentialRef) => {
                             axios
                                 .get(
                                     `${apiBaseUrl}/wallet/credential/${credentialRef.id}`
                                 )
-                                .then(result => {
+                                .then((result) => {
                                     credentials.push(result.data);
                                 })
-                                .catch(e => {
+                                .catch((e) => {
                                     console.error(e);
                                     EventBus.$emit("error", e);
                                 });
                         });
                         commit({
                             type: "loadCredentialsFinished",
-                            credentials: credentials
+                            credentials: credentials,
                         });
                     }
                 })
-                .catch(e => {
+                .catch((e) => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
-        }
+        },
         // async completeEditDocument({ state }) {
         //   if (state.editedDocument.add) {
         //     axios
@@ -215,8 +215,8 @@ const store = new Vuex.Store({
         },
         setSettings(state, payload) {
             state.expertMode = payload.isExpert;
-        }
-    }
+        },
+    },
 });
 
 store.subscribeAction({
@@ -225,7 +225,7 @@ store.subscribeAction({
     },
     after: (action, state) => {
         state.busyStack = state.busyStack - 1;
-    }
+    },
 });
 
 export default store;

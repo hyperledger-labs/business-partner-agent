@@ -64,7 +64,7 @@ export default {
     name: "RequestPresentation",
     components: {},
     props: {
-        id: String //partner ID
+        id: String, //partner ID
     },
     created() {
         EventBus.$emit("title", "Request Presentation");
@@ -78,35 +78,35 @@ export default {
             headers: [
                 {
                     text: "Type",
-                    value: "credentialDefinitionId"
+                    value: "credentialDefinitionId",
                 },
                 {
                     text: "Issuer",
-                    value: "issuer"
-                }
+                    value: "issuer",
+                },
             ],
             templates: [
                 {
                     credentialDefinitionId:
                         "nJvGcV7hBSLRSUvwGk2hT:3:CL:734:IATF Certificate",
-                    issuer: "IATF Proxy Issuer"
+                    issuer: "IATF Proxy Issuer",
                 },
                 {
                     credentialDefinitionId:
                         "4QybVurJnPDTHcmcbiGUnU:3:CL:894:commercial register entry",
-                    issuer: "did:sov:iil:4QybVurJnPDTHcmcbiGUnU"
+                    issuer: "did:sov:iil:4QybVurJnPDTHcmcbiGUnU",
                 },
                 {
                     credentialDefinitionId:
                         "8faozNpSjFfPJXYtgcPtmJ:3:CL:894:Commercial Registry Entry",
-                    issuer: "Commercial Registry (Open Corporates Proxy)"
+                    issuer: "Commercial Registry (Open Corporates Proxy)",
                 },
                 {
                     credentialDefinitionId:
                         "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc",
-                    issuer: "did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt"
-                }
-            ]
+                    issuer: "did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt",
+                },
+            ],
         };
     },
     computed: {},
@@ -124,16 +124,16 @@ export default {
                     .post(
                         `${this.$apiBaseUrl}/partners/${this.id}/proof-request`,
                         {
-                            credentialDefinitionId: credDefId
+                            credentialDefinitionId: credDefId,
                         }
                     )
-                    .then(res => {
+                    .then((res) => {
                         console.log(res);
                         this.isBusy = false;
                         EventBus.$emit("success", "Presentation request sent");
                         this.$router.go(-1);
                     })
-                    .catch(e => {
+                    .catch((e) => {
                         this.isBusy = false;
                         console.error(e);
                         EventBus.$emit("error", e);
@@ -145,8 +145,8 @@ export default {
         },
         cancel() {
             this.$router.go(-1);
-        }
-    }
+        },
+    },
 };
 </script>
 

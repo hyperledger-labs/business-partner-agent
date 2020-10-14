@@ -80,34 +80,34 @@ import { EventBus } from "../../main";
 import { CredentialTypes } from "../../constants";
 export default {
     props: {
-        credentials: Array
+        credentials: Array,
     },
     created() {},
     data: () => {
         return {
             selected: [],
             CredentialTypes: CredentialTypes,
-            expanded: []
+            expanded: [],
         };
     },
     computed: {
         // Add an unique index, because elements do not have unique id
-        credentialsWithIndex: function() {
+        credentialsWithIndex: function () {
             return this.credentials.map((credentials, index) => ({
                 ...credentials,
-                index: index + 1
+                index: index + 1,
             }));
             // .map(credential => {
             //   credential.verified = true
             // })
-        }
+        },
     },
     methods: {
         openPresentation(presentation) {
             if (presentation.id) {
                 this.$router.push({
                     path: `presentation/${presentation.id}`,
-                    append: true
+                    append: true,
                 });
             } else {
                 EventBus.$emit(
@@ -115,10 +115,10 @@ export default {
                     "No details view available for presentations in public profile."
                 );
             }
-        }
+        },
     },
     components: {
-        DocumentCredential
-    }
+        DocumentCredential,
+    },
 };
 </script>

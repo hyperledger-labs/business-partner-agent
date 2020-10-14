@@ -52,7 +52,7 @@ export default {
     props: {},
     components: {
         OrganizationalProfile,
-        DocumentCredentialList
+        DocumentCredentialList,
     },
     computed: {
         document() {
@@ -64,12 +64,12 @@ export default {
         publicDocumentsAndCredentials() {
             console.log(this.$store.getters.publicDocumentsAndCredentials);
             return this.$store.getters.publicDocumentsAndCredentials;
-        }
+        },
     },
     created() {
         EventBus.$emit("title", "Public Profile");
         this.$store.dispatch("loadDocuments");
         this.$store.dispatch("loadCredentials");
-    }
+    },
 };
 </script>

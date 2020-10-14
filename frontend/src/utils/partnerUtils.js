@@ -8,9 +8,9 @@
 
 import { CredentialTypes } from "../constants";
 
-export const getPartnerProfile = partner => {
+export const getPartnerProfile = (partner) => {
     if ({}.hasOwnProperty.call(partner, "credential")) {
-        let partnerProfile = partner.credential.find(cred => {
+        let partnerProfile = partner.credential.find((cred) => {
             return cred.type === CredentialTypes.PROFILE.name;
         });
 
@@ -21,7 +21,7 @@ export const getPartnerProfile = partner => {
     } else return null;
 };
 
-export const getPartnerName = partner => {
+export const getPartnerName = (partner) => {
     if (typeof partner !== "object") {
         return "";
     } else if ({}.hasOwnProperty.call(partner, "alias")) {

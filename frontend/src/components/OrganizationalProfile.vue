@@ -28,7 +28,7 @@
                     placeholder
                     v-model="documentData.legalName"
                     :disabled="isReadOnly"
-                    :rules="[v => !!v || 'Item is required']"
+                    :rules="[(v) => !!v || 'Item is required']"
                     required
                     outlined
                     dense
@@ -70,8 +70,7 @@
                             <v-btn
                                 v-if="
                                     !isReadOnly &&
-                                        index ===
-                                            documentData.identifier.length - 1
+                                    index === documentData.identifier.length - 1
                                 "
                                 color="primary"
                                 text
@@ -82,8 +81,7 @@
                                 icon
                                 v-if="
                                     !isReadOnly &&
-                                        index !==
-                                            documentData.identifier.length - 1
+                                    index !== documentData.identifier.length - 1
                                 "
                                 @click="deleteIdentifier(index)"
                             >
@@ -167,7 +165,7 @@
 export default {
     props: {
         isReadOnly: Boolean,
-        document: Object
+        document: Object,
     },
     created() {
         console.log(this.document);
@@ -186,8 +184,8 @@ export default {
                 identifier: [
                     {
                         id: "",
-                        type: ""
-                    }
+                        type: "",
+                    },
                 ],
                 registeredSite: {
                     address: {
@@ -195,10 +193,10 @@ export default {
                         zipCode: "",
                         city: "",
                         country: "",
-                        region: ""
-                    }
-                }
-            }
+                        region: "",
+                    },
+                },
+            },
         };
     },
     computed: {},
@@ -206,14 +204,14 @@ export default {
         addIdentifier() {
             this.documentData.identifier.push({
                 id: "",
-                type: ""
+                type: "",
             });
             console.log(this.documentData.identifier);
         },
         deleteIdentifier(i) {
             this.documentData.identifier.splice(i, 1);
-        }
+        },
     },
-    components: {}
+    components: {},
 };
 </script>

@@ -49,10 +49,10 @@ import MyCredentialList from "@/components/MyCredentialList";
 export default {
     name: "SendPresentation",
     components: {
-        MyCredentialList
+        MyCredentialList,
     },
     props: {
-        id: String
+        id: String,
     },
     created() {
         EventBus.$emit("title", "Send Presentation");
@@ -63,17 +63,17 @@ export default {
             credHeaders: [
                 {
                     text: "Type",
-                    value: "type"
+                    value: "type",
                 },
                 {
                     text: "Issuer",
-                    value: "issuer"
+                    value: "issuer",
                 },
                 {
                     text: "Issued at",
-                    value: "issuedAt"
-                }
-            ]
+                    value: "issuedAt",
+                },
+            ],
         };
     },
     computed: {},
@@ -88,19 +88,19 @@ export default {
                         .post(
                             `${this.$apiBaseUrl}/partners/${this.id}/proof-send`,
                             {
-                                myCredentialId: selectedCredential
+                                myCredentialId: selectedCredential,
                             }
                         )
-                        .then(res => {
+                        .then((res) => {
                             console.log(res);
                             this.isBusy = false;
                             EventBus.$emit("success", "Presentation sent");
                             this.$router.push({
                                 name: "Partner",
-                                params: { id: this.id }
+                                params: { id: this.id },
                             });
                         })
-                        .catch(e => {
+                        .catch((e) => {
                             this.isBusy = false;
                             console.error(e);
                             EventBus.$emit("error", e);
@@ -116,8 +116,8 @@ export default {
 
         cancel() {
             this.$router.go(-1);
-        }
-    }
+        },
+    },
 };
 </script>
 

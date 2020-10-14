@@ -100,7 +100,7 @@
                         text
                         :to="{
                             name: 'AddDocument',
-                            params: { person: person }
+                            params: { person: person },
                         }"
                         >Save</v-btn
                     >
@@ -116,8 +116,8 @@ export default {
     name: "ContactPerson",
     props: {
         person: {
-            type: Object
-        }
+            type: Object,
+        },
     },
     created() {
         EventBus.$emit("title", "Contact Person");
@@ -135,12 +135,12 @@ export default {
                 "Compliance Responsible",
                 "Product Safety Expert",
                 "Director Finance",
-                "HSE-Responsible"
+                "HSE-Responsible",
             ],
             salutationTypes: ["Mr.", "Mrs."],
-            academicTitleTypes: ["Dr.", "Prof. Dr."]
+            academicTitleTypes: ["Dr.", "Prof. Dr."],
         };
     },
-    methods: {}
+    methods: {},
 };
 </script>

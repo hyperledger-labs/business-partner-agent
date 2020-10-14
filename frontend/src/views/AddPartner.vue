@@ -98,7 +98,7 @@ export default {
     name: "AddPartner",
     components: {
         OganizationalProfile,
-        DocumentCredentialList
+        DocumentCredentialList,
     },
     created: () => {},
     data: () => {
@@ -109,7 +109,7 @@ export default {
             did: "",
             alias: "",
             partnerProfile: null,
-            publicCredentials: []
+            publicCredentials: [],
         };
     },
     methods: {
@@ -118,7 +118,7 @@ export default {
             this.partnerLoading = true;
             this.$axios
                 .get(`${this.$apiBaseUrl}/partners/lookup/${this.did}`)
-                .then(result => {
+                .then((result) => {
                     this.partnerLoading = false;
                     console.log(result);
                     if (
@@ -130,7 +130,7 @@ export default {
                             this.publicCredentials = partner.credential;
                             // Get OrgProfile credential
                             this.partnerProfile = this.publicCredentials.find(
-                                cred => {
+                                (cred) => {
                                     return (
                                         cred.type ===
                                         CredentialTypes.PROFILE.name
@@ -142,7 +142,7 @@ export default {
                             }
                             // Show only creds other than OrgProfile in credential list
                             this.publicCredentials = this.publicCredentials.filter(
-                                cred => {
+                                (cred) => {
                                     return (
                                         cred.type !==
                                         CredentialTypes.PROFILE.name
@@ -161,7 +161,7 @@ export default {
                         }
                     }
                 })
-                .catch(e => {
+                .catch((e) => {
                     console.error(e);
                     this.msg = `Could not resolve ${this.did}.`;
                     this.partnerLoading = false;
@@ -170,7 +170,7 @@ export default {
         },
         addPartner() {
             let partnerToAdd = {
-                did: `${this.did}`
+                did: `${this.did}`,
             };
 
             if (this.alias && this.alias !== "") {
@@ -178,7 +178,7 @@ export default {
             }
             this.$axios
                 .post(`${this.$apiBaseUrl}/partners`, partnerToAdd)
-                .then(result => {
+                .then((result) => {
                     console.log(result);
 
                     if (result.status === 201) {
@@ -192,11 +192,11 @@ export default {
                         //   this.partnerLoading = false;
                         EventBus.$emit("success", "Partner added successfully");
                         this.$router.push({
-                            name: "Partners"
+                            name: "Partners",
                         });
                     }
                 })
-                .catch(e => {
+                .catch((e) => {
                     if (e.response.status === 412) {
                         EventBus.$emit("error", "Partner already exists");
                     } else {
@@ -204,7 +204,7 @@ export default {
                         EventBus.$emit("error", e);
                     }
                 });
-        }
-    }
+        },
+    },
 };
 </script>

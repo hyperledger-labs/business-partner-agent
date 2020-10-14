@@ -122,32 +122,32 @@ export default {
             settingsHeader: [
                 {
                     text: "Host",
-                    value: "host"
+                    value: "host",
                 },
                 {
                     text: "Universal Resolver",
-                    value: "uniResolverUrl"
+                    value: "uniResolverUrl",
                 },
                 {
                     text: "Ledger Browser",
-                    value: "ledgerBrowser"
+                    value: "ledgerBrowser",
                 },
                 {
                     text: "Ledger DID Prefix",
-                    value: "ledgerPrefix"
+                    value: "ledgerPrefix",
                 },
                 {
                     text: "Aries Agent Url",
-                    value: "acaPyUrl"
+                    value: "acaPyUrl",
                 },
                 {
                     text: "Aries API Key",
-                    value: "acaPyApiKey"
-                }
+                    value: "acaPyApiKey",
+                },
             ],
             settings: [],
             isEditingColor: false,
-            uiColor: ""
+            uiColor: "",
         };
     },
     computed: {
@@ -155,13 +155,13 @@ export default {
             set(body) {
                 this.$store.commit({
                     type: "setSettings",
-                    isExpert: body
+                    isExpert: body,
                 });
             },
             get() {
                 return this.$store.state.expertMode;
-            }
-        }
+            },
+        },
     },
     methods: {
         setUiColor() {
@@ -172,21 +172,21 @@ export default {
         fetch() {
             this.$axios
                 .get(`${this.$apiBaseUrl}/admin/config`)
-                .then(result => {
+                .then((result) => {
                     if ({}.hasOwnProperty.call(result, "data")) {
-                        this.settings = this.settingsHeader.map(setting => {
+                        this.settings = this.settingsHeader.map((setting) => {
                             return {
                                 text: setting.text,
-                                value: result.data[setting.value]
+                                value: result.data[setting.value],
                             };
                         });
                     }
                 })
-                .catch(e => {
+                .catch((e) => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
-        }
-    }
+        },
+    },
 };
 </script>

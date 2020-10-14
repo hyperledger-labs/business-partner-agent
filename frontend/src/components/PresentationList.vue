@@ -29,7 +29,7 @@
             <v-icon
                 v-if="
                     item.state === 'verified' ||
-                        item.state == 'presentation_acked'
+                    item.state == 'presentation_acked'
                 "
                 color="green"
                 >mdi-check</v-icon
@@ -70,57 +70,57 @@ export default {
         credentials: Array,
         selectable: {
             type: Boolean,
-            default: false
+            default: false,
         },
         expandable: {
             type: Boolean,
-            default: true
+            default: true,
         },
         headers: {
             type: Array,
             default: () => [
                 {
                     text: "Type",
-                    value: "type"
+                    value: "type",
                 },
                 {
                     text: "Issuer",
-                    value: "issuer"
+                    value: "issuer",
                 },
                 {
                     text: "Received at",
-                    value: "receivedAt"
+                    value: "receivedAt",
                 },
                 {
                     text: "State",
-                    value: "state"
+                    value: "state",
                 },
                 {
                     text: " ",
-                    value: "actions"
-                }
-            ]
-        }
+                    value: "actions",
+                },
+            ],
+        },
     },
     created() {},
     data: () => {
         return {
             selected: [],
             CredentialTypes: CredentialTypes,
-            expanded: []
+            expanded: [],
         };
     },
     computed: {
         // Add an unique index, because elements do not have unique id
-        credentialsWithIndex: function() {
+        credentialsWithIndex: function () {
             return this.credentials.map((credentials, index) => ({
                 ...credentials,
-                index: index + 1
+                index: index + 1,
             }));
             // .map(credential => {
             //   credential.verified = true
             // })
-        }
+        },
     },
     methods: {
         deletePresentation(presentation) {
@@ -130,14 +130,14 @@ export default {
                 .delete(
                     `${this.$apiBaseUrl}/partners/${partnerId}/proof/${presentation.id}`
                 )
-                .then(result => {
+                .then((result) => {
                     if (result.status === 200) {
-                        this.credentials = this.credentials.filter(pres => {
+                        this.credentials = this.credentials.filter((pres) => {
                             pres.id !== presentation;
                         });
                     }
                 })
-                .catch(e => {
+                .catch((e) => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
@@ -150,7 +150,7 @@ export default {
                 if (presentation.id) {
                     this.$router.push({
                         path: `presentation/${presentation.id}`,
-                        append: true
+                        append: true,
                     });
                 } else {
                     EventBus.$emit(
@@ -162,10 +162,10 @@ export default {
                 // Do nothing for now. Presentation is not ready
                 // Need to fix Presentation.vue for unfinished presentations
             }
-        }
+        },
     },
     components: {
-        Credential
-    }
+        Credential,
+    },
 };
 </script>

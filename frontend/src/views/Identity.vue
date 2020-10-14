@@ -24,7 +24,7 @@ import { EventBus } from "../main";
 export default {
     name: "Identity",
     components: {
-        VueJsonPretty
+        VueJsonPretty,
     },
     created() {
         EventBus.$emit("title", "Identity");
@@ -33,7 +33,7 @@ export default {
     data: () => {
         return {
             didDocLoaded: false,
-            didDoc: {}
+            didDoc: {},
         };
     },
     methods: {
@@ -46,16 +46,16 @@ export default {
                         ""
                     )}/.well-known/did.json`
                 )
-                .then(result => {
+                .then((result) => {
                     console.log(result);
                     this.didDocLoaded = true;
                     this.didDoc = result.data;
                 })
-                .catch(e => {
+                .catch((e) => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
-        }
-    }
+        },
+    },
 };
 </script>
