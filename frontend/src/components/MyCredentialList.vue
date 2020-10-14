@@ -12,7 +12,7 @@
 
         <template v-slot:[`item.type`]="{ item }">
             <div v-if="item.type === CredentialTypes.OTHER.name" class="font-weight-medium">{{ item.credentialDefinitionId | credentialTag }}</div>
-            <div v-else class="font-weight-medium">{{ item.type | credentialLabel }}</div>
+            <div v-else class="font-weight-medium">{{ item.type | credentialLabel | capitalize }}</div>
         </template>
 
         <template v-slot:[`item.createdDate`]="{ item }">
