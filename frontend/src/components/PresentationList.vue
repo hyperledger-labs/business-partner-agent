@@ -21,7 +21,7 @@
     >
         <template v-slot:[`item.type`]="{ item }">
             <div v-if="item.type === CredentialTypes.OTHER.name">
-                {{ item.credentialDefinitionId | credentialTag }}
+                {{ item.credentialDefinitionId | credentialTag | capitalize  }}
             </div>
             <div v-else>{{ item.type | credentialLabel }}</div>
         </template>
