@@ -25,7 +25,11 @@
             item-key="credentialDefinitionId" 
         >
             <template v-slot:[`item.credentialDefinitionId`]="{ item }">
+                <span v-if="item.label"> {{ item.label }} </span>
+                <span v-else
+                >
                 {{ item.credentialDefinitionId | credentialTag }}
+                </span>
             </template>
         </v-data-table>
         <h4 class="pt-4">Or enter a custom Credential Definition ID</h4>
@@ -79,16 +83,13 @@ export default {
                     issuer: "IATF Proxy Issuer"
                 },
                 {
-                    credentialDefinitionId: "4QybVurJnPDTHcmcbiGUnU:3:CL:894:commercial register entry",
-                    issuer: "did:sov:iil:4QybVurJnPDTHcmcbiGUnU"
-                },
-                {
-                    credentialDefinitionId: "8faozNpSjFfPJXYtgcPtmJ:3:CL:894:Commercial Registry Entry",
-                    issuer: "Commercial Registry (Open Corporates Proxy)"
+                    credentialDefinitionId: "8faozNpSjFfPJXYtgcPtmJ:3:CL:1041:Commercial Registry Entry (Open Corporates)",
+                    issuer: "Commercial Registry"
                 },
                 {
                     credentialDefinitionId: "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc",
-                    issuer: "did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt"
+                    label: "Bank Account",
+                    issuer: "Contoso LP"
                 }
             ]
         };
