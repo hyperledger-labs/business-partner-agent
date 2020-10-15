@@ -81,10 +81,10 @@ import PartnerList from "@/components/PartnerList";
 export default {
     name: "RequestVerification",
     components: {
-        PartnerList,
+        PartnerList
     },
     props: {
-        documentId: String,
+        documentId: String
     },
     created() {
         EventBus.$emit("title", "Request Verification");
@@ -95,7 +95,7 @@ export default {
             isBusy: false,
             isReady: false,
             attentionPartnerStateDialog: false,
-            partner: {},
+            partner: {}
         };
     },
     computed: {},
@@ -103,7 +103,6 @@ export default {
         submitRequest() {
             this.isBusy = true;
             if (this.$refs.partnerList.selected.length === 1) {
-
                 if (this.$refs.partnerList.selected[0].id) {
                     this.partner = this.$refs.partnerList.selected[0];
 
@@ -130,18 +129,18 @@ export default {
                 .post(
                     `${this.$apiBaseUrl}/partners/${this.partner.id}/credential-request`,
                     {
-                        documentId: this.documentId,
+                        documentId: this.documentId
                     }
                 )
-                .then((res) => {
+                .then(res => {
                     console.log(res);
                     this.isBusy = false;
                     EventBus.$emit("success", "Verification Request sent");
                     this.$router.push({
-                        name: "Wallet",
+                        name: "Wallet"
                     });
                 })
-                .catch((e) => {
+                .catch(e => {
                     this.isBusy = false;
                     console.error(e);
                     EventBus.$emit("error", e);
@@ -149,8 +148,8 @@ export default {
         },
         cancel() {
             this.$router.go(-1);
-        },
-    },
+        }
+    }
 };
 </script>
 

@@ -18,18 +18,18 @@ if (uiColor) {
 
 const uiColor = localStorage.getItem("uiColor");
 if (uiColor) {
-  primaryColor = uiColor
+    primaryColor = uiColor;
 }
 
 export default new Vuetify({
     icons: {
-        iconfont: "mdiSvg",
+        iconfont: "mdiSvg"
     },
     theme: {
         themes: {
             light: {
-                primary: primaryColor,
-            },
-        },
-    },
+                primary: primaryColor
+            }
+        }
+    }
 });

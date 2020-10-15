@@ -63,7 +63,7 @@ export default {
     name: "Schema",
     props: {
         id: String, //schema ID
-        schema: Object,
+        schema: Object
     },
     created() {
         EventBus.$emit("title", "Schema");
@@ -78,7 +78,7 @@ export default {
     data: () => {
         return {
             data: [],
-            isLoading: true,
+            isLoading: true
         };
     },
     computed: {},
@@ -87,14 +87,14 @@ export default {
             this.isLoading = true;
             this.$axios
                 .get(`${this.$apiBaseUrl}/admin/schema/${this.id}`)
-                .then((result) => {
+                .then(result => {
                     console.log(result);
                     if ({}.hasOwnProperty.call(result, "data")) {
                         this.data = result.data;
                         this.isLoading = false;
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     this.isLoading = false;
                     if (e.response.status === 404) {
                         this.data = [];
@@ -108,21 +108,21 @@ export default {
         deleteSchema() {
             this.$axios
                 .delete(`${this.$apiBaseUrl}/admin/schema/${this.id}`)
-                .then((result) => {
+                .then(result => {
                     console.log(result);
                     if (result.status === 200) {
                         EventBus.$emit("success", "Schema deleted");
                         this.$router.push({
-                            name: "SchemaSettings",
+                            name: "SchemaSettings"
                         });
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
-        },
-    },
+        }
+    }
 };
 </script>
 

@@ -6,44 +6,73 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
-<v-container>
-    <v-card max-width="600" class="mx-auto" flat>
-        <v-card-title class="grey--text text--darken-2">
-            Add new Business Partner
-        </v-card-title>
-        <v-container>
-            <v-row>
-                <v-col cols="12">
-                    <v-text-field prepend-icon="mdi-fingerprint" label="Decentralized Identifier (DID)" placeholder="" v-model="did" @change="partnerLoaded = false" outlined dense>
-                    </v-text-field>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-layout justify-center>
-                    <v-progress-circular v-if="partnerLoading" indeterminate color="primary"></v-progress-circular>
-                </v-layout>
-            </v-row>
+    <v-container>
+        <v-card max-width="600" class="mx-auto" flat>
+            <v-card-title class="grey--text text--darken-2">
+                Add new Business Partner
+            </v-card-title>
+            <v-container>
+                <v-row>
+                    <v-col cols="12">
+                        <v-text-field
+                            prepend-icon="mdi-fingerprint"
+                            label="Decentralized Identifier (DID)"
+                            placeholder=""
+                            v-model="did"
+                            @change="partnerLoaded = false"
+                            outlined
+                            dense
+                        >
+                        </v-text-field>
+                    </v-col>
+                </v-row>
+                <v-row>
+                    <v-layout justify-center>
+                        <v-progress-circular
+                            v-if="partnerLoading"
+                            indeterminate
+                            color="primary"
+                        ></v-progress-circular>
+                    </v-layout>
+                </v-row>
 
-            <v-row>
-                <v-layout justify-center>
-                    <div class="font-weight-medium">{{ msg }}</div>
-                </v-layout>
-            </v-row>
-            <v-row class="mx-2" v-if="partnerLoaded">
-                <v-col cols="4">
-                   <p class="grey--text text--darken-2 font-weight-medium">Set a name</p>
-                </v-col>
-                <v-col cols="8">
-                    <v-text-field label="Name" placeholder="" v-model="alias" outlined dense>
-                    </v-text-field>
-                </v-col>
-            </v-row>
-            <OganizationalProfile v-if="msg === '' && partnerProfile !== null" v-bind:document="partnerProfile" isReadOnly></OganizationalProfile>
-            <DocumentCredentialList v-if="publicCredentials.length > 0" v-bind:credentials="publicCredentials"></DocumentCredentialList>
-        </v-container>
-        <v-card-actions>
-            <v-layout justify-space-between>
-                <v-btn color="secondary" text to="/app/partners">Cancel</v-btn>
+                <v-row>
+                    <v-layout justify-center>
+                        <div class="font-weight-medium">{{ msg }}</div>
+                    </v-layout>
+                </v-row>
+                <v-row class="mx-2" v-if="partnerLoaded">
+                    <v-col cols="4">
+                        <p class="grey--text text--darken-2 font-weight-medium">
+                            Set a name
+                        </p>
+                    </v-col>
+                    <v-col cols="8">
+                        <v-text-field
+                            label="Name"
+                            placeholder=""
+                            v-model="alias"
+                            outlined
+                            dense
+                        >
+                        </v-text-field>
+                    </v-col>
+                </v-row>
+                <OganizationalProfile
+                    v-if="msg === '' && partnerProfile !== null"
+                    v-bind:document="partnerProfile"
+                    isReadOnly
+                ></OganizationalProfile>
+                <DocumentCredentialList
+                    v-if="publicCredentials.length > 0"
+                    v-bind:credentials="publicCredentials"
+                ></DocumentCredentialList>
+            </v-container>
+            <v-card-actions>
+                <v-layout justify-space-between>
+                    <v-btn color="secondary" text to="/app/partners"
+                        >Cancel</v-btn
+                    >
 
                     <v-btn
                         v-if="!partnerLoaded"
@@ -62,13 +91,9 @@
 
 <script>
 import OganizationalProfile from "@/components/OrganizationalProfile";
-import DocumentCredentialList from "@/components/credentials/DocumentCredentialList"
-import {
-    EventBus
-} from "../main";
-import {
-    CredentialTypes
-} from "../constants";
+import DocumentCredentialList from "@/components/credentials/DocumentCredentialList";
+import { EventBus } from "../main";
+import { CredentialTypes } from "../constants";
 export default {
     name: "AddPartner",
     components: {
@@ -84,7 +109,7 @@ export default {
             did: "",
             alias: "",
             partnerProfile: null,
-            publicCredentials: [],
+            publicCredentials: []
         };
     },
     methods: {
@@ -93,7 +118,7 @@ export default {
             this.partnerLoading = true;
             this.$axios
                 .get(`${this.$apiBaseUrl}/partners/lookup/${this.did}`)
-                .then((result) => {
+                .then(result => {
                     this.partnerLoading = false;
                     console.log(result);
                     if (
@@ -105,7 +130,7 @@ export default {
                             this.publicCredentials = partner.credential;
                             // Get OrgProfile credential
                             this.partnerProfile = this.publicCredentials.find(
-                                (cred) => {
+                                cred => {
                                     return (
                                         cred.type ===
                                         CredentialTypes.PROFILE.name
@@ -117,7 +142,7 @@ export default {
                             }
                             // Show only creds other than OrgProfile in credential list
                             this.publicCredentials = this.publicCredentials.filter(
-                                (cred) => {
+                                cred => {
                                     return (
                                         cred.type !==
                                         CredentialTypes.PROFILE.name
@@ -136,7 +161,7 @@ export default {
                         }
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     console.error(e);
                     this.msg = `Could not resolve ${this.did}.`;
                     this.partnerLoading = false;
@@ -145,7 +170,7 @@ export default {
         },
         addPartner() {
             let partnerToAdd = {
-                did: `${this.did}`,
+                did: `${this.did}`
             };
 
             if (this.alias && this.alias !== "") {
@@ -153,7 +178,7 @@ export default {
             }
             this.$axios
                 .post(`${this.$apiBaseUrl}/partners`, partnerToAdd)
-                .then((result) => {
+                .then(result => {
                     console.log(result);
 
                     if (result.status === 201) {
@@ -167,11 +192,11 @@ export default {
                         //   this.partnerLoading = false;
                         EventBus.$emit("success", "Partner added successfully");
                         this.$router.push({
-                            name: "Partners",
+                            name: "Partners"
                         });
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     if (e.response.status === 412) {
                         EventBus.$emit("error", "Partner already exists");
                     } else {
@@ -179,7 +204,7 @@ export default {
                         EventBus.$emit("error", e);
                     }
                 });
-        },
-    },
+        }
+    }
 };
 </script>

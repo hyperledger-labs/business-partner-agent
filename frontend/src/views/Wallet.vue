@@ -70,7 +70,7 @@ import { EventBus } from "../main";
 export default {
     name: "Wallet",
     components: {
-        MyCredentialList,
+        MyCredentialList
     },
     created() {
         EventBus.$emit("title", "Wallet");
@@ -84,52 +84,52 @@ export default {
             credHeaders: [
                 {
                     text: "Type",
-                    value: "type",
+                    value: "type"
                 },
                 {
                     text: "Issuer",
-                    value: "issuer",
+                    value: "issuer"
                 },
                 {
                     text: "Issued at",
-                    value: "issuedAt",
+                    value: "issuedAt"
                 },
                 {
                     text: "Public",
-                    value: "isPublic",
-                },
+                    value: "isPublic"
+                }
             ],
             docHeaders: [
                 {
                     text: "Type",
-                    value: "type",
+                    value: "type"
                 },
                 {
                     text: "Created at",
-                    value: "createdDate",
+                    value: "createdDate"
                 },
                 {
                     text: "Updated at",
-                    value: "updatedDate",
+                    value: "updatedDate"
                 },
                 {
                     text: "Public",
-                    value: "isPublic",
-                },
-            ],
+                    value: "isPublic"
+                }
+            ]
         };
     },
     methods: {
         fetchSchemas() {
             this.$axios
                 .get(`${this.$apiBaseUrl}/admin/schema`)
-                .then((result) => {
+                .then(result => {
                     console.log(result);
                     if ({}.hasOwnProperty.call(result, "data")) {
                         this.schemas = result.data;
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     this.isBusy = false;
                     if (e.response.status === 404) {
                         this.schemas = [];
@@ -139,32 +139,32 @@ export default {
                     }
                 });
         },
-        createDocument: function (type) {
+        createDocument: function(type) {
             console.log(type);
 
             this.$router.push({
                 name: "DocumentAdd",
                 params: {
-                    type: type,
-                },
+                    type: type
+                }
             });
-        },
+        }
     },
     computed: {
         types() {
-            let docTypes = Object.values(CredentialTypes).filter((type) => {
+            let docTypes = Object.values(CredentialTypes).filter(type => {
                 return type.name !== CredentialTypes.OTHER.name;
             });
             // here is the store really useful
             if (this.$store.getters.organizationalProfile != undefined) {
-                docTypes = docTypes.filter((type) => {
+                docTypes = docTypes.filter(type => {
                     return type.name !== CredentialTypes.PROFILE.name;
                 });
             }
             // docTypes = docTypes.concat(this.schemas)
             return docTypes;
-        },
-    },
+        }
+    }
 };
 </script>
 

@@ -33,122 +33,122 @@ const routes = [
     {
         path: "/",
         name: "Dashboard",
-        component: Dashboard,
+        component: Dashboard
     },
     {
         path: "/app/identity",
         name: "Identity",
-        component: Identity,
+        component: Identity
     },
     {
         path: "/app/publicprofile",
         name: "PublicProfile",
         component: PublicProfile,
-        props: true,
+        props: true
     },
     {
         path: "/app/wallet/contact",
         name: "ContactPerson",
         component: ContactPerson,
-        props: true,
+        props: true
     },
     {
         path: "/app/wallet",
         name: "Wallet",
-        component: Wallet,
+        component: Wallet
     },
     {
         path: "/app/wallet/document/new",
         name: "DocumentAdd",
         component: Document,
-        props: true,
+        props: true
     },
     {
         path: "/app/wallet/document/:id",
         name: "Document",
         component: Document,
-        props: true,
+        props: true
     },
     {
         path: "/app/wallet/document/:documentId/verify",
         name: "RequestVerification",
         component: RequestVerification,
-        props: true,
+        props: true
     },
     {
         path: "/app/wallet/credential/:id",
         name: "Credential",
         component: Credential,
-        props: true,
+        props: true
     },
     {
         path: "/app/partners/:id/presentation/:presentationId",
         name: "Presentation",
         component: Presentation,
-        props: true,
+        props: true
     },
     {
         path: "/app/partners",
         name: "Partners",
-        component: Partners,
+        component: Partners
     },
     {
         path: "/app/partners/:id",
         name: "Partner",
         component: Partner,
-        props: true,
+        props: true
     },
     {
         path: "/app/partners/:id/request",
         name: "RequestPresentation",
         component: RequestPresentation,
-        props: true,
+        props: true
     },
     {
         path: "/app/partners/:id/send",
         name: "SendPresentation",
         component: SendPresentation,
-        props: true,
+        props: true
     },
     {
         path: "/app/partners/add",
         name: "AddPartner",
-        component: AddPartner,
+        component: AddPartner
     },
     {
         path: "/app/settings",
         name: "Settings",
-        component: Settings,
+        component: Settings
     },
     {
         path: "/app/settings/schema",
         name: "SchemaSettings",
-        component: SchemaSettings,
+        component: SchemaSettings
     },
     {
         path: "/app/schema/add",
         name: "AddSchema",
-        component: AddSchema,
+        component: AddSchema
     },
     {
         path: "/app/schema/:id",
         name: "Schema",
         component: Schema,
-        props: true,
-    },
+        props: true
+    }
 ];
 
 const router = new VueRouter({
     mode: "history",
     routes,
-    scrollBehavior: function (to) {
+    scrollBehavior: function(to) {
         if (to.hash) {
             return {
                 selector: to.hash,
-                offset: { x: 0, y: 100 },
+                offset: { x: 0, y: 100 }
             };
         }
-    },
+    }
 });
 
 export default router;

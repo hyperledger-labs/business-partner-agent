@@ -54,20 +54,20 @@ export default {
             data: [],
             newSchema: {
                 label: "",
-                schemaId: "",
+                schemaId: ""
             },
             isBusy: true,
             isBusyAddSchema: false,
             headers: [
                 {
                     text: "Name",
-                    value: "label",
+                    value: "label"
                 },
                 {
                     text: "Schema ID",
-                    value: "schemaId",
-                },
-            ],
+                    value: "schemaId"
+                }
+            ]
         };
     },
     computed: {},
@@ -75,7 +75,7 @@ export default {
         fetch() {
             this.$axios
                 .get(`${this.$apiBaseUrl}/admin/schema`)
-                .then((result) => {
+                .then(result => {
                     console.log(result);
                     if ({}.hasOwnProperty.call(result, "data")) {
                         this.isBusy = false;
@@ -85,7 +85,7 @@ export default {
                         console.log(this.data);
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     this.isBusy = false;
                     if (e.response.status === 404) {
                         this.data = [];
@@ -100,26 +100,26 @@ export default {
                 name: "Schema",
                 params: {
                     id: schema.id,
-                    schema: schema,
-                },
+                    schema: schema
+                }
             });
         },
         deleteSchema(schemaId) {
             this.$axios
                 .delete(`${this.$apiBaseUrl}/admin/schema/${schemaId}`)
-                .then((result) => {
+                .then(result => {
                     console.log(result);
                     if (result.status === 200) {
                         EventBus.$emit("success", "Schema deleted");
                         this.fetch();
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
-        },
-    },
+        }
+    }
 };
 </script>
 

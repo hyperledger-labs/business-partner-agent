@@ -80,12 +80,12 @@ export default {
         return {
             schema: {
                 label: "",
-                schemaId: "",
+                schemaId: ""
             },
             isBusyAddSchema: false,
             rules: {
-                required: (value) => !!value || "Can't be empty",
-            },
+                required: value => !!value || "Can't be empty"
+            }
         };
     },
     computed: {
@@ -94,7 +94,7 @@ export default {
                 this.schema.label.length === 0 ||
                 this.schema.schemaId.length === 0
             );
-        },
+        }
     },
     methods: {
         addSchema() {
@@ -102,7 +102,7 @@ export default {
 
             this.$axios
                 .post(`${this.$apiBaseUrl}/admin/schema`, this.schema)
-                .then((result) => {
+                .then(result => {
                     console.log(result);
                     this.isBusyAddSchema = false;
 
@@ -111,7 +111,7 @@ export default {
                         this.$router.push({ name: "SchemaSettings" });
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     this.isBusyAddSchema = false;
                     if (e.response.status === 400) {
                         EventBus.$emit("error", "Schema already exists");
@@ -120,7 +120,7 @@ export default {
                         EventBus.$emit("error", e);
                     }
                 });
-        },
-    },
+        }
+    }
 };
 </script>

@@ -85,7 +85,7 @@ export default {
     name: "Credential",
     props: {
         id: String,
-        type: String,
+        type: String
     },
     created() {
         EventBus.$emit("title", "Credential");
@@ -96,27 +96,27 @@ export default {
             document: {},
             isBusy: false,
             isReady: false,
-            CredentialTypes: CredentialTypes,
+            CredentialTypes: CredentialTypes
         };
     },
     computed: {
         expertMode() {
             return this.$store.state.expertMode;
-        },
+        }
     },
     methods: {
         getCredential() {
             console.log(this.id);
             this.$axios
                 .get(`${this.$apiBaseUrl}/wallet/credential/${this.id}`)
-                .then((result) => {
+                .then(result => {
                     if ({}.hasOwnProperty.call(result, "data")) {
                         this.credential = result.data;
                         this.isPublic = this.credential.isPublic;
                         this.isReady = true;
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
@@ -128,52 +128,52 @@ export default {
                     .put(
                         `${this.$apiBaseUrl}/wallet/credential/${this.id}/toggle-visibility`
                     )
-                    .then((result) => {
+                    .then(result => {
                         console.log(result);
                         if (result.status === 200) {
                             EventBus.$emit("success", "Visibility updated");
                             this.$router.push({
-                                name: "Wallet",
+                                name: "Wallet"
                             });
                         }
                     })
-                    .catch((e) => {
+                    .catch(e => {
                         console.error(e);
                         EventBus.$emit("error", e);
                     });
             } else {
                 this.$router.push({
-                    name: "Wallet",
+                    name: "Wallet"
                 });
             }
         },
         deleteCredential() {
             this.$axios
                 .delete(`${this.$apiBaseUrl}/wallet/credential/${this.id}`)
-                .then((result) => {
+                .then(result => {
                     console.log(result);
                     if (result.status === 200) {
                         EventBus.$emit("success", "Credential deleted");
                         this.$router.push({
-                            name: "Wallet",
+                            name: "Wallet"
                         });
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
         },
         cancel() {
             this.$router.push({
-                name: "Wallet",
+                name: "Wallet"
             });
-        },
+        }
     },
     components: {
         Cred,
-        VueJsonPretty,
-    },
+        VueJsonPretty
+    }
 };
 </script>
 

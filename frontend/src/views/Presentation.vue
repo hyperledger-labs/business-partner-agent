@@ -57,7 +57,7 @@ export default {
     name: "Presentation",
     props: {
         id: String,
-        presentationId: String,
+        presentationId: String
     },
     created() {
         EventBus.$emit("title", "Presentation");
@@ -68,13 +68,13 @@ export default {
             document: {},
             isBusy: false,
             isReady: false,
-            CredentialTypes: CredentialTypes,
+            CredentialTypes: CredentialTypes
         };
     },
     computed: {
         expertMode() {
             return this.$store.state.expertMode;
-        },
+        }
     },
     methods: {
         getPresentation() {
@@ -82,13 +82,13 @@ export default {
                 .get(
                     `${this.$apiBaseUrl}/partners/${this.id}/proof/${this.presentationId}`
                 )
-                .then((result) => {
+                .then(result => {
                     if ({}.hasOwnProperty.call(result, "data")) {
                         this.presentation = result.data;
                         this.isReady = true;
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
@@ -100,26 +100,26 @@ export default {
                 .delete(
                     `${this.$apiBaseUrl}/partners/${this.id}/proof/${this.presentationId}`
                 )
-                .then((result) => {
+                .then(result => {
                     console.log(result);
                     if (result.status === 200) {
                         EventBus.$emit("success", "Presentation deleted");
                         this.$router.go(-1);
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
         },
         cancel() {
             this.$router.go(-1);
-        },
+        }
     },
     components: {
         Cred,
-        VueJsonPretty,
-    },
+        VueJsonPretty
+    }
 };
 </script>
 

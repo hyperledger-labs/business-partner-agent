@@ -7,17 +7,18 @@
 -->
 
 <template>
-<v-container>
-    <v-data-table
-    :hide-default-footer="data.length < 10" 
-    v-model="selected" 
-    :loading="isBusy" 
-    :headers="headers" 
-    :items="data" 
-    :show-select="selectable" 
-    single-select>
-    </v-data-table>
-</v-container>
+    <v-container>
+        <v-data-table
+            :hide-default-footer="data.length < 10"
+            v-model="selected"
+            :loading="isBusy"
+            :headers="headers"
+            :items="data"
+            :show-select="selectable"
+            single-select
+        >
+        </v-data-table>
+    </v-container>
 </template>
 
 <script>
@@ -27,26 +28,26 @@ import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 export default {
     name: "PartnerList",
     components: {
-        PartnerStateIndicator,
+        PartnerStateIndicator
     },
     props: {
         selectable: {
             type: Boolean,
-            default: false,
+            default: false
         },
         headers: {
             type: Array,
             default: () => [
                 {
                     text: "Name",
-                    value: "name",
-                },
-            ],
+                    value: "name"
+                }
+            ]
         },
         onlyAries: {
             type: Boolean,
-            default: false,
-        },
+            default: false
+        }
     },
     created() {
         this.fetch();
@@ -55,43 +56,43 @@ export default {
         return {
             selected: [],
             data: [],
-            isBusy: true,
+            isBusy: true
         };
     },
     computed: {
         expertMode() {
             return this.$store.state.expertMode;
-        },
+        }
     },
     methods: {
         open(partner) {
             this.$router.push({
                 name: "Partner",
                 params: {
-                    id: partner.id,
-                },
+                    id: partner.id
+                }
             });
         },
         fetch() {
             this.$axios
                 .get(`${this.$apiBaseUrl}/partners`)
-                .then((result) => {
+                .then(result => {
                     console.log(result);
                     if ({}.hasOwnProperty.call(result, "data")) {
                         this.isBusy = false;
 
                         if (this.onlyAries) {
-                            result.data = result.data.filter((item) => {
+                            result.data = result.data.filter(item => {
                                 return item.ariesSupport === true;
                             });
                         }
 
                         // Get profile of each partner and merge with partner data
-                        this.data = result.data.map((partner) => {
+                        this.data = result.data.map(partner => {
                             let profile = getPartnerProfile(partner);
                             if (profile) {
                                 delete Object.assign(profile, {
-                                    ["did"]: profile["id"],
+                                    ["did"]: profile["id"]
                                 })["id"];
                             }
                             delete partner.credential;
@@ -103,13 +104,13 @@ export default {
                         console.log(this.data);
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     this.isBusy = false;
 
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
-        },
-    },
+        }
+    }
 };
 </script>

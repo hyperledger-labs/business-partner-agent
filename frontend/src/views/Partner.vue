@@ -204,7 +204,7 @@ export default {
         OganizationalProfile,
         PresentationList,
         PartnerStateIndicator,
-        DocumentCredentialList,
+        DocumentCredentialList
     },
     created() {
         EventBus.$emit("title", "Partner");
@@ -225,32 +225,32 @@ export default {
             presentationsSent: [],
             presentationsReceived: [],
             rules: {
-                required: (value) => !!value || "Can't be empty",
+                required: value => !!value || "Can't be empty"
             },
             headersSent: [
                 {
                     text: "Type",
-                    value: "type",
+                    value: "type"
                 },
                 {
                     text: "Issuer",
-                    value: "issuer",
+                    value: "issuer"
                 },
                 {
                     text: "Sent at",
-                    value: "sentAt",
+                    value: "sentAt"
                 },
                 {
                     text: "State",
-                    value: "state",
-                },
-            ],
+                    value: "state"
+                }
+            ]
         };
     },
     computed: {
         expertMode() {
             return this.$store.state.expertMode;
-        },
+        }
     },
     methods: {
         proceed() {
@@ -264,13 +264,13 @@ export default {
             ) {
                 this.$router.push({
                     name: "RequestPresentation",
-                    params: { id: this.id },
+                    params: { id: this.id }
                 });
             } else {
                 this.attentionPartnerStateDialog = true;
                 this.goTo = {
                     name: "RequestPresentation",
-                    params: { id: this.id },
+                    params: { id: this.id }
                 };
             }
         },
@@ -281,13 +281,13 @@ export default {
             ) {
                 this.$router.push({
                     name: "SendPresentation",
-                    params: { id: this.id },
+                    params: { id: this.id }
                 });
             } else {
                 this.attentionPartnerStateDialog = true;
                 this.goTo = {
                     name: "SendPresentation",
-                    params: { id: this.id },
+                    params: { id: this.id }
                 };
             }
         },
@@ -295,21 +295,21 @@ export default {
             console.log("Getting presentation records...");
             this.$axios
                 .get(`${this.$apiBaseUrl}/partners/${this.id}/proof`)
-                .then((result) => {
+                .then(result => {
                     if ({}.hasOwnProperty.call(result, "data")) {
                         let data = result.data;
                         console.log(data);
-                        this.presentationsSent = data.filter((item) => {
+                        this.presentationsSent = data.filter(item => {
                             console.log(item);
                             return item.role === "prover";
                         });
-                        this.presentationsReceived = data.filter((item) => {
+                        this.presentationsReceived = data.filter(item => {
                             return item.role === "verifier";
                         });
                         console.log(this.presentationsSent);
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     console.error(e);
                     // EventBus.$emit("error", e);
                 });
@@ -318,22 +318,22 @@ export default {
             console.log("Getting partner...");
             this.$axios
                 .get(`${this.$apiBaseUrl}/partners/${this.id}`)
-                .then((result) => {
+                .then(result => {
                     console.log(result);
                     if ({}.hasOwnProperty.call(result, "data")) {
                         this.rawData = result.data;
                         this.partner = {
                             ...result.data,
                             ...{
-                                profile: getPartnerProfile(result.data),
-                            },
+                                profile: getPartnerProfile(result.data)
+                            }
                         };
                         if (
                             {}.hasOwnProperty.call(this.partner, "credential")
                         ) {
                             // Show only creds other than OrgProfile in credential list
                             this.credentials = this.partner.credential.filter(
-                                (cred) => {
+                                cred => {
                                     return (
                                         cred.type !==
                                         CredentialTypes.PROFILE.name
@@ -350,7 +350,7 @@ export default {
                         this.isReady = true;
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
@@ -358,16 +358,16 @@ export default {
         deletePartner() {
             this.$axios
                 .delete(`${this.$apiBaseUrl}/partners/${this.id}`)
-                .then((result) => {
+                .then(result => {
                     console.log(result);
                     if (result.status === 200) {
                         EventBus.$emit("success", "Partner deleted");
                         this.$router.push({
-                            name: "Partners",
+                            name: "Partners"
                         });
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
@@ -375,7 +375,7 @@ export default {
         refreshPartner() {
             this.$axios
                 .get(`${this.$apiBaseUrl}/partners/${this.id}/refresh`)
-                .then((result) => {
+                .then(result => {
                     if (result.status === 200) {
                         EventBus.$emit("success", "Partner updated");
                         if ({}.hasOwnProperty.call(result, "data")) {
@@ -384,8 +384,8 @@ export default {
                             this.partner = {
                                 ...result.data,
                                 ...{
-                                    profile: getPartnerProfile(result.data),
-                                },
+                                    profile: getPartnerProfile(result.data)
+                                }
                             };
                             if (
                                 {}.hasOwnProperty.call(
@@ -395,7 +395,7 @@ export default {
                             ) {
                                 // Show only creds other than OrgProfile in credential list
                                 this.credentials = this.partner.credential.filter(
-                                    (cred) => {
+                                    cred => {
                                         return (
                                             cred.type !==
                                             CredentialTypes.PROFILE.name
@@ -411,7 +411,7 @@ export default {
                         }
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
@@ -421,16 +421,16 @@ export default {
             if (this.alias && this.alias !== "") {
                 this.$axios
                     .put(`${this.$apiBaseUrl}/partners/${this.id}`, {
-                        alias: this.alias,
+                        alias: this.alias
                     })
-                    .then((result) => {
+                    .then(result => {
                         if (result.status === 200) {
                             this.isBusy = false;
                             this.partner.name = this.alias;
                             this.isUpdatingName = false;
                         }
                     })
-                    .catch((e) => {
+                    .catch(e => {
                         this.isBusy = false;
                         this.isUpdatingName = false;
                         console.error(e);
@@ -440,8 +440,8 @@ export default {
                 this.isBusy = false;
                 console.log("blub");
             }
-        },
-    },
+        }
+    }
 };
 </script>
 

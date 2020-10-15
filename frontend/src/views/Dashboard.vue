@@ -39,7 +39,7 @@
                 color="primary"
                 :to="{
                     name: 'DocumentAdd',
-                    params: { type: 'ORGANIZATIONAL_PROFILE_CREDENTIAL' },
+                    params: { type: 'ORGANIZATIONAL_PROFILE_CREDENTIAL' }
                 }"
                 >Setup your Profile</v-btn
             >
@@ -96,7 +96,7 @@ export default {
     data: () => {
         return {
             isWelcome: true,
-            isLoading: true,
+            isLoading: true
         };
     },
     methods: {
@@ -104,13 +104,13 @@ export default {
             console.log("Getting status...");
             this.$axios
                 .get(`${this.$apiBaseUrl}/status`)
-                .then((result) => {
+                .then(result => {
                     console.log(result);
                     this.isWelcome = !result.data.profile;
                     this.status = result.data;
                     this.isLoading = false;
                 })
-                .catch((e) => {
+                .catch(e => {
                     console.error(e);
                     this.isLoading = false;
                     EventBus.$emit("error", e);
@@ -130,7 +130,7 @@ export default {
                 : EventBus.$emit("error", "Can't copy DID");
             didEl.blur();
             window.getSelection().removeAllRanges();
-        },
-    },
+        }
+    }
 };
 </script>

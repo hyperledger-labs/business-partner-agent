@@ -70,7 +70,7 @@
                         icon
                         :to="{
                             name: 'RequestVerification',
-                            params: { documentId: id },
+                            params: { documentId: id }
                         }"
                     >
                         <v-icon color="grey">mdi-chevron-right</v-icon>
@@ -117,7 +117,7 @@ export default {
     name: "Document",
     props: {
         id: String,
-        type: String,
+        type: String
     },
     created() {
         if (this.id) {
@@ -139,20 +139,20 @@ export default {
             document: {},
             isBusy: false,
             isReady: false,
-            CredentialTypes,
+            CredentialTypes
         };
     },
     computed: {
         expertMode() {
             return this.$store.state.expertMode;
-        },
+        }
     },
     methods: {
         getDocument() {
             console.log(this.id);
             this.$axios
                 .get(`${this.$apiBaseUrl}/wallet/document/${this.id}`)
-                .then((result) => {
+                .then(result => {
                     console.log(result);
                     if ({}.hasOwnProperty.call(result, "data")) {
                         this.document = result.data;
@@ -160,7 +160,7 @@ export default {
                         this.isReady = true;
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
@@ -175,17 +175,17 @@ export default {
                     .put(`${this.$apiBaseUrl}/wallet/document/${this.id}`, {
                         document: this.$refs.doc.documentData,
                         isPublic: this.document.isPublic,
-                        type: this.document.type,
+                        type: this.document.type
                     })
-                    .then((res) => {
+                    .then(res => {
                         console.log(res);
                         this.isBusy = false;
                         this.$router.push({
-                            name: "Wallet",
+                            name: "Wallet"
                         });
                         EventBus.$emit("success", "Success");
                     })
-                    .catch((e) => {
+                    .catch(e => {
                         this.isBusy = false;
                         console.error(e);
                         EventBus.$emit("error", e);
@@ -196,17 +196,17 @@ export default {
                     .post(`${this.$apiBaseUrl}/wallet/document`, {
                         document: this.$refs.doc.documentData,
                         isPublic: this.document.isPublic,
-                        type: this.type,
+                        type: this.type
                     })
-                    .then((res) => {
+                    .then(res => {
                         console.log(res);
                         this.isBusy = false;
                         this.$router.push({
-                            name: "Wallet",
+                            name: "Wallet"
                         });
                         EventBus.$emit("success", "Success");
                     })
-                    .catch((e) => {
+                    .catch(e => {
                         this.isBusy = false;
                         console.error(e);
                         EventBus.$emit("error", e);
@@ -216,31 +216,31 @@ export default {
         deleteDocument() {
             this.$axios
                 .delete(`${this.$apiBaseUrl}/wallet/document/${this.id}`)
-                .then((result) => {
+                .then(result => {
                     console.log(result);
                     if (result.status === 200) {
                         EventBus.$emit("success", "Document deleted");
                         this.$router.push({
-                            name: "Wallet",
+                            name: "Wallet"
                         });
                     }
                 })
-                .catch((e) => {
+                .catch(e => {
                     console.error(e);
                     EventBus.$emit("error", e);
                 });
         },
         cancel() {
             this.$router.push({
-                name: "Wallet",
+                name: "Wallet"
             });
-        },
+        }
     },
     components: {
         OganizationalProfile,
         Credential,
-        VueJsonPretty,
-    },
+        VueJsonPretty
+    }
 };
 </script>
 
