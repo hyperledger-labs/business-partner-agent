@@ -6,56 +6,50 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
-    <v-container justify-center>
-        <v-card class="mx-auto" max-width="400" flat>
-            <v-card-title class="grey--text text--darken-2">
-                Identity Information
-            </v-card-title>
+  <v-container justify-center>
+    <v-card class="mx-auto" max-width="400" flat>
+      <v-card-title class="grey--text text--darken-2">
+        Identity Information
+      </v-card-title>
 
-            <vue-json-pretty v-if="didDocLoaded" :data="didDoc">
-            </vue-json-pretty>
-        </v-card>
-    </v-container>
+      <vue-json-pretty v-if="didDocLoaded" :data="didDoc"> </vue-json-pretty>
+    </v-card>
+  </v-container>
 </template>
 
 <script>
 import VueJsonPretty from "vue-json-pretty";
 import { EventBus } from "../main";
 export default {
-    name: "Identity",
-    components: {
-        VueJsonPretty,
+  name: "Identity",
+  components: {
+    VueJsonPretty,
+  },
+  created() {
+    EventBus.$emit("title", "Identity");
+    this.getIdentity();
+  },
+  data: () => {
+    return {
+      didDocLoaded: false,
+      didDoc: {},
+    };
+  },
+  methods: {
+    getIdentity() {
+      console.log("Getting partner...");
+      this.$axios
+        .get(`${this.$apiBaseUrl.replace("/api", "")}/.well-known/did.json`)
+        .then((result) => {
+          console.log(result);
+          this.didDocLoaded = true;
+          this.didDoc = result.data;
+        })
+        .catch((e) => {
+          console.error(e);
+          EventBus.$emit("error", e);
+        });
     },
-    created() {
-        EventBus.$emit("title", "Identity");
-        this.getIdentity();
-    },
-    data: () => {
-        return {
-            didDocLoaded: false,
-            didDoc: {},
-        };
-    },
-    methods: {
-        getIdentity() {
-            console.log("Getting partner...");
-            this.$axios
-                .get(
-                    `${this.$apiBaseUrl.replace(
-                        "/api",
-                        ""
-                    )}/.well-known/did.json`
-                )
-                .then((result) => {
-                    console.log(result);
-                    this.didDocLoaded = true;
-                    this.didDoc = result.data;
-                })
-                .catch((e) => {
-                    console.error(e);
-                    EventBus.$emit("error", e);
-                });
-        },
-    },
+  },
 };
 </script>
