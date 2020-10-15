@@ -8,12 +8,12 @@ Vue.use(Vuetify);
 // Theming
 let primaryColor = "#4A148C";
 if (process.env.VUE_APP_UI_COLOR) {
-    primaryColor = process.env.VUE_APP_UI_COLOR;
+  primaryColor = process.env.VUE_APP_UI_COLOR;
 }
 
 const uiColor = localStorage.getItem("uiColor");
 if (uiColor) {
-    primaryColor = uiColor;
+  primaryColor = uiColor;
 }
 
 const uiColor = localStorage.getItem("uiColor");
@@ -22,14 +22,14 @@ if (uiColor) {
 }
 
 export default new Vuetify({
-    icons: {
-        iconfont: "mdiSvg"
+  icons: {
+    iconfont: "mdiSvg",
+  },
+  theme: {
+    themes: {
+      light: {
+        primary: primaryColor,
+      },
     },
-    theme: {
-        themes: {
-            light: {
-                primary: primaryColor
-            }
-        }
-    }
+  },
 });

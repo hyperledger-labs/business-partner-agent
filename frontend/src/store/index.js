@@ -29,126 +29,209 @@ import AddSchema from "../views/AddSchema.vue";
 
 Vue.use(VueRouter);
 
-const routes = [
-    {
-        path: "/",
-        name: "Dashboard",
-        component: Dashboard
-    },
-    {
-        path: "/app/identity",
-        name: "Identity",
-        component: Identity
-    },
-    {
-        path: "/app/publicprofile",
-        name: "PublicProfile",
-        component: PublicProfile,
-        props: true
-    },
-    {
-        path: "/app/wallet/contact",
-        name: "ContactPerson",
-        component: ContactPerson,
-        props: true
-    },
-    {
-        path: "/app/wallet",
-        name: "Wallet",
-        component: Wallet
-    },
-    {
-        path: "/app/wallet/document/new",
-        name: "DocumentAdd",
-        component: Document,
-        props: true
-    },
-    {
-        path: "/app/wallet/document/:id",
-        name: "Document",
-        component: Document,
-        props: true
-    },
-    {
-        path: "/app/wallet/document/:documentId/verify",
-        name: "RequestVerification",
-        component: RequestVerification,
-        props: true
-    },
-    {
-        path: "/app/wallet/credential/:id",
-        name: "Credential",
-        component: Credential,
-        props: true
-    },
-    {
-        path: "/app/partners/:id/presentation/:presentationId",
-        name: "Presentation",
-        component: Presentation,
-        props: true
-    },
-    {
-        path: "/app/partners",
-        name: "Partners",
-        component: Partners
-    },
-    {
-        path: "/app/partners/:id",
-        name: "Partner",
-        component: Partner,
-        props: true
-    },
-    {
-        path: "/app/partners/:id/request",
-        name: "RequestPresentation",
-        component: RequestPresentation,
-        props: true
-    },
-    {
-        path: "/app/partners/:id/send",
-        name: "SendPresentation",
-        component: SendPresentation,
-        props: true
-    },
-    {
-        path: "/app/partners/add",
-        name: "AddPartner",
-        component: AddPartner
-    },
-    {
-        path: "/app/settings",
-        name: "Settings",
-        component: Settings
-    },
-    {
-        path: "/app/settings/schema",
-        name: "SchemaSettings",
-        component: SchemaSettings
-    },
-    {
-        path: "/app/schema/add",
-        name: "AddSchema",
-        component: AddSchema
-    },
-    {
-        path: "/app/schema/:id",
-        name: "Schema",
-        component: Schema,
-        props: true
-    }
-];
+const store = new Vuex.Store({
+  state: {
+    partners: [],
+    editedDocument: {}, //document currently being edited
+    documents: [],
+    credentials: [],
+    schemas: [],
+    busyStack: 0,
+    expertMode: false,
+  },
 
-const router = new VueRouter({
-    mode: "history",
-    routes,
-    scrollBehavior: function(to) {
-        if (to.hash) {
-            return {
-                selector: to.hash,
-                offset: { x: 0, y: 100 }
-            };
-        }
-    }
+  getters: {
+    isBusy: (state) => {
+      return state.busyStack > 0;
+    },
+    publicDocumentsAndCredentials: (state) => {
+      var retval = state.credentials
+        .concat(
+          state.documents.filter((d) => d.type != CredentialTypes.PROFILE.name)
+        )
+        .filter((d) => d.isPublic == true);
+      return retval;
+    },
+    organizationalProfile: (state) => {
+      var documents = state.documents.filter(
+        (d) => d.type == CredentialTypes.PROFILE.name
+      );
+      if (documents.length == 1) return documents[0];
+      else return undefined;
+    },
+    getPartnerByDID: (state) => (did) => {
+      return state.partners.find((partner) => {
+        partner.did === did;
+      });
+    },
+  },
+
+  actions: {
+    async loadSchemas({ commit }) {
+      axios
+        .get(`${apiBaseUrl}/admin/schema`)
+        .then((result) => {
+          if ({}.hasOwnProperty.call(result, "data")) {
+            let schemas = result.data;
+            commit({
+              type: "loadSchemasFinished",
+              schemas: schemas,
+            });
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+          EventBus.$emit("error", e);
+        });
+    },
+    async loadPartners({ commit }) {
+      axios
+        .get(`${apiBaseUrl}/partners`)
+        .then((result) => {
+          if ({}.hasOwnProperty.call(result, "data")) {
+            let partners = result.data;
+            partners = partners.map((partner) => {
+              partner.profile = getPartnerProfile(partner);
+              return partner;
+            });
+
+            commit({
+              type: "loadPartnersFinished",
+              partners: partners,
+            });
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+          EventBus.$emit("error", e);
+        });
+    },
+    async loadDocuments({ commit }) {
+      axios
+        .get(`${apiBaseUrl}/wallet/document`)
+        .then((result) => {
+          console.log(result);
+          if ({}.hasOwnProperty.call(result, "data")) {
+            var documents = result.data;
+            documents.map((documentIn) => {
+              documentIn.createdDate = moment(documentIn.createdDate);
+              documentIn.updatedDate = moment(documentIn.updatedDate);
+            });
+
+            commit({
+              type: "loadDocumentsFinished",
+              documents: documents,
+            });
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+          EventBus.$emit("error", e);
+        });
+    },
+
+    async loadCredentials({ commit }) {
+      axios
+        .get(`${apiBaseUrl}/wallet/credential`)
+        .then((result) => {
+          if ({}.hasOwnProperty.call(result, "data")) {
+            var credentials = [];
+            result.data.forEach((credentialRef) => {
+              axios
+                .get(`${apiBaseUrl}/wallet/credential/${credentialRef.id}`)
+                .then((result) => {
+                  credentials.push(result.data);
+                })
+                .catch((e) => {
+                  console.error(e);
+                  EventBus.$emit("error", e);
+                });
+            });
+            commit({
+              type: "loadCredentialsFinished",
+              credentials: credentials,
+            });
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+          EventBus.$emit("error", e);
+        });
+    },
+    // async completeEditDocument({ state }) {
+    //   if (state.editedDocument.add) {
+    //     axios
+    //       .post(`${apiBaseUrl}/wallet/document`, {
+    //         document: state.editedDocument.document,
+    //         isPublic: true, //TODO
+    //         type: state.editedDocument.type
+    //       })
+    //       .then(() => {
+    //         this.dispatch('loadDocuments')
+    //         EventBus.$emit("success", "Success");
+    //       })
+    //       .catch((e) => {
+    //         console.error(e);
+    //         EventBus.$emit("error", e);
+    //       });
+    //   }
+    //   else {
+    //     axios
+    //       .put(`${apiBaseUrl}/wallet/document/${state.editedDocument.id}`, {
+    //         document: state.editedDocument.document,
+    //         isPublic: true, //TODO
+    //         type: state.editedDocument.type
+    //       })
+    //       .then(() => {
+    //         this.dispatch('loadDocuments')
+    //         EventBus.$emit("success", "Success");
+    //       })
+    //       .catch((e) => {
+    //         console.error(e);
+    //         EventBus.$emit("error", e);
+    //       });
+    //   }
+    // }
+  },
+
+  mutations: {
+    // initEditDocument(state, payload) {
+    //   state.editedDocument.type = payload.documentType
+    //   state.editedDocument.add = payload.add
+    //   if (payload.add) {
+    //     state.editedDocument.document = { ...emptyDocument };
+    //   }
+    //   else {
+    //     state.editedDocument.id = payload.id
+    //     var documents = state.documents.filter(d => d.id == payload.id)
+    //     if (documents.length == 1) state.editedDocument.document = documents[0].documentData
+    //   }
+    // },
+    loadDocumentsFinished(state, payload) {
+      state.documents = payload.documents;
+    },
+    loadCredentialsFinished(state, payload) {
+      state.credentials = payload.credentials;
+    },
+    loadPartnersFinished(state, payload) {
+      state.partners = payload.partners;
+    },
+    loadSchemasFinished(state, payload) {
+      state.schemas = payload.schemas;
+    },
+    setSettings(state, payload) {
+      state.expertMode = payload.isExpert;
+    },
+  },
+});
+
+store.subscribeAction({
+  before: (action, state) => {
+    state.busyStack = state.busyStack + 1;
+  },
+  after: (action, state) => {
+    state.busyStack = state.busyStack - 1;
+  },
 });
 
 export default router;

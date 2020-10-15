@@ -23,4 +23,4 @@ jobs:
       with:
         dry: true
         prettier_version: 2.1.2
-        prettier_options: --write **/*.{js,vue}
+        prettier_options: --write frontend/src/**/*.{js,vue}
