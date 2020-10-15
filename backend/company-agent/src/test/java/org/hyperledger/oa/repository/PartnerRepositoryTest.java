@@ -23,21 +23,32 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
+import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.model.Partner;
 import org.junit.jupiter.api.Test;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @MicronautTest
 class PartnerRepositoryTest {
 
     @Inject
     PartnerRepository repo;
+
+    @Inject
+    Converter conv;
 
     @Test
     void testUpdateAlias() {
@@ -158,6 +169,48 @@ class PartnerRepositoryTest {
         assertTrue(p2.isPresent());
         assertNull(p2.get().getLastSeen());
         assertNull(p2.get().getState());
+    }
+
+    @Test
+    void testFinBySupportedCredentials() throws Exception {
+        createPartnerWithCredentialType(571);
+        createPartnerWithCredentialType(573);
+        createPartnerWithCredentialType(573);
+        createPartnerWithCredentialType(575);
+        createPartnerWithCredentialType(575);
+        createPartnerWithCredentialType(575);
+
+        List<Partner> found = repo.findBySuppertedCredential("571");
+        assertEquals(1, found.size());
+
+        found = repo.findBySuppertedCredential("573");
+        assertEquals(2, found.size());
+
+        found = repo.findBySuppertedCredential("575");
+        assertEquals(3, found.size());
+    }
+
+    private void createPartnerWithCredentialType(int seqno) {
+        final String did = RandomStringUtils.random(16);
+        repo.save(Partner
+                .builder()
+                .ariesSupport(Boolean.TRUE)
+                .did(did)
+                .connectionId(did)
+                .build());
+
+        final List<PartnerCredentialType> sc = List.of(
+                PartnerCredentialType.fromCredDefId("M6Mbe3qx7vB4wpZF4sBRj1:3:CL:" + seqno + ":ba"),
+                PartnerCredentialType.fromCredDefId("M6Mbe3qx7vB4wpZF4sBRj2:3:CL:" + ++seqno + ":bank_account"));
+        Map<String, Object> map = conv.toMap(new Foo(sc));
+        repo.updateByDid(did, map);
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Foo {
+        List<PartnerCredentialType> wrapped;
     }
 
 }

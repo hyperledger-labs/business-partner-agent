@@ -69,7 +69,7 @@ public class SchemaService {
         final CredentialType credType = CredentialType.fromSchemaId(sId);
 
         if (schemaRepo.findBySchemaId(sId).isPresent()) {
-            throw new WrongApiUsageException("Scheme with id: " + sId + " already exists.");
+            throw new WrongApiUsageException("Schema with id: " + sId + " already exists.");
         }
 
         try {
@@ -105,13 +105,13 @@ public class SchemaService {
         schemaRepo.deleteById(id);
     }
 
-    public @Nullable SchemaAPI getSchema(@NonNull UUID id) {
+    public Optional<SchemaAPI> getSchema(@NonNull UUID id) {
         Optional<BPASchema> schema = schemaRepo.findById(id);
         if (schema.isPresent()) {
             SchemaAPI schemaAPI = SchemaAPI.from(schema.get());
-            return schemaAPI;
-        } else
-            return null;
+            return Optional.of(schemaAPI);
+        }
+        return Optional.empty();
     }
 
     public @Nullable BPASchema getSchemaFor(CredentialType type) {
@@ -143,7 +143,7 @@ public class SchemaService {
     }
 
     public void resetWriteOnlySchemas() {
-        schemaRepo.deleteByIsReadOnly(true);
+        schemaRepo.deleteByIsReadOnly(Boolean.TRUE);
 
         for (Schema schema : schemas) {
             addSchema(schema.getId(), schema.getLabel(), true);

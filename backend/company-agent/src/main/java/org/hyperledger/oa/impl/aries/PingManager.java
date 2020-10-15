@@ -49,9 +49,10 @@ import lombok.extern.slf4j.Slf4j;
 public class PingManager {
 
     @Inject
-    private AriesClient aries;
+    AriesClient aries;
+
     @Inject
-    private PartnerRepository repo;
+    PartnerRepository repo;
 
     private boolean firstRun;
 

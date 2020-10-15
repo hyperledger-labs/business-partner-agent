@@ -70,7 +70,7 @@ public class ConnectionManager {
         try {
             ac.connectionsReceiveInvitation(
                     ReceiveInvitationRequest.builder()
-                            .did(AriesStringUtil.didGetLastSegment(did))
+                            .did(AriesStringUtil.getLastSegment(did))
                             .label(label)
                             .build(),
                     alias);

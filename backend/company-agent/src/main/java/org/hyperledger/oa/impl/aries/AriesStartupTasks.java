@@ -44,13 +44,13 @@ import lombok.extern.slf4j.Slf4j;
 public class AriesStartupTasks {
 
     @Inject
-    private VPManager vpMgmt;
+    VPManager vpMgmt;
 
     @Inject
-    private AriesClient ac;
+    AriesClient ac;
 
     @Value("${oagent.host}")
-    private String host;
+    String host;
 
     @Inject
     Optional<SchemaService> schemaService;

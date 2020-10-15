@@ -30,7 +30,7 @@ public class AriesStringUtil {
      * @param did String e.g. did or credential definition id
      * @return the last part of the input when separated by : unchanged otherwise
      */
-    public static String didGetLastSegment(@NonNull String did) {
+    public static String getLastSegment(@NonNull String did) {
         final String[] parts = did.split(":");
         return parts[parts.length - 1];
     }

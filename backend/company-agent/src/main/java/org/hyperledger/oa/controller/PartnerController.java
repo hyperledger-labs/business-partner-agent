@@ -21,8 +21,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.api.aries.AriesProof;
 import org.hyperledger.oa.controller.api.partner.AddPartnerRequest;
@@ -34,6 +36,7 @@ import org.hyperledger.oa.controller.api.partner.UpdatePartnerRequest;
 import org.hyperledger.oa.impl.PartnerManager;
 import org.hyperledger.oa.impl.activity.PartnerLookup;
 import org.hyperledger.oa.impl.aries.AriesCredentialManager;
+import org.hyperledger.oa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.oa.impl.aries.ProofManager;
 
 import io.micronaut.http.HttpResponse;
@@ -44,11 +47,13 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Put;
+import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Controller("/api/partners")
@@ -62,13 +67,18 @@ public class PartnerController {
     PartnerManager pm;
 
     @Inject
+    PartnerLookup partnerLookup;
+
+    // Aries Mode only Beans
+
+    @Inject
     Optional<AriesCredentialManager> credM;
 
     @Inject
     Optional<ProofManager> proofM;
 
     @Inject
-    PartnerLookup partnerLookup;
+    Optional<PartnerCredDefLookup> credLookup;
 
     /**
      * Get known partners
@@ -76,7 +86,11 @@ public class PartnerController {
      * @return list of partners
      */
     @Get
-    public HttpResponse<List<PartnerAPI>> getPartners() {
+    public HttpResponse<List<PartnerAPI>> getPartners(
+            @Parameter(description = "UUID - schema id") @Nullable @QueryValue String issuerFor) {
+        if (StringUtils.isNotBlank(issuerFor) && credLookup.isPresent()) {
+            return HttpResponse.ok(credLookup.get().getSupportedPartners(UUID.fromString(issuerFor)));
+        }
         return HttpResponse.ok(pm.getPartners());
     }
 
@@ -191,8 +205,9 @@ public class PartnerController {
      */
     @Get("/{id}/credential-types")
     public HttpResponse<List<PartnerCredentialType>> partnerCredentialTypes(@PathVariable String id) {
-        if (credM.isPresent()) {
-            final Optional<List<PartnerCredentialType>> credDefs = credM.get().getPartnerCredDefs(UUID.fromString(id));
+        if (credLookup.isPresent()) {
+            final Optional<List<PartnerCredentialType>> credDefs = credLookup.get()
+                    .getPartnerCredDefs(UUID.fromString(id));
             if (credDefs.isPresent()) {
                 return HttpResponse.ok(credDefs.get());
             }
