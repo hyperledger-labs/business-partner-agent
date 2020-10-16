@@ -61,11 +61,9 @@
 import { EventBus } from "../main";
 
 import { CredentialTypes } from "../constants";
-// import VueJsonPretty from "vue-json-pretty";
 
 export default {
   name: "RequestPresentation",
-  components: {},
   props: {
     id: String, //partner ID
   },

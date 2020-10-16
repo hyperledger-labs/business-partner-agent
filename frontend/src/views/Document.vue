@@ -104,7 +104,7 @@ import { EventBus } from "../main";
 import { CredentialTypes } from "../constants";
 import OganizationalProfile from "@/components/OrganizationalProfile";
 import Credential from "@/components/Credential";
-import VueJsonPretty from "vue-json-pretty";
+
 export default {
   name: "Document",
   props: {
@@ -232,7 +232,6 @@ export default {
   components: {
     OganizationalProfile,
     Credential,
-    VueJsonPretty,
   },
 };
 </script>

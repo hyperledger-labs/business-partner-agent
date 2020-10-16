@@ -43,7 +43,6 @@
 import { EventBus } from "../main";
 
 // import { CredentialTypes } from "../constants";
-// import VueJsonPretty from "vue-json-pretty"
 import MyCredentialList from "@/components/MyCredentialList";
 
 export default {

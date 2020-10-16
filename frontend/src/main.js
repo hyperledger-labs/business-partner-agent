@@ -7,6 +7,7 @@
 */
 
 import Vue from "vue";
+
 import axios from "axios";
 import App from "./App.vue";
 import vuetify from "./plugins/vuetify";
@@ -14,6 +15,10 @@ import "@babel/polyfill";
 import router from "./router";
 import store from "./store";
 import { CredentialTypes } from "./constants";
+
+import VueJsonPretty from "vue-json-pretty";
+import "vue-json-pretty/lib/styles.css";
+Vue.component("vue-json-pretty", VueJsonPretty);
 
 Vue.use(require("vue-moment"));
 
@@ -32,7 +37,7 @@ Vue.prototype.$axios = axios;
 Vue.prototype.$apiBaseUrl = apiBaseUrl;
 Vue.config.productionTip = false;
 
-Vue.filter("credentialLabel", function (name) {
+Vue.filter("credentialLabel", function(name) {
   if (!name) return "";
   let itemOfName = Object.values(CredentialTypes).find((item) => {
     return item.name === name;
@@ -40,7 +45,7 @@ Vue.filter("credentialLabel", function (name) {
   return itemOfName.label;
 });
 
-Vue.filter("credentialTag", function (credDefId) {
+Vue.filter("credentialTag", function(credDefId) {
   if (!credDefId) return "";
   let pos = credDefId.lastIndexOf(":");
   return credDefId.substring(pos + 1);

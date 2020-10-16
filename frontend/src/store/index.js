@@ -7,27 +7,13 @@
 */
 
 import Vue from "vue";
-import VueRouter from "vue-router";
-import Dashboard from "../views/Dashboard.vue";
-import Identity from "../views/Identity.vue";
-import PublicProfile from "../views/PublicProfile.vue";
-import ContactPerson from "../views/ContactPerson.vue";
-import Wallet from "../views/Wallet.vue";
-import Document from "../views/Document.vue";
-import RequestVerification from "../views/RequestVerification.vue";
-import RequestPresentation from "../views/RequestPresentation.vue";
-import SendPresentation from "../views/SendPresentation.vue";
-import Credential from "../views/Credential.vue";
-import Presentation from "../views/Presentation.vue";
-import Partners from "../views/Partners.vue";
-import Partner from "../views/Partner.vue";
-import AddPartner from "../views/AddPartner.vue";
-import Settings from "../views/Settings.vue";
-import SchemaSettings from "../views/SchemaSettings.vue";
-import Schema from "../views/Schema.vue";
-import AddSchema from "../views/AddSchema.vue";
+import Vuex from "vuex";
+import moment from "moment";
+import { EventBus, axios, apiBaseUrl } from "../main";
+import { CredentialTypes } from "../constants";
+import { getPartnerProfile } from "../utils/partnerUtils";
 
-Vue.use(VueRouter);
+Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
@@ -234,4 +220,4 @@ store.subscribeAction({
   },
 });
 
-export default router;
+export default store;

@@ -13,7 +13,6 @@ import Identity from "../views/Identity.vue";
 import PublicProfile from "../views/PublicProfile.vue";
 import ContactPerson from "../views/ContactPerson.vue";
 import Wallet from "../views/Wallet.vue";
-import OrganizationalProfileEditor from "../views/OrganizationalProfileEditor.vue";
 import Document from "../views/Document.vue";
 import RequestVerification from "../views/RequestVerification.vue";
 import RequestPresentation from "../views/RequestPresentation.vue";
@@ -24,6 +23,9 @@ import Partners from "../views/Partners.vue";
 import Partner from "../views/Partner.vue";
 import AddPartner from "../views/AddPartner.vue";
 import Settings from "../views/Settings.vue";
+import SchemaSettings from "../views/SchemaSettings.vue";
+import Schema from "../views/Schema.vue";
+import AddSchema from "../views/AddSchema.vue";
 
 Vue.use(VueRouter);
 
@@ -139,7 +141,7 @@ const routes = [
 const router = new VueRouter({
   mode: "history",
   routes,
-  scrollBehavior: function (to) {
+  scrollBehavior: function(to) {
     if (to.hash) {
       return {
         selector: to.hash,

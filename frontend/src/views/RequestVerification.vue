@@ -72,7 +72,6 @@
 import { EventBus } from "../main";
 import PartnerList from "@/components/PartnerList";
 // import { CredentialTypes } from "../constants";
-// import VueJsonPretty from "vue-json-pretty";
 
 export default {
   name: "RequestVerification",
