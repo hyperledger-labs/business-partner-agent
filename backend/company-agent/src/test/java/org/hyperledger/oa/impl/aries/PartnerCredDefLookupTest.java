@@ -1,11 +1,13 @@
 package org.hyperledger.oa.impl.aries;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -88,8 +90,9 @@ class PartnerCredDefLookupTest {
 
         partners = pRepo.findBySuppertedCredential("977");
         assertEquals(2, partners.size());
-        assertEquals(did1, partners.get(0).getDid());
-        assertEquals(did2, partners.get(1).getDid());
+        final List<String> pList = partners.stream().map(Partner::getDid).collect(Collectors.toList());
+        assertTrue(pList.contains(did1));
+        assertTrue(pList.contains(did2));
 
         partners = pRepo.findBySuppertedCredential("9999");
         assertEquals(0, partners.size());
