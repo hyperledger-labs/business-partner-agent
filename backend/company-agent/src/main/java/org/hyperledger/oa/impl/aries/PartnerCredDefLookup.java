@@ -23,6 +23,7 @@ import org.hyperledger.oa.repository.PartnerRepository;
 import org.hyperledger.oa.repository.SchemaRepository;
 
 import io.micronaut.context.annotation.Value;
+import io.micronaut.scheduling.annotation.Async;
 import io.micronaut.scheduling.annotation.Scheduled;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -108,6 +109,11 @@ public class PartnerCredDefLookup {
         didToTypes.forEach((did, types) -> {
             partnerRepo.updateByDid(didPrefix + did, conv.toMap(new CredentialTypeWrapper(types)));
         });
+    }
+
+    @Async
+    public void lookupTypesForAllPartnersAsync() {
+        lookupTypesForAllPartners();
     }
 
     @Data

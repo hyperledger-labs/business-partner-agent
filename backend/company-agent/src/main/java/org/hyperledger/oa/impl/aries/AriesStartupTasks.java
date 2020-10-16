@@ -43,17 +43,20 @@ import lombok.extern.slf4j.Slf4j;
 @Requires(notEnv = { Environment.TEST })
 public class AriesStartupTasks {
 
+    @Value("${oagent.host}")
+    String host;
+
     @Inject
     VPManager vpMgmt;
 
     @Inject
     AriesClient ac;
 
-    @Value("${oagent.host}")
-    String host;
-
     @Inject
     Optional<SchemaService> schemaService;
+
+    @Inject
+    Optional<PartnerCredDefLookup> credLookup;
 
     @Async
     public void onServiceStartedEvent() {
@@ -69,6 +72,8 @@ public class AriesStartupTasks {
             log.info("Creating default public profile for host: {}", host);
             vpMgmt.recreateVerifiablePresentation();
         });
+
+        credLookup.ifPresent(lookup -> lookup.lookupTypesForAllPartnersAsync());
 
         // currently done by aca-py --profile-endpoint option
         // registerProfileEndpoint();

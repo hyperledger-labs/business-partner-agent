@@ -73,6 +73,7 @@ class PartnerCredDefLookupTest {
         when(ledger.queryCredentialDefinitions(anyString()))
                 .thenReturn(Optional.of(List.of(
                         PartnerCredentialType.fromCredDefId("did-1:3:CL:1077:commercial register entry"),
+                        PartnerCredentialType.fromCredDefId("did-1:3:CL:1077:commereg test"),
                         PartnerCredentialType.fromCredDefId("other:3:CL:1077:commreg"))))
                 .thenReturn(Optional.of(List.of(
                         PartnerCredentialType.fromCredDefId("did-1:3:CL:977:bank"),

@@ -53,6 +53,8 @@ import okhttp3.Response;
  */
 @Slf4j
 @Singleton
+// TODO probably better to use:
+// https://github.com/decentralized-identity/universal-resolver/tree/master/resolver/java/uni-resolver-client
 public class URClient {
 
     @Client("${oagent.resolver.url}")
@@ -68,7 +70,7 @@ public class URClient {
 
     public URClient() {
         super();
-        this.headers = Map.of("Accept", "application/json, text/plain");
+        this.headers = Map.of("Accept", "application/ld+json");
     }
 
     @Cacheable(cacheNames = { "ur-cache" })

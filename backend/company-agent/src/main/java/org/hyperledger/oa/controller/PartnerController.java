@@ -87,7 +87,7 @@ public class PartnerController {
      */
     @Get
     public HttpResponse<List<PartnerAPI>> getPartners(
-            @Parameter(description = "UUID - schema id") @Nullable @QueryValue String issuerFor) {
+            @Parameter(description = "UUID - configured schema id") @Nullable @QueryValue String issuerFor) {
         if (StringUtils.isNotBlank(issuerFor) && credLookup.isPresent()) {
             return HttpResponse.ok(credLookup.get().getSupportedPartners(UUID.fromString(issuerFor)));
         }
