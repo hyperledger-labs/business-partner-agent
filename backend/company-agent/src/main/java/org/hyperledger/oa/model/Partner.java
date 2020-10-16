@@ -27,6 +27,7 @@ import javax.persistence.Id;
 
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.oa.api.PartnerAPI;
+import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
 
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
@@ -98,5 +99,13 @@ public class Partner {
     @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> verifiablePresentation;
+
+    /**
+     * Serialized {@link PartnerCredentialType} to allow filtering partners by
+     * supported credentials
+     */
+    @Nullable
+    @TypeDef(type = DataType.JSON)
+    private Map<String, Object> supportedCredentials;
 
 }

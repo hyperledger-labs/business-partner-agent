@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -46,9 +45,7 @@ import org.hyperledger.oa.api.aries.BankAccount;
 import org.hyperledger.oa.api.aries.ProfileVC;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.api.exception.PartnerException;
-import org.hyperledger.oa.client.LedgerClient;
 import org.hyperledger.oa.config.runtime.RequiresAries;
-import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.oa.impl.activity.VPManager;
 import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.impl.util.Converter;
@@ -91,41 +88,16 @@ public class AriesCredentialManager {
     VPManager vpMgmt;
 
     @Inject
+    PartnerCredDefLookup credLookup;
+
+    @Inject
     SchemaService schemaService;
 
     @Inject
     Converter conv;
 
     @Inject
-    LedgerClient ledger;
-
-    @Inject
     ObjectMapper mapper;
-
-    public Optional<List<PartnerCredentialType>> getPartnerCredDefs(@NonNull UUID partnerId) {
-        Optional<List<PartnerCredentialType>> result = Optional.empty();
-        final Optional<Partner> p = partnerRepo.findById(partnerId);
-        if (p.isPresent() && StringUtils.isNotEmpty(p.get().getDid())) {
-            result = ledger.getCredentialDefinitionIdsForDid(AriesStringUtil.didGetLastSegment(p.get().getDid()));
-        }
-        return result;
-    }
-
-    private Optional<String> findBACredentialDefinitionId(@NonNull UUID partnerId, @NonNull Integer seqNo) {
-        Optional<String> result = Optional.empty();
-
-        final Optional<List<PartnerCredentialType>> pct = getPartnerCredDefs(partnerId);
-        if (pct.isPresent()) {
-            final List<PartnerCredentialType> baCreds = pct.get().stream()
-                    .filter(cred -> AriesStringUtil.credDefIdGetSquenceNo(
-                            cred.getCredentialDefinitionId()).equals(seqNo.toString()))
-                    .collect(Collectors.toList());
-            if (baCreds.size() > 0) {
-                result = Optional.of(baCreds.get(baCreds.size() - 1).getCredentialDefinitionId());
-            }
-        }
-        return result;
-    }
 
     // request credential from issuer (partner)
     public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId) {
@@ -138,7 +110,8 @@ public class AriesCredentialManager {
                     try {
                         final org.hyperledger.oa.model.BPASchema s = schemaService
                                 .getSchemaFor(CredentialType.BANK_ACCOUNT_CREDENTIAL);
-                        final Optional<String> baCredDefId = findBACredentialDefinitionId(partnerId, s.getSeqNo());
+                        final Optional<String> baCredDefId = credLookup.findBACredentialDefinitionId(
+                                partnerId, s.getSeqNo());
                         if (baCredDefId.isPresent()) {
                             ac.issueCredentialSendProposal(
                                     CredentialProposalRequest

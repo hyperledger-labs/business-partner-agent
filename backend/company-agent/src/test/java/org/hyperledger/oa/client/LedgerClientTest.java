@@ -35,7 +35,7 @@ class LedgerClientTest extends BaseTest {
         c.setUrl("https://indy-test.bosch-digital.de");
         c.setMapper(mapper);
 
-        final Optional<List<PartnerCredentialType>> credDefIds = c.getCredentialDefinitionIdsForDid(
+        final Optional<List<PartnerCredentialType>> credDefIds = c.queryCredentialDefinitions(
                 "CHysca6fY8n8ytCDLAJGZj");
         System.err.println(credDefIds.get());
     }

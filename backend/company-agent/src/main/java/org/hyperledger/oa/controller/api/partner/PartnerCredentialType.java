@@ -27,10 +27,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PartnerCredentialType {
+    /** The credential definition id */
     private String credentialDefinitionId;
+    /** The credential definitions tag */
     private String type;
+    /** The schemas TRX id */
+    private String seqno;
 
     public static PartnerCredentialType fromCredDefId(String credDefId) {
-        return new PartnerCredentialType(credDefId, AriesStringUtil.didGetLastSegment(credDefId));
+        return new PartnerCredentialType(
+                credDefId,
+                AriesStringUtil.getLastSegment(credDefId),
+                AriesStringUtil.credDefIdGetSquenceNo(credDefId));
     }
 }

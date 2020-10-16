@@ -30,6 +30,7 @@ import org.hyperledger.oa.client.api.LedgerQueryResult;
 import org.hyperledger.oa.client.api.LedgerQueryResult.DomainTransaction;
 import org.hyperledger.oa.client.api.LedgerQueryResult.DomainTransaction.TxnMetadata;
 import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
+import org.hyperledger.oa.impl.util.AriesStringUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -57,7 +58,14 @@ public class LedgerClient {
 
     private OkHttpClient ok = new OkHttpClient();
 
-    public Optional<List<PartnerCredentialType>> getCredentialDefinitionIdsForDid(@NonNull String did) {
+    /**
+     * Query the ledger explorer for a list of credential definitions that are based
+     * on a did or a TRX id.
+     * 
+     * @param query query can be either a did or a transaction id.
+     * @return optional list of {@link PartnerCredentialType}
+     */
+    public Optional<List<PartnerCredentialType>> queryCredentialDefinitions(@NonNull String query) {
         Optional<List<PartnerCredentialType>> result = Optional.empty();
 
         if (StringUtils.isEmpty(url)) {
@@ -68,7 +76,7 @@ public class LedgerClient {
         try {
             HttpUrl b = HttpUrl.parse(url + "/ledger/domain")
                     .newBuilder()
-                    .addQueryParameter("query", did)
+                    .addQueryParameter("query", AriesStringUtil.getLastSegment(query))
                     .addQueryParameter("type", "102") // 102 = credential definition
                     .build();
             Request request = new Request.Builder()
