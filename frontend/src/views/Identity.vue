@@ -21,12 +21,6 @@
 import { EventBus } from "../main";
 export default {
   name: "Identity",
-<<<<<<< HEAD
-=======
-  components: {
-    VueJsonPretty,
-  },
->>>>>>> bpa/master
   created() {
     EventBus.$emit("title", "Identity");
     this.getIdentity();

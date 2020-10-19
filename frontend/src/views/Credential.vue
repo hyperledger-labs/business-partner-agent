@@ -167,10 +167,6 @@ export default {
   },
   components: {
     Cred,
-<<<<<<< HEAD
-=======
-    VueJsonPretty,
->>>>>>> bpa/master
   },
 };
 </script>
