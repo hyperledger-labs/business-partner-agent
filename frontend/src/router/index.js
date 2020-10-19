@@ -141,7 +141,11 @@ const routes = [
 const router = new VueRouter({
   mode: "history",
   routes,
+<<<<<<< HEAD
   scrollBehavior: function(to) {
+=======
+  scrollBehavior: function (to) {
+>>>>>>> bpa/master
     if (to.hash) {
       return {
         selector: to.hash,

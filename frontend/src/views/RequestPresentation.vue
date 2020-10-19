@@ -64,6 +64,10 @@ import { CredentialTypes } from "../constants";
 
 export default {
   name: "RequestPresentation",
+<<<<<<< HEAD
+=======
+  components: {},
+>>>>>>> bpa/master
   props: {
     id: String, //partner ID
   },

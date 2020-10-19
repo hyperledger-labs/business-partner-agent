@@ -184,6 +184,10 @@ export default {
   name: "Partner",
   props: ["id"],
   components: {
+<<<<<<< HEAD
+=======
+    VueJsonPretty,
+>>>>>>> bpa/master
     OganizationalProfile,
     PresentationList,
     PartnerStateIndicator,
