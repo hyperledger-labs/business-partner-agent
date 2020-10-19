@@ -43,7 +43,7 @@
         <skip.docker.build>true</skip.docker.build>
         <!-- Dependency Versions -->
         <log4j2.version>2.13.3</log4j2.version>
-        <lombok.version>1.18.14</lombok.version>
+        <lombok.version>1.18.16</lombok.version>
         <micronaut.version>2.1.1</micronaut.version>
         <micronaut.data.version>2.0.1</micronaut.data.version>
         <micronaut.security.version>2.1.1</micronaut.security.version>
