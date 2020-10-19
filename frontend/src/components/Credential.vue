@@ -45,12 +45,13 @@
             :key="field.type"
             :label="field.label"
             placeholder
-            v-model="documentData[field.type]"
             :disabled="isReadOnly"
             :rules="[(v) => !!v || 'Item is required']"
             :required="field.required"
             outlined
             dense
+            :value="documentData[field.type]"
+            @change="fieldChanged(field.type, $event)"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -95,13 +96,16 @@ export default {
         return typeof value === "object" && value !== null;
       });
       this.documentData = nestedData ? nestedData : documentData;
+      this.intDoc = { ...this.documentData };
     }
   },
   data: () => {
-    return {};
+    return {
+      intDoc: Object,
+    };
   },
   computed: {
-    schema: function () {
+    schema: function() {
       let s = getSchema(this.document.type);
       if (s && {}.hasOwnProperty.call(s, "fields")) {
         return s;
@@ -122,6 +126,21 @@ export default {
       }
     },
   },
-  methods: {},
+  methods: {
+    fieldChanged(fieldType, event) {
+      if (this.intDoc[fieldType] != event) {
+        this.documentData[fieldType] = event;
+      } else {
+        this.documentData[fieldType] = event;
+      }
+
+      const isDirty = Object.keys(this.intDoc).find((key) => {
+        return this.documentData[key] != this.intDoc[key] ? true : false;
+      })
+        ? true
+        : false;
+      this.$emit("doc-changed", isDirty);
+    },
+  },
 };
 </script>
