@@ -60,7 +60,7 @@
         </v-row>
         <OganizationalProfile
           v-if="msg === '' && partnerProfile !== null"
-          v-bind:document="partnerProfile"
+          v-bind:documentData="partnerProfile"
           isReadOnly
         ></OganizationalProfile>
         <DocumentCredentialList

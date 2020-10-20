@@ -50,6 +50,11 @@ Vue.filter("credentialTag", function(credDefId) {
   return credDefId.substring(pos + 1);
 });
 
+Vue.filter('capitalize', function (string) {
+  return string.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
+});
+
+
 const EventBus = new Vue();
 export { EventBus, axios, apiBaseUrl };
 

@@ -29,9 +29,9 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.api.exception.PartnerException;
-import org.hyperledger.oa.client.URClient;
 import org.hyperledger.oa.impl.activity.PartnerLookup;
 import org.hyperledger.oa.impl.aries.ConnectionManager;
+import org.hyperledger.oa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.model.Partner;
 import org.hyperledger.oa.repository.MyCredentialRepository;
@@ -49,11 +49,11 @@ public class PartnerManager {
     @Inject
     Converter converter;
 
-    @Inject
-    URClient ur;
-
     @Inject // conditional bean
     Optional<ConnectionManager> cm;
+
+    @Inject
+    Optional<PartnerCredDefLookup> credLookup;
 
     @Inject
     PartnerLookup partnerLookup;
@@ -103,6 +103,7 @@ public class PartnerManager {
         Partner result = repo.save(partner); // save before creating the connection
         if (lookupP.getAriesSupport().booleanValue() && cm.isPresent()) {
             cm.get().createConnection(did, connectionLabel, alias);
+            credLookup.ifPresent(cl -> cl.lookupTypesForAllPartnersAsync());
         }
         return converter.toAPIObject(result);
     }

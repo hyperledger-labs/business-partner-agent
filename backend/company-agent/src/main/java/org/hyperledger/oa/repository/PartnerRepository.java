@@ -18,6 +18,7 @@
 package org.hyperledger.oa.repository;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,13 +42,18 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     int updateAlias(@Id UUID id, @Nullable String alias);
 
+    Number updateByDid(String did, Map<String, Object> supportedCredentials);
+
     Optional<Partner> findByDid(String did);
 
     Optional<Partner> findByLabel(String label);
 
     Optional<Partner> findByConnectionId(String connectionId);
 
-    // The queries below are native queries to prevent changes to the last_updated
+    @Query("SELECT distinct partner.* FROM partner,jsonb_to_recordset(partner.supported_credentials->'wrapped') as items(seqno text) where items.seqno = :seqNo")
+    List<Partner> findBySuppertedCredential(String seqNo);
+
+    // The queries below are native queries to prevent changes to the lastpdated
     // timestamp. As this timestamp indicates user interaction, whereas the queries
     // below indicate changes made by jobs.
 

@@ -38,13 +38,13 @@ import io.micronaut.context.annotation.Value;
 public class AriesDidDocManager implements DidDocManager {
 
     @Value("${oagent.did.prefix}")
-    private String didPrefix;
+    String didPrefix;
 
     @Inject
-    private CachingAriesClient ac;
+    CachingAriesClient ac;
 
     @Inject
-    private URClient ur;
+    URClient ur;
 
     /**
      * In this case the did document is always on the ledger, so this method will

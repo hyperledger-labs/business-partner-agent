@@ -93,16 +93,14 @@ public class AdminController {
     public HttpResponse<Void> removeSchema(@PathVariable String id) {
         if (schemaService.isPresent()) {
             SchemaService sService = schemaService.get();
-            SchemaAPI schema = sService.getSchema(UUID.fromString(id));
-            if (!schema.getIsReadOnly()) {
+            Optional<SchemaAPI> schema = sService.getSchema(UUID.fromString(id));
+            if (schema.isPresent() && !schema.get().getIsReadOnly()) {
                 sService.deleteSchema(UUID.fromString(id));
                 return HttpResponse.ok();
-            } else {
-                return HttpResponse.notAllowed();
             }
-        } else {
-            return HttpResponse.notFound();
+            return HttpResponse.notAllowed();
         }
+        return HttpResponse.notFound();
     }
 
     /**
@@ -114,7 +112,10 @@ public class AdminController {
     @Get("/schema/{id}")
     public HttpResponse<SchemaAPI> getSchema(@PathVariable UUID id) {
         if (schemaService.isPresent()) {
-            return HttpResponse.ok(schemaService.get().getSchema(id));
+            final Optional<SchemaAPI> schema = schemaService.get().getSchema(id);
+            if (schema.isPresent()) {
+                return HttpResponse.ok(schema.get());
+            }
         }
         return HttpResponse.notFound();
     }

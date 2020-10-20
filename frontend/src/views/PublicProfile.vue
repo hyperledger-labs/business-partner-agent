@@ -12,7 +12,7 @@
     >
       <OrganizationalProfile
         v-if="document && document.isPublic"
-        v-bind:document="document.documentData"
+        v-bind:documentData="document.documentData"
         isReadOnly
       >
       </OrganizationalProfile>
