@@ -62,7 +62,7 @@
             icon
             :to="{
               name: 'RequestVerification',
-              params: { documentId: id },
+              params: { document: document },
             }"
           >
             <v-icon color="grey">mdi-chevron-right</v-icon>
