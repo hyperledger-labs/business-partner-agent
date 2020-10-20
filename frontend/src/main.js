@@ -15,6 +15,10 @@ import router from "./router";
 import store from "./store";
 import { CredentialTypes } from "./constants";
 
+import VueJsonPretty from "vue-json-pretty";
+import "vue-json-pretty/lib/styles.css";
+Vue.component("vue-json-pretty", VueJsonPretty);
+
 Vue.use(require("vue-moment"));
 
 var apiBaseUrl;

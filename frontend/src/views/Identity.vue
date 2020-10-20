@@ -18,13 +18,10 @@
 </template>
 
 <script>
-import VueJsonPretty from "vue-json-pretty";
 import { EventBus } from "../main";
 export default {
   name: "Identity",
-  components: {
-    VueJsonPretty,
-  },
+  components: {},
   created() {
     EventBus.$emit("title", "Identity");
     this.getIdentity();

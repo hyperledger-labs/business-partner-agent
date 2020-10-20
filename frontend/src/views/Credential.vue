@@ -74,9 +74,7 @@
 
 <script>
 import { EventBus } from "../main";
-
 import Cred from "@/components/Credential";
-import VueJsonPretty from "vue-json-pretty";
 import { CredentialTypes } from "../constants";
 
 export default {
@@ -169,8 +167,7 @@ export default {
     },
   },
   components: {
-    Cred,
-    VueJsonPretty,
+    Cred
   },
 };
 </script>
