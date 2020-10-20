@@ -29,7 +29,7 @@ The Business Partner Agent supports two modes
 1. Web mode: Serves a did:web identity and allows to publish a public organizational profile.
 2. Aries mode: Utilizes an identity on an Hyperledger Indy ledger (default: https://indy-test.bosch-digital.de/) and enables Aries interaction protocols.
 
-Following this turorial, the agent will be started in Aries mode.
+Following this tutorial, the agent will be started in Aries mode.
 
 ## Prerequistes
 
@@ -62,7 +62,7 @@ Just run:
 ./scripts/register-did.sh
 ```
 
-You should see the following outpout:
+You should see the following output:
 ```s
 {
   "did": "W3KMxGKUmajhiJzGmqVcAM",
@@ -86,8 +86,8 @@ You can start an instance of the Business Partner Agent with docker compose. It 
 - Controller Backend (Java Micronaut)
 - Aries Cloud Agent Python
 - Postgres
-  
-with a default configuration. 
+
+with a default configuration.
 
 ### Build and run
 ```s
@@ -112,7 +112,7 @@ http://localhost:8080/swagger-ui
 docker-compose down
 ```
 
-If you want to wipe the database as well you can use 
+If you want to wipe the database as well you can use
 
 ```s
 docker-compose down -v
@@ -131,7 +131,7 @@ To terminate all ngrok tunnels you can use
 ./kill-tunnels.sh
 ```
 
-***BE AWARE:*** If you don't have any security enabled the Business Partner API and and the frontend will be publicly available. This is in particular important when running in Aries mode where the public IP is written to the ledger. 
+***BE AWARE:*** If you don't have any security enabled the Business Partner API and and the frontend will be publicly available. This is in particular important when running in Aries mode where the public IP is written to the ledger.
 
 ### Setup Security
 
