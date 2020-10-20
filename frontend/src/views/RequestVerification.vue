@@ -22,7 +22,7 @@
         <PartnerList
           v-bind:selectable="true"
           ref="partnerList"
-          v-bind:onlyAries="true"
+          v-bind:onlyIssuersForSchema="this.document.type"
         ></PartnerList>
       </v-card-text>
 
@@ -80,7 +80,7 @@ export default {
     PartnerList,
   },
   props: {
-    documentId: String,
+    document: Object,
   },
   created() {
     EventBus.$emit("title", "Request Verification");
