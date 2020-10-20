@@ -64,6 +64,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    onlyIssuersForSchema: {
+      type: String,
+      default: ""
+    }
   },
   created() {
     this.fetch();
@@ -90,8 +94,13 @@ export default {
       });
     },
     fetch() {
+      // Query only for partners that can issue credentials of specified schema
+      let queryParam = '';
+      if (this.onlyIssuersForSchema.length > 0) {
+        queryParam = `?issuerFor=${this.onlyIssuersForSchema}`;
+      }
       this.$axios
-        .get(`${this.$apiBaseUrl}/partners`)
+        .get(`${this.$apiBaseUrl}/partners${queryParam}`)
         .then((result) => {
           console.log(result);
           if ({}.hasOwnProperty.call(result, "data")) {

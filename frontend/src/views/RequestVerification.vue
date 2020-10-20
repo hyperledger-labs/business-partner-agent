@@ -23,6 +23,7 @@
           v-bind:selectable="true"
           ref="partnerList"
           v-bind:onlyAries="true"
+          v-bind:onlyIssuersForSchema="this.documentId"
         ></PartnerList>
       </v-card-text>
 
