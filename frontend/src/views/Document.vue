@@ -32,7 +32,7 @@
     <v-card-text>
       <OganizationalProfile
         v-if="type === CredentialTypes.PROFILE.name"
-        v-bind:document="document.documentData"
+        v-bind:documentData="document.documentData"
         ref="doc"
       ></OganizationalProfile>
       <Credential v-else v-bind:document="document" ref="doc"></Credential>
