@@ -68,3 +68,5 @@ my-values.yaml
 
 /docker-compose-backend.yml
 **/application-dev-*.yml
+node_modules
+package-lock.json

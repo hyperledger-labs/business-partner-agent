@@ -30,11 +30,11 @@
       </v-layout>
     </v-card-title>
     <v-card-text>
-      <OganizationalProfile
+      <OrganizationalProfile
         v-if="isProfile(intDoc.type)"
-        v-bind:document="document.documentData"
+        v-bind:documentData="document.documentData"
         ref="doc"
-      ></OganizationalProfile>
+      ></OrganizationalProfile>
       <Credential
         v-else
         v-bind:document="document"
@@ -76,7 +76,7 @@
                 icon
                 :to="{
                   name: 'RequestVerification',
-                  params: { documentId: id },
+                  params: { document: document },
                 }"
                 :disabled="docModified()"
               >
