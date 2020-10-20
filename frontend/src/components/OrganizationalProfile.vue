@@ -159,41 +159,42 @@
 export default {
   props: {
     isReadOnly: Boolean,
-    document: Object,
+    documentData: {
+      type: Object,
+      default: () => { 
+        return {
+          type: "Legal Entity",
+          legalName: "",
+          altName: "",
+          identifier: [
+            {
+              id: "",
+              type: "",
+            },
+          ],
+          registeredSite: {
+            address: {
+              streetAddress: "",
+              zipCode: "",
+              city: "",
+              country: "",
+              region: "",
+            },
+          }
+        }
+      }
+    }
   },
   created() {
-    console.log(this.document);
-    if (this.document.legalName) {
-      this.documentData = this.document;
-    }
   },
   data: () => {
     return {
       identifierTypes: ["LEI", "D-U-N-S", "VAT", "USCC"],
       orgTypes: ["Legal Entity", "Business Unit", "Site"],
-      documentData: {
-        type: "Legal Entity",
-        legalName: "",
-        altName: "",
-        identifier: [
-          {
-            id: "",
-            type: "",
-          },
-        ],
-        registeredSite: {
-          address: {
-            streetAddress: "",
-            zipCode: "",
-            city: "",
-            country: "",
-            region: "",
-          },
-        },
-      },
     };
   },
-  computed: {},
+  computed: {
+  },
   methods: {
     addIdentifier() {
       this.documentData.identifier.push({
