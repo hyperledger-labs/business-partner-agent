@@ -97,6 +97,7 @@
               <PresentationList
                 v-if="isReady"
                 v-bind:credentials="presentationsReceived"
+                v-on:removedItem="removePresentationReceived"
                 :expandable="false"
               ></PresentationList>
             </v-card>
@@ -122,6 +123,7 @@
               v-if="isReady"
               v-bind:credentials="presentationsSent"
               v-bind:headers="headersSent"
+              v-on:removedItem="removePresentationSent"
               :expandable="false"
             ></PresentationList>
           </v-col>
@@ -298,6 +300,20 @@ export default {
           console.error(e);
           // EventBus.$emit("error", e);
         });
+    },
+    removePresentationReceived(id) {
+
+        this.presentationsReceived = this.presentationsReceived.filter(item => {
+            return item.id !== id;
+        });
+
+    },
+    removePresentationSent(id) {
+
+        this.presentationsSent = this.presentationsSent.filter(item => {
+            return item.id !== id;
+        });
+
     },
     getPartner() {
       console.log("Getting partner...");

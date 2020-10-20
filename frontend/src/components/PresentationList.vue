@@ -51,7 +51,7 @@
       </td>
     </template>
     <template v-slot:[`item.actions`]="{ item }">
-      <v-icon small @click="deletePresentation(item)"> mdi-delete </v-icon>
+      <v-icon small @click.stop="deletePresentation(item)"> mdi-delete </v-icon>
     </template>
   </v-data-table>
 </template>
@@ -97,19 +97,18 @@ export default {
       ],
     },
   },
-  created() {},
   data: () => {
     return {
       selected: [],
       CredentialTypes: CredentialTypes,
-      expanded: [],
+      expanded: []
     };
   },
   computed: {
     // Add an unique index, because elements do not have unique id
     credentialsWithIndex: function () {
-      return this.credentials.map((credentials, index) => ({
-        ...credentials,
+      return this.credentials.map((creds, index) => ({
+        ...creds,
         index: index + 1,
       }));
       // .map(credential => {
@@ -127,9 +126,7 @@ export default {
         )
         .then((result) => {
           if (result.status === 200) {
-            this.credentials = this.credentials.filter((pres) => {
-              pres.id !== presentation;
-            });
+            this.$emit('removedItem', presentation.id);
           }
         })
         .catch((e) => {
