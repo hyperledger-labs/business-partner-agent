@@ -119,7 +119,6 @@
 </template>
 
 <script>
-import VueJsonPretty from "vue-json-pretty";
 import OrganizationalProfile from "@/components/OrganizationalProfile";
 import DocumentCredentialList from "@/components/credentials/DocumentCredentialList";
 import PresentationList from "@/components/PresentationList";
@@ -138,7 +137,6 @@ export default {
     name: "Partner",
     props: ["id"],
     components: {
-        VueJsonPretty,
         OrganizationalProfile,
         PresentationList,
         PartnerStateIndicator,

@@ -30,11 +30,11 @@
       </v-layout>
     </v-card-title>
     <v-card-text>
-      <OganizationalProfile
+      <OrganizationalProfile
         v-if="type === CredentialTypes.PROFILE.name"
         v-bind:documentData="document.documentData"
         ref="doc"
-      ></OganizationalProfile>
+      ></OrganizationalProfile>
       <Credential v-else v-bind:document="document" ref="doc"></Credential>
       <v-divider></v-divider>
       <v-list-item>
@@ -102,9 +102,8 @@
 <script>
 import { EventBus } from "../main";
 import { CredentialTypes } from "../constants";
-import OganizationalProfile from "@/components/OrganizationalProfile";
+import OrganizationalProfile from "@/components/OrganizationalProfile";
 import Credential from "@/components/Credential";
-import VueJsonPretty from "vue-json-pretty";
 
 export default {
   name: "Document",
@@ -231,9 +230,8 @@ export default {
     },
   },
   components: {
-    OganizationalProfile,
+    OrganizationalProfile,
     Credential,
-    VueJsonPretty,
   },
 };
 </script>
