@@ -24,9 +24,10 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.api.aries.AriesProof;
+import org.hyperledger.oa.api.exception.WrongApiUsageException;
 import org.hyperledger.oa.controller.api.partner.AddPartnerRequest;
 import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.oa.controller.api.partner.RequestCredentialRequest;
@@ -87,9 +88,13 @@ public class PartnerController {
      */
     @Get
     public HttpResponse<List<PartnerAPI>> getPartners(
-            @Parameter(description = "UUID - configured schema id") @Nullable @QueryValue String issuerFor) {
-        if (StringUtils.isNotBlank(issuerFor) && credLookup.isPresent()) {
-            return HttpResponse.ok(credLookup.get().getSupportedPartners(UUID.fromString(issuerFor)));
+            @Parameter(description = "credential type") @Nullable @QueryValue CredentialType issuerFor) {
+        if (issuerFor != null && credLookup.isPresent()) {
+            if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(issuerFor)) {
+                return HttpResponse.ok(credLookup.get().getIssuersForBankAccount());
+            }
+            throw new WrongApiUsageException(
+                    "Currently you can only filter by " + CredentialType.BANK_ACCOUNT_CREDENTIAL);
         }
         return HttpResponse.ok(pm.getPartners());
     }
