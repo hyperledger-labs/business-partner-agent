@@ -16,7 +16,7 @@
       >
         <v-icon dark>mdi-chevron-left</v-icon>
       </v-btn>
-      {{ type | credentialLabel }}
+      {{ intDoc.type | credentialLabel }}
       <v-layout align-end justify-end>
         <v-btn
           v-if="this.id"
@@ -31,11 +31,16 @@
     </v-card-title>
     <v-card-text>
       <OrganizationalProfile
-        v-if="type === CredentialTypes.PROFILE.name"
+        v-if="isProfile(intDoc.type)"
         v-bind:documentData="document.documentData"
         ref="doc"
       ></OrganizationalProfile>
-      <Credential v-else v-bind:document="document" ref="doc"></Credential>
+      <Credential
+        v-else
+        v-bind:document="document"
+        ref="doc"
+        @doc-changed="childChanged"
+      ></Credential>
       <v-divider></v-divider>
       <v-list-item>
         <v-list-item-content>
@@ -46,29 +51,43 @@
           <v-switch
             :disabled="document.type === CredentialTypes.OTHER.name"
             v-model="document.isPublic"
+            @change="fieldModified()"
           ></v-switch>
         </v-list-item-action>
       </v-list-item>
       <v-divider></v-divider>
+
       <v-list-item
-        v-if="this.id && document.type !== CredentialTypes.PROFILE.name"
+        v-if="this.id && !isProfile(document.type)"
+        :disabled="docModified()"
       >
-        <v-list-item-content>
-          <v-list-item-title>Verification</v-list-item-title>
-          <v-list-item-subtitle>Request a verification</v-list-item-subtitle>
-        </v-list-item-content>
-        <v-list-item-action>
-          <v-btn
-            icon
-            :to="{
-              name: 'RequestVerification',
-              params: { document: document },
-            }"
-          >
-            <v-icon color="grey">mdi-chevron-right</v-icon>
-          </v-btn>
-        </v-list-item-action>
+        <v-tooltip right v-model="showTooltip">
+          <template v-slot:activator="{ attrs }">
+            <v-list-item-content>
+              <v-list-item-title>Verification</v-list-item-title>
+              <v-list-item-subtitle
+                >Request a verification</v-list-item-subtitle
+              >
+            </v-list-item-content>
+
+            <v-list-item-action>
+              <v-btn
+                v-bind="attrs"
+                icon
+                :to="{
+                  name: 'RequestVerification',
+                  params: { document: document },
+                }"
+                :disabled="docModified()"
+              >
+                <v-icon color="grey">mdi-chevron-right</v-icon>
+              </v-btn>
+            </v-list-item-action>
+          </template>
+          <span>Document modified, please save before start verification</span>
+        </v-tooltip>
       </v-list-item>
+
       <v-divider></v-divider>
     </v-card-text>
 
@@ -79,8 +98,16 @@
           :loading="this.isBusy"
           color="primary"
           text
-          @click="saveDocument()"
+          @click="saveDocument(false || isProfile(intDoc.type))"
           >Save</v-btn
+        >
+        <v-btn
+          v-show="this.id && !isProfile(intDoc.type)"
+          :loading="this.isBusy"
+          color="primary"
+          text
+          @click="saveDocument(true && !isProfile(intDoc.type))"
+          >Save & Close</v-btn
         >
       </v-layout>
     </v-card-actions>
@@ -118,20 +145,22 @@ export default {
     } else {
       EventBus.$emit("title", "Create new Document");
       this.document.type = this.type;
+      this.document.isPublic =
+        this.document.type === CredentialTypes.PROFILE.name ? true : false;
       this.isReady = true;
-      if (this.document.type === CredentialTypes.PROFILE.name) {
-        this.document.isPublic = true;
-      } else {
-        this.document.isPublic = false;
-      }
     }
   },
   data: () => {
     return {
       document: {},
+      intDoc: {},
       isBusy: false,
       isReady: false,
       CredentialTypes,
+      docChanged: false,
+      credChanged: false,
+      showTooltip: false,
+      intIsPublic: false,
     };
   },
   computed: {
@@ -139,6 +168,7 @@ export default {
       return this.$store.state.expertMode;
     },
   },
+  watch: {},
   methods: {
     getDocument() {
       console.log(this.id);
@@ -148,7 +178,7 @@ export default {
           console.log(result);
           if ({}.hasOwnProperty.call(result, "data")) {
             this.document = result.data;
-            this.type = this.document.type;
+            this.intDoc = { ...this.document };
             this.isReady = true;
           }
         })
@@ -157,7 +187,7 @@ export default {
           EventBus.$emit("error", e);
         });
     },
-    saveDocument() {
+    saveDocument(closeDocument) {
       this.isBusy = true;
       console.log(this.$refs.doc.document);
       console.log(this.$refs.doc.documentData);
@@ -172,9 +202,13 @@ export default {
           .then((res) => {
             console.log(res);
             this.isBusy = false;
-            this.$router.push({
-              name: "Wallet",
-            });
+            if (closeDocument) {
+              this.$router.push({
+                name: "Wallet",
+              });
+            } else {
+              this.$router.go(0);
+            }
             EventBus.$emit("success", "Success");
           })
           .catch((e) => {
@@ -224,9 +258,30 @@ export default {
         });
     },
     cancel() {
+      this.document = this.getDocument();
       this.$router.push({
         name: "Wallet",
       });
+    },
+    isProfile(docType) {
+      return docType === CredentialTypes.PROFILE.name;
+    },
+    fieldModified() {
+      const isModified = Object.keys(this.intDoc).find((key) => {
+        return this.document[key] != this.intDoc[key];
+      })
+        ? true
+        : false;
+      this.docChanged = isModified;
+      this.docModified();
+    },
+    childChanged(credChanged) {
+      this.credChanged = credChanged;
+      this.docModified();
+    },
+    docModified() {
+      this.showTooltip = this.docChanged || this.credChanged;
+      return this.docChanged || this.credChanged;
     },
   },
   components: {
