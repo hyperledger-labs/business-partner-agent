@@ -1,0 +1,62 @@
+{
+    "didDocument": {
+        "@context": "https://w3id.org/did/v1",
+        "id": "did:evan:testcore:0x521a97b8baecde51038e2c83f5a37890690e9118",
+        "created": "2020-05-26T08:48:28.377Z",
+        "service": [
+            {
+                "id": "did:evan:testcore:0x521a97B8baECDE51038E2c83F5a37890690E9118",
+                "type": "profile",
+                "serviceEndpoint": "https://test.test.com/ipfs/QmQGGjnY88gwvD6xSKXKbxz6n1Vdk9Q5WAMtar3WdEXmun"
+            }
+        ],
+        "authentication": [
+            "did:evan:testcore:0x521a97b8baecde51038e2c83f5a37890690e9118#key-1"
+        ],
+        "proof": {
+            "type": "EcdsaPublicKeySecp256k1",
+            "created": "2020-05-28T05:20:13.820Z",
+            "jws": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NkstUiJ9.eyJpYXQiOjE1OTA2NDMyMTMsImRpZERvY3VtZW50Ijp7IkBjb250ZXh0IjoiaHR0cHM6Ly93M2lkLm9yZy9kaWQvdjEiLCJpZCI6ImRpZDpldmFuOnRlc3Rjb3JlOjB4NTIxYTk3YjhiYWVjZGU1MTAzOGUyYzgzZjVhMzc4OTA2OTBlOTExOCIsInB1YmxpY0tleSI6W3siaWQiOiJkaWQ6ZXZhbjp0ZXN0Y29yZToweDUyMWE5N2I4YmFlY2RlNTEwMzhlMmM4M2Y1YTM3ODkwNjkwZTkxMTgja2V5LTEiLCJ0eXBlIjoiU2VjcDI1NmsxVmVyaWZpY2F0aW9uS2V5MjAxOCIsImNvbnRyb2xsZXIiOiJkaWQ6ZXZhbjp0ZXN0Y29yZToweDUyMWE5N2I4YmFlY2RlNTEwMzhlMmM4M2Y1YTM3ODkwNjkwZTkxMTgiLCJldGhlcmV1bUFkZHJlc3MiOiIweGU0ODg1YjU2OGZiN2RiYmQyNWI2NDNiZGFjYzhjMDBiMmRjZGE4YTQifSx7ImlkIjoiZGlkOmV2YW46dGVzdGNvcmU6MHg1MjFhOTdiOGJhZWNkZTUxMDM4ZTJjODNmNWEzNzg5MDY5MGU5MTE4I2tleS0yIiwidHlwZSI6IkVkMjU1MTlWZXJpZmljYXRpb25LZXkyMDE4IiwicHVibGljS2V5QmFzZTU4IjoiRWtVNmpLdjhLemlxNXVHTUQ3MTFuaXhjaUgxc1U4c2R5R3dLTE5SaUpyNSJ9XSwiYXV0aGVudGljYXRpb24iOlsiZGlkOmV2YW46dGVzdGNvcmU6MHg1MjFhOTdiOGJhZWNkZTUxMDM4ZTJjODNmNWEzNzg5MDY5MGU5MTE4I2tleS0xIl0sImNyZWF0ZWQiOiIyMDIwLTA1LTI2VDA4OjQ4OjI4LjM3N1oiLCJ1cGRhdGVkIjoiMjAyMC0wNS0yOFQwNToyMDoxMy44MTZaIiwic2VydmljZSI6W3siaWQiOiJkaWQ6ZXZhbjp0ZXN0Y29yZToweDUyMWE5N0I4YmFFQ0RFNTEwMzhFMmM4M0Y1YTM3ODkwNjkwRTkxMTgiLCJ0eXBlIjoibWFzdGVyZGF0YSIsInNlcnZpY2VFbmRwb2ludCI6Imh0dHBzOi8vaXBmcy50ZXN0LmV2YW4ubmV0d29yay9pcGZzL1FtUUdHam5ZODhnd3ZENnhTS1hLYnh6Nm4xVmRrOVE1V0FNdGFyM1dkRVhtdW4ifV19LCJpc3MiOiJkaWQ6ZXZhbjp0ZXN0Y29yZToweDUyMWE5N2I4YmFlY2RlNTEwMzhlMmM4M2Y1YTM3ODkwNjkwZTkxMTgifQ.Wbvm5nwSjmgXh0gQBHou9KEHhMH8MGuJ0DgM2u1OMXYsDI3NLnbz2rq6tLV0BMg-35H8pkydxKmAlaWmhMNP4QA",
+            "proofPurpose": "assertionMethod",
+            "verificationMethod": "did:evan:testcore:0x521a97b8baecde51038e2c83f5a37890690e9118#key-1"
+        },
+        "publicKey": [
+            {
+                "id": "did:evan:testcore:0x521a97b8baecde51038e2c83f5a37890690e9118#key-1",
+                "type": "Secp256k1VerificationKey2018",
+                "controller": "did:evan:testcore:0x521a97b8baecde51038e2c83f5a37890690e9118",
+                "ethereumAddress": "0xe4885b568fb7dbbd25b643bdacc8c00b2dcda8a4"
+            },
+            {
+                "id": "did:evan:testcore:0x521a97b8baecde51038e2c83f5a37890690e9118#key-2",
+                "type": "Ed25519VerificationKey2018",
+                "publicKeyBase58": "EkU6jKv8Kziq5uGMD711nixciH1sU8sdyGwKLNRiJr5"
+            }
+        ]
+    },
+    "content": null,
+    "contentType": null,
+    "resolverMetadata": {
+        "duration": 251,
+        "identifier": "did:evan:testcore:0x521a97b8baecde51038e2c83f5a37890690e9118",
+        "driverId": "driver-evannetwork/evan-did-driver",
+        "didUrl": {
+            "didUrlString": "did:evan:testcore:0x521a97b8baecde51038e2c83f5a37890690e9118",
+            "did": {
+                "didString": "did:evan:testcore:0x521a97b8baecde51038e2c83f5a37890690e9118",
+                "method": "evan",
+                "methodSpecificId": "testcore:0x521a97b8baecde51038e2c83f5a37890690e9118",
+                "parseTree": null,
+                "parseRuleCount": null
+            },
+            "parameters": null,
+            "parametersMap": {},
+            "path": "",
+            "query": null,
+            "fragment": null,
+            "parseTree": null,
+            "parseRuleCount": null
+        }
+    },
+    "methodMetadata": {}
+}

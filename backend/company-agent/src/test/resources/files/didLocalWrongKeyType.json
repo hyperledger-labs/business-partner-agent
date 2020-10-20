@@ -1,0 +1,20 @@
+{
+    "didDocument": {
+        "id": "did:web:localhost:8020",
+        "publicKey": [
+            {
+                "id": "did:web:localhost:8020#key-1",
+                "type": "RandomStuffForTesting",
+                "publicKeyBase58": "AABBCCDDEEFF"
+            }
+        ],
+        "service": [
+            {
+                "id": "did:web:localhost:8020#masterdata",
+                "type": "masterdata",
+                "serviceEndpoint": "https://localhost:8020/md.json"
+            }
+        ],
+        "@context": "https://www.w3.org/ns/did/v1"
+    }
+}

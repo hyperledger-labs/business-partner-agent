@@ -1,0 +1,89 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+    - feature/*
+    - releases/*
+  paths:
+    exclude:
+    - CONTRIBUTING.md
+    - README.md
+
+variables:
+#  Define the following variables in a variable group "my-variable-group":  
+#     dockerRegistryServiceConnection, imageRepositorySsiCompanyAgent, containerRegistry,
+#     imagePullSecret, k8connection, namespace
+  - group: my-variable-group
+  - name: tag
+    value: '0.1.$(Build.BuildId)' #'$(Build.SourceBranchName)' 
+  - name: vmImageName   # Agent VM image name
+    value: 'ubuntu-latest'
+
+stages:
+- stage: Test
+  displayName: Test
+  jobs:  
+  - job: Maven
+    displayName: Maven
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+      - task: MavenAuthenticate@0
+        displayName: 'Maven Authenticate'
+        inputs:
+          artifactsFeeds: economy-of-things
+      - task: Maven@3
+        displayName: 'build maven project'
+        inputs:
+          mavenPomFile: 'backend/pom.xml'
+          mavenOptions: '-Xmx3072m'
+          javaHomeOption: 'JDKVersion'
+          jdkVersionOption: '1.11'
+          jdkArchitectureOption: 'x64'
+          publishJUnitResults: false
+          goals: 'test spotbugs:check pmd:check'
+
+- stage: BuildAndDeploy
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  displayName: Build and Deploy
+  jobs:  
+  - job: BuildAndDeploy
+    displayName: Build and Deploy
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: MavenAuthenticate@0
+      displayName: 'Maven Authenticate'
+      inputs:
+        artifactsFeeds: economy-of-things
+    - task: Maven@3
+      displayName: 'Maven package'
+      inputs:
+        mavenPomFile: 'backend/pom.xml'
+        mavenOptions: '-Xmx3072m'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.11'
+        jdkArchitectureOption: 'x64'
+        publishJUnitResults: false
+        goals: 'package -DskipTests=true -P build-frontend' 
+    - task: Docker@2
+      displayName: Login to ACR
+      inputs:
+        command: login
+        containerRegistry: $(dockerRegistryServiceConnection)               
+    - task: Maven@3
+      displayName: 'Maven docker build and push'
+      inputs:
+        mavenPomFile: 'backend/pom.xml'
+        mavenOptions: '-Xmx3072m'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.11'
+        jdkArchitectureOption: 'x64'
+        publishJUnitResults: false
+        goals: 'docker:build docker:push -Ddocker.push.registry=$(containerRegistry) -Ddocker.name=iil/%a:$(tag)'
+    - task: Docker@2
+      displayName: Logout of ACR
+      inputs:
+        command: logout
+        containerRegistry: $(dockerRegistryServiceConnection)
