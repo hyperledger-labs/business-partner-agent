@@ -68,8 +68,8 @@ public class SchemaService {
         String sId = StringUtils.strip(schemaId);
         final CredentialType credType = CredentialType.fromSchemaId(sId);
 
-        if (schemaRepo.findBySchemaId(sId).isPresent()) {
-            throw new WrongApiUsageException("Schema with id: " + sId + " already exists.");
+        if (schemaRepo.findByType(credType).isPresent()) {
+            throw new WrongApiUsageException("Credential with type: " + credType + " already exists.");
         }
 
         try {

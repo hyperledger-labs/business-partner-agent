@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.client.LedgerClient;
 import org.hyperledger.oa.config.runtime.RequiresAries;
@@ -79,9 +80,9 @@ public class PartnerCredDefLookup {
         return result;
     }
 
-    public List<PartnerAPI> getSupportedPartners(@NonNull UUID schemaId) {
+    public List<PartnerAPI> getIssuersForBankAccount() {
         List<PartnerAPI> result = new ArrayList<>();
-        schemaRepo.findById(schemaId).ifPresent(s -> {
+        schemaRepo.findByType(CredentialType.BANK_ACCOUNT_CREDENTIAL).ifPresent(s -> {
             partnerRepo.findBySuppertedCredential(s.getSeqNo().toString()).forEach(dbPartner -> {
                 result.add(conv.toAPIObject(dbPartner));
             });
