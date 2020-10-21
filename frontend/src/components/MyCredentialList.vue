@@ -17,7 +17,7 @@
       :show-select="selectable"
       single-select
       :sort-by="['type', 'createdDate']"
-      :sort-desc="[true, true]"
+      :sort-desc="[true, false]"
       multi-sort
       @click:row="open"
     >
