@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
@@ -16,7 +16,7 @@
       </v-card-title>
       <v-card-text>
         <h4 class="pt-4">
-          Select the business partner you would like to request a verififcation
+          Select the business partner you would like to request a verification
           from
         </h4>
         <PartnerList
