@@ -101,7 +101,7 @@ export default {
     return {
       selected: [],
       CredentialTypes: CredentialTypes,
-      expanded: []
+      expanded: [],
     };
   },
   computed: {
@@ -126,7 +126,7 @@ export default {
         )
         .then((result) => {
           if (result.status === 200) {
-            this.$emit('removedItem', presentation.id);
+            this.$emit("removedItem", presentation.id);
           }
         })
         .catch((e) => {

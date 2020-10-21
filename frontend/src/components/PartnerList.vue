@@ -66,8 +66,8 @@ export default {
     },
     onlyIssuersForSchema: {
       type: String,
-      default: ""
-    }
+      default: "",
+    },
   },
   created() {
     this.fetch();
@@ -95,7 +95,7 @@ export default {
     },
     fetch() {
       // Query only for partners that can issue credentials of specified schema
-      let queryParam = '';
+      let queryParam = "";
       if (this.onlyIssuersForSchema.length > 0) {
         queryParam = `?issuerFor=${this.onlyIssuersForSchema}`;
       }
