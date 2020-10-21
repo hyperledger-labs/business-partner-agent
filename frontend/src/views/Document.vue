@@ -258,7 +258,6 @@ export default {
         });
     },
     cancel() {
-      this.document = this.getDocument();
       this.$router.push({
         name: "Wallet",
       });
