@@ -119,7 +119,7 @@ export default {
     },
   },
   components: {
-    Cred
+    Cred,
   },
 };
 </script>

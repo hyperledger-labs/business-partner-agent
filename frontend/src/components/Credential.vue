@@ -105,7 +105,7 @@ export default {
     };
   },
   computed: {
-    schema: function() {
+    schema: function () {
       let s = getSchema(this.document.type);
       if (s && {}.hasOwnProperty.call(s, "fields")) {
         return s;

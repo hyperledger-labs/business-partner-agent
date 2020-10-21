@@ -161,7 +161,7 @@ export default {
     isReadOnly: Boolean,
     documentData: {
       type: Object,
-      default: () => { 
+      default: () => {
         return {
           type: "Legal Entity",
           legalName: "",
@@ -180,21 +180,19 @@ export default {
               country: "",
               region: "",
             },
-          }
-        }
-      }
-    }
+          },
+        };
+      },
+    },
   },
-  created() {
-  },
+  created() {},
   data: () => {
     return {
       identifierTypes: ["LEI", "D-U-N-S", "VAT", "USCC"],
       orgTypes: ["Legal Entity", "Business Unit", "Site"],
     };
   },
-  computed: {
-  },
+  computed: {},
   methods: {
     addIdentifier() {
       this.documentData.identifier.push({
