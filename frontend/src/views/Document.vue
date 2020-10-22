@@ -160,7 +160,7 @@ export default {
       CredentialTypes,
       docChanged: false,
       credChanged: false,
-      showTooltip: false
+      showTooltip: false,
     };
   },
   computed: {
@@ -178,7 +178,7 @@ export default {
           console.log(result);
           if ({}.hasOwnProperty.call(result, "data")) {
             this.document = result.data;
-            this.intDoc = { ... this.document };
+            this.intDoc = { ...this.document };
             this.isReady = true;
           }
         })
