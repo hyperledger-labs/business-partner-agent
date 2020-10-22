@@ -14,7 +14,7 @@ import "@babel/polyfill";
 import router from "./router";
 import store from "./store";
 import { CredentialTypes } from "./constants";
-import SortUtil from './utils/sortUtils';
+import SortUtil from "./utils/sortUtils";
 
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";

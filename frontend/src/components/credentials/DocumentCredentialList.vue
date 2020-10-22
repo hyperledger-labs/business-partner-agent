@@ -79,12 +79,12 @@ export default {
     return {
       selected: [],
       CredentialTypes: CredentialTypes,
-      expanded: []
+      expanded: [],
     };
   },
   computed: {
     sortCredentials: function () {
-      const sortKeys = { type: 'asc', createdDate: 'desc' };
+      const sortKeys = { type: "asc", createdDate: "desc" };
       return this.credentials.sortByKeys(sortKeys);
     },
   },
