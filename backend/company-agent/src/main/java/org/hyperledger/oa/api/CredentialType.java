@@ -18,6 +18,7 @@
 package org.hyperledger.oa.api;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.Nullable;
 
@@ -92,9 +93,12 @@ public enum CredentialType {
      */
     public static @Nullable CredentialType fromSchemaId(@NonNull String schemaId) {
         String schemaName = AriesStringUtil.schemaGetName(schemaId);
-        if (ORGANIZATIONAL_PROFILE_CREDENTIAL.getCredentialTag().equals(schemaName)) {
+        String normalizedName = schemaName.toLowerCase(Locale.US);
+
+        if (ORGANIZATIONAL_PROFILE_CREDENTIAL.getCredentialTag().equals(normalizedName)) {
             return ORGANIZATIONAL_PROFILE_CREDENTIAL;
-        } else if (BANK_ACCOUNT_CREDENTIAL.getCredentialTag().equals(schemaName)) {
+        } else if (normalizedName.contains("bankaccount")
+                || normalizedName.contains(BANK_ACCOUNT_CREDENTIAL.getCredentialTag())) {
             return BANK_ACCOUNT_CREDENTIAL;
         }
         return OTHER;
