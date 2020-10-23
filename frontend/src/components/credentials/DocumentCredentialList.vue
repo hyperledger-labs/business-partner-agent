@@ -84,7 +84,7 @@ export default {
   },
   computed: {
     sortCredentials: function () {
-      const sortKeys = { type: "asc", createdDate: "desc" };
+      const sortKeys = { createdDate: "desc" };
       return this.credentials.sortByKeys(sortKeys);
     },
   },

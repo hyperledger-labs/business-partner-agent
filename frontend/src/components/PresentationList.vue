@@ -16,9 +16,8 @@
     :expanded.sync="expanded"
     item-key="index"
     :show-expand="expandable"
-    :sort-by="['type', 'createdDate']"
-    :sort-desc="[true, false]"
-    multi-sort
+    :sort-by="['createdDate']"
+    :sort-desc="[false]"
     single-select
     @click:row="openPresentation"
   >
