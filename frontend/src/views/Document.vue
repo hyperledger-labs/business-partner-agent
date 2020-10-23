@@ -76,7 +76,7 @@
                 icon
                 :to="{
                   name: 'RequestVerification',
-                  params: { document: document },
+                  params: { documentId: id, type: type },
                 }"
                 :disabled="docModified()"
               >
@@ -148,6 +148,7 @@ export default {
       this.document.isPublic =
         this.document.type === CredentialTypes.PROFILE.name ? true : false;
       this.isReady = true;
+      this.intDoc = { ...this.document };
     }
   },
   data: () => {
@@ -160,7 +161,6 @@ export default {
       docChanged: false,
       credChanged: false,
       showTooltip: false,
-      intIsPublic: false,
     };
   },
   computed: {
@@ -207,7 +207,7 @@ export default {
                 name: "Wallet",
               });
             } else {
-              this.$router.go(0);
+              this.$router.go(this.$router.currentRoute);
             }
             EventBus.$emit("success", "Success");
           })

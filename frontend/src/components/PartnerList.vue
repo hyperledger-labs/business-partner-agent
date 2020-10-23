@@ -15,6 +15,8 @@
       :headers="headers"
       :items="data"
       :show-select="selectable"
+      :sort-by="['createdAt']"
+      :sort-desc="[false]"
       single-select
       @click:row="open"
     >
