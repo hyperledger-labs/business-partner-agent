@@ -8,7 +8,7 @@
 
 <template>
   <div>
-    <div v-for="(item, index) in credentials" v-bind:key="index">
+    <div v-for="(item, index) in sortCredentials" v-bind:key="index">
       <v-row>
         <v-col cols="4">
           <span class="grey--text text--darken-2 font-weight-medium">
@@ -27,8 +27,6 @@
             isReadOnly
             showOnlyContent
           ></DocumentCredential>
-
-          <!-- TODO own component -->
           <h4
             v-if="item.sentAt || item.receivedAt"
             class="grey--text text--darken-2"
@@ -72,11 +70,11 @@
 import DocumentCredential from "@/components/credentials/DocumentCredential";
 import { EventBus } from "../../main";
 import { CredentialTypes } from "../../constants";
+
 export default {
   props: {
     credentials: Array,
   },
-  created() {},
   data: () => {
     return {
       selected: [],
@@ -85,15 +83,9 @@ export default {
     };
   },
   computed: {
-    // Add an unique index, because elements do not have unique id
-    credentialsWithIndex: function () {
-      return this.credentials.map((credentials, index) => ({
-        ...credentials,
-        index: index + 1,
-      }));
-      // .map(credential => {
-      //   credential.verified = true
-      // })
+    sortCredentials: function () {
+      const sortKeys = { createdDate: "desc" };
+      return this.credentials.sortByKeys(sortKeys);
     },
   },
   methods: {

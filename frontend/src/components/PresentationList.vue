@@ -11,12 +11,14 @@
     :hide-default-footer="credentialsWithIndex.length < 10"
     v-model="selected"
     :show-select="selectable"
-    single-select
     :headers="headers"
     :items="credentialsWithIndex"
     :expanded.sync="expanded"
     item-key="index"
     :show-expand="expandable"
+    :sort-by="['createdDate']"
+    :sort-desc="[false]"
+    single-select
     @click:row="openPresentation"
   >
     <template v-slot:[`item.type`]="{ item }">

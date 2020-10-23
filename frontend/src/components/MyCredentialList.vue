@@ -16,6 +16,8 @@
       :items="data"
       :show-select="selectable"
       single-select
+      :sort-by="['createdDate']"
+      :sort-desc="[false]"
       @click:row="open"
     >
       <template v-slot:[`item.type`]="{ item }">
