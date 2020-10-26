@@ -7,6 +7,23 @@
 # and sets the public endpoint as ACA-Py endpoint.
 # If ngrok is used, ngrok should be locally installed and an account with ngrok should be setup.
 
+# Allow to set custom docker compose file with option -f
+DOCKERFILE="docker-compose.yml"
+while getopts "f:" opt; do
+	echo ${opt}
+	case ${opt} in
+		f ) DOCKERFILE=$OPTARG 
+		;; 
+		\? )
+		#print option error
+		echo "Invalid option: $OPTARG" 1>&2
+		exit 1
+		;;
+		: )
+		
+	esac
+done
+
 # Check if web mode is enabled in .env
 eval $(grep -i  'BPA_WEB_MODE' .env)
 
@@ -93,4 +110,4 @@ else
 fi
 
 # Start agent
-docker-compose up
+docker-compose -f $DOCKERFILE up
