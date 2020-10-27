@@ -84,6 +84,7 @@ public class PartnerController {
     /**
      * Get known partners
      *
+     * @param issuerFor Filter Partners by {@link CredentialType}
      * @return list of partners
      */
     @Get
