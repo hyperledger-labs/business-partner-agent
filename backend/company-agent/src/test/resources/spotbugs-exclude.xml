@@ -27,4 +27,9 @@
        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
     </Match>
 
+    <Match>
+       <Class name="org.hyperledger.oa.impl.WebhookService" />
+       <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
+    </Match>
+
 </FindBugsFilter>

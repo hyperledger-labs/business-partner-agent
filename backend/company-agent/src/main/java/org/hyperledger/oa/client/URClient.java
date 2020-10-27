@@ -64,7 +64,7 @@ public class URClient {
     @Inject
     private ObjectMapper mapper;
 
-    private OkHttpClient okClient = new OkHttpClient();
+    private final OkHttpClient okClient = new OkHttpClient();
 
     private final Map<CharSequence, CharSequence> headers;
 
