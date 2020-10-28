@@ -59,6 +59,7 @@ services:
         --outbound-transport http \
         --webhook-url http://company-agent:${BPA_PORT}/log \
         --genesis-url '${LEDGER_URL}/genesis' \
+        --endpoint ${AGENT_ENDPOINT} \
         --wallet-type 'indy' \
         --wallet-name '${WALLET_DATABASE}' \
         --wallet-key '${WALLET_ENCRYPTION_KEY}' \
