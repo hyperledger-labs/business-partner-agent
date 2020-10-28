@@ -25,7 +25,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.ledger.TAAAccept;
 import org.hyperledger.aries.api.ledger.TAAInfo;
 import org.hyperledger.oa.config.runtime.RequiresAries;
 import org.hyperledger.oa.impl.EndpointService;
@@ -71,19 +70,6 @@ public class AriesStartupTasks {
         ac.statusWaitUntilReady(Duration.ofSeconds(60));
 
         createDefaultSchemas();
-
-        try {
-            Optional<TAAInfo> taa = ac.ledgerTaa();
-            ac.ledgerTaaAccept(TAAAccept.builder()
-                    .mechanism(taa.get().getAmlRecord().getAml().keySet().iterator().next())
-                    .text(taa.get().getTaaRecord().getText())
-                    .version(taa.get().getTaaRecord().getVersion())
-                    .build());
-
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
 
         vpMgmt.getVerifiablePresentation().ifPresentOrElse(vp -> {
             log.info("VP already exists, skipping: {}", host);

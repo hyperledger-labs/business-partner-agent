@@ -17,15 +17,21 @@
  */
 package org.hyperledger.oa.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import javax.inject.Inject;
 
+import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.ledger.TAAAccept;
+import org.hyperledger.aries.api.ledger.TAAInfo;
+import org.hyperledger.aries.api.ledger.TAAInfo.TAARecord;
 import org.hyperledger.oa.api.aries.SchemaAPI;
 import org.hyperledger.oa.config.RuntimeConfig;
 import org.hyperledger.oa.controller.api.admin.AddSchemaRequest;
+import org.hyperledger.oa.impl.EndpointService;
 import org.hyperledger.oa.impl.aries.SchemaService;
 
 import io.micronaut.http.HttpResponse;
@@ -41,8 +47,10 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller("/api/admin")
+@Slf4j
 @Tag(name = "Configuration")
 @Validated
 @Secured(SecurityRule.IS_AUTHENTICATED)
@@ -53,7 +61,13 @@ public class AdminController {
     Optional<SchemaService> schemaService;
 
     @Inject
+    Optional<EndpointService> endpointService;
+
+    @Inject
     RuntimeConfig config;
+
+    @Inject
+    AriesClient ac;
 
     /**
      * Aries: List configured schemas
@@ -130,4 +144,60 @@ public class AdminController {
         return HttpResponse.ok(config);
     }
 
+    /**
+     * Trigger the backend to write configured endpoints to the ledger. TAA digest
+     * has to be passed to explicitly confirm TTA acceptance of the user for this
+     * ledger interaction.
+     * 
+     * @param tAADigest TAA digest retrieved from "/taa/get"
+     * @return {@link HttpResponse}
+     */
+    @Post("/taa/writeEndpoints")
+    public HttpResponse<SchemaAPI> writeEndpoints(@Body String tAADigest) {
+        if (endpointService.isPresent()) {
+            try {
+                Optional<TAAInfo> taa = ac.ledgerTaa();
+                if (!taa.isEmpty()) {
+                    // do TAA acceptance even if not required or if already done
+                    // (assuming the user accepted the TAA for this single ledger interaction or
+                    // this session)
+                    TAARecord taaRecord = taa.get().getTaaRecord();
+                    if (tAADigest.equals(taaRecord.getDigest())) {
+                        ac.ledgerTaaAccept(TAAAccept.builder()
+                                // TODO use suitable mechanism, e.g. "session type".For the time being we just
+                                // use a random one.
+                                .mechanism(taa.get().getAmlRecord().getAml().keySet().iterator().next())
+                                .text(taaRecord.getText())
+                                .version(taaRecord.getVersion())
+                                .build());
+                        endpointService.get().registerEndpoints();
+                        return HttpResponse.ok();
+                    }
+                }
+            } catch (IOException e) {
+                log.error("TAA acceptance could not be written to the ledger.", e);
+            }
+        }
+        return HttpResponse.notFound();
+    }
+
+    /**
+     * Get TAA record (digest, text, version)
+     * 
+     * @return {@link RuntimeConfig}
+     */
+    @Get("/taa/get")
+    public HttpResponse<TAARecord> getTAARecord() {
+        try {
+            Optional<TAAInfo> taa = ac.ledgerTaa();
+            if (!taa.isEmpty()) {
+                return HttpResponse.ok(taa.get().getTaaRecord());
+            }
+        } catch (IOException e) {
+            log.error("TAA Record could not be retrieved from ledger.", e);
+            return HttpResponse.notFound();
+        }
+
+        return HttpResponse.ok();
+    }
 }
