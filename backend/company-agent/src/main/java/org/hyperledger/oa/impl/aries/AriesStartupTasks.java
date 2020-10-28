@@ -75,7 +75,7 @@ public class AriesStartupTasks {
             log.info("VP already exists, skipping: {}", host);
         }, () -> {
             log.info("Creating default public profile for host: {}", host);
-            // vpMgmt.recreateVerifiablePresentation();
+            vpMgmt.recreateVerifiablePresentation();
         });
 
         // register endpoints if not in webmode or if no TTA acceptance is required
