@@ -25,6 +25,7 @@ services:
       BPA_DID_PREFIX: ${BPA_DID_PREFIX}
       BPA_BOOTSTRAP_UN: ${BPA_BOOTSTRAP_UN}
       BPA_BOOTSTRAP_PW: ${BPA_BOOTSTRAP_PW}
+      AGENT_ENDPOINT: ${AGENT_ENDPOINT}
     ports:
       - ${BPA_PORT}:${BPA_PORT}
     restart: always
@@ -56,8 +57,6 @@ services:
         --plugin aries_cloudagent.messaging.jsonld \
         --inbound-transport http '0.0.0.0' ${AGENT_HTTP_PORT} \
         --outbound-transport http \
-        --endpoint ${AGENT_ENDPOINT} \
-        --profile-endpoint https://${BPA_HOST}/profile.jsonld \
         --webhook-url http://company-agent:${BPA_PORT}/log \
         --genesis-url '${LEDGER_URL}/genesis' \
         --wallet-type 'indy' \

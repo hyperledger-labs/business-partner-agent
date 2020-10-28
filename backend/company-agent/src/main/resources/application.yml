@@ -107,6 +107,8 @@ oagent:
   bootstrap:
     username: ${BPA_BOOTSTRAP_UN:admin}
     password: ${BPA_BOOTSTRAP_PW:changeme}
+  agent:
+    endpoint: ${AGENT_ENDPOINT:`http://localhost:8030`}  
   schemas:
      #test ledger schemas, can be overwritten / extended when e.g. working with other ledger  
      bank-account:
