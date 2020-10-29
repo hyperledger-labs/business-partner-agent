@@ -27,7 +27,6 @@ import javax.inject.Singleton;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.TAAInfo;
 import org.hyperledger.oa.config.runtime.RequiresAries;
-import org.hyperledger.oa.impl.EndpointService;
 import org.hyperledger.oa.impl.activity.VPManager;
 
 import io.micronaut.context.annotation.Requires;
