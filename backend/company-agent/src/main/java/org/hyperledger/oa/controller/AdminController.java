@@ -23,9 +23,12 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.ledger.TAAInfo.TAARecord;
 import org.hyperledger.oa.api.aries.SchemaAPI;
 import org.hyperledger.oa.config.RuntimeConfig;
 import org.hyperledger.oa.controller.api.admin.AddSchemaRequest;
+import org.hyperledger.oa.impl.EndpointService;
 import org.hyperledger.oa.impl.aries.SchemaService;
 
 import io.micronaut.http.HttpResponse;
@@ -53,7 +56,13 @@ public class AdminController {
     Optional<SchemaService> schemaService;
 
     @Inject
+    Optional<EndpointService> endpointService;
+
+    @Inject
     RuntimeConfig config;
+
+    @Inject
+    AriesClient ac;
 
     /**
      * Aries: List configured schemas
@@ -130,4 +139,46 @@ public class AdminController {
         return HttpResponse.ok(config);
     }
 
+    /**
+     * Trigger the backend to write configured endpoints to the ledger. TAA digest
+     * has to be passed to explicitly confirm prior TTA acceptance by the user for
+     * this ledger interaction / session.
+     * 
+     * @param tAADigest TAA digest retrieved from "/taa/get"
+     * @return {@link HttpResponse}
+     */
+    @Post("/endpoints/register")
+    public HttpResponse<Void> registerEndpoints(@Body String tAADigest) {
+        if (endpointService.isPresent()) {
+            endpointService.get().registerEndpoints(tAADigest);
+            return HttpResponse.ok();
+        }
+        return HttpResponse.notFound();
+    }
+
+    /**
+     * @return true if endpoint registration is required
+     */
+    @Get("/endpoints/registrationRequired")
+    public HttpResponse<Boolean> isEndpointsWriteRequired() {
+        if (endpointService.isPresent()) {
+            return HttpResponse.ok(endpointService.get().getEndpointRegistrationRequired());
+        }
+
+        return HttpResponse.notFound();
+    }
+
+    /**
+     * Get TAA record (digest, text, version)
+     * 
+     * @return {@link TAARecord}
+     */
+    @Get("/taa/get")
+    public HttpResponse<TAARecord> getTAARecord() {
+        if (endpointService.isPresent() && endpointService.get().getTAA().isPresent()) {
+            return HttpResponse.ok(endpointService.get().getTAA().get());
+        }
+
+        return HttpResponse.notFound();
+    }
 }
