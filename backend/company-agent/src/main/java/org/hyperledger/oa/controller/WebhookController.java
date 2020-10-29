@@ -24,7 +24,7 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 import org.hyperledger.oa.core.RegisteredWebhook;
-import org.hyperledger.oa.core.RegisteredWebhook.RegisteredWebhookMessage;
+import org.hyperledger.oa.core.RegisteredWebhook.RegisteredWebhookResponse;
 import org.hyperledger.oa.impl.WebhookService;
 
 import io.micronaut.http.HttpResponse;
@@ -56,36 +56,36 @@ public class WebhookController {
 
     /**
      * List registered webhooks
-     * 
+     *
      * @return list of {@link RegisteredWebhookMessage}
      */
     @Get
-    public HttpResponse<List<RegisteredWebhookMessage>> listRegisteredWebhooks() {
+    public HttpResponse<List<RegisteredWebhookResponse>> listRegisteredWebhooks() {
         return HttpResponse.ok(ws.listRegisteredWebhooks());
     }
 
     /**
      * Register a new webhook
-     * 
+     *
      * @param request {@link RegisteredWebhook}
      * @return {@link RegisteredWebhookMessage}
      */
     @Post
-    public HttpResponse<RegisteredWebhookMessage> registerWebhook(@Body RegisteredWebhook request) {
+    public HttpResponse<RegisteredWebhookResponse> registerWebhook(@Body RegisteredWebhook request) {
         return HttpResponse.ok(ws.registerWebhook(request));
     }
 
     /**
      * Update a registered webhook
-     * 
+     *
      * @param id      the webhook's id
      * @param request {@link RegisteredWebhook}
      * @return {@link RegisteredWebhookMessage}
      */
     @Put("/{id}")
-    public HttpResponse<RegisteredWebhookMessage> updateWebhook(@PathVariable String id,
+    public HttpResponse<RegisteredWebhookResponse> updateWebhook(@PathVariable String id,
             @Body RegisteredWebhook request) {
-        final Optional<RegisteredWebhookMessage> updated = ws.updateRegisteredWebhook(UUID.fromString(id), request);
+        final Optional<RegisteredWebhookResponse> updated = ws.updateRegisteredWebhook(UUID.fromString(id), request);
         if (updated.isPresent()) {
             return HttpResponse.ok(updated.get());
         }
@@ -94,7 +94,7 @@ public class WebhookController {
 
     /**
      * Delete a registered webhook
-     * 
+     *
      * @param id the webhook's id
      * @return always OK
      */

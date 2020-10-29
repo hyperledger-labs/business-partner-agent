@@ -41,7 +41,7 @@ public class RegisteredWebhook {
     @NotBlank
     private String url;
     @Size(min = 1)
-    private List<WebhookEvent> registeredEvent;
+    private List<WebhookEventType> registeredEvent;
     private WebhookCredentials credentials;
 
     public RegisteredWebhook(RegisteredWebhook hook) {
@@ -51,16 +51,17 @@ public class RegisteredWebhook {
         this.credentials = hook.getCredentials();
     }
 
-    public enum WebhookEvent {
-        DOCUMENT_UPDATE,
-        CREDENTIAL_UPDATE;
+    public enum WebhookEventType {
+        ALL,
+        PARTNER_ADD,
+        PARTNER_UPDATE;
     }
 
     @Data
     @NoArgsConstructor
     public static final class WebhookCredentials {
         // Hardcoded default for now
-        private String type = "BasicAuth";
+        public static final String TYPE = "BASIC";
         private String username;
         private String password;
     }
@@ -70,10 +71,10 @@ public class RegisteredWebhook {
     @NoArgsConstructor
     @EqualsAndHashCode(callSuper = true)
     @ToString(callSuper = true)
-    public static class RegisteredWebhookMessage extends RegisteredWebhook {
+    public static class RegisteredWebhookResponse extends RegisteredWebhook {
         private UUID id;
 
-        public RegisteredWebhookMessage(UUID id, RegisteredWebhook hook) {
+        public RegisteredWebhookResponse(UUID id, RegisteredWebhook hook) {
             super(hook);
             this.id = id;
         }

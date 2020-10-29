@@ -29,6 +29,7 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.api.exception.PartnerException;
+import org.hyperledger.oa.core.RegisteredWebhook.WebhookEventType;
 import org.hyperledger.oa.impl.activity.PartnerLookup;
 import org.hyperledger.oa.impl.aries.ConnectionManager;
 import org.hyperledger.oa.impl.aries.PartnerCredDefLookup;
@@ -61,6 +62,9 @@ public class PartnerManager {
     @Inject
     MyCredentialRepository myCredRepo;
 
+    @Inject
+    WebhookService webhook;
+
     public List<PartnerAPI> getPartners() {
         List<PartnerAPI> result = new ArrayList<>();
         repo.findAll().forEach(dbPartner -> {
@@ -69,7 +73,7 @@ public class PartnerManager {
         return result;
     }
 
-    public Optional<PartnerAPI> getPartnerById(UUID id) {
+    public Optional<PartnerAPI> getPartnerById(@NonNull UUID id) {
         Optional<PartnerAPI> result = Optional.empty();
         Optional<Partner> dbPartner = repo.findById(id);
         if (dbPartner.isPresent()) {
@@ -78,7 +82,7 @@ public class PartnerManager {
         return result;
     }
 
-    public void removePartnerById(UUID id) {
+    public void removePartnerById(@NonNull UUID id) {
         repo.findById(id).ifPresent(p -> {
             if (p.getConnectionId() != null && cm.isPresent()) {
                 cm.get().removeConnection(p.getConnectionId());
@@ -105,7 +109,9 @@ public class PartnerManager {
             cm.get().createConnection(did, connectionLabel, alias);
             credLookup.ifPresent(cl -> cl.lookupTypesForAllPartnersAsync());
         }
-        return converter.toAPIObject(result);
+        final PartnerAPI apiPartner = converter.toAPIObject(result);
+        webhook.convertAndSend(WebhookEventType.PARTNER_ADD, apiPartner);
+        return apiPartner;
     }
 
     public Optional<PartnerAPI> updatePartner(@NonNull UUID id, @Nullable String alias) {

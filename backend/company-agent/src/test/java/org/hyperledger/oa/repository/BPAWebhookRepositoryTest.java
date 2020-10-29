@@ -11,7 +11,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hyperledger.oa.core.RegisteredWebhook;
-import org.hyperledger.oa.core.RegisteredWebhook.WebhookEvent;
+import org.hyperledger.oa.core.RegisteredWebhook.WebhookEventType;
 import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.model.BPAWebhook;
 import org.junit.jupiter.api.Test;
@@ -64,19 +64,19 @@ class BPAWebhookRepositoryTest {
 
     @Test
     void testFinDbyType() {
-        repo.save(randomWebhook(List.of(WebhookEvent.CREDENTIAL_UPDATE)));
-        repo.save(randomWebhook(List.of(WebhookEvent.CREDENTIAL_UPDATE)));
-        repo.save(randomWebhook(List.of(WebhookEvent.DOCUMENT_UPDATE)));
+        repo.save(randomWebhook(List.of(WebhookEventType.PARTNER_UPDATE)));
+        repo.save(randomWebhook(List.of(WebhookEventType.PARTNER_UPDATE)));
+        repo.save(randomWebhook(List.of(WebhookEventType.PARTNER_ADD)));
         repo.save(randomWebhook(List.of()));
 
-        final List<BPAWebhook> two = repo.findByEventType(WebhookEvent.CREDENTIAL_UPDATE);
+        final List<BPAWebhook> two = repo.findByEventType(WebhookEventType.PARTNER_UPDATE);
         assertEquals(2, two.size());
 
-        final List<BPAWebhook> one = repo.findByEventType(WebhookEvent.DOCUMENT_UPDATE);
+        final List<BPAWebhook> one = repo.findByEventType(WebhookEventType.PARTNER_ADD);
         assertEquals(1, one.size());
     }
 
-    private BPAWebhook randomWebhook(List<WebhookEvent> types) {
+    private BPAWebhook randomWebhook(List<WebhookEventType> types) {
         RegisteredWebhook h = RegisteredWebhook
                 .builder()
                 .url(RandomStringUtils.random(8))
