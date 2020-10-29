@@ -60,9 +60,6 @@ public class AriesStartupTasks {
     @Inject
     Optional<PartnerCredDefLookup> credLookup;
 
-    @Value("${oagent.web.only}")
-    private Boolean webOnly;
-
     @Async
     public void onServiceStartedEvent() {
         log.debug("Running aries startup tasks...");
