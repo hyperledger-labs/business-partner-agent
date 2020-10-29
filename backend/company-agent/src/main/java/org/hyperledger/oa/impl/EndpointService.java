@@ -18,6 +18,7 @@
 package org.hyperledger.oa.impl;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -60,9 +61,10 @@ public class EndpointService {
 
     private boolean endpointRegistrationRequired = false;
 
-    Map<String, EndpointType> endpoints;
+    private final Map<String, EndpointType> endpoints;
 
     public EndpointService() {
+        endpoints = new HashMap<String, EndpointType>();
         endpoints.put("https://" + host + "/profile.jsonld", EndpointType.Profile);
         endpoints.put(agentEndpoint, EndpointType.Endpoint);
     }
