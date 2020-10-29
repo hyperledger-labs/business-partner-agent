@@ -18,6 +18,8 @@
 package org.hyperledger.oa.impl;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -31,6 +33,7 @@ import org.hyperledger.aries.api.ledger.TAAAccept;
 import org.hyperledger.aries.api.ledger.TAAInfo;
 import org.hyperledger.aries.api.ledger.TAAInfo.TAARecord;
 import org.hyperledger.aries.api.wallet.SetDidEndpointRequest;
+import org.hyperledger.aries.api.wallet.WalletDidResponse;
 import org.hyperledger.oa.api.exception.NetworkException;
 
 import io.micronaut.context.annotation.Value;
@@ -57,6 +60,13 @@ public class EndpointService {
 
     private boolean endpointRegistrationRequired = false;
 
+    Map<String, EndpointType> endpoints;
+
+    public EndpointService() {
+        endpoints.put("https://" + host + "/profile.jsonld", EndpointType.Profile);
+        endpoints.put(agentEndpoint, EndpointType.Endpoint);
+    }
+
     /**
      * Register endpoints with prior TAA acceptance
      * 
@@ -77,14 +87,9 @@ public class EndpointService {
      * Register endpoints
      */
     public void registerEndpoints() {
-        // register profile endpoint
-        final String endpoint = "https://" + host + "/profile.jsonld";
-        EndpointType type = EndpointType.Profile;
-        registerProfileEndpoint(endpoint, type);
-
-        // register aries endpoint
-        type = EndpointType.Endpoint;
-        registerProfileEndpoint(agentEndpoint, type);
+        for (Entry<String, EndpointType> endpoint : endpoints.entrySet()) {
+            registerProfileEndpoint(endpoint.getKey(), endpoint.getValue());
+        }
 
         this.endpointRegistrationRequired = false;
     }
@@ -115,35 +120,62 @@ public class EndpointService {
         return Optional.empty();
     }
 
+    public boolean endpointsNewOrChanged() {
+        boolean retval = false;
+
+        // register profile endpoint
+        final String endpoint = "https://" + host + "/profile.jsonld";
+        EndpointType type = EndpointType.Profile;
+        if (endpointNewOrChanged(endpoint, type))
+            retval = true;
+
+        // register aries endpoint
+        type = EndpointType.Endpoint;
+        if (endpointNewOrChanged(agentEndpoint, type))
+            retval = true;
+
+        return retval;
+    }
+
+    public boolean endpointNewOrChanged(String endpoint, EndpointType type) {
+        try {
+            if (ac.walletDidPublic().isPresent()) {
+                WalletDidResponse res = ac.walletDidPublic().get();
+
+                final Optional<EndpointResponse> existingEndpoint = ac.ledgerDidEndpoint(
+                        res.getDid(), type);
+                boolean newOrChanged = existingEndpoint.isEmpty()
+                        || StringUtils.isEmpty(existingEndpoint.get().getEndpoint())
+                        || existingEndpoint.isPresent() && !endpoint.equals(existingEndpoint.get().getEndpoint());
+
+                if (!newOrChanged)
+                    log.info("Endpoint found on the ledger which did not change: {}",
+                            existingEndpoint.get().getEndpoint());
+                else
+                    log.info("Endpoint has to be set or changed to: {}",
+                            endpoint);
+                return newOrChanged;
+            } else {
+                log.warn("No public did available");
+            }
+        } catch (Exception e) {
+            log.error("Could not query for the '{}' endpoint", type, e);
+        }
+        return true;
+    }
+
     private void registerProfileEndpoint(String endpoint, EndpointType type) {
         try {
-            ac.walletDidPublic().ifPresentOrElse(res -> {
-                try {
-
-                    final Optional<EndpointResponse> existingEndpoint = ac.ledgerDidEndpoint(
-                            res.getDid(), type);
-                    if (existingEndpoint.isEmpty() || StringUtils.isEmpty(existingEndpoint.get().getEndpoint())
-                            || existingEndpoint.isPresent() && !endpoint.equals(existingEndpoint.get().getEndpoint())) {
-                        log.info("Publishing public '{}' endpoint: {}", type, endpoint);
-                        ac.walletSetDidEndpoint(SetDidEndpointRequest
-                                .builder()
-                                .did(res.getDid())
-                                .endpointType(type)
-                                .endpoint(endpoint)
-                                .build());
-                    } else {
-                        log.info("Endpoint found on the ledger, skipping: {}",
-                                existingEndpoint.get().getEndpoint());
-                    }
-                } catch (Exception e) {
-                    log.error("Could not publish the '{}' endpoint", type, e);
-                }
-
-            }, () -> {
-                log.warn("No public did available, no '{}' endpoint is published", type);
-            });
-        } catch (Exception e) {
-            log.error(e.getMessage());
+            WalletDidResponse res = ac.walletDidPublic().get();
+            log.info("Publishing public '{}' endpoint: {}", type, endpoint);
+            ac.walletSetDidEndpoint(SetDidEndpointRequest
+                    .builder()
+                    .did(res.getDid())
+                    .endpointType(type)
+                    .endpoint(endpoint)
+                    .build());
+        } catch (IOException e) {
+            log.error("Could not publish the '{}' endpoint", type, e);
         }
     }
 
