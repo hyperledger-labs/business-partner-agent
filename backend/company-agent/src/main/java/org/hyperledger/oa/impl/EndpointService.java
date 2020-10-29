@@ -17,6 +17,7 @@
  */
 package org.hyperledger.oa.impl;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -26,7 +27,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.EndpointResponse;
 import org.hyperledger.aries.api.ledger.EndpointType;
+import org.hyperledger.aries.api.ledger.TAAAccept;
+import org.hyperledger.aries.api.ledger.TAAInfo;
+import org.hyperledger.aries.api.ledger.TAAInfo.TAARecord;
 import org.hyperledger.aries.api.wallet.SetDidEndpointRequest;
+import org.hyperledger.oa.api.exception.NetworkException;
 
 import io.micronaut.context.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +55,27 @@ public class EndpointService {
     @Inject
     private AriesClient ac;
 
+    private boolean endpointRegistrationRequired = false;
+
+    /**
+     * Register endpoints with prior TAA acceptance
+     * 
+     * @param tAADigest the digest of the TAA text
+     */
+    public void registerEndpoints(String tAADigest) {
+        try {
+            acceptTAA(tAADigest);
+        } catch (IOException e) {
+            String message = "TAA could not be accepted on ledger.";
+            log.error(message, e);
+            throw new NetworkException(message);
+        }
+        registerEndpoints();
+    }
+
+    /**
+     * Register endpoints
+     */
     public void registerEndpoints() {
         // register profile endpoint
         final String endpoint = "https://" + host + "/profile.jsonld";
@@ -59,6 +85,34 @@ public class EndpointService {
         // register aries endpoint
         type = EndpointType.Endpoint;
         registerProfileEndpoint(agentEndpoint, type);
+
+        this.endpointRegistrationRequired = false;
+    }
+
+    /**
+     * Set temporarily flag to allow deferred registration
+     */
+    public void setEndpointRegistrationRequired() {
+        this.endpointRegistrationRequired = true;
+    }
+
+    public boolean getEndpointRegistrationRequired() {
+        return this.endpointRegistrationRequired;
+    }
+
+    public Optional<TAARecord> getTAA() {
+        Optional<TAAInfo> taa = null;
+        try {
+            taa = ac.ledgerTaa();
+            if (taa.isPresent())
+                return Optional.of(taa.get().getTaaRecord());
+
+        } catch (IOException e) {
+            String message = "TAA could not be retrieved";
+            log.error(message, e);
+            throw new NetworkException(message);
+        }
+        return Optional.empty();
     }
 
     private void registerProfileEndpoint(String endpoint, EndpointType type) {
@@ -90,6 +144,26 @@ public class EndpointService {
             });
         } catch (Exception e) {
             log.error(e.getMessage());
+        }
+    }
+
+    private void acceptTAA(String tAADigest) throws IOException {
+        Optional<TAAInfo> taa = ac.ledgerTaa();
+        if (!taa.isEmpty()) {
+            // do TAA acceptance even if not required or if already done
+            // (assuming the user accepted the TAA for this single ledger interaction or
+            // this session)
+            TAAInfo taaInfo = taa.get();
+            TAARecord taaRecord = taaInfo.getTaaRecord();
+            if (tAADigest.equals(taaRecord.getDigest())) {
+                ac.ledgerTaaAccept(TAAAccept.builder()
+                        // TODO use suitable mechanism, e.g. "session type".For the time being we just
+                        // use a random one.
+                        .mechanism(taaInfo.getAmlRecord().getAml().keySet().iterator().next())
+                        .text(taaRecord.getText())
+                        .version(taaRecord.getVersion())
+                        .build());
+            }
         }
     }
 }
