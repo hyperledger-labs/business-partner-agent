@@ -76,7 +76,7 @@ public class WebhookService {
         return result;
     }
 
-    public RegisteredWebhookResponse registerWebhook(RegisteredWebhook hook) {
+    public RegisteredWebhookResponse registerWebhook(@NonNull RegisteredWebhook hook) {
         checkUrl(hook.getUrl());
         final Map<String, Object> map = conv.toMap(hook);
         try {
@@ -87,7 +87,8 @@ public class WebhookService {
         }
     }
 
-    public Optional<RegisteredWebhookResponse> updateRegisteredWebhook(UUID id, RegisteredWebhook hook) {
+    public Optional<RegisteredWebhookResponse> updateRegisteredWebhook(
+            @NonNull UUID id, @NonNull RegisteredWebhook hook) {
         checkUrl(hook.getUrl());
         Optional<RegisteredWebhookResponse> result = Optional.empty();
         final Map<String, Object> map = conv.toMap(hook);
