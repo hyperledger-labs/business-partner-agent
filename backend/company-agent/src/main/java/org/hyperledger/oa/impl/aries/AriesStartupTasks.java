@@ -75,21 +75,20 @@ public class AriesStartupTasks {
             log.info("VP already exists, skipping: {}", host);
         }, () -> {
             log.info("Creating default public profile for host: {}", host);
-            vpMgmt.recreateVerifiablePresentation();
+            // vpMgmt.recreateVerifiablePresentation();
         });
 
-        // register endpoints if not in webmode or if no TTA acceptance is required
-        if (webOnly != null && webOnly.booleanValue()) {
-            endpointService.registerEndpoints();
-        } else {
-            Optional<TAAInfo> taa;
-            try {
-                taa = ac.ledgerTaa();
-                if (!taa.isPresent() || !taa.get().getTaaRequired())
-                    endpointService.registerEndpoints();
-            } catch (IOException e) {
-                log.error("Endpoints could not be registered", e);
-            }
+        // register endpoints if no TTA acceptance is required, otherwise set
+        // related flag
+        Optional<TAAInfo> taa;
+        try {
+            taa = ac.ledgerTaa();
+            if (!taa.isPresent() || !taa.get().getTaaRequired())
+                endpointService.registerEndpoints();
+            else
+                endpointService.setEndpointRegistrationRequired();
+        } catch (IOException e) {
+            log.error("Endpoints could not be registered", e);
         }
 
         credLookup.ifPresent(lookup -> lookup.lookupTypesForAllPartnersAsync());
