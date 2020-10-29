@@ -23,6 +23,8 @@ import java.util.UUID;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -59,10 +61,14 @@ public class RegisteredWebhook {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static final class WebhookCredentials {
         // Hardcoded default for now
         public static final String TYPE = "BASIC";
+        @Size(min = 1)
         private String username;
+        @Size(min = 1)
         private String password;
     }
 
