@@ -20,6 +20,7 @@ package org.hyperledger.oa.impl;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -118,15 +119,13 @@ public class WebhookService {
                     .payload(msg)
                     .type(eventType)
                     .sent(Long.valueOf(Instant.now().toEpochMilli()))
-                    .build()
-                    ;
+                    .build();
 
             conv.writeValueAsString(event).ifPresent(json -> {
 
                 Request.Builder request = new Request.Builder()
                         .url(hook.getUrl())
-                        .post(RequestBody.create(json, JSON_TYPE))
-                        ;
+                        .post(RequestBody.create(json, JSON_TYPE));
                 addBasicAuthHeaderIfSet(request, hook);
 
                 try (Response response = okClient.newCall(request.build()).execute()) {
@@ -152,13 +151,14 @@ public class WebhookService {
         }
     }
 
-    private static void addBasicAuthHeaderIfSet (Request.Builder b, RegisteredWebhook hook) {
+    private static void addBasicAuthHeaderIfSet(Request.Builder b, RegisteredWebhook hook) {
         final WebhookCredentials creds = hook.getCredentials();
         if (creds != null
                 && StringUtils.isNotEmpty(creds.getUsername())) {
             String basic = "Basic ";
             String base64 = Base64.getEncoder()
-                    .encodeToString((creds.getUsername() + ":" + creds.getPassword()).getBytes());
+                    .encodeToString((creds.getUsername() + ":" + creds.getPassword())
+                            .getBytes(Charset.forName("UTF-8")));
             b.addHeader("Authorization", basic + base64);
         }
     }

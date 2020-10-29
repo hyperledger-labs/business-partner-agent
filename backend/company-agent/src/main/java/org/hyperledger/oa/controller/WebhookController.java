@@ -57,7 +57,7 @@ public class WebhookController {
     /**
      * List registered webhooks
      *
-     * @return list of {@link RegisteredWebhookMessage}
+     * @return list of {@link RegisteredWebhookResponse}
      */
     @Get
     public HttpResponse<List<RegisteredWebhookResponse>> listRegisteredWebhooks() {
@@ -68,7 +68,7 @@ public class WebhookController {
      * Register a new webhook
      *
      * @param request {@link RegisteredWebhook}
-     * @return {@link RegisteredWebhookMessage}
+     * @return {@link RegisteredWebhookResponse}
      */
     @Post
     public HttpResponse<RegisteredWebhookResponse> registerWebhook(@Body RegisteredWebhook request) {
@@ -80,7 +80,7 @@ public class WebhookController {
      *
      * @param id      the webhook's id
      * @param request {@link RegisteredWebhook}
-     * @return {@link RegisteredWebhookMessage}
+     * @return {@link RegisteredWebhookResponse}
      */
     @Put("/{id}")
     public HttpResponse<RegisteredWebhookResponse> updateWebhook(@PathVariable String id,
