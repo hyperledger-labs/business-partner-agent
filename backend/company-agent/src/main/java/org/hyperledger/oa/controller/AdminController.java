@@ -28,7 +28,7 @@ import org.hyperledger.aries.api.ledger.TAAInfo.TAARecord;
 import org.hyperledger.oa.api.aries.SchemaAPI;
 import org.hyperledger.oa.config.RuntimeConfig;
 import org.hyperledger.oa.controller.api.admin.AddSchemaRequest;
-import org.hyperledger.oa.impl.EndpointService;
+import org.hyperledger.oa.impl.aries.EndpointService;
 import org.hyperledger.oa.impl.aries.SchemaService;
 
 import io.micronaut.http.HttpResponse;
