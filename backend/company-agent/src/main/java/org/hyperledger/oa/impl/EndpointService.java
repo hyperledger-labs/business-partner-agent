@@ -49,13 +49,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Singleton
 public class EndpointService {
-
-    @Value("${oagent.agent.endpoint}")
-    private String agentEndpoint;
-
-    @Value("${oagent.host}")
-    private String host;
-
     @Inject
     private AriesClient ac;
 
@@ -63,7 +56,10 @@ public class EndpointService {
 
     private final Map<String, EndpointType> endpoints;
 
-    public EndpointService() {
+    @Inject
+    public EndpointService(
+            @Value(value = "${oagent.agent.endpoint}") String agentEndpoint,
+            @Value(value = "${oagent.host}") String host) {
         endpoints = new HashMap<String, EndpointType>();
         endpoints.put("https://" + host + "/profile.jsonld", EndpointType.Profile);
         endpoints.put(agentEndpoint, EndpointType.Endpoint);
@@ -125,16 +121,10 @@ public class EndpointService {
     public boolean endpointsNewOrChanged() {
         boolean retval = false;
 
-        // register profile endpoint
-        final String endpoint = "https://" + host + "/profile.jsonld";
-        EndpointType type = EndpointType.Profile;
-        if (endpointNewOrChanged(endpoint, type))
-            retval = true;
-
-        // register aries endpoint
-        type = EndpointType.Endpoint;
-        if (endpointNewOrChanged(agentEndpoint, type))
-            retval = true;
+        for (Entry<String, EndpointType> endpoint : endpoints.entrySet()) {
+            if (endpointNewOrChanged(endpoint.getKey(), endpoint.getValue()))
+                retval = true;
+        }
 
         return retval;
     }
