@@ -7,11 +7,16 @@
 # and sets the public endpoint as ACA-Py endpoint.
 # If ngrok is used, ngrok should be locally installed and an account with ngrok should be setup.
 
-# Allow to set custom docker compose file with option -f
+# Options 
+# - set custom docker compose file with option -f
+# - diode mode with -d
 DOCKERFILE="docker-compose.yml"
-while getopts "f:" opt; do
+MODE="ngrok"
+while getopts "df:" opt; do
 	echo ${opt}
 	case ${opt} in
+                d ) MODE="diode"
+		;;
 		f ) DOCKERFILE=$OPTARG 
 		;; 
 		\? )
@@ -33,12 +38,7 @@ fi
 
 echo "Web Mode: $BPA_WEB_MODE"
 
-# Generate random API Key
-ACAPY_API_KEY=$(cat /dev/urandom | env LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-export ACAPY_ADMIN_URL_API_KEY=$ACAPY_API_KEY
-echo "ACA PY Admin Key: $ACAPY_API_KEY"
-
-if [ "$1" == "--diode" ]; then
+if [ "$MODE" = "diode" ]; then
     echo "Use diode"
     
     if ! command -v diode &> /dev/null
@@ -47,16 +47,9 @@ if [ "$1" == "--diode" ]; then
 	    curl -Ssf https://diode.io/install.sh | sh
 	fi
 
-	# currently only one port is possible (acapy is more important). will be fixed soon.
-	# see issue https://github.com/diodechain/diode_go_client/issues/60
-	diode publish -public 8030:80 >/dev/null 2>&1 &
-    ACA_PY_ENDPOINT=https://$(diode config 2>&1 | awk '/Client address/ { print $5 }').diode.link
-    
-    # write public ip to env
-	export AGENT_ENDPOINT=$ACA_PY_ENDPOINT
-	
-	echo "Public ACA-PY Endpoint: $AGENT_ENDPOINT"
-
+	diode publish -public 8030:8030 -public 8080:80 >/dev/null 2>&1 &
+    	ACA_PY_ENDPOINT=https://$(diode config 2>&1 | awk '/Client address/ { print $5 }').diode.link:8030
+	BPA_HOST=$(diode config 2>&1 | awk '/Client address/ { print $5 }').diode.link
 else
     echo "Use ngrok"
     # Run ngrok
@@ -100,14 +93,14 @@ else
 	else
 	    echo "Could not start ngrok."
 	fi
-	
-	# write public ip to env
-	export BPA_HOST=$BPA_HOST
-	export AGENT_ENDPOINT=$ACA_PY_ENDPOINT
-	
-	echo "Business Partner Agent Public URL: $BPA_HOST"
-	echo "Public ACA-PY Endpoint: $AGENT_ENDPOINT"
 fi
+
+# write public ip to env
+export BPA_HOST=$BPA_HOST
+export AGENT_ENDPOINT=$ACA_PY_ENDPOINT
+
+echo "Business Partner Agent Public URL: https://$BPA_HOST"
+echo "Public ACA-PY Endpoint: $AGENT_ENDPOINT"
 
 # Start agent
 docker-compose -f $DOCKERFILE up

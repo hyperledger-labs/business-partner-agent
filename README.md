@@ -141,6 +141,8 @@ BPA_SECURITY_ENABLED=true
 ```
 and a user name and password.
 
+Ideally also configure a secure connection between the backend services (core and aca-py).
+This can be achieved by setting an API key in `.env` file via `ACAPY_ADMIN_CONFIG` (see example).
 
 ## Play a demo scenario
 
