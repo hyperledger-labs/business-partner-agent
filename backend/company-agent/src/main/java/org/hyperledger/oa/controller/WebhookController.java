@@ -83,7 +83,8 @@ public class WebhookController {
      * @return {@link RegisteredWebhookResponse}
      */
     @Put("/{id}")
-    public HttpResponse<RegisteredWebhookResponse> updateWebhook(@PathVariable String id,
+    public HttpResponse<RegisteredWebhookResponse> updateWebhook(
+            @PathVariable String id,
             @Body RegisteredWebhook request) {
         final Optional<RegisteredWebhookResponse> updated = ws.updateRegisteredWebhook(UUID.fromString(id), request);
         if (updated.isPresent()) {
