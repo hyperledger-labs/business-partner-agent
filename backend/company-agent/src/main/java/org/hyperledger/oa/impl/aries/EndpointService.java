@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.oa.impl;
+package org.hyperledger.oa.impl.aries;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -42,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Service which registers endpoints on the ledger.
- * 
+ *
  * Either called in the start-up phases of the business partner agent or later,
  * triggered by the frontend (if TAA acceptance from user is required)
  */
@@ -60,14 +60,14 @@ public class EndpointService {
     public EndpointService(
             @Value(value = "${oagent.agent.endpoint}") String agentEndpoint,
             @Value(value = "${oagent.host}") String host) {
-        endpoints = new HashMap<String, EndpointType>();
+        endpoints = new HashMap<>();
         endpoints.put("https://" + host + "/profile.jsonld", EndpointType.Profile);
         endpoints.put(agentEndpoint, EndpointType.Endpoint);
     }
 
     /**
      * Register endpoints with prior TAA acceptance
-     * 
+     *
      * @param tAADigest the digest of the TAA text
      */
     public void registerEndpoints(String tAADigest) {
@@ -147,9 +147,8 @@ public class EndpointService {
                     log.info("Endpoint has to be set or changed to: {}",
                             endpoint);
                 return newOrChanged;
-            } else {
-                log.warn("No public did available");
             }
+            log.warn("No public did available");
         } catch (Exception e) {
             log.error("Could not query for the '{}' endpoint", type, e);
         }

@@ -20,6 +20,7 @@ package org.hyperledger.oa.impl.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -34,6 +35,7 @@ import org.hyperledger.oa.api.PartnerAPI.PartnerCredential;
 import org.hyperledger.oa.model.MyDocument;
 import org.hyperledger.oa.model.Partner;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,7 +43,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Singleton
 public class Converter {
 
@@ -163,6 +167,15 @@ public class Converter {
 
     public <T> T fromMapString(@NonNull Map<String, String> fromValue, @NotNull Class<T> type) {
         return mapper.convertValue(fromValue, type);
+    }
+
+    public Optional<String> writeValueAsString(Object value) {
+        try {
+            return Optional.of(mapper.writeValueAsString(value));
+        } catch (JsonProcessingException e) {
+            log.error("Could not serialise to string: {}", e, value);
+        }
+        return Optional.empty();
     }
 
 }

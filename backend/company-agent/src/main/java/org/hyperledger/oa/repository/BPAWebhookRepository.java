@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.hyperledger.oa.core.RegisteredWebhook.WebhookEvent;
+import org.hyperledger.oa.core.RegisteredWebhook.WebhookEventType;
 import org.hyperledger.oa.model.BPAWebhook;
 
 import io.micronaut.data.annotation.Query;
@@ -36,5 +36,5 @@ public interface BPAWebhookRepository extends CrudRepository<BPAWebhook, UUID> {
     Optional<BPAWebhook> findByUrl(String url);
 
     @Query("SELECT * FROM bpawebhook where (webhook->'registeredEvent') ?? :type")
-    List<BPAWebhook> findByEventType(WebhookEvent type);
+    List<BPAWebhook> findByEventType(WebhookEventType type);
 }
