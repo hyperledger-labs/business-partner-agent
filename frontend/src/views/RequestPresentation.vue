@@ -72,7 +72,6 @@ export default {
   },
   created() {
     EventBus.$emit("title", "Request Presentation");
-    console.log(this.$config);
   },
   data: () => {
     return {
@@ -147,7 +146,6 @@ export default {
   methods: {
     submitRequest() {
       this.isBusy = true;
-      console.log(this.selected);
       if (this.selected.length === 1 || this.credDefId.length > 0) {
         let credDefId =
           this.selected.length === 1
@@ -159,7 +157,6 @@ export default {
             credentialDefinitionId: credDefId,
           })
           .then((res) => {
-            console.log(res);
             this.isBusy = false;
             EventBus.$emit("success", "Presentation request sent");
             this.$router.go(-1);
