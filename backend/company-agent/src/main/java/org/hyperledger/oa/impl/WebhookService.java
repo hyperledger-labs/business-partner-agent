@@ -114,31 +114,34 @@ public class WebhookService {
         // Not a parallel stream for now to keep it simple
         repo.findByEventType(eventType).forEach(e -> {
             final RegisteredWebhook hook = conv.fromMap(e.getWebhook(), RegisteredWebhook.class);
+            try {
+                WebhookEvent<?> event = WebhookEvent
+                        .builder()
+                        .payload(msg)
+                        .type(eventType)
+                        .sent(Long.valueOf(Instant.now().toEpochMilli()))
+                        .build();
 
-            WebhookEvent<?> event = WebhookEvent
-                    .builder()
-                    .payload(msg)
-                    .type(eventType)
-                    .sent(Long.valueOf(Instant.now().toEpochMilli()))
-                    .build();
+                conv.writeValueAsString(event).ifPresent(json -> {
 
-            conv.writeValueAsString(event).ifPresent(json -> {
+                    Request.Builder request = new Request.Builder()
+                            .url(hook.getUrl())
+                            .post(RequestBody.create(json, JSON_TYPE));
+                    addBasicAuthHeaderIfSet(request, hook);
 
-                Request.Builder request = new Request.Builder()
-                        .url(hook.getUrl())
-                        .post(RequestBody.create(json, JSON_TYPE));
-                addBasicAuthHeaderIfSet(request, hook);
-
-                try (Response response = okClient.newCall(request.build()).execute()) {
-                    if (!response.isSuccessful()) {
-                        String body = response.body() != null ? response.body().toString() : "";
-                        log.error("Call to {} falied, code: {}, msg: {}",
-                                hook.getUrl(), Integer.valueOf(response.code()), body);
+                    try (Response response = okClient.newCall(request.build()).execute()) {
+                        if (!response.isSuccessful()) {
+                            String body = response.body() != null ? response.body().toString() : "";
+                            log.error("Call to {} falied, code: {}, msg: {}",
+                                    hook.getUrl(), Integer.valueOf(response.code()), body);
+                        }
+                    } catch (IOException ex) {
+                        log.error("Call to " + hook.getUrl() + " failed", ex);
                     }
-                } catch (IOException ex) {
-                    log.error("Call to " + hook.getUrl() + " failed", ex);
-                }
-            });
+                });
+            } catch (Exception e1) {
+                log.error("Could not send webhook for url: {}", hook.getUrl(), e1);
+            }
         });
     }
 

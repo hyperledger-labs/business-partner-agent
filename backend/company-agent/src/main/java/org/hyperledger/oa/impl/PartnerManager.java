@@ -148,6 +148,7 @@ public class PartnerManager {
             dbP.setVerifiablePresentation(converter.toMap(pAPI.getVerifiablePresentation()));
             dbP = repo.update(dbP);
             result = Optional.of(converter.toAPIObject(dbP));
+            webhook.convertAndSend(WebhookEventType.PARTNER_UPDATE, result.get());
         }
         return result;
     }

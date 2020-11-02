@@ -18,6 +18,7 @@
     <url>https://github.com/hyperledger-labs/organizational-agent</url>
 
     <properties>
+        <skip.docker.build>true</skip.docker.build>
     </properties>
 
     <dependencies>

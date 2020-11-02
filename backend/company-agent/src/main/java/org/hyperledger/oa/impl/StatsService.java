@@ -60,7 +60,7 @@ public class StatsService {
                 .profile(Boolean.valueOf(docRepo
                         .existsByTypeEqualsAndIsPublicTrue(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL)))
                 .partners(Long.valueOf(partnerRepo.count()))
-                .credentials(Long.valueOf(credRepo.count()))
+                .credentials(credRepo.countByStateEquals("credential_acked"))
                 .build();
     }
 
