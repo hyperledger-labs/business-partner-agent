@@ -105,10 +105,6 @@ export default {
             label: "Commercial Registry Entry",
             issuer: "Commercial Registry",
           },
-          // {
-          //     credentialDefinitionId: "8faozNpSjFfPJXYtgcPtmJ:3:CL:1041:Commercial Registry Entry (Open Corporates)",
-          //     issuer: "Commercial Registry"
-          // },
           {
             credentialDefinitionId:
               "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc",
@@ -156,7 +152,7 @@ export default {
           .post(`${this.$apiBaseUrl}/partners/${this.id}/proof-request`, {
             credentialDefinitionId: credDefId,
           })
-          .then((res) => {
+          .then(() => {
             this.isBusy = false;
             EventBus.$emit("success", "Presentation request sent");
             this.$router.go(-1);
