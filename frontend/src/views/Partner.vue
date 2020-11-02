@@ -231,6 +231,10 @@ export default {
           text: "State",
           value: "state",
         },
+        {
+          text: " ",
+          value: "actions",
+        },
       ],
     };
   },

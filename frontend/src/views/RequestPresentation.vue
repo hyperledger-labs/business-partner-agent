@@ -21,7 +21,7 @@
         :show-select="true"
         single-select
         :headers="headers"
-        :items="templates"
+        :items="templates[this.$config.ledger]"
         item-key="credentialDefinitionId"
       >
         <template v-slot:[`item.credentialDefinitionId`]="{ item }">
@@ -31,15 +31,17 @@
           </span>
         </template>
       </v-data-table>
-      <h4 class="pt-4">Or enter a custom Credential Definition ID</h4>
-      <v-text-field
-        label="Credential Definition ID"
-        placeholder=""
-        v-model="credDefId"
-        outlined
-        dense
-      >
-      </v-text-field>
+      <div v-if="expertMode">
+        <h4 class="pt-4">Or enter a custom Credential Definition ID</h4>
+        <v-text-field
+          label="Credential Definition ID"
+          placeholder=""
+          v-model="credDefId"
+          outlined
+          dense
+        >
+        </v-text-field>
+      </div>
     </v-card-text>
 
     <v-card-actions>
@@ -61,7 +63,6 @@
 import { EventBus } from "../main";
 
 import { CredentialTypes } from "../constants";
-// import VueJsonPretty from "vue-json-pretty";
 
 export default {
   name: "RequestPresentation",
@@ -71,6 +72,7 @@ export default {
   },
   created() {
     EventBus.$emit("title", "Request Presentation");
+    console.log(this.$config);
   },
   data: () => {
     return {
@@ -88,32 +90,60 @@ export default {
           value: "issuer",
         },
       ],
-      templates: [
-        {
-          credentialDefinitionId:
-            "nJvGcV7hBSLRSUvwGk2hT:3:CL:734:IATF Certificate",
-          issuer: "IATF Proxy Issuer",
-        },
-        {
-          credentialDefinitionId:
-            "5mwQSWnRePrZ3oF67C4KqD:3:CL:1077:commercial register entry",
-          label: "Commercial Registry Entry",
-          issuer: "Commercial Registry",
-        },
-        // {
-        //     credentialDefinitionId: "8faozNpSjFfPJXYtgcPtmJ:3:CL:1041:Commercial Registry Entry (Open Corporates)",
-        //     issuer: "Commercial Registry"
-        // },
-        {
-          credentialDefinitionId:
-            "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc",
-          label: "Bank Account",
-          issuer: "Contoso LP",
-        },
-      ],
+      templates: {
+        iil: [
+          // {
+          //   credentialDefinitionId: {
+          //     iiL: "nJvGcV7hBSLRSUvwGk2hT:3:CL:734:IATF Certificate",
+          //     idu: ""
+          //   }
+          //     ,
+          //   issuer: "IATF Proxy Issuer",
+          // },
+          {
+            credentialDefinitionId:
+              "5mwQSWnRePrZ3oF67C4KqD:3:CL:1077:commercial register entry",
+            label: "Commercial Registry Entry",
+            issuer: "Commercial Registry",
+          },
+          // {
+          //     credentialDefinitionId: "8faozNpSjFfPJXYtgcPtmJ:3:CL:1041:Commercial Registry Entry (Open Corporates)",
+          //     issuer: "Commercial Registry"
+          // },
+          {
+            credentialDefinitionId:
+              "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc",
+            label: "Bank Account",
+            issuer: "Bank",
+          },
+        ],
+        idu: [
+          {
+            credentialDefinitionId:
+              "R6WR6n7CQVDjvvmwofHK6S:3:CL:109:Commercial Registry Entry",
+            label: "Commercial Registry Entry",
+            issuer: "Trust Service Provider",
+          },
+          {
+            credentialDefinitionId:
+              "UmZ25DANwS6ngGWB4ye4tN:3:CL:104:Bank Account",
+            label: "Bank Account",
+            issuer: "Bank",
+          },
+          {
+            credentialDefinitionId: "3QowxFtwciWceMFr7WbwnM:3:CL:104:BankCard",
+            label: "Bank Account",
+            issuer: "CommerzBank",
+          },
+        ],
+      },
     };
   },
-  computed: {},
+  computed: {
+    expertMode() {
+      return this.$store.state.expertMode;
+    },
+  },
   methods: {
     submitRequest() {
       this.isBusy = true;
