@@ -54,4 +54,6 @@ public interface MyCredentialRepository extends CrudRepository<MyCredential, UUI
             + "AND credential->>'credentialDefinitionId' = :credentialDefinitionId")
     List<MyCredential> findBySchemaIdAndCredentialDefinitionId(String schemaId, String credentialDefinitionId);
 
+    Long countByStateEquals(String state);
+
 }

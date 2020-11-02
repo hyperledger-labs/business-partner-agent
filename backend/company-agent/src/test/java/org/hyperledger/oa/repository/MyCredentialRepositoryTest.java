@@ -93,12 +93,22 @@ class MyCredentialRepositoryTest extends BaseTest {
         assertEquals("My Bank", cred.get(0).getIssuer());
     }
 
+    @Test
+    void testCountByState() {
+        String connectionId = UUID.randomUUID().toString();
+        repo.save(createDummyCredential(connectionId));
+        repo.save(createDummyCredential(connectionId).setState("credential_verified"));
+        repo.save(createDummyCredential("other"));
+
+        assertEquals(2, repo.countByStateEquals("credential_acked"));
+    }
+
     private static MyCredential createDummyCredential(String connectionId) {
         return MyCredential
                 .builder()
                 .connectionId(connectionId)
                 .threadId(UUID.randomUUID().toString())
-                .state("acked")
+                .state("credential_acked")
                 .isPublic(Boolean.FALSE)
                 .build();
     }
