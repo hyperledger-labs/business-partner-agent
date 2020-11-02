@@ -146,7 +146,11 @@ public class SchemaService {
         schemaRepo.deleteByIsReadOnly(Boolean.TRUE);
 
         for (Schema schema : schemas) {
-            addSchema(schema.getId(), schema.getLabel(), true);
+            try {
+                addSchema(schema.getId(), schema.getLabel(), true);
+            } catch (@SuppressWarnings("unused") Exception e) {
+                log.warn("Schema already exists: {}", schema.getId());
+            }
         }
     }
 }
