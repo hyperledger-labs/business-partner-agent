@@ -1,10 +1,12 @@
 trigger:
   batch: true
+  tags:
   branches:
-    include:
-    - master
-    - feature/*
-    - releases/*
+  - master
+  - releases/* 
+  pr:
+  - master
+  - releases/*  
   paths:
     exclude:
     - CONTRIBUTING.md
@@ -15,8 +17,12 @@ variables:
 #     dockerRegistryServiceConnection, imageRepositorySsiCompanyAgent, containerRegistry,
 #     imagePullSecret, k8connection, namespace
   - group: my-variable-group
+${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
   - name: tag
-    value: '0.1.$(Build.BuildId)' #'$(Build.SourceBranchName)' 
+    value: '0.1.$(Build.BuildId)'
+${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
+  - name: tag
+    value: '$(Build.SourceBranchName)' 
   - name: vmImageName   # Agent VM image name
     value: 'ubuntu-latest'
 
