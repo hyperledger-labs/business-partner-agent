@@ -9,8 +9,6 @@ global:
 
     ## Persistence configuration
   persistence:
-    WALLET_TYPE: postgres_storage
-    WALLET_ENCRYPTION_KEY: key
 
     # If true, the Postgres chart is deployed
     deployPostgres: true
@@ -25,22 +23,22 @@ bpa:
     tag: ""
 
   # Security Config
-  SECURITY_ENABLED: false
+  securityEnabled: false
   # Default username and password, set if running in production like environments
-  BOOTSTRAP_UN: admin
-  BOOTSTRAP_PW: changeme
+  userName: admin
+  password: changeme
 
   # Run in web only mode without any ledger dependency and aries functionality
-  WEB_MODE: false
+  webMode: false
 
   # Uni Resolver URL
-  RESOLVER_URL: https://resolver.dev.economyofthings.io
+  resolverURL: https://resolver.dev.economyofthings.io
   # The ledger prefix that is configured with the Uni Resolver
-  DID_PREFIX: "did:sov:iil:"
+  didPrefix: "did:sov:iil:"
 
   # The Ledger Explorer
-  LEDGER_URL: https://indy-test.bosch-digital.de
-  LEDGER_BROWSER: https://indy-test.bosch-digital.de
+  ledgerURL: https://indy-test.bosch-digital.de
+  ledgerBrowser: https://indy-test.bosch-digital.de
 
   imagePullSecrets: []
  
@@ -59,7 +57,7 @@ bpa:
 
   service:
     type: ClusterIP
-    PORT: 80
+    port: 80
 
   ingress:
     enabled: false
@@ -102,14 +100,11 @@ acapy:
     tag: py36-1.15-0_0.5.6
 
   # Enter wallet seed here:
-  AGENT_SEED: 0dcb2d7b444a4de591316231527aea1f
+  agentSeed: 0dcb2d7b444a4de591316231527aea1f
 
-  BUILD_CONTEXT: https://github.com/hyperledger/aries-cloudagent-python.git
-  BUILD_DOCKERFILE_PATH: docker/Dockerfile.run
+  adminURLApiKey: 2f9729eef0be49608c1cffd49ee3cc4a
 
-  ADMIN_URL_API_KEY: 2f9729eef0be49608c1cffd49ee3cc4a
-
-  AGENT_NAME: ca-aca-py
+  agentName: ca-aca-py
 
   imagePullSecrets: [] 
   nameOverride: ""
@@ -130,8 +125,8 @@ acapy:
 
   service:
     type: ClusterIP
-    ADMIN_PORT: 8031
-    HTTP_PORT: 8030
+    adminPort: 8031
+    httpPort: 8030
 
   ingress:
     enabled: false

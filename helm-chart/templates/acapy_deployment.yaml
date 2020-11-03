@@ -47,10 +47,10 @@ spec:
            --monitor-ping \
            --public-invites \
            --plugin aries_cloudagent.messaging.jsonld \
-           --inbound-transport http '0.0.0.0' {{ .Values.acapy.service.HTTP_PORT }} \ 
+           --inbound-transport http '0.0.0.0' {{ .Values.acapy.service.httpPort }} \ 
            --outbound-transport http \ 
-           --webhook-url http://{{ include "bpa.fullname" . }}:{{ .Values.bpa.service.PORT }}/log \
-           --genesis-url '{{ .Values.bpa.LEDGER_URL }}/genesis' \
+           --webhook-url http://{{ include "bpa.fullname" . }}:{{ .Values.bpa.service.port }}/log \
+           --genesis-url '{{ .Values.bpa.ledgerURL }}/genesis' \
            --endpoint https://{{ (index .Values.acapy.ingress.hosts 0).host }} \
            --wallet-storage-type 'postgres_storage' \
            --wallet-type 'indy' \
@@ -58,10 +58,10 @@ spec:
            --wallet-key '123' \
            --wallet-storage-config '{\"url\":\"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.service.port }}\",\"max_connections\":5}' \
            --wallet-storage-creds '{\"account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"password\":\"$(POSTGRES_PASSWORD)\",\"admin_account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"admin_password\":\"$(POSTGRES_PASSWORD)\"}' \ 
-           --seed '{{ .Values.acapy.AGENT_SEED }}' \
-           --admin '0.0.0.0' {{ .Values.acapy.service.ADMIN_PORT }} \
+           --seed '{{ .Values.acapy.agentSeed }}' \
+           --admin '0.0.0.0' {{ .Values.acapy.service.adminPort }} \
            --admin-insecure-mode \
-           --label {{ .Values.acapy.AGENT_NAME }} \
+           --label {{ .Values.acapy.agentName }} \
            --log-level debug \
            "
           ]
