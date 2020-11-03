@@ -62,7 +62,7 @@ spec:
                 -Doagent.pg.url=jdbc:postgresql://{{ include "global.postgresql.fullname" . }}/{{ .Values.postgresql.postgresqlUsername }}
                 -Doagent.pg.username={{ .Values.postgresql.postgresqlUsername }}
                 -Doagent.pg.password=$(POSTGRES_PASSWORD)
-                -Doagent.host=https://{{ (index .Values.acapy.ingress.hosts 0).host }}
+                -Doagent.host={{ (index .Values.bpa.ingress.hosts 0).host }}
           resources:
             {{- toYaml .Values.bpa.resources | nindent 12 }}
       {{- with .Values.bpa.nodeSelector }}
