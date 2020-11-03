@@ -4,10 +4,9 @@ trigger:
     include:
     - master
     - releases/*  
-  pr:
+  tags:
     include:
-    - master
-    - releases/*    
+    - "*"  
   paths:
     exclude:
     - CONTRIBUTING.md
