@@ -1,6 +1,7 @@
 trigger:
   batch: true
   tags:
+  - "*"
   branches:
   - master
   - releases/* 
