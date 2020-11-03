@@ -3,8 +3,10 @@ trigger:
   branches:
     include:
     - master
-    - feature/*
-    - releases/*
+    - releases/*  
+  tags:
+    include:
+    - "*"  
   paths:
     exclude:
     - CONTRIBUTING.md
@@ -16,7 +18,10 @@ variables:
 #     imagePullSecret, k8connection, namespace
   - group: my-variable-group
   - name: tag
-    value: '0.1.$(Build.BuildId)' #'$(Build.SourceBranchName)' 
+    ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
+      value: '$(Build.SourceBranchName)' 
+    ${{ if ne(startsWith(variables['Build.SourceBranch'], 'refs/tags/'),true) }}:
+      value: '$(Build.SourceBranchName)+$(Build.BuildId)'
   - name: vmImageName   # Agent VM image name
     value: 'ubuntu-latest'
 
