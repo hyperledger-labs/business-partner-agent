@@ -35,17 +35,17 @@ spec:
               protocol: TCP
           env:
             - name: BPA_BOOTSTRAP_PW
-              value: {{ .Values.bpa.BOOTSTRAP_PW | quote }}
+              value: {{ .Values.bpa.password | quote }}
             - name: BPA_BOOTSTRAP_UN
-              value: {{ .Values.bpa.BOOTSTRAP_UN | quote }}   
+              value: {{ .Values.bpa.userName | quote }}   
             - name: BPA_DID_PREFIX
-              value: {{ .Values.bpa.DID_PREFIX | quote }}
+              value: {{ .Values.bpa.didPrefix | quote }}
             - name: BPA_LEDGER_BROWSER
-              value: {{ .Values.bpa.LEDGER_BROWSER | quote }}
+              value: {{ .Values.bpa.ledgerBrowser | quote }}
             - name: BPA_RESOLVER_URL
-              value: {{ .Values.bpa.RESOLVER_URL | quote }}
+              value: {{ .Values.bpa.resolverURL | quote }}
             - name: BPA_WEB_MODE
-              value: {{ .Values.bpa.WEB_MODE | quote }}
+              value: {{ .Values.bpa.webMode | quote }}
             - name: AGENT_ENDPOINT
               value: https://{{ (index .Values.acapy.ingress.hosts 0).host }}
             - name: POSTGRES_PASSWORD
@@ -55,9 +55,9 @@ spec:
                   key: postgresql-password            
             - name: JAVA_OPTS 
               value: |
-                -Doagent.acapy.url=http://{{ include "acapy.fullname" . }}:{{ .Values.acapy.service.ADMIN_PORT }} 
-                -Doagent.acapy.apiKey={{ .Values.acapy.ADMIN_URL_API_KEY }}
-                -Dmicronaut.security.enabled={{ .Values.bpa.SECURITY_ENABLED }} 
+                -Doagent.acapy.url=http://{{ include "acapy.fullname" . }}:{{ .Values.acapy.service.adminPort }} 
+                -Doagent.acapy.apiKey={{ .Values.acapy.adminURLApiKey }}
+                -Dmicronaut.security.enabled={{ .Values.bpa.securityEnabled }} 
                 -Dmicronaut.server.port=8080
                 -Doagent.pg.url=jdbc:postgresql://{{ include "global.postgresql.fullname" . }}/{{ .Values.postgresql.postgresqlUsername }}
                 -Doagent.pg.username={{ .Values.postgresql.postgresqlUsername }}

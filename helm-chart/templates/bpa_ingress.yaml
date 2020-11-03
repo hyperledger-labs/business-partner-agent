@@ -1,6 +1,6 @@
 {{- if .Values.bpa.ingress.enabled -}}
 {{- $fullName := include "bpa.fullname" . -}}
-{{- $svcPort := .Values.bpa.service.PORT -}}
+{{- $svcPort := .Values.bpa.service.port -}}
 {{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1beta1
 {{- else -}}
