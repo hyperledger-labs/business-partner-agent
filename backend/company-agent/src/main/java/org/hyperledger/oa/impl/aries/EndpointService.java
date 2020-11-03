@@ -58,11 +58,11 @@ public class EndpointService {
 
     @Inject
     public EndpointService(
-            @Value(value = "${oagent.agent.endpoint}") String agentEndpoint,
+            @Value(value = "${oagent.acapy.endpoint}") String acapyEndpoint,
             @Value(value = "${oagent.host}") String host) {
         endpoints = new HashMap<>();
         endpoints.put("https://" + host + "/profile.jsonld", EndpointType.Profile);
-        endpoints.put(agentEndpoint, EndpointType.Endpoint);
+        endpoints.put(acapyEndpoint, EndpointType.Endpoint);
     }
 
     /**
