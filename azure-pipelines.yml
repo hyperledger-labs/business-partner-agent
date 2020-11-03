@@ -17,11 +17,10 @@ variables:
 #     dockerRegistryServiceConnection, imageRepositorySsiCompanyAgent, containerRegistry,
 #     imagePullSecret, k8connection, namespace
   - group: my-variable-group
-${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
   - name: tag
+    ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:  
     value: '0.1.$(Build.BuildId)'
-${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
-  - name: tag
+    ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
     value: '$(Build.SourceBranchName)' 
   - name: vmImageName   # Agent VM image name
     value: 'ubuntu-latest'
