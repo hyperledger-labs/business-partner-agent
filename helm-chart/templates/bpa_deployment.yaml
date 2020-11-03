@@ -46,6 +46,8 @@ spec:
               value: {{ .Values.bpa.RESOLVER_URL | quote }}
             - name: BPA_WEB_MODE
               value: {{ .Values.bpa.WEB_MODE | quote }}
+            - name: AGENT_ENDPOINT
+              value: https://{{ (index .Values.acapy.ingress.hosts 0).host }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -60,7 +62,7 @@ spec:
                 -Doagent.pg.url=jdbc:postgresql://{{ include "global.postgresql.fullname" . }}/{{ .Values.postgresql.postgresqlUsername }}
                 -Doagent.pg.username={{ .Values.postgresql.postgresqlUsername }}
                 -Doagent.pg.password=$(POSTGRES_PASSWORD)
-                -Doagent.host={{ include "bpa.fullname" . }} 
+                -Doagent.host=https://{{ (index .Values.acapy.ingress.hosts 0).host }}
           resources:
             {{- toYaml .Values.bpa.resources | nindent 12 }}
       {{- with .Values.bpa.nodeSelector }}
