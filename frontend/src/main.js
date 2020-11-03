@@ -58,6 +58,24 @@ Vue.filter("capitalize", function (string) {
   );
 });
 
+// Get Configuration
+Vue.prototype.$config = {
+  ledger: "iil",
+};
+axios
+  .get(`${apiBaseUrl}/admin/config`)
+  .then((result) => {
+    if ({}.hasOwnProperty.call(result, "data")) {
+      Vue.prototype.$config = result.data;
+      let ledgerPrefix = Vue.prototype.$config.ledgerPrefix;
+      let splitted = ledgerPrefix.split(":");
+      Vue.prototype.$config.ledger = splitted[splitted.length - 2];
+    }
+  })
+  .catch((e) => {
+    console.error(e);
+  });
+
 const EventBus = new Vue();
 export { EventBus, axios, apiBaseUrl };
 
