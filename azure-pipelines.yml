@@ -18,9 +18,9 @@ variables:
 #     imagePullSecret, k8connection, namespace
   - group: my-variable-group
   - name: tag
-    ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:  
+    $[ if eq(variables['Build.SourceBranchName'], 'master') ]:  
     value: '0.1.$(Build.BuildId)'
-    ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
+    $[ if ne(variables['Build.SourceBranchName'], 'master') ]: 
     value: '$(Build.SourceBranchName)' 
   - name: vmImageName   # Agent VM image name
     value: 'ubuntu-latest'
