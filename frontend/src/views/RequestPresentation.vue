@@ -126,7 +126,7 @@ export default {
             issuer: "Bank",
           },
           {
-            credentialDefinitionId: "3QowxFtwciWceMFr7WbwnM:3:CL:104:BankCard",
+            credentialDefinitionId: "3QowxFtwciWceMFr7WbwnM:3:CL:104:Bank Account",
             label: "Bank Account",
             issuer: "CommerzBank",
           },
