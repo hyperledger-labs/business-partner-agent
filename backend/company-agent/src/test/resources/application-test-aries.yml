@@ -1,4 +1,0 @@
-# additional profile to be loaded for tests running in web mode
-oagent:
-  web:
-    only: true

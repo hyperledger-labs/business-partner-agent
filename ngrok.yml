@@ -1,9 +1,0 @@
-tunnels:
-    businesspartner:
-      proto: http
-      addr: 8080
-      bind_tls: true
-    acapyendpoint:
-      proto: http
-      addr: 8030
-      bind_tls: true
