@@ -1,6 +1,6 @@
 apiVersion: v2
 name: bpa
-description: The business partner agent
+description: The business partner agent.
 
 # A chart can be either an 'application' or a 'library' chart.
 #
