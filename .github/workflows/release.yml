@@ -3,7 +3,7 @@ name: Release Charts
 on:
   push:
     branches:
-      - feature/helmChartReleaser
+      - release/*
     paths:
       - 'charts/**'
 
@@ -24,6 +24,3 @@ jobs:
         uses: helm/chart-releaser-action@v1.0.0
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-        with:   
-          prerelease: true
-          draft: true

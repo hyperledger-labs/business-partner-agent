@@ -16,3 +16,4 @@ jobs:
           repo_token: ${{ github.token }}
           date: '2 months ago'
           delete_tags: false
+          include_prefixes: "feature"
