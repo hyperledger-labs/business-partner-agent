@@ -2,18 +2,18 @@ apiVersion: v1
 entries:
   bpa:
   - apiVersion: v2
-    appVersion: 1.16.0
-    created: "2020-11-05T09:58:48.356686881Z"
+    appVersion: 0.0.1
+    created: "2020-11-05T10:10:20.012634554Z"
     dependencies:
     - condition: persistence.deployPostgres
       name: postgresql
       repository: https://charts.bitnami.com/bitnami/
       version: 9.7.2
     description: The business partner agent.
-    digest: 4cafe26647111d1f96171ddf8cb5069add17a60c1dca5668de4348dd47989a0e
+    digest: 47d6df5bde0a259811c60219a3f522b41cb3ab88d92c5ebac89ebd9ac07188d1
     name: bpa
     type: application
     urls:
-    - https://github.com/hyperledger-labs/business-partner-agent/releases/download/bpa-0.1.0-dev2/bpa-0.1.0-dev2.tgz
-    version: 0.1.0-dev2
-generated: "2020-11-05T09:58:48.208634966Z"
+    - https://github.com/hyperledger-labs/business-partner-agent/releases/download/bpa-0.1.0-dev3/bpa-0.1.0-dev3.tgz
+    version: 0.1.0-dev3
+generated: "2020-11-05T10:10:19.867951237Z"
