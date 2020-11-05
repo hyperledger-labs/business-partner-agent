@@ -3,13 +3,11 @@
 # Declare variables to be passed into your templates.
 
 global:
-
   nameOverride: ""
   fullnameOverride: ""
 
     ## Persistence configuration
   persistence:
-
     # If true, the Postgres chart is deployed
     deployPostgres: true
 
