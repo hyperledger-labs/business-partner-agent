@@ -17,11 +17,8 @@
  */
 package org.hyperledger.oa.controller.api;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+import org.hyperledger.oa.model.Partner;
 
 /**
  * Websocket events
@@ -31,16 +28,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(staticName = "of")
 public class WebSocketMessageBody {
 
-    private long id = System.nanoTime();
+    private final long id = System.nanoTime();
 
-    private long timestamp = System.currentTimeMillis();
+    private final long timestamp = System.currentTimeMillis();
 
     @NonNull
-    private WebSockerMessage message;
+    private WebSocketMessage message;
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Builder
-    public static final class WebSockerMessage {
+    public static final class WebSocketMessage {
         private WebSocketMessageType type;
         private WebSocketMessageState state;
         private String linkId;
@@ -50,12 +49,22 @@ public class WebSocketMessageBody {
     public enum WebSocketMessageType {
         PROOF,
         CREDENTIAL,
-        CONNECTION,
+        PARTNER,
         ;
     }
 
     public enum WebSocketMessageState {
         RECEIVED,
         UPDATED;
+    }
+
+    public static WebSocketMessageBody partnerReceived(Partner partner) {
+        return WebSocketMessageBody.of(WebSocketMessage
+                .builder()
+                .type(WebSocketMessageType.PARTNER)
+                .state(WebSocketMessageState.RECEIVED)
+                .linkId(partner.getId().toString())
+                .info(partner)
+                .build());
     }
 }

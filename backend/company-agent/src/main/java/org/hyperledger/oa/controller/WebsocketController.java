@@ -17,6 +17,7 @@
  */
 package org.hyperledger.oa.controller;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.micronaut.security.annotation.Secured;
@@ -29,36 +30,38 @@ import io.micronaut.websocket.annotation.OnOpen;
 import io.micronaut.websocket.annotation.ServerWebSocket;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.oa.impl.MessageService;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Singleton
 @ServerWebSocket("/events")
-@Tag(name = "Websocket")
 @Secured(SecurityRule.IS_AUTHENTICATED)
 public class WebsocketController {
 
-    @SuppressWarnings("unused")
-    private final WebSocketBroadcaster broadcaster;
-
-    public WebsocketController(WebSocketBroadcaster broadcaster) {
-        this.broadcaster = broadcaster;
-    }
+    @Inject
+    MessageService msg;
 
     @OnOpen
     public void onOpen(WebSocketSession session) {
         log.debug("New websocket session: {}", session.getId());
+        msg.addSession(session);
+        msg.sendStored(session);
     }
 
     @OnMessage
-    public void onMessage(
-            String message,
-            WebSocketSession session) {
+    public void onMessage(String message, WebSocketSession session) {
         log.debug("Received websocket message: {} -> {}", session.getId(), message);
     }
 
     @OnClose
-    public void onClose(
-            WebSocketSession session) {
-        log.debug("Websocket session diconnected: {}", session.getId());
+    public void onClose(WebSocketSession session) {
+        log.debug("Websocket session disconnected: {}", session.getId());
+        msg.removeSession(session);
     }
 }
