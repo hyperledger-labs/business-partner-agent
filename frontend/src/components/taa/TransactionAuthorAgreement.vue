@@ -13,6 +13,8 @@
             accept the Transaction Author Agreement for this session which is
             the following:
             <br /><br />
+            <hr>
+            <br />
             <span v-if="isTaaLoaded()">
               <v-markdown :source="taaText()"></v-markdown>
             </span>
@@ -22,6 +24,7 @@
                   <div>Loading</div>
                 </div>
             </span>
+            <hr>
             <small v-show="isTaaLoaded()">Version: {{ getTaaVersion() }}</small>
             <v-checkbox
               v-model="agree"
