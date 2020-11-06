@@ -3,13 +3,11 @@
 # Declare variables to be passed into your templates.
 
 global:
-
   nameOverride: ""
   fullnameOverride: ""
 
     ## Persistence configuration
   persistence:
-
     # If true, the Postgres chart is deployed
     deployPostgres: true
 
@@ -171,7 +169,7 @@ postgresql:
   ## PostgreSQL Password for the new user.
   ## If not set, a random 10 characters password will be used.
   ##
-  #postgresPassword: ""
+  postgresPassword: bpa
 
   ## PostgreSQL Database to create.
   ##

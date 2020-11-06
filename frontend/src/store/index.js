@@ -8,10 +8,12 @@
 
 import Vue from "vue";
 import Vuex from "vuex";
-import moment from "moment";
-import { EventBus, axios, apiBaseUrl } from "../main";
+//import moment from "moment";
+//import { EventBus, axios, apiBaseUrl } from "../main";
 import { CredentialTypes } from "../constants";
-import { getPartnerProfile } from "../utils/partnerUtils";
+//import { getPartnerProfile } from "../utils/partnerUtils";
+import taa from "./modules/taa";
+import * as actions from "./actions";
 
 Vue.use(Vuex);
 
@@ -52,133 +54,7 @@ const store = new Vuex.Store({
     },
   },
 
-  actions: {
-    async loadSchemas({ commit }) {
-      axios
-        .get(`${apiBaseUrl}/admin/schema`)
-        .then((result) => {
-          if ({}.hasOwnProperty.call(result, "data")) {
-            let schemas = result.data;
-            commit({
-              type: "loadSchemasFinished",
-              schemas: schemas,
-            });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
-        });
-    },
-    async loadPartners({ commit }) {
-      axios
-        .get(`${apiBaseUrl}/partners`)
-        .then((result) => {
-          if ({}.hasOwnProperty.call(result, "data")) {
-            let partners = result.data;
-            partners = partners.map((partner) => {
-              partner.profile = getPartnerProfile(partner);
-              return partner;
-            });
-
-            commit({
-              type: "loadPartnersFinished",
-              partners: partners,
-            });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
-        });
-    },
-    async loadDocuments({ commit }) {
-      axios
-        .get(`${apiBaseUrl}/wallet/document`)
-        .then((result) => {
-          console.log(result);
-          if ({}.hasOwnProperty.call(result, "data")) {
-            var documents = result.data;
-            documents.map((documentIn) => {
-              documentIn.createdDate = moment(documentIn.createdDate);
-              documentIn.updatedDate = moment(documentIn.updatedDate);
-            });
-
-            commit({
-              type: "loadDocumentsFinished",
-              documents: documents,
-            });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
-        });
-    },
-
-    async loadCredentials({ commit }) {
-      axios
-        .get(`${apiBaseUrl}/wallet/credential`)
-        .then((result) => {
-          if ({}.hasOwnProperty.call(result, "data")) {
-            var credentials = [];
-            result.data.forEach((credentialRef) => {
-              axios
-                .get(`${apiBaseUrl}/wallet/credential/${credentialRef.id}`)
-                .then((result) => {
-                  credentials.push(result.data);
-                })
-                .catch((e) => {
-                  console.error(e);
-                  EventBus.$emit("error", e);
-                });
-            });
-            commit({
-              type: "loadCredentialsFinished",
-              credentials: credentials,
-            });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
-        });
-    },
-    // async completeEditDocument({ state }) {
-    //   if (state.editedDocument.add) {
-    //     axios
-    //       .post(`${apiBaseUrl}/wallet/document`, {
-    //         document: state.editedDocument.document,
-    //         isPublic: true, //TODO
-    //         type: state.editedDocument.type
-    //       })
-    //       .then(() => {
-    //         this.dispatch('loadDocuments')
-    //         EventBus.$emit("success", "Success");
-    //       })
-    //       .catch((e) => {
-    //         console.error(e);
-    //         EventBus.$emit("error", e);
-    //       });
-    //   }
-    //   else {
-    //     axios
-    //       .put(`${apiBaseUrl}/wallet/document/${state.editedDocument.id}`, {
-    //         document: state.editedDocument.document,
-    //         isPublic: true, //TODO
-    //         type: state.editedDocument.type
-    //       })
-    //       .then(() => {
-    //         this.dispatch('loadDocuments')
-    //         EventBus.$emit("success", "Success");
-    //       })
-    //       .catch((e) => {
-    //         console.error(e);
-    //         EventBus.$emit("error", e);
-    //       });
-    //   }
-    // }
-  },
+  actions: actions,
 
   mutations: {
     // initEditDocument(state, payload) {
@@ -208,6 +84,10 @@ const store = new Vuex.Store({
     setSettings(state, payload) {
       state.expertMode = payload.isExpert;
     },
+  },
+
+  modules: {
+    taa,
   },
 });
 
