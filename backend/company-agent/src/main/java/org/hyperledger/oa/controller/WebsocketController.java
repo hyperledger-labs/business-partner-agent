@@ -28,15 +28,8 @@ import io.micronaut.websocket.annotation.OnClose;
 import io.micronaut.websocket.annotation.OnMessage;
 import io.micronaut.websocket.annotation.OnOpen;
 import io.micronaut.websocket.annotation.ServerWebSocket;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.oa.impl.MessageService;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Singleton
@@ -46,6 +39,13 @@ public class WebsocketController {
 
     @Inject
     MessageService msg;
+
+    @SuppressWarnings("unused")
+    private final WebSocketBroadcaster broadcaster;
+
+    public WebsocketController(WebSocketBroadcaster broadcaster) {
+        this.broadcaster = broadcaster;
+    }
 
     @OnOpen
     public void onOpen(WebSocketSession session) {

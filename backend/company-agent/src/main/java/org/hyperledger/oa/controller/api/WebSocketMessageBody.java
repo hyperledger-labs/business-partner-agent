@@ -18,7 +18,7 @@
 package org.hyperledger.oa.controller.api;
 
 import lombok.*;
-import org.hyperledger.oa.model.Partner;
+import org.hyperledger.oa.api.PartnerAPI;
 
 /**
  * Websocket events
@@ -58,12 +58,12 @@ public class WebSocketMessageBody {
         UPDATED;
     }
 
-    public static WebSocketMessageBody partnerReceived(Partner partner) {
+    public static WebSocketMessageBody partnerReceived(PartnerAPI partner) {
         return WebSocketMessageBody.of(WebSocketMessage
                 .builder()
                 .type(WebSocketMessageType.PARTNER)
                 .state(WebSocketMessageState.RECEIVED)
-                .linkId(partner.getId().toString())
+                .linkId(partner.getId())
                 .info(partner)
                 .build());
     }

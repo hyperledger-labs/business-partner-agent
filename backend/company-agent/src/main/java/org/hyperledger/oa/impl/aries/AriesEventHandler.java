@@ -17,19 +17,16 @@
  */
 package org.hyperledger.oa.impl.aries;
 
-import java.util.Optional;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.credential.CredentialExchange;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
 
-import io.micronaut.websocket.WebSocketBroadcaster;
-import lombok.extern.slf4j.Slf4j;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Optional;
 
 @Slf4j
 @Singleton
@@ -46,9 +43,6 @@ public class AriesEventHandler extends EventHandler {
 
     @Inject
     private Optional<ProofManager> proofMgmt;
-
-    @Inject
-    private WebSocketBroadcaster broadcaster;
 
     @Override
     public void handleConnection(ConnectionRecord connection) {
@@ -95,7 +89,5 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleRaw(String eventType, String json) {
         log.trace(json);
-        broadcaster.broadcast(json);
     }
-
 }

@@ -1,6 +1,7 @@
 package org.hyperledger.oa.impl;
 
 import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.scheduling.annotation.Async;
 import io.micronaut.scheduling.annotation.Scheduled;
 import io.micronaut.websocket.WebSocketBroadcaster;
 import io.micronaut.websocket.WebSocketSession;
@@ -45,12 +46,17 @@ public class MessageService {
     }
 
     // called by impl
+    @Async
     public void sendMessage(WebSocketMessageBody message) {
-        if (hasConnectedSessions()) {
-            broadcaster.broadcastSync(message);
-        } else {
-            MessageQueue msg = MessageQueue.builder().message(conv.toMap(message)).build();
-            queue.save(msg);
+        try {
+            if (hasConnectedSessions()) {
+                broadcaster.broadcastSync(message);
+            } else {
+                MessageQueue msg = MessageQueue.builder().message(conv.toMap(message)).build();
+                queue.save(msg);
+            }
+        } catch (Exception e) {
+            log.error("Could not send websocket message.", e);
         }
     }
 
@@ -73,7 +79,7 @@ public class MessageService {
             }
         });
         log.debug("Found {} session(s), {} of them are stale.", connected.size(), stale.size());
-        stale.forEach(k -> connected.remove(k));
+        stale.forEach(connected::remove);
     }
 
 //    @Scheduled(fixedRate = "5s")

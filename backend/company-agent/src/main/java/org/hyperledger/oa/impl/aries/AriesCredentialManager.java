@@ -17,17 +17,11 @@
  */
 package org.hyperledger.oa.impl.aries;
 
-import java.io.IOException;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micronaut.context.annotation.Value;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credential.Credential;
@@ -56,12 +50,15 @@ import org.hyperledger.oa.repository.MyCredentialRepository;
 import org.hyperledger.oa.repository.MyDocumentRepository;
 import org.hyperledger.oa.repository.PartnerRepository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.micronaut.context.annotation.Value;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Singleton
@@ -143,9 +140,7 @@ public class AriesCredentialManager {
     // all other state changes that are not store or acked
     public void handleCredentialEvent(CredentialExchange credEx) {
         credRepo.findByThreadId(credEx.getThreadId())
-                .ifPresentOrElse(cred -> {
-                    credRepo.updateState(cred.getId(), credEx.getState());
-                }, () -> {
+                .ifPresentOrElse(cred -> credRepo.updateState(cred.getId(), credEx.getState()), () -> {
                     MyCredential dbCred = MyCredential
                             .builder()
                             .isPublic(Boolean.FALSE)
@@ -206,10 +201,7 @@ public class AriesCredentialManager {
 
     public Optional<AriesCredential> getAriesCredentialById(@NonNull UUID id) {
         final Optional<MyCredential> dbCred = credRepo.findById(id);
-        if (dbCred.isPresent()) {
-            return Optional.of(buildAriesCredential(dbCred.get()));
-        }
-        return Optional.empty();
+        return dbCred.map(this::buildAriesCredential);
     }
 
     private AriesCredential buildAriesCredential(MyCredential dbCred) {
@@ -239,7 +231,7 @@ public class AriesCredentialManager {
 
     public void deleteCredentialById(@NonNull UUID id) {
         credRepo.findById(id).ifPresent(c -> {
-            boolean isPublic = c.getIsPublic().booleanValue();
+            boolean isPublic = c.getIsPublic();
             try {
                 if (c.getReferent() != null) {
                     ac.credentialRemove(c.getReferent());
@@ -283,7 +275,7 @@ public class AriesCredentialManager {
                         issuer = pVC.getLegalName();
                     }
                 }
-                if (issuer == null && p.get().getIncoming() != null && p.get().getIncoming().booleanValue()) {
+                if (issuer == null && p.get().getIncoming() != null && p.get().getIncoming()) {
                     issuer = p.get().getLabel();
                 }
             }
