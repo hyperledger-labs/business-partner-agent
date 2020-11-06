@@ -377,7 +377,7 @@
                                 <name>bds/%a</name>
                                 <build>
                                     <skip>${skip.docker.build}</skip>
-                                    <from>amazoncorretto:${java.version}</from>
+                                    <from>amazoncorretto:${jdk.version}</from>
                                     <assembly>
                                         <descriptorRef>artifact</descriptorRef>
                                     </assembly>
