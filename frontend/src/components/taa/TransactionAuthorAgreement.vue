@@ -15,11 +15,17 @@
             <br /><br />
             <hr>
             <br />
-            <span>
-              <v-markdown :source="taaText"></v-markdown>
+            <span v-if="isTaaLoaded()">
+              <v-markdown :source="taaText()"></v-markdown>
+            </span>
+            <span v-else>
+              <div class="text-center">
+                  <v-progress-circular v-if="!isTaaLoaded()" indeterminate color="primary"></v-progress-circular>
+                  <div>Loading</div>
+                </div>
             </span>
             <hr>
-            <small>Version: {{ getTaaVersion() }}</small>
+            <small v-show="isTaaLoaded()">Version: {{ getTaaVersion() }}</small>
             <v-checkbox
               v-model="agree"
               :rules="[(v) => !!v || 'You must agree to continue!']"
@@ -52,12 +58,8 @@ export default {
       valid: true,
       agree: false,
       showDialog: this.isTaaRequired,
+      taaText: this.getTaaText
     };
-  },
-  computed: {
-    taaText() {
-      return this.getTaaText()
-    },
   },
   methods: {
     ...mapActions(["isRegistrationRequired", "getTaa", "registerTaa"]),
@@ -65,6 +67,7 @@ export default {
       isTaaRequired: "taaRequired",
       getTaaText: "taaText",
       getTaaVersion: "taaVersion",
+      isTaaLoaded: "taaLoaded"
     }),
     register() {
       if (this.$refs.form.validate()) {
