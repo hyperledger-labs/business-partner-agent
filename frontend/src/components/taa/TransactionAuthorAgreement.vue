@@ -13,9 +13,12 @@
             accept the Transaction Author Agreement for this session which is
             the following:
             <br /><br />
+            <hr>
+            <br />
             <span>
               <v-markdown :source="taaText"></v-markdown>
             </span>
+            <hr>
             <small>Version: {{ getTaaVersion() }}</small>
             <v-checkbox
               v-model="agree"
