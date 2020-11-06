@@ -16,7 +16,7 @@
             <span>
               <v-markdown :source="taaText"></v-markdown>
             </span>
-            <small>v.{{ getTaaVersion() }}</small>
+            <small>Version: {{ getTaaVersion() }}</small>
             <v-checkbox
               v-model="agree"
               :rules="[(v) => !!v || 'You must agree to continue!']"
@@ -49,8 +49,12 @@ export default {
       valid: true,
       agree: false,
       showDialog: this.isTaaRequired,
-      taaText: this.getTaaText(),
     };
+  },
+  computed: {
+    taaText() {
+      return this.getTaaText()
+    },
   },
   methods: {
     ...mapActions(["isRegistrationRequired", "getTaa", "registerTaa"]),
