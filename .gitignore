@@ -45,6 +45,10 @@ formatter-maven-cache.properties
 **/application-dev-**.yml
 .vscode
 
+# IntelliJ
+.idea/
+*.iml
+
 # Build
 **/target/**
 /docker-compose-backend.yml

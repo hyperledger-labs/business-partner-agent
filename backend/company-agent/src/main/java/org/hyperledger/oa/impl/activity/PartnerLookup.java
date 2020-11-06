@@ -77,7 +77,7 @@ public class PartnerLookup {
             }
             throw new PartnerException("Could not resolve profile and/or aries endpoint from did document");
         }
-        throw new PartnerException("Could not retreive did document from universal resolver");
+        throw new PartnerException("Could not retrieve did document from universal resolver");
     }
 
     static Optional<Map<String, String>> filterServices(@NonNull DidDocAPI doc) {
@@ -106,7 +106,7 @@ public class PartnerLookup {
             }
             return partner;
         }
-        throw new PartnerException("Could not retreive public profile from endpoint: " + endpoint);
+        throw new PartnerException("Could not retrieve public profile from endpoint: " + endpoint);
     }
 
     /**

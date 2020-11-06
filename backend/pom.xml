@@ -47,8 +47,8 @@
         <micronaut.version>2.1.2</micronaut.version>
         <micronaut.data.version>2.1.0</micronaut.data.version>
         <micronaut.openapi.version>2.1.1</micronaut.openapi.version>
-        <micronaut.security.version>2.1.1</micronaut.security.version>
-        <mockito.version>3.5.15</mockito.version>
+        <micronaut.security.version>2.1.2</micronaut.security.version>
+        <mockito.version>3.6.0</mockito.version>
         <pmd.version>6.29.0</pmd.version>
         <spotbugs.version>4.1.4</spotbugs.version>
         <testcontainers.version>1.14.3</testcontainers.version>
