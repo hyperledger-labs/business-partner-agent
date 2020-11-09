@@ -3,8 +3,9 @@ import { EventBus, axios, apiBaseUrl } from "../../main";
 const state = {
   taaRequired: false,
   taaText: "No Transaction Author Agreement loaded",
-  taaDigest: "",
-  taaVersion: String,
+  taaDigest: String,
+  taaVersion: "-",
+  taaLoaded: false,
 };
 
 const getters = {
@@ -17,6 +18,9 @@ const getters = {
   taaVersion: (state) => {
     return state.taaVersion;
   },
+  taaLoaded: (state) => {
+    return state.taaLoaded;
+  },
 };
 
 const mutations = {
@@ -26,6 +30,7 @@ const mutations = {
       state.taaDigest = payload.taa.digest;
       state.taaVersion = payload.taa.version;
     }
+    state.taaLoaded = true;
   },
   setTaaRequired(state, payload) {
     state.taaRequired = payload.taaRequired;
@@ -56,6 +61,10 @@ const actions = {
         commit({ type: "setTaa", taa: result.data });
       })
       .catch((e) => {
+        commit({
+          type: "setTaa",
+          taa: { digest: "", version: state.version, text: state.taaText },
+        });
         console.error(e);
         EventBus.$emit("error", e);
       });
@@ -67,8 +76,8 @@ const actions = {
         digest: state.taaDigest,
       })
       .then(() => {
+        EventBus.$emit("success", "TAA registration fired");
         dispatch("validateTaa");
-        EventBus.$emit("success", "Success");
       })
       .catch((e) => {
         console.error(e);
