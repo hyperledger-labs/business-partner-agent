@@ -40,6 +40,8 @@ import org.hyperledger.oa.api.aries.ProfileVC;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.api.exception.PartnerException;
 import org.hyperledger.oa.config.runtime.RequiresAries;
+import org.hyperledger.oa.controller.api.WebSocketMessageBody;
+import org.hyperledger.oa.impl.MessageService;
 import org.hyperledger.oa.impl.activity.VPManager;
 import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.impl.util.Converter;
@@ -95,6 +97,9 @@ public class AriesCredentialManager {
 
     @Inject
     ObjectMapper mapper;
+
+    @Inject
+    MessageService messageService;
 
     // request credential from issuer (partner)
     public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId) {
@@ -177,11 +182,12 @@ public class AriesCredentialManager {
                             .setState(credEx.getState())
                             .setIssuer(resolveIssuer(credEx.getCredential()))
                             .setIssuedAt(Instant.now());
-                    credRepo.update(cred);
+                    MyCredential updated = credRepo.update(cred);
+                    messageService.sendMessage(WebSocketMessageBody.credentialReceived(buildAriesCredential(updated)));
+
                 }, () -> log.error("Received credential without matching thread id, credential is not stored."));
     }
 
-    @SuppressWarnings("boxing")
     public Optional<MyCredential> toggleVisibility(UUID id) {
         final Optional<MyCredential> cred = credRepo.findById(id);
         if (cred.isPresent()) {

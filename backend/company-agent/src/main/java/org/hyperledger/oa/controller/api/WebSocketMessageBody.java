@@ -19,6 +19,8 @@ package org.hyperledger.oa.controller.api;
 
 import lombok.*;
 import org.hyperledger.oa.api.PartnerAPI;
+import org.hyperledger.oa.api.aries.AriesCredential;
+import org.hyperledger.oa.api.aries.AriesProof;
 
 /**
  * Websocket events
@@ -54,7 +56,8 @@ public class WebSocketMessageBody {
 
     public enum WebSocketMessageState {
         RECEIVED,
-        UPDATED
+        UPDATED,
+        SENT
     }
 
     public static WebSocketMessageBody partnerReceived(PartnerAPI partner) {
@@ -64,6 +67,32 @@ public class WebSocketMessageBody {
                 .state(WebSocketMessageState.RECEIVED)
                 .linkId(partner.getId())
                 .info(partner)
+                .build());
+    }
+
+    public static WebSocketMessageBody credentialReceived(AriesCredential credential) {
+        return WebSocketMessageBody.of(WebSocketMessage
+                .builder()
+                .type(WebSocketMessageType.CREDENTIAL)
+                .state(WebSocketMessageState.RECEIVED)
+                .linkId(credential.getId().toString())
+                .info(credential)
+                .build());
+    }
+
+    public static WebSocketMessageBody proofReceived(AriesProof proof) {
+        WebSocketMessageState state;
+        if ("verifier".equals(proof.getRole())) {
+            state = WebSocketMessageState.RECEIVED;
+        } else {
+            state = WebSocketMessageState.SENT;
+        }
+        return WebSocketMessageBody.of(WebSocketMessage
+                .builder()
+                .type(WebSocketMessageType.PROOF)
+                .state(state)
+                .linkId(proof.getId().toString())
+                .info(proof)
                 .build());
     }
 }

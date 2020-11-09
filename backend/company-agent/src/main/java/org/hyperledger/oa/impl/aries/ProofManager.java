@@ -33,6 +33,8 @@ import org.hyperledger.oa.api.aries.AriesProof;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.api.exception.PartnerException;
 import org.hyperledger.oa.config.runtime.RequiresAries;
+import org.hyperledger.oa.controller.api.WebSocketMessageBody;
+import org.hyperledger.oa.impl.MessageService;
 import org.hyperledger.oa.impl.activity.DidResolver;
 import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.impl.util.Converter;
@@ -80,6 +82,9 @@ public class ProofManager {
 
     @Inject
     DidResolver didRes;
+
+    @Inject
+    MessageService messageService;
 
     // request proof from partner
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull String credDefId) {
@@ -167,6 +172,7 @@ public class ProofManager {
                         .setProof(proof.from(schemaService.getSchemaAttributeNames(schemaId)));
                 final PartnerProof savedProof = pProofRepo.update(pp);
                 didRes.resolveDid(savedProof);
+                messageService.sendMessage(WebSocketMessageBody.proofReceived(toApiProof(savedProof)));
             }
         });
     }
