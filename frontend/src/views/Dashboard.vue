@@ -17,6 +17,7 @@
         label="DID"
         :append-icon="'mdi-content-copy'"
         @click:append="copyDid"
+        class="col-md-8 offset-md-2 col-sm-10 offset-sm-1"
       ></v-text-field>
     </v-card>
     <div v-if="isWelcome && !isLoading">
@@ -46,7 +47,7 @@
     </div>
     <div v-if="!isWelcome && !isLoading">
       <v-row>
-        <v-col class="col-sm-6">
+        <v-col class="col-sm-5 offset-sm-1 col-md-4 offset-md-2">
           <v-card class="mx-auto" :to="{ name: 'Wallet' }">
             <v-img
               class="align-end"
@@ -60,7 +61,7 @@
             >
           </v-card>
         </v-col>
-        <v-col class="col-sm-6">
+        <v-col class="col-sm-5 col-md-4">
           <v-card class="mx-auto" :to="{ name: 'Partners' }">
             <!-- FIXME Used aspect ratio as a hacky way to make the cards the same height -->
             <v-img
