@@ -20,13 +20,6 @@ helm install \
    	mybpa bpa/bpa -n mynamespace --devel
 ```
 
-Get the application URL by running the commands returned by helm install, e.g.:
-```sh
-export POD_NAME=$(kubectl get pods --namespace md -l "app.kubernetes.io/name=bpa-bpacore,app.kubernetes.io/instance=mynamespace" -o jsonpath="{.items[0].metadata.name}")
-echo "Visit http://127.0.0.1:8080 to use your application"
-kubectl --namespace mynamespace port-forward $POD_NAME 8080:8080
- ```
-
 ## Introduction
 
 This chart bootstraps a business partner agent deployment on a Kubernetes cluster using the Helm package manager. Its default installation comes with PostgreSQL. Ingress routes can be activated, allowing the agent to
@@ -92,8 +85,14 @@ helm install \
    	mybpa bpa/bpa -n mynamespace --devel
 ```
 
-The command deploys BPA (bpa-core & bpa-acapy) and Postgres on the Kubernetes cluster in the default configuration. The [Parameters](#Parameters) sections list the parameter that can be configured during installation.
+Get the application URL by running the commands returned by helm install, e.g.:
+```sh
+export POD_NAME=$(kubectl get pods --namespace md -l "app.kubernetes.io/name=bpa-bpacore,app.kubernetes.io/instance=mynamespace" -o jsonpath="{.items[0].metadata.name}")
+echo "Visit http://127.0.0.1:8080 to use your application"
+kubectl --namespace mynamespace port-forward $POD_NAME 8080:8080
+ ```
 
+This deploys BPA (bpa-core & bpa-acapy) and Postgres on the Kubernetes cluster in the default configuration. The [Parameters](#Parameters) sections list the parameter that can be configured during installation.
 Deploying the charts with configured ingress routes could be done e.g. as follows:
 TODO
 
