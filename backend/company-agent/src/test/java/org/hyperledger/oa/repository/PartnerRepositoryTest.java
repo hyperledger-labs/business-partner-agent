@@ -1,26 +1,33 @@
-/**
- * Copyright (c) 2020 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/organizational-agent
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (c) 2020 - for information on the respective copyright owner
+  see the NOTICE file and/or the repository at
+  https://github.com/hyperledger-labs/organizational-agent
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package org.hyperledger.oa.repository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
+import org.hyperledger.oa.impl.util.Converter;
+import org.hyperledger.oa.model.Partner;
+import org.junit.jupiter.api.Test;
 
+import javax.inject.Inject;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -28,18 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.inject.Inject;
-
-import org.apache.commons.lang3.RandomStringUtils;
-import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
-import org.hyperledger.oa.impl.util.Converter;
-import org.hyperledger.oa.model.Partner;
-import org.junit.jupiter.api.Test;
-
-import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import static org.junit.jupiter.api.Assertions.*;
 
 @MicronautTest
 class PartnerRepositoryTest {
@@ -67,7 +63,7 @@ class PartnerRepositoryTest {
     }
 
     @Test
-    void testUpdateStateWithoutAffectingTimestamp() throws Exception {
+    void testUpdateStateWithoutAffectingTimestamp() {
         final String connectionId = "id-123";
         repo.save(Partner
                 .builder()
@@ -97,7 +93,7 @@ class PartnerRepositoryTest {
     }
 
     @Test
-    void testUpdateStateShouldNotChangeStateOfOtherConnections() throws Exception {
+    void testUpdateStateShouldNotChangeStateOfOtherConnections() {
         final String p1CId = "id-1";
         repo.save(Partner
                 .builder()
@@ -172,7 +168,7 @@ class PartnerRepositoryTest {
     }
 
     @Test
-    void testFinBySupportedCredentials() throws Exception {
+    void testFinBySupportedCredentials() {
         createPartnerWithCredentialType(571);
         createPartnerWithCredentialType(573);
         createPartnerWithCredentialType(573);
@@ -180,13 +176,13 @@ class PartnerRepositoryTest {
         createPartnerWithCredentialType(575);
         createPartnerWithCredentialType(575);
 
-        List<Partner> found = repo.findBySuppertedCredential("571");
+        List<Partner> found = repo.findBySupportedCredential("571");
         assertEquals(1, found.size());
 
-        found = repo.findBySuppertedCredential("573");
+        found = repo.findBySupportedCredential("573");
         assertEquals(2, found.size());
 
-        found = repo.findBySuppertedCredential("575");
+        found = repo.findBySupportedCredential("575");
         assertEquals(3, found.size());
     }
 

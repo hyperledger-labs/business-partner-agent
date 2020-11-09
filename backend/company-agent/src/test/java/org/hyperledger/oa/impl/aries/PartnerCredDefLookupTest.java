@@ -1,16 +1,6 @@
 package org.hyperledger.oa.impl.aries;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.oa.client.LedgerClient;
 import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.oa.model.BPASchema;
@@ -23,7 +13,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @MicronautTest
 @ExtendWith(MockitoExtension.class)
@@ -68,9 +66,9 @@ class PartnerCredDefLookupTest {
                 .build());
 
         when(schemaRepo.findAll()).thenReturn(List.of(
-                BPASchema.builder().seqNo(Integer.valueOf(1077)).build(),
-                BPASchema.builder().seqNo(Integer.valueOf(977)).build(),
-                BPASchema.builder().seqNo(Integer.valueOf(9999)).build()));
+                BPASchema.builder().seqNo(1077).build(),
+                BPASchema.builder().seqNo(977).build(),
+                BPASchema.builder().seqNo(9999).build()));
 
         when(ledger.queryCredentialDefinitions(anyString()))
                 .thenReturn(Optional.of(List.of(
@@ -84,17 +82,17 @@ class PartnerCredDefLookupTest {
 
         lookup.lookupTypesForAllPartners();
 
-        List<Partner> partners = pRepo.findBySuppertedCredential("1077");
+        List<Partner> partners = pRepo.findBySupportedCredential("1077");
         assertEquals(1, partners.size());
         assertEquals(did1, partners.get(0).getDid());
 
-        partners = pRepo.findBySuppertedCredential("977");
+        partners = pRepo.findBySupportedCredential("977");
         assertEquals(2, partners.size());
         final List<String> pList = partners.stream().map(Partner::getDid).collect(Collectors.toList());
         assertTrue(pList.contains(did1));
         assertTrue(pList.contains(did2));
 
-        partners = pRepo.findBySuppertedCredential("9999");
+        partners = pRepo.findBySupportedCredential("9999");
         assertEquals(0, partners.size());
     }
 

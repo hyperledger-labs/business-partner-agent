@@ -16,7 +16,7 @@
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>organizational-agent: backend</description>
-    <url>https://github.com/hyperledger-labs/organizational-agent</url>
+    <url>https://github.com/hyperledger-labs/business-partner-agent</url>
 
     <properties>
         <!-- Settings -->

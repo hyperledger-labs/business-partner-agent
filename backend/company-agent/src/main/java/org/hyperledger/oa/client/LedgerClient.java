@@ -1,39 +1,23 @@
-/**
- * Copyright (c) 2020 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/organizational-agent
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (c) 2020 - for information on the respective copyright owner
+  see the NOTICE file and/or the repository at
+  https://github.com/hyperledger-labs/business-partner-agent
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package org.hyperledger.oa.client;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.oa.client.api.LedgerQueryResult;
-import org.hyperledger.oa.client.api.LedgerQueryResult.DomainTransaction;
-import org.hyperledger.oa.client.api.LedgerQueryResult.DomainTransaction.TxnMetadata;
-import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
-import org.hyperledger.oa.impl.util.AriesStringUtil;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.micronaut.context.annotation.Value;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -43,6 +27,19 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.oa.client.api.LedgerQueryResult;
+import org.hyperledger.oa.client.api.LedgerQueryResult.DomainTransaction;
+import org.hyperledger.oa.client.api.LedgerQueryResult.DomainTransaction.TxnMetadata;
+import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
+import org.hyperledger.oa.impl.util.AriesStringUtil;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
@@ -56,7 +53,7 @@ public class LedgerClient {
     @Setter(value = AccessLevel.PROTECTED)
     private ObjectMapper mapper;
 
-    private OkHttpClient ok = new OkHttpClient();
+    private final OkHttpClient ok = new OkHttpClient();
 
     /**
      * Query the ledger explorer for a list of credential definitions that are based

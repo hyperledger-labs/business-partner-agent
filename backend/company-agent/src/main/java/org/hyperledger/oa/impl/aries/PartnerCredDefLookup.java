@@ -83,7 +83,7 @@ public class PartnerCredDefLookup {
     public List<PartnerAPI> getIssuersForBankAccount() {
         List<PartnerAPI> result = new ArrayList<>();
         schemaRepo.findByType(CredentialType.BANK_ACCOUNT_CREDENTIAL).ifPresent(s -> {
-            partnerRepo.findBySuppertedCredential(s.getSeqNo().toString()).forEach(
+            partnerRepo.findBySupportedCredential(s.getSeqNo().toString()).forEach(
                     dbPartner -> result.add(conv.toAPIObject(dbPartner)));
         });
         return result;

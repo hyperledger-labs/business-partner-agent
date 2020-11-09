@@ -1,32 +1,21 @@
-/**
- * Copyright (c) 2020 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/organizational-agent
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (c) 2020 - for information on the respective copyright owner
+  see the NOTICE file and/or the repository at
+  https://github.com/hyperledger-labs/business-partner-agent
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package org.hyperledger.oa.impl;
-
-import java.util.Iterator;
-import java.util.Optional;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.hyperledger.oa.impl.aries.AriesStartupTasks;
-import org.hyperledger.oa.impl.web.WebStartupTasks;
-import org.hyperledger.oa.model.BPAState;
-import org.hyperledger.oa.repository.BPAStateRepository;
 
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
@@ -34,6 +23,15 @@ import io.micronaut.context.env.Environment;
 import io.micronaut.context.event.StartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.oa.impl.aries.AriesStartupTasks;
+import org.hyperledger.oa.impl.web.WebStartupTasks;
+import org.hyperledger.oa.model.BPAState;
+import org.hyperledger.oa.repository.BPAStateRepository;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Iterator;
+import java.util.Optional;
 
 @Slf4j
 @Singleton
@@ -56,12 +54,12 @@ public class StartupTasks {
     public void onServiceStartedEvent(@SuppressWarnings("unused") StartupEvent startEvent) {
         checkModeChange();
 
-        if (envState.booleanValue()) {
+        if (envState) {
             log.info("Running in Web Only mode.");
-            webTasks.ifPresent(at -> at.onServiceStartedEvent());
+            webTasks.ifPresent(WebStartupTasks::onServiceStartedEvent);
         } else {
             log.info("Running in Aries mode");
-            ariesTasks.ifPresent(at -> at.onServiceStartedEvent());
+            ariesTasks.ifPresent(AriesStartupTasks::onServiceStartedEvent);
         }
     }
 
@@ -71,7 +69,7 @@ public class StartupTasks {
             Boolean state = dbState.get().getWebOnly();
             if (!state.equals(envState)) {
                 String msg;
-                if (state.equals(Boolean.TRUE) && envState.equals(Boolean.FALSE)) {
+                if (state.equals(Boolean.TRUE)) {
                     msg = "Switching from web only mode to aries is not supported";
                 } else {
                     msg = "Switching from aries to web mode is not supported";

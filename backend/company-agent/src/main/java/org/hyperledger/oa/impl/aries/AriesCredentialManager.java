@@ -1,19 +1,19 @@
-/**
- * Copyright (c) 2020 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/organizational-agent
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (c) 2020 - for information on the respective copyright owner
+  see the NOTICE file and/or the repository at
+  https://github.com/hyperledger-labs/business-partner-agent
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package org.hyperledger.oa.impl.aries;
 
@@ -40,6 +40,8 @@ import org.hyperledger.oa.api.aries.ProfileVC;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.api.exception.PartnerException;
 import org.hyperledger.oa.config.runtime.RequiresAries;
+import org.hyperledger.oa.controller.api.WebSocketMessageBody;
+import org.hyperledger.oa.impl.MessageService;
 import org.hyperledger.oa.impl.activity.VPManager;
 import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.impl.util.Converter;
@@ -95,6 +97,9 @@ public class AriesCredentialManager {
 
     @Inject
     ObjectMapper mapper;
+
+    @Inject
+    MessageService messageService;
 
     // request credential from issuer (partner)
     public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId) {
@@ -153,7 +158,7 @@ public class AriesCredentialManager {
     }
 
     // credential signed, but not in wallet yet
-    public void handleStroreCredential(CredentialExchange credEx) {
+    public void handleStoreCredential(CredentialExchange credEx) {
         credRepo.findByThreadId(credEx.getThreadId())
                 .ifPresentOrElse(cred -> {
                     try {
@@ -163,7 +168,7 @@ public class AriesCredentialManager {
                     } catch (IOException e) {
                         log.error("aca-py not reachable", e);
                     }
-                }, () -> log.error("Received store credential event without matching therad id"));
+                }, () -> log.error("Received store credential event without matching thread id"));
     }
 
     // credential, signed and stored in wallet
@@ -177,11 +182,12 @@ public class AriesCredentialManager {
                             .setState(credEx.getState())
                             .setIssuer(resolveIssuer(credEx.getCredential()))
                             .setIssuedAt(Instant.now());
-                    credRepo.update(cred);
+                    MyCredential updated = credRepo.update(cred);
+                    messageService.sendMessage(WebSocketMessageBody.credentialReceived(buildAriesCredential(updated)));
+
                 }, () -> log.error("Received credential without matching thread id, credential is not stored."));
     }
 
-    @SuppressWarnings("boxing")
     public Optional<MyCredential> toggleVisibility(UUID id) {
         final Optional<MyCredential> cred = credRepo.findById(id);
         if (cred.isPresent()) {
@@ -220,6 +226,13 @@ public class AriesCredentialManager {
         return myCred.build();
     }
 
+    /**
+     * Updates the credentials label
+     * 
+     * @param id    the credential id
+     * @param label the credentials label
+     * @return the updated credential if found
+     */
     public Optional<AriesCredential> updateCredentialById(@NonNull UUID id, @NonNull String label) {
         final Optional<AriesCredential> cred = getAriesCredentialById(id);
         if (cred.isPresent()) {

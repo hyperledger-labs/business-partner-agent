@@ -1,31 +1,27 @@
-/**
- * Copyright (c) 2020 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/organizational-agent
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (c) 2020 - for information on the respective copyright owner
+  see the NOTICE file and/or the repository at
+  https://github.com/hyperledger-labs/business-partner-agent
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package org.hyperledger.oa.impl.activity;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.micronaut.scheduling.annotation.Async;
+import lombok.AccessLevel;
+import lombok.NonNull;
+import lombok.Setter;
 import org.hyperledger.aries.api.credential.Credential;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential.VerifiableIndyCredentialBuilder;
@@ -46,13 +42,13 @@ import org.hyperledger.oa.repository.MyCredentialRepository;
 import org.hyperledger.oa.repository.MyDocumentRepository;
 import org.hyperledger.oa.repository.PartnerRepository;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import io.micronaut.scheduling.TaskExecutors;
-import io.micronaut.scheduling.annotation.Async;
-import lombok.AccessLevel;
-import lombok.NonNull;
-import lombok.Setter;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 @Singleton
 public class VPManager {
@@ -84,9 +80,8 @@ public class VPManager {
 
         String myDid = id.getMyDid();
 
-        docRepo.findByIsPublicTrue().forEach(doc -> {
-            vcs.add(buildFromDocument(doc, myDid));
-        });
+        docRepo.findByIsPublicTrue().forEach(doc -> vcs.add(buildFromDocument(doc, myDid)));
+
         credRepo.findByIsPublicTrue().forEach(cred -> {
             if (!CredentialType.OTHER.equals(cred.getType())) {
                 vcs.add(buildFromCredential(cred, myDid));
@@ -99,7 +94,7 @@ public class VPManager {
         signVP(vcs);
     }
 
-    @Async(value = TaskExecutors.SCHEDULED)
+    @Async
     public void signVP(List<VerifiableIndyCredential> vcs) {
         final VerifiablePresentationBuilder<VerifiableIndyCredential> vpBuilder = VerifiablePresentation.builder();
         if (vcs.size() > 0) {
