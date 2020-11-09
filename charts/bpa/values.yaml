@@ -21,7 +21,7 @@ bpa:
     tag: ""
 
   # Security Config
-  securityEnabled: false
+  securityEnabled: true
   # Default username and password, set if running in production like environments
   userName: admin
   password: changeme
@@ -97,8 +97,7 @@ acapy:
     # Overrides the image tag whose default is the chart appVersion.
     tag: py36-1.15-0_0.5.6
 
-  # Enter wallet seed here:
-  agentSeed: 0dcb2d7b444a4de591316231527aea1f
+  agentSeed:
 
   adminURLApiKey: 2f9729eef0be49608c1cffd49ee3cc4a
 

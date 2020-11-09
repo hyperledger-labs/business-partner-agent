@@ -1,0 +1,129 @@
+{{ template "chart.header" . }}
+{{ template "chart.description" . }}
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+This chart will install BPA (bpa-core & bpa-acapy) and Postgres.
+
+It will also create the default ingress routes.
+
+## TL;DR
+
+```sh
+helm repo add bpa https://hyperledger-labs.github.io/business-partner-agent/
+helm repo update
+helm install \
+	--set bpa.image.repository=myrepo.io/bpa \
+	--set bpa.image.tag=latest \
+	--set bpa.acapy.agentSeed=12345678901234567890123456789012 \
+   	mybpa bpa/bpa -n mynamespace --devel
+```
+
+Get the application URL by running the commands returned by helm install, e.g.:
+```sh
+export POD_NAME=$(kubectl get pods --namespace md -l "app.kubernetes.io/name=bpa-bpacore,app.kubernetes.io/instance=mynamespace" -o jsonpath="{.items[0].metadata.name}")
+echo "Visit http://127.0.0.1:8080 to use your application"
+kubectl --namespace mynamespace port-forward $POD_NAME 8080:8080
+ ```
+
+## Introduction
+
+This chart bootstraps a business partner agent deployment on a Kubernetes cluster using the Helm package manager. Its default installation comes with PostgreSQL. Ingress routes can be activated, allowing the agent to 
+communicate with other agents outside the cluster.
+
+## Requirements
+
+- Kubernetes 1.12+
+- Docker
+- Helm v3.3.4+
+- PV provisioner support in the underlying infrastructure (for PostgreSQL persistence)
+- If activating Ingress routes:
+  - Ingress controller installed
+  - Cert-manager
+  - DNS records pointing to your routes  
+
+## Initial preparation
+
+The following steps have to be done only once.
+
+### Clone this git repository 
+
+This  is required for the next preparation steps.
+
+```s
+git@github.com:hyperledger-labs/business-partner-agent.git
+cd business-partner-agent
+```
+
+### Create and push docker image 
+
+In the future we plan to have bpa image publically available, e.g. on docker hub.
+Currently you have to build it on your own and make it available in a registry (one that is reachable by your kubernetes cluster, e.g. docker hub). 
+
+Build your image by executing the docker build command and push it to you registry. 
+
+```s
+docker login --username=yourusername --password=yourpassword
+docker build -t myrepo.io/bpa:latest .
+sudo docker push myrepo.io/bpa:latest
+```
+
+### Register a new DID
+
+Use the `./scripts/register-did.sh` script to register a new DID on our test network (see also [main documentation](../../README.md)
+Just run:
+
+```s
+./scripts/register-did.sh
+```
+
+## Install the chart
+
+To install the chart with the release name `bpa`, the docker image `myrepo.io/bpa` and the seed `12345678901234567890123456789012` in the namespace `mynamespace`
+
+```sh
+helm repo add bpa https://hyperledger-labs.github.io/business-partner-agent/
+helm repo update
+helm install \
+	--set bpa.image.repository=myrepo.io/bpa \
+	--set bpa.image.tag=latest \
+	--set bpa.acapy.agentSeed=12345678901234567890123456789012 \
+   	mybpa bpa/bpa -n mynamespace --devel
+```
+
+The command deploys BPA (bpa-core & bpa-acapy) and Postgres on the Kubernetes cluster in the default configuration. The [Parameters](#Parameters) sections list the parameter that can be configured during installation.
+
+Deploying the charts with configured ingress routes could be done e.g. as follows:
+TODO
+
+## Uninstalling the Chart
+
+To uninstall/delete the my-release deployment:
+
+```sh
+helm delete mybpa
+```
+
+The command removes all the Kubernetes components but PVC's associated with the chart and deletes the release.
+
+To delete the PVC's associated with my-release:
+
+```sh
+kubectl delete pvc -l release=mybpa
+```
+
+Note: Deleting the PVC's will delete postgresql data as well. Please be cautious before doing it.
+culpa qui officia deserunt mollit anim id est laborum.
+
+## Installing the Chart
+
+To install the chart with the release name `my-release`:
+
+```console
+$ helm repo add foo-bar http://charts.foo-bar.com
+$ helm install my-release foo-bar/{{ template "chart.name" . }}
+```
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}
