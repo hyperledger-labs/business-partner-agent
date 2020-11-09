@@ -1,7 +1,7 @@
 /*
   Copyright (c) 2020 - for information on the respective copyright owner
   see the NOTICE file and/or the repository at
-  https://github.com/hyperledger-labs/organizational-agent
+  https://github.com/hyperledger-labs/business-partner-agent
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
