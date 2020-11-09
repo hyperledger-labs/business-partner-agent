@@ -42,7 +42,7 @@ const actions = {
     axios
       .get(`${apiBaseUrl}/admin/endpoints/registrationRequired`)
       .then((result) => {
-        let required = result.data;
+        const required = result.data;
         if (required) {
           dispatch("getTaa");
         }
@@ -76,8 +76,8 @@ const actions = {
         digest: state.taaDigest,
       })
       .then(() => {
+        EventBus.$emit("success", "TAA registration fired");
         dispatch("validateTaa");
-        EventBus.$emit("success", "Success");
       })
       .catch((e) => {
         console.error(e);
