@@ -17,14 +17,11 @@
  */
 package org.hyperledger.oa.impl.aries;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import io.micronaut.context.annotation.Value;
+import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.scheduling.annotation.Async;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.connection.ReceiveInvitationRequest;
@@ -32,18 +29,22 @@ import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
 import org.hyperledger.oa.config.runtime.RequiresAries;
+import org.hyperledger.oa.controller.api.WebSocketMessageBody;
+import org.hyperledger.oa.impl.MessageService;
 import org.hyperledger.oa.impl.util.AriesStringUtil;
+import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.model.Partner;
 import org.hyperledger.oa.model.PartnerProof;
 import org.hyperledger.oa.repository.MyCredentialRepository;
 import org.hyperledger.oa.repository.PartnerProofRepository;
 import org.hyperledger.oa.repository.PartnerRepository;
 
-import io.micronaut.context.annotation.Value;
-import io.micronaut.core.util.CollectionUtils;
-import io.micronaut.scheduling.annotation.Async;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
@@ -60,10 +61,16 @@ public class ConnectionManager {
     PartnerRepository partnerRepo;
 
     @Inject
-    PartnerProofRepository partnerPrepo;
+    PartnerProofRepository partnerProofRepo;
 
     @Inject
     MyCredentialRepository myCredRepo;
+
+    @Inject
+    MessageService messageService;
+
+    @Inject
+    Converter conv;
 
     @Async
     public void createConnection(@NonNull String did, @NonNull String label, @Nullable String alias) {
@@ -81,21 +88,21 @@ public class ConnectionManager {
 
     public synchronized void handleConnectionEvent(ConnectionRecord connection) {
         if (connection.isIncomingConnection()) {
-            partnerRepo.findByConnectionId(connection.getConnectionId()).ifPresentOrElse(dbP -> {
-                partnerRepo.updateState(dbP.getId(), connection.getState());
-            }, () -> {
-                Partner p = Partner
-                        .builder()
-                        .ariesSupport(Boolean.TRUE)
-                        .alias(connection.getTheirLabel()) // event has no alias in this case
-                        .connectionId(connection.getConnectionId())
-                        .did(didPrefix + connection.getTheirDid())
-                        .label(connection.getTheirLabel())
-                        .state(connection.getState())
-                        .incoming(Boolean.TRUE)
-                        .build();
-                partnerRepo.save(p);
-            });
+            partnerRepo.findByConnectionId(connection.getConnectionId())
+                    .ifPresentOrElse(dbP -> partnerRepo.updateState(dbP.getId(), connection.getState()), () -> {
+                        Partner p = Partner
+                                .builder()
+                                .ariesSupport(Boolean.TRUE)
+                                .alias(connection.getTheirLabel()) // event has no alias in this case
+                                .connectionId(connection.getConnectionId())
+                                .did(didPrefix + connection.getTheirDid())
+                                .label(connection.getTheirLabel())
+                                .state(connection.getState())
+                                .incoming(Boolean.TRUE)
+                                .build();
+                        p = partnerRepo.save(p);
+                        messageService.sendMessage(WebSocketMessageBody.partnerReceived(conv.toAPIObject(p)));
+                    });
         } else {
             partnerRepo.findByLabel(connection.getTheirLabel()).ifPresent(dbP -> {
                 if (dbP.getConnectionId() == null) {
@@ -109,7 +116,7 @@ public class ConnectionManager {
         }
     }
 
-    public boolean removeConnection(String connectionId) {
+    public void removeConnection(String connectionId) {
         log.debug("Removing connection: {}", connectionId);
         try {
             try {
@@ -119,9 +126,9 @@ public class ConnectionManager {
             }
 
             partnerRepo.findByConnectionId(connectionId).ifPresent(p -> {
-                final List<PartnerProof> proofs = partnerPrepo.findByPartnerId(p.getId());
+                final List<PartnerProof> proofs = partnerProofRepo.findByPartnerId(p.getId());
                 if (CollectionUtils.isNotEmpty(proofs)) {
-                    partnerPrepo.deleteAll(proofs);
+                    partnerProofRepo.deleteAll(proofs);
                 }
             });
 
@@ -146,7 +153,5 @@ public class ConnectionManager {
         } catch (IOException e) {
             log.error("Could not delete connection: {}", connectionId, e);
         }
-
-        return false;
     }
 }
