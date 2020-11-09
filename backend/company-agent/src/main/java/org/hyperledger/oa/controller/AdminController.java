@@ -28,6 +28,7 @@ import org.hyperledger.aries.api.ledger.TAAInfo.TAARecord;
 import org.hyperledger.oa.api.aries.SchemaAPI;
 import org.hyperledger.oa.config.RuntimeConfig;
 import org.hyperledger.oa.controller.api.admin.AddSchemaRequest;
+import org.hyperledger.oa.controller.api.admin.TAADigestRequest;
 import org.hyperledger.oa.impl.aries.EndpointService;
 import org.hyperledger.oa.impl.aries.SchemaService;
 
@@ -144,13 +145,13 @@ public class AdminController {
      * has to be passed to explicitly confirm prior TTA acceptance by the user for
      * this ledger interaction / session.
      * 
-     * @param tAADigest TAA digest retrieved from "/taa/get"
+     * @param tAADigest {@link TAADigestRequest}
      * @return {@link HttpResponse}
      */
     @Post("/endpoints/register")
-    public HttpResponse<Void> registerEndpoints(@Body String tAADigest) {
+    public HttpResponse<Void> registerEndpoints(@Body TAADigestRequest tAADigest) {
         if (endpointService.isPresent()) {
-            endpointService.get().registerEndpoints(tAADigest);
+            endpointService.get().registerEndpoints(tAADigest.getDigest());
             return HttpResponse.ok();
         }
         return HttpResponse.notFound();
