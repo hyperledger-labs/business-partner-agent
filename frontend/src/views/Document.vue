@@ -76,7 +76,7 @@
                 icon
                 :to="{
                   name: 'RequestVerification',
-                  params: { documentId: id, type: type },
+                  params: { documentId: id, type: intDoc.type },
                 }"
                 :disabled="docModified()"
               >
