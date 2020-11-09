@@ -1,28 +1,25 @@
-/**
- * Copyright (c) 2020 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/organizational-agent
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (c) 2020 - for information on the respective copyright owner
+  see the NOTICE file and/or the repository at
+  https://github.com/hyperledger-labs/organizational-agent
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package org.hyperledger.oa.impl.activity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.time.Instant;
-import java.util.Map;
-import java.util.UUID;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.impl.util.Converter;
@@ -30,16 +27,17 @@ import org.hyperledger.oa.model.MyDocument;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Instant;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class VPManagerTest {
 
-    private ObjectMapper m = new ObjectMapper();
-    private Converter c = new Converter();
-    private VPManager vpm = new VPManager();
+    private final ObjectMapper m = new ObjectMapper();
+    private final Converter c = new Converter();
+    private final VPManager vpm = new VPManager();
 
     @BeforeEach
     void setup() {
@@ -73,7 +71,7 @@ class VPManagerTest {
                 vp.getCredentialSubject().toString());
     }
 
-    private Map<String, Object> createMap(String json) throws JsonProcessingException, JsonMappingException {
+    private Map<String, Object> createMap(String json) throws JsonProcessingException {
         final JsonNode node = m.readTree(json);
         return c.toMap(node);
     }

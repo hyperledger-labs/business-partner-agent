@@ -1,31 +1,24 @@
-/**
- * Copyright (c) 2020 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/organizational-agent
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (c) 2020 - for information on the respective copyright owner
+  see the NOTICE file and/or the repository at
+  https://github.com/hyperledger-labs/organizational-agent
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package org.hyperledger.oa.impl.aries;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import io.micronaut.context.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.EndpointResponse;
@@ -37,8 +30,13 @@ import org.hyperledger.aries.api.wallet.SetDidEndpointRequest;
 import org.hyperledger.aries.api.wallet.WalletDidResponse;
 import org.hyperledger.oa.api.exception.NetworkException;
 
-import io.micronaut.context.annotation.Value;
-import lombok.extern.slf4j.Slf4j;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Service which registers endpoints on the ledger.
@@ -104,7 +102,7 @@ public class EndpointService {
     }
 
     public Optional<TAARecord> getTAA() {
-        Optional<TAAInfo> taa = null;
+        Optional<TAAInfo> taa;
         try {
             taa = ac.ledgerTaa();
             if (taa.isPresent())
@@ -157,14 +155,16 @@ public class EndpointService {
 
     private void registerProfileEndpoint(String endpoint, EndpointType type) {
         try {
-            WalletDidResponse res = ac.walletDidPublic().get();
-            log.info("Publishing public '{}' endpoint: {}", type, endpoint);
-            ac.walletSetDidEndpoint(SetDidEndpointRequest
-                    .builder()
-                    .did(res.getDid())
-                    .endpointType(type)
-                    .endpoint(endpoint)
-                    .build());
+            Optional<WalletDidResponse> pubDid = ac.walletDidPublic();
+            if (pubDid.isPresent()) {
+                log.info("Publishing public '{}' endpoint: {}", type, endpoint);
+                ac.walletSetDidEndpoint(SetDidEndpointRequest
+                        .builder()
+                        .did(pubDid.get().getDid())
+                        .endpointType(type)
+                        .endpoint(endpoint)
+                        .build());
+            }
         } catch (IOException e) {
             log.error("Could not publish the '{}' endpoint", type, e);
         }
@@ -172,7 +172,7 @@ public class EndpointService {
 
     private void acceptTAA(String tAADigest) throws IOException {
         Optional<TAAInfo> taa = ac.ledgerTaa();
-        if (!taa.isEmpty()) {
+        if (taa.isPresent()) {
             // do TAA acceptance even if not required or if already done
             // (assuming the user accepted the TAA for this single ledger interaction or
             // this session)

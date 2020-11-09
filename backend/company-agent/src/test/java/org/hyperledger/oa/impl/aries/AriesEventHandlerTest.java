@@ -1,30 +1,23 @@
-/**
- * Copyright (c) 2020 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/organizational-agent
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (c) 2020 - for information on the respective copyright owner
+  see the NOTICE file and/or the repository at
+  https://github.com/hyperledger-labs/organizational-agent
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package org.hyperledger.oa.impl.aries;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Optional;
-
-import javax.inject.Inject;
-
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventParser;
 import org.hyperledger.oa.BaseTest;
@@ -34,7 +27,12 @@ import org.hyperledger.oa.repository.PartnerProofRepository;
 import org.hyperledger.oa.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
 
-import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import javax.inject.Inject;
+import java.util.Optional;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @MicronautTest
 class AriesEventHandlerTest extends BaseTest {
@@ -48,10 +46,10 @@ class AriesEventHandlerTest extends BaseTest {
     @Inject
     PartnerRepository partnerRepo;
 
-    private EventParser ep = new EventParser();
+    private final EventParser ep = new EventParser();
 
     @Test
-    void testHandleProofRequest() throws Exception {
+    void testHandleProofRequest() {
         String reqSent = loader.load("files/request-proof/01-verifier-request-sent.json");
         String presRec = loader.load("files/request-proof/02-verifier-presentation-received.json");
         String verified = loader.load("files/request-proof/03-verifier-verified.json");
@@ -86,7 +84,7 @@ class AriesEventHandlerTest extends BaseTest {
     }
 
     @Test
-    void testHandleProofProposal() throws Exception {
+    void testHandleProofProposal() {
         String propSent = loader.load("files/send-proof/01-prover-proposal-sent.json");
         String reqRec = loader.load("files/send-proof/02-prover-request-received.json");
         String presSent = loader.load("files/send-proof/03-prover-presentation-sent.json");

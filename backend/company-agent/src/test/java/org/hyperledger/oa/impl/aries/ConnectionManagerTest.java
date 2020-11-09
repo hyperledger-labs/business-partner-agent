@@ -1,46 +1,24 @@
-/**
- * Copyright (c) 2020 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/organizational-agent
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (c) 2020 - for information on the respective copyright owner
+  see the NOTICE file and/or the repository at
+  https://github.com/hyperledger-labs/organizational-agent
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package org.hyperledger.oa.impl.aries;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-/**
- * Copyright (c) 2020 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/organizational-agent
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-import java.util.Optional;
-
-import javax.inject.Inject;
-
+import com.google.gson.Gson;
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.oa.BaseTest;
@@ -48,14 +26,16 @@ import org.hyperledger.oa.model.Partner;
 import org.hyperledger.oa.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
 
-import com.google.gson.Gson;
+import javax.inject.Inject;
+import java.util.Optional;
 
-import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @MicronautTest
 class ConnectionManagerTest extends BaseTest {
 
-    private Gson gson = GsonConfig.defaultConfig();
+    private final Gson gson = GsonConfig.defaultConfig();
 
     @Inject
     ConnectionManager mgmt;
@@ -64,7 +44,7 @@ class ConnectionManagerTest extends BaseTest {
     PartnerRepository repo;
 
     @Test
-    void testCreateConnectionEvents() throws Exception {
+    void testCreateConnectionEvents() {
         repo.save(Partner
                 .builder()
                 .ariesSupport(Boolean.TRUE)
@@ -88,7 +68,7 @@ class ConnectionManagerTest extends BaseTest {
     }
 
     @Test
-    void testReceiveConnectionEvents() throws Exception {
+    void testReceiveConnectionEvents() {
         final ConnectionRecord invite = gson.fromJson(receiveInvite, ConnectionRecord.class);
         mgmt.handleConnectionEvent(invite);
 
@@ -103,7 +83,7 @@ class ConnectionManagerTest extends BaseTest {
         assertEquals("active", p.get().getState());
     }
 
-    private String createInvite = "{\n" +
+    private final String createInvite = "{\n" +
             "    \"accept\": \"auto\",\n" +
             "    \"created_at\": \"2020-09-17 08:03:09.370827Z\",\n" +
             "    \"connection_id\": \"19a61365-894a-42b6-bdd1-e747ec9321fd\",\n" +
@@ -116,7 +96,7 @@ class ConnectionManagerTest extends BaseTest {
             "    \"alias\": \"Alice\"\n" +
             "}";
 
-    private String createActive = "{\n" +
+    private final String createActive = "{\n" +
             "    \"accept\": \"auto\",\n" +
             "    \"created_at\": \"2020-09-17 08:03:09.370827Z\",\n" +
             "    \"connection_id\": \"19a61365-894a-42b6-bdd1-e747ec9321fd\",\n" +
@@ -132,7 +112,7 @@ class ConnectionManagerTest extends BaseTest {
             "    \"their_did\": \"2mWTTjMyFrUX1ApNN2zUe1\"\n" +
             "}";
 
-    private String receiveInvite = " {\n" +
+    private final String receiveInvite = " {\n" +
             "    \"created_at\": \"2020-09-17 08:03:10.123103Z\",\n" +
             "    \"my_did\": \"2mWTTjMyFrUX1ApNN2zUe1\",\n" +
             "    \"their_label\": \"Bob's Agent\",\n" +
@@ -147,7 +127,7 @@ class ConnectionManagerTest extends BaseTest {
             "    \"accept\": \"auto\"\n" +
             "}";
 
-    private String receiveActive = "{\n" +
+    private final String receiveActive = "{\n" +
             "    \"created_at\": \"2020-09-17 08:03:10.123103Z\",\n" +
             "    \"my_did\": \"2mWTTjMyFrUX1ApNN2zUe1\",\n" +
             "    \"their_label\": \"Bob's Agent\",\n" +

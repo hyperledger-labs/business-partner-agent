@@ -1,37 +1,28 @@
-/**
- * Copyright (c) 2020 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/organizational-agent
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (c) 2020 - for information on the respective copyright owner
+  see the NOTICE file and/or the repository at
+  https://github.com/hyperledger-labs/organizational-agent
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package org.hyperledger.oa.impl;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import io.micronaut.core.util.StringUtils;
+import io.micronaut.data.exceptions.DataAccessException;
+import io.micronaut.scheduling.annotation.Async;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.*;
 import org.hyperledger.oa.api.exception.WrongApiUsageException;
 import org.hyperledger.oa.core.RegisteredWebhook;
 import org.hyperledger.oa.core.RegisteredWebhook.RegisteredWebhookResponse;
@@ -42,16 +33,14 @@ import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.model.BPAWebhook;
 import org.hyperledger.oa.repository.BPAWebhookRepository;
 
-import io.micronaut.core.util.StringUtils;
-import io.micronaut.data.exceptions.DataAccessException;
-import io.micronaut.scheduling.annotation.Async;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.*;
 
 @Slf4j
 @Singleton
@@ -119,7 +108,7 @@ public class WebhookService {
                         .builder()
                         .payload(msg)
                         .type(eventType)
-                        .sent(Long.valueOf(Instant.now().toEpochMilli()))
+                        .sent(Instant.now().toEpochMilli())
                         .build();
 
                 conv.writeValueAsString(event).ifPresent(json -> {
@@ -133,7 +122,7 @@ public class WebhookService {
                         if (!response.isSuccessful()) {
                             String body = response.body() != null ? response.body().toString() : "";
                             log.error("Call to {} falied, code: {}, msg: {}",
-                                    hook.getUrl(), Integer.valueOf(response.code()), body);
+                                    hook.getUrl(), response.code(), body);
                         }
                     } catch (IOException ex) {
                         log.error("Call to " + hook.getUrl() + " failed", ex);
@@ -162,7 +151,7 @@ public class WebhookService {
             String basic = "Basic ";
             String base64 = Base64.getEncoder()
                     .encodeToString((creds.getUsername() + ":" + creds.getPassword())
-                            .getBytes(Charset.forName("UTF-8")));
+                            .getBytes(StandardCharsets.UTF_8));
             b.addHeader("Authorization", basic + base64);
         }
     }
