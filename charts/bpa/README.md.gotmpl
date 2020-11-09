@@ -124,6 +124,19 @@ $ helm repo add foo-bar http://charts.foo-bar.com
 $ helm install my-release foo-bar/{{ template "chart.name" . }}
 ```
 
+Get the application URL by running the commands returned by helm install, e.g.:
+```sh
+export POD_NAME=$(kubectl get pods --namespace md -l "app.kubernetes.io/name=bpa-bpacore,app.kubernetes.io/instance=mynamespace" -o jsonpath="{.items[0].metadata.name}")
+echo "Visit http://127.0.0.1:8080 to use your application"
+kubectl --namespace mynamespace port-forward $POD_NAME 8080:8080
+ ```
+
+## Chart dependencies
+
+{{ template "chart.requirementsTable" . }}
+
 {{ template "chart.valuesSection" . }}
+
+{{ template "chart.maintainersSection" . }}
 
 {{ template "helm-docs.versionFooter" . }}
