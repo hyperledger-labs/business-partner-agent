@@ -28,11 +28,11 @@ The Business Partner Agent supports two modes
 1. Web mode: Serves a did:web identity and allows to publish a public organizational profile.
 2. Aries mode: Utilizes an identity on an Hyperledger Indy ledger (default: https://indy-test.bosch-digital.de/) and enables Aries interaction protocols.
 
-Following this guide, the agent will be started in Aries mode.
+In our documentation, the agent will be started in Aries mode.
 
 ## Run a business partner agent
 
-You can either run the agent [via docker-compose](charts/bpa) (recommended for e.g. development /debugging) or deploy it into a [kubernetes cluster (via helm)](charts/bpa).
+You can either run the agent [via docker-compose](docker/) (recommended for e.g. development /debugging) or deploy it into a [kubernetes cluster (via helm)](charts/bpa).
 
 ## Play a demo scenario
 
