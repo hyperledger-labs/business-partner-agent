@@ -119,7 +119,25 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 {{ template "chart.requirementsTable" . }}
 
 ## Chart development
-*TODO*
+
+# Deployment
+
+Charts in the [charts folder](..) will be automatically deployed to a repository hosted on github pages.
+To deploy a new version:
+- checkout master
+- increase the version in [Chart.yaml](Chart.yaml)
+- push the changes to a new release branch or checkout an existing one (release/*)
+
+Release will be created automatically via github workflow / action.
+
+# Documentation 
+
+The Documentation is generated via `helm-docs` out of a go template.
+
+```sh
+cd charts
+docker run --rm --volume "$(pwd):/helm-docs" -u $(id -u) jnorwood/helm-docs:latest
+```
 
 {{ template "chart.maintainersSection" . }}
 
