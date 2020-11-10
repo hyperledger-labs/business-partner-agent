@@ -7,22 +7,8 @@
 -->
 <template>
   <v-container>
-    <div
-      v-if="(document && document.isPublic) || publicDocumentsAndCredentials"
-    >
-      <OrganizationalProfile
-        v-if="document && document.isPublic"
-        v-bind:documentData="document.documentData"
-        isReadOnly
-      >
-      </OrganizationalProfile>
-      <DocumentCredentialList
-        v-if="!isBusy"
-        v-bind:credentials="publicDocumentsAndCredentials"
-        isReadOnly
-        showOnlyContent
-      >
-      </DocumentCredentialList>
+    <div v-if="publicDocumentsAndCredentials.length > 0">
+      <Profile v-bind:partner="{ credential: publicDocumentsAndCredentials }" />
     </div>
 
     <v-container v-else fill-height fluid text-center>
@@ -41,16 +27,16 @@
 </template>
 
 <script>
-import OrganizationalProfile from "@/components/OrganizationalProfile";
-import DocumentCredentialList from "@/components/credentials/DocumentCredentialList";
+import Profile from "@/components/Profile";
+// import DocumentCredentialList from "@/components/credentials/DocumentCredentialList";
 
 import { EventBus } from "../main";
 export default {
   name: "PublicProfile",
   props: {},
   components: {
-    OrganizationalProfile,
-    DocumentCredentialList,
+    Profile,
+    // DocumentCredentialList,
   },
   computed: {
     document() {

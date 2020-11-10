@@ -8,8 +8,6 @@
 
 import Vue from "vue";
 import Vuex from "vuex";
-//import moment from "moment";
-//import { EventBus, axios, apiBaseUrl } from "../main";
 import { CredentialTypes } from "../constants";
 //import { getPartnerProfile } from "../utils/partnerUtils";
 import taa from "./modules/taa";
@@ -34,9 +32,7 @@ const store = new Vuex.Store({
     },
     publicDocumentsAndCredentials: (state) => {
       var retval = state.credentials
-        .concat(
-          state.documents.filter((d) => d.type != CredentialTypes.PROFILE.name)
-        )
+        .concat(state.documents)
         .filter((d) => d.isPublic == true);
       return retval;
     },

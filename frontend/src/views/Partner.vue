@@ -70,15 +70,7 @@
       <v-progress-linear v-if="isLoading" indeterminate></v-progress-linear>
 
       <v-card-text>
-        <OrganizationalProfile
-          v-if="partner.profile"
-          v-bind:documentData="partner.profile"
-          isReadOnly
-        ></OrganizationalProfile>
-        <DocumentCredentialList
-          v-if="isReady"
-          v-bind:credentials="credentials"
-        ></DocumentCredentialList>
+        <Profile v-if="isReady" v-bind:partner="partner"></Profile>
         <v-row class="mx-4">
           <v-col cols="4">
             <v-row>
@@ -176,8 +168,7 @@
 </template>
 
 <script>
-import OrganizationalProfile from "@/components/OrganizationalProfile";
-import DocumentCredentialList from "@/components/credentials/DocumentCredentialList";
+import Profile from "@/components/Profile";
 import PresentationList from "@/components/PresentationList";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import { CredentialTypes } from "../constants";
@@ -187,10 +178,9 @@ export default {
   name: "Partner",
   props: ["id"],
   components: {
-    OrganizationalProfile,
+    Profile,
     PresentationList,
     PartnerStateIndicator,
-    DocumentCredentialList,
   },
   created() {
     EventBus.$emit("title", "Partner");
@@ -338,15 +328,9 @@ export default {
                 profile: getPartnerProfile(result.data),
               },
             };
-            if ({}.hasOwnProperty.call(this.partner, "credential")) {
-              // Show only creds other than OrgProfile in credential list
-              this.credentials = this.partner.credential.filter((cred) => {
-                return cred.type !== CredentialTypes.PROFILE.name;
-              });
-            }
 
             // Hacky way to define a partner name
-            // Todo: Make this consistent. Probalby in backend
+            // Todo: Make this consistent. Probably in backend
             this.partner.name = getPartnerName(this.partner);
             this.alias = this.partner.name;
             this.isReady = true;

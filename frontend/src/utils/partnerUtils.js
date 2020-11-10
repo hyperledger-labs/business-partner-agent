@@ -10,15 +10,21 @@ import { CredentialTypes } from "../constants";
 
 export const getPartnerProfile = (partner) => {
   if ({}.hasOwnProperty.call(partner, "credential")) {
+    console.log(partner.credential);
     let partnerProfile = partner.credential.find((cred) => {
       return cred.type === CredentialTypes.PROFILE.name;
     });
 
-    return partnerProfile &&
-      {}.hasOwnProperty.call(partnerProfile, "credentialData")
-      ? partnerProfile.credentialData
-      : null;
-  } else return null;
+    if (partnerProfile) {
+      if ({}.hasOwnProperty.call(partnerProfile, "credentialData")) {
+        return partnerProfile.credentialData;
+      } else if ({}.hasOwnProperty.call(partnerProfile, "documentData")) {
+        return partnerProfile.documentData;
+      }
+    }
+  }
+
+  return null;
 };
 
 export const getPartnerName = (partner) => {
