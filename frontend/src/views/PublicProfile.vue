@@ -8,6 +8,11 @@
 <template>
   <v-container>
     <div v-if="publicDocumentsAndCredentials.length > 0">
+      <v-alert color="light" border="left" elevation="2" icon="md-info" dark>
+        You can change the visibility settings of documents and verified
+        credentials in the <strong>wallet</strong> to update your public
+        profile.
+      </v-alert>
       <Profile v-bind:partner="{ credential: publicDocumentsAndCredentials }" />
     </div>
 
@@ -28,15 +33,12 @@
 
 <script>
 import Profile from "@/components/Profile";
-// import DocumentCredentialList from "@/components/credentials/DocumentCredentialList";
-
 import { EventBus } from "../main";
 export default {
   name: "PublicProfile",
   props: {},
   components: {
     Profile,
-    // DocumentCredentialList,
   },
   computed: {
     document() {
