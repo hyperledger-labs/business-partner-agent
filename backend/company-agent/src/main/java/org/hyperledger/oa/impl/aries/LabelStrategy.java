@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.credential.Credential;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.MyDocumentAPI;
+import org.hyperledger.oa.api.aries.AriesCredential;
 import org.hyperledger.oa.config.runtime.RequiresAries;
 import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.model.BPASchema;
@@ -50,19 +51,19 @@ public class LabelStrategy {
             // TODO broken for type other
             Optional<String> attr = findDefaultAttribute(document.getType());
             if (attr.isPresent()) {
-                    JsonNode documentData = document.getDocumentData();
-                    JsonNode value = documentData.findValue(attr.get());
-                    if (value != null) {
-                        String label = value.asText();
-                        document.setLabel(label);
-                        return label;
-                    }
+                JsonNode documentData = document.getDocumentData();
+                JsonNode value = documentData.findValue(attr.get());
+                if (value != null) {
+                    String label = value.asText();
+                    document.setLabel(label);
+                    return label;
+                }
             }
         }
         return null;
     }
 
-    public @Nullable String apply(@NonNull CredentialType type, Credential credential) {
+    public @Nullable String apply(@NonNull CredentialType type, @Nullable Credential credential) {
         Optional<String> attr = findDefaultAttribute(type);
         if (attr.isPresent() && credential != null && credential.getAttrs() != null) {
             Map<String, String> attrs = credential.getAttrs();
@@ -71,7 +72,21 @@ public class LabelStrategy {
         return null;
     }
 
-    private Optional<String> findDefaultAttribute(CredentialType type) {
+    public @Nullable String apply(@Nullable String newLabel, @NonNull AriesCredential credential) {
+        String mergedLabel = null;
+        if (StringUtils.isNotBlank(newLabel)) {
+            mergedLabel = newLabel;
+        } else {
+            Optional<String> attr = findDefaultAttribute(credential.getType());
+            if (attr.isPresent() && credential.getCredentialData() != null) {
+                Map<String, String> attrs = credential.getCredentialData();
+                mergedLabel = attrs.get(attr.get());
+            }
+        }
+        return mergedLabel;
+    }
+
+    private Optional<String> findDefaultAttribute(@NonNull CredentialType type) {
         BPASchema schema = schemaService.getSchemaFor(type);
         if (schema != null) {
             String defaultAttributeName = schema.getDefaultAttributeName();

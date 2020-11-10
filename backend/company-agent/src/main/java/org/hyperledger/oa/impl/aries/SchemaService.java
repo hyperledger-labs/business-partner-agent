@@ -58,7 +58,7 @@ public class SchemaService {
     }
 
     SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label,
-                        @Nullable String defaultAttributeName, boolean isReadOnly) {
+            @Nullable String defaultAttributeName, boolean isReadOnly) {
         SchemaAPI result = null;
         String sId = StringUtils.strip(schemaId);
         final CredentialType credType = CredentialType.fromSchemaId(sId);

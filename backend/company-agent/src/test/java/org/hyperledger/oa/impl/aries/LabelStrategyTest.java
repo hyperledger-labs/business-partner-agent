@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hyperledger.aries.api.credential.Credential;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.MyDocumentAPI;
+import org.hyperledger.oa.api.aries.AriesCredential;
 import org.hyperledger.oa.model.BPASchema;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -96,6 +97,23 @@ public class LabelStrategyTest {
         Credential credential = new Credential();
         credential.setAttrs(Map.of("iban", "test123", "bic", "1234"));
         String label = labelStrategy.apply(CredentialType.BANK_ACCOUNT_CREDENTIAL, credential);
+        assertEquals("test123", label);
+    }
+
+    @Test
+    void testSetLabelOnCredentialUpdate() {
+        String myLabel = labelStrategy.apply("My Label", new AriesCredential());
+        assertEquals("My Label", myLabel);
+    }
+
+    void testResetLabelOnCredentialUpdate() {
+        when(schemaService.getSchemaFor(any(CredentialType.class))).thenReturn(BPASchema
+                .builder()
+                .defaultAttributeName("iban")
+                .build());
+        AriesCredential credential = new AriesCredential();
+        credential.setCredentialData(Map.of("iban", "test123", "bic", "1234"));
+        String label = labelStrategy.apply("", credential);
         assertEquals("test123", label);
     }
 }

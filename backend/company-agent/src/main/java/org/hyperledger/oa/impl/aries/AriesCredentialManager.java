@@ -239,10 +239,11 @@ public class AriesCredentialManager {
      * @param label the credentials label
      * @return the updated credential if found
      */
-    public Optional<AriesCredential> updateCredentialById(@NonNull UUID id, @NonNull String label) {
+    public Optional<AriesCredential> updateCredentialById(@NonNull UUID id, @Nullable String label) {
         final Optional<AriesCredential> cred = getAriesCredentialById(id);
         if (cred.isPresent()) {
-            credRepo.updateLabel(id, label);
+            String mergedLabel = labelStrategy.apply(label, cred.get());
+            credRepo.updateLabel(id, mergedLabel);
             cred.get().setLabel(label);
         }
         return cred;

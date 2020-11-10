@@ -22,6 +22,7 @@ import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.MyDocumentAPI;
 import org.hyperledger.oa.api.exception.WrongApiUsageException;
 import org.hyperledger.oa.impl.activity.VPManager;
+import org.hyperledger.oa.impl.aries.LabelStrategy;
 import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.model.MyDocument;
 import org.hyperledger.oa.repository.MyDocumentRepository;
@@ -37,19 +38,23 @@ import java.util.UUID;
 public class MyDocumentManager {
 
     @Inject
-    private MyDocumentRepository docRepo;
+    MyDocumentRepository docRepo;
 
     @Inject
-    private VPManager vp;
+    VPManager vp;
 
     @Inject
-    private Converter converter;
+    Converter converter;
+
+    @Inject
+    Optional<LabelStrategy> labelStrategy;
 
     @SuppressWarnings("boxing")
     public MyDocumentAPI saveNewDocument(@NonNull MyDocumentAPI document) {
         // there should be only one Masterdata credential
         verifyOnlyOneMasterdata(document);
 
+        labelStrategy.ifPresent(strategy -> strategy.apply(document));
         final MyDocument vc = docRepo.save(converter.toModelObject(document));
 
         if (document.getIsPublic()) { // new credential, so no need to change the VP when it's private
@@ -65,6 +70,7 @@ public class MyDocumentManager {
             throw new WrongApiUsageException("Credential does not exist in database");
         }
 
+        labelStrategy.ifPresent(strategy -> strategy.apply(document));
         MyDocument dbCredUpdated = converter.updateMyCredential(document, dbCred.get());
         docRepo.update(dbCredUpdated);
 
