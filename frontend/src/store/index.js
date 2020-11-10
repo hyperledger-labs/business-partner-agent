@@ -8,10 +8,7 @@
 
 import Vue from "vue";
 import Vuex from "vuex";
-//import moment from "moment";
-//import { EventBus, axios, apiBaseUrl } from "../main";
 import { CredentialTypes } from "../constants";
-//import { getPartnerProfile } from "../utils/partnerUtils";
 import taa from "./modules/taa";
 import * as actions from "./actions";
 
@@ -20,12 +17,19 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
     partners: [],
+    newPartners: [],
     editedDocument: {}, //document currently being edited
     documents: [],
     credentials: [],
+    newCredentials: [],
     schemas: [],
     busyStack: 0,
     expertMode: false,
+    socket: {
+      isConnected: false,
+      message: "",
+      reconnectError: false,
+    },
   },
 
   getters: {
@@ -57,18 +61,35 @@ const store = new Vuex.Store({
   actions: actions,
 
   mutations: {
-    // initEditDocument(state, payload) {
-    //   state.editedDocument.type = payload.documentType
-    //   state.editedDocument.add = payload.add
-    //   if (payload.add) {
-    //     state.editedDocument.document = { ...emptyDocument };
-    //   }
-    //   else {
-    //     state.editedDocument.id = payload.id
-    //     var documents = state.documents.filter(d => d.id == payload.id)
-    //     if (documents.length == 1) state.editedDocument.document = documents[0].documentData
-    //   }
-    // },
+    SOCKET_ONOPEN(state, event) {
+      console.log(event);
+      Vue.prototype.$socket = event.currentTarget;
+      state.socket.isConnected = true;
+    },
+    SOCKET_ONCLOSE(state, event) {
+      console.log(event);
+      state.socket.isConnected = false;
+    },
+    SOCKET_ONERROR(state, event) {
+      console.error(state, event);
+    },
+    // default handler called for all methods
+    SOCKET_ONMESSAGE(state, message) {
+      console.log(message);
+      if (
+        {}.hasOwnProperty(message, "message") &&
+        {}.hasOwnProperty(message.message, "type")
+      ) {
+      }
+      state.socket.message = message;
+    },
+    // mutations for reconnect methods
+    SOCKET_RECONNECT(state, count) {
+      console.info(state, count);
+    },
+    SOCKET_RECONNECT_ERROR(state) {
+      state.socket.reconnectError = true;
+    },
     loadDocumentsFinished(state, payload) {
       state.documents = payload.documents;
     },

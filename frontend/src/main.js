@@ -8,6 +8,7 @@
 
 import Vue from "vue";
 import axios from "axios";
+import VueNativeSock from 'vue-native-websocket';
 import App from "./App.vue";
 import vuetify from "./plugins/vuetify";
 import "@babel/polyfill";
@@ -33,6 +34,37 @@ if (process.env.NODE_ENV === "development") {
 } else {
   apiBaseUrl = "/api";
 }
+
+Vue.use(VueNativeSock, 'ws://localhost:8080/events', {
+  store: store,
+  format: 'json',
+  reconnection: true,
+  passToStoreHandler: function (eventName, event) {
+    if (!eventName.startsWith('SOCKET_')) { return }
+    console.log(event)
+    let msg = event
+    let method = 'commit';
+    let target = eventName.toUpperCase();
+    if (target === 'SOCKET_ONMESSAGE') {
+      if (this.format === 'json' && event.data) {
+        msg = JSON.parse(event.data)
+        method = 'dispatch';
+        switch (msg.message.type) {
+          case 'PARTNER':
+            target = 'newPartner';
+            break;
+          case 'CREDENTIAL':
+            target = 'newCredential';
+            break;
+          case 'PROOF':
+            target = 'newPresentation';
+            break;
+        }
+      }
+    } 
+    this.store[method](target, msg)
+  }
+});
 
 Vue.prototype.$axios = axios;
 Vue.prototype.$apiBaseUrl = apiBaseUrl;
