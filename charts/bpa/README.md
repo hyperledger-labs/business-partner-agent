@@ -91,7 +91,7 @@ echo "Visit http://127.0.0.1:8080 to use your application"
 kubectl --namespace mynamespace port-forward $POD_NAME 8080:8080
  ```
 
-This deploys BPA (bpa-core & bpa-acapy) and Postgres on the Kubernetes cluster in the default configuration. The [Parameters](#Parameters) sections list the parameters that can be configured during installation.
+This deploys BPA (bpa-core & bpa-acapy) and Postgres on the Kubernetes cluster in the default configuration. The [Values](#Values) section list the parameters that can be configured during installation.
 
 Deploying the charts with configured ingress routes could be done e.g. as follows:
 *TODO*
@@ -113,12 +113,6 @@ kubectl delete pvc -l release=mybpa
 ```
 
 Note: Deleting the PVC's will delete postgresql data as well. Please be cautious before doing it.
-
-## Chart dependencies
-
-| Repository | Name | Version |
-|------------|------|---------|
-| https://charts.bitnami.com/bitnami/ | postgresql | 9.7.2 |
 
 ## Values
 
@@ -184,6 +178,11 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | postgresql.postgresqlDatabase | string | `"bpa"` |  |
 | postgresql.postgresqlUsername | string | `"bpa"` |  |
 | postgresql.service.port | int | `5432` |  |
+
+## Chart dependencies
+| Repository | Name | Version |
+|------------|------|---------|
+| https://charts.bitnami.com/bitnami/ | postgresql | 9.7.2 |
 
 ## Chart development
 *TODO*
