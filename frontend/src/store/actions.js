@@ -2,11 +2,6 @@ import moment from "moment";
 import { EventBus, axios, apiBaseUrl } from "../main";
 import { getPartnerProfile } from "../utils/partnerUtils";
 
-export const newPartner = ({ commit }, msg) => {
-  console.log(commit);
-  console.log(msg);
-};
-
 export const loadSchemas = async ({ commit }) => {
   axios
     .get(`${apiBaseUrl}/admin/schema`)

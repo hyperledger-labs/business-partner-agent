@@ -76,11 +76,6 @@ const store = new Vuex.Store({
     // default handler called for all methods
     SOCKET_ONMESSAGE(state, message) {
       console.log(message);
-      if (
-        {}.hasOwnProperty(message, "message") &&
-        {}.hasOwnProperty(message.message, "type")
-      ) {
-      }
       state.socket.message = message;
     },
     // mutations for reconnect methods
@@ -89,6 +84,14 @@ const store = new Vuex.Store({
     },
     SOCKET_RECONNECT_ERROR(state) {
       state.socket.reconnectError = true;
+    },
+    newPartner(state, payload) {
+      console.log(payload);
+      state.newPartners.push(payload);
+    },
+    newCredential(state, payload) {
+      console.log(payload);
+      state.newCredentials.push(payload);
     },
     loadDocumentsFinished(state, payload) {
       state.documents = payload.documents;
