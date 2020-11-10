@@ -101,6 +101,9 @@ public class AriesCredentialManager {
     @Inject
     MessageService messageService;
 
+    @Inject
+    LabelStrategy labelStrategy;
+
     // request credential from issuer (partner)
     public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId) {
         final Optional<Partner> dbPartner = partnerRepo.findById(partnerId);
@@ -175,13 +178,16 @@ public class AriesCredentialManager {
     public void handleCredentialAcked(CredentialExchange credEx) {
         credRepo.findByThreadId(credEx.getThreadId())
                 .ifPresentOrElse(cred -> {
+                    CredentialType credentialType = CredentialType.fromSchemaId(credEx.getSchemaId());
+                    String label = labelStrategy.apply(credentialType, credEx.getCredential());
                     cred
                             .setReferent(credEx.getCredential().getReferent())
                             .setCredential(conv.toMap(credEx.getCredential()))
-                            .setType(CredentialType.fromSchemaId(credEx.getSchemaId()))
+                            .setType(credentialType)
                             .setState(credEx.getState())
                             .setIssuer(resolveIssuer(credEx.getCredential()))
-                            .setIssuedAt(Instant.now());
+                            .setIssuedAt(Instant.now())
+                            .setLabel(label);
                     MyCredential updated = credRepo.update(cred);
                     messageService.sendMessage(WebSocketMessageBody.credentialReceived(buildAriesCredential(updated)));
 

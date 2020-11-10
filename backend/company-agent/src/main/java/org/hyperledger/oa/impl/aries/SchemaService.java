@@ -26,6 +26,7 @@ import org.hyperledger.oa.api.ApiConstants;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.aries.SchemaAPI;
 import org.hyperledger.oa.api.exception.WrongApiUsageException;
+import org.hyperledger.oa.config.SchemaConfig;
 import org.hyperledger.oa.config.runtime.RequiresAries;
 import org.hyperledger.oa.model.BPASchema;
 import org.hyperledger.oa.repository.SchemaRepository;
@@ -48,15 +49,16 @@ public class SchemaService {
     AriesClient ac;
 
     @Inject
-    List<Schema> schemas;
+    List<SchemaConfig> schemas;
 
     // CRUD Methods
 
     public SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label) {
-        return addSchema(schemaId, label, false);
+        return addSchema(schemaId, label, null, false);
     }
 
-    public SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label, boolean isReadOnly) {
+    SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label,
+                        @Nullable String defaultAttributeName, boolean isReadOnly) {
         SchemaAPI result = null;
         String sId = StringUtils.strip(schemaId);
         final CredentialType credType = CredentialType.fromSchemaId(sId);
@@ -73,6 +75,7 @@ public class SchemaService {
                         .type(credType)
                         .schemaId(sId)
                         .schemaAttributeNames(getSchemaAttributeNames(sId))
+                        .defaultAttributeName(defaultAttributeName)
                         .seqNo(ariesSchema.get().getSeqNo())
                         .isReadOnly(isReadOnly)
                         .build();
@@ -85,26 +88,29 @@ public class SchemaService {
         return result;
     }
 
-    public List<SchemaAPI> listSchemas() {
-        List<SchemaAPI> result = new ArrayList<>();
-        schemaRepo.findAll().forEach(dbS -> {
-            SchemaAPI schemaAPI = SchemaAPI.from(dbS);
-            result.add(schemaAPI);
-        });
-        return result;
+    public Optional<SchemaAPI> updateSchema(@NonNull UUID id, @Nullable String defaultAttribute) {
+        Optional<BPASchema> schema = schemaRepo.findById(id);
+        if (schema.isPresent()) {
+            schemaRepo.updateDefaultAttributeName(id, defaultAttribute);
+            schema.get().setDefaultAttributeName(defaultAttribute);
+            return Optional.of(SchemaAPI.from(schema.get()));
+        }
+        return Optional.empty();
     }
 
-    public void deleteSchema(@NonNull UUID id) {
-        schemaRepo.deleteById(id);
+    public List<SchemaAPI> listSchemas() {
+        List<SchemaAPI> result = new ArrayList<>();
+        schemaRepo.findAll().forEach(dbS -> result.add(SchemaAPI.from(dbS)));
+        return result;
     }
 
     public Optional<SchemaAPI> getSchema(@NonNull UUID id) {
         Optional<BPASchema> schema = schemaRepo.findById(id);
-        if (schema.isPresent()) {
-            SchemaAPI schemaAPI = SchemaAPI.from(schema.get());
-            return Optional.of(schemaAPI);
-        }
-        return Optional.empty();
+        return schema.map(SchemaAPI::from);
+    }
+
+    public void deleteSchema(@NonNull UUID id) {
+        schemaRepo.deleteById(id);
     }
 
     public @Nullable BPASchema getSchemaFor(CredentialType type) {
@@ -138,9 +144,9 @@ public class SchemaService {
     public void resetWriteOnlySchemas() {
         schemaRepo.deleteByIsReadOnly(Boolean.TRUE);
 
-        for (Schema schema : schemas) {
+        for (SchemaConfig schema : schemas) {
             try {
-                addSchema(schema.getId(), schema.getLabel(), true);
+                addSchema(schema.getId(), schema.getLabel(), schema.getDefaultAttributeName(), true);
             } catch (@SuppressWarnings("unused") Exception e) {
                 log.warn("Schema already exists: {}", schema.getId());
             }

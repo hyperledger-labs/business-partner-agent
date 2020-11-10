@@ -15,20 +15,29 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.oa.impl.aries;
+package org.hyperledger.oa.config;
 
 import io.micronaut.context.annotation.EachProperty;
 import io.micronaut.context.annotation.Parameter;
 import lombok.Data;
 
+/**
+ * Schema configuration bean that maps the default schema configuration.
+ */
 @EachProperty("oagent.schemas")
 @Data
-public class Schema {
+public class SchemaConfig {
+
+    /**
+     * Bean name
+     */
     private String name;
+
     private String label;
     private String id;
+    private String defaultAttributeName;
 
-    public Schema(@Parameter String name) {
+    public SchemaConfig(@Parameter String name) {
         this.name = name;
     }
 }

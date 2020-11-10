@@ -15,31 +15,16 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.oa.config;
+package org.hyperledger.oa.controller.api.admin;
 
-import io.micronaut.context.annotation.Value;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.inject.Singleton;
-
-@Getter
-@Singleton
+@Data
 @NoArgsConstructor
-public class RuntimeConfig {
-
-    @Value("${oagent.host}")
-    private String host;
-
-    @Value("${oagent.resolver.url}")
-    private String uniResolverUrl;
-
-    @Value("${oagent.ledger.browser}")
-    private String ledgerBrowser;
-
-    @Value("${oagent.did.prefix}")
-    private String ledgerPrefix;
-
-    @Value("${oagent.web.only}")
-    private Boolean webOnly;
+public class UpdateSchemaRequest {
+    /**
+     * Schema attribute used to create a default label
+     */
+    private String defaultAttribute;
 }
