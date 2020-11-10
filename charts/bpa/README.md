@@ -121,11 +121,11 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | acapy.adminURLApiKey | string | `"2f9729eef0be49608c1cffd49ee3cc4a"` |  |
 | acapy.affinity | object | `{}` |  |
 | acapy.agentName | string | `"ca-aca-py"` |  |
-| acapy.agentSeed | string | `nil` |  |
+| acapy.agentSeed | String | `nil` | The agent seed, 32 characters. See main documentation.  |
 | acapy.fullnameOverride | string | `""` |  |
 | acapy.image.pullPolicy | string | `"IfNotPresent"` |  |
 | acapy.image.repository | string | `"bcgovimages/aries-cloudagent"` |  |
-| acapy.image.tag | string | `"py36-1.15-0_0.5.6"` |  |
+| acapy.image.tag | string | `"py36-1.15-0_0.5.6"` | Overrides the image tag whose default is the chart appVersion. |
 | acapy.imagePullSecrets | list | `[]` |  |
 | acapy.ingress.annotations | object | `{}` |  |
 | acapy.ingress.enabled | bool | `false` |  |
@@ -144,40 +144,41 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | acapy.service.type | string | `"ClusterIP"` |  |
 | acapy.tolerations | list | `[]` |  |
 | bpa.affinity | object | `{}` |  |
-| bpa.didPrefix | string | `"did:sov:iil:"` |  |
+| bpa.didPrefix | string | `"did:sov:iil:"` | The ledger prefix that is configured with the Uni Resolver |
 | bpa.image.pullPolicy | string | `"IfNotPresent"` |  |
 | bpa.image.repository | string | `"myrepo"` |  |
-| bpa.image.tag | string | `""` |  |
+| bpa.image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
 | bpa.imagePullSecrets | list | `[]` |  |
 | bpa.ingress.annotations | object | `{}` |  |
 | bpa.ingress.enabled | bool | `false` |  |
 | bpa.ingress.hosts[0].host | string | `"my-bpa.local"` |  |
 | bpa.ingress.hosts[0].paths | list | `[]` |  |
 | bpa.ingress.tls | list | `[]` |  |
-| bpa.ledgerBrowser | string | `"https://indy-test.bosch-digital.de"` |  |
-| bpa.ledgerURL | string | `"https://indy-test.bosch-digital.de"` |  |
+| bpa.ledgerBrowser | string | `"https://indy-test.bosch-digital.de"` | The Ledger Explorer   |
+| bpa.ledgerURL | string | `"https://indy-test.bosch-digital.de"` | The Ledger URL |
 | bpa.name | string | `"bpacore"` |  |
 | bpa.nodeSelector | object | `{}` |  |
-| bpa.password | string | `"changeme"` |  |
+| bpa.password | string | `"changeme"` | Default password, overwrite default if running in production like environments |
 | bpa.podAnnotations | object | `{}` |  |
 | bpa.podSecurityContext | object | `{}` |  |
-| bpa.resolverURL | string | `"https://resolver.dev.economyofthings.io"` |  |
+| bpa.resolverURL | string | `"https://resolver.dev.economyofthings.io"` | Uni Resolver URL |
 | bpa.resources | object | `{}` |  |
 | bpa.securityContext | object | `{}` |  |
-| bpa.securityEnabled | bool | `true` |  |
+| bpa.securityEnabled | bool | `true` | enable security (username and password) |
 | bpa.service.port | int | `80` |  |
 | bpa.service.type | string | `"ClusterIP"` |  |
 | bpa.tolerations | list | `[]` |  |
-| bpa.userName | string | `"admin"` |  |
-| bpa.webMode | bool | `false` |  |
+| bpa.userName | string | `"admin"` | Default username |
+| bpa.webMode | bool | `false` | Run in web only mode without any ledger dependency and aries functionality |
 | global.fullnameOverride | string | `""` |  |
 | global.nameOverride | string | `""` |  |
-| global.persistence.deployPostgres | bool | `true` |  |
-| postgresql.persistence.enabled | bool | `false` |  |
-| postgresql.postgresPassword | string | `"bpa"` |  |
-| postgresql.postgresqlDatabase | string | `"bpa"` |  |
-| postgresql.postgresqlUsername | string | `"bpa"` |  |
-| postgresql.service.port | int | `5432` |  |
+| global.persistence.deployPostgres | bool | `true` | If true, the Postgres chart is deployed |
+| postgresql.persistence | object | `{"enabled":false}` | Persistent Volume Storage configuration. ref: https://kubernetes.io/docs/user-guide/persistent-volumes |
+| postgresql.persistence.enabled | bool | `false` | Enable PostgreSQL persistence using Persistent Volume Claims. |
+| postgresql.postgresPassword | string | `"bpa"` | PostgreSQL Password for the new user. If not set, a random 10 characters password will be used. |
+| postgresql.postgresqlDatabase | string | `"bpa"` | PostgreSQL Database to create. |
+| postgresql.postgresqlUsername | string | `"bpa"` | PostgreSQL User to create. |
+| postgresql.service | object | `{"port":5432}` | PostgreSQL service configuration |
 
 ## Chart dependencies
 | Repository | Name | Version |
