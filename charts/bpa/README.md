@@ -22,8 +22,7 @@ helm install \
 
 ## Introduction
 
-This chart bootstraps a business partner agent deployment on a Kubernetes cluster using the Helm package manager. Its default installation comes with PostgreSQL. Ingress routes can be activated, allowing the agent to
-communicate with other agents outside the cluster.
+This chart bootstraps a business partner agent deployment on a Kubernetes cluster using the Helm package manager. Its default installation comes with PostgreSQL. Ingress can be activated, allowing the agent to communicate with other agents outside the cluster.
 
 ## Requirements
 
@@ -31,7 +30,7 @@ communicate with other agents outside the cluster.
 - Docker
 - Helm v3.3.4+
 - PV provisioner support in the underlying infrastructure (for PostgreSQL persistence)
-- If activating Ingress routes:
+- If activating Ingress:
   - Ingress controller installed
   - Cert-manager
   - DNS records pointing to your routes 
@@ -46,7 +45,7 @@ This  is required for the next preparation steps.
 
 ```s
 git@github.com:hyperledger-labs/business-partner-agent.git
-cd business-partner-agent
+cd business-partner-agent/docker
 ```
 
 ### Create and push docker image
@@ -54,7 +53,7 @@ cd business-partner-agent
 In the future we plan to have bpa image publically available, e.g. on docker hub.
 Currently you have to build it on your own and make it available in a registry (one that is reachable by your kubernetes cluster, e.g. docker hub).
 
-Build your image by executing the docker build command and push it to you registry.
+Build your image by executing the docker build command and push it to your registry.
 
 ```s
 docker login --username=yourusername --password=yourpassword
@@ -64,14 +63,14 @@ sudo docker push myrepo.io/bpa:latest
 
 ### Register a new DID
 
-Use the `./scripts/register-did.sh` script to register a new DID on our test network (see also [main documentation](../../README.md)
+Use the `./docker/register-did.sh` script to register a new DID on our test network (see also [docker setup](../../docker/README.md))
 Just run:
 
 ```s
-./scripts/register-did.sh
+./register-did.sh
 ```
 
-## Install the chart
+## Installing the chart
 
 To install the chart with the release name `bpa`, the docker image `myrepo.io/bpa` and the seed `12345678901234567890123456789012` in the namespace `mynamespace`
 
@@ -92,9 +91,10 @@ echo "Visit http://127.0.0.1:8080 to use your application"
 kubectl --namespace mynamespace port-forward $POD_NAME 8080:8080
  ```
 
-This deploys BPA (bpa-core & bpa-acapy) and Postgres on the Kubernetes cluster in the default configuration. The [Parameters](#Parameters) sections list the parameter that can be configured during installation.
+This deploys BPA (bpa-core & bpa-acapy) and Postgres on the Kubernetes cluster in the default configuration. The [Parameters](#Parameters) sections list the parameters that can be configured during installation.
+
 Deploying the charts with configured ingress routes could be done e.g. as follows:
-TODO
+*TODO*
 
 ## Uninstalling the Chart
 
@@ -113,23 +113,6 @@ kubectl delete pvc -l release=mybpa
 ```
 
 Note: Deleting the PVC's will delete postgresql data as well. Please be cautious before doing it.
-culpa qui officia deserunt mollit anim id est laborum.
-
-## Installing the Chart
-
-To install the chart with the release name `my-release`:
-
-```console
-$ helm repo add foo-bar http://charts.foo-bar.com
-$ helm install my-release foo-bar/bpa
-```
-
-Get the application URL by running the commands returned by helm install, e.g.:
-```sh
-export POD_NAME=$(kubectl get pods --namespace md -l "app.kubernetes.io/name=bpa-bpacore,app.kubernetes.io/instance=mynamespace" -o jsonpath="{.items[0].metadata.name}")
-echo "Visit http://127.0.0.1:8080 to use your application"
-kubectl --namespace mynamespace port-forward $POD_NAME 8080:8080
- ```
 
 ## Chart dependencies
 
@@ -201,6 +184,9 @@ kubectl --namespace mynamespace port-forward $POD_NAME 8080:8080
 | postgresql.postgresqlDatabase | string | `"bpa"` |  |
 | postgresql.postgresqlUsername | string | `"bpa"` |  |
 | postgresql.service.port | int | `5432` |  |
+
+## Chart development
+*TODO*
 
 ## Maintainers
 
