@@ -15,8 +15,8 @@
       :headers="headers"
       :items="data"
       :show-select="selectable"
-      :sort-by="['createdAt']"
-      :sort-desc="[false]"
+      :sort-by="['updatedAt']"
+      :sort-desc="[true]"
       single-select
       @click:row="open"
     >
@@ -25,7 +25,7 @@
           v-if="item.state"
           v-bind:state="item.state"
         ></PartnerStateIndicator>
-        <span class="font-weight-medium"> {{ item.name }}</span>
+        <span v-bind:class="{ 'font-weight-medium': item.new }"> {{ item.name }}</span>
       </template>
 
       <template v-slot:[`item.createdAt`]="{ item }">
@@ -65,6 +65,10 @@ export default {
     onlyAries: {
       type: Boolean,
       default: false,
+    },
+    indicateNew: {
+      type: Boolean,
+      default: false
     },
     onlyIssuersForSchema: {
       type: String,
@@ -107,6 +111,27 @@ export default {
           console.log(result);
           if ({}.hasOwnProperty.call(result, "data")) {
             this.isBusy = false;
+
+            if (this.indicateNew) {
+              let newPartners = this.$store.state.newPartners;
+              if (newPartners.length > 0 ) {
+                   result.data = result.data.map(partner => {
+                    let found = newPartners.find(newPartner => {
+                  
+                       return partner.id === newPartner.message.linkId;
+                    })
+
+                    if (found) {
+
+                      partner.new = true
+
+                    }
+
+                      return partner;
+                    })
+              }
+              
+            }
 
             if (this.onlyAries) {
               result.data = result.data.filter((item) => {
