@@ -1,49 +1,42 @@
-/**
- * Copyright (c) 2020 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/organizational-agent
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (c) 2020 - for information on the respective copyright owner
+  see the NOTICE file and/or the repository at
+  https://github.com/hyperledger-labs/organizational-agent
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package org.hyperledger.oa.controller;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import javax.inject.Inject;
-
-import org.hyperledger.oa.api.MyDocumentAPI;
-import org.hyperledger.oa.api.aries.AriesCredential;
-import org.hyperledger.oa.controller.api.wallet.WalletDocumentRequest;
-import org.hyperledger.oa.impl.MyDocumentManager;
-import org.hyperledger.oa.impl.aries.AriesCredentialManager;
-import org.hyperledger.oa.model.MyCredential;
-
 import io.micronaut.http.HttpResponse;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Delete;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.PathVariable;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.annotation.Put;
+import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.hyperledger.oa.api.MyDocumentAPI;
+import org.hyperledger.oa.api.aries.AriesCredential;
+import org.hyperledger.oa.controller.api.wallet.WalletCredentialRequest;
+import org.hyperledger.oa.controller.api.wallet.WalletDocumentRequest;
+import org.hyperledger.oa.impl.MyDocumentManager;
+import org.hyperledger.oa.impl.aries.AriesCredentialManager;
+import org.hyperledger.oa.model.MyCredential;
+
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Controller("/api/wallet")
 @Tag(name = "Wallet Management")
@@ -155,6 +148,27 @@ public class WalletController {
             final Optional<AriesCredential> cred = credMgmt.get().getAriesCredentialById(UUID.fromString(id));
             if (cred.isPresent()) {
                 return HttpResponse.ok(cred.get());
+            }
+        }
+        return HttpResponse.notFound();
+    }
+
+    /**
+     * Aries: Set/update a credentials label
+     *
+     * @param id  the credential id
+     * @param req {@link WalletCredentialRequest}
+     * @return HTTP status
+     */
+    @Put("/credential/{id}")
+    public HttpResponse<Void> updateCredential(
+            @PathVariable String id,
+            @Body WalletCredentialRequest req) {
+        if (credMgmt.isPresent()) {
+            final Optional<AriesCredential> apiCred = credMgmt.get()
+                    .updateCredentialById(UUID.fromString(id), req.getLabel());
+            if (apiCred.isPresent()) {
+                return HttpResponse.ok();
             }
         }
         return HttpResponse.notFound();

@@ -22,6 +22,8 @@ micronaut:
         pattern: /**
         access:
           - isAuthenticated()
+  session:
+    max-inactive-interval: 12h
   router:
     # note also check the AppController
     static-resources:
@@ -36,12 +38,16 @@ micronaut:
         paths: classpath:public
         mapping: /**
   caches:
+    '*':
+      maximum-size: 5000
     ur-cache:
       expire-after-write: 300s
     partner-lookup-cache:
       expire-after-write: 180s
     did-lookup-cache:
       expire-after-write: 3600s
+    schema-cache:
+      expire-after-write: 1d
   executors:
     io:
       type: fixed
@@ -57,12 +63,14 @@ datasources:
     username: ${oagent.pg.username}
     password: ${oagent.pg.password}
     dialect: POSTGRES
+    schema: ${oagent.pg.schema}
     initialization-fail-timeout: -1 # wait forever until the db is ready
 
 flyway:
   datasources: 
     '*': 
       locations: classpath:databasemigrations
+      schemas: ${oagent.pg.schema}
 
 jackson:
   serialization-inclusion: NON_ABSENT # Omit null and Optional.empty(), but include empty collections
@@ -80,7 +88,7 @@ oagent:
     #host where containers are running: typically localhost but might be an IP as well
     host: localhost
   resolver:
-    url: ${BPA_RESOLVER_URL:`https://resolver.4d8674d5248546c79689.westeurope.aksapp.io`}
+    url: ${BPA_RESOLVER_URL:`https://resolver.dev.economyofthings.io`}
   ledger:
     browser: ${BPA_LEDGER_BROWSER:`https://indy-test.bosch-digital.de`}
   host: localhost:${micronaut.server.port}
@@ -89,12 +97,19 @@ oagent:
   acapy:
     url: http://${oagent.docker.host}:8031
     apiKey: empty
+    endpoint: ${AGENT_ENDPOINT:`http://localhost:8030`}
   did:
     prefix: ${BPA_DID_PREFIX:`did:sov:iil:`}
   pg:
     url: jdbc:postgresql://${oagent.docker.host}/alice
     username: alice
     password: alice1234
+    schema: public
   bootstrap:
     username: ${BPA_BOOTSTRAP_UN:admin}
     password: ${BPA_BOOTSTRAP_PW:changeme}
+  schemas:
+     #test ledger schemas, can be overwritten / extended when e.g. working with other ledger
+     bank-account:
+      id: "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
+      label: "Bank Account"

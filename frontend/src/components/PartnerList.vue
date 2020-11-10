@@ -7,99 +7,137 @@
 -->
 
 <template>
-<v-container>
-    <v-data-table v-model="selected" :loading="isBusy" :headers="headers" :items="data" :show-select="selectable" single-select>
+  <v-container>
+    <v-data-table
+      :hide-default-footer="data.length < 10"
+      v-model="selected"
+      :loading="isBusy"
+      :headers="headers"
+      :items="data"
+      :show-select="selectable"
+      :sort-by="['createdAt']"
+      :sort-desc="[false]"
+      single-select
+      @click:row="open"
+    >
+      <template v-slot:[`item.name`]="{ item }">
+        <PartnerStateIndicator
+          v-if="item.state"
+          v-bind:state="item.state"
+        ></PartnerStateIndicator>
+        <span class="font-weight-medium"> {{ item.name }}</span>
+      </template>
+
+      <template v-slot:[`item.createdAt`]="{ item }">
+        {{ item.createdAt | moment("YYYY-MM-DD HH:mm") }}
+      </template>
+
+      <template v-slot:[`item.updatedAt`]="{ item }">
+        {{ item.updatedAt | moment("YYYY-MM-DD HH:mm") }}
+      </template>
     </v-data-table>
-</v-container>
+  </v-container>
 </template>
 
 <script>
-import {
-    EventBus
-} from "../main";
-import {
-    getPartnerProfile,
-    getPartnerName
-} from "../utils/partnerUtils"
+import { EventBus } from "../main";
+import { getPartnerProfile, getPartnerName } from "../utils/partnerUtils";
+import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 export default {
-    name: "RequestVerification",
-    props: {
-        selectable: {
-            type: Boolean,
-            default: false
+  name: "PartnerList",
+  components: {
+    PartnerStateIndicator,
+  },
+  props: {
+    selectable: {
+      type: Boolean,
+      default: false,
+    },
+    headers: {
+      type: Array,
+      default: () => [
+        {
+          text: "Name",
+          value: "name",
         },
-        headers: {
-            type: Array,
-            default: () => [{
-                text: "Name",
-                value: "name"
-            }, {
-                text: "DID",
-                value: "did"
-            }]
+      ],
+    },
+    onlyAries: {
+      type: Boolean,
+      default: false,
+    },
+    onlyIssuersForSchema: {
+      type: String,
+      default: "",
+    },
+  },
+  created() {
+    this.fetch();
+  },
+  data: () => {
+    return {
+      selected: [],
+      data: [],
+      isBusy: true,
+    };
+  },
+  computed: {
+    expertMode() {
+      return this.$store.state.expertMode;
+    },
+  },
+  methods: {
+    open(partner) {
+      this.$router.push({
+        name: "Partner",
+        params: {
+          id: partner.id,
         },
-        onlyAries: {
-            type: Boolean,
-            default: false
-        }
+      });
     },
-    created() {
+    fetch() {
+      // Query only for partners that can issue credentials of specified schema
+      let queryParam = "";
+      if (this.onlyIssuersForSchema.length > 0) {
+        queryParam = `?issuerFor=${this.onlyIssuersForSchema}`;
+      }
+      this.$axios
+        .get(`${this.$apiBaseUrl}/partners${queryParam}`)
+        .then((result) => {
+          console.log(result);
+          if ({}.hasOwnProperty.call(result, "data")) {
+            this.isBusy = false;
 
-        this.fetch()
+            if (this.onlyAries) {
+              result.data = result.data.filter((item) => {
+                return item.ariesSupport === true;
+              });
+            }
 
+            // Get profile of each partner and merge with partner data
+            this.data = result.data.map((partner) => {
+              let profile = getPartnerProfile(partner);
+              if (profile) {
+                delete Object.assign(profile, {
+                  ["did"]: profile["id"],
+                })["id"];
+              }
+              delete partner.credential;
+              partner.profile = profile;
+              partner.name = getPartnerName(partner);
+              return partner;
+            });
+
+            console.log(this.data);
+          }
+        })
+        .catch((e) => {
+          this.isBusy = false;
+
+          console.error(e);
+          EventBus.$emit("error", e);
+        });
     },
-    data: () => {
-        return {
-            selected: [],
-            data: [],
-            isBusy: true
-        }
-    },
-    computed: {
-
-    },
-    methods: {
-        fetch() {
-            this.$axios.get(`${this.$apiBaseUrl}/partners`)
-                .then((result) => {
-                    console.log(result);
-                    if ({}.hasOwnProperty.call(result, 'data')) {
-
-                        this.isBusy = false
-
-                        if (this.onlyAries) {
-                            result.data = result.data.filter(item => {
-                                return item.ariesSupport === true
-                            })
-                        }
-
-                        // Get profile of each partner and merge with partner data
-                        this.data = result.data.map(partner => {
-                            let profile = getPartnerProfile(partner)
-                            if (profile) {
-                                delete Object.assign(profile, {
-                                    ['did']: profile['id']
-                                })['id'];
-                            }
-                            delete partner.credential
-                            partner.profile = profile
-                            partner.name = getPartnerName(partner)
-                            return partner
-                        })
-
-                        console.log(this.data)
-
-                    }
-                })
-                .catch((e) => {
-
-                    this.isBusy = false
-
-                    console.error(e)
-                    EventBus.$emit('error', e)
-
-                });
-        }
-    }
+  },
 };
 </script>

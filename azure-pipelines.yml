@@ -3,8 +3,10 @@ trigger:
   branches:
     include:
     - master
-    - feature/*
-    - releases/*
+    - releases/*  
+  tags:
+    include:
+    - "*"  
   paths:
     exclude:
     - CONTRIBUTING.md
@@ -16,11 +18,12 @@ variables:
 #     imagePullSecret, k8connection, namespace
   - group: my-variable-group
   - name: tag
-    value: '$(Build.SourceBranchName)'  #'$(Build.BuildId)'
+    ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags/') }}:
+      value: '$(Build.SourceBranchName)' 
+    ${{ if ne(startsWith(variables['Build.SourceBranch'], 'refs/tags/'),true) }}:
+      value: '$(Build.SourceBranchName)-$(Build.BuildId)'
   - name: vmImageName   # Agent VM image name
     value: 'ubuntu-latest'
-  - name: buildImageOnAnyBranch 
-    value: false # Set to true to build and push docker images on other branches than "master"
 
 stages:
 - stage: Test
@@ -47,7 +50,7 @@ stages:
           goals: 'test spotbugs:check pmd:check'
 
 - stage: BuildAndDeploy
-  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['buildImageOnAnyBranch'], 'true')))
+  condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   displayName: Build and Deploy
   jobs:  
   - job: BuildAndDeploy
@@ -68,7 +71,7 @@ stages:
         jdkVersionOption: '1.11'
         jdkArchitectureOption: 'x64'
         publishJUnitResults: false
-        goals: 'package -DskipTests=true' 
+        goals: 'install -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true -P build-frontend' 
     - task: Docker@2
       displayName: Login to ACR
       inputs:

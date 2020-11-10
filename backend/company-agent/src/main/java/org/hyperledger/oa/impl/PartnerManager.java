@@ -1,75 +1,75 @@
-/**
- * Copyright (c) 2020 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/organizational-agent
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (c) 2020 - for information on the respective copyright owner
+  see the NOTICE file and/or the repository at
+  https://github.com/hyperledger-labs/business-partner-agent
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package org.hyperledger.oa.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import io.micronaut.cache.annotation.CacheInvalidate;
+import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.oa.api.PartnerAPI;
+import org.hyperledger.oa.api.exception.PartnerException;
+import org.hyperledger.oa.core.RegisteredWebhook.WebhookEventType;
+import org.hyperledger.oa.impl.activity.PartnerLookup;
+import org.hyperledger.oa.impl.aries.ConnectionManager;
+import org.hyperledger.oa.impl.aries.PartnerCredDefLookup;
+import org.hyperledger.oa.impl.util.Converter;
+import org.hyperledger.oa.model.Partner;
+import org.hyperledger.oa.repository.MyCredentialRepository;
+import org.hyperledger.oa.repository.PartnerRepository;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import org.hyperledger.aries.api.ledger.EndpointType;
-import org.hyperledger.oa.api.DidDocAPI;
-import org.hyperledger.oa.api.DidDocAPI.Service;
-import org.hyperledger.oa.api.PartnerAPI;
-import org.hyperledger.oa.api.exception.PartnerException;
-import org.hyperledger.oa.client.URClient;
-import org.hyperledger.oa.impl.aries.ConnectionManager;
-import org.hyperledger.oa.impl.util.Converter;
-import org.hyperledger.oa.impl.web.WebPartnerFlow;
-import org.hyperledger.oa.model.Partner;
-import org.hyperledger.oa.repository.PartnerRepository;
-
-import io.micronaut.cache.annotation.Cacheable;
-import lombok.NonNull;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Singleton
 public class PartnerManager {
 
     @Inject
-    private PartnerRepository repo;
+    PartnerRepository repo;
 
     @Inject
-    private Converter converter;
-
-    @Inject
-    private URClient ur;
+    Converter converter;
 
     @Inject // conditional bean
-    private Optional<ConnectionManager> cm;
+    Optional<ConnectionManager> cm;
 
     @Inject
-    private WebPartnerFlow webFlow;
+    Optional<PartnerCredDefLookup> credLookup;
+
+    @Inject
+    PartnerLookup partnerLookup;
+
+    @Inject
+    MyCredentialRepository myCredRepo;
+
+    @Inject
+    WebhookService webhook;
 
     public List<PartnerAPI> getPartners() {
         List<PartnerAPI> result = new ArrayList<>();
-        repo.findAll().forEach(dbPartner -> {
-            result.add(converter.toAPIObject(dbPartner));
-        });
+        repo.findAll().forEach(dbPartner -> result.add(converter.toAPIObject(dbPartner)));
         return result;
     }
 
-    public Optional<PartnerAPI> getPartnerById(UUID id) {
+    public Optional<PartnerAPI> getPartnerById(@NonNull UUID id) {
         Optional<PartnerAPI> result = Optional.empty();
         Optional<Partner> dbPartner = repo.findById(id);
         if (dbPartner.isPresent()) {
@@ -78,7 +78,7 @@ public class PartnerManager {
         return result;
     }
 
-    public void removePartnerById(UUID id) {
+    public void removePartnerById(@NonNull UUID id) {
         repo.findById(id).ifPresent(p -> {
             if (p.getConnectionId() != null && cm.isPresent()) {
                 cm.get().removeConnection(p.getConnectionId());
@@ -92,7 +92,7 @@ public class PartnerManager {
         if (dbPartner.isPresent()) {
             throw new PartnerException("Partner for did already exists: " + did);
         }
-        PartnerAPI lookupP = lookupPartner(did);
+        PartnerAPI lookupP = partnerLookup.lookupPartner(did);
 
         String connectionLabel = UUID.randomUUID().toString();
         Partner partner = converter.toModelObject(did, lookupP)
@@ -101,10 +101,13 @@ public class PartnerManager {
                 .setAlias(alias)
                 .setState("requested");
         Partner result = repo.save(partner); // save before creating the connection
-        if (lookupP.getAriesSupport().booleanValue() && cm.isPresent()) {
+        if (lookupP.getAriesSupport() && cm.isPresent()) {
             cm.get().createConnection(did, connectionLabel, alias);
+            credLookup.ifPresent(PartnerCredDefLookup::lookupTypesForAllPartnersAsync);
         }
-        return converter.toAPIObject(result);
+        final PartnerAPI apiPartner = converter.toAPIObject(result);
+        webhook.convertAndSend(WebhookEventType.PARTNER_ADD, apiPartner);
+        return apiPartner;
     }
 
     public Optional<PartnerAPI> updatePartner(@NonNull UUID id, @Nullable String alias) {
@@ -114,6 +117,9 @@ public class PartnerManager {
             final Optional<Partner> dbP = repo.findById(id);
             if (dbP.isPresent()) {
                 result = Optional.of(converter.toAPIObject(dbP.get()));
+                if (StringUtils.isNotBlank(alias)) {
+                    myCredRepo.updateByConnectionId(dbP.get().getConnectionId(), dbP.get().getConnectionId(), alias);
+                }
             }
         }
         return result;
@@ -126,53 +132,21 @@ public class PartnerManager {
      * @param id the id
      * @return {@link PartnerAPI}
      */
+    // TODO use partner UUID as cache key
+    @CacheInvalidate(cacheNames = { "partner-lookup-cache" }, all = true)
     public Optional<PartnerAPI> refreshPartner(@NonNull UUID id) {
         Optional<PartnerAPI> result = Optional.empty();
         final Optional<Partner> dbPartner = repo.findById(id);
         if (dbPartner.isPresent()) {
             Partner dbP = dbPartner.get();
-            PartnerAPI pAPI = lookupPartner(dbP.getDid());
+            PartnerAPI pAPI = partnerLookup.lookupPartner(dbP.getDid());
             dbP.setValid(pAPI.getValid());
             dbP.setVerifiablePresentation(converter.toMap(pAPI.getVerifiablePresentation()));
             dbP = repo.update(dbP);
             result = Optional.of(converter.toAPIObject(dbP));
+            webhook.convertAndSend(WebhookEventType.PARTNER_UPDATE, result.get());
         }
         return result;
-    }
-
-    @Cacheable(cacheNames = { "partner-lookup-cache" })
-    public PartnerAPI lookupPartner(@NonNull String did) {
-        Optional<DidDocAPI> didDocument = ur.getDidDocument(did);
-        if (didDocument.isPresent()) {
-            Optional<Map<String, String>> services = filterServices(didDocument.get());
-            if (services.isPresent()) {
-                PartnerAPI partner = new PartnerAPI();
-                if (services.get().containsKey(EndpointType.Profile.getLedgerName())) {
-                    partner = webFlow.lookupPartner(
-                            services.get().get(EndpointType.Profile.getLedgerName()),
-                            didDocument.get().getPublicKey());
-                }
-                if (services.get().containsKey(EndpointType.Endpoint.getLedgerName())) {
-                    partner.setAriesSupport(Boolean.TRUE);
-                } else {
-                    partner.setAriesSupport(Boolean.FALSE);
-                }
-                return partner;
-            }
-            throw new PartnerException("Could not resolve profile and/or aries endpoint from did document");
-        }
-        throw new PartnerException("Could not retreive did document from universal resolver");
-    }
-
-    static Optional<Map<String, String>> filterServices(@NonNull DidDocAPI doc) {
-        Map<String, String> result = null;
-        if (doc.getService() != null) {
-            result = doc.getService().stream()
-                    .filter(s -> EndpointType.Profile.getLedgerName().equals(s.getType())
-                            || EndpointType.Endpoint.getLedgerName().equals(s.getType()))
-                    .collect(Collectors.toMap(Service::getType, Service::getServiceEndpoint));
-        }
-        return Optional.ofNullable(result);
     }
 
 }

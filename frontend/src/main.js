@@ -7,45 +7,83 @@
 */
 
 import Vue from "vue";
-import axios from 'axios'
+import axios from "axios";
 import App from "./App.vue";
-import vuetify from './plugins/vuetify';
-import '@babel/polyfill'
-import router from './router'
-import store from './store';
-import { CredentialTypes } from './constants';
+import vuetify from "./plugins/vuetify";
+import "@babel/polyfill";
+import router from "./router";
+import store from "./store";
+import { CredentialTypes } from "./constants";
+import SortUtil from "./utils/sortUtils";
 
-Vue.use(require('vue-moment'));
+import VueJsonPretty from "vue-json-pretty";
+import "vue-json-pretty/lib/styles.css";
+Vue.component("vue-json-pretty", VueJsonPretty);
+
+Vue.use(require("vue-moment"));
+Vue.use(SortUtil);
 
 var apiBaseUrl;
-if (process.env.NODE_ENV === 'development') {
-  apiBaseUrl = 'http://localhost:8080/api';
+if (process.env.NODE_ENV === "development") {
+  apiBaseUrl = "http://localhost:8080/api";
   store.commit({
     type: "setSettings",
     isExpert: true,
   });
 } else {
-  apiBaseUrl = '/api';
+  apiBaseUrl = "/api";
 }
 
 Vue.prototype.$axios = axios;
 Vue.prototype.$apiBaseUrl = apiBaseUrl;
 Vue.config.productionTip = false;
 
-Vue.filter('credentialLabel', function (name) {
-  if (!name) return ''
-  let itemOfName = Object.values(CredentialTypes).find(item => {
-    return item.name === name
+Vue.filter("credentialLabel", function (name) {
+  if (!name) return "";
+  let itemOfName = Object.values(CredentialTypes).find((item) => {
+    return item.name === name;
+  });
+  return itemOfName.label;
+});
+
+Vue.filter("credentialTag", function (credDefId) {
+  if (!credDefId) return "";
+  let pos = credDefId.lastIndexOf(":");
+  return credDefId.substring(pos + 1);
+});
+
+Vue.filter("capitalize", function (string) {
+  return string.replace(/\w\S*/g, (w) =>
+    w.replace(/^\w/, (c) => c.toUpperCase())
+  );
+});
+
+// Get Configuration
+Vue.prototype.$config = {
+  ledger: "iil",
+};
+axios
+  .get(`${apiBaseUrl}/admin/config`)
+  .then((result) => {
+    if ({}.hasOwnProperty.call(result, "data")) {
+      Vue.prototype.$config = result.data;
+      let ledgerPrefix = Vue.prototype.$config.ledgerPrefix;
+      let splitted = ledgerPrefix.split(":");
+      Vue.prototype.$config.ledger = splitted[splitted.length - 2];
+    }
   })
-  return itemOfName.label
-})
+  .catch((e) => {
+    console.error(e);
+  });
 
 const EventBus = new Vue();
 export { EventBus, axios, apiBaseUrl };
+
+console.log(Vue.prototype);
 
 new Vue({
   vuetify,
   router,
   store,
-  render: h => h(App)
+  render: (h) => h(App),
 }).$mount("#app");

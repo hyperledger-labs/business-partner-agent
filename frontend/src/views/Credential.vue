@@ -8,10 +8,18 @@
 <template>
   <v-card v-if="isReady" class="mx-auto">
     <v-card-title class="bg-light">
-      <v-btn depressed color="secondary" icon @click="$router.push({ name: 'Wallet' })">
+      <v-btn
+        depressed
+        color="secondary"
+        icon
+        @click="$router.push({ name: 'Wallet' })"
+      >
         <v-icon dark>mdi-chevron-left</v-icon>
       </v-btn>
-      {{ type | credentialLabel}}
+      <div v-if="credential.type === CredentialTypes.OTHER.name">
+        {{ credential.credentialDefinitionId | credentialTag }}
+      </div>
+      <div v-else>{{ credential.type | credentialLabel }}</div>
       <v-layout align-end justify-end>
         <v-btn depressed color="red" icon @click="deleteCredential()">
           <v-icon dark>mdi-delete</v-icon>
@@ -27,7 +35,10 @@
           <v-list-item-subtitle>Visible in Public Profile</v-list-item-subtitle>
         </v-list-item-content>
         <v-list-item-action>
-          <v-switch v-model="isPublic"></v-switch>
+          <v-switch
+            :disabled="credential.type === CredentialTypes.OTHER.name"
+            v-model="isPublic"
+          ></v-switch>
         </v-list-item-action>
       </v-list-item>
       <v-divider></v-divider>
@@ -37,7 +48,8 @@
         <v-expansion-panel>
           <v-expansion-panel-header
             class="grey--text text--darken-2 font-weight-medium bg-light"
-          >Show raw data</v-expansion-panel-header>
+            >Show raw data</v-expansion-panel-header
+          >
           <v-expansion-panel-content class="bg-light">
             <vue-json-pretty :data="credential"></vue-json-pretty>
           </v-expansion-panel-content>
@@ -48,7 +60,13 @@
     <v-card-actions>
       <v-layout align-end justify-end>
         <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
-        <v-btn :loading="this.isBusy" color="primary" text @click="saveChanges()">Save</v-btn>
+        <v-btn
+          :loading="this.isBusy"
+          color="primary"
+          text
+          @click="saveChanges()"
+          >Save</v-btn
+        >
       </v-layout>
     </v-card-actions>
   </v-card>
@@ -56,15 +74,14 @@
 
 <script>
 import { EventBus } from "../main";
-
 import Cred from "@/components/Credential";
-import VueJsonPretty from "vue-json-pretty";
+import { CredentialTypes } from "../constants";
 
 export default {
   name: "Credential",
   props: {
     id: String,
-    type: String
+    type: String,
   },
   created() {
     EventBus.$emit("title", "Credential");
@@ -74,27 +91,28 @@ export default {
     return {
       document: {},
       isBusy: false,
-      isReady: false
+      isReady: false,
+      CredentialTypes: CredentialTypes,
     };
   },
   computed: {
     expertMode() {
       return this.$store.state.expertMode;
-    }
+    },
   },
   methods: {
     getCredential() {
       console.log(this.id);
       this.$axios
         .get(`${this.$apiBaseUrl}/wallet/credential/${this.id}`)
-        .then(result => {
+        .then((result) => {
           if ({}.hasOwnProperty.call(result, "data")) {
             this.credential = result.data;
             this.isPublic = this.credential.isPublic;
             this.isReady = true;
           }
         })
-        .catch(e => {
+        .catch((e) => {
           console.error(e);
           EventBus.$emit("error", e);
         });
@@ -106,52 +124,51 @@ export default {
           .put(
             `${this.$apiBaseUrl}/wallet/credential/${this.id}/toggle-visibility`
           )
-          .then(result => {
+          .then((result) => {
             console.log(result);
             if (result.status === 200) {
               EventBus.$emit("success", "Visibility updated");
               this.$router.push({
-                name: "Wallet"
+                name: "Wallet",
               });
             }
           })
-          .catch(e => {
+          .catch((e) => {
             console.error(e);
             EventBus.$emit("error", e);
           });
       } else {
         this.$router.push({
-          name: "Wallet"
+          name: "Wallet",
         });
       }
     },
     deleteCredential() {
       this.$axios
         .delete(`${this.$apiBaseUrl}/wallet/credential/${this.id}`)
-        .then(result => {
+        .then((result) => {
           console.log(result);
           if (result.status === 200) {
             EventBus.$emit("success", "Credential deleted");
             this.$router.push({
-              name: "Wallet"
+              name: "Wallet",
             });
           }
         })
-        .catch(e => {
+        .catch((e) => {
           console.error(e);
           EventBus.$emit("error", e);
         });
     },
     cancel() {
       this.$router.push({
-        name: "Wallet"
+        name: "Wallet",
       });
-    }
+    },
   },
   components: {
     Cred,
-    VueJsonPretty
-  }
+  },
 };
 </script>
 

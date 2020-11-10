@@ -16,7 +16,7 @@
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>organizational-agent: backend</description>
-    <url>https://github.com/hyperledger-labs/organizational-agent</url>
+    <url>https://github.com/hyperledger-labs/business-partner-agent</url>
 
     <properties>
         <!-- Settings -->
@@ -99,7 +99,12 @@
         <dependency>
             <groupId>org.hyperledger</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>0.4.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hyperledger.organizational-agent</groupId>
+            <artifactId>organizational-agent-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- Assorted -->
@@ -116,12 +121,12 @@
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>4.8.1</version>
+            <version>4.9.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>5.3.4.RELEASE</version>
+            <version>5.4.1</version>
         </dependency>
 
         <!-- database -->
@@ -206,7 +211,7 @@
                                 <version>${lombok.version}</version>
                             </path>
                             <path>
-                                <groupId>io.micronaut.configuration</groupId>
+                                <groupId>io.micronaut.openapi</groupId>
                                 <artifactId>micronaut-openapi</artifactId>
                                 <version>${micronaut.openapi.version}</version>
                             </path>
@@ -273,7 +278,7 @@
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
                         <artifactId>frontend-maven-plugin</artifactId>
-                        <version>1.10.0</version>
+                        <version>1.10.3</version>
                         <configuration>
                             <workingDirectory>../../frontend</workingDirectory>
                         </configuration>
@@ -285,8 +290,8 @@
                                 </goals>
                                 <configuration>
                                     <!-- See https://nodejs.org/en/download/ -->
-                                    <nodeVersion>v12.18.2</nodeVersion>
-                                    <npmVersion>6.14.5</npmVersion>
+                                    <nodeVersion>v12.19.0</nodeVersion>
+                                    <npmVersion>6.14.8</npmVersion>
                                 </configuration>
                             </execution>
                             <execution>

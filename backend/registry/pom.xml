@@ -58,8 +58,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
-            <version>4.1.0</version>
-        </dependency>
+            </dependency>
         <!-- Scope Test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -117,9 +116,9 @@
                                 <version>${lombok.version}</version>
                             </path>
                             <path>
-                                <groupId>io.micronaut.configuration</groupId>
+                                <groupId>io.micronaut.openapi</groupId>
                                 <artifactId>micronaut-openapi</artifactId>
-                                <version>${micronaut.openapi.version}</version>
+                                <version>${micronaut.version}</version>
                             </path>
                             <path>
                                 <groupId>io.micronaut</groupId>

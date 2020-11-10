@@ -1,0 +1,51 @@
+{
+    "updated_at": "2020-09-07 09:31:31.460063Z",
+    "thread_id": "62f7fa51-2e0f-4fec-9c5e-7b7a48c3ce1b",
+    "initiator": "self",
+    "role": "verifier",
+    "presentation_request_dict": {
+        "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/present-proof/1.0/request-presentation",
+        "@id": "62f7fa51-2e0f-4fec-9c5e-7b7a48c3ce1b",
+        "request_presentations~attach": [
+            {
+                "@id": "libindy-request-presentation-0",
+                "mime-type": "application/json",
+                "data": {
+                    "base64": "eyJuYW1lIjogIlByb29mIHJlcXVlc3QiLCAidmVyc2lvbiI6ICIxLjAiLCAicmVxdWVzdGVkX2F0dHJpYnV0ZXMiOiB7ImliYW4iOiB7Im5hbWUiOiAiaWJhbiIsICJyZXN0cmljdGlvbnMiOiBbeyJzY2hlbWFfaWQiOiAiTTZNYmUzcXg3dkI0d3BaRjRzQlJqdDoyOmJhbmtfYWNjb3VudDoxLjAiLCAiY3JlZF9kZWZfaWQiOiAiTTZNYmUzcXg3dkI0d3BaRjRzQlJqdDozOkNMOjU3MTpiYW5rX2FjY291bnRfbm9fcmV2b2MifV19LCAiYmljIjogeyJuYW1lIjogImJpYyIsICJyZXN0cmljdGlvbnMiOiBbeyJzY2hlbWFfaWQiOiAiTTZNYmUzcXg3dkI0d3BaRjRzQlJqdDoyOmJhbmtfYWNjb3VudDoxLjAiLCAiY3JlZF9kZWZfaWQiOiAiTTZNYmUzcXg3dkI0d3BaRjRzQlJqdDozOkNMOjU3MTpiYW5rX2FjY291bnRfbm9fcmV2b2MifV19fSwgInJlcXVlc3RlZF9wcmVkaWNhdGVzIjoge30sICJub25jZSI6ICIzMjA0MTIzMTQ5ODU5NjAxNTU2MTM5MjgifQ=="
+                }
+            }
+        ]
+    },
+    "presentation_exchange_id": "dc3c553c-5a87-476a-96c6-05e60aad475e",
+    "connection_id": "535ad44a-ba4a-45de-9f4e-a922310cab7d",
+    "presentation_request": {
+        "name": "Proof request",
+        "version": "1.0",
+        "requested_attributes": {
+            "iban": {
+                "name": "iban",
+                "restrictions": [
+                    {
+                        "schema_id": "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
+                        "cred_def_id": "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc"
+                    }
+                ]
+            },
+            "bic": {
+                "name": "bic",
+                "restrictions": [
+                    {
+                        "schema_id": "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
+                        "cred_def_id": "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc"
+                    }
+                ]
+            }
+        },
+        "requested_predicates": {},
+        "nonce": "320412314985960155613928"
+    },
+    "auto_present": false,
+    "state": "request_sent",
+    "created_at": "2020-09-07 09:31:31.460063Z",
+    "trace": false
+}

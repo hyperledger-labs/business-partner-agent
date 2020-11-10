@@ -1,53 +1,47 @@
-/**
- * Copyright (c) 2020 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/organizational-agent
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (c) 2020 - for information on the respective copyright owner
+  see the NOTICE file and/or the repository at
+  https://github.com/hyperledger-labs/business-partner-agent
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package org.hyperledger.oa.controller;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import javax.inject.Inject;
-
-import org.hyperledger.oa.api.PartnerAPI;
-import org.hyperledger.oa.api.aries.AriesProof;
-import org.hyperledger.oa.controller.api.partner.AddPartnerRequest;
-import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
-import org.hyperledger.oa.controller.api.partner.RequestCredentialRequest;
-import org.hyperledger.oa.controller.api.partner.RequestProofRequest;
-import org.hyperledger.oa.controller.api.partner.UpdatePartnerRequest;
-import org.hyperledger.oa.impl.PartnerManager;
-import org.hyperledger.oa.impl.aries.AriesCredentialManager;
-import org.hyperledger.oa.impl.aries.ProofManager;
-
 import io.micronaut.http.HttpResponse;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Delete;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.PathVariable;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.annotation.Put;
+import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.hyperledger.oa.api.CredentialType;
+import org.hyperledger.oa.api.PartnerAPI;
+import org.hyperledger.oa.api.aries.AriesProof;
+import org.hyperledger.oa.api.exception.WrongApiUsageException;
+import org.hyperledger.oa.controller.api.partner.*;
+import org.hyperledger.oa.impl.PartnerManager;
+import org.hyperledger.oa.impl.activity.PartnerLookup;
+import org.hyperledger.oa.impl.aries.AriesCredentialManager;
+import org.hyperledger.oa.impl.aries.PartnerCredDefLookup;
+import org.hyperledger.oa.impl.aries.ProofManager;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Controller("/api/partners")
 @Tag(name = "Partner (Connection) Management")
@@ -57,21 +51,38 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class PartnerController {
 
     @Inject
-    private PartnerManager pm;
+    PartnerManager pm;
 
     @Inject
-    private Optional<AriesCredentialManager> credM;
+    PartnerLookup partnerLookup;
+
+    // Aries Mode only Beans
 
     @Inject
-    private Optional<ProofManager> proofM;
+    Optional<AriesCredentialManager> credM;
+
+    @Inject
+    Optional<ProofManager> proofM;
+
+    @Inject
+    Optional<PartnerCredDefLookup> credLookup;
 
     /**
      * Get known partners
      *
+     * @param issuerFor Filter Partners by {@link CredentialType}
      * @return list of partners
      */
     @Get
-    public HttpResponse<List<PartnerAPI>> getPartners() {
+    public HttpResponse<List<PartnerAPI>> getPartners(
+            @Parameter(description = "credential type") @Nullable @QueryValue CredentialType issuerFor) {
+        if (issuerFor != null && credLookup.isPresent()) {
+            if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(issuerFor)) {
+                return HttpResponse.ok(credLookup.get().getIssuersForBankAccount());
+            }
+            throw new WrongApiUsageException(
+                    "Currently you can only filter by " + CredentialType.BANK_ACCOUNT_CREDENTIAL);
+        }
         return HttpResponse.ok(pm.getPartners());
     }
 
@@ -82,7 +93,7 @@ public class PartnerController {
      * @return partner
      */
     @Get("/{id}")
-    public HttpResponse<PartnerAPI> getPartnerbyId(@PathVariable String id) {
+    public HttpResponse<PartnerAPI> getPartnerById(@PathVariable String id) {
         Optional<PartnerAPI> partner = pm.getPartnerById(UUID.fromString(id));
         if (partner.isPresent()) {
             return HttpResponse.ok(partner.get());
@@ -93,6 +104,7 @@ public class PartnerController {
     /**
      * Update partner
      *
+     * @param id     the partner id
      * @param update {@link UpdatePartnerRequest}
      * @return {@link PartnerAPI}
      */
@@ -138,7 +150,7 @@ public class PartnerController {
      */
     @Get("/lookup/{did}")
     public HttpResponse<PartnerAPI> lookupPartner(@PathVariable String did) {
-        return HttpResponse.ok(pm.lookupPartner(did));
+        return HttpResponse.ok(partnerLookup.lookupPartner(did));
     }
 
     /**
@@ -167,10 +179,14 @@ public class PartnerController {
     public HttpResponse<Void> requestCredential(
             @PathVariable String id,
             @Body RequestCredentialRequest credReq) {
-        credM.ifPresent(mgmt -> mgmt.sendCredentialRequest(
-                UUID.fromString(id),
-                UUID.fromString(credReq.getDocumentId())));
-        return HttpResponse.ok();
+        if (credM.isPresent()) {
+
+            credM.get().sendCredentialRequest(
+                    UUID.fromString(id),
+                    UUID.fromString(credReq.getDocumentId()));
+            return HttpResponse.ok();
+        }
+        return HttpResponse.notFound();
     }
 
     /**
@@ -181,8 +197,9 @@ public class PartnerController {
      */
     @Get("/{id}/credential-types")
     public HttpResponse<List<PartnerCredentialType>> partnerCredentialTypes(@PathVariable String id) {
-        if (credM.isPresent()) {
-            final Optional<List<PartnerCredentialType>> credDefs = credM.get().getPartnerCredDefs(UUID.fromString(id));
+        if (credLookup.isPresent()) {
+            final Optional<List<PartnerCredentialType>> credDefs = credLookup.get()
+                    .getPartnerCredDefs(UUID.fromString(id));
             if (credDefs.isPresent()) {
                 return HttpResponse.ok(credDefs.get());
             }
@@ -202,12 +219,33 @@ public class PartnerController {
     public HttpResponse<Void> requestProof(
             @PathVariable String id,
             @Body RequestProofRequest req) {
-        proofM.ifPresent(mgmt -> mgmt.sendPresentProofRequest(UUID.fromString(id), req.getCredentialDefinitionId()));
-        return HttpResponse.ok();
+        if (proofM.isPresent()) {
+            proofM.get().sendPresentProofRequest(UUID.fromString(id), req.getCredentialDefinitionId());
+            return HttpResponse.ok();
+        }
+        return HttpResponse.notFound();
     }
 
     /**
-     * Aries: List proofs that the partner sent to me
+     * Aries: Send proof to partner
+     *
+     * @param id  the partner id
+     * @param req {@link SendProofRequest}
+     * @return HTTP status
+     */
+    @Post("/{id}/proof-send")
+    public HttpResponse<Void> sendProof(
+            @PathVariable String id,
+            @Body SendProofRequest req) {
+        if (proofM.isPresent()) {
+            proofM.get().sendProofProposal(UUID.fromString(id), req.getMyCredentialId());
+            return HttpResponse.ok();
+        }
+        return HttpResponse.notFound();
+    }
+
+    /**
+     * Aries: List proof exchange records
      *
      * @param id the partner id
      * @return HTTP status
@@ -222,7 +260,7 @@ public class PartnerController {
     }
 
     /**
-     * Aries: Get a partners proof by id
+     * Aries: Get a proof exchange by id
      *
      * @param id      the partner id
      * @param proofId the proof id
@@ -239,5 +277,20 @@ public class PartnerController {
             }
         }
         return HttpResponse.notFound();
+    }
+
+    /**
+     * Aries: Deletes a partners proof by id
+     *
+     * @param id      the partner id
+     * @param proofId the proof id
+     * @return HTTP status
+     */
+    @Delete("/{id}/proof/{proofId}")
+    public HttpResponse<Void> deletePartnerProofById(
+            @PathVariable String id,
+            @PathVariable String proofId) {
+        proofM.ifPresent(pMgmt -> pMgmt.deletePartnerProof(UUID.fromString(proofId)));
+        return HttpResponse.ok();
     }
 }

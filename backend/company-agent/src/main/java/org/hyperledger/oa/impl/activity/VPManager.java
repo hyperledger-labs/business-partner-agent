@@ -1,33 +1,30 @@
-/**
- * Copyright (c) 2020 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/organizational-agent
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (c) 2020 - for information on the respective copyright owner
+  see the NOTICE file and/or the repository at
+  https://github.com/hyperledger-labs/business-partner-agent
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package org.hyperledger.oa.impl.activity;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.micronaut.scheduling.annotation.Async;
+import lombok.AccessLevel;
+import lombok.NonNull;
+import lombok.Setter;
 import org.hyperledger.aries.api.credential.Credential;
-import org.hyperledger.aries.api.jsonld.VerifiableCredential;
-import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableCredentialBuilder;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential.VerifiableIndyCredentialBuilder;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation.VerifiablePresentationBuilder;
 import org.hyperledger.aries.config.GsonConfig;
@@ -45,49 +42,50 @@ import org.hyperledger.oa.repository.MyCredentialRepository;
 import org.hyperledger.oa.repository.MyDocumentRepository;
 import org.hyperledger.oa.repository.PartnerRepository;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import io.micronaut.scheduling.TaskExecutors;
-import io.micronaut.scheduling.annotation.Async;
-import lombok.AccessLevel;
-import lombok.NonNull;
-import lombok.Setter;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 @Singleton
 public class VPManager {
 
     @Inject
-    private Identity id;
+    Identity id;
 
     @Inject
-    private MyDocumentRepository docRepo;
+    MyDocumentRepository docRepo;
 
     @Inject
-    private MyCredentialRepository credRepo;
+    MyCredentialRepository credRepo;
 
     @Inject
-    private DidDocWebRepository didRepo;
+    DidDocWebRepository didRepo;
 
     @Inject
-    private PartnerRepository partnerRepo;
+    PartnerRepository partnerRepo;
 
     @Inject
-    private CryptoManager crypto;
+    CryptoManager crypto;
 
     @Inject
     @Setter(AccessLevel.PROTECTED)
-    private Converter converter;
+    Converter converter;
 
     public void recreateVerifiablePresentation() {
-        List<VerifiableCredential> vcs = new ArrayList<>();
+        List<VerifiableIndyCredential> vcs = new ArrayList<>();
 
         String myDid = id.getMyDid();
 
-        docRepo.findByIsPublicTrue().forEach(doc -> {
-            vcs.add(buildFromDocument(doc, myDid));
-        });
+        docRepo.findByIsPublicTrue().forEach(doc -> vcs.add(buildFromDocument(doc, myDid)));
+
         credRepo.findByIsPublicTrue().forEach(cred -> {
-            vcs.add(buildFromCredential(cred, myDid));
+            if (!CredentialType.OTHER.equals(cred.getType())) {
+                vcs.add(buildFromCredential(cred, myDid));
+            }
         });
 
         // only split up into own method, because of a weird issue that the second
@@ -96,26 +94,27 @@ public class VPManager {
         signVP(vcs);
     }
 
-    @Async(value = TaskExecutors.SCHEDULED)
-    public void signVP(List<VerifiableCredential> vcs) {
-        final VerifiablePresentationBuilder vpBuilder = VerifiablePresentation.builder();
+    @Async
+    public void signVP(List<VerifiableIndyCredential> vcs) {
+        final VerifiablePresentationBuilder<VerifiableIndyCredential> vpBuilder = VerifiablePresentation.builder();
         if (vcs.size() > 0) {
             vpBuilder.verifiableCredential(vcs);
         } else {
             vpBuilder.verifiableCredential(null);
         }
-        Optional<VerifiablePresentation> vp = crypto.sign(vpBuilder.build());
-        getVerifiablePresentationInternal().ifPresentOrElse(didWeb -> {
-            didRepo.updateProfileJson(didWeb.getId(), converter.toMap(vp));
-        }, () -> {
-            didRepo.save(DidDocWeb
-                    .builder()
-                    .profileJson(converter.toMap(vp))
-                    .build());
+        crypto.sign(vpBuilder.build()).ifPresent(vp -> {
+            getVerifiablePresentationInternal().ifPresentOrElse(didWeb -> {
+                didRepo.updateProfileJson(didWeb.getId(), converter.toMap(vp));
+            }, () -> {
+                didRepo.save(DidDocWeb
+                        .builder()
+                        .profileJson(converter.toMap(vp))
+                        .build());
+            });
         });
     }
 
-    protected VerifiableCredential buildFromDocument(@NonNull MyDocument doc, @NonNull String myDid) {
+    protected VerifiableIndyCredential buildFromDocument(@NonNull MyDocument doc, @NonNull String myDid) {
         Object subj;
         if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(doc.getType())) {
             BankAccount ba = converter.fromMap(doc.getDocument(), BankAccount.class);
@@ -128,18 +127,19 @@ public class VPManager {
             // and cannot handle Jackson ObjectNode
             subj = GsonConfig.defaultConfig().fromJson(on.toString(), Object.class);
         }
-        return VerifiableCredential
+        return VerifiableIndyCredential
                 .builder()
                 .id("urn:" + doc.getId().toString())
                 .type(doc.getType().getType())
                 .context(doc.getType().getContext())
                 .issuanceDate(TimeUtil.currentTimeFormatted())
                 .issuer(myDid)
+                .label(doc.getLabel())
                 .credentialSubject(subj)
                 .build();
     }
 
-    private VerifiableCredential buildFromCredential(@NonNull MyCredential cred, @NonNull String myDid) {
+    private VerifiableIndyCredential buildFromCredential(@NonNull MyCredential cred, @Nullable String myDid) {
         final ArrayList<String> type = new ArrayList<>(cred.getType().getType());
         type.add("IndyCredential");
 
@@ -155,22 +155,25 @@ public class VPManager {
         } else {
             credSubj = converter.fromMap(cred.getCredential(), Object.class);
         }
-        VerifiableCredentialBuilder builder = VerifiableCredential.builder()
+
+        @SuppressWarnings("rawtypes")
+        VerifiableIndyCredentialBuilder builder = VerifiableIndyCredential.builder()
                 .id("urn:" + cred.getId().toString())
                 .type(type)
                 .context(context)
                 .issuanceDate(TimeUtil.currentTimeFormatted(cred.getIssuedAt()))
                 .schemaId(ariesCred.getSchemaId())
                 .credDefId(ariesCred.getCredentialDefinitionId())
+                .label(cred.getLabel())
                 .credentialSubject(credSubj);
         partnerRepo.findByConnectionId(cred.getConnectionId()).ifPresent(p -> builder.indyIssuer(p.getDid()));
         return builder.build();
     }
 
-    public Optional<VerifiablePresentation> getVerifiablePresentation() {
+    public Optional<VerifiablePresentation<VerifiableIndyCredential>> getVerifiablePresentation() {
         final Optional<DidDocWeb> dbVP = getVerifiablePresentationInternal();
         if (dbVP.isPresent() && dbVP.get().getProfileJson() != null) {
-            return Optional.of(converter.fromMap(dbVP.get().getProfileJson(), VerifiablePresentation.class));
+            return Optional.of(converter.fromMap(dbVP.get().getProfileJson(), Converter.VP_TYPEREF));
         }
         return Optional.empty();
     }

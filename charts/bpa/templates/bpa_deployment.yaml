@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "bpa.fullname" . }}
+  labels:
+    {{- include "bpa.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "bpa.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.bpa.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "bpa.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.bpa.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.bpa.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.bpa.securityContext | nindent 12 }}
+          image: "{{ .Values.bpa.image.repository }}:{{ .Values.bpa.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.bpa.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: BPA_BOOTSTRAP_PW
+              value: {{ .Values.bpa.password | quote }}
+            - name: BPA_BOOTSTRAP_UN
+              value: {{ .Values.bpa.userName | quote }}   
+            - name: BPA_DID_PREFIX
+              value: {{ .Values.bpa.didPrefix | quote }}
+            - name: BPA_LEDGER_BROWSER
+              value: {{ .Values.bpa.ledgerBrowser | quote }}
+            - name: BPA_RESOLVER_URL
+              value: {{ .Values.bpa.resolverURL | quote }}
+            - name: BPA_WEB_MODE
+              value: {{ .Values.bpa.webMode | quote }}
+            - name: AGENT_ENDPOINT
+              value: https://{{ (index .Values.acapy.ingress.hosts 0).host }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "global.postgresql.fullname" . }}
+                  key: postgresql-password            
+            - name: JAVA_OPTS 
+              value: |
+                -Doagent.acapy.url=http://{{ include "acapy.fullname" . }}:{{ .Values.acapy.service.adminPort }} 
+                -Doagent.acapy.apiKey={{ .Values.acapy.adminURLApiKey }}
+                -Dmicronaut.security.enabled={{ .Values.bpa.securityEnabled }} 
+                -Dmicronaut.server.port=8080
+                -Doagent.pg.url=jdbc:postgresql://{{ include "global.postgresql.fullname" . }}/{{ .Values.postgresql.postgresqlUsername }}
+                -Doagent.pg.username={{ .Values.postgresql.postgresqlUsername }}
+                -Doagent.pg.password=$(POSTGRES_PASSWORD)
+                -Doagent.host={{ (index .Values.bpa.ingress.hosts 0).host }}
+          resources:
+            {{- toYaml .Values.bpa.resources | nindent 12 }}
+      {{- with .Values.bpa.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.bpa.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.bpa.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

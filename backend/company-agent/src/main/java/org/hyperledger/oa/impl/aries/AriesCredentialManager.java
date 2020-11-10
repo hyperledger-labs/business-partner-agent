@@ -1,33 +1,27 @@
-/**
- * Copyright (c) 2020 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/organizational-agent
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (c) 2020 - for information on the respective copyright owner
+  see the NOTICE file and/or the repository at
+  https://github.com/hyperledger-labs/business-partner-agent
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package org.hyperledger.oa.impl.aries;
 
-import java.io.IOException;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micronaut.context.annotation.Value;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credential.Credential;
@@ -35,17 +29,19 @@ import org.hyperledger.aries.api.credential.CredentialAttributes;
 import org.hyperledger.aries.api.credential.CredentialExchange;
 import org.hyperledger.aries.api.credential.CredentialProposalRequest;
 import org.hyperledger.aries.api.credential.CredentialProposalRequest.CredentialPreview;
-import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
-import org.hyperledger.oa.api.ApiConstants;
+import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
+import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.aries.AriesCredential;
 import org.hyperledger.oa.api.aries.AriesCredential.AriesCredentialBuilder;
 import org.hyperledger.oa.api.aries.BankAccount;
+import org.hyperledger.oa.api.aries.ProfileVC;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.api.exception.PartnerException;
-import org.hyperledger.oa.client.LedgerClient;
 import org.hyperledger.oa.config.runtime.RequiresAries;
-import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
+import org.hyperledger.oa.controller.api.WebSocketMessageBody;
+import org.hyperledger.oa.impl.MessageService;
 import org.hyperledger.oa.impl.activity.VPManager;
 import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.impl.util.Converter;
@@ -56,63 +52,57 @@ import org.hyperledger.oa.repository.MyCredentialRepository;
 import org.hyperledger.oa.repository.MyDocumentRepository;
 import org.hyperledger.oa.repository.PartnerRepository;
 
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Singleton
 @RequiresAries
 public class AriesCredentialManager {
 
-    @Inject
-    private AriesClient ac;
+    @Value("${oagent.did.prefix}")
+    String didPrefix;
 
     @Inject
-    private PartnerRepository partnerRepo;
+    @Setter
+    AriesClient ac;
 
     @Inject
-    private MyDocumentRepository docRepo;
+    PartnerRepository partnerRepo;
 
     @Inject
-    private MyCredentialRepository credRepo;
+    MyDocumentRepository docRepo;
 
     @Inject
-    private VPManager vpMgmt;
+    MyCredentialRepository credRepo;
 
     @Inject
-    private Converter conv;
+    VPManager vpMgmt;
 
     @Inject
-    private LedgerClient ledger;
+    PartnerCredDefLookup credLookup;
 
-    public Optional<List<PartnerCredentialType>> getPartnerCredDefs(@NonNull UUID partnerId) {
-        Optional<List<PartnerCredentialType>> result = Optional.empty();
-        final Optional<Partner> p = partnerRepo.findById(partnerId);
-        if (p.isPresent() && StringUtils.isNotEmpty(p.get().getDid())) {
-            result = ledger.getCredentialDefinitionIdsForDid(AriesStringUtil.didGetLastSegment(p.get().getDid()));
-        }
-        return result;
-    }
+    @Inject
+    SchemaService schemaService;
 
-    private Optional<String> findBACredentialDefinitionId(@NonNull UUID partnerId) {
-        Optional<String> result = Optional.empty();
+    @Inject
+    Converter conv;
 
-        final Optional<List<PartnerCredentialType>> pct = getPartnerCredDefs(partnerId);
-        if (pct.isPresent()) {
-            final List<PartnerCredentialType> baCreds = pct.get().stream()
-                    .filter(cred -> AriesStringUtil.credDefIdGetSquenceNo(
-                            cred.getCredentialDefinitionId()).equals(ApiConstants.BANK_ACCOUNT_SCHEMA_SEQ))
-                    .collect(Collectors.toList());
-            if (baCreds.size() > 0) {
-                result = Optional.of(baCreds.get(baCreds.size() - 1).getCredentialDefinitionId());
-            }
-        }
-        return result;
-    }
+    @Inject
+    ObjectMapper mapper;
+
+    @Inject
+    MessageService messageService;
 
     // request credential from issuer (partner)
     public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId) {
-
         final Optional<Partner> dbPartner = partnerRepo.findById(partnerId);
         if (dbPartner.isPresent()) {
             final Optional<MyDocument> dbDoc = docRepo.findById(myDocId);
@@ -120,19 +110,16 @@ public class AriesCredentialManager {
                 if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(dbDoc.get().getType())) {
                     final BankAccount bankAccount = conv.fromMap(dbDoc.get().getDocument(), BankAccount.class);
                     try {
-                        final Optional<String> baCredDefId = findBACredentialDefinitionId(partnerId);
+                        final org.hyperledger.oa.model.BPASchema s = schemaService
+                                .getSchemaFor(CredentialType.BANK_ACCOUNT_CREDENTIAL);
+                        final Optional<String> baCredDefId = credLookup.findBACredentialDefinitionId(
+                                partnerId, s.getSeqNo());
                         if (baCredDefId.isPresent()) {
-                            String schemaId = null;
-                            Optional<Schema> schema = ac.schemasGetById(AriesStringUtil.credDefIdGetSquenceNo(
-                                    baCredDefId.get()));
-                            if (schema.isPresent()) {
-                                schemaId = schema.get().getId();
-                            }
                             ac.issueCredentialSendProposal(
                                     CredentialProposalRequest
                                             .builder()
                                             .connectionId(dbPartner.get().getConnectionId())
-                                            .schemaId(schemaId)
+                                            .schemaId(s.getSchemaId())
                                             .credentialProposal(
                                                     new CredentialPreview(
                                                             CredentialAttributes.from(bankAccount)))
@@ -158,13 +145,10 @@ public class AriesCredentialManager {
     // all other state changes that are not store or acked
     public void handleCredentialEvent(CredentialExchange credEx) {
         credRepo.findByThreadId(credEx.getThreadId())
-                .ifPresentOrElse(cred -> {
-                    credRepo.updateState(cred.getId(), credEx.getState());
-                }, () -> {
+                .ifPresentOrElse(cred -> credRepo.updateState(cred.getId(), credEx.getState()), () -> {
                     MyCredential dbCred = MyCredential
                             .builder()
                             .isPublic(Boolean.FALSE)
-                            .type(CredentialType.fromSchemaId(credEx.getSchemaId()))
                             .connectionId(credEx.getConnectionId())
                             .state(credEx.getState())
                             .threadId(credEx.getThreadId())
@@ -174,9 +158,9 @@ public class AriesCredentialManager {
     }
 
     // credential signed, but not in wallet yet
-    public void handleStroreCredential(CredentialExchange credEx) {
+    public void handleStoreCredential(CredentialExchange credEx) {
         credRepo.findByThreadId(credEx.getThreadId())
-                .ifPresent(cred -> {
+                .ifPresentOrElse(cred -> {
                     try {
                         credRepo.updateState(cred.getId(), credEx.getState());
                         // TODO should not be necessary with --auto-store-credential set
@@ -184,23 +168,26 @@ public class AriesCredentialManager {
                     } catch (IOException e) {
                         log.error("aca-py not reachable", e);
                     }
-                });
+                }, () -> log.error("Received store credential event without matching thread id"));
     }
 
     // credential, signed and stored in wallet
     public void handleCredentialAcked(CredentialExchange credEx) {
         credRepo.findByThreadId(credEx.getThreadId())
-                .ifPresent(cred -> {
+                .ifPresentOrElse(cred -> {
                     cred
                             .setReferent(credEx.getCredential().getReferent())
                             .setCredential(conv.toMap(credEx.getCredential()))
+                            .setType(CredentialType.fromSchemaId(credEx.getSchemaId()))
                             .setState(credEx.getState())
+                            .setIssuer(resolveIssuer(credEx.getCredential()))
                             .setIssuedAt(Instant.now());
-                    credRepo.update(cred);
-                });
+                    MyCredential updated = credRepo.update(cred);
+                    messageService.sendMessage(WebSocketMessageBody.credentialReceived(buildAriesCredential(updated)));
+
+                }, () -> log.error("Received credential without matching thread id, credential is not stored."));
     }
 
-    @SuppressWarnings("boxing")
     public Optional<MyCredential> toggleVisibility(UUID id) {
         final Optional<MyCredential> cred = credRepo.findById(id);
         if (cred.isPresent()) {
@@ -214,35 +201,101 @@ public class AriesCredentialManager {
 
     public List<AriesCredential> listCredentials() {
         List<AriesCredential> result = new ArrayList<>();
-        credRepo.findAll().forEach(c -> result.add(AriesCredential.fromMyCredential(c).build()));
+        credRepo.findAll().forEach(c -> result.add(buildAriesCredential(c)));
         return result;
     }
 
     public Optional<AriesCredential> getAriesCredentialById(@NonNull UUID id) {
         final Optional<MyCredential> dbCred = credRepo.findById(id);
-        if (dbCred.isPresent()) {
-            final AriesCredentialBuilder myCred = AriesCredential.fromMyCredential(dbCred.get());
-            final Credential ariesCred = conv.fromMap(dbCred.get().getCredential(), Credential.class);
-            myCred
-                    .schemaId(ariesCred.getSchemaId())
-                    .credentialData(ariesCred.getAttrs());
-            partnerRepo.findByConnectionId(dbCred.get().getConnectionId())
-                    .ifPresent(p -> myCred.issuer(p.getDid()));
-            return Optional.of(myCred.build());
-        }
-        return Optional.empty();
+        return dbCred.map(this::buildAriesCredential);
     }
 
-    public void deleteCredentialById(UUID id) {
+    private AriesCredential buildAriesCredential(MyCredential dbCred) {
+        final AriesCredentialBuilder myCred = AriesCredential.fromMyCredential(dbCred);
+        if (dbCred.getCredential() != null) {
+            final Credential ariesCred = conv.fromMap(dbCred.getCredential(), Credential.class);
+            myCred
+                    .schemaId(ariesCred.getSchemaId())
+                    .credentialDefinitionId(ariesCred.getCredentialDefinitionId())
+                    .credentialData(ariesCred.getAttrs());
+            // TODO only for backwards compatibility, can be removed at some point
+            if (dbCred.getIssuer() == null) {
+                myCred.issuer(resolveIssuer(ariesCred));
+            }
+        }
+        return myCred.build();
+    }
+
+    /**
+     * Updates the credentials label
+     * 
+     * @param id    the credential id
+     * @param label the credentials label
+     * @return the updated credential if found
+     */
+    public Optional<AriesCredential> updateCredentialById(@NonNull UUID id, @NonNull String label) {
+        final Optional<AriesCredential> cred = getAriesCredentialById(id);
+        if (cred.isPresent()) {
+            credRepo.updateLabel(id, label);
+            cred.get().setLabel(label);
+        }
+        return cred;
+    }
+
+    public void deleteCredentialById(@NonNull UUID id) {
         credRepo.findById(id).ifPresent(c -> {
+            boolean isPublic = c.getIsPublic();
             try {
                 if (c.getReferent() != null) {
                     ac.credentialRemove(c.getReferent());
                 }
-            } catch (IOException e) {
-                throw new NetworkException("aca-py not reachable", e);
+            } catch (AriesException | IOException e) {
+                // if we fail here its not good, but also no deal breaker, so log and continue
+                log.error("Could not delete aca-py credential for referent: {}", c.getReferent(), e);
             }
             credRepo.deleteById(id);
+            if (isPublic) {
+                vpMgmt.recreateVerifiablePresentation();
+            }
         });
+    }
+
+    /**
+     * Tries to resolve the issuers DID into a human readable name. Resolution order
+     * is: 1. Partner alias the user gave 2. Legal name from the partners public
+     * profile 3. ACA-PY Label 4. DID
+     *
+     * @param ariesCred {@link Credential}
+     * @return the issuer or null when the credential or the credential definition
+     *         id is null
+     */
+    @Nullable
+    String resolveIssuer(@Nullable Credential ariesCred) {
+        String issuer = null;
+        if (ariesCred != null && StringUtils.isNotEmpty(ariesCred.getCredentialDefinitionId())) {
+            String did = didPrefix + AriesStringUtil.credDefIdGetDid(ariesCred.getCredentialDefinitionId());
+            Optional<Partner> p = partnerRepo.findByDid(did);
+            if (p.isPresent()) {
+                if (StringUtils.isNotEmpty(p.get().getAlias())) {
+                    issuer = p.get().getAlias();
+                } else if (p.get().getVerifiablePresentation() != null) {
+                    VerifiablePresentation<VerifiableIndyCredential> vp = conv
+                            .fromMap(p.get().getVerifiablePresentation(), Converter.VP_TYPEREF);
+                    Optional<VerifiableIndyCredential> profile = vp.getVerifiableCredential()
+                            .stream().filter(ic -> ic.getType().contains("OrganizationalProfileCredential")).findAny();
+                    if (profile.isPresent() && profile.get().getCredentialSubject() != null) {
+                        ProfileVC pVC = mapper.convertValue(profile.get().getCredentialSubject(), ProfileVC.class);
+                        issuer = pVC.getLegalName();
+                    }
+                }
+                if (issuer == null && p.get().getIncoming() != null && p.get().getIncoming()) {
+                    issuer = p.get().getLabel();
+                }
+            }
+            if (issuer == null) {
+                issuer = did;
+            }
+        }
+        return issuer;
     }
 }

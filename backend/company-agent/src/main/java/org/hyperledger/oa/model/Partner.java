@@ -1,32 +1,21 @@
-/**
- * Copyright (c) 2020 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/organizational-agent
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+  Copyright (c) 2020 - for information on the respective copyright owner
+  see the NOTICE file and/or the repository at
+  https://github.com/hyperledger-labs/business-partner-agent
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
  */
 package org.hyperledger.oa.model;
-
-import java.time.Instant;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.annotation.Nullable;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
-import org.hyperledger.oa.api.PartnerAPI;
 
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
@@ -38,6 +27,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.oa.api.PartnerAPI;
+import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
+
+import javax.annotation.Nullable;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import java.time.Instant;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Flat representation of a partner. In the web context a partner is just a
@@ -62,6 +61,9 @@ public class Partner {
 
     @DateUpdated
     private Instant updatedAt;
+
+    @Nullable
+    private Instant lastSeen; // last time a ping response was received from the partner
 
     /** The fully qualified did like did:sov:123 */
     private String did;
@@ -95,5 +97,13 @@ public class Partner {
     @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> verifiablePresentation;
+
+    /**
+     * Serialized {@link PartnerCredentialType} to allow filtering partners by
+     * supported credentials
+     */
+    @Nullable
+    @TypeDef(type = DataType.JSON)
+    private Map<String, Object> supportedCredentials;
 
 }
