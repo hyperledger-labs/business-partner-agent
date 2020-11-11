@@ -44,7 +44,7 @@ The following steps have to be done only once.
 This  is required for the next preparation steps.
 
 ```s
-git@github.com:hyperledger-labs/business-partner-agent.git
+git clone git@github.com:hyperledger-labs/business-partner-agent.git
 cd business-partner-agent/docker
 ```
 
