@@ -65,7 +65,7 @@ See also [docker command line documentation](https://docs.docker.com/engine/refe
 
 ### Register a new DID
 
-Use the `./docker/register-did.sh` script to register a new DID on our test network (see also [docker setup](../../docker/README.md))
+Use the `./docker/register-did.sh` script to register a new DID on our test network (see also [docker-compose setup](../../scripts/README.md))
 Just run:
 
 ```s
