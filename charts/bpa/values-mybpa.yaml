@@ -1,0 +1,18 @@
+bpa:
+   image:
+     repository: myrepo.io/bpa
+     tag: latest
+   ingress:
+     enabled: true
+     hosts:
+     - host: mybpa.example.com
+       paths:
+       - /
+acapy:
+   agentSeed: 12345678901234567890123456789012
+   ingress:
+     enabled: true
+     hosts:
+     - host: mybpa-acapy.example.com
+       paths:
+       - /

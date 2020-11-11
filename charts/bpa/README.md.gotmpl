@@ -3,7 +3,7 @@
 
 {{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
 
-This chart will install BPA (bpa-core & bpa-acapy) and Postgres.
+This chart will install a business partner agent (bpa-core & bpa-acapy) and Postgres.
 
 It will also create the default ingress routes.
 
@@ -38,7 +38,7 @@ This chart bootstraps a business partner agent deployment on a Kubernetes cluste
 
 The following steps have to be done only once.
 
-### Clone this git repository 
+### Clone this git repository
 
 This  is required for the next preparation steps.
 
@@ -47,18 +47,20 @@ git@github.com:hyperledger-labs/business-partner-agent.git
 cd business-partner-agent/docker
 ```
 
-### Create and push docker image 
+### Create and push docker image
 
 In the future we plan to have bpa image publically available, e.g. on docker hub.
-Currently you have to build it on your own and make it available in a registry (one that is reachable by your kubernetes cluster, e.g. docker hub). 
+Currently you have to build it on your own and make it available in a registry (one that is reachable by your kubernetes cluster, e.g. docker hub).
 
-Build your image by executing the docker build command and push it to your registry. 
+Build your image by executing the docker build command and push it to your registry.
+E.g.
 
 ```s
 docker login --username=yourusername --password=yourpassword
 docker build -t myrepo.io/bpa:latest .
-sudo docker push myrepo.io/bpa:latest
+docker push myrepo.io/bpa:latest
 ```
+See also [docker command line documentation](https://docs.docker.com/engine/reference/commandline/cli/).
 
 ### Register a new DID
 
@@ -88,12 +90,51 @@ Get the application URL by running the commands returned by helm install, e.g.:
 export POD_NAME=$(kubectl get pods --namespace md -l "app.kubernetes.io/name=bpa-bpacore,app.kubernetes.io/instance=mynamespace" -o jsonpath="{.items[0].metadata.name}")
 echo "Visit http://127.0.0.1:8080 to use your application"
 kubectl --namespace mynamespace port-forward $POD_NAME 8080:8080
- ```
+```
 
 This deploys BPA (bpa-core & bpa-acapy) and Postgres on the Kubernetes cluster in the default configuration. The [Values](#Values) section list the parameters that can be configured during installation.
 
-Deploying the charts with configured ingress routes could be done e.g. as follows:
-*TODO*
+#### Install chart with values file
+
+Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart.
+Deploying the charts with configured ingress routes could be done e.g. as follows.
+
+Create a yaml file. 
+```yaml
+cat <<EOT >> values-mybpa.yaml
+bpa:
+   image:
+     repository: myrepo.io/bpa
+     tag: latest
+   ingress:
+     enabled: true
+     hosts:
+     - host: mybpa.example.com
+       paths:
+       - /
+acapy:
+   agentSeed: 12345678901234567890123456789012
+   ingress:
+     enabled: true
+     hosts:
+     - host: mybpa-acapy.example.com
+       paths:
+       - /
+EOT
+```
+
+Install the chart with the release name `mybpa`, in the namespace `mynamespace`.
+
+
+```sh
+helm install \
+	--values values-mybpa.yaml \
+   	mybpa bpa/bpa -n mynamespace --devel  
+```
+#### Installl multiple bpa instances
+
+> You could easily deploy a second business partner agent like this, e.g. for demo purpose.
+> Just use a different helm release name, the seed of another DID and different ingress host names.
 
 ## Uninstalling the Chart
 
@@ -120,19 +161,13 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 
 ## Chart development
 
-### Deployment
+### Publish chart(s)
 
-Charts in the [charts folder](..) will be automatically deployed to a repository hosted on github pages.
-To deploy a new version:
-- checkout master
-- increase the version in [Chart.yaml](Chart.yaml)
-- push the changes to a new release branch or checkout an existing one (release/*)
-
-Release will be created automatically via github workflow / action.
+See [publishing docu](../../PUBLISHING.md).
 
 ### Documentation 
 
-The Documentation is generated via `helm-docs` out of a go template.
+The chart documentation is generated via `helm-docs` out of a go template.
 
 ```sh
 cd charts
