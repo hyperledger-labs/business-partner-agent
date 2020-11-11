@@ -10,6 +10,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import { CredentialTypes } from "../constants";
 import taa from "./modules/taa";
+import socketEvents from "./modules/socketevents";
 import * as actions from "./actions";
 
 Vue.use(Vuex);
@@ -17,19 +18,12 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
     partners: [],
-    newPartners: {},
     editedDocument: {}, //document currently being edited
     documents: [],
     credentials: [],
-    newCredentials: {},
     schemas: [],
     busyStack: 0,
     expertMode: false,
-    socket: {
-      isConnected: false,
-      message: "",
-      reconnectError: false,
-    },
   },
 
   getters: {
@@ -56,63 +50,11 @@ const store = new Vuex.Store({
         partner.did === did;
       });
     },
-    newPartners: (state) => {
-      return Object.keys(state.newPartners).length;
-    },
-    newCredentials: (state) => {
-      return Object.keys(state.newCredentials).length;
-    },
   },
 
   actions: actions,
 
   mutations: {
-    SOCKET_ONOPEN(state, event) {
-      console.log(event);
-      Vue.prototype.$socket = event.currentTarget;
-      state.socket.isConnected = true;
-    },
-    SOCKET_ONCLOSE(state, event) {
-      console.log(event);
-      state.socket.isConnected = false;
-    },
-    SOCKET_ONERROR(state, event) {
-      console.error(state, event);
-    },
-    // default handler called for all methods
-    SOCKET_ONMESSAGE(state, message) {
-      console.log(message);
-      state.socket.message = message;
-    },
-    // mutations for reconnect methods
-    SOCKET_RECONNECT(state, count) {
-      console.info(state, count);
-    },
-    SOCKET_RECONNECT_ERROR(state) {
-      state.socket.reconnectError = true;
-    },
-    newPartner(state, payload) {
-      console.log(payload);
-      let id = payload.message.linkId;
-      state.newPartners[id] = payload;
-    },
-    newCredential(state, payload) {
-      console.log(payload);
-      let id = payload.message.linkId;
-      state.newCredentials[id] = payload;
-    },
-    partnerSeen(state, payload) {
-      let id = payload.id;
-      if ({}.hasOwnProperty.call(state.newPartners, id)) {
-        delete state.newPartners[id];
-      }
-    },
-    credentialSeen(state, payload) {
-      let id = payload.id;
-      if ({}.hasOwnProperty.call(state.newCredentials, id)) {
-        delete state.newCredentials[id];
-      }
-    },
     loadDocumentsFinished(state, payload) {
       state.documents = payload.documents;
     },
@@ -132,6 +74,7 @@ const store = new Vuex.Store({
 
   modules: {
     taa,
+    socketEvents,
   },
 });
 

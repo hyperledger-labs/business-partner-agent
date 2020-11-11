@@ -59,8 +59,8 @@
               <v-badge
               overlap
               bordered
-              :content="newCredentials"
-              :value="newCredentials"
+              :content="newCredentialsCount"
+              :value="newCredentialsCount"
               color="red"
               offset-x="10"
               offset-y="10"
@@ -77,8 +77,8 @@
               <v-badge
               overlap
               bordered
-              :content="newPartners"
-              :value="newPartners"
+              :content="newPartnersCount"
+              :value="newPartnersCount"
               color="red"
               offset-x="10"
               offset-y="10"
@@ -184,12 +184,11 @@ export default {
     expertMode() {
       return this.$store.state.expertMode;
     },
-    newPartners() {
-      console.log(this.$store.getters.newPartners)
-      return Object.keys(this.$store.state.newPartners).length;
+    newPartnersCount() {
+      return this.$store.getters.newPartnersCount;
     },
-    newCredentials() {
-      return Object.keys(this.$store.state.newCredentials).length;
+    newCredentialsCount() {
+      return this.$store.getters.newCredentialsCount;
     }
   },
   created() {
