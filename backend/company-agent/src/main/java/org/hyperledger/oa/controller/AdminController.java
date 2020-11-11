@@ -106,7 +106,7 @@ public class AdminController {
     /**
      * Aries: Update a schema configuration
      *
-     * @param id the schema id
+     * @param id  the schema id
      * @param req {@link UpdateSchemaRequest}
      * @return {@link HttpResponse}
      */
