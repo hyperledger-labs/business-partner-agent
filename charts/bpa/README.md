@@ -44,8 +44,8 @@ The following steps have to be done only once.
 This  is required for the next preparation steps.
 
 ```s
-git@github.com:hyperledger-labs/business-partner-agent.git
-cd business-partner-agent/docker
+git clone git@github.com:hyperledger-labs/business-partner-agent.git
+cd business-partner-agent
 ```
 
 ### Create and push docker image
@@ -65,7 +65,7 @@ See also [docker command line documentation](https://docs.docker.com/engine/refe
 
 ### Register a new DID
 
-Use the `./docker/register-did.sh` script to register a new DID on our test network (see also [docker setup](../../docker/README.md))
+Use the `./docker/register-did.sh` script to register a new DID on our test network (see also [docker-compose setup](../../scripts/README.md))
 Just run:
 
 ```s
