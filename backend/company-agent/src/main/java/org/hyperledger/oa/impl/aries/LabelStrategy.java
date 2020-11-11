@@ -35,6 +35,12 @@ import javax.inject.Singleton;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Tries to set a human readable label on document and credential data. Labels
+ * set by a user always take precedence, if none is set the strategy tries to
+ * set a default value based on a schema attribute that has been configured in
+ * the {@link org.hyperledger.oa.config.SchemaConfig}.
+ */
 @RequiresAries
 @Singleton
 public class LabelStrategy {

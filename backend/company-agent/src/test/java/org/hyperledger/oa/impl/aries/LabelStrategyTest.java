@@ -88,7 +88,7 @@ public class LabelStrategyTest {
     }
 
     @Test
-    void testHappyLabelFromCredential() throws Exception {
+    void testHappyLabelFromCredential() {
         when(schemaService.getSchemaFor(any(CredentialType.class))).thenReturn(BPASchema
                 .builder()
                 .defaultAttributeName("iban")
@@ -106,12 +106,15 @@ public class LabelStrategyTest {
         assertEquals("My Label", myLabel);
     }
 
+    @Test
     void testResetLabelOnCredentialUpdate() {
         when(schemaService.getSchemaFor(any(CredentialType.class))).thenReturn(BPASchema
                 .builder()
                 .defaultAttributeName("iban")
+                .type(CredentialType.BANK_ACCOUNT_CREDENTIAL)
                 .build());
         AriesCredential credential = new AriesCredential();
+        credential.setType(CredentialType.BANK_ACCOUNT_CREDENTIAL);
         credential.setCredentialData(Map.of("iban", "test123", "bic", "1234"));
         String label = labelStrategy.apply("", credential);
         assertEquals("test123", label);
