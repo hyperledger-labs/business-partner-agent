@@ -32,7 +32,7 @@ In our documentation, the agent will be started in Aries mode.
 
 ## Run a business partner agent
 
-You can either run the agent [via docker-compose](docker/) (recommended for e.g. development /debugging) or deploy it into a [kubernetes cluster (via helm)](charts/bpa).
+You can either run the agent [via docker-compose](scripts/) (recommended for e.g. development /debugging) or deploy it into a [kubernetes cluster (via helm)](charts/bpa).
 
 ## Play a demo scenario
 
