@@ -113,3 +113,4 @@ oagent:
      bank-account:
       id: "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
       label: "Bank Account"
+      defaultAttributeName: "iban"

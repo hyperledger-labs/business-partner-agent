@@ -31,6 +31,7 @@ import org.hyperledger.oa.api.aries.SchemaAPI;
 import org.hyperledger.oa.config.RuntimeConfig;
 import org.hyperledger.oa.controller.api.admin.AddSchemaRequest;
 import org.hyperledger.oa.controller.api.admin.TAADigestRequest;
+import org.hyperledger.oa.controller.api.admin.UpdateSchemaRequest;
 import org.hyperledger.oa.impl.aries.EndpointService;
 import org.hyperledger.oa.impl.aries.SchemaService;
 
@@ -72,6 +73,23 @@ public class AdminController {
     }
 
     /**
+     * Aries: Get a schema configuration
+     *
+     * @param id the schema id
+     * @return {@link HttpResponse}
+     */
+    @Get("/schema/{id}")
+    public HttpResponse<SchemaAPI> getSchema(@PathVariable UUID id) {
+        if (schemaService.isPresent()) {
+            final Optional<SchemaAPI> schema = schemaService.get().getSchema(id);
+            if (schema.isPresent()) {
+                return HttpResponse.ok(schema.get());
+            }
+        }
+        return HttpResponse.notFound();
+    }
+
+    /**
      * Aries: Add a schema configuration
      *
      * @param req {@link AddSchemaRequest}
@@ -86,6 +104,24 @@ public class AdminController {
     }
 
     /**
+     * Aries: Update a schema configuration
+     *
+     * @param id  the schema id
+     * @param req {@link UpdateSchemaRequest}
+     * @return {@link HttpResponse}
+     */
+    @Put("/schema/{id}")
+    public HttpResponse<SchemaAPI> updateSchema(@PathVariable UUID id, @Body UpdateSchemaRequest req) {
+        if (schemaService.isPresent()) {
+            Optional<SchemaAPI> schemaAPI = schemaService.get().updateSchema(id, req.getDefaultAttribute());
+            if (schemaAPI.isPresent()) {
+                return HttpResponse.ok(schemaAPI.get());
+            }
+        }
+        return HttpResponse.notFound();
+    }
+
+    /**
      * Aries: Removes a schema configuration. Doing so means the BPA will not
      * process requests containing this schema id any more.
      *
@@ -93,32 +129,15 @@ public class AdminController {
      * @return {@link HttpResponse}
      */
     @Delete("/schema/{id}")
-    public HttpResponse<Void> removeSchema(@PathVariable String id) {
+    public HttpResponse<Void> removeSchema(@PathVariable UUID id) {
         if (schemaService.isPresent()) {
             SchemaService sService = schemaService.get();
-            Optional<SchemaAPI> schema = sService.getSchema(UUID.fromString(id));
+            Optional<SchemaAPI> schema = sService.getSchema(id);
             if (schema.isPresent() && !schema.get().getIsReadOnly()) {
-                sService.deleteSchema(UUID.fromString(id));
+                sService.deleteSchema(id);
                 return HttpResponse.ok();
             }
             return HttpResponse.notAllowed();
-        }
-        return HttpResponse.notFound();
-    }
-
-    /**
-     * Aries: Get a schema configuration
-     *
-     * @param id the schema id
-     * @return {@link HttpResponse}
-     */
-    @Get("/schema/{id}")
-    public HttpResponse<SchemaAPI> getSchema(@PathVariable UUID id) {
-        if (schemaService.isPresent()) {
-            final Optional<SchemaAPI> schema = schemaService.get().getSchema(id);
-            if (schema.isPresent()) {
-                return HttpResponse.ok(schema.get());
-            }
         }
         return HttpResponse.notFound();
     }

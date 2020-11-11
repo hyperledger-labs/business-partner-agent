@@ -22,6 +22,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.core.util.CollectionUtils;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +46,8 @@ import java.util.Optional;
 
 @Slf4j
 @Singleton
+@NoArgsConstructor
+@AllArgsConstructor
 public class Converter {
 
     public static final TypeReference<Map<String, Object>> MAP_TYPEREF = new TypeReference<>() {

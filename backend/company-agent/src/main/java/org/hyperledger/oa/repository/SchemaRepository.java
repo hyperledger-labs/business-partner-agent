@@ -17,6 +17,7 @@
  */
 package org.hyperledger.oa.repository;
 
+import io.micronaut.data.annotation.Id;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
@@ -31,6 +32,8 @@ public interface SchemaRepository extends CrudRepository<BPASchema, UUID> {
     Optional<BPASchema> findBySchemaId(String schemaId);
 
     Optional<BPASchema> findByType(CredentialType type);
+
+    void updateDefaultAttributeName(@Id UUID id, String defaultAttributeName);
 
     void deleteByIsReadOnly(Boolean isReadOnly);
 }
