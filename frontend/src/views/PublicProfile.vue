@@ -8,7 +8,7 @@
 <template>
   <v-container>
     <div v-if="publicDocumentsAndCredentials.length > 0">
-      <v-alert color="light" border="left" elevation="2" icon="md-info" dark>
+      <v-alert color="#7f8c8d" border="left" elevation="2" icon="md-info" dark>
         You can change the visibility settings of documents and verified
         credentials in the <strong>wallet</strong> to update your public
         profile.
@@ -48,7 +48,6 @@ export default {
       return this.$store.getters.isBusy;
     },
     publicDocumentsAndCredentials() {
-      console.log(this.$store.getters.publicDocumentsAndCredentials);
       return this.$store.getters.publicDocumentsAndCredentials;
     },
   },

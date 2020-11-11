@@ -53,29 +53,9 @@ export default {
     partner: Object,
   },
   created() {
-    console.log(this.partner);
   },
   data: () => {
     return {
-      identityCredential: {
-        type: "OTHER",
-        credentialDefinitionId: "afafdsfdsf:sdfaf:Commercial Registry Entry",
-        issuer: "blubb",
-        credentialData: {
-          did: "did:x:4323",
-          validFrom: "",
-          validUntil: "",
-          companyName: "A generic Company",
-          lastEntryDate: "",
-          nominalCapital: "",
-          authorizedOfficers: "",
-          registrationNumber: "23434",
-          companyAddressStreet: "Uhlsteinstrasse 23",
-          companyAddressCountry: "Germany",
-          companyAddressLocality: "Berlin",
-          companyAddressPostalCode: "2323",
-        },
-      },
       CredentialTypes: CredentialTypes,
     };
   },
@@ -84,8 +64,6 @@ export default {
       if (this.partner.profile) {
         return this.partner.profile;
       } else {
-        console.log(this.partner);
-        console.log(getPartnerProfile(this.partner));
         return getPartnerProfile(this.partner);
       }
     },
@@ -97,11 +75,7 @@ export default {
         credentials = this.partner.credential.filter((cred) => {
           return cred.type !== CredentialTypes.PROFILE.name;
         });
-
-        if (this.identityCredential) {
-          credentials.push(this.identityCredential);
-        }
-
+        
         return credentials;
       } else {
         return [];
