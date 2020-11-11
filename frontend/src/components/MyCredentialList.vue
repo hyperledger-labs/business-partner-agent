@@ -23,12 +23,12 @@
       <template v-slot:[`item.type`]="{ item }">
         <div
           v-if="item.type === CredentialTypes.OTHER.name"
-          class="font-weight-medium"
+          v-bind:class="{ 'font-weight-medium': !item.new }"
         >
           {{ item.credentialDefinitionId | credentialTag | capitalize }}
         </div>
-        <div v-else class="font-weight-medium">
-          {{ item.type | credentialLabel }}
+        <div v-else v-bind:class="{ 'font-weight-medium': item.new}">
+          {{ item.type | credentialLabel }} 
         </div>
       </template>
 
@@ -50,21 +50,6 @@
           <v-icon>mdi-eye-off</v-icon>
         </template>
       </template>
-
-      <!-- <template v-slot:item="{ item }">
-          <tr tag="tr"
-            @click="open(item)"
-          >
-            <td class="font-weight-medium">
-            <td>{{ item.updatedDate ? item.updatedDate : item.createdDate | moment("dddd, MMMM Do YYYY") }}</td>
-            <td>
-              <v-icon v-if="item.isPublic" color="green">mdi-eye</v-icon>
-              <template v-else>
-                <v-icon>mdi-eye-off</v-icon>
-              </template>
-            </td>
-          </tr>
-        </template> -->
     </v-data-table>
   </v-container>
 </template>
@@ -77,6 +62,10 @@ export default {
     type: String,
     headers: Array,
     selectable: {
+      type: Boolean,
+      default: false,
+    },
+    indicateNew: {
       type: Boolean,
       default: false,
     },
@@ -106,10 +95,21 @@ export default {
               this.data = result.data.filter((item) => {
                 return item.issuer;
               });
+
+              if (this.indicateNew) {
+                const newPartners = this.$store.getters.newPartners;
+                if (this.$store.getters.newPartnersCount > 0) {
+                  this.data = this.data.map((partner) => {
+                    if ({}.hasOwnProperty.call(newPartners, partner.id)) {
+                      partner.new = true;
+                    }
+                    return partner;
+                  });
+                }
+              }
             } else {
               this.data = result.data;
             }
-
             console.log(this.data);
           }
         })

@@ -115,7 +115,7 @@ export default {
             this.isBusy = false;
 
             if (this.indicateNew) {
-              let newPartners = this.$store.state.newPartners;
+              let newPartners = this.$store.getters.newPartners;
               if (Object.keys(newPartners).length > 0) {
                 result.data = result.data.map((partner) => {
                   if ({}.hasOwnProperty.call(newPartners, partner.id)) {

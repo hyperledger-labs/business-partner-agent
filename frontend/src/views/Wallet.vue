@@ -8,16 +8,7 @@
 <template>
   <v-container>
     <v-card class="my-4">
-      <v-card-title>
-        Documents
-        <!-- <v-text-field
-          v-model="search"
-          prepend-icon="mdi-magnify"
-          label="Search"
-          single-line
-          hide-details
-        ></v-text-field>-->
-      </v-card-title>
+      <v-card-title> Documents </v-card-title>
       <MyCredentialList
         v-bind:headers="docHeaders"
         type="document"
@@ -56,6 +47,7 @@
       <MyCredentialList
         v-bind:headers="credHeaders"
         type="credential"
+        :indicateNew="true"
       ></MyCredentialList>
     </v-card>
   </v-container>
