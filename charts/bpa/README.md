@@ -45,7 +45,7 @@ This  is required for the next preparation steps.
 
 ```s
 git clone git@github.com:hyperledger-labs/business-partner-agent.git
-cd business-partner-agent/docker
+cd business-partner-agent
 ```
 
 ### Create and push docker image
