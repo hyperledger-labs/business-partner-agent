@@ -1,4 +1,4 @@
-# Docker setup
+# Docker-compose setup
 
 ## Prerequistes
 
@@ -8,14 +8,14 @@ The following tools should be installed on your developer machine:
 - (optional) [ngrok](https://ngrok.com/) or [diode](https://support.diode.io/) to have a public endpoint to communicate with other Business Partner Agents
 
 As well, make sure you are not sitting behind a restrictive company firewall.
-If so, at least the setup has to be adopted (e.g. configure proxy configuration in the maven settings in the [Dockerfile](./Dockerfile)).
+If so, at least the setup has to be adopted (e.g. configure proxy configuration in the maven settings in the [Dockerfile](../Dockerfile)).
 Furthermore the firewall might block traffic to other agents depending on its endpoint configuration (if e.g. in the firewall other ports than 443 are blocked).
 
 ## Quickstart
 
 ```s
 git clone https://github.com/hyperledger-labs/business-partner-agent
-cd ./business-partner-agent/docker
+cd ./business-partner-agent/scripts
 ./register-did.sh
 ./start-with-tunnels.sh
 ```
