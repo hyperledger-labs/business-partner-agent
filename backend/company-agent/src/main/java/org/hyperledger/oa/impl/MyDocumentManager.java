@@ -70,6 +70,10 @@ public class MyDocumentManager {
             throw new WrongApiUsageException("Credential does not exist in database");
         }
 
+        if (!dbCred.get().getType().equals(document.getType())) {
+            throw new WrongApiUsageException("Document type can not be changed after creation");
+        }
+
         labelStrategy.ifPresent(strategy -> strategy.apply(document));
         MyDocument dbCredUpdated = converter.updateMyCredential(document, dbCred.get());
         docRepo.update(dbCredUpdated);

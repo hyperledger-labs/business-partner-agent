@@ -65,6 +65,7 @@ public class LabelStrategy {
                     return label;
                 }
             }
+            document.setLabel(null);
         }
         return null;
     }
