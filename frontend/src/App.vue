@@ -185,10 +185,11 @@ export default {
       return this.$store.state.expertMode;
     },
     newPartners() {
-      return this.$store.state.newPartners.length;
+      console.log(this.$store.getters.newPartners)
+      return Object.keys(this.$store.state.newPartners).length;
     },
     newCredentials() {
-      return this.$store.state.newCredentials.length;
+      return Object.keys(this.$store.state.newCredentials).length;
     }
   },
   created() {

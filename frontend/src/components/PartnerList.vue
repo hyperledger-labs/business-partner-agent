@@ -25,7 +25,9 @@
           v-if="item.state"
           v-bind:state="item.state"
         ></PartnerStateIndicator>
-        <span v-bind:class="{ 'font-weight-medium': item.new }"> {{ item.name }}</span>
+        <span v-bind:class="{ 'font-weight-medium': item.new }">
+          {{ item.name }}</span
+        >
       </template>
 
       <template v-slot:[`item.createdAt`]="{ item }">
@@ -68,7 +70,7 @@ export default {
     },
     indicateNew: {
       type: Boolean,
-      default: false
+      default: false,
     },
     onlyIssuersForSchema: {
       type: String,
@@ -114,23 +116,14 @@ export default {
 
             if (this.indicateNew) {
               let newPartners = this.$store.state.newPartners;
-              if (newPartners.length > 0 ) {
-                   result.data = result.data.map(partner => {
-                    let found = newPartners.find(newPartner => {
-                  
-                       return partner.id === newPartner.message.linkId;
-                    })
-
-                    if (found) {
-
-                      partner.new = true
-
-                    }
-
-                      return partner;
-                    })
+              if (Object.keys(newPartners).length > 0) {
+                result.data = result.data.map((partner) => {
+                  if ({}.hasOwnProperty.call(newPartners, partner.id)) {
+                    partner.new = true;
+                  }
+                  return partner;
+                });
               }
-              
             }
 
             if (this.onlyAries) {

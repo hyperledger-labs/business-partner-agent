@@ -17,11 +17,11 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
     partners: [],
-    newPartners: [],
+    newPartners: {},
     editedDocument: {}, //document currently being edited
     documents: [],
     credentials: [],
-    newCredentials: [],
+    newCredentials: {},
     schemas: [],
     busyStack: 0,
     expertMode: false,
@@ -56,6 +56,12 @@ const store = new Vuex.Store({
         partner.did === did;
       });
     },
+    newPartners: (state) => {
+      return Object.keys(state.newPartners).length;
+    },
+    newCredentials: (state) => {
+      return Object.keys(state.newCredentials).length;
+    },
   },
 
   actions: actions,
@@ -87,11 +93,25 @@ const store = new Vuex.Store({
     },
     newPartner(state, payload) {
       console.log(payload);
-      state.newPartners.push(payload);
+      let id = payload.message.linkId;
+      state.newPartners[id] = payload;
     },
     newCredential(state, payload) {
       console.log(payload);
-      state.newCredentials.push(payload);
+      let id = payload.message.linkId;
+      state.newCredentials[id] = payload;
+    },
+    partnerSeen(state, payload) {
+      let id = payload.id;
+      if ({}.hasOwnProperty.call(state.newPartners, id)) {
+        delete state.newPartners[id];
+      }
+    },
+    credentialSeen(state, payload) {
+      let id = payload.id;
+      if ({}.hasOwnProperty.call(state.newCredentials, id)) {
+        delete state.newCredentials[id];
+      }
     },
     loadDocumentsFinished(state, payload) {
       state.documents = payload.documents;
