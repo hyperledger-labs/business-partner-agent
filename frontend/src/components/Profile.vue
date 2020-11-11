@@ -58,8 +58,8 @@ export default {
   data: () => {
     return {
       identityCredential: {
-        type: "IDENTITY_CREDENTIAL",
-        schemaId: "bla",
+        type: "OTHER",
+        credentialDefinitionId: "afafdsfdsf:sdfaf:Commercial Registry Entry",
         issuer: "blubb",
         credentialData: {
           did: "did:x:4323",

@@ -19,10 +19,6 @@ export const CredentialTypes = Object.freeze({
     name: "OTHER",
     label: "Unkown",
   },
-  IDENTITY: {
-    name: "IDENTITY_CREDENTIAL",
-    label: "Commercial Registry Entry",
-  },
 });
 
 const Schemas = [
