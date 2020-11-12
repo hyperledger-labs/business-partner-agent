@@ -7,8 +7,7 @@
 -->
 
 <template>
-  <v-card-text>
-    <v-form ref="mdForm">
+  <div>
       <h3 v-if="!showOnlyContent && (document.issuer || document.issuedAt)">
         Issuer
       </h3>
@@ -55,8 +54,7 @@
           ></v-text-field>
         </v-col>
       </v-row>
-    </v-form>
-  </v-card-text>
+    </div>
 </template>
 
 <script>
@@ -95,7 +93,13 @@ export default {
       let nestedData = Object.values(documentData).find((value) => {
         return typeof value === "object" && value !== null;
       });
-      this.documentData = nestedData ? nestedData : documentData;
+      documentData = nestedData ? nestedData : documentData;
+      
+      // Filter empty elements
+      this.documentData = Object.fromEntries(Object.entries(documentData).filter(([, value]) => {
+        return value !== "";
+      }));
+
       this.intDoc = { ...this.documentData };
     }
   },
