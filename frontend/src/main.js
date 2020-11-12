@@ -25,19 +25,23 @@ Vue.use(require("vue-moment"));
 Vue.use(SortUtil);
 
 var apiBaseUrl;
+var socketApi;
 if (process.env.NODE_ENV === "development") {
   apiBaseUrl = "http://localhost:8080/api";
+  socketApi = `${
+    window.location.protocol === "https:" ? "wss" : "ws"
+  }://localhost:8080/events`;
   store.commit({
     type: "setSettings",
     isExpert: true,
   });
 } else {
   apiBaseUrl = "/api";
+  socketApi = `${window.location.protocol === "https:" ? "wss" : "ws"}://${
+    window.location.host
+  }/events`;
 }
 
-var socketApi = `${
-  window.location.protocol === "https:" ? "wss" : "ws"
-}://localhost:8080/events`;
 Vue.use(VueNativeSock, socketApi, {
   store: store,
   format: "json",
