@@ -96,17 +96,7 @@ export default {
                 return item.issuer;
               });
 
-              if (this.indicateNew) {
-                const newCredentials = this.$store.getters.newCredentials;
-                if (this.$store.getters.newCredentialsCount > 0) {
-                  this.data = this.data.map((cred) => {
-                    if ({}.hasOwnProperty.call(newCredentials, cred.id)) {
-                      cred.new = true;
-                    }
-                    return cred;
-                  });
-                }
-              }
+              this.data = this.markNew(this.data);
             } else {
               this.data = result.data;
             }
@@ -145,6 +135,20 @@ export default {
         });
       }
     },
+    markNew(data) {
+      if (this.indicateNew) {
+        const newCredentials = this.$store.getters.newCredentials;
+        if (this.$store.getters.newCredentialsCount > 0) {
+          data = data.map((cred) => {
+            if ({}.hasOwnProperty.call(newCredentials, cred.id)) {
+              cred.new = true;
+            }
+            return cred;
+          });
+        }
+      }
+      return data;
+    }
   },
 };
 </script>

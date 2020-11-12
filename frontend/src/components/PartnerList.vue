@@ -114,17 +114,7 @@ export default {
           if ({}.hasOwnProperty.call(result, "data")) {
             this.isBusy = false;
 
-            if (this.indicateNew) {
-              let newPartners = this.$store.getters.newPartners;
-              if (Object.keys(newPartners).length > 0) {
-                result.data = result.data.map((partner) => {
-                  if ({}.hasOwnProperty.call(newPartners, partner.id)) {
-                    partner.new = true;
-                  }
-                  return partner;
-                });
-              }
-            }
+            result.data = this.markNew(result.data);
 
             if (this.onlyAries) {
               result.data = result.data.filter((item) => {
@@ -155,6 +145,20 @@ export default {
           console.error(e);
           EventBus.$emit("error", e);
         });
+    },
+    markNew(data) {
+      if (this.indicateNew) {
+        let newPartners = this.$store.getters.newPartners;
+        if (Object.keys(newPartners).length > 0) {
+          data = data.map((partner) => {
+            if ({}.hasOwnProperty.call(newPartners, partner.id)) {
+              partner.new = true;
+            }
+            return partner;
+          });
+        }
+      }
+      return data;
     },
   },
 };
