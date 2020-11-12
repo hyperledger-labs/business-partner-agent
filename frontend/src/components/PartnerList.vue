@@ -21,13 +21,14 @@
       @click:row="open"
     >
       <template v-slot:[`item.name`]="{ item }">
+        <new-message-icon v-show="item.new" isPartner></new-message-icon>
         <PartnerStateIndicator
           v-if="item.state"
           v-bind:state="item.state"
         ></PartnerStateIndicator>
         <span v-bind:class="{ 'font-weight-medium': item.new }">
-          {{ item.name }}</span
-        >
+          {{ item.name }}
+        </span>
       </template>
 
       <template v-slot:[`item.createdAt`]="{ item }">
@@ -45,10 +46,13 @@
 import { EventBus } from "../main";
 import { getPartnerProfile, getPartnerName } from "../utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
+import NewMessageIcon from "@/components/NewMessageIcon";
+
 export default {
   name: "PartnerList",
   components: {
     PartnerStateIndicator,
+    NewMessageIcon,
   },
   props: {
     selectable: {

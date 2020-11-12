@@ -35,7 +35,10 @@ if (process.env.NODE_ENV === "development") {
   apiBaseUrl = "/api";
 }
 
-Vue.use(VueNativeSock, "ws://localhost:8080/events", {
+var socketApi = `${
+  window.location.protocol === "https:" ? "wss" : "ws"
+}://localhost:8080/events`;
+Vue.use(VueNativeSock, socketApi, {
   store: store,
   format: "json",
   reconnection: true,

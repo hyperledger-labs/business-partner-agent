@@ -28,6 +28,7 @@
           {{ item.credentialDefinitionId | credentialTag | capitalize }}
         </div>
         <div v-else v-bind:class="{ 'font-weight-medium': item.new }">
+          <new-message-icon v-show="item.new"></new-message-icon>
           {{ item.type | credentialLabel }}
         </div>
       </template>
@@ -57,6 +58,8 @@
 <script>
 import { CredentialTypes } from "../constants";
 import { EventBus } from "../main";
+import NewMessageIcon from "@/components/NewMessageIcon";
+
 export default {
   props: {
     type: String,
@@ -69,6 +72,9 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  components: {
+    NewMessageIcon,
   },
   created() {
     this.fetch(this.type);
