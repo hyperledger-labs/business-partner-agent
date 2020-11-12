@@ -15,17 +15,20 @@
       :headers="headers"
       :items="data"
       :show-select="selectable"
-      :sort-by="['createdAt']"
-      :sort-desc="[false]"
+      :sort-by="['updatedAt']"
+      :sort-desc="[true]"
       single-select
       @click:row="open"
     >
       <template v-slot:[`item.name`]="{ item }">
+        <new-message-icon v-show="item.new" isPartner></new-message-icon>
         <PartnerStateIndicator
           v-if="item.state"
           v-bind:state="item.state"
         ></PartnerStateIndicator>
-        <span class="font-weight-medium"> {{ item.name }}</span>
+        <span v-bind:class="{ 'font-weight-medium': item.new }">
+          {{ item.name }}
+        </span>
       </template>
 
       <template v-slot:[`item.createdAt`]="{ item }">
@@ -43,10 +46,13 @@
 import { EventBus } from "../main";
 import { getPartnerProfile, getPartnerName } from "../utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
+import NewMessageIcon from "@/components/NewMessageIcon";
+
 export default {
   name: "PartnerList",
   components: {
     PartnerStateIndicator,
+    NewMessageIcon,
   },
   props: {
     selectable: {
@@ -63,6 +69,10 @@ export default {
       ],
     },
     onlyAries: {
+      type: Boolean,
+      default: false,
+    },
+    indicateNew: {
       type: Boolean,
       default: false,
     },
@@ -108,6 +118,8 @@ export default {
           if ({}.hasOwnProperty.call(result, "data")) {
             this.isBusy = false;
 
+            result.data = this.markNew(result.data);
+
             if (this.onlyAries) {
               result.data = result.data.filter((item) => {
                 return item.ariesSupport === true;
@@ -137,6 +149,20 @@ export default {
           console.error(e);
           EventBus.$emit("error", e);
         });
+    },
+    markNew(data) {
+      if (this.indicateNew) {
+        let newPartners = this.$store.getters.newPartners;
+        if (Object.keys(newPartners).length > 0) {
+          data = data.map((partner) => {
+            if ({}.hasOwnProperty.call(newPartners, partner.id)) {
+              partner.new = true;
+            }
+            return partner;
+          });
+        }
+      }
+      return data;
     },
   },
 };

@@ -52,8 +52,7 @@ export default {
   props: {
     partner: Object,
   },
-  created() {
-  },
+  created() {},
   data: () => {
     return {
       CredentialTypes: CredentialTypes,
@@ -75,7 +74,7 @@ export default {
         credentials = this.partner.credential.filter((cred) => {
           return cred.type !== CredentialTypes.PROFILE.name;
         });
-        
+
         return credentials;
       } else {
         return [];

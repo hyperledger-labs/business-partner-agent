@@ -53,9 +53,14 @@
               class="align-end"
               src="@/assets/undraw_certification_aif8.png"
             ></v-img>
-            <v-card-title style="font-size: 400%" class="justify-center">{{
-              status.credentials
-            }}</v-card-title>
+            <v-card-title class="justify-center">
+              <span class="cardTitle">
+                {{ status.credentials }}
+              </span>
+              <span class="newHighlight" v-show="newCredentialsCount > 0">
+                (+{{ newCredentialsCount }})
+              </span>
+            </v-card-title>
             <v-card-title class="justify-center"
               >Verified Credentials</v-card-title
             >
@@ -69,9 +74,14 @@
               aspect-ratio="1.29"
               src="@/assets/undraw_agreement_aajr.png"
             ></v-img>
-            <v-card-title style="font-size: 400%" class="justify-center">{{
-              status.partners
-            }}</v-card-title>
+            <v-card-title class="justify-center">
+              <span class="cardTitle">
+                {{ status.partners }}
+              </span>
+              <span class="newHighlight" v-show="newPartnersCount > 0">
+                (+{{ newPartnersCount }})
+              </span>
+            </v-card-title>
             <v-card-title class="justify-center"
               >Business Partners</v-card-title
             >
@@ -95,6 +105,14 @@ export default {
       isWelcome: true,
       isLoading: true,
     };
+  },
+  computed: {
+    newPartnersCount() {
+      return this.$store.getters.newPartnersCount;
+    },
+    newCredentialsCount() {
+      return this.$store.getters.newCredentialsCount;
+    },
   },
   methods: {
     getStatus() {
@@ -131,3 +149,14 @@ export default {
   },
 };
 </script>
+<style scoped>
+.newHighlight {
+  color: #2ecc71;
+  padding-left: 4px;
+  font-size: 200%;
+}
+.cardTitle {
+  font-size: 400%;
+  margin-bottom: 2;
+}
+</style>

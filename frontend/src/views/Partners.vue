@@ -8,7 +8,7 @@
 <template>
   <v-container>
     <v-card class="mx-auto px-8">
-      <PartnerList :headers="headers" />
+      <PartnerList :headers="headers" :indicateNew="true" />
       <v-card-actions>
         <v-btn
           color="primary"

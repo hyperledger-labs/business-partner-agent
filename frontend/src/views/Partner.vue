@@ -190,6 +190,8 @@ export default {
     EventBus.$emit("title", "Partner");
     this.getPartner();
     this.getPresentationRecords();
+
+    this.$store.commit("partnerSeen", { id: this.id });
   },
   data: () => {
     return {

@@ -56,7 +56,17 @@
           </v-list-item>
           <v-list-item link :to="{ name: 'Wallet' }">
             <v-list-item-action>
+              <v-badge
+              overlap
+              bordered
+              :content="newCredentialsCount"
+              :value="newCredentialsCount"
+              color="red"
+              offset-x="10"
+              offset-y="10"
+              >
               <v-icon>mdi-cards-outline</v-icon>
+               </v-badge>
             </v-list-item-action>
             <v-list-item-content>
               <v-list-item-title>Wallet</v-list-item-title>
@@ -64,7 +74,17 @@
           </v-list-item>
           <v-list-item link :to="{ name: 'Partners' }">
             <v-list-item-action>
+              <v-badge
+              overlap
+              bordered
+              :content="newPartnersCount"
+              :value="newPartnersCount"
+              color="red"
+              offset-x="10"
+              offset-y="10"
+              >
               <v-icon>mdi-handshake</v-icon>
+              </v-badge>
             </v-list-item-action>
             <v-list-item-content>
               <v-list-item-title>Business Partners</v-list-item-title>
@@ -163,6 +183,12 @@ export default {
   computed: {
     expertMode() {
       return this.$store.state.expertMode;
+    },
+    newPartnersCount() {
+      return this.$store.getters.newPartnersCount;
+    },
+    newCredentialsCount() {
+      return this.$store.getters.newCredentialsCount;
     }
   },
   created() {

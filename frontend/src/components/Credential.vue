@@ -8,53 +8,53 @@
 
 <template>
   <div>
-      <h3 v-if="!showOnlyContent && (document.issuer || document.issuedAt)">
-        Issuer
-      </h3>
-      <v-row v-if="!showOnlyContent">
-        <v-col>
-          <v-text-field
-            v-if="document.issuer"
-            label="Issuer"
-            v-model="document.issuer"
-            disabled
-            outlined
-            dense
-          ></v-text-field>
-          <v-text-field
-            v-if="document.issuedAt"
-            label="Issued at"
-            :placeholder="
-              $options.filters.moment(document.issuedAt, 'YYYY-MM-DD HH:mm')
-            "
-            disabled
-            outlined
-            dense
-          ></v-text-field>
-        </v-col>
-      </v-row>
+    <h3 v-if="!showOnlyContent && (document.issuer || document.issuedAt)">
+      Issuer
+    </h3>
+    <v-row v-if="!showOnlyContent">
+      <v-col>
+        <v-text-field
+          v-if="document.issuer"
+          label="Issuer"
+          v-model="document.issuer"
+          disabled
+          outlined
+          dense
+        ></v-text-field>
+        <v-text-field
+          v-if="document.issuedAt"
+          label="Issued at"
+          :placeholder="
+            $options.filters.moment(document.issuedAt, 'YYYY-MM-DD HH:mm')
+          "
+          disabled
+          outlined
+          dense
+        ></v-text-field>
+      </v-col>
+    </v-row>
 
-      <h3 v-if="document.credentialData && !showOnlyContent">
-        Credential Content
-      </h3>
-      <v-row>
-        <v-col>
-          <v-text-field
-            v-for="field in schema.fields"
-            :key="field.type"
-            :label="field.label"
-            placeholder
-            :disabled="isReadOnly"
-            :rules="[(v) => !!v || 'Item is required']"
-            :required="field.required"
-            outlined
-            dense
-            :value="documentData[field.type]"
-            @change="fieldChanged(field.type, $event)"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-    </div>
+    <h3 v-if="document.credentialData && !showOnlyContent">
+      Credential Content
+    </h3>
+    <v-row>
+      <v-col>
+        <v-text-field
+          v-for="field in schema.fields"
+          :key="field.type"
+          :label="field.label"
+          placeholder
+          :disabled="isReadOnly"
+          :rules="[(v) => !!v || 'Item is required']"
+          :required="field.required"
+          outlined
+          dense
+          :value="documentData[field.type]"
+          @change="fieldChanged(field.type, $event)"
+        ></v-text-field>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script>
@@ -94,11 +94,13 @@ export default {
         return typeof value === "object" && value !== null;
       });
       documentData = nestedData ? nestedData : documentData;
-      
+
       // Filter empty elements
-      this.documentData = Object.fromEntries(Object.entries(documentData).filter(([, value]) => {
-        return value !== "";
-      }));
+      this.documentData = Object.fromEntries(
+        Object.entries(documentData).filter(([, value]) => {
+          return value !== "";
+        })
+      );
 
       this.intDoc = { ...this.documentData };
     }
