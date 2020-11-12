@@ -18,6 +18,7 @@
 package org.hyperledger.oa.impl.activity;
 
 import io.micronaut.context.annotation.Value;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
@@ -46,6 +47,7 @@ public class Identity {
     @Value("${oagent.web.only}")
     boolean webOnly;
 
+    @Getter
     @Value("${oagent.did.prefix}")
     String didPrefix;
 

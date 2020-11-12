@@ -99,6 +99,8 @@ public enum CredentialType {
 
         if (ORGANIZATIONAL_PROFILE_CREDENTIAL.getCredentialTag().equals(normalizedName)) {
             return ORGANIZATIONAL_PROFILE_CREDENTIAL;
+        } else if (COMMERCIAL_REGISTER_CREDENTIAL.getCredentialTag().equals(normalizedName)) {
+            return COMMERCIAL_REGISTER_CREDENTIAL;
         } else if (normalizedName.contains("bankaccount")
                 || normalizedName.contains(BANK_ACCOUNT_CREDENTIAL.getCredentialTag())) {
             return BANK_ACCOUNT_CREDENTIAL;

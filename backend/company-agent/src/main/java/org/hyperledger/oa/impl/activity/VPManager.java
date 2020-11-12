@@ -194,7 +194,7 @@ public class VPManager {
             JsonObject ctx = new JsonObject();
             JsonObject content = new JsonObject();
             ctx.add("@context", content);
-            content.add("sc", new JsonPrimitive(schema.getSchemaId()));
+            content.add("sc", new JsonPrimitive(id.getDidPrefix() + schema.getSchemaId()));
 
             attributeNames.forEach(name -> {
                 JsonObject id = new JsonObject();

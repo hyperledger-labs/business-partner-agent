@@ -69,6 +69,19 @@ class CryptoManagerTest extends RunWithAries {
     }
 
     @Test
+    void testSignWithCommercialRegister() throws Exception {
+        VerifiableIndyCredential vc = loadAndConvertTo(
+                "files/verifiableCredentialAdHocContext.json", VerifiableIndyCredential.class);
+        final VerifiablePresentationBuilder<VerifiableIndyCredential> builder = VerifiablePresentation.builder();
+        VerifiablePresentation<VerifiableIndyCredential> vp = builder
+                .verifiableCredential(List.of(vc))
+                .build();
+        final Optional<VerifiablePresentation<VerifiableIndyCredential>> signed = mgmt.sign(vp);
+        assertTrue(signed.isPresent());
+        assertNotNull(signed.get().getProof());
+    }
+
+    @Test
     void testSignWithMasterdata() throws Exception {
         VerifiableIndyCredential vc = loadAndConvertTo(
                 "files/verifiableCredential.json", VerifiableIndyCredential.class);
