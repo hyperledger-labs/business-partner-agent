@@ -43,14 +43,17 @@
           v-bind:state="partner.state"
         ></PartnerStateIndicator>
         <v-layout align-center justify-end>
-          <v-icon small>mdi-fingerprint</v-icon><span class="grey--text text--darken-2 font-weight-medium text-caption pl-1 pr-4">{{partner.did}}</span>
+          <v-icon small>mdi-fingerprint</v-icon
+          ><span
+            class="grey--text text--darken-2 font-weight-medium text-caption pl-1 pr-4"
+            >{{ partner.did }}</span
+          >
           <v-btn icon @click="isUpdatingName = !isUpdatingName">
             <v-icon dark>mdi-pencil</v-icon>
           </v-btn>
           <v-tooltip top>
             <template v-slot:activator="{ on, attrs }">
               <v-btn
-                
                 color="primary"
                 v-bind="attrs"
                 v-on="on"
@@ -67,13 +70,12 @@
             <v-icon dark>mdi-delete</v-icon>
           </v-btn>
         </v-layout>
-        
       </v-card-title>
       <v-progress-linear v-if="isLoading" indeterminate></v-progress-linear>
 
       <v-card-text>
         <Profile v-if="isReady" v-bind:partner="partner"></Profile>
-        <v-row class="mx-4">
+        <v-row v-if="partner.ariesSupport" class="mx-4">
           <v-col cols="4">
             <v-row>
               <p class="grey--text text--darken-2 font-weight-medium">
@@ -101,7 +103,7 @@
         <v-row class="mx-4">
           <v-divider></v-divider>
         </v-row>
-        <v-row class="mx-4">
+        <v-row v-if="partner.ariesSupport" class="mx-4">
           <v-col cols="4">
             <v-row>
               <p class="grey--text text--darken-2 font-weight-medium">
