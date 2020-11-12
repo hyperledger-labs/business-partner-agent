@@ -27,8 +27,8 @@
         >
           {{ item.credentialDefinitionId | credentialTag | capitalize }}
         </div>
-        <div v-else v-bind:class="{ 'font-weight-medium': item.new}">
-          {{ item.type | credentialLabel }} 
+        <div v-else v-bind:class="{ 'font-weight-medium': item.new }">
+          {{ item.type | credentialLabel }}
         </div>
       </template>
 
@@ -97,13 +97,13 @@ export default {
               });
 
               if (this.indicateNew) {
-                const newPartners = this.$store.getters.newPartners;
-                if (this.$store.getters.newPartnersCount > 0) {
-                  this.data = this.data.map((partner) => {
-                    if ({}.hasOwnProperty.call(newPartners, partner.id)) {
-                      partner.new = true;
+                const newCredentials = this.$store.getters.newCredentials;
+                if (this.$store.getters.newCredentialsCount > 0) {
+                  this.data = this.data.map((cred) => {
+                    if ({}.hasOwnProperty.call(newCredentials, cred.id)) {
+                      cred.new = true;
                     }
-                    return partner;
+                    return cred;
                   });
                 }
               }
