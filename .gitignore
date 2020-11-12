@@ -67,12 +67,11 @@ frontend/node/**
 frontend/node_modules/**
 frontend/dist/**
 
-# K8s / helm
-my-values*.yaml
-helm-chart/charts/
-manifests/
-
-/docker-compose-backend.yml
 **/application-dev-*.yml
 node_modules
 package-lock.json
+
+# K8s / helm
+charts/**/charts/
+charts/**/manifests/
+my-values.yaml

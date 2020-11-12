@@ -6,57 +6,59 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
-  <v-card class="mx-auto">
-    <v-card-title class="bg-light">
-      <v-btn depressed color="secondary" icon @click="$router.go(-1)">
-        <v-icon dark>mdi-chevron-left</v-icon>
-      </v-btn>
-      Create a Presentation Request
-    </v-card-title>
-    <v-card-text>
-      <h4 class="pt-4">Select a credential type to request</h4>
-      <v-data-table
-        hide-default-footer
-        v-model="selected"
-        :show-select="true"
-        single-select
-        :headers="headers"
-        :items="templates[this.$config.ledger]"
-        item-key="credentialDefinitionId"
-      >
-        <template v-slot:[`item.credentialDefinitionId`]="{ item }">
-          <span v-if="item.label"> {{ item.label }} </span>
-          <span v-else>
-            {{ item.credentialDefinitionId | credentialTag }}
-          </span>
-        </template>
-      </v-data-table>
-      <div v-if="expertMode">
-        <h4 class="pt-4">Or enter a custom Credential Definition ID</h4>
-        <v-text-field
-          label="Credential Definition ID"
-          placeholder=""
-          v-model="credDefId"
-          outlined
-          dense
+  <v-container>
+    <v-card class="mx-auto">
+      <v-card-title class="bg-light">
+        <v-btn depressed color="secondary" icon @click="$router.go(-1)">
+          <v-icon dark>mdi-chevron-left</v-icon>
+        </v-btn>
+        Create a Presentation Request
+      </v-card-title>
+      <v-card-text>
+        <h4 class="pt-4">Select a credential type to request</h4>
+        <v-data-table
+          hide-default-footer
+          v-model="selected"
+          :show-select="true"
+          single-select
+          :headers="headers"
+          :items="templates[this.$config.ledger]"
+          item-key="credentialDefinitionId"
         >
-        </v-text-field>
-      </div>
-    </v-card-text>
+          <template v-slot:[`item.credentialDefinitionId`]="{ item }">
+            <span v-if="item.label"> {{ item.label }} </span>
+            <span v-else>
+              {{ item.credentialDefinitionId | credentialTag }}
+            </span>
+          </template>
+        </v-data-table>
+        <div v-if="expertMode">
+          <h4 class="pt-4">Or enter a custom Credential Definition ID</h4>
+          <v-text-field
+            label="Credential Definition ID"
+            placeholder=""
+            v-model="credDefId"
+            outlined
+            dense
+          >
+          </v-text-field>
+        </div>
+      </v-card-text>
 
-    <v-card-actions>
-      <v-layout align-end justify-end>
-        <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
-        <v-btn
-          :loading="this.isBusy"
-          color="primary"
-          text
-          @click="submitRequest()"
-          >Submit</v-btn
-        >
-      </v-layout>
-    </v-card-actions>
-  </v-card>
+      <v-card-actions>
+        <v-layout align-end justify-end>
+          <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
+          <v-btn
+            :loading="this.isBusy"
+            color="primary"
+            text
+            @click="submitRequest()"
+            >Submit</v-btn
+          >
+        </v-layout>
+      </v-card-actions>
+    </v-card>
+  </v-container>
 </template>
 
 <script>
@@ -126,7 +128,8 @@ export default {
             issuer: "Bank",
           },
           {
-            credentialDefinitionId: "3QowxFtwciWceMFr7WbwnM:3:CL:104:Bank Account",
+            credentialDefinitionId:
+              "3QowxFtwciWceMFr7WbwnM:3:CL:104:Bank Account",
             label: "Bank Account",
             issuer: "CommerzBank",
           },

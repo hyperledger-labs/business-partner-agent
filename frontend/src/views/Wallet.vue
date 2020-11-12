@@ -8,7 +8,7 @@
 <template>
   <v-container>
     <v-card class="my-4">
-      <v-card-title> Documents </v-card-title>
+      <v-card-title class="bg-light"> Documents </v-card-title>
       <MyCredentialList
         v-bind:headers="docHeaders"
         type="document"
@@ -43,7 +43,7 @@
       </v-card-actions>
     </v-card>
     <v-card class="my-10">
-      <v-card-title>Verified Credentials</v-card-title>
+      <v-card-title class="bg-light">Verified Credentials</v-card-title>
       <MyCredentialList
         v-bind:headers="credHeaders"
         type="credential"

@@ -1,4 +1,0 @@
-# -Dmicronaut.environments=cloud
-# MICRONAUT_ENVIRONMENTS=cloud
-mongodb:
-  uri: "mongodb+srv://masterdata:"
