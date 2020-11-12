@@ -47,7 +47,7 @@ export default {
 }
 
 .newIconPartner {
-  right: -8px;
+  right: 0px;
 }
 
 .newIconCredential {

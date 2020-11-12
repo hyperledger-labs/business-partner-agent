@@ -151,7 +151,7 @@ export default {
 </script>
 <style scoped>
 .newHighlight {
-  color: red;
+  color: #2ecc71;
   padding-left: 4px;
   font-size: 200%;
 }
