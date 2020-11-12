@@ -6,6 +6,7 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
+<v-container>
   <v-card v-if="isReady" class="mx-auto">
     <v-card-title class="bg-light">
       <v-btn
@@ -67,6 +68,7 @@
       </v-expansion-panel>
     </v-expansion-panels>
   </v-card>
+</v-container>
 </template>
 
 <script>

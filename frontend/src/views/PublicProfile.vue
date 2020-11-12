@@ -8,12 +8,25 @@
 <template>
   <v-container>
     <div v-if="publicDocumentsAndCredentials.length > 0">
-      <v-alert color="#7f8c8d" border="left" elevation="2" icon="md-info" dark>
-        You can change the visibility settings of documents and verified
-        credentials in the <strong>wallet</strong> to update your public
-        profile.
+      <v-alert
+        colored-border
+        color="primary"
+        border="left"
+        elevation="2"
+        icon="md-info"
+        dense
+      >
+        <span class="text-caption"
+          >You can change the visibility settings of documents and verified
+          credentials in the <strong>wallet</strong> to update your public
+          profile.
+        </span>
       </v-alert>
-      <Profile v-bind:partner="{ credential: publicDocumentsAndCredentials }" />
+      <v-card class="mx-auto" flat>
+        <Profile
+          v-bind:partner="{ credential: publicDocumentsAndCredentials }"
+        />
+      </v-card>
     </div>
 
     <v-container v-else fill-height fluid text-center>
