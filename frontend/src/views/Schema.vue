@@ -7,7 +7,7 @@
 -->
 <template>
   <v-container justify-center>
-    <v-card v-if="!isLoading" max-width="600" class="mx-auto">
+    <v-card v-if="!isLoading" class="mx-auto">
       <v-card-title class="bg-light">
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>mdi-chevron-left</v-icon>
