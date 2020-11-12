@@ -196,7 +196,8 @@ public class VPManager {
             ctx.add("@context", content);
             content.add("sc", new JsonPrimitive(id.getDidPrefix() + schema.getSchemaId()));
 
-            attributeNames.forEach(name -> {
+            // filter by did, otherwise there is a cyclic reference in the json-ld parser
+            attributeNames.stream().filter(a -> !"did".equals(a)).forEach(name -> {
                 JsonObject id = new JsonObject();
                 id.addProperty("@id", "sc:" + name);
                 content.add(name, id);
