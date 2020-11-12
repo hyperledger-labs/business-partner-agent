@@ -52,14 +52,18 @@ public enum CredentialType {
                     "LabeledCredential",
                     "BankAccountCredential"),
             "bank_account"),
+    COMMERCIAL_REGISTER_CREDENTIAL(
+            List.of(ApiConstants.CREDENTIALS_V1),
+            List.of("VerifiableCredential"),
+            "commercialregister"),
     OTHER(
-            List.of(),
-            List.of(),
+            List.of(ApiConstants.CREDENTIALS_V1),
+            List.of("VerifiableCredential"),
             "other");
 
     // json-ld
 
-    private final List<String> context;
+    private final List<Object> context;
     private final List<String> type;
 
     // aries credential tag
