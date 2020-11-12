@@ -72,6 +72,6 @@ node_modules
 package-lock.json
 
 # K8s / helm
-charts/**/my-values*.yaml
 charts/**/charts/
 charts/**/manifests/
+my-values.yaml
