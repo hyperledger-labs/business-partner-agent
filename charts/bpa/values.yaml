@@ -171,7 +171,7 @@ postgresql:
   postgresqlUsername: bpa
 
   # --  PostgreSQL Password for the new user. If not set, a random 10 characters password will be used.
-  postgresPassword: bpa
+  postgresqlPassword: change-me
 
   # -- PostgreSQL Database to create.
   postgresqlDatabase: bpa

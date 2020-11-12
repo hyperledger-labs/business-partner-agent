@@ -2,7 +2,7 @@ apiVersion: v2
 name: bpa
 description: The Business Partner Agent allows to manage and exchange master data between organizations.
 type: application
-version: 0.1.0-alpha2.1
+version: 0.1.0-alpha2.2
 
 appVersion: latest
 

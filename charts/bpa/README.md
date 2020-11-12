@@ -2,7 +2,7 @@
 
 The Business Partner Agent allows to manage and exchange master data between organizations.
 
-![Version: 0.1.0-alpha2](https://img.shields.io/badge/Version-0.1.0--alpha2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 0.1.0-alpha2.2](https://img.shields.io/badge/Version-0.1.0--alpha2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 This chart will install a business partner agent (bpa-core & bpa-acapy) and Postgres.
 
@@ -13,11 +13,11 @@ It will also create the default ingress routes.
 ```sh
 helm repo add bpa https://hyperledger-labs.github.io/business-partner-agent/
 helm repo update
-helm install \
+helm upgrade \
 	--set bpa.image.repository=myrepo.io/bpa \
 	--set bpa.image.tag=latest \
 	--set bpa.acapy.agentSeed=12345678901234567890123456789012 \
-   	mybpa bpa/bpa -n mynamespace --devel
+   	mybpa bpa/bpa -i -n mynamespace --devel
 ```
 
 ## Introduction
@@ -44,8 +44,8 @@ The following steps have to be done only once.
 This  is required for the next preparation steps.
 
 ```s
-git clone git@github.com:hyperledger-labs/business-partner-agent.git
-cd business-partner-agent
+git@github.com:hyperledger-labs/business-partner-agent.git
+cd business-partner-agent/docker
 ```
 
 ### Create and push docker image
@@ -65,7 +65,7 @@ See also [docker command line documentation](https://docs.docker.com/engine/refe
 
 ### Register a new DID
 
-Use the `./docker/register-did.sh` script to register a new DID on our test network (see also [docker-compose setup](../../scripts/README.md))
+Use the `./docker/register-did.sh` script to register a new DID on our test network (see also [docker setup](../../docker/README.md))
 Just run:
 
 ```s
@@ -79,11 +79,11 @@ To install the chart with the release name `bpa`, the docker image `myrepo.io/bp
 ```sh
 helm repo add bpa https://hyperledger-labs.github.io/business-partner-agent/
 helm repo update
-helm install \
+helm upgrade \
 	--set bpa.image.repository=myrepo.io/bpa \
 	--set bpa.image.tag=latest \
 	--set bpa.acapy.agentSeed=12345678901234567890123456789012 \
-   	mybpa bpa/bpa -n mynamespace --devel
+   	mybpa bpa/bpa -i -n mynamespace --devel
 ```
 
 Get the application URL by running the commands returned by helm install, e.g.:
@@ -127,14 +127,34 @@ EOT
 Install the chart with the release name `mybpa`, in the namespace `mynamespace`.
 
 ```sh
-helm install \
+helm upgrade \
 	--values values-mybpa.yaml \
-   	mybpa bpa/bpa -n mynamespace --devel 
+   	mybpa bpa/bpa -i -n mynamespace --devel 
 ```
-#### Installl multiple bpa instances
+#### Install multiple bpa instances
 
 > You could easily deploy a second business partner agent like this, e.g. for demo purpose.
 > Just use a different helm release name, the seed of another DID and different ingress host names.
+
+#### Install in local development cluster
+
+No special handling, should work the same way as with a remote cluster.
+With minikube you would
+
+Install and run minikube (see also minikube [documentation](https://minikube.sigs.k8s.io/docs/start/))
+```sh
+ curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+ sudo install minikube-linux-amd64 /usr/local/bin/minikube 
+ minikube start --vm-driver=docker
+
+```
+
+Install the chart
+```sh
+helm upgrade \
+	--values values-mybpa.yaml \
+   	mybpa bpa/bpa -i -n mynamespace --devel 
+```
 
 ## Uninstalling the Chart
 
@@ -215,8 +235,8 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | global.persistence.deployPostgres | bool | `true` | If true, the Postgres chart is deployed |
 | postgresql.persistence | object | `{"enabled":false}` | Persistent Volume Storage configuration. ref: https://kubernetes.io/docs/user-guide/persistent-volumes |
 | postgresql.persistence.enabled | bool | `false` | Enable PostgreSQL persistence using Persistent Volume Claims. |
-| postgresql.postgresPassword | string | `"bpa"` | PostgreSQL Password for the new user. If not set, a random 10 characters password will be used. |
 | postgresql.postgresqlDatabase | string | `"bpa"` | PostgreSQL Database to create. |
+| postgresql.postgresqlPassword | string | `"change-me"` | PostgreSQL Password for the new user. If not set, a random 10 characters password will be used. |
 | postgresql.postgresqlUsername | string | `"bpa"` | PostgreSQL User to create. |
 | postgresql.service | object | `{"port":5432}` | PostgreSQL service configuration |
 
