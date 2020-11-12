@@ -7,15 +7,14 @@
 -->
 <template>
   <v-container justify-center>
-    <v-card class="mx-auto" max-width="600" flat>
-      <v-card-title class="grey--text text--darken-2">Settings</v-card-title>
+    <v-card class="mx-auto">
+      <v-card-title class="bg-light">Settings</v-card-title>
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
             >Expert mode</v-list-item-title
           >
-          <v-list-item-subtitle>Enable demo features</v-list-item-subtitle>
         </v-list-item-content>
         <v-list-item-action>
           <v-switch v-model="expertMode"></v-switch>

@@ -60,5 +60,8 @@ public class BPASchema {
     @TypeDef(type = DataType.JSON)
     private Set<String> schemaAttributeNames;
 
+    @Nullable
+    private String defaultAttributeName;
+
     private Integer seqNo;
 }
