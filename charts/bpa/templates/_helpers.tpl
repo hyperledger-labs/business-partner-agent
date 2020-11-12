@@ -63,7 +63,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector bpa labels
 */}}
 {{- define "bpa.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "global.name" . }}-{{ .Values.bpa.name }}
+app.kubernetes.io/name: {{ include "global.fullname" . }}-{{ .Values.bpa.name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
@@ -83,7 +83,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector acapy labels
 */}}
 {{- define "acapy.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "global.name" . }}-{{ .Values.acapy.name }}
+app.kubernetes.io/name: {{ include "global.fullname" . }}-{{ .Values.acapy.name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 

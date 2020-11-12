@@ -2,9 +2,9 @@
 
 The Business Partner Agent allows to manage and exchange master data between organizations.
 
-![Version: 0.1.0-alpha2](https://img.shields.io/badge/Version-0.1.0--alpha2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 0.1.0-alpha2.2](https://img.shields.io/badge/Version-0.1.0--alpha2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
-This chart will install BPA (bpa-core & bpa-acapy) and Postgres.
+This chart will install a business partner agent (bpa-core & bpa-acapy) and Postgres.
 
 It will also create the default ingress routes.
 
@@ -13,11 +13,11 @@ It will also create the default ingress routes.
 ```sh
 helm repo add bpa https://hyperledger-labs.github.io/business-partner-agent/
 helm repo update
-helm install \
+helm upgrade \
 	--set bpa.image.repository=myrepo.io/bpa \
 	--set bpa.image.tag=latest \
 	--set bpa.acapy.agentSeed=12345678901234567890123456789012 \
-   	mybpa bpa/bpa -n mynamespace --devel
+   	mybpa bpa/bpa -i -n mynamespace --devel
 ```
 
 ## Introduction
@@ -54,12 +54,14 @@ In the future we plan to have bpa image publically available, e.g. on docker hub
 Currently you have to build it on your own and make it available in a registry (one that is reachable by your kubernetes cluster, e.g. docker hub).
 
 Build your image by executing the docker build command and push it to your registry.
+E.g.
 
 ```s
 docker login --username=yourusername --password=yourpassword
 docker build -t myrepo.io/bpa:latest .
-sudo docker push myrepo.io/bpa:latest
+docker push myrepo.io/bpa:latest
 ```
+See also [docker command line documentation](https://docs.docker.com/engine/reference/commandline/cli/).
 
 ### Register a new DID
 
@@ -77,11 +79,11 @@ To install the chart with the release name `bpa`, the docker image `myrepo.io/bp
 ```sh
 helm repo add bpa https://hyperledger-labs.github.io/business-partner-agent/
 helm repo update
-helm install \
+helm upgrade \
 	--set bpa.image.repository=myrepo.io/bpa \
 	--set bpa.image.tag=latest \
 	--set bpa.acapy.agentSeed=12345678901234567890123456789012 \
-   	mybpa bpa/bpa -n mynamespace --devel
+   	mybpa bpa/bpa -i -n mynamespace --devel
 ```
 
 Get the application URL by running the commands returned by helm install, e.g.:
@@ -89,12 +91,70 @@ Get the application URL by running the commands returned by helm install, e.g.:
 export POD_NAME=$(kubectl get pods --namespace md -l "app.kubernetes.io/name=bpa-bpacore,app.kubernetes.io/instance=mynamespace" -o jsonpath="{.items[0].metadata.name}")
 echo "Visit http://127.0.0.1:8080 to use your application"
 kubectl --namespace mynamespace port-forward $POD_NAME 8080:8080
- ```
+```
 
 This deploys BPA (bpa-core & bpa-acapy) and Postgres on the Kubernetes cluster in the default configuration. The [Values](#Values) section list the parameters that can be configured during installation.
 
-Deploying the charts with configured ingress routes could be done e.g. as follows:
-*TODO*
+#### Install chart with values file
+
+Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart.
+Deploying the charts with configured ingress routes could be done e.g. as follows.
+
+Create a yaml file.
+```yaml
+cat <<EOT >> values-mybpa.yaml
+bpa:
+   image:
+     repository: myrepo.io/bpa
+     tag: latest
+   ingress:
+     enabled: true
+     hosts:
+     - host: mybpa.example.com
+       paths:
+       - /
+acapy:
+   agentSeed: 12345678901234567890123456789012
+   ingress:
+     enabled: true
+     hosts:
+     - host: mybpa-acapy.example.com
+       paths:
+       - /
+EOT
+```
+
+Install the chart with the release name `mybpa`, in the namespace `mynamespace`.
+
+```sh
+helm upgrade \
+	--values values-mybpa.yaml \
+   	mybpa bpa/bpa -i -n mynamespace --devel 
+```
+#### Install multiple bpa instances
+
+> You could easily deploy a second business partner agent like this, e.g. for demo purpose.
+> Just use a different helm release name, the seed of another DID and different ingress host names.
+
+#### Install in local development cluster
+
+No special handling, should work the same way as with a remote cluster.
+With minikube you would
+
+Install and run minikube (see also minikube [documentation](https://minikube.sigs.k8s.io/docs/start/))
+```sh
+ curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+ sudo install minikube-linux-amd64 /usr/local/bin/minikube 
+ minikube start --vm-driver=docker
+
+```
+
+Install the chart
+```sh
+helm upgrade \
+	--values values-mybpa.yaml \
+   	mybpa bpa/bpa -i -n mynamespace --devel 
+```
 
 ## Uninstalling the Chart
 
@@ -175,8 +235,8 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | global.persistence.deployPostgres | bool | `true` | If true, the Postgres chart is deployed |
 | postgresql.persistence | object | `{"enabled":false}` | Persistent Volume Storage configuration. ref: https://kubernetes.io/docs/user-guide/persistent-volumes |
 | postgresql.persistence.enabled | bool | `false` | Enable PostgreSQL persistence using Persistent Volume Claims. |
-| postgresql.postgresPassword | string | `"bpa"` | PostgreSQL Password for the new user. If not set, a random 10 characters password will be used. |
 | postgresql.postgresqlDatabase | string | `"bpa"` | PostgreSQL Database to create. |
+| postgresql.postgresqlPassword | string | `"change-me"` | PostgreSQL Password for the new user. If not set, a random 10 characters password will be used. |
 | postgresql.postgresqlUsername | string | `"bpa"` | PostgreSQL User to create. |
 | postgresql.service | object | `{"port":5432}` | PostgreSQL service configuration |
 
@@ -187,19 +247,13 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 
 ## Chart development
 
-### Deployment
+### Publish chart(s)
 
-Charts in the [charts folder](..) will be automatically deployed to a repository hosted on github pages.
-To deploy a new version:
-- checkout master
-- increase the version in [Chart.yaml](Chart.yaml)
-- push the changes to a new release branch or checkout an existing one (release/*)
-
-Release will be created automatically via github workflow / action.
+See [publishing docu](../../PUBLISHING.md).
 
 ### Documentation
 
-The Documentation is generated via `helm-docs` out of a go template.
+The chart documentation is generated via `helm-docs` out of a go template.
 
 ```sh
 cd charts

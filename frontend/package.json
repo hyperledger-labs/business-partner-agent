@@ -44,6 +44,6 @@
     }
   },
   "lint-staged": {
-    "**/*.{js,vue}": "prettier --write --allow-empty"
+    "**/*.{js,vue}": "prettier --write"
   }
 }
