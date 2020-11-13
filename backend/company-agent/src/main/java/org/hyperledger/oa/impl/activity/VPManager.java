@@ -72,8 +72,10 @@ public class VPManager {
     @Inject
     CryptoManager crypto;
 
+    // TODO needs to be refactored once the web mode is replaced
     @Inject
-    SchemaService schemaService;
+    @Setter
+    Optional<SchemaService> schemaService;
 
     @Inject
     @Setter(AccessLevel.PROTECTED)
@@ -106,13 +108,13 @@ public class VPManager {
         } else {
             vpBuilder.verifiableCredential(null);
         }
-        crypto.sign(vpBuilder.build()).ifPresent(vp ->
-                getVerifiablePresentationInternal().ifPresentOrElse(didWeb ->
-                        didRepo.updateProfileJson(didWeb.getId(), converter.toMap(vp)),
-                () -> didRepo.save(DidDocWeb
-                        .builder()
-                        .profileJson(converter.toMap(vp))
-                        .build())));
+        crypto.sign(vpBuilder.build())
+                .ifPresent(vp -> getVerifiablePresentationInternal().ifPresentOrElse(
+                        didWeb -> didRepo.updateProfileJson(didWeb.getId(), converter.toMap(vp)),
+                        () -> didRepo.save(DidDocWeb
+                                .builder()
+                                .profileJson(converter.toMap(vp))
+                                .build())));
     }
 
     protected VerifiableIndyCredential buildFromDocument(@NonNull MyDocument doc, @NonNull String myDid) {
@@ -187,24 +189,26 @@ public class VPManager {
 
         final ArrayList<Object> context = new ArrayList<>(type.getContext());
 
-        BPASchema schema = schemaService.getSchemaFor(type);
-        if (schema != null) {
-            Set<String> attributeNames = schema.getSchemaAttributeNames();
+        schemaService.ifPresent(s -> {
+            BPASchema schema = s.getSchemaFor(type);
+            if (schema != null) {
+                Set<String> attributeNames = schema.getSchemaAttributeNames();
 
-            JsonObject ctx = new JsonObject();
-            JsonObject content = new JsonObject();
-            ctx.add("@context", content);
-            content.add("sc", new JsonPrimitive(id.getDidPrefix() + schema.getSchemaId()));
+                JsonObject ctx = new JsonObject();
+                JsonObject content = new JsonObject();
+                ctx.add("@context", content);
+                content.add("sc", new JsonPrimitive(id.getDidPrefix() + schema.getSchemaId()));
 
-            // filter by did, otherwise there is a cyclic reference in the json-ld parser
-            attributeNames.stream().filter(a -> !"did".equals(a)).forEach(name -> {
-                JsonObject id = new JsonObject();
-                id.addProperty("@id", "sc:" + name);
-                content.add(name, id);
-            });
+                // filter by did, otherwise there is a cyclic reference in the json-ld parser
+                attributeNames.stream().filter(a -> !"did".equals(a)).forEach(name -> {
+                    JsonObject id = new JsonObject();
+                    id.addProperty("@id", "sc:" + name);
+                    content.add(name, id);
+                });
 
-            context.add(ctx);
-        }
+                context.add(ctx);
+            }
+        });
 
         return context;
     }

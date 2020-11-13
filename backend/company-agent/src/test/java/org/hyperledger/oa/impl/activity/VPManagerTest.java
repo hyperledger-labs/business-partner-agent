@@ -36,10 +36,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -54,6 +51,9 @@ class VPManagerTest {
     @Mock
     private SchemaService schemaService;
 
+    @Mock
+    private Identity identity;
+
     @InjectMocks
     private final VPManager vpm = new VPManager();
 
@@ -61,6 +61,7 @@ class VPManagerTest {
     void setup() {
         c.setMapper(m);
         vpm.setConverter(c);
+        vpm.setSchemaService(Optional.of(schemaService));
     }
 
     @Test
@@ -107,8 +108,10 @@ class VPManagerTest {
         when(schemaService.getSchemaFor(CredentialType.OTHER)).thenReturn(
                 BPASchema.builder()
                         .schemaAttributeNames(attributeNames)
-                        .schemaId("did:iil:1234")
+                        .schemaId("1234")
                         .build());
+
+        when(identity.getDidPrefix()).thenReturn("did:iil:");
 
         MyDocument doc = buildDefault()
                 .setType(CredentialType.OTHER)

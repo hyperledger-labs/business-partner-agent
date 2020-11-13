@@ -87,7 +87,8 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
         mgmt.deleteCredentialById(credId);
         waitForVCDeletion(vpMgmt);
         assertTrue(vpMgmt.getVerifiablePresentation().isPresent());
-        assertNull(vpMgmt.getVerifiablePresentation().get().getVerifiableCredential());
+        assertNotNull(vpMgmt.getVerifiablePresentation().get().getVerifiableCredential());
+        assertTrue(vpMgmt.getVerifiablePresentation().get().getVerifiableCredential().isEmpty());
     }
 
     private CredentialExchange createNewCredential() {

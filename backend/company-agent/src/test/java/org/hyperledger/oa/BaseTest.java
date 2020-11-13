@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
 import org.hyperledger.oa.impl.activity.VPManager;
 import org.hyperledger.oa.util.FileLoader;
@@ -68,7 +69,7 @@ public abstract class BaseTest {
     public static void waitForVCDeletion(@NonNull VPManager vpMgmt) throws Exception {
         Instant timeout = Instant.now().plusSeconds(30);
         while (vpMgmt.getVerifiablePresentation().isPresent()
-                && vpMgmt.getVerifiablePresentation().get().getVerifiableCredential() != null) {
+                && CollectionUtils.isNotEmpty(vpMgmt.getVerifiablePresentation().get().getVerifiableCredential())) {
             Thread.sleep(15);
             if (Instant.now().isAfter(timeout)) {
                 fail("Timeout reached while waiting for the VP to be created");
