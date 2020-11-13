@@ -23,11 +23,12 @@
       <template v-slot:[`item.type`]="{ item }">
         <div
           v-if="item.type === CredentialTypes.OTHER.name"
-          class="font-weight-medium"
+          v-bind:class="{ 'font-weight-medium': !item.new }"
         >
           {{ item.credentialDefinitionId | credentialTag | capitalize }}
         </div>
-        <div v-else class="font-weight-medium">
+        <div v-else v-bind:class="{ 'font-weight-medium': item.new }">
+          <new-message-icon v-show="item.new"></new-message-icon>
           {{ item.type | credentialLabel }}
         </div>
       </template>
@@ -50,21 +51,6 @@
           <v-icon>mdi-eye-off</v-icon>
         </template>
       </template>
-
-      <!-- <template v-slot:item="{ item }">
-          <tr tag="tr"
-            @click="open(item)"
-          >
-            <td class="font-weight-medium">
-            <td>{{ item.updatedDate ? item.updatedDate : item.createdDate | moment("dddd, MMMM Do YYYY") }}</td>
-            <td>
-              <v-icon v-if="item.isPublic" color="green">mdi-eye</v-icon>
-              <template v-else>
-                <v-icon>mdi-eye-off</v-icon>
-              </template>
-            </td>
-          </tr>
-        </template> -->
     </v-data-table>
   </v-container>
 </template>
@@ -72,6 +58,8 @@
 <script>
 import { CredentialTypes } from "../constants";
 import { EventBus } from "../main";
+import NewMessageIcon from "@/components/NewMessageIcon";
+
 export default {
   props: {
     type: String,
@@ -80,6 +68,13 @@ export default {
       type: Boolean,
       default: false,
     },
+    indicateNew: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  components: {
+    NewMessageIcon,
   },
   created() {
     this.fetch(this.type);
@@ -106,10 +101,11 @@ export default {
               this.data = result.data.filter((item) => {
                 return item.issuer;
               });
+
+              this.data = this.markNew(this.data);
             } else {
               this.data = result.data;
             }
-
             console.log(this.data);
           }
         })
@@ -145,6 +141,20 @@ export default {
         });
       }
     },
+    markNew(data) {
+      if (this.indicateNew) {
+        const newCredentials = this.$store.getters.newCredentials;
+        if (this.$store.getters.newCredentialsCount > 0) {
+          data = data.map((cred) => {
+            if ({}.hasOwnProperty.call(newCredentials, cred.id)) {
+              cred.new = true;
+            }
+            return cred;
+          });
+        }
+      }
+      return data;
+    }
   },
 };
 </script>

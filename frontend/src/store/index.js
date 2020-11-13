@@ -9,8 +9,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import { CredentialTypes } from "../constants";
-//import { getPartnerProfile } from "../utils/partnerUtils";
 import taa from "./modules/taa";
+import socketEvents from "./modules/socketevents";
 import * as actions from "./actions";
 
 Vue.use(Vuex);
@@ -53,18 +53,6 @@ const store = new Vuex.Store({
   actions: actions,
 
   mutations: {
-    // initEditDocument(state, payload) {
-    //   state.editedDocument.type = payload.documentType
-    //   state.editedDocument.add = payload.add
-    //   if (payload.add) {
-    //     state.editedDocument.document = { ...emptyDocument };
-    //   }
-    //   else {
-    //     state.editedDocument.id = payload.id
-    //     var documents = state.documents.filter(d => d.id == payload.id)
-    //     if (documents.length == 1) state.editedDocument.document = documents[0].documentData
-    //   }
-    // },
     loadDocumentsFinished(state, payload) {
       state.documents = payload.documents;
     },
@@ -84,6 +72,7 @@ const store = new Vuex.Store({
 
   modules: {
     taa,
+    socketEvents,
   },
 });
 

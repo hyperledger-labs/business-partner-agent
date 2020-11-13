@@ -10,7 +10,7 @@
   <span>
     <v-tooltip right>
       <template v-slot:activator="{ on, attrs }">
-        <v-icon small class="ml-2" :color="color" v-bind="attrs" v-on="on"
+        <v-icon x-small class="ml-2" :color="color" v-bind="attrs" v-on="on"
           >mdi-brightness-1</v-icon
         >
       </template>

@@ -8,6 +8,7 @@
 
 import Vue from "vue";
 import axios from "axios";
+import VueNativeSock from "vue-native-websocket";
 import App from "./App.vue";
 import vuetify from "./plugins/vuetify";
 import "@babel/polyfill";
@@ -24,15 +25,55 @@ Vue.use(require("vue-moment"));
 Vue.use(SortUtil);
 
 var apiBaseUrl;
+var socketApi;
 if (process.env.NODE_ENV === "development") {
   apiBaseUrl = "http://localhost:8080/api";
+  socketApi = `${
+    window.location.protocol === "https:" ? "wss" : "ws"
+  }://localhost:8080/events`;
   store.commit({
     type: "setSettings",
     isExpert: true,
   });
 } else {
   apiBaseUrl = "/api";
+  socketApi = `${window.location.protocol === "https:" ? "wss" : "ws"}://${
+    window.location.host
+  }/events`;
 }
+
+Vue.use(VueNativeSock, socketApi, {
+  store: store,
+  format: "json",
+  reconnection: true,
+  passToStoreHandler: function (eventName, event) {
+    if (!eventName.startsWith("SOCKET_")) {
+      return;
+    }
+    console.log(event);
+    let msg = event;
+    let method = "commit";
+    let target = eventName.toUpperCase();
+    if (target === "SOCKET_ONMESSAGE") {
+      if (this.format === "json" && event.data) {
+        msg = JSON.parse(event.data);
+        // method = 'dispatch';
+        switch (msg.message.type) {
+          case "PARTNER":
+            target = "newPartner";
+            break;
+          case "CREDENTIAL":
+            target = "newCredential";
+            break;
+          case "PROOF":
+            target = "newPresentation";
+            break;
+        }
+      }
+    }
+    this.store[method](target, msg);
+  },
+});
 
 Vue.prototype.$axios = axios;
 Vue.prototype.$apiBaseUrl = apiBaseUrl;
