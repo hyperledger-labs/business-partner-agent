@@ -18,6 +18,8 @@
 package org.hyperledger.oa.impl.activity;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import io.micronaut.scheduling.annotation.Async;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -33,7 +35,9 @@ import org.hyperledger.oa.api.ApiConstants;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.aries.BankAccount;
 import org.hyperledger.oa.api.aries.BankAccountVC;
+import org.hyperledger.oa.impl.aries.SchemaService;
 import org.hyperledger.oa.impl.util.Converter;
+import org.hyperledger.oa.model.BPASchema;
 import org.hyperledger.oa.model.DidDocWeb;
 import org.hyperledger.oa.model.MyCredential;
 import org.hyperledger.oa.model.MyDocument;
@@ -45,10 +49,7 @@ import org.hyperledger.oa.repository.PartnerRepository;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Singleton
 public class VPManager {
@@ -70,6 +71,11 @@ public class VPManager {
 
     @Inject
     CryptoManager crypto;
+
+    // TODO needs to be refactored once the web mode is replaced
+    @Inject
+    @Setter
+    Optional<SchemaService> schemaService;
 
     @Inject
     @Setter(AccessLevel.PROTECTED)
@@ -102,16 +108,13 @@ public class VPManager {
         } else {
             vpBuilder.verifiableCredential(null);
         }
-        crypto.sign(vpBuilder.build()).ifPresent(vp -> {
-            getVerifiablePresentationInternal().ifPresentOrElse(didWeb -> {
-                didRepo.updateProfileJson(didWeb.getId(), converter.toMap(vp));
-            }, () -> {
-                didRepo.save(DidDocWeb
-                        .builder()
-                        .profileJson(converter.toMap(vp))
-                        .build());
-            });
-        });
+        crypto.sign(vpBuilder.build())
+                .ifPresent(vp -> getVerifiablePresentationInternal().ifPresentOrElse(
+                        didWeb -> didRepo.updateProfileJson(didWeb.getId(), converter.toMap(vp)),
+                        () -> didRepo.save(DidDocWeb
+                                .builder()
+                                .profileJson(converter.toMap(vp))
+                                .build())));
     }
 
     protected VerifiableIndyCredential buildFromDocument(@NonNull MyDocument doc, @NonNull String myDid) {
@@ -131,7 +134,7 @@ public class VPManager {
                 .builder()
                 .id("urn:" + doc.getId().toString())
                 .type(doc.getType().getType())
-                .context(doc.getType().getContext())
+                .context(resolveContext(doc.getType()))
                 .issuanceDate(TimeUtil.currentTimeFormatted())
                 .issuer(myDid)
                 .label(doc.getLabel())
@@ -139,11 +142,11 @@ public class VPManager {
                 .build();
     }
 
-    private VerifiableIndyCredential buildFromCredential(@NonNull MyCredential cred, @Nullable String myDid) {
+    protected VerifiableIndyCredential buildFromCredential(@NonNull MyCredential cred, @Nullable String myDid) {
         final ArrayList<String> type = new ArrayList<>(cred.getType().getType());
         type.add("IndyCredential");
 
-        final ArrayList<String> context = new ArrayList<>(cred.getType().getContext());
+        final ArrayList<Object> context = new ArrayList<>(resolveContext(cred.getType()));
         context.add(ApiConstants.INDY_CREDENTIAL_SCHEMA);
 
         Credential ariesCred = converter.fromMap(cred.getCredential(), Credential.class);
@@ -176,6 +179,38 @@ public class VPManager {
             return Optional.of(converter.fromMap(dbVP.get().getProfileJson(), Converter.VP_TYPEREF));
         }
         return Optional.empty();
+    }
+
+    protected List<Object> resolveContext(@NonNull CredentialType type) {
+        if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(type)
+                || CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(type)) {
+            return type.getContext();
+        }
+
+        final ArrayList<Object> context = new ArrayList<>(type.getContext());
+
+        schemaService.ifPresent(s -> {
+            BPASchema schema = s.getSchemaFor(type);
+            if (schema != null) {
+                Set<String> attributeNames = schema.getSchemaAttributeNames();
+
+                JsonObject ctx = new JsonObject();
+                JsonObject content = new JsonObject();
+                ctx.add("@context", content);
+                content.add("sc", new JsonPrimitive(id.getDidPrefix() + schema.getSchemaId()));
+
+                // filter by did, otherwise there is a cyclic reference in the json-ld parser
+                attributeNames.stream().filter(a -> !"did".equals(a)).forEach(name -> {
+                    JsonObject id = new JsonObject();
+                    id.addProperty("@id", "sc:" + name);
+                    content.add(name, id);
+                });
+
+                context.add(ctx);
+            }
+        });
+
+        return context;
     }
 
     private Optional<DidDocWeb> getVerifiablePresentationInternal() {

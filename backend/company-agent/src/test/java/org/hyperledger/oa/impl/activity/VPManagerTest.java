@@ -20,29 +20,48 @@ package org.hyperledger.oa.impl.activity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
+import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.oa.api.CredentialType;
+import org.hyperledger.oa.impl.aries.SchemaService;
 import org.hyperledger.oa.impl.util.Converter;
+import org.hyperledger.oa.model.BPASchema;
 import org.hyperledger.oa.model.MyDocument;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class VPManagerTest {
 
     private final ObjectMapper m = new ObjectMapper();
     private final Converter c = new Converter();
+    private final Gson gson = GsonConfig.defaultConfig();
+
+    @Mock
+    private SchemaService schemaService;
+
+    @Mock
+    private Identity identity;
+
+    @InjectMocks
     private final VPManager vpm = new VPManager();
 
     @BeforeEach
     void setup() {
         c.setMapper(m);
         vpm.setConverter(c);
+        vpm.setSchemaService(Optional.of(schemaService));
     }
 
     @Test
@@ -54,8 +73,10 @@ class VPManagerTest {
                 .setType(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL)
                 .setDocument(d);
         final VerifiableCredential vp = vpm.buildFromDocument(doc, "xxyyyzzz");
+
         assertEquals("{type=LegalEntity, id=xxyyyzzz}",
                 vp.getCredentialSubject().toString());
+        assertEquals(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.getContext(), vp.getContext());
     }
 
     @Test
@@ -66,9 +87,43 @@ class VPManagerTest {
         MyDocument doc = buildDefault()
                 .setType(CredentialType.BANK_ACCOUNT_CREDENTIAL)
                 .setDocument(d);
-        final VerifiableCredential vp = vpm.buildFromDocument(doc, "xxyyyzzz");
+        String myDid = "xxyyyzzz";
+        final VerifiableCredential vp = vpm.buildFromDocument(doc, myDid);
+
         assertEquals("BankAccountVC(id=xxyyyzzz, bankAccount=BankAccount(iban=1234, bic=4321))",
                 vp.getCredentialSubject().toString());
+        assertEquals(myDid, vp.getIssuer());
+        assertEquals(CredentialType.BANK_ACCOUNT_CREDENTIAL.getContext(), vp.getContext());
+    }
+
+    @Test
+    void testBuildFromDocumentOther() throws Exception {
+        String json = "{\"key1\":\"1234\",\"key2\":\"4321\"}";
+        final Map<String, Object> d = createMap(json);
+
+        Set<String> attributeNames = new LinkedHashSet<>();
+        attributeNames.add("key1");
+        attributeNames.add("key2");
+
+        when(schemaService.getSchemaFor(CredentialType.OTHER)).thenReturn(
+                BPASchema.builder()
+                        .schemaAttributeNames(attributeNames)
+                        .schemaId("1234")
+                        .build());
+
+        when(identity.getDidPrefix()).thenReturn("did:iil:");
+
+        MyDocument doc = buildDefault()
+                .setType(CredentialType.OTHER)
+                .setDocument(d);
+
+        final VerifiableCredential vp = vpm.buildFromDocument(doc, "xxyyyzzz");
+
+        String actual = gson.toJson(vp.getContext());
+        String expected = "[\"https://www.w3.org/2018/credentials/v1\",{\"@context\":{\"sc\":\"did:iil:1234\"," +
+                "\"key1\":{\"@id\":\"sc:key1\"},\"key2\":{\"@id\":\"sc:key2\"}}}]";
+
+        assertEquals(expected, actual);
     }
 
     private Map<String, Object> createMap(String json) throws JsonProcessingException {

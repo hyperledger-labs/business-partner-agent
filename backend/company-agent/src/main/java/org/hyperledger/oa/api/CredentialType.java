@@ -52,14 +52,18 @@ public enum CredentialType {
                     "LabeledCredential",
                     "BankAccountCredential"),
             "bank_account"),
+    COMMERCIAL_REGISTER_CREDENTIAL(
+            List.of(ApiConstants.CREDENTIALS_V1),
+            List.of("VerifiableCredential"),
+            "commercialregister"),
     OTHER(
-            List.of(),
-            List.of(),
+            List.of(ApiConstants.CREDENTIALS_V1),
+            List.of("VerifiableCredential"),
             "other");
 
     // json-ld
 
-    private final List<String> context;
+    private final List<Object> context;
     private final List<String> type;
 
     // aries credential tag
@@ -95,6 +99,8 @@ public enum CredentialType {
 
         if (ORGANIZATIONAL_PROFILE_CREDENTIAL.getCredentialTag().equals(normalizedName)) {
             return ORGANIZATIONAL_PROFILE_CREDENTIAL;
+        } else if (COMMERCIAL_REGISTER_CREDENTIAL.getCredentialTag().equals(normalizedName)) {
+            return COMMERCIAL_REGISTER_CREDENTIAL;
         } else if (normalizedName.contains("bankaccount")
                 || normalizedName.contains(BANK_ACCOUNT_CREDENTIAL.getCredentialTag())) {
             return BANK_ACCOUNT_CREDENTIAL;
