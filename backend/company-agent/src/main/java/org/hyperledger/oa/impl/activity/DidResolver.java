@@ -20,11 +20,11 @@ package org.hyperledger.oa.impl.activity;
 import io.micronaut.scheduling.annotation.Async;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.DidDocAPI;
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.api.exception.PartnerException;
 import org.hyperledger.oa.client.URClient;
-import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.model.PartnerProof;
 import org.hyperledger.oa.repository.PartnerRepository;
@@ -57,7 +57,8 @@ public class DidResolver {
     public void resolveDid(PartnerProof pp) {
         try {
             if (StringUtils.isNotEmpty(pp.getSchemaId())
-                    && AriesStringUtil.schemaGetName(pp.getSchemaId()).equals("commercialregister")) {
+                    && CredentialType.COMMERCIAL_REGISTER_CREDENTIAL
+                            .equals(CredentialType.fromSchemaId(pp.getSchemaId()))) {
                 partnerRepo.findById(pp.getPartnerId()).ifPresent(p -> {
                     if (p.getVerifiablePresentation() == null
                             && p.getIncoming() != null

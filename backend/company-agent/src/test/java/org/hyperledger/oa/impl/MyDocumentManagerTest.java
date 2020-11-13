@@ -185,7 +185,7 @@ class MyDocumentManagerTest extends RunWithAries {
         waitForVP(vpMgmt, false);
         final Optional<VerifiablePresentation<VerifiableIndyCredential>> vp = vpMgmt.getVerifiablePresentation();
         assertTrue(vp.isPresent());
-        assertNull(vp.get().getVerifiableCredential());
+        assertTrue(vp.get().getVerifiableCredential().isEmpty());
         assertNotNull(vp.get().getProof());
         log.debug(PRETTY.toJson(vp));
     }
@@ -209,7 +209,7 @@ class MyDocumentManagerTest extends RunWithAries {
 
         waitForVCDeletion(vpMgmt);
         vp = vpMgmt.getVerifiablePresentation();
-        assertNull(vp.get().getVerifiableCredential());
+        assertTrue(vp.get().getVerifiableCredential().isEmpty());
     }
 
     private MyDocumentAPI createAndSaveDummyCredential() throws JsonProcessingException {
