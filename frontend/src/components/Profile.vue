@@ -13,7 +13,7 @@
       v-bind:documentData="profile"
       isReadOnly
     ></OrganizationalProfile>
-    <v-container v-for="(item, index) in credentials" v-bind:key="index">
+    <v-container v-for="(item, index) in credentials" v-bind:key="item.id">
       <v-row>
         <v-col cols="4">
           <span class="grey--text text--darken-2 font-weight-medium">
@@ -67,18 +67,11 @@ export default {
       }
     },
     credentials: function () {
-      let credentials = [];
-
       if ({}.hasOwnProperty.call(this.partner, "credential")) {
-        // Show only creds other than OrgProfile in credential list
-        credentials = this.partner.credential.filter((cred) => {
+        return this.partner.credential.filter((cred) => {
           return cred.type !== CredentialTypes.PROFILE.name;
         });
-
-        return credentials;
-      } else {
-        return [];
-      }
+      } else return [];
     },
   },
   methods: {},
