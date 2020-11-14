@@ -57,7 +57,7 @@ Vue.use(VueNativeSock, socketApi, {
     if (target === "SOCKET_ONMESSAGE") {
       if (this.format === "json" && event.data) {
         msg = JSON.parse(event.data);
-        // method = 'dispatch';
+        method = "dispatch";
         switch (msg.message.type) {
           case "PARTNER":
             target = "newPartner";

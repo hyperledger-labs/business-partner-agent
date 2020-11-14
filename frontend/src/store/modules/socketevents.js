@@ -76,7 +76,18 @@ const mutations = {
   },
 };
 
-const actions = {};
+const actions = {
+  newPartner({ commit }, payload) {
+    commit("newPartner", payload);
+    if (payload.message && payload.message.info) {
+      payload.message.info.new = true;
+      commit("SET_PARTNER", payload.message.info);
+    }
+  },
+  newCredential({ commit }, payload) {
+    commit("newCredential", payload);
+  },
+};
 
 export default {
   state,
