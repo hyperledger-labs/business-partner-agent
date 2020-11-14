@@ -15,6 +15,10 @@ export const CredentialTypes = Object.freeze({
     name: "BANK_ACCOUNT_CREDENTIAL",
     label: "Bank Account",
   },
+  COMMERCIAL_REGISTER_CREDENTIAL: {
+    name: "COMMERCIAL_REGISTER_CREDENTIAL",
+    label: "Commerical Registry Entry",
+  },
   OTHER: {
     name: "OTHER",
     label: "Unkown",

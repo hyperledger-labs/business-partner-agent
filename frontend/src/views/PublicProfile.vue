@@ -8,14 +8,7 @@
 <template>
   <v-container>
     <div v-if="publicDocumentsAndCredentials.length > 0">
-      <v-alert
-        colored-border
-        color="primary"
-        border="left"
-        elevation="2"
-        icon="md-info"
-        dense
-      >
+      <v-alert colored-border color="primary" border="left" elevation="2" dense>
         <span class="text-caption"
           >You can change the visibility settings of documents and verified
           credentials in the <strong>wallet</strong> to update your public
