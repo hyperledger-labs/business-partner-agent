@@ -13,18 +13,32 @@
       v-bind:documentData="profile"
       isReadOnly
     ></OrganizationalProfile>
-    <v-container v-for="(item, index) in credentials" v-bind:key="index">
+    <v-container v-for="(item, index) in credentials" v-bind:key="item.id">
       <v-row>
         <v-col cols="4">
-          <span class="grey--text text--darken-2 font-weight-medium">
-            <span v-if="item.type === CredentialTypes.OTHER.name">{{
-              item.credentialDefinitionId | credentialTag
-            }}</span>
-            <span v-else>{{ item.type | credentialLabel }}</span>
-          </span>
-          <div v-if="item.issuer" class="text-caption">
+          <v-row>
+            <span class="grey--text text--darken-2 font-weight-medium">
+              <span v-if="item.type === CredentialTypes.OTHER.name">{{
+                item.credentialDefinitionId | credentialTag
+              }}</span>
+              <span v-else>{{ item.type | credentialLabel }}</span>
+            </span>
+          </v-row>
+          <v-row v-if="item.issuer" class="text-caption">
             verified by {{ item.issuer }}
-          </div>
+          </v-row>
+          <v-row v-if="item.credentialData && item.credentialData.validFrom">
+            <v-icon small class="pt-1 mr-2">{{ validFrom }}</v-icon>
+            <span class="text-caption">{{
+              item.credentialData.validFrom | moment("YYYY-MM-DD")
+            }}</span>
+          </v-row>
+          <v-row v-if="item.credentialData && item.credentialData.validUntil">
+            <v-icon small class="pt-1 mr-2">{{ validUntil }}</v-icon>
+            <span class="text-caption">{{
+              item.credentialData.validUntil | moment("YYYY-MM-DD")
+            }}</span>
+          </v-row>
         </v-col>
         <v-col>
           <Credential
@@ -44,6 +58,9 @@ import { CredentialTypes } from "../constants";
 import OrganizationalProfile from "@/components/OrganizationalProfile";
 import Credential from "@/components/Credential";
 import { getPartnerProfile } from "../utils/partnerUtils";
+import { mdiCalendarCheck } from "@mdi/js";
+import { mdiCalendarRemove } from "@mdi/js";
+
 export default {
   components: {
     OrganizationalProfile,
@@ -56,6 +73,8 @@ export default {
   data: () => {
     return {
       CredentialTypes: CredentialTypes,
+      validFrom: mdiCalendarCheck,
+      validUntil: mdiCalendarRemove,
     };
   },
   computed: {
@@ -67,18 +86,11 @@ export default {
       }
     },
     credentials: function () {
-      let credentials = [];
-
       if ({}.hasOwnProperty.call(this.partner, "credential")) {
-        // Show only creds other than OrgProfile in credential list
-        credentials = this.partner.credential.filter((cred) => {
+        return this.partner.credential.filter((cred) => {
           return cred.type !== CredentialTypes.PROFILE.name;
         });
-
-        return credentials;
-      } else {
-        return [];
-      }
+      } else return [];
     },
   },
   methods: {},

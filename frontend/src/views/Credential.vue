@@ -38,10 +38,7 @@
             >
           </v-list-item-content>
           <v-list-item-action>
-            <v-switch
-              :disabled="credential.type === CredentialTypes.OTHER.name"
-              v-model="isPublic"
-            ></v-switch>
+            <v-switch v-model="isPublic"></v-switch>
           </v-list-item-action>
         </v-list-item>
         <v-divider></v-divider>

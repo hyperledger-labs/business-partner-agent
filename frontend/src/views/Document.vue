@@ -51,11 +51,7 @@
             >
           </v-list-item-content>
           <v-list-item-action>
-            <v-switch
-              :disabled="document.type === CredentialTypes.OTHER.name"
-              v-model="document.isPublic"
-              @change="fieldModified()"
-            ></v-switch>
+            <v-switch v-model="document.isPublic"></v-switch>
           </v-list-item-action>
         </v-list-item>
         <v-divider></v-divider>
