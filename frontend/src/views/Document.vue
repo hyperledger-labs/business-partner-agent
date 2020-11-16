@@ -17,7 +17,12 @@
         >
           <v-icon dark>mdi-chevron-left</v-icon>
         </v-btn>
-        {{ intDoc.type | credentialLabel }}
+        <div v-if="schemaLabel">
+          {{ schemaLabel }}
+        </div>
+        <div v-else>
+          {{ intDoc.type | credentialLabel }}
+        </div>
         <v-layout align-end justify-end>
           <v-btn
             v-if="this.id"
@@ -137,8 +142,18 @@ import Credential from "@/components/Credential";
 export default {
   name: "Document",
   props: {
-    id: String,
-    type: String,
+    id: {
+      type: String,
+      required: false,
+    },
+    type: {
+      type: String,
+      required: false,
+    },
+    schemaId: {
+      type: String,
+      required: false,
+    },
   },
   created() {
     if (this.id) {
@@ -147,6 +162,7 @@ export default {
     } else {
       EventBus.$emit("title", "Create new Document");
       this.document.type = this.type;
+      this.document.schemaId = this.schemaId;
       this.document.isPublic =
         this.document.type === CredentialTypes.PROFILE.name ? true : false;
       this.isReady = true;
@@ -168,6 +184,13 @@ export default {
   computed: {
     expertMode() {
       return this.$store.state.expertMode;
+    },
+    schemaLabel() {
+      if (this.$store.getters.getSchema(this.schemaId)) {
+        return this.$store.getters.getSchema(this.schemaId).label;
+      } else {
+        return null;
+      }
     },
   },
   watch: {},

@@ -1,6 +1,7 @@
 import moment from "moment";
 import { EventBus, axios, apiBaseUrl } from "../main";
 import { getPartnerProfile } from "../utils/partnerUtils";
+import { CredentialTypes } from "../constants";
 
 export const loadSchemas = async ({ commit }) => {
   axios
@@ -8,6 +9,16 @@ export const loadSchemas = async ({ commit }) => {
     .then((result) => {
       if ({}.hasOwnProperty.call(result, "data")) {
         let schemas = result.data;
+        // TODO: This is hardcoded crap
+        schemas.map((schema) => {
+          if (schema.schemaId.indexOf("bank") > -1) {
+            schema.type = CredentialTypes.BANK_ACCOUNT.name;
+          } else if (schema.schemaId.indexOf("commercialregister") > -1) {
+            schema.type = CredentialTypes.COMMERCIAL_REGISTER_CREDENTIAL.name;
+          } else {
+            // schema.type = CredentialTypes.OTHER.name;
+          }
+        });
         commit({
           type: "loadSchemasFinished",
           schemas: schemas,

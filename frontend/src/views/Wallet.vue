@@ -34,7 +34,7 @@
             <v-list-item
               v-for="(type, i) in types"
               :key="i"
-              @click="createDocument(type.name)"
+              @click="createDocument(type)"
             >
               <v-list-item-title>{{ type.label }}</v-list-item-title>
             </v-list-item>
@@ -65,7 +65,7 @@ export default {
   created() {
     EventBus.$emit("title", "Wallet");
     this.$store.dispatch("loadDocuments");
-    this.fetchSchemas();
+    this.$store.dispatch("loadSchemas");
   },
   data: () => {
     return {
@@ -130,28 +130,39 @@ export default {
         });
     },
     createDocument: function (type) {
-      console.log(type);
-
+      if (type.type) {
+        type.name = type.type;
+      } else {
+        type.name = CredentialTypes.OTHER.name;
+      }
       this.$router.push({
         name: "DocumentAdd",
         params: {
-          type: type,
+          type: type.name,
+          schemaId: type.schemaId,
         },
       });
     },
   },
   computed: {
     types() {
-      let docTypes = Object.values(CredentialTypes).filter((type) => {
-        return type.name !== CredentialTypes.OTHER.name;
+      let docTypes = this.$store.getters.schemas;
+      console.log(docTypes);
+      let index = docTypes.findIndex((schema) => {
+        console.log(schema);
+        if ({}.hasOwnProperty.call(schema, "name")) {
+          return schema.name === CredentialTypes.PROFILE.name;
+        }
       });
-      // here is the store really useful
-      if (this.$store.getters.organizationalProfile != undefined) {
-        docTypes = docTypes.filter((type) => {
-          return type.name !== CredentialTypes.PROFILE.name;
-        });
+      if (
+        this.$store.getters.organizationalProfile === undefined &&
+        index === -1
+      ) {
+        docTypes.unshift(CredentialTypes.PROFILE);
       }
-      // docTypes = docTypes.concat(this.schemas)
+      console.log(CredentialTypes.PROFILE);
+      console.log("SCHEMAS");
+      console.log(docTypes);
       return docTypes;
     },
   },

@@ -113,11 +113,12 @@ export default {
   computed: {
     schema: function () {
       let s = getSchema(this.document.type);
+
       if (s && {}.hasOwnProperty.call(s, "fields")) {
         return s;
+      } else if (this.documentData) {
         // No known schema. Generate one from data
         // Todo: Support arrays and objects as fields
-      } else {
         s = {
           type: this.document.type,
           fields: Object.keys(this.documentData).map((key) => {
@@ -129,6 +130,9 @@ export default {
         };
         console.log(s);
         return s;
+      } else {
+        console.log("I'm here");
+        return this.$store.getters.getPreparedSchema(this.document.schemaId);
       }
     },
   },

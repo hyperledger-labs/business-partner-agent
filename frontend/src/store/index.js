@@ -45,7 +45,32 @@ const store = new Vuex.Store({
     },
     getPartnerByDID: (state) => (did) => {
       return state.partners.find((partner) => {
-        partner.did === did;
+        return partner.did === did;
+      });
+    },
+    schemas: (state) => {
+      return state.schemas;
+    },
+    getSchema: (state) => (schemaId) => {
+      if (!schemaId) {
+        return null;
+      }
+      return state.schemas.find((schema) => {
+        return schema.schemaId === schemaId;
+      });
+    },
+    getPreparedSchema: (state) => (schemaId) => {
+      let schema = state.schemas.find((schema) => {
+        return schema.schemaId === schemaId;
+      });
+      console.log(schema);
+      return Object.assign(schema, {
+        fields: schema.schemaAttributeNames.map((key) => {
+          return {
+            type: key,
+            label: key,
+          };
+        }),
       });
     },
   },

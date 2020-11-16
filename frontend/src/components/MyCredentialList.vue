@@ -22,7 +22,10 @@
     >
       <template v-slot:[`item.type`]="{ item }">
         <div
-          v-if="item.type === CredentialTypes.OTHER.name"
+          v-if="
+            item.type === CredentialTypes.OTHER.name &&
+            item.credentialDefinitionId
+          "
           v-bind:class="{ 'font-weight-medium': !item.new }"
         >
           {{ item.credentialDefinitionId | credentialTag | capitalize }}
@@ -128,7 +131,7 @@ export default {
           name: "Document",
           params: {
             id: doc.id,
-            type: doc.type,
+            // type: doc.type,
           },
         });
       } else {
@@ -154,7 +157,7 @@ export default {
         }
       }
       return data;
-    }
+    },
   },
 };
 </script>
