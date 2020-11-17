@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "postbuild": "generate-attribution -o ./dist/oss-attribution",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
@@ -38,8 +37,7 @@
     "lint-staged": "^10.4.2",
     "prettier": "2.1.2",
     "vue-cli-plugin-vuetify": "^2.0.7",
-    "vue-template-compiler": "^2.6.12",
-    "oss-attribution-generator": "^1.7.1"
+    "vue-template-compiler": "^2.6.12"
   },
   "husky": {
     "hooks": {
