@@ -95,12 +95,16 @@ export default {
       });
       documentData = nestedData ? nestedData : documentData;
 
-      // Filter empty elements
-      this.documentData = Object.fromEntries(
-        Object.entries(documentData).filter(([, value]) => {
-          return value !== "";
-        })
-      );
+      // Filter empty elements only for credentials
+      if (!this.document.documentData) {
+        this.documentData = Object.fromEntries(
+          Object.entries(documentData).filter(([, value]) => {
+            return value !== "";
+          })
+        );
+      } else {
+        this.documentData = documentData;
+      }
 
       this.intDoc = { ...this.documentData };
     }

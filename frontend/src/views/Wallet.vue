@@ -147,9 +147,7 @@ export default {
   computed: {
     types() {
       let docTypes = this.$store.getters.schemas;
-      console.log(docTypes);
       let index = docTypes.findIndex((schema) => {
-        console.log(schema);
         if ({}.hasOwnProperty.call(schema, "name")) {
           return schema.name === CredentialTypes.PROFILE.name;
         }
@@ -161,8 +159,6 @@ export default {
         docTypes.unshift(CredentialTypes.PROFILE);
       }
       console.log(CredentialTypes.PROFILE);
-      console.log("SCHEMAS");
-      console.log(docTypes);
       return docTypes;
     },
   },
