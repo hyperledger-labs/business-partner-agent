@@ -215,17 +215,22 @@ export default {
     saveDocument(closeDocument) {
       this.isBusy = true;
       console.log(this.$refs.doc.document);
-      console.log(this.$refs.doc.documentData);
+
+      let data = {
+        document: this.$refs.doc.documentData,
+        isPublic: this.document.isPublic,
+        type: this.document.type,
+      };
+
+      if (this.document.schemaId) {
+        data.schemaId = this.document.schemaId;
+      }
+
       // update document
       if (this.id) {
         this.$axios
-          .put(`${this.$apiBaseUrl}/wallet/document/${this.id}`, {
-            document: this.$refs.doc.documentData,
-            isPublic: this.document.isPublic,
-            type: this.document.type,
-          })
-          .then((res) => {
-            console.log(res);
+          .put(`${this.$apiBaseUrl}/wallet/document/${this.id}`, data)
+          .then(() => {
             this.isBusy = false;
             if (closeDocument) {
               this.$router.push({
@@ -269,7 +274,6 @@ export default {
       this.$axios
         .delete(`${this.$apiBaseUrl}/wallet/document/${this.id}`)
         .then((result) => {
-          console.log(result);
           if (result.status === 200) {
             EventBus.$emit("success", "Document deleted");
             this.$router.push({

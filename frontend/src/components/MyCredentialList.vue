@@ -96,7 +96,7 @@ export default {
       this.$axios
         .get(`${this.$apiBaseUrl}/wallet/${type}`)
         .then((result) => {
-          console.log(result);
+          console.log({ type: result });
           if ({}.hasOwnProperty.call(result, "data")) {
             this.isBusy = false;
 
@@ -109,7 +109,6 @@ export default {
             } else {
               this.data = result.data;
             }
-            console.log(this.data);
           }
         })
         .catch((e) => {
