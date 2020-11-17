@@ -14,8 +14,6 @@ RUN mvn clean install -P build-frontend -DskipTests=true -Dspotbugs.skip=true -D
 
 FROM adoptopenjdk/openjdk11-openj9:alpine-slim
 COPY --from=0 /home/maven/backend/company-agent/target/organizational-agent*SNAPSHOT.jar organizational-agent.jar
-COPY --from=0 /home/maven/backend/company-agent/target/generated-resources/licenses ./licenses
-COPY --from=0 /home/maven/backend/company-agent/target/generated-resources/licenses.xml .
 
 EXPOSE 8080
 CMD java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dcom.sun.management.jmxremote -noverify ${JAVA_OPTS} -jar organizational-agent.jar
