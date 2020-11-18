@@ -38,7 +38,7 @@
           ref="doc"
         ></OrganizationalProfile>
         <Credential
-          v-if="!isProfile(intDoc.type)"
+          v-else
           v-bind:document="document"
           ref="doc"
           @doc-field-changed="fieldModified"
