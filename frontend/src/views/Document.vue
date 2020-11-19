@@ -34,7 +34,6 @@
         <OrganizationalProfile
           v-if="isProfile(intDoc.type)"
           v-bind:documentData="document.documentData"
-          v-bind:documentLabel="document.label"
           ref="doc"
         ></OrganizationalProfile>
         <Credential
@@ -205,7 +204,6 @@ export default {
       if (this.id) {
         this.$axios
           .put(`${this.$apiBaseUrl}/wallet/document/${this.id}`, {
-            //document: this.$refs.doc.documentData,
             document: this.document.documentData,
             isPublic: this.document.isPublic,
             label: this.isProfile(this.document.type)
@@ -235,8 +233,8 @@ export default {
       } else {
         this.$axios
           .post(`${this.$apiBaseUrl}/wallet/document`, {
-            document: this.document.documentData,
-            //document: this.$refs.doc.documentData,
+            document: this.$refs.doc.intDoc.documentData,
+            label: this.$refs.doc.intDoc.label,
             isPublic: this.document.isPublic,
             type: this.type,
           })

@@ -113,6 +113,7 @@ export default {
   },
   methods: {
     docDataFieldChanged(propertyName, event) {
+      console.log("CREDENTIAL DATA FIELD CHANGED", propertyName, event);
       if (this.origIntDoc[this.documentDataType][propertyName] != event) {
         this.intDoc[this.documentDataType][propertyName] = event;
       } else {
@@ -145,11 +146,13 @@ export default {
       //New Document
       if (!this.document.id) {
         this.documentDataType = this.documentDataTypes[0];
+        this.document.label = "";
         this.intDoc[this.documentDataType] = Object.fromEntries(
           this.schema.fields.map((field) => {
             return [field.type, ""];
           })
         );
+        //this.intDoc = Object.assign(this.intDoc, {[this.documentDataType]:arrFields});
         this.intCopy();
       }
       //Existing Document, extract Data
