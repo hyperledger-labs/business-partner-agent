@@ -82,10 +82,12 @@ export default {
   },
   data: () => {
     return {
-      intDoc: Object,
+      intDoc: {
+        type: Object,
+        default: {},
+      },
       origIntDoc: Object,
       documentDataTypes: ["documentData", "credentialData", "proofData"],
-      labelValue: "",
       documentDataType: "",
     };
   },
@@ -152,7 +154,6 @@ export default {
             return [field.type, ""];
           })
         );
-        //this.intDoc = Object.assign(this.intDoc, {[this.documentDataType]:arrFields});
         this.intCopy();
       }
       //Existing Document, extract Data
