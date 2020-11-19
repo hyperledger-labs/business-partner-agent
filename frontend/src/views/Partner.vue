@@ -212,7 +212,6 @@ export default {
         required: (value) => !!value || "Can't be empty",
       },
       headersSent: [
-        { text: "Label", value: "label" },
         {
           text: "Type",
           value: "type",
@@ -235,7 +234,6 @@ export default {
         },
       ],
       headersReceived: [
-        { text: "Label", value: "label" },
         {
           text: "Type",
           value: "type",

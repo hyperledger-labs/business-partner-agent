@@ -11,6 +11,9 @@
     <v-row>
       <v-col cols="12" class="pb-0">
         <v-text-field
+          v-if="
+            intDoc.label instanceof String || typeof intDoc.label === 'string'
+          "
           label="Label (Optional)"
           placeholder
           outlined
