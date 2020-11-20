@@ -26,12 +26,13 @@
         <v-text-field
           label="Company Legal Name"
           placeholder
-          v-model="documentData.legalName"
           :disabled="isReadOnly"
           :rules="[(v) => !!v || 'Item is required']"
           required
           outlined
           dense
+          @change="onLegalNameChange($event)"
+          :value="documentData.legalName"
         ></v-text-field>
         <v-text-field
           label="Company Alternative Name"
@@ -185,11 +186,15 @@ export default {
       },
     },
   },
-  created() {},
+  created() {
+    this.intDoc.documentData = this.documentData;
+    this.intDoc.label = this.documentData.legalName;
+  },
   data: () => {
     return {
       identifierTypes: ["LEI", "D-U-N-S", "VAT", "USCC"],
       orgTypes: ["Legal Entity", "Business Unit", "Site"],
+      intDoc: Object,
     };
   },
   computed: {},
@@ -203,6 +208,10 @@ export default {
     },
     deleteIdentifier(i) {
       this.documentData.identifier.splice(i, 1);
+    },
+    onLegalNameChange(event) {
+      this.documentData.legalName = event;
+      this.intDoc.label = event;
     },
   },
   components: {},

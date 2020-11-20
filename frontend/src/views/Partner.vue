@@ -94,6 +94,7 @@
               <PresentationList
                 v-if="isReady"
                 v-bind:credentials="presentationsReceived"
+                v-bind:headers="headersReceived"
                 v-on:removedItem="removePresentationReceived"
                 :expandable="false"
               ></PresentationList>
@@ -222,6 +223,28 @@ export default {
         {
           text: "Sent at",
           value: "sentAt",
+        },
+        {
+          text: "State",
+          value: "state",
+        },
+        {
+          text: " ",
+          value: "actions",
+        },
+      ],
+      headersReceived: [
+        {
+          text: "Type",
+          value: "type",
+        },
+        {
+          text: "Issuer",
+          value: "issuer",
+        },
+        {
+          text: "Received at",
+          value: "receivedAt",
         },
         {
           text: "State",

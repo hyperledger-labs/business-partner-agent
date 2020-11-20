@@ -63,6 +63,10 @@ export default {
       isBusy: false,
       credHeaders: [
         {
+          text: "Label",
+          value: "label",
+        },
+        {
           text: "Type",
           value: "type",
         },

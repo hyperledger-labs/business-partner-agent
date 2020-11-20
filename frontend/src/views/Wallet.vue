@@ -73,6 +73,10 @@ export default {
       scheams: [],
       credHeaders: [
         {
+          text: "Label",
+          value: "label",
+        },
+        {
           text: "Type",
           value: "type",
         },
@@ -90,6 +94,10 @@ export default {
         },
       ],
       docHeaders: [
+        {
+          text: "Label",
+          value: "label",
+        },
         {
           text: "Type",
           value: "type",

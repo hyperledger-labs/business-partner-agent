@@ -8,24 +8,40 @@
 
 <template>
   <div>
-    <h3 v-if="!showOnlyContent && (document.issuer || document.issuedAt)">
+    <v-row>
+      <v-col cols="12" class="pb-0">
+        <v-text-field
+          v-if="
+            intDoc.label instanceof String || typeof intDoc.label === 'string'
+          "
+          label="Label (Optional)"
+          placeholder
+          outlined
+          dense
+          :value="intDoc.label"
+          :disabled="showOnlyContent"
+          @change="docFieldChanged('label', $event)"
+        ></v-text-field>
+      </v-col>
+    </v-row>
+    <h3 v-if="!showOnlyContent && (intDoc.issuer || intDoc.issuedAt)">
       Issuer
     </h3>
     <v-row v-if="!showOnlyContent">
       <v-col>
         <v-text-field
-          v-if="document.issuer"
+          v-if="intDoc.issuer"
           label="Issuer"
-          v-model="document.issuer"
+          v-model="intDoc.issuer"
           disabled
           outlined
           dense
         ></v-text-field>
         <v-text-field
-          v-if="document.issuedAt"
+          v-if="intDoc.issuedAt"
           label="Issued at"
           :placeholder="
-            $options.filters.moment(document.issuedAt, 'YYYY-MM-DD HH:mm')
+            $options.filters.moment(intDoc.issuedAt, 'YYYY-MM-DD HH:mm')
           "
           disabled
           outlined
@@ -34,9 +50,7 @@
       </v-col>
     </v-row>
 
-    <h3 v-if="document.credentialData && !showOnlyContent">
-      Credential Content
-    </h3>
+    <h3 v-if="intDoc.credentialData && !showOnlyContent">Credential Content</h3>
     <v-row>
       <v-col>
         <v-text-field
@@ -49,8 +63,8 @@
           :required="field.required"
           outlined
           dense
-          :value="documentData[field.type]"
-          @change="fieldChanged(field.type, $event)"
+          :value="intDoc[documentDataType][field.type]"
+          @change="docDataFieldChanged(field.type, $event)"
         ></v-text-field>
       </v-col>
     </v-row>
@@ -67,47 +81,17 @@ export default {
   },
   created() {
     console.log(this.document);
-    // New created document
-    if (
-      !{}.hasOwnProperty.call(this.document, "documentData") &&
-      !{}.hasOwnProperty.call(this.document, "credentialData") &&
-      !{}.hasOwnProperty.call(this.document, "proofData")
-    ) {
-      this.documentData = Object.fromEntries(
-        this.schema.fields.map((field) => {
-          return [field.type, ""];
-        })
-      );
-      // Existing document or credential
-    } else {
-      // Check if document or credential data is here. This needs to be improved
-      let documentData;
-      if (this.document.documentData) {
-        documentData = this.document.documentData;
-      } else if (this.document.credentialData) {
-        documentData = this.document.credentialData;
-      } else if (this.document.proofData) {
-        documentData = this.document.proofData;
-      }
-      // Only support one nested node for now
-      let nestedData = Object.values(documentData).find((value) => {
-        return typeof value === "object" && value !== null;
-      });
-      documentData = nestedData ? nestedData : documentData;
-
-      // Filter empty elements
-      this.documentData = Object.fromEntries(
-        Object.entries(documentData).filter(([, value]) => {
-          return value !== "";
-        })
-      );
-
-      this.intDoc = { ...this.documentData };
-    }
+    this.prepareDocument();
   },
   data: () => {
     return {
-      intDoc: Object,
+      intDoc: {
+        type: Object,
+        default: {},
+      },
+      origIntDoc: Object,
+      documentDataTypes: ["documentData", "credentialData", "proofData"],
+      documentDataType: "",
     };
   },
   computed: {
@@ -120,7 +104,7 @@ export default {
       } else {
         s = {
           type: this.document.type,
-          fields: Object.keys(this.documentData).map((key) => {
+          fields: Object.keys(this.intDoc).map((key) => {
             return {
               type: key,
               label: key,
@@ -133,19 +117,68 @@ export default {
     },
   },
   methods: {
-    fieldChanged(fieldType, event) {
-      if (this.intDoc[fieldType] != event) {
-        this.documentData[fieldType] = event;
+    docDataFieldChanged(propertyName, event) {
+      console.log("CREDENTIAL DATA FIELD CHANGED", propertyName, event);
+      if (this.origIntDoc[this.documentDataType][propertyName] != event) {
+        this.intDoc[this.documentDataType][propertyName] = event;
       } else {
-        this.documentData[fieldType] = event;
+        this.intDoc[this.documentDataType][propertyName] = event;
       }
 
-      const isDirty = Object.keys(this.intDoc).find((key) => {
-        return this.documentData[key] != this.intDoc[key] ? true : false;
-      })
+      const isDirty = Object.keys(this.origIntDoc[this.documentDataType]).find(
+        (key) => {
+          return this.intDoc[this.documentDataType][key] !=
+            this.origIntDoc[this.documentDataType][key]
+            ? true
+            : false;
+        }
+      )
         ? true
         : false;
-      this.$emit("doc-changed", isDirty);
+      this.$emit("doc-data-field-changed", isDirty);
+    },
+
+    docFieldChanged(propertyName, event) {
+      if (this.origIntDoc[propertyName] != event) {
+        this.intDoc[propertyName] = event;
+      } else {
+        this.intDoc[propertyName] = event;
+      }
+      this.$emit("doc-field-changed", { key: propertyName, value: event });
+    },
+
+    prepareDocument() {
+      //New Document
+      if (!this.document.id) {
+        this.documentDataType = this.documentDataTypes[0];
+        this.document.label = "";
+        this.intDoc[this.documentDataType] = Object.fromEntries(
+          this.schema.fields.map((field) => {
+            return [field.type, ""];
+          })
+        );
+        this.intCopy();
+      }
+      //Existing Document, extract Data
+      else {
+        this.documentDataTypes.forEach((field) => {
+          if ({}.hasOwnProperty.call(this.document, field)) {
+            this.documentDataType = field;
+            this.intDoc = this.document;
+            this.intCopy();
+            return;
+          }
+        });
+      }
+    },
+    intCopy() {
+      this.origIntDoc = { ...this.intDoc };
+      //create deep copy of objects
+      Object.entries(this.intDoc).find(([key, value]) => {
+        if (typeof value === "object" && value !== null) {
+          this.origIntDoc[key] = { ...this.intDoc[key] };
+        }
+      });
     },
   },
 };
