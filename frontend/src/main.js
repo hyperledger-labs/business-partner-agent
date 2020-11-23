@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === "development") {
     window.location.protocol === "https:" ? "wss" : "ws"
   }://localhost:8080/events`;
   store.commit({
-    type: "setSettings",
+    type: "setExpertMode",
     isExpert: true,
   });
 } else {
@@ -121,6 +121,7 @@ const EventBus = new Vue();
 export { EventBus, axios, apiBaseUrl };
 
 console.log(Vue.prototype);
+store.dispatch("loadSettings");
 
 new Vue({
   vuetify,

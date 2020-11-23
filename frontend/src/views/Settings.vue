@@ -39,46 +39,26 @@
           Frontend Color
         </v-list-item-title>
         <v-list-item-subtitle align="end">
-          <v-text-field
+          <text-field-color-picker
             v-if="isEditingColor"
-            class="mt-1"
-            x-small
-            align-end
-            justify-end
-            :placeholder="$vuetify.theme.themes.light.primary"
-            v-model="uiColor"
-            outlined
-            dense
+            @on-save="onPickColor"
+            @on-cancel="isEditingColor = false"
           >
-            <template v-slot:append>
-              <v-btn class="pt-1" x-small text @click="isEditingColor = false"
-                >Cancel</v-btn
-              >
-              <v-btn
-                class="pt-1"
-                x-small
-                text
-                color="primary"
-                @click="setUiColor()"
-                >Save</v-btn
-              >
-            </template>
-          </v-text-field>
+          </text-field-color-picker>
           <span v-else>{{ $vuetify.theme.themes.light.primary }}</span>
         </v-list-item-subtitle>
-
-        <v-list-item-action>
-          <v-btn
-            v-if="!isEditingColor"
-            icon
-            x-small
-            @click="isEditingColor = !isEditingColor"
-          >
+        <v-list-item-action v-show="!isEditingColor">
+          <v-btn icon x-small @click="isEditingColor = !isEditingColor">
             <v-icon dark>mdi-pencil</v-icon>
           </v-btn>
         </v-list-item-action>
       </v-list-item>
-      <v-list-item v-for="setting in settings" :key="setting.text">
+
+      <v-list-item
+        v-show="expertMode"
+        v-for="setting in settings"
+        :key="setting.text"
+      >
         <!-- <v-list-item-content> -->
         <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
           {{ setting.text }}
@@ -94,11 +74,12 @@
 
 <script>
 import { EventBus } from "../main";
+import TextFieldColorPicker from "@/components/helper/TextFieldColorPicker";
+
 export default {
   name: "Settings",
   created() {
     EventBus.$emit("title", "Settings");
-    this.fetch();
   },
   data: () => {
     return {
@@ -127,17 +108,19 @@ export default {
           text: "Aries API Key",
           value: "acaPyApiKey",
         },
+        {
+          text: "BPA Name",
+          value: "agentName",
+        },
       ],
-      settings: [],
       isEditingColor: false,
-      uiColor: "",
     };
   },
   computed: {
     expertMode: {
       set(body) {
         this.$store.commit({
-          type: "setSettings",
+          type: "setExpertMode",
           isExpert: body,
         });
       },
@@ -145,31 +128,26 @@ export default {
         return this.$store.state.expertMode;
       },
     },
+    settings: {
+      get() {
+        return this.settingsHeader.map((setting) => {
+          return {
+            text: setting.text,
+            value: this.$store.getters.getSettingByKey(setting.value),
+          };
+        });
+      },
+    },
   },
   methods: {
-    setUiColor() {
-      this.$vuetify.theme.themes.light.primary = this.uiColor;
-      localStorage.setItem("uiColor", this.uiColor);
+    onPickColor(c) {
+      this.$vuetify.theme.themes.light.primary = c;
+      localStorage.setItem("uiColor", c);
       this.isEditingColor = false;
     },
-    fetch() {
-      this.$axios
-        .get(`${this.$apiBaseUrl}/admin/config`)
-        .then((result) => {
-          if ({}.hasOwnProperty.call(result, "data")) {
-            this.settings = this.settingsHeader.map((setting) => {
-              return {
-                text: setting.text,
-                value: result.data[setting.value],
-              };
-            });
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
-        });
-    },
+  },
+  components: {
+    "text-field-color-picker": TextFieldColorPicker,
   },
 };
 </script>

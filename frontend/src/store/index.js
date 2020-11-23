@@ -24,6 +24,7 @@ const store = new Vuex.Store({
     schemas: [],
     busyStack: 0,
     expertMode: false,
+    settings: {},
   },
 
   getters: {
@@ -48,6 +49,14 @@ const store = new Vuex.Store({
         partner.did === did;
       });
     },
+    getSettingByKey: (state) => (key) => {
+      if (state.settings && {}.hasOwnProperty.call(state.settings, key)) {
+        return state.settings[key];
+      }
+    },
+    getSettings: (state) => {
+      return state.settings;
+    },
   },
 
   actions: actions,
@@ -65,8 +74,11 @@ const store = new Vuex.Store({
     loadSchemasFinished(state, payload) {
       state.schemas = payload.schemas;
     },
-    setSettings(state, payload) {
+    setExpertMode(state, payload) {
       state.expertMode = payload.isExpert;
+    },
+    setSettings(state, payload) {
+      state.settings = payload.settings;
     },
   },
 
