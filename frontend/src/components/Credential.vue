@@ -55,6 +55,7 @@
       <v-col>
         <v-text-field
           v-for="field in schema.fields"
+          v-show="intDoc[documentDataType][field.type] && isReadOnly"
           :key="field.type"
           :label="field.label"
           placeholder
@@ -102,12 +103,21 @@ export default {
         // No known schema. Generate one from data
         // Todo: Support arrays and objects as fields
       } else {
+        const dataType = this.documentDataTypes.find((val) => {
+          if (this.document && {}.hasOwnProperty.call(this.document, val)) {
+            return val;
+          }
+        });
         s = {
           type: this.document.type,
-          fields: Object.keys(this.intDoc).map((key) => {
+          fields: Object.keys(
+            dataType ? this.intDoc[dataType] : this.intDoc
+          ).map((key) => {
             return {
               type: key,
-              label: key,
+              label:
+                key.substring(0, 1).toUpperCase() +
+                key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2"),
             };
           }),
         };
@@ -118,7 +128,6 @@ export default {
   },
   methods: {
     docDataFieldChanged(propertyName, event) {
-      console.log("CREDENTIAL DATA FIELD CHANGED", propertyName, event);
       if (this.origIntDoc[this.documentDataType][propertyName] != event) {
         this.intDoc[this.documentDataType][propertyName] = event;
       } else {
@@ -171,6 +180,7 @@ export default {
         });
       }
     },
+
     intCopy() {
       this.origIntDoc = { ...this.intDoc };
       //create deep copy of objects
