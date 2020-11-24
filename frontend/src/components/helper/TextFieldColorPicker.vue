@@ -1,40 +1,49 @@
 <template>
-  <div style="min-width: 250px">
-    <v-text-field
-      v-model="intColor"
-      hide-details
-      outlined
-      dense
-      :rules="hexReg"
-      required
-    >
-      <template v-slot:append>
-        <v-menu
-          v-model="menu"
-          top
-          nudge-bottom="300"
-          nudge-left="0"
-          :close-on-content-click="false"
-        >
-          <template v-slot:activator="{ on }">
-            <div :style="swatchStyle" v-on="on" />
-          </template>
-          <v-card>
-            <v-card-text class="pa-0">
-              <v-color-picker v-model="intColor" flat hide-mode-switch>
-              </v-color-picker>
-            </v-card-text>
-          </v-card>
-        </v-menu>
-        <span justify>
-          <v-btn class="" x-small text @click="cancel()"> Cancel </v-btn>
-          <v-btn class="" x-small text color="primary" @click="saveColor()">
-            Save
-          </v-btn>
-        </span>
-      </template>
-    </v-text-field>
-  </div>
+  <v-form ref="form" v-model="valid" lazy-validation>
+    <div style="min-width: 250px">
+      <v-text-field
+        outlined
+        dense
+        :rules="hexReg"
+        required
+        :value="intColorField"
+        @input="changeColor($event)"
+        maxlength="7"
+        color="intColor"
+      >
+        <template v-slot:append>
+          <v-menu
+            v-model="menu"
+            top
+            nudge-bottom="300"
+            nudge-left="0"
+            :close-on-content-click="false"
+          >
+            <template v-slot:activator="{ on }">
+              <div :style="swatchStyle" v-on="on" />
+            </template>
+            <v-card>
+              <v-card-text class="pa-0">
+                <v-color-picker
+                  v-model="intColor"
+                  hide-mode-switch
+                  flat
+                  type="hex"
+                >
+                </v-color-picker>
+              </v-card-text>
+            </v-card>
+          </v-menu>
+          <span justify>
+            <v-btn class="" x-small text @click="cancel()"> Cancel </v-btn>
+            <v-btn class="" color="#000" x-small text @click="saveColor()">
+              Save
+            </v-btn>
+          </span>
+        </template>
+      </v-text-field>
+    </div>
+  </v-form>
 </template>
 <script>
 export default {
@@ -45,7 +54,7 @@ export default {
         return "hex";
       },
     },
-    currentColor: {
+    baseColor: {
       type: String,
       default() {
         return this.$vuetify.theme.themes.light.primary;
@@ -54,17 +63,24 @@ export default {
   },
   data() {
     return {
+      valid: true,
+      intColorField: "",
       intColor: "",
       menu: false,
       hexReg: [
-        (v) => !!v || "#EEEEEE",
-        (v) => /^#([0-9A-F]{3}){1,2}$/i.test(v) || "Color should be valid",
+        (value) => !!value || "Color should begin with #",
+
+        (value) => {
+          const pattern = /^#([0-9A-F]{3}){1,2}$/i;
+          return pattern.test(value) || "Invalid color (e.g. #FF00FF)";
+        },
       ],
     };
   },
   computed: {
     swatchStyle() {
       const { intColor, menu } = this;
+      this.pickColor(intColor);
       return {
         backgroundColor: intColor,
         cursor: "pointer",
@@ -72,11 +88,13 @@ export default {
         width: "20px",
         borderRadius: menu ? "50%" : "4px",
         transition: "border-radius 200ms ease-in-out",
+        border: "1px solid black",
       };
     },
   },
   created() {
-    this.intColor = this.currentColor;
+    this.intColor = this.baseColor;
+    this.intColorField = this.baseColor;
   },
   methods: {
     saveColor() {
@@ -84,6 +102,14 @@ export default {
     },
     cancel() {
       this.$emit("on-cancel");
+    },
+    changeColor(value) {
+      if (this.$refs.form.validate()) {
+        this.intColor = value;
+      }
+    },
+    pickColor(newColor) {
+      this.intColorField = newColor;
     },
   },
 };

@@ -54,8 +54,7 @@
     <v-row>
       <v-col>
         <v-text-field
-          v-for="field in schema.fields"
-          v-show="intDoc[documentDataType][field.type] && isReadOnly"
+          v-for="field in filteredSchemaField"
           :key="field.type"
           :label="field.label"
           placeholder
@@ -79,6 +78,7 @@ export default {
     isReadOnly: Boolean,
     document: Object,
     showOnlyContent: Boolean,
+    isNew: Boolean,
   },
   created() {
     console.log(this.document);
@@ -110,19 +110,32 @@ export default {
         });
         s = {
           type: this.document.type,
+          label: "",
           fields: Object.keys(
             dataType ? this.intDoc[dataType] : this.intDoc
           ).map((key) => {
             return {
               type: key,
-              label:
-                key.substring(0, 1).toUpperCase() +
-                key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2"),
+              label: key
+                ? key.substring(0, 1).toUpperCase() +
+                  key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2")
+                : "",
             };
           }),
         };
-        console.log(s);
         return s;
+      }
+    },
+    filteredSchemaField() {
+      let fields = this.schema.fields;
+      if (!this.isReadOnly) {
+        return fields;
+      } else {
+        return fields.filter((field) => {
+          if (this.intDoc[this.documentDataType][field.type] !== "") {
+            return field;
+          }
+        });
       }
     },
   },
