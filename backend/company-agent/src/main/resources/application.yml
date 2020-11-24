@@ -92,6 +92,7 @@ oagent:
   ledger:
     browser: ${BPA_LEDGER_BROWSER:`https://indy-test.bosch-digital.de`}
   host: localhost:${micronaut.server.port}
+  name: ${AGENT_NAME:`Business Partner Agent`}
   web:
     only: ${BPA_WEB_MODE:false}
   acapy:

@@ -123,7 +123,7 @@ public class DidResolver {
      * @param label the label
      * @return {@link ConnectionLabel}
      */
-    static ConnectionLabel splitDidFrom(String label) {
+    public static ConnectionLabel splitDidFrom(String label) {
         ConnectionLabel.ConnectionLabelBuilder cl = ConnectionLabel.builder();
         if (StringUtils.isNotEmpty(label)) {
             String[] parts = label.split(":");
