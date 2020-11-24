@@ -27,6 +27,8 @@ import org.hyperledger.oa.api.DidDocAPI;
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.api.exception.PartnerException;
 import org.hyperledger.oa.client.URClient;
+import org.hyperledger.oa.core.RegisteredWebhook;
+import org.hyperledger.oa.impl.WebhookService;
 import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.model.Partner;
 import org.hyperledger.oa.model.PartnerProof;
@@ -55,6 +57,9 @@ public class DidResolver {
 
     @Inject
     Converter converter;
+
+    @Inject
+    WebhookService webhook;
 
     /**
      * Tries to resolve the partners public profile based on the did
@@ -113,6 +118,8 @@ public class DidResolver {
                     pAPI.getValid(),
                     cl.getLabel(),
                     did);
+            pAPI.setDid(did);
+            webhook.convertAndSend(RegisteredWebhook.WebhookEventType.PARTNER_ADD, pAPI);
         });
 
     }
@@ -142,7 +149,7 @@ public class DidResolver {
     @Getter
     @Builder
     public static final class ConnectionLabel {
-        private String label;
-        private Optional<String> did;
+        private final String label;
+        private final Optional<String> did;
     }
 }
