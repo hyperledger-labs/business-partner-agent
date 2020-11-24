@@ -102,8 +102,6 @@ export const loadSettings = async ({ commit }) => {
     .then((result) => {
       if ({}.hasOwnProperty.call(result, "data")) {
         let settings = result.data;
-        //TODO remove this if comes from backend
-        settings = { ...settings, agentName: "Business Partner Agent" };
         commit({
           type: "setSettings",
           settings: settings,

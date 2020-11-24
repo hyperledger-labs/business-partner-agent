@@ -25,6 +25,8 @@ services:
       BPA_DID_PREFIX: ${BPA_DID_PREFIX}
       BPA_BOOTSTRAP_UN: ${BPA_BOOTSTRAP_UN}
       BPA_BOOTSTRAP_PW: ${BPA_BOOTSTRAP_PW}
+      AGENT_ENDPOINT: ${AGENT_ENDPOINT}
+      AGENT_NAME: ${AGENT_NAME}
     ports:
       - ${BPA_PORT}:${BPA_PORT}
     restart: always
@@ -70,7 +72,7 @@ services:
         --seed '${AGENT_SEED}' \
         --admin '0.0.0.0' ${AGENT_ADMIN_PORT} \
         --admin-api-key '${ACAPY_ADMIN_URL_API_KEY}' \
-        --label ${AGENT_NAME} \
+        --label '${AGENT_NAME}' \
         --log-level info"
       ]
   postgres:

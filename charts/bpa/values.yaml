@@ -43,6 +43,9 @@ bpa:
   # --  The Ledger Explorer  
   ledgerBrowser: https://indy-test.bosch-digital.de
 
+  # -- The Agent Name as it should be displayed in the UI
+  agentName: "Business Partner Agent"
+
   imagePullSecrets: []
  
   podAnnotations: {}

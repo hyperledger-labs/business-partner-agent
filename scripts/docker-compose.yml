@@ -26,6 +26,7 @@ services:
       BPA_BOOTSTRAP_UN: ${BPA_BOOTSTRAP_UN}
       BPA_BOOTSTRAP_PW: ${BPA_BOOTSTRAP_PW}
       AGENT_ENDPOINT: ${AGENT_ENDPOINT}
+      AGENT_NAME: ${AGENT_NAME}
     ports:
       - ${BPA_PORT}:${BPA_PORT}
     restart: always
@@ -68,7 +69,7 @@ services:
         --wallet-storage-creds '{\"account\":\"${POSTGRESQL_WALLET_USER}\",\"password\":\"${POSTGRESQL_WALLET_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_WALLET_USER}\",\"admin_password\":\"${POSTGRESQL_WALLET_PASSWORD}\"}' \
         --seed '${AGENT_SEED}' \
         --admin '0.0.0.0' ${AGENT_ADMIN_PORT} \
-        --label ${AGENT_NAME} \
+        --label '${AGENT_NAME}' \
         --log-level info \
         ${ACAPY_ADMIN_CONFIG} \
         "

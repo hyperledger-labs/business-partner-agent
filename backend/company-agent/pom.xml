@@ -290,7 +290,7 @@
                                 </goals>
                                 <configuration>
                                     <!-- See https://nodejs.org/en/download/ -->
-                                    <nodeVersion>v12.19.0</nodeVersion>
+                                    <nodeVersion>v14.15.1</nodeVersion>
                                     <npmVersion>6.14.8</npmVersion>
                                 </configuration>
                             </execution>

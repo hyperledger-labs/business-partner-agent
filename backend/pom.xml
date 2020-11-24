@@ -44,10 +44,10 @@
         <!-- Dependency Versions -->
         <log4j2.version>2.14.0</log4j2.version>
         <lombok.version>1.18.16</lombok.version>
-        <micronaut.version>2.1.3</micronaut.version>
-        <micronaut.data.version>2.1.1</micronaut.data.version>
-        <micronaut.openapi.version>2.1.1</micronaut.openapi.version>
-        <micronaut.security.version>2.1.2</micronaut.security.version>
+        <micronaut.version>2.2.0</micronaut.version>
+        <micronaut.data.version>2.2.0</micronaut.data.version>
+        <micronaut.openapi.version>2.2.0</micronaut.openapi.version>
+        <micronaut.security.version>2.2.0</micronaut.security.version>
         <mockito.version>3.6.0</mockito.version>
         <pmd.version>6.29.0</pmd.version>
         <spotbugs.version>4.1.4</spotbugs.version>
@@ -101,7 +101,7 @@
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
-                <version>6.5.7</version>
+                <version>7.2.1</version>
             </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>

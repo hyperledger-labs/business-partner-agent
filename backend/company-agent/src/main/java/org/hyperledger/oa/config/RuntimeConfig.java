@@ -20,6 +20,7 @@ package org.hyperledger.oa.config;
 import io.micronaut.context.annotation.Value;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hyperledger.oa.impl.activity.DidResolver;
 
 import javax.inject.Singleton;
 
@@ -42,4 +43,11 @@ public class RuntimeConfig {
 
     @Value("${oagent.web.only}")
     private Boolean webOnly;
+
+    @Value("${oagent.name}")
+    private String agentName;
+
+    public String getAgentName() {
+        return DidResolver.splitDidFrom(agentName).getLabel();
+    }
 }
