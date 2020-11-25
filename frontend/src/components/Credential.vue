@@ -77,7 +77,10 @@
 import { getSchema } from "../constants";
 export default {
   props: {
-    isReadOnly: Boolean,
+    isReadOnly: {
+      type: Boolean,
+      default: false,
+    },
     document: Object,
     showOnlyContent: Boolean,
     isNew: Boolean,
@@ -85,47 +88,6 @@ export default {
   created() {
     console.log("Credential: ", this.document);
     this.prepareDocument();
-    // // New created document
-    // if (
-    //   !{}.hasOwnProperty.call(this.document, "documentData") &&
-    //   !{}.hasOwnProperty.call(this.document, "credentialData") &&
-    //   !{}.hasOwnProperty.call(this.document, "proofData")
-    // ) {
-    //   this.documentData = Object.fromEntries(
-    //     this.schema.fields.map((field) => {
-    //       return [field.type, ""];
-    //     })
-    //   );
-    //   // Existing document or credential
-    // } else {
-    //   // Check if document or credential data is here. This needs to be improved
-    //   let documentData;
-    //   if (this.document.documentData) {
-    //     documentData = this.document.documentData;
-    //   } else if (this.document.credentialData) {
-    //     documentData = this.document.credentialData;
-    //   } else if (this.document.proofData) {
-    //     documentData = this.document.proofData;
-    //   }
-    //   // Only support one nested node for now
-    //   let nestedData = Object.values(documentData).find((value) => {
-    //     return typeof value === "object" && value !== null;
-    //   });
-    //   documentData = nestedData ? nestedData : documentData;
-
-    //   // Filter empty elements only for credentials
-    //   if (!this.document.documentData) {
-    //     this.documentData = Object.fromEntries(
-    //       Object.entries(documentData).filter(([, value]) => {
-    //         return value !== "";
-    //       })
-    //     );
-    //   } else {
-    //     this.documentData = documentData;
-    //   }
-
-    //   this.intDoc = { ...this.documentData };
-    // }
   },
   data: () => {
     return {
@@ -149,7 +111,6 @@ export default {
             return val;
           }
         });
-        console.log(dataType);
         if (dataType) {
           s = {
             type: this.document.type,
@@ -217,10 +178,7 @@ export default {
 
     prepareDocument() {
       //New Document
-      if (
-        !this.document.id &&
-        !{}.hasOwnProperty.call(this.document, "schemaId")
-      ) {
+      if (!this.document.id && !this.document.credentialData) {
         this.documentDataType = this.documentDataTypes[0];
         this.intDoc.label = "";
         this.intDoc[this.documentDataType] = Object.fromEntries(
@@ -228,6 +186,7 @@ export default {
             return [field.type, ""];
           })
         );
+        console.log(this.intDoc);
         this.intCopy();
       }
       //Existing Document, extract Data
