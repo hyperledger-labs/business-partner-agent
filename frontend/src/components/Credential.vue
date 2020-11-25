@@ -173,7 +173,7 @@ export default {
       //New Document
       if (!this.document.id) {
         this.documentDataType = this.documentDataTypes[0];
-        this.document.label = "";
+        this.intDoc.label = "";
         this.intDoc[this.documentDataType] = Object.fromEntries(
           this.schema.fields.map((field) => {
             return [field.type, ""];
