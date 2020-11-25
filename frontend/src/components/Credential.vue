@@ -12,7 +12,9 @@
       <v-col cols="12" class="pb-0">
         <v-text-field
           v-if="
-            intDoc.label instanceof String || typeof intDoc.label === 'string'
+            (intDoc.label instanceof String ||
+              typeof intDoc.label === 'string') &&
+            !showOnlyContent
           "
           label="Label (Optional)"
           placeholder
@@ -81,7 +83,7 @@ export default {
     isNew: Boolean,
   },
   created() {
-    console.log(this.document);
+    console.log("Credential: ", this.document);
     this.prepareDocument();
   },
   data: () => {
@@ -171,7 +173,10 @@ export default {
 
     prepareDocument() {
       //New Document
-      if (!this.document.id) {
+      if (
+        !this.document.id &&
+        !{}.hasOwnProperty.call(this.document, "schemaId")
+      ) {
         this.documentDataType = this.documentDataTypes[0];
         this.intDoc.label = "";
         this.intDoc[this.documentDataType] = Object.fromEntries(
