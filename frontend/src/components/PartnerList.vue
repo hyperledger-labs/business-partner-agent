@@ -21,7 +21,11 @@
       @click:row="open"
     >
       <template v-slot:[`item.name`]="{ item }">
-        <new-message-icon v-show="item.new" isPartner></new-message-icon>
+        <new-message-icon
+          v-show="item.new"
+          isPartner
+          :text="item.name"
+        ></new-message-icon>
         <PartnerStateIndicator
           v-if="item.state"
           v-bind:state="item.state"

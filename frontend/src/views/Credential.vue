@@ -89,7 +89,6 @@ export default {
   created() {
     EventBus.$emit("title", "Credential");
     this.getCredential();
-
     this.$store.commit("credentialSeen", { id: this.id });
   },
   data: () => {

@@ -151,7 +151,10 @@ export default {
   computed: {
     types() {
       let docTypes = Object.values(CredentialTypes).filter((type) => {
-        return type.name !== CredentialTypes.OTHER.name;
+        return (
+          type.name !== CredentialTypes.OTHER.name &&
+          type.name !== CredentialTypes.COMMERCIAL_REGISTER_CREDENTIAL.name
+        );
       });
       // here is the store really useful
       if (this.$store.getters.organizationalProfile != undefined) {
