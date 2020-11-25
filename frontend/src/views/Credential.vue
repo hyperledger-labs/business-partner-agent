@@ -28,7 +28,12 @@
         </v-layout>
       </v-card-title>
       <v-card-text>
-        <Cred v-bind:document="credential" isReadOnly></Cred>
+        <Cred
+          v-bind:document="credential"
+          isReadOnly
+          @doc-field-changed="fieldModified"
+        >
+        </Cred>
         <v-divider></v-divider>
         <v-list-item>
           <v-list-item-content>
@@ -84,13 +89,16 @@ export default {
   created() {
     EventBus.$emit("title", "Credential");
     this.getCredential();
+
     this.$store.commit("credentialSeen", { id: this.id });
   },
   data: () => {
     return {
-      document: {},
+      credential: {},
+      intDocument: {},
       isBusy: false,
       isReady: false,
+      docChanged: false,
       CredentialTypes: CredentialTypes,
     };
   },
@@ -107,8 +115,12 @@ export default {
         .then((result) => {
           if ({}.hasOwnProperty.call(result, "data")) {
             this.credential = result.data;
+            this.credential.label = {}.hasOwnProperty.call(result.data, "label")
+              ? result.data.label
+              : "";
             this.isPublic = this.credential.isPublic;
             this.isReady = true;
+            this.intDoc = { ...this.credential };
           }
         })
         .catch((e) => {
@@ -117,30 +129,46 @@ export default {
         });
     },
     saveChanges() {
-      this.isBusy = true;
+      var requests = [];
       if (this.credential.isPublic !== this.isPublic) {
-        this.$axios
-          .put(
+        requests.push(
+          this.$axios.put(
             `${this.$apiBaseUrl}/wallet/credential/${this.id}/toggle-visibility`
           )
-          .then((result) => {
-            console.log(result);
-            if (result.status === 200) {
-              EventBus.$emit("success", "Visibility updated");
+        );
+      }
+
+      if (this.docChanged) {
+        requests.push(
+          this.$axios.put(`${this.$apiBaseUrl}/wallet/credential/${this.id}`, {
+            label: this.credential.label,
+          })
+        );
+      }
+
+      this.$axios
+        .all(requests)
+        .then(
+          this.$axios.spread((...responses) => {
+            var allResponsesTrue = responses.every((response) => {
+              console.log(response);
+              return response.status === 200;
+            });
+            if (allResponsesTrue) {
+              EventBus.$emit("success", "Credential updated");
               this.$router.push({
                 name: "Wallet",
               });
             }
           })
-          .catch((e) => {
-            console.error(e);
-            EventBus.$emit("error", e);
+        )
+        .catch((errors) => {
+          errors.forEach((error) => {
+            console.error(error);
           });
-      } else {
-        this.$router.push({
-          name: "Wallet",
+          // react on errors.
+          EventBus.$emit("errors", errors);
         });
-      }
     },
     deleteCredential() {
       this.$axios
@@ -163,6 +191,17 @@ export default {
       this.$router.push({
         name: "Wallet",
       });
+    },
+    fieldModified(keyValue) {
+      const isModified = Object.keys(this.intDoc).find((key) => {
+        return this.credential[key] != this.intDoc[key];
+      })
+        ? true
+        : false;
+      this.docChanged = isModified;
+      if (this.docChanged) {
+        this.credential[keyValue.key] = keyValue.value;
+      }
     },
   },
   components: {

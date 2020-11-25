@@ -45,7 +45,8 @@
           v-else
           v-bind:document="document"
           ref="doc"
-          @doc-changed="childChanged"
+          @doc-field-changed="fieldModified"
+          @doc-data-field-changed="documentDataFieldChanged"
         ></Credential>
         <v-divider></v-divider>
         <v-list-item>
@@ -56,7 +57,11 @@
             >
           </v-list-item-content>
           <v-list-item-action>
-            <v-switch v-model="document.isPublic"></v-switch>
+            <v-switch
+              :disabled="document.type === CredentialTypes.OTHER.name"
+              v-model="document.isPublic"
+              @change="fieldModified()"
+            ></v-switch>
           </v-list-item-action>
         </v-list-item>
         <v-divider></v-divider>
@@ -159,6 +164,8 @@ export default {
     if (this.id) {
       EventBus.$emit("title", "Edit Document");
       this.getDocument();
+    } else if (!this.type) {
+      this.$router.push({ name: "Wallet" });
     } else {
       EventBus.$emit("title", "Create new Document");
       this.document.type = this.type;
@@ -196,7 +203,6 @@ export default {
   watch: {},
   methods: {
     getDocument() {
-      console.log(this.id);
       this.$axios
         .get(`${this.$apiBaseUrl}/wallet/document/${this.id}`)
         .then((result) => {
@@ -214,23 +220,18 @@ export default {
     },
     saveDocument(closeDocument) {
       this.isBusy = true;
-      console.log(this.$refs.doc.document);
-
-      let data = {
-        document: this.$refs.doc.documentData,
-        isPublic: this.document.isPublic,
-        type: this.document.type,
-      };
-
-      if (this.document.schemaId) {
-        data.schemaId = this.document.schemaId;
-      }
-
-      // update document
       if (this.id) {
         this.$axios
-          .put(`${this.$apiBaseUrl}/wallet/document/${this.id}`, data)
-          .then(() => {
+          .put(`${this.$apiBaseUrl}/wallet/document/${this.id}`, {
+            document: this.document.documentData,
+            isPublic: this.document.isPublic,
+            label: this.isProfile(this.document.type)
+              ? this.document.documentData.legalName
+              : this.document.label,
+            type: this.document.type,
+          })
+          .then((res) => {
+            console.log(res);
             this.isBusy = false;
             if (closeDocument) {
               this.$router.push({
@@ -251,7 +252,8 @@ export default {
       } else {
         this.$axios
           .post(`${this.$apiBaseUrl}/wallet/document`, {
-            document: this.$refs.doc.documentData,
+            document: this.$refs.doc.intDoc.documentData,
+            label: this.$refs.doc.intDoc.label,
             isPublic: this.document.isPublic,
             type: this.type,
           })
@@ -303,7 +305,7 @@ export default {
       this.docChanged = isModified;
       this.docModified();
     },
-    childChanged(credChanged) {
+    documentDataFieldChanged(credChanged) {
       this.credChanged = credChanged;
       this.docModified();
     },

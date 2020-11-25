@@ -86,7 +86,7 @@ stages:
         jdkVersionOption: '1.11'
         jdkArchitectureOption: 'x64'
         publishJUnitResults: false
-        goals: 'docker:build docker:push -Ddocker.push.registry=$(containerRegistry) -Ddocker.name=iil/%a:$(tag)'
+        goals: 'docker:build docker:push -Ddocker.push.registry=$(containerRegistry) -Ddocker.name=iil/%a -Ddocker.tags.0=latest -Ddocker.tags.1=$(tag)'
     - task: Docker@2
       displayName: Logout of ACR
       inputs:

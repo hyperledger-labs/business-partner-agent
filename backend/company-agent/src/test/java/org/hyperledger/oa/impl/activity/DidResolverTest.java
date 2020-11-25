@@ -34,6 +34,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -109,6 +111,23 @@ class DidResolverTest extends BaseTest {
         verify(partnerRepo, times(1)).update(any());
         verify(ur, times(1)).getDidDocument(any());
         verify(partnerLookup, times(1)).lookupPartner(any());
+    }
+
+    @Test
+    void testSplitDid() {
+        DidResolver.ConnectionLabel cl = DidResolver.splitDidFrom("did:sov:iil:123:label");
+        assertEquals("label", cl.getLabel());
+        assertTrue(cl.getDid().isPresent());
+        assertEquals("did:sov:iil:123", cl.getDid().get());
+
+        cl = DidResolver.splitDidFrom("did:sov:iil:JTWwhv1L3ZBtX8WWBPJMRy:Bob's Agent");
+        assertEquals("Bob's Agent", cl.getLabel());
+        assertTrue(cl.getDid().isPresent());
+        assertEquals("did:sov:iil:JTWwhv1L3ZBtX8WWBPJMRy", cl.getDid().get());
+
+        cl = DidResolver.splitDidFrom("did:label");
+        assertEquals("did:label", cl.getLabel());
+        assertTrue(cl.getDid().isEmpty());
     }
 
 }

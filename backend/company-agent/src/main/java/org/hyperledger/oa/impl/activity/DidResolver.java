@@ -18,6 +18,8 @@
 package org.hyperledger.oa.impl.activity;
 
 import io.micronaut.scheduling.annotation.Async;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.oa.api.CredentialType;
@@ -25,7 +27,10 @@ import org.hyperledger.oa.api.DidDocAPI;
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.api.exception.PartnerException;
 import org.hyperledger.oa.client.URClient;
+import org.hyperledger.oa.core.RegisteredWebhook;
+import org.hyperledger.oa.impl.WebhookService;
 import org.hyperledger.oa.impl.util.Converter;
+import org.hyperledger.oa.model.Partner;
 import org.hyperledger.oa.model.PartnerProof;
 import org.hyperledger.oa.repository.PartnerRepository;
 
@@ -53,6 +58,14 @@ public class DidResolver {
     @Inject
     Converter converter;
 
+    @Inject
+    WebhookService webhook;
+
+    /**
+     * Tries to resolve the partners public profile based on the did
+     * contained withn a commercial register credential.
+     * @param pp {@link PartnerProof}
+     */
     @Async
     public void resolveDid(PartnerProof pp) {
         try {
@@ -86,5 +99,57 @@ public class DidResolver {
         } catch (Exception e) {
             log.error("Could not lookup public did.", e);
         }
+    }
+
+    /**
+     * Tries to resolve the partners public profile based on a did that is embedded
+     * in the partners label. The label is supposed to adhere to the following format:
+     * did:sov:xxx:123:MyLabel
+     * @param p {@link Partner}
+     */
+    @Async
+    public void lookupIncoming(Partner p) {
+        ConnectionLabel cl = splitDidFrom(p.getLabel());
+        cl.getDid().ifPresent(did -> {
+            final PartnerAPI pAPI = partnerLookup.lookupPartner(did);
+            partnerRepo.updateVerifiablePresentation(
+                    p.getId(),
+                    converter.toMap(pAPI.getVerifiablePresentation()),
+                    pAPI.getValid(),
+                    cl.getLabel(),
+                    did);
+            pAPI.setDid(did);
+            webhook.convertAndSend(RegisteredWebhook.WebhookEventType.PARTNER_ADD, pAPI);
+        });
+
+    }
+
+    /**
+     * Extracts the did and label components from a label is supposed to adhere to the following format:
+     * did:sov:xxx:123:MyLabel.
+     * @param label the label
+     * @return {@link ConnectionLabel}
+     */
+    public static ConnectionLabel splitDidFrom(String label) {
+        ConnectionLabel.ConnectionLabelBuilder cl = ConnectionLabel.builder();
+        if (StringUtils.isNotEmpty(label)) {
+            String[] parts = label.split(":");
+            if (parts.length == 5) {
+                cl.label = parts[4];
+                String did = StringUtils.joinWith(":", parts[0], parts[1], parts[2], parts[3]);
+                cl.did(Optional.of(did));
+            } else {
+                cl.label = label;
+                cl.did(Optional.empty());
+            }
+        }
+        return cl.build();
+    }
+
+    @Getter
+    @Builder
+    public static final class ConnectionLabel {
+        private final String label;
+        private final Optional<String> did;
     }
 }

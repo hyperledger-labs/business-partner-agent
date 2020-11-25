@@ -107,6 +107,23 @@ export const loadCredentials = async ({ commit }) => {
     });
 };
 
+export const loadSettings = async ({ commit }) => {
+  axios
+    .get(`${apiBaseUrl}/admin/config`)
+    .then((result) => {
+      if ({}.hasOwnProperty.call(result, "data")) {
+        let settings = result.data;
+        commit({
+          type: "setSettings",
+          settings: settings,
+        });
+      }
+    })
+    .catch((e) => {
+      console.error(e);
+      EventBus.$emit("error", e);
+    });
+};
 // export const completeEditDocument = async ({ state }) => {
 //   if (state.editedDocument.add) {
 //     axios

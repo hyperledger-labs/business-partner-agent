@@ -31,6 +31,7 @@ import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
 import org.hyperledger.oa.config.runtime.RequiresAries;
 import org.hyperledger.oa.controller.api.WebSocketMessageBody;
 import org.hyperledger.oa.impl.MessageService;
+import org.hyperledger.oa.impl.activity.DidResolver;
 import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.model.Partner;
@@ -72,6 +73,9 @@ public class ConnectionManager {
     @Inject
     Converter conv;
 
+    @Inject
+    DidResolver didResolver;
+
     @Async
     public void createConnection(@NonNull String did, @NonNull String label, @Nullable String alias) {
         try {
@@ -101,6 +105,7 @@ public class ConnectionManager {
                                 .incoming(Boolean.TRUE)
                                 .build();
                         p = partnerRepo.save(p);
+                        didResolver.lookupIncoming(p);
                         messageService.sendMessage(WebSocketMessageBody.partnerReceived(conv.toAPIObject(p)));
                     });
         } else {

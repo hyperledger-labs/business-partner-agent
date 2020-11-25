@@ -156,7 +156,7 @@ public class VPManager {
             BankAccount ba = ariesCred.to(BankAccount.class);
             credSubj = new BankAccountVC(myDid, ba);
         } else {
-            credSubj = converter.fromMap(cred.getCredential(), Object.class);
+            credSubj = ariesCred.getAttrs();
         }
 
         @SuppressWarnings("rawtypes")
