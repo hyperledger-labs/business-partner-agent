@@ -115,6 +115,9 @@ export default {
         .then((result) => {
           if ({}.hasOwnProperty.call(result, "data")) {
             this.credential = result.data;
+            this.credential.label = {}.hasOwnProperty.call(result.data, "label")
+              ? result.data.label
+              : "";
             this.isPublic = this.credential.isPublic;
             this.isReady = true;
             this.intDoc = { ...this.credential };

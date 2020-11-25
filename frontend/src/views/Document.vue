@@ -52,7 +52,11 @@
             >
           </v-list-item-content>
           <v-list-item-action>
-            <v-switch v-model="document.isPublic"></v-switch>
+            <v-switch
+              :disabled="document.type === CredentialTypes.OTHER.name"
+              v-model="document.isPublic"
+              @change="fieldModified()"
+            ></v-switch>
           </v-list-item-action>
         </v-list-item>
         <v-divider></v-divider>
@@ -178,14 +182,12 @@ export default {
   watch: {},
   methods: {
     getDocument() {
-      console.log(this.id);
       this.$axios
         .get(`${this.$apiBaseUrl}/wallet/document/${this.id}`)
         .then((result) => {
           console.log(result);
           if ({}.hasOwnProperty.call(result, "data")) {
             this.document = result.data;
-            console.log(this.document);
             this.intDoc = { ...this.document };
             this.isReady = true;
           }
