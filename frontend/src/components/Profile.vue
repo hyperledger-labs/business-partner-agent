@@ -69,7 +69,9 @@ export default {
   props: {
     partner: Object,
   },
-  created() {},
+  created() {
+    console.log("Partner: ", this.partner);
+  },
   data: () => {
     return {
       CredentialTypes: CredentialTypes,
@@ -86,13 +88,38 @@ export default {
       }
     },
     credentials: function () {
+      let creds = [];
       if ({}.hasOwnProperty.call(this.partner, "credential")) {
-        return this.partner.credential.filter((cred) => {
-          return cred.type !== CredentialTypes.PROFILE.name;
+        creds = this.partner.credential.filter((cred) => {
+          if (cred.type !== CredentialTypes.PROFILE.name) {
+            return this.prepareCredential(cred);
+          }
         });
-      } else return [];
+      }
+      return creds;
     },
   },
-  methods: {},
+  methods: {
+    prepareCredential(credential) {
+      if (
+        {}.hasOwnProperty.call(credential, "credentialData") &&
+        typeof credential.credentialData === "object" &&
+        credential.credentialData !== null
+      ) {
+        Object.entries(credential.credentialData).find(([key, value]) => {
+          if (key === "id") {
+            credential.id = value;
+            delete credential.credentialData.id;
+          } else if (typeof value === "object" && value !== null) {
+            Object.keys(value).map(function (key) {
+              credential.credentialData[key] = value[key];
+            });
+            delete credential.credentialData[key];
+          }
+        });
+      }
+      return credential;
+    },
+  },
 };
 </script>

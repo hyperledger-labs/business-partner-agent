@@ -154,11 +154,19 @@ export default {
   },
   computed: {
     types() {
+<<<<<<< HEAD
       let docTypes = this.$store.getters.schemas;
       let index = docTypes.findIndex((schema) => {
         if ({}.hasOwnProperty.call(schema, "name")) {
           return schema.name === CredentialTypes.PROFILE.name;
         }
+=======
+      let docTypes = Object.values(CredentialTypes).filter((type) => {
+        return (
+          type.name !== CredentialTypes.OTHER.name &&
+          type.name !== CredentialTypes.COMMERCIAL_REGISTER_CREDENTIAL.name
+        );
+>>>>>>> master
       });
       if (
         this.$store.getters.organizationalProfile === undefined &&

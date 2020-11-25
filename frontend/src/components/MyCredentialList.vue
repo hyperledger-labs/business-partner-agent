@@ -20,6 +20,13 @@
       :sort-desc="[false]"
       @click:row="open"
     >
+      <template v-slot:[`item.label`]="{ item }">
+        <new-message-icon
+          v-show="item.new"
+          :text="item.label"
+        ></new-message-icon>
+        {{ item.label }}
+      </template>
       <template v-slot:[`item.type`]="{ item }">
         <div
           v-if="
@@ -31,7 +38,6 @@
           {{ item.credentialDefinitionId | credentialTag | capitalize }}
         </div>
         <div v-else v-bind:class="{ 'font-weight-medium': item.new }">
-          <new-message-icon v-show="item.new"></new-message-icon>
           {{ item.type | credentialLabel }}
         </div>
       </template>

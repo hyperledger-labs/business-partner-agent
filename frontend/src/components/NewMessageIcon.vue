@@ -15,6 +15,7 @@
       v-bind:class="{
         newIconPartner: isPartner,
         newIconCredential: !isPartner,
+        setTop: isEmpty,
       }"
     >
       mdi-shape-polygon-plus
@@ -29,6 +30,15 @@ export default {
     isPartner: {
       type: Boolean,
       default: false,
+    },
+    text: {
+      type: String,
+      default: "",
+    },
+  },
+  computed: {
+    isEmpty() {
+      return this.text.length === 0;
     },
   },
 };
@@ -52,5 +62,9 @@ export default {
 
 .newIconCredential {
   right: 2px;
+}
+
+.setTop {
+  top: 0px;
 }
 </style>
