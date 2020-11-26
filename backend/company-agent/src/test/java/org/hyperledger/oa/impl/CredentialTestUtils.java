@@ -38,6 +38,7 @@ public class CredentialTestUtils {
                 .type(credType)
                 .documentData(jsonNode)
                 .isPublic(isPublic)
+                .schemaId(CredentialType.INDY_CREDENTIAL.equals(credType) ? "testSchema" : null)
                 .build();
     }
 }

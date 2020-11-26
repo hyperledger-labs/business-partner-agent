@@ -98,7 +98,8 @@ public class AdminController {
     @Post("/schema")
     public HttpResponse<SchemaAPI> addSchema(@Body AddSchemaRequest req) {
         if (schemaService.isPresent()) {
-            return HttpResponse.ok(schemaService.get().addSchema(req.getSchemaId(), req.getLabel()));
+            return HttpResponse.ok(schemaService.get().addSchema(req.getSchemaId(), req.getLabel(),
+                    req.getDefaultAttributeName()));
         }
         return HttpResponse.notFound();
     }

@@ -18,9 +18,8 @@
 package org.hyperledger.oa.impl;
 
 import lombok.NonNull;
-import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.MyDocumentAPI;
-import org.hyperledger.oa.api.exception.WrongApiUsageException;
+import org.hyperledger.oa.impl.activity.DocumentValidator;
 import org.hyperledger.oa.impl.activity.VPManager;
 import org.hyperledger.oa.impl.aries.LabelStrategy;
 import org.hyperledger.oa.impl.util.Converter;
@@ -49,10 +48,11 @@ public class MyDocumentManager {
     @Inject
     Optional<LabelStrategy> labelStrategy;
 
-    @SuppressWarnings("boxing")
+    @Inject
+    DocumentValidator validator;
+
     public MyDocumentAPI saveNewDocument(@NonNull MyDocumentAPI document) {
-        // there should be only one Masterdata credential
-        verifyOnlyOneMasterdata(document);
+        validator.validateNew(document);
 
         labelStrategy.ifPresent(strategy -> strategy.apply(document));
         final MyDocument vc = docRepo.save(converter.toModelObject(document));
@@ -66,13 +66,7 @@ public class MyDocumentManager {
     public MyDocumentAPI updateDocument(@NonNull UUID id, @NonNull MyDocumentAPI document) {
         final Optional<MyDocument> dbCred = docRepo.findById(id);
 
-        if (dbCred.isEmpty()) {
-            throw new WrongApiUsageException("Credential does not exist in database");
-        }
-
-        if (!dbCred.get().getType().equals(document.getType())) {
-            throw new WrongApiUsageException("Document type can not be changed after creation");
-        }
+        validator.validateExisting(dbCred, document);
 
         labelStrategy.ifPresent(strategy -> strategy.apply(document));
         MyDocument dbCredUpdated = converter.updateMyCredential(document, dbCred.get());
@@ -99,13 +93,4 @@ public class MyDocumentManager {
         vp.recreateVerifiablePresentation();
     }
 
-    private void verifyOnlyOneMasterdata(MyDocumentAPI doc) {
-        if (doc.getType().equals(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL)) {
-            docRepo.findAll().forEach(d -> {
-                if (d.getType().equals(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL)) {
-                    throw new WrongApiUsageException("Organizational profile already exists, use update instead");
-                }
-            });
-        }
-    }
 }

@@ -59,7 +59,7 @@ class AriesCredentialManagerTest extends BaseTest {
     void testSaveNewCredential() {
         credRepo.save(MyCredential
                 .builder()
-                .type(CredentialType.BANK_ACCOUNT_CREDENTIAL)
+                .type(CredentialType.INDY_CREDENTIAL)
                 .isPublic(Boolean.FALSE)
                 .connectionId("dummy")
                 .state("dummy")

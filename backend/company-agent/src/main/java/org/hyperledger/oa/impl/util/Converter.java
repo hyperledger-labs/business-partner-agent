@@ -138,6 +138,7 @@ public class Converter {
                 .setDocument(data)
                 .setIsPublic(apiDoc.getIsPublic())
                 .setType(apiDoc.getType())
+                .setSchemaId(apiDoc.getSchemaId())
                 .setLabel(apiDoc.getLabel());
         return myDoc;
     }
@@ -150,6 +151,7 @@ public class Converter {
                 .documentData(fromMap(myDoc.getDocument(), JsonNode.class))
                 .isPublic(myDoc.getIsPublic())
                 .type(myDoc.getType())
+                .schemaId(myDoc.getSchemaId())
                 .label(myDoc.getLabel())
                 .build();
     }

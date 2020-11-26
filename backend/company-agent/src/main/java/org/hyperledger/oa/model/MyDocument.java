@@ -59,6 +59,9 @@ public class MyDocument {
 
     private CredentialType type;
 
+    @Nullable
+    private String schemaId;
+
     private Boolean isPublic = Boolean.FALSE;
 
     @Nullable

@@ -26,10 +26,9 @@ import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.hyperledger.oa.api.CredentialType;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.api.aries.AriesProof;
-import org.hyperledger.oa.api.exception.WrongApiUsageException;
 import org.hyperledger.oa.controller.api.partner.*;
 import org.hyperledger.oa.impl.PartnerManager;
 import org.hyperledger.oa.impl.activity.PartnerLookup;
@@ -70,18 +69,14 @@ public class PartnerController {
     /**
      * Get known partners
      *
-     * @param issuerFor Filter Partners by {@link CredentialType}
+     * @param schemaId Filter Partners by schema id
      * @return list of partners
      */
     @Get
     public HttpResponse<List<PartnerAPI>> getPartners(
-            @Parameter(description = "credential type") @Nullable @QueryValue CredentialType issuerFor) {
-        if (issuerFor != null && credLookup.isPresent()) {
-            if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(issuerFor)) {
-                return HttpResponse.ok(credLookup.get().getIssuersForBankAccount());
-            }
-            throw new WrongApiUsageException(
-                    "Currently you can only filter by " + CredentialType.BANK_ACCOUNT_CREDENTIAL);
+            @Parameter(description = "schema id") @Nullable @QueryValue String schemaId) {
+        if (StringUtils.isNotBlank(schemaId) && credLookup.isPresent()) {
+            return HttpResponse.ok(credLookup.get().getIssuersFor(schemaId));
         }
         return HttpResponse.ok(pm.getPartners());
     }

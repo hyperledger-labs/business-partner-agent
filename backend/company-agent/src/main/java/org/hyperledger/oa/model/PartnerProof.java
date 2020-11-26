@@ -59,6 +59,7 @@ public class PartnerProof {
     private Instant issuedAt;
 
     @Nullable
+    @Deprecated
     private CredentialType type;
 
     @Nullable

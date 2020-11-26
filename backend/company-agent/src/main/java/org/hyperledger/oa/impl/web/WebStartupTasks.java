@@ -51,14 +51,13 @@ public class WebStartupTasks {
     @Async
     public void onServiceStartedEvent() {
         log.debug("Running web mode startup tasks...");
-        vpMgmt.getVerifiablePresentation().ifPresentOrElse(vp -> {
-            log.info("VP already exists, skipping: {}", host);
-        }, () -> {
-            ac.statusWaitUntilReady(Duration.ofSeconds(60));
-            log.info("Creating default did document for host: {}", host);
-            dicDocMgmt.createIfNeeded(host);
-            log.info("Creating default public profile for host: {}", host);
-            vpMgmt.recreateVerifiablePresentation();
-        });
+        vpMgmt.getVerifiablePresentation().ifPresentOrElse(vp -> log.info("VP already exists, skipping: {}", host),
+                () -> {
+                    ac.statusWaitUntilReady(Duration.ofSeconds(60));
+                    log.info("Creating default did document for host: {}", host);
+                    dicDocMgmt.createIfNeeded(host);
+                    log.info("Creating default public profile for host: {}", host);
+                    vpMgmt.recreateVerifiablePresentation();
+                });
     }
 }

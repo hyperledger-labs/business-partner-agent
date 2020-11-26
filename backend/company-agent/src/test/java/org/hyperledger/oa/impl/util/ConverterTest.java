@@ -70,7 +70,7 @@ class ConverterTest extends BaseTest {
         final PartnerAPI partner = conv.toAPIObject(vp);
         assertEquals(2, partner.getCredential().size());
         assertEquals(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL, partner.getCredential().get(0).getType());
-        assertEquals(CredentialType.BANK_ACCOUNT_CREDENTIAL, partner.getCredential().get(1).getType());
+        assertEquals(CredentialType.INDY_CREDENTIAL, partner.getCredential().get(1).getType());
     }
 
     @Test

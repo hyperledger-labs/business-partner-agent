@@ -53,6 +53,7 @@ public class BPASchema {
 
     private Boolean isReadOnly;
 
+    @Deprecated
     private CredentialType type;
 
     private String schemaId;
