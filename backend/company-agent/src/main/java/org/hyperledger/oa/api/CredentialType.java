@@ -20,7 +20,6 @@ package org.hyperledger.oa.api;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -62,7 +61,7 @@ public enum CredentialType {
      * @param type the list of credential types
      * @return {@link CredentialType} or null when no match was found
      */
-    public static @Nullable CredentialType fromType(List<String> type) {
+    public static CredentialType fromType(List<String> type) {
         for (String t : type) {
             if ("OrganizationalProfileCredential".equals(t)) {
                 return CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL;

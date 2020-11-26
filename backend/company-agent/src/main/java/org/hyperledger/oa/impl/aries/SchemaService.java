@@ -26,6 +26,7 @@ import org.hyperledger.oa.api.aries.SchemaAPI;
 import org.hyperledger.oa.api.exception.WrongApiUsageException;
 import org.hyperledger.oa.config.SchemaConfig;
 import org.hyperledger.oa.config.runtime.RequiresAries;
+import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.model.BPASchema;
 import org.hyperledger.oa.repository.SchemaRepository;
 
@@ -138,6 +139,9 @@ public class SchemaService {
         Optional<BPASchema> schema = schemaRepo.findBySchemaId(schemaId);
         if (schema.isPresent()) {
             result = schema.get().getLabel();
+        }
+        if (StringUtils.isEmpty(result)) {
+            result = AriesStringUtil.schemaGetName(schemaId);
         }
         return result;
     }

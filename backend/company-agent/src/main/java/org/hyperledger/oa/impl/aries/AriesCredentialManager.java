@@ -224,6 +224,7 @@ public class AriesCredentialManager {
             myCred
                     .schemaId(ariesCred.getSchemaId())
                     .credentialDefinitionId(ariesCred.getCredentialDefinitionId())
+                    .typeLabel(schemaService.getSchemaLabel(ariesCred.getSchemaId()))
                     .credentialData(ariesCred.getAttrs());
             // TODO only for backwards compatibility, can be removed at some point
             if (dbCred.getIssuer() == null) {

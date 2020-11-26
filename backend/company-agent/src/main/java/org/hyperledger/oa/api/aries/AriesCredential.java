@@ -39,6 +39,7 @@ public class AriesCredential {
     private String connectionId;
 
     private String label;
+    private String typeLabel;
     private Map<String, String> credentialData;
 
     public static class AriesCredentialBuilder {
