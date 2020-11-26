@@ -39,6 +39,7 @@ public class AriesProof {
     // probably not available
     private Long issuedAt;
 
+    private String typeLabel;
     private String state;
 
     private String issuer;

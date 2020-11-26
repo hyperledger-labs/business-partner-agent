@@ -231,6 +231,10 @@ public class ProofManager {
     }
 
     private AriesProof toApiProof(@NonNull PartnerProof p) {
-        return AriesProof.from(p, p.getProof() != null ? conv.fromMap(p.getProof(), JsonNode.class) : null);
+        AriesProof proof = AriesProof.from(p, p.getProof() != null ? conv.fromMap(p.getProof(), JsonNode.class) : null);
+        if (StringUtils.isNotEmpty(p.getSchemaId())) {
+            proof.setTypeLabel(schemaService.getSchemaLabel(p.getSchemaId()));
+        }
+        return proof;
     }
 }

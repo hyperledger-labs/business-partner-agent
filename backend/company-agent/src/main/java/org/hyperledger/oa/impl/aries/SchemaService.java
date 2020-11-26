@@ -118,7 +118,7 @@ public class SchemaService {
         return Optional.empty();
     }
 
-    @Cacheable("schema-cache")
+    @Cacheable("schema-attr-cache")
     public Set<String> getSchemaAttributeNames(@NonNull String schemaId) {
         Set<String> result = new LinkedHashSet<>();
         try {
@@ -133,7 +133,7 @@ public class SchemaService {
         return result;
     }
 
-    @Cacheable("schema-cache")
+    @Cacheable("schema-label-cache")
     public @Nullable String getSchemaLabel(@NonNull String schemaId) {
         String result = null;
         Optional<BPASchema> schema = schemaRepo.findBySchemaId(schemaId);

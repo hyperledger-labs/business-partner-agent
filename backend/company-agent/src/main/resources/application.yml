@@ -46,7 +46,9 @@ micronaut:
       expire-after-write: 180s
     did-lookup-cache:
       expire-after-write: 3600s
-    schema-cache:
+    schema-attr-cache:
+      expire-after-write: 1d
+    schema-label-cache:
       expire-after-write: 1d
   executors:
     io:
