@@ -43,9 +43,14 @@ public class DidDocAPI {
 
     private String id;
 
-    private List<PublicKey> publicKey;
+    private VerificationMethod verificationMethod;
+
+    private Authentication authentication;
 
     private List<Service> service;
+
+    // TODO not in the did document returned from the universal resolver
+    private List<PublicKey> publicKey;
 
     // TODO not compatible with did:evan, because they use a different context,
     // needs context sensitive parsing
@@ -87,7 +92,17 @@ public class DidDocAPI {
     public static final class Authentication {
         private String id;
         private String type;
-        private List<String> publicKey;
+        private String verificationMethod;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static final class VerificationMethod {
+        private String id;
+        private String type;
+        private String publicKeyBase58;
     }
 
     public List<PublicKey> getPublicKey() {

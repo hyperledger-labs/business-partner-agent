@@ -25,7 +25,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hyperledger.oa.api.CredentialType;
 
 import javax.annotation.Nullable;
 import javax.persistence.Entity;
@@ -52,9 +51,6 @@ public class BPASchema {
     private String label;
 
     private Boolean isReadOnly;
-
-    @Deprecated
-    private CredentialType type;
 
     private String schemaId;
 

@@ -62,8 +62,9 @@ public class DidResolver {
     WebhookService webhook;
 
     /**
-     * Tries to resolve the partners public profile based on the did
-     * contained withn a commercial register credential.
+     * Tries to resolve the partners public profile based on the did contained withn
+     * a commercial register credential.
+     * 
      * @param pp {@link PartnerProof}
      */
     @Async
@@ -102,8 +103,9 @@ public class DidResolver {
 
     /**
      * Tries to resolve the partners public profile based on a did that is embedded
-     * in the partners label. The label is supposed to adhere to the following format:
-     * did:sov:xxx:123:MyLabel
+     * in the partners label. The label is supposed to adhere to the following
+     * format: did:sov:xxx:123:MyLabel
+     * 
      * @param p {@link Partner}
      */
     @Async
@@ -124,8 +126,9 @@ public class DidResolver {
     }
 
     /**
-     * Extracts the did and label components from a label is supposed to adhere to the following format:
-     * did:sov:xxx:123:MyLabel.
+     * Extracts the did and label components from a label is supposed to adhere to
+     * the following format: did:sov:xxx:123:MyLabel.
+     * 
      * @param label the label
      * @return {@link ConnectionLabel}
      */
