@@ -89,6 +89,18 @@ public class Identity {
                 if (didDoc.isPresent()) {
                     Optional<PublicKey> pk = didDoc.get().getPublicKey().stream()
                             .filter(k -> ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE.equals(k.getType())).findFirst();
+                    if (pk.isEmpty()) {
+                        DidDocAPI.VerificationMethod verificationMethod = didDoc.get().getVerificationMethod();
+                        if (verificationMethod != null
+                                && ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE.equals(verificationMethod.getType())) {
+                            pk = Optional.of(PublicKey
+                                    .builder()
+                                    .publicKeyBase58(verificationMethod.getPublicKeyBase58())
+                                    .id(verificationMethod.getId())
+                                    .type(ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE)
+                                    .build());
+                        }
+                    }
                     if (pk.isPresent()) {
                         myKeyId = pk.get().getId();
                     }

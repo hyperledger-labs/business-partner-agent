@@ -109,7 +109,7 @@ public class AriesCredentialManager {
         if (dbPartner.isPresent()) {
             final Optional<MyDocument> dbDoc = docRepo.findById(myDocId);
             if (dbDoc.isPresent()) {
-                if (!CredentialType.INDY_CREDENTIAL.equals(dbDoc.get().getType())) {
+                if (!CredentialType.SCHEMA_BASED.equals(dbDoc.get().getType())) {
                     throw new PartnerException("Only documents that are based on a " +
                             "schema can be converted into a credential");
                 }
@@ -184,7 +184,7 @@ public class AriesCredentialManager {
                     cred
                             .setReferent(credEx.getCredential().getReferent())
                             .setCredential(conv.toMap(credEx.getCredential()))
-                            .setType(CredentialType.INDY_CREDENTIAL)
+                            .setType(CredentialType.SCHEMA_BASED)
                             .setState(credEx.getState())
                             .setIssuer(resolveIssuer(credEx.getCredential()))
                             .setIssuedAt(Instant.now())

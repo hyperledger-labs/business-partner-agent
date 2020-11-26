@@ -36,6 +36,7 @@ public class MyDocumentAPI {
     private Long createdDate;
     private Long updatedDate;
     private CredentialType type;
+    private String typeLabel;
     private String schemaId;
     private Boolean isPublic;
     private String label;

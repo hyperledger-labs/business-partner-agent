@@ -45,16 +45,14 @@ public class DidDocAPI {
 
     private VerificationMethod verificationMethod;
 
+    // TODO not compatible with did:evan, because they use a different context,
+    // needs context sensitive parsing
     private Authentication authentication;
 
     private List<Service> service;
 
     // TODO not in the did document returned from the universal resolver
     private List<PublicKey> publicKey;
-
-    // TODO not compatible with did:evan, because they use a different context,
-    // needs context sensitive parsing
-    // private List<Authentication> authentication;
 
     /**
      * @see <a href=

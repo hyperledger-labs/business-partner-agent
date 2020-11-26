@@ -73,7 +73,7 @@ public class DocumentValidatorTest {
     @Test
     void testIndyCredentialWthNoSchemaId() {
         assertThrows(WrongApiUsageException.class, () -> validator.validateNew(MyDocumentAPI.builder()
-                .type(CredentialType.INDY_CREDENTIAL).build()));
+                .type(CredentialType.SCHEMA_BASED).build()));
     }
 
     @Test
@@ -107,7 +107,7 @@ public class DocumentValidatorTest {
     private MyDocumentAPI buildMyDocument(JsonNode jsonNode) {
         return MyDocumentAPI
                 .builder()
-                .type(CredentialType.INDY_CREDENTIAL)
+                .type(CredentialType.SCHEMA_BASED)
                 .schemaId("123")
                 .documentData(jsonNode)
                 .build();

@@ -37,16 +37,4 @@ class ApiSerialisationTest extends BaseTest {
         assertEquals(2, doc.getDidDocument().getService().size());
     }
 
-    @Test
-    void testDidEvanDeserialisation() throws Exception {
-        String didDocument = loader.load("files/didEvan.json");
-        DidDocument doc = mapper.readValue(didDocument, DidDocument.class);
-
-        assertNotNull(doc);
-        assertNotNull(doc.getDidDocument());
-        assertNotNull(doc.getDidDocument().getService());
-        assertEquals(1, doc.getDidDocument().getService().size());
-        assertEquals("profile", doc.getDidDocument().getService().get(0).getType());
-    }
-
 }

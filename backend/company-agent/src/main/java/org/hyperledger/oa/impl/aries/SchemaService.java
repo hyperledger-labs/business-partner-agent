@@ -132,6 +132,16 @@ public class SchemaService {
         return result;
     }
 
+    @Cacheable("schema-cache")
+    public @Nullable String getSchemaLabel(@NonNull String schemaId) {
+        String result = null;
+        Optional<BPASchema> schema = schemaRepo.findBySchemaId(schemaId);
+        if (schema.isPresent()) {
+            result = schema.get().getLabel();
+        }
+        return result;
+    }
+
     public void resetWriteOnlySchemas() {
         schemaRepo.deleteByIsReadOnly(Boolean.TRUE);
 

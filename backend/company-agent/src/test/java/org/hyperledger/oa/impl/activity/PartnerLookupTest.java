@@ -19,7 +19,6 @@ package org.hyperledger.oa.impl.activity;
 
 import org.hyperledger.oa.BaseTest;
 import org.hyperledger.oa.api.DidDocAPI;
-import org.hyperledger.oa.api.DidDocAPI.PublicKey;
 import org.hyperledger.oa.client.api.DidDocument;
 import org.junit.jupiter.api.Test;
 
@@ -31,15 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PartnerLookupTest extends BaseTest {
-
-    @Test
-    void testResolvePublicKeyWithKeyId() throws Exception {
-        DidDocument didDoc = loadAndConvertTo("files/didEvan.json", DidDocument.class);
-
-        final Optional<PublicKey> publicKey = PartnerLookup.resolvePublicKey(didDoc.getDidDocument().getPublicKey());
-        assertTrue(publicKey.isPresent());
-        assertTrue(publicKey.get().getPublicKeyBase58().startsWith("EkU6jKv"));
-    }
 
     @Test
     void testResolvePublicKeyNoKeyId() throws Exception {
@@ -57,16 +47,6 @@ class PartnerLookupTest extends BaseTest {
                 "did:web:localhost:8020#key-2", didDoc.getDidDocument().getPublicKey());
         assertTrue(matchKey.isPresent());
         assertTrue(matchKey.get().startsWith("C2VBLJff"));
-    }
-
-    @Test
-    void testResolveEndpoint() throws Exception {
-        DidDocument didDoc = loadAndConvertTo("files/didEvan.json", DidDocument.class);
-
-        Optional<Map<String, String>> ep = PartnerLookup.filterServices(didDoc.getDidDocument());
-        assertTrue(ep.isPresent());
-        assertEquals(1, ep.get().size());
-        assertTrue(ep.get().get("profile").startsWith("https://test.test.com"));
     }
 
     @Test

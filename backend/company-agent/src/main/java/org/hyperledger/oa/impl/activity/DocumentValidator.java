@@ -65,7 +65,7 @@ public class DocumentValidator {
     }
 
     private void validateInternal(MyDocumentAPI document) {
-        if (CredentialType.INDY_CREDENTIAL.equals(document.getType())) {
+        if (CredentialType.SCHEMA_BASED.equals(document.getType())) {
             if (StringUtils.isEmpty(document.getSchemaId())) {
                 throw new WrongApiUsageException("A document of type indy_credential must have a schema id set.");
             }

@@ -52,7 +52,7 @@ class MyCredentialRepositoryTest extends BaseTest {
 
         MyCredential cred = MyCredential
                 .builder()
-                .type(CredentialType.INDY_CREDENTIAL)
+                .type(CredentialType.SCHEMA_BASED)
                 .isPublic(Boolean.TRUE)
                 .connectionId("1")
                 .state("active")

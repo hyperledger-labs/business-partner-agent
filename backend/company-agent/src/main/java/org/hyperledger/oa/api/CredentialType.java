@@ -29,6 +29,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 public enum CredentialType {
+
     /**
      * A document that can never be a credential and that is not linked to a schema.
      * Typed documents use a static context, like it is defined here.
@@ -43,10 +44,10 @@ public enum CredentialType {
                     "LabeledCredential",
                     "OrganizationalProfileCredential")),
     /**
-     * A document or indy credential that is linked to a schema. Indy credentials
-     * use ad hoc context
+     * A document or indy credential that is linked to a schema and uses an ad hoc
+     * context
      */
-    INDY_CREDENTIAL(
+    SCHEMA_BASED(
             List.of(ApiConstants.CREDENTIALS_V1),
             List.of("VerifiableCredential"));
 
@@ -67,7 +68,7 @@ public enum CredentialType {
                 return CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL;
             }
         }
-        return CredentialType.INDY_CREDENTIAL;
+        return CredentialType.SCHEMA_BASED;
     }
 
 }
