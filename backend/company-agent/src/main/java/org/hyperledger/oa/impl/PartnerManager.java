@@ -132,13 +132,12 @@ public class PartnerManager {
      * @param id the id
      * @return {@link PartnerAPI}
      */
-    // TODO use partner UUID as cache key
-    @CacheInvalidate(cacheNames = { "partner-lookup-cache" }, all = true)
     public Optional<PartnerAPI> refreshPartner(@NonNull UUID id) {
         Optional<PartnerAPI> result = Optional.empty();
         final Optional<Partner> dbPartner = repo.findById(id);
         if (dbPartner.isPresent()) {
             Partner dbP = dbPartner.get();
+            invalidatePartnerLookupCache();
             PartnerAPI pAPI = partnerLookup.lookupPartner(dbP.getDid());
             dbP.setValid(pAPI.getValid());
             dbP.setVerifiablePresentation(converter.toMap(pAPI.getVerifiablePresentation()));
@@ -147,6 +146,12 @@ public class PartnerManager {
             webhook.convertAndSend(WebhookEventType.PARTNER_UPDATE, result.get());
         }
         return result;
+    }
+
+    // TODO use partner UUID as cache key
+    @CacheInvalidate(cacheNames = { "partner-lookup-cache" }, all = true)
+    public void invalidatePartnerLookupCache() {
+        //
     }
 
 }
