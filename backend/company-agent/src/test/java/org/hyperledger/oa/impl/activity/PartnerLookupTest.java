@@ -17,24 +17,24 @@
  */
 package org.hyperledger.oa.impl.activity;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hyperledger.oa.BaseTest;
-import org.hyperledger.oa.api.DidDocAPI;
 import org.hyperledger.oa.client.api.DidDocument;
 import org.junit.jupiter.api.Test;
 
-import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PartnerLookupTest extends BaseTest {
 
+    private final ObjectMapper mapper = new ObjectMapper();
+
     @Test
     void testResolvePublicKeyNoKeyId() throws Exception {
         DidDocument didDoc = loadAndConvertTo("files/didLocal.json", DidDocument.class);
-        final Optional<String> matchKey = PartnerLookup.matchKey(null, didDoc.getDidDocument().getPublicKey());
+        final Optional<String> matchKey = PartnerLookup.matchKey(null,
+                didDoc.getDidDocument().getVerificationMethod(mapper));
         assertTrue(matchKey.isPresent());
         // expecting first match
         assertTrue(matchKey.get().startsWith("D2k3NWUD"));
@@ -44,16 +44,9 @@ class PartnerLookupTest extends BaseTest {
     void testResolvePublicKeyKeyIdProvided() throws Exception {
         DidDocument didDoc = loadAndConvertTo("files/didLocal.json", DidDocument.class);
         final Optional<String> matchKey = PartnerLookup.matchKey(
-                "did:web:localhost:8020#key-2", didDoc.getDidDocument().getPublicKey());
+                "did:web:localhost:8020#key-2", didDoc.getDidDocument().getVerificationMethod(mapper));
         assertTrue(matchKey.isPresent());
         assertTrue(matchKey.get().startsWith("C2VBLJff"));
-    }
-
-    @Test
-    void testResolveEndpointEmpty() {
-        Optional<Map<String, String>> ep = PartnerLookup.filterServices(new DidDocAPI());
-        assertFalse(ep.isEmpty());
-        assertEquals(0, ep.get().size());
     }
 
 }

@@ -17,6 +17,7 @@
  */
 package org.hyperledger.oa.impl.activity;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +26,6 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.wallet.WalletDidResponse;
 import org.hyperledger.oa.api.ApiConstants;
 import org.hyperledger.oa.api.DidDocAPI;
-import org.hyperledger.oa.api.DidDocAPI.PublicKey;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.client.CachingAriesClient;
 import org.hyperledger.oa.client.URClient;
@@ -62,6 +62,9 @@ public class Identity {
     @Inject
     private URClient ur;
 
+    @Inject
+    ObjectMapper mapper;
+
     public @Nullable String getMyDid() {
         String myDid = null;
         if (webOnly) {
@@ -87,22 +90,10 @@ public class Identity {
             } else {
                 final Optional<DidDocAPI> didDoc = ur.getDidDocument(myDid);
                 if (didDoc.isPresent()) {
-                    Optional<PublicKey> pk = didDoc.get().getPublicKey().stream()
+                    Optional<DidDocAPI.VerificationMethod> vm = didDoc.get().getVerificationMethod(mapper).stream()
                             .filter(k -> ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE.equals(k.getType())).findFirst();
-                    if (pk.isEmpty()) {
-                        DidDocAPI.VerificationMethod verificationMethod = didDoc.get().getVerificationMethod();
-                        if (verificationMethod != null
-                                && ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE.equals(verificationMethod.getType())) {
-                            pk = Optional.of(PublicKey
-                                    .builder()
-                                    .publicKeyBase58(verificationMethod.getPublicKeyBase58())
-                                    .id(verificationMethod.getId())
-                                    .type(ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE)
-                                    .build());
-                        }
-                    }
-                    if (pk.isPresent()) {
-                        myKeyId = pk.get().getId();
+                    if (vm.isPresent()) {
+                        myKeyId = vm.get().getId();
                     }
                 }
             }
