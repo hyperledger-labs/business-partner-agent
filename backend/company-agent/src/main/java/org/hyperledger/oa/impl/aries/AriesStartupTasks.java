@@ -26,6 +26,7 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.TAAInfo;
 import org.hyperledger.oa.config.runtime.RequiresAries;
 import org.hyperledger.oa.impl.activity.VPManager;
+import org.hyperledger.oa.repository.migration.V1_9_1__RepairSchemaIds;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -57,6 +58,10 @@ public class AriesStartupTasks {
     @Inject
     Optional<PartnerCredDefLookup> credLookup;
 
+    // TODO delete
+    @Inject
+    V1_9_1__RepairSchemaIds migration;
+
     @Async
     public void onServiceStartedEvent() {
         log.debug("Running aries startup tasks...");
@@ -64,6 +69,9 @@ public class AriesStartupTasks {
         ac.statusWaitUntilReady(Duration.ofSeconds(60));
 
         createDefaultSchemas();
+
+        // TODO delete
+        migration.setSchemaIdsWhereNull();
 
         vpMgmt.getVerifiablePresentation().ifPresentOrElse(vp -> log.info("VP already exists, skipping: {}", host),
                 () -> {
