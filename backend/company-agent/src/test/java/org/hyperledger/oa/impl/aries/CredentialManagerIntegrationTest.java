@@ -34,8 +34,7 @@ import org.junit.jupiter.api.Test;
 import javax.inject.Inject;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @MicronautTest
 public class CredentialManagerIntegrationTest extends RunWithAries {

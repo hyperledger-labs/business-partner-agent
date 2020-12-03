@@ -34,6 +34,7 @@ import org.hyperledger.aries.config.TimeUtil;
 import org.hyperledger.oa.api.ApiConstants;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.impl.aries.SchemaService;
+import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.model.DidDocWeb;
 import org.hyperledger.oa.model.MyCredential;
@@ -149,8 +150,8 @@ public class VPManager {
                 .schemaId(ariesCred.getSchemaId())
                 .credDefId(ariesCred.getCredentialDefinitionId())
                 .label(cred.getLabel())
+                .indyIssuer(id.getDidPrefix() + AriesStringUtil.credDefIdGetDid(ariesCred.getCredentialDefinitionId()))
                 .credentialSubject(ariesCred.getAttrs());
-        partnerRepo.findByConnectionId(cred.getConnectionId()).ifPresent(p -> builder.indyIssuer(p.getDid()));
         return builder.build();
     }
 

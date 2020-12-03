@@ -94,7 +94,7 @@ public class MyDocumentManager {
 
     public Optional<MyDocumentAPI> getMyDocumentById(@NonNull UUID id) {
         Optional<MyDocument> myDoc = docRepo.findById(id);
-        return myDoc.map(dbDoc -> convertAndResolve(dbDoc));
+        return myDoc.map(this::convertAndResolve);
     }
 
     public void deleteMyDocumentById(@NonNull UUID id) {
