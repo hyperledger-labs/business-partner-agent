@@ -70,8 +70,7 @@ public class V1_9_1__RepairSchemaIdsTest {
                 new MyDocument()
                         .setId(id2)
                         .setDocument(Map.of("did", "did:sov:123"))
-                        .setType(CredentialType.SCHEMA_BASED)
-        ));
+                        .setType(CredentialType.SCHEMA_BASED)));
 
         Mockito.when(schemaService.listSchemas()).thenReturn(List.of(
                 SchemaAPI
@@ -83,8 +82,7 @@ public class V1_9_1__RepairSchemaIdsTest {
                         .builder()
                         .schemaId(s2)
                         .label("Commercial")
-                        .build()
-        ));
+                        .build()));
 
         migration.setSchemaIdsWhereNull();
 
