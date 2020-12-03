@@ -18,6 +18,7 @@
 package org.hyperledger.oa.impl;
 
 import lombok.NonNull;
+import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.MyDocumentAPI;
 import org.hyperledger.oa.api.exception.WrongApiUsageException;
 import org.hyperledger.oa.impl.activity.DocumentValidator;
@@ -103,7 +104,11 @@ public class MyDocumentManager {
 
     private MyDocumentAPI convertAndResolve(MyDocument dbDoc) {
         MyDocumentAPI apiDoc = converter.toApiObject(dbDoc);
-        schemaService.ifPresent(s -> apiDoc.setTypeLabel(s.getSchemaLabel(dbDoc.getSchemaId())));
+        if (CredentialType.SCHEMA_BASED.equals(apiDoc.getType())) {
+            schemaService.ifPresent(s -> apiDoc.setTypeLabel(s.getSchemaLabel(dbDoc.getSchemaId())));
+        } else {
+            apiDoc.setTypeLabel("Organizational Profile");
+        }
         return apiDoc;
     }
 
