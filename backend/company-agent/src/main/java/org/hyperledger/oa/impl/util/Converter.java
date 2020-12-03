@@ -36,6 +36,7 @@ import org.hyperledger.oa.api.PartnerAPI.PartnerCredential;
 import org.hyperledger.oa.model.MyDocument;
 import org.hyperledger.oa.model.Partner;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
@@ -82,27 +83,41 @@ public class Converter {
 
     public PartnerAPI toAPIObject(@NonNull VerifiablePresentation<VerifiableIndyCredential> partner) {
         List<PartnerCredential> pc = new ArrayList<>();
+        String alias = null;
         if (partner.getVerifiableCredential() != null) {
-            partner.getVerifiableCredential().forEach(c -> {
+            for(VerifiableIndyCredential c : partner.getVerifiableCredential()) {
                 JsonNode node = mapper.convertValue(c.getCredentialSubject(), JsonNode.class);
                 boolean indyCredential = false;
                 if (CollectionUtils.isNotEmpty(c.getType())) {
                     indyCredential = c.getType().stream().anyMatch("IndyCredential"::equals);
                 }
+                CredentialType type = CredentialType.fromType(c.getType());
+                if (CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(type)) {
+                    alias = getAttributeFromJsonNode(node, "legalName");
+                }
                 final PartnerCredential pCred = PartnerCredential
                         .builder()
-                        .type(CredentialType.fromType(c.getType()))
+                        .type(type)
                         .issuer(indyCredential ? c.getIndyIssuer() : c.getIssuer())
                         .schemaId(c.getSchemaId())
                         .credentialData(node)
                         .indyCredential(indyCredential)
                         .build();
                 pc.add(pCred);
-            });
+            }
         }
         return PartnerAPI.builder()
                 .verifiablePresentation(partner)
+                .alias(alias)
                 .credential(pc).build();
+    }
+
+    public @Nullable String getAttributeFromJsonNode(@NonNull JsonNode node, @NonNull String attribute) {
+        List<String> values = node.findValuesAsText(attribute);
+        if (CollectionUtils.isNotEmpty(values)) {
+            return values.get(0);
+        }
+        return null;
     }
 
     public Partner toModelObject(String did, PartnerAPI api) {

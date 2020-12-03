@@ -71,6 +71,7 @@ class ConverterTest extends BaseTest {
         assertEquals(2, partner.getCredential().size());
         assertEquals(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL, partner.getCredential().get(0).getType());
         assertEquals(CredentialType.SCHEMA_BASED, partner.getCredential().get(1).getType());
+        assertTrue(partner.getAlias().startsWith("Bosch Healthcare"));
     }
 
     @Test
