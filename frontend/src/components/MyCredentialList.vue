@@ -30,15 +30,16 @@
       <template v-slot:[`item.type`]="{ item }">
         <div
           v-if="
-            item.type === CredentialTypes.OTHER.name &&
+            item.type === CredentialTypes.UNKNOWN.type &&
             item.credentialDefinitionId
           "
           v-bind:class="{ 'font-weight-medium': !item.new }"
         >
           {{ item.credentialDefinitionId | credentialTag | capitalize }}
         </div>
+
         <div v-else v-bind:class="{ 'font-weight-medium': item.new }">
-          {{ item.type | credentialLabel }}
+          {{ $store.getters.getSchemaLabel(item.type, item.schemaId) }}
         </div>
       </template>
 
@@ -102,7 +103,6 @@ export default {
       this.$axios
         .get(`${this.$apiBaseUrl}/wallet/${type}`)
         .then((result) => {
-          console.log({ type: result });
           if ({}.hasOwnProperty.call(result, "data")) {
             this.isBusy = false;
 

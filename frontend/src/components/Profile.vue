@@ -18,10 +18,12 @@
         <v-col cols="4">
           <v-row>
             <span class="grey--text text--darken-2 font-weight-medium">
-              <span v-if="item.type === CredentialTypes.OTHER.name">{{
+              <span v-if="item.type === CredentialTypes.UNKNOWN.type">{{
                 item.credentialDefinitionId | credentialTag
               }}</span>
-              <span v-else>{{ item.type | credentialLabel }}</span>
+              <span v-else>{{
+                $store.getters.getSchemaLabel(item.type, item.schemaId)
+              }}</span>
             </span>
           </v-row>
           <v-row v-if="item.issuer" class="text-caption">
@@ -69,9 +71,7 @@ export default {
   props: {
     partner: Object,
   },
-  created() {
-    console.log("Partner: ", this.partner);
-  },
+  created() {},
   data: () => {
     return {
       CredentialTypes: CredentialTypes,
@@ -91,7 +91,7 @@ export default {
       let creds = [];
       if ({}.hasOwnProperty.call(this.partner, "credential")) {
         creds = this.partner.credential.filter((cred) => {
-          if (cred.type !== CredentialTypes.PROFILE.name) {
+          if (cred.type !== CredentialTypes.PROFILE.type) {
             return this.prepareCredential(cred);
           }
         });

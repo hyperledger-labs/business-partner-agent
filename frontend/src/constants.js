@@ -6,6 +6,7 @@
  SPDX-License-Identifier: Apache-2.0
 */
 
+/*
 export const CredentialTypes = Object.freeze({
   PROFILE: {
     name: "ORGANIZATIONAL_PROFILE_CREDENTIAL",
@@ -23,9 +24,23 @@ export const CredentialTypes = Object.freeze({
     name: "OTHER",
     label: "Unkown",
   },
+});*/
+
+export const CredentialTypes = Object.freeze({
+  PROFILE: {
+    type: "ORGANIZATIONAL_PROFILE_CREDENTIAL",
+    label: "Organizational Profile",
+  },
+  SCHEMA_BASED: {
+    type: "SCHEMA_BASED",
+  },
+  UNKNOWN: {
+    type: "UNKNOWN",
+    label: "Unknown",
+  },
 });
 
-const Schemas = [
+/*const Schemas = [
   {
     type: "BANK_ACCOUNT_CREDENTIAL",
     fields: [
@@ -41,10 +56,10 @@ const Schemas = [
       },
     ],
   },
-];
+];*/
 
-export const getSchema = (type) => {
+/*export const getSchema = (type) => {
   return Schemas.find((schema) => {
     return schema.type === type;
   });
-};
+};*/

@@ -20,7 +20,11 @@
         <div v-if="credential.type === CredentialTypes.OTHER.name">
           {{ credential.credentialDefinitionId | credentialTag }}
         </div>
-        <div v-else>{{ credential.type | credentialLabel }}</div>
+        <div v-else>
+          {{
+            store.getters.getSchemaLabel(credential.type, credential.schemaId)
+          }}
+        </div>
         <v-layout align-end justify-end>
           <v-btn depressed color="red" icon @click="deleteCredential()">
             <v-icon dark>mdi-delete</v-icon>

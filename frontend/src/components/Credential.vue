@@ -74,7 +74,8 @@
 </template>
 
 <script>
-import { getSchema } from "../constants";
+//import { getSchema } from "../constants";
+
 export default {
   props: {
     isReadOnly: {
@@ -102,36 +103,9 @@ export default {
   },
   computed: {
     schema: function () {
-      let s = getSchema(this.document.type);
-      if (s && {}.hasOwnProperty.call(s, "fields")) {
-        return s;
-      } else {
-        const dataType = this.documentDataTypes.find((val) => {
-          if (this.document && {}.hasOwnProperty.call(this.document, val)) {
-            return val;
-          }
-        });
-        if (dataType) {
-          s = {
-            type: this.document.type,
-            label: "",
-            fields: Object.keys(
-              dataType ? this.intDoc[dataType] : this.intDoc
-            ).map((key) => {
-              return {
-                type: key,
-                label: key
-                  ? key.substring(0, 1).toUpperCase() +
-                    key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2")
-                  : "",
-              };
-            }),
-          };
-          return s;
-        } else {
-          return this.$store.getters.getPreparedSchema(this.document.schemaId);
-        }
-      }
+      return this.$store.getters.createTemplateFromSchemaId(
+        this.document.schemaId
+      );
     },
     filteredSchemaField() {
       let fields = this.schema.fields;
@@ -195,7 +169,6 @@ export default {
           if ({}.hasOwnProperty.call(this.document, field)) {
             this.documentDataType = field;
             this.intDoc = this.document;
-            console.log(this.intDoc);
             this.intCopy();
             return;
           }

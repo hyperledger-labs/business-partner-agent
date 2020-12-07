@@ -40,7 +40,7 @@
         color="primary"
         :to="{
           name: 'DocumentAdd',
-          params: { type: 'ORGANIZATIONAL_PROFILE_CREDENTIAL' },
+          params: { type: CredentialTypes.PROFILE.type },
         }"
         >Setup your Profile</v-btn
       >
@@ -94,6 +94,7 @@
 
 <script>
 import { EventBus } from "../main";
+import { CredentialTypes } from "../constants";
 export default {
   name: "Dashboard",
   created() {
@@ -104,6 +105,7 @@ export default {
     return {
       isWelcome: true,
       isLoading: true,
+      CredentialTypes,
     };
   },
   computed: {

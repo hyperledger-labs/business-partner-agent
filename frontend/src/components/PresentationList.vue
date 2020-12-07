@@ -25,7 +25,9 @@
       <div v-if="item.type === CredentialTypes.OTHER.name">
         {{ item.credentialDefinitionId | credentialTag | capitalize }}
       </div>
-      <div v-else>{{ item.type | credentialLabel }}</div>
+      <div v-else>
+        {{ store.getters.getSchemaLabel(item.type, item.schemaId) }}
+      </div>
     </template>
     <template v-slot:[`item.state`]="{ item }">
       <v-icon
@@ -62,6 +64,8 @@
 import Credential from "@/components/Credential";
 import { EventBus } from "../main";
 import { CredentialTypes } from "../constants";
+import { presentationListHeaders } from "@/components/tableHeaders/PresentationListHeaders";
+
 export default {
   props: {
     credentials: Array,
@@ -75,28 +79,7 @@ export default {
     },
     headers: {
       type: Array,
-      default: () => [
-        {
-          text: "Type",
-          value: "type",
-        },
-        {
-          text: "Issuer",
-          value: "issuer",
-        },
-        {
-          text: "Received at",
-          value: "receivedAt",
-        },
-        {
-          text: "State",
-          value: "state",
-        },
-        {
-          text: " ",
-          value: "actions",
-        },
-      ],
+      default: () => presentationListHeaders,
     },
   },
   data: () => {

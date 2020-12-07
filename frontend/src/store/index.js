@@ -8,10 +8,10 @@
 
 import Vue from "vue";
 import Vuex from "vuex";
-import { CredentialTypes } from "../constants";
 import taa from "./modules/taa";
 import socketEvents from "./modules/socketevents";
 import * as actions from "./actions";
+import * as getters from "./getters";
 
 Vue.use(Vuex);
 
@@ -27,63 +27,7 @@ const store = new Vuex.Store({
     settings: {},
   },
 
-  getters: {
-    isBusy: (state) => {
-      return state.busyStack > 0;
-    },
-    publicDocumentsAndCredentials: (state) => {
-      var retval = state.credentials
-        .concat(state.documents)
-        .filter((d) => d.isPublic == true);
-      return retval;
-    },
-    organizationalProfile: (state) => {
-      var documents = state.documents.filter(
-        (d) => d.type == CredentialTypes.PROFILE.name
-      );
-      if (documents.length == 1) return documents[0];
-      else return undefined;
-    },
-    getPartnerByDID: (state) => (did) => {
-      return state.partners.find((partner) => {
-        return partner.did === did;
-      });
-    },
-    schemas: (state) => {
-      return state.schemas;
-    },
-    getSchema: (state) => (schemaId) => {
-      if (!schemaId) {
-        return null;
-      }
-      return state.schemas.find((schema) => {
-        return schema.schemaId === schemaId;
-      });
-    },
-    getPreparedSchema: (state) => (schemaId) => {
-      let schema = state.schemas.find((schema) => {
-        return schema.schemaId === schemaId;
-      });
-      console.log(schema);
-      return Object.assign(schema, {
-        fields: schema.schemaAttributeNames.map((key) => {
-          return {
-            type: key,
-            label: key,
-          };
-        }),
-      });
-    },
-    getSettingByKey: (state) => (key) => {
-      if (state.settings && {}.hasOwnProperty.call(state.settings, key)) {
-        return state.settings[key];
-      }
-    },
-    getSettings: (state) => {
-      return state.settings;
-    },
-  },
-
+  getters: getters,
   actions: actions,
 
   mutations: {
@@ -96,7 +40,7 @@ const store = new Vuex.Store({
     loadPartnersFinished(state, payload) {
       state.partners = payload.partners;
     },
-    loadSchemasFinished(state, payload) {
+    setSchemas(state, payload) {
       state.schemas = payload.schemas;
     },
     setExpertMode(state, payload) {

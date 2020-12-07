@@ -12,7 +12,7 @@ export const getPartnerProfile = (partner) => {
   if ({}.hasOwnProperty.call(partner, "credential")) {
     console.log(partner.credential);
     let partnerProfile = partner.credential.find((cred) => {
-      return cred.type === CredentialTypes.PROFILE.name;
+      return cred.type === CredentialTypes.PROFILE.type;
     });
 
     if (partnerProfile) {

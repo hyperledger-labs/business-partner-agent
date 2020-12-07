@@ -15,7 +15,14 @@
         <div v-if="presentation.type === CredentialTypes.OTHER.name">
           {{ presentation.credentialDefinitionId | credentialTag }}
         </div>
-        <div v-else>{{ presentation.type | credentialLabel }}</div>
+        <div v-else>
+          {{
+            store.getters.getSchemaLabel(
+              presentation.type,
+              presentation.schemaId
+            )
+          }}
+        </div>
         <v-layout align-end justify-end>
           <v-btn depressed color="red" icon @click="deletePresentation()">
             <v-icon dark>mdi-delete</v-icon>
