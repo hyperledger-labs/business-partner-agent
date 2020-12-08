@@ -7,14 +7,16 @@
 [![Build Status](https://dev.azure.com/economy-of-things/Business-Partner-Agent/_apis/build/status/hyperledger-labs.business-partner-agent?branchName=master)](https://dev.azure.com/economy-of-things/Business-Partner-Agent/_build/latest?definitionId=79&branchName=master)
 
 # Short Description
-The Business Partner Agent allows to manage and exchange master data between organizations.
+The Business Partner Agent allows to manage and exchange master data between organizations. Exchange of master data should not happen via telephone, excel, e-mail or various supplier portals. Organizations should be able to publish documents like addresses, locations, contacts, bank accounts and certifications publicly, or exchange them privately with their business partners in a machine-readable and tamper-proof format. Furthemore, verified documents, issued by trusted institutions, are able streamline the process of onboarding new business partners.
 
-# Scope of Lab
-The Business Partner Agent is a domain-specific controller and extension for Aries Cloud Agent Python. It allows to manage and to publish public organizational master data tied to a decentralized identifier (DID) as well as to share and to request business partner specific master data and certifications.
+The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Identity Stack, in particular Hyperledger Indy and Hyperledger Cloud Agent Python.
 
-The project consists of a backend written in Java that provides domain-specific APIs for integration in enterprise systems, as well as a simple reference user interface.
+## Current Features
 
-![Business Partner Agent](./images/CompanyAgentDesign.png "Business Partner Agent")
+- Attach a public organizational profile to your public DID
+- Add business partners by their public DID and view their public profile
+- Add documents (currently bank acccounts are supported) and request verifications from business partners
+- Share and request verified documents with/from your business partners
 
 ## Project Status
 
@@ -25,7 +27,7 @@ It is not ready for production use.
 # Getting Started
 
 The Business Partner Agent supports two modes
-1. Web mode: Serves a did:web identity and allows to publish a public organizational profile.
+1. Web mode: Serves a did:web identity and allows to publish a public organizational profile (Currently not maintained)
 2. Aries mode: Utilizes an identity on an Hyperledger Indy ledger (default: https://indy-test.bosch-digital.de/) and enables Aries interaction protocols.
 
 In our documentation, the agent will be started in Aries mode.
