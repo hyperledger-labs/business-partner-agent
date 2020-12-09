@@ -184,4 +184,6 @@ postgresql:
     
     # -- Enable PostgreSQL persistence using Persistent Volume Claims.
     enabled: false
+  image:
+    tag: 12
 

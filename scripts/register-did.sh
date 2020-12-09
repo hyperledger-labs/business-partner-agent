@@ -1,19 +1,18 @@
+#!/bin/bash
 # Copyright (c) 2020 - for information on the respective copyright owner
 # see the NOTICE file and/or the repository at
 # https://github.com/hyperledger-labs/organizational-agent
 # 
 # SPDX-License-Identifier: Apache-2.0
 
-#!/bin/bash
-
 
 # Check the system the script is running on
-# This is taken from https://stackoverflow.com/questions/3466166/how-to-check-if-running-in-cygwin-mac-or-linux
-case "$(uname -s)" in
-    Linux*)     machine=Linux;;
-    Darwin*)    machine=Mac;;
-    *)          machine=${unameOut}
-esac
+ARCHITECTURE="$(uname -s)"
+if [[ ${ARCHITECTURE} == "Linux"* ]]; then
+    ARCHITECTURE="Linux"
+elif [[ ${ARCHITECTURE} == "Darwin"* ]]; then
+    ARCHITECTURE="Mac"
+fi
 
 if [ "$machine" != "Linux" ] && [ "$machine" != "Mac" ]; then
     echo "No Linux or Mac OSX detected. You might need to do some steps manually."

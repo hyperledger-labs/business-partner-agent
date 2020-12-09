@@ -26,7 +26,7 @@ This information is currently self-attested, but we like to have this informatio
 ## Add our bank as a business partner
 
 1. Go to `Business Partners` and click the `+ button`
-2. Select `did:sov:iil` and paste `M6Mbe3qx7vB4wpZF4sBRjt`  in the DID Box. This is the DID of your bank
+2. Paste `did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt` in the DID Box. This is the DID of your bank
 3. Click on `Lookup Partner`. You'll see the public profile of your partner.
 4. Click on `Add Partner`. Now you have a connection with your bank.
 
@@ -37,3 +37,6 @@ This information is currently self-attested, but we like to have this informatio
 2. Click on `>` in the Verification section
 3. Select your bank and click `submit`
 4. You should see the bank account in the `Verified Credentials` section of your wallet
+   
+   
+You can now send a proof of your verified bank account to one of your business partners.

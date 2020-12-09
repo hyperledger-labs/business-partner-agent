@@ -55,14 +55,14 @@ services:
         --auto-store-credential \
         --auto-verify-presentation \
         --auto-ping-connection \
+        --monitor-ping \
         --public-invites \
         --plugin aries_cloudagent.messaging.jsonld \
         --inbound-transport http '0.0.0.0' ${AGENT_HTTP_PORT} \
         --outbound-transport http \
-        --endpoint ${AGENT_ENDPOINT} \
-        --profile-endpoint ${BPA_PROFILE_ENDPOINT} \
         --webhook-url http://company-agent:${BPA_PORT}/log \
         --genesis-url '${LEDGER_URL}/genesis' \
+        --endpoint ${AGENT_ENDPOINT} \
         --wallet-type 'indy' \
         --wallet-name '${WALLET_DATABASE}' \
         --wallet-key '${WALLET_ENCRYPTION_KEY}' \
@@ -71,9 +71,10 @@ services:
         --wallet-storage-creds '{\"account\":\"${POSTGRESQL_WALLET_USER}\",\"password\":\"${POSTGRESQL_WALLET_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_WALLET_USER}\",\"admin_password\":\"${POSTGRESQL_WALLET_PASSWORD}\"}' \
         --seed '${AGENT_SEED}' \
         --admin '0.0.0.0' ${AGENT_ADMIN_PORT} \
-        --admin-api-key '${ACAPY_ADMIN_URL_API_KEY}' \
         --label '${AGENT_NAME}' \
-        --log-level info"
+        --log-level info \
+        ${ACAPY_ADMIN_CONFIG} \
+        "
       ]
   postgres:
     image: "postgres:12-alpine"

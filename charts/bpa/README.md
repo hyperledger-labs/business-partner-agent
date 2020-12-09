@@ -4,7 +4,7 @@ The Business Partner Agent allows to manage and exchange master data between org
 
 ![Version: 0.1.0-alpha2.2](https://img.shields.io/badge/Version-0.1.0--alpha2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
-This chart will install a business partner agent (bpa-core & bpa-acapy) and Postgres.
+This chart will install a business partner agent (bpa-core & bpa-acapy) and Postgres. Be aware that in the standard configuration the database is not persistant, and kubernetes might redeploy your database at anytime.
 
 It will also create the default ingress routes.
 
