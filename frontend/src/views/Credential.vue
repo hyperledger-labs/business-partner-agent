@@ -17,7 +17,7 @@
         >
           <v-icon dark>mdi-chevron-left</v-icon>
         </v-btn>
-        <div v-if="credential.type === CredentialTypes.OTHER.name">
+        <div v-if="credential.type === CredentialTypes.UNKNOWN.type">
           {{ credential.credentialDefinitionId | credentialTag }}
         </div>
         <div v-else>

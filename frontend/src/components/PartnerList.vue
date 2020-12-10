@@ -48,7 +48,9 @@
 
 <script>
 import { EventBus } from "../main";
-import { getPartnerProfile, getPartnerName } from "../utils/partnerUtils";
+//import { getPartnerProfile } from "../utils/partnerUtils";
+import { getPartnerName } from "../utils/partnerUtils";
+//import { getPartnerProfile, getPartnerName } from "../utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import NewMessageIcon from "@/components/NewMessageIcon";
 
@@ -118,7 +120,7 @@ export default {
       this.$axios
         .get(`${this.$apiBaseUrl}/partners${queryParam}`)
         .then((result) => {
-          console.log(result);
+          console.log("Partner List", result);
           if ({}.hasOwnProperty.call(result, "data")) {
             this.isBusy = false;
 
@@ -130,16 +132,7 @@ export default {
               });
             }
 
-            // Get profile of each partner and merge with partner data
             this.data = result.data.map((partner) => {
-              let profile = getPartnerProfile(partner);
-              if (profile) {
-                delete Object.assign(profile, {
-                  ["did"]: profile["id"],
-                })["id"];
-              }
-              delete partner.credential;
-              partner.profile = profile;
               partner.name = getPartnerName(partner);
               return partner;
             });

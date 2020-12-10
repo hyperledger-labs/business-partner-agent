@@ -21,9 +21,7 @@
               <span v-if="item.type === CredentialTypes.UNKNOWN.type">{{
                 item.credentialDefinitionId | credentialTag
               }}</span>
-              <span v-else>{{
-                $store.getters.getSchemaLabel(item.type, item.schemaId)
-              }}</span>
+              <span v-else>{{ item.typeLabel }}</span>
             </span>
           </v-row>
           <v-row v-if="item.issuer" class="text-caption">
@@ -59,7 +57,7 @@
 import { CredentialTypes } from "../constants";
 import OrganizationalProfile from "@/components/OrganizationalProfile";
 import Credential from "@/components/Credential";
-import { getPartnerProfile } from "../utils/partnerUtils";
+import { getPartnerProfile } from "@/utils/partnerUtils";
 import { mdiCalendarCheck } from "@mdi/js";
 import { mdiCalendarRemove } from "@mdi/js";
 
@@ -81,11 +79,7 @@ export default {
   },
   computed: {
     profile: function () {
-      if (this.partner.profile) {
-        return this.partner.profile;
-      } else {
-        return getPartnerProfile(this.partner);
-      }
+      return getPartnerProfile(this.partner);
     },
     credentials: function () {
       let creds = [];

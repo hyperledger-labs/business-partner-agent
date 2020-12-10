@@ -51,60 +51,45 @@ export const getSchemaLabel = (state) => (typeName, schemaId = undefined) => {
   let schemaType = { label: "" };
   if (schemaId) {
     schemaType = state.schemas.find((schema) => {
-      return schema.schemaId === schemaId;
+      schema.schemaId === schemaId;
     });
   } else if (typeName) {
     schemaType = state.schemas.find((schema) => {
       return schema.type === typeName;
     });
   }
-  return schemaType.label;
+
+  if (schemaType && {}.hasOwnProperty.call(schemaType, "label")) {
+    return schemaType.label;
+  }
+
+  if (schemaId) {
+    //Maybe in backend get label for schemaId
+    return schemaId;
+  }
+  return "";
 };
 
 export const createTemplateFromSchemaId = (state) => (schemaId) => {
   let schema = state.schemas.find((schema) => {
     return schema.schemaId === schemaId;
   });
-  const objectTemplate = Object.assign(schema, {
-    fields: schema.schemaAttributeNames.map((key) => {
-      return {
-        type: key,
-        label: key
-          ? key.substring(0, 1).toUpperCase() +
-            key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2")
-          : "",
-      };
-    }),
-  });
-  console.log("OBJECT TEMPLATE", objectTemplate, schemaId);
-  return objectTemplate;
-};
-
-/*schemas: (state) => {
-    return state.schemas;
-  },
-  getSchema: (state) => (schemaId) => {
-    if (!schemaId) {
-      return null;
-    }
-    return state.schemas.find((schema) => {
-      return schema.schemaId === schemaId;
-    });
-  },
-  getPreparedSchema: (state) => (schemaId) => {
-    let schema = state.schemas.find((schema) => {
-      return schema.schemaId === schemaId;
-    });
-    console.log(schema);
-    return Object.assign(schema, {
+  if (schema) {
+    let objectTemplate = Object.assign(schema, {
       fields: schema.schemaAttributeNames.map((key) => {
         return {
           type: key,
-          label: key,
+          label: key
+            ? key.substring(0, 1).toUpperCase() +
+              key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2")
+            : "",
         };
       }),
     });
-  },*/
+    return objectTemplate;
+  }
+  return null;
+};
 
 export const getSettingByKey = (state) => (key) => {
   if (state.settings && {}.hasOwnProperty.call(state.settings, key)) {

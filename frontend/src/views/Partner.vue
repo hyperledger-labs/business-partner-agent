@@ -371,7 +371,7 @@ export default {
               if ({}.hasOwnProperty.call(this.partner, "credential")) {
                 // Show only creds other than OrgProfile in credential list
                 this.credentials = this.partner.credential.filter((cred) => {
-                  return cred.type !== CredentialTypes.PROFILE.name;
+                  return cred.type !== CredentialTypes.PROFILE.type;
                 });
               }
 
@@ -413,7 +413,6 @@ export default {
           });
       } else {
         this.isBusy = false;
-        console.log("blub");
       }
     },
   },
