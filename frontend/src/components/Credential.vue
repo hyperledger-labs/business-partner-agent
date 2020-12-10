@@ -103,9 +103,14 @@ export default {
   },
   computed: {
     schema: function () {
-      return this.$store.getters.createTemplateFromSchemaId(
-        this.document.schemaId
+      let schemaTemplate = this.$store.getters.createTemplateFromSchemaId(
+        this.document.schemaId,
+        this.document.credentialData
       );
+      if (!schemaTemplate) {
+        schemaTemplate = this.createTemplateFromSchema(this.document);
+      }
+      return schemaTemplate;
     },
     filteredSchemaField() {
       let fields = this.schema.fields;
@@ -139,6 +144,31 @@ export default {
         ? true
         : false;
       this.$emit("doc-data-field-changed", isDirty);
+    },
+
+    createTemplateFromSchema(objData) {
+      const documentDataTypes = ["documentData", "credentialData", "proofData"];
+      const dataType = documentDataTypes.find((val) => {
+        if (objData && {}.hasOwnProperty.call(objData, val)) {
+          return val;
+        }
+      });
+      const s = {
+        type: objData.type,
+        label: "",
+        fields: Object.keys(dataType ? objData[dataType] : objData).map(
+          (key) => {
+            return {
+              type: key,
+              label: key
+                ? key.substring(0, 1).toUpperCase() +
+                  key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2")
+                : "",
+            };
+          }
+        ),
+      };
+      return s;
     },
 
     docFieldChanged(propertyName, event) {

@@ -9,12 +9,10 @@
 import { CredentialTypes } from "../constants";
 
 export const getPartnerProfile = (partner) => {
-  if ({}.hasOwnProperty.call(partner, "credential")) {
-    console.log(partner.credential);
+  if (partner && {}.hasOwnProperty.call(partner, "credential")) {
     let partnerProfile = partner.credential.find((cred) => {
       return cred.type === CredentialTypes.PROFILE.type;
     });
-
     if (partnerProfile) {
       if ({}.hasOwnProperty.call(partnerProfile, "credentialData")) {
         return partnerProfile.credentialData;
@@ -23,7 +21,6 @@ export const getPartnerProfile = (partner) => {
       }
     }
   }
-
   return null;
 };
 
@@ -38,7 +35,16 @@ export const getPartnerName = (partner) => {
     {}.hasOwnProperty.call(partner.profile, "legalName")
   ) {
     return partner.profile.legalName;
+  } else if (
+    {}.hasOwnProperty.call(partner, "credential") &&
+    partner.credential !== null &&
+    partner.credential.length === 1 &&
+    {}.hasOwnProperty.call(partner.credential[0], "credentialData") &&
+    {}.hasOwnProperty.call(partner.credential[0].credentialData, "legalName")
+  ) {
+    //Hacky way, need to be improved, maybe in backend.
+    return partner.credential[0].credentialData.legalName;
   } else {
-    return partner.id;
+    return "UNKNOWN NAME";
   }
 };

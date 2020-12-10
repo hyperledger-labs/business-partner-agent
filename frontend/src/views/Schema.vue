@@ -65,7 +65,7 @@ export default {
   },
   created() {
     EventBus.$emit("title", "Schema");
-
+    console.log("SCHEMA", this.schema);
     if (this.schema) {
       this.isLoading = false;
       this.data = this.schema;
