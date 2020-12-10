@@ -48,10 +48,10 @@ public class MyDocumentManager {
     Converter converter;
 
     @Inject
-    LabelStrategy labelStrategy;
+    Optional<LabelStrategy> labelStrategy;
 
     @Inject
-    SchemaService schemaService;
+    Optional<SchemaService> schemaService;
 
     @Inject
     DocumentValidator validator;
@@ -59,7 +59,7 @@ public class MyDocumentManager {
     public MyDocumentAPI saveNewDocument(@NonNull MyDocumentAPI apiDoc) {
         validator.validateNew(apiDoc);
 
-        labelStrategy.apply(apiDoc);
+        labelStrategy.ifPresent(strategy -> strategy.apply(apiDoc));
         final MyDocument dbDoc = docRepo.save(converter.toModelObject(apiDoc));
 
         if (apiDoc.getIsPublic()) { // new credential, so no need to change the VP when it's private
@@ -73,7 +73,7 @@ public class MyDocumentManager {
         if (dbCred.isPresent()) {
             validator.validateExisting(dbCred, apiDoc);
 
-            labelStrategy.apply(apiDoc);
+            labelStrategy.ifPresent(strategy -> strategy.apply(apiDoc));
             MyDocument dbDoc = converter.updateMyCredential(apiDoc, dbCred.get());
             docRepo.update(dbDoc);
 
