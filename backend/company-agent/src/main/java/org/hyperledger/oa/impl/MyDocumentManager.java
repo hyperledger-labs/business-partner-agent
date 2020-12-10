@@ -18,7 +18,6 @@
 package org.hyperledger.oa.impl;
 
 import lombok.NonNull;
-import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.MyDocumentAPI;
 import org.hyperledger.oa.api.exception.WrongApiUsageException;
 import org.hyperledger.oa.impl.activity.DocumentValidator;
@@ -49,10 +48,10 @@ public class MyDocumentManager {
     Converter converter;
 
     @Inject
-    Optional<LabelStrategy> labelStrategy;
+    LabelStrategy labelStrategy;
 
     @Inject
-    Optional<SchemaService> schemaService;
+    SchemaService schemaService;
 
     @Inject
     DocumentValidator validator;
@@ -60,13 +59,13 @@ public class MyDocumentManager {
     public MyDocumentAPI saveNewDocument(@NonNull MyDocumentAPI apiDoc) {
         validator.validateNew(apiDoc);
 
-        labelStrategy.ifPresent(strategy -> strategy.apply(apiDoc));
+        labelStrategy.apply(apiDoc);
         final MyDocument dbDoc = docRepo.save(converter.toModelObject(apiDoc));
 
         if (apiDoc.getIsPublic()) { // new credential, so no need to change the VP when it's private
             vp.recreateVerifiablePresentation();
         }
-        return convertAndResolve(dbDoc);
+        return converter.toApiObject(dbDoc);
     }
 
     public MyDocumentAPI updateDocument(@NonNull UUID id, @NonNull MyDocumentAPI apiDoc) {
@@ -74,42 +73,31 @@ public class MyDocumentManager {
         if (dbCred.isPresent()) {
             validator.validateExisting(dbCred, apiDoc);
 
-            labelStrategy.ifPresent(strategy -> strategy.apply(apiDoc));
+            labelStrategy.apply(apiDoc);
             MyDocument dbDoc = converter.updateMyCredential(apiDoc, dbCred.get());
             docRepo.update(dbDoc);
 
             // update, so we always need to check, only exception private stays private
             vp.recreateVerifiablePresentation();
 
-            return convertAndResolve(dbDoc);
+            return converter.toApiObject(dbDoc);
         }
         throw new WrongApiUsageException("No document with id " + id + " found.");
     }
 
     public List<MyDocumentAPI> getMyDocuments() {
         List<MyDocumentAPI> result = new ArrayList<>();
-        docRepo.findAll().forEach(dbDoc -> result.add(convertAndResolve(dbDoc)));
+        docRepo.findAll().forEach(dbDoc -> result.add(converter.toApiObject(dbDoc)));
         return result;
     }
 
     public Optional<MyDocumentAPI> getMyDocumentById(@NonNull UUID id) {
         Optional<MyDocument> myDoc = docRepo.findById(id);
-        return myDoc.map(this::convertAndResolve);
+        return myDoc.map(converter::toApiObject);
     }
 
     public void deleteMyDocumentById(@NonNull UUID id) {
         docRepo.deleteById(id);
         vp.recreateVerifiablePresentation();
     }
-
-    private MyDocumentAPI convertAndResolve(MyDocument dbDoc) {
-        MyDocumentAPI apiDoc = converter.toApiObject(dbDoc);
-        if (CredentialType.SCHEMA_BASED.equals(apiDoc.getType())) {
-            schemaService.ifPresent(s -> apiDoc.setTypeLabel(s.getSchemaLabel(dbDoc.getSchemaId())));
-        } else {
-            apiDoc.setTypeLabel("Organizational Profile");
-        }
-        return apiDoc;
-    }
-
 }

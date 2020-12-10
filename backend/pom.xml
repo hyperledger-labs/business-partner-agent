@@ -44,8 +44,8 @@
         <!-- Dependency Versions -->
         <log4j2.version>2.14.0</log4j2.version>
         <lombok.version>1.18.16</lombok.version>
-        <micronaut.version>2.2.0</micronaut.version>
-        <micronaut.data.version>2.2.0</micronaut.data.version>
+        <micronaut.version>2.2.1</micronaut.version>
+        <micronaut.data.version>2.2.1</micronaut.data.version>
         <micronaut.openapi.version>2.2.0</micronaut.openapi.version>
         <micronaut.security.version>2.2.0</micronaut.security.version>
         <mockito.version>3.6.28</mockito.version>

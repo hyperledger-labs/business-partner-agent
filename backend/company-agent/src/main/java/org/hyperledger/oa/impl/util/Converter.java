@@ -27,12 +27,15 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.oa.api.ApiConstants;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.MyDocumentAPI;
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.api.PartnerAPI.PartnerCredential;
+import org.hyperledger.oa.impl.aries.SchemaService;
 import org.hyperledger.oa.model.MyDocument;
 import org.hyperledger.oa.model.Partner;
 
@@ -59,7 +62,10 @@ public class Converter {
 
     @Inject
     @Setter
-    private ObjectMapper mapper;
+    ObjectMapper mapper;
+
+    @Inject
+    SchemaService schemaService;
 
     public PartnerAPI toAPIObject(@NonNull Partner p) {
         PartnerAPI result;
@@ -87,17 +93,21 @@ public class Converter {
         if (partner.getVerifiableCredential() != null) {
             for (VerifiableIndyCredential c : partner.getVerifiableCredential()) {
                 JsonNode node = mapper.convertValue(c.getCredentialSubject(), JsonNode.class);
+
                 boolean indyCredential = false;
                 if (CollectionUtils.isNotEmpty(c.getType())) {
                     indyCredential = c.getType().stream().anyMatch("IndyCredential"::equals);
                 }
+
                 CredentialType type = CredentialType.fromType(c.getType());
                 if (CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(type)) {
                     alias = getAttributeFromJsonNode(node, "legalName");
                 }
+
                 final PartnerCredential pCred = PartnerCredential
                         .builder()
                         .type(type)
+                        .typeLabel(resolveTypeLabel(type, c.getSchemaId()))
                         .issuer(indyCredential ? c.getIndyIssuer() : c.getIssuer())
                         .schemaId(c.getSchemaId())
                         .credentialData(node)
@@ -166,6 +176,7 @@ public class Converter {
                 .documentData(fromMap(myDoc.getDocument(), JsonNode.class))
                 .isPublic(myDoc.getIsPublic())
                 .type(myDoc.getType())
+                .typeLabel(resolveTypeLabel(myDoc.getType(), myDoc.getSchemaId()))
                 .schemaId(myDoc.getSchemaId())
                 .label(myDoc.getLabel())
                 .build();
@@ -190,6 +201,16 @@ public class Converter {
             log.error("Could not serialise to string: {}", value, e);
         }
         return Optional.empty();
+    }
+
+    private String resolveTypeLabel(@NonNull CredentialType type, @Nullable String schemaId) {
+        String result = null;
+        if (CredentialType.SCHEMA_BASED.equals(type) && StringUtils.isNotEmpty(schemaId)) {
+            result = schemaService.getSchemaLabel(schemaId);
+        } else if (CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(type)) {
+            result = (ApiConstants.ORG_PROFILE_NAME);
+        }
+        return result;
     }
 
 }
