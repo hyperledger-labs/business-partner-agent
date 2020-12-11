@@ -21,6 +21,7 @@
           {{ credential.credentialDefinitionId | credentialTag }}
         </div>
         <div v-else>
+          {{ credential.typeLabel | capitalize }}
           {{
             store.getters.getSchemaLabel(credential.type, credential.schemaId)
           }}

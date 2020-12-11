@@ -16,6 +16,7 @@
           {{ presentation.credentialDefinitionId | credentialTag }}
         </div>
         <div v-else>
+          {{ presentation.typeLabel }}
           {{
             store.getters.getSchemaLabel(
               presentation.type,

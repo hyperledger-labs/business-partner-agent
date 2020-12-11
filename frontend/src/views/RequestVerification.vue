@@ -22,7 +22,7 @@
         <PartnerList
           v-bind:selectable="true"
           ref="partnerList"
-          v-bind:onlyIssuersForSchema="this.schemaId"
+          v-bind:onlyIssuersForSchema="schemaId"
         ></PartnerList>
       </v-card-text>
 
@@ -84,6 +84,10 @@ export default {
   },
   created() {
     EventBus.$emit("title", "Request Verification");
+    if (!this.schemaId) {
+      EventBus.$emit("success", "Can't start verification");
+      this.$router.push({ name: "Wallet" });
+    }
   },
   data: () => {
     return {

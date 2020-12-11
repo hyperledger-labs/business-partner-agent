@@ -74,8 +74,6 @@
 </template>
 
 <script>
-//import { getSchema } from "../constants";
-
 export default {
   props: {
     isReadOnly: {
@@ -104,11 +102,12 @@ export default {
   computed: {
     schema: function () {
       let schemaTemplate = this.$store.getters.createTemplateFromSchemaId(
-        this.document.schemaId,
-        this.document.credentialData
+        this.document.schemaId
       );
       if (!schemaTemplate) {
         schemaTemplate = this.createTemplateFromSchema(this.document);
+      } else {
+        console.log("No Schema Template found", this.document);
       }
       return schemaTemplate;
     },
@@ -144,6 +143,29 @@ export default {
         ? true
         : false;
       this.$emit("doc-data-field-changed", isDirty);
+    },
+
+    createTemplateFromSchemaId(schemaId) {
+      const schemas = this.$store.getters.getSchemas;
+      let schema = schemas.find((schema) => {
+        return schema.schemaId === schemaId;
+      });
+      if (schema) {
+        //TODO check if fields already available
+        let objectTemplate = Object.assign(schema, {
+          fields: schema.schemaAttributeNames.map((key) => {
+            return {
+              type: key,
+              label: key
+                ? key.substring(0, 1).toUpperCase() +
+                  key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2")
+                : "",
+            };
+          }),
+        });
+        return objectTemplate;
+      }
+      return null;
     },
 
     createTemplateFromSchema(objData) {
@@ -190,7 +212,6 @@ export default {
             return [field.type, ""];
           })
         );
-        console.log(this.intDoc);
         this.intCopy();
       }
       //Existing Document, extract Data

@@ -39,7 +39,7 @@
         </div>
 
         <div v-else v-bind:class="{ 'font-weight-medium': item.new }">
-          {{ $store.getters.getSchemaLabel(item.type, item.schemaId) }}
+          {{ item.typeLabel }}
         </div>
       </template>
 
@@ -128,10 +128,8 @@ export default {
         });
     },
     open(doc) {
-      console.log(doc);
-
+      console.log("Open Document: ", doc);
       if (this.type === "document") {
-        console.log(doc);
         this.$router.push({
           name: "Document",
           params: {

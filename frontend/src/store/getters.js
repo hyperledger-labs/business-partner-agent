@@ -70,10 +70,14 @@ export const getSchemaLabel = (state) => (typeName, schemaId = undefined) => {
   return "";
 };
 
-export const createTemplateFromSchemaId = (state) => (schemaId) => {
+export const createTemplateFromSchemaId = (state) => (schemaId, schemaType) => {
   let schema = state.schemas.find((schema) => {
-    return schema.schemaId === schemaId;
+    return (
+      schema.schemaId === schemaId &&
+      schemaType !== CredentialTypes.PROFILE.type
+    );
   });
+  console.log("TRY GET ATTRIBUTENAME: ", schema);
   if (schema) {
     let objectTemplate = Object.assign(schema, {
       fields: schema.schemaAttributeNames.map((key) => {

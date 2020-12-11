@@ -25,26 +25,26 @@ export const getPartnerProfile = (partner) => {
 };
 
 export const getPartnerName = (partner) => {
-  if (typeof partner !== "object") {
-    return "";
-  } else if ({}.hasOwnProperty.call(partner, "alias")) {
-    return partner.alias;
-  } else if (
-    {}.hasOwnProperty.call(partner, "profile") &&
-    partner.profile !== null &&
-    {}.hasOwnProperty.call(partner.profile, "legalName")
-  ) {
-    return partner.profile.legalName;
-  } else if (
+  let credential = partner;
+  if (
     {}.hasOwnProperty.call(partner, "credential") &&
-    partner.credential !== null &&
-    partner.credential.length === 1 &&
-    {}.hasOwnProperty.call(partner.credential[0], "credentialData") &&
-    {}.hasOwnProperty.call(partner.credential[0].credentialData, "legalName")
+    Array.isArray(partner.credential)
   ) {
-    //Hacky way, need to be improved, maybe in backend.
-    return partner.credential[0].credentialData.legalName;
-  } else {
-    return "UNKNOWN NAME";
+    credential = partner.credential.find((p) => {
+      return p.type === CredentialTypes.PROFILE.type;
+    });
   }
+
+  if (typeof credential !== "object") {
+    return "";
+  }
+
+  if (
+    {}.hasOwnProperty.call(credential, "credentialData") &&
+    {}.hasOwnProperty.call(credential.credentialData, "legalName")
+  ) {
+    return credential.credentialData.legalName;
+  }
+
+  return "";
 };

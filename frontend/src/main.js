@@ -85,9 +85,9 @@ Vue.filter("credentialTag", function (credDefId) {
 });
 
 Vue.filter("capitalize", function (string) {
-  return string.replace(/\w\S*/g, (w) =>
-    w.replace(/^\w/, (c) => c.toUpperCase())
-  );
+  return string && string !== ""
+    ? string.replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()))
+    : "";
 });
 
 // Get Configuration

@@ -24,7 +24,10 @@
               <span v-else>{{ item.typeLabel }}</span>
             </span>
           </v-row>
-          <v-row v-if="item.issuer" class="text-caption">
+          <v-row
+            v-if="item.issuer && profile.id !== item.issuer"
+            class="text-caption"
+          >
             verified by {{ item.issuer }}
           </v-row>
           <v-row v-if="item.credentialData && item.credentialData.validFrom">

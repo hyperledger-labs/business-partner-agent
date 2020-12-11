@@ -48,9 +48,7 @@
 
 <script>
 import { EventBus } from "../main";
-//import { getPartnerProfile } from "../utils/partnerUtils";
 import { getPartnerName } from "../utils/partnerUtils";
-//import { getPartnerProfile, getPartnerName } from "../utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import NewMessageIcon from "@/components/NewMessageIcon";
 
@@ -115,7 +113,7 @@ export default {
       // Query only for partners that can issue credentials of specified schema
       let queryParam = "";
       if (this.onlyIssuersForSchema.length > 0) {
-        queryParam = `?issuerFor=${this.onlyIssuersForSchema}`;
+        queryParam = `?schemaId=${this.onlyIssuersForSchema}`;
       }
       this.$axios
         .get(`${this.$apiBaseUrl}/partners${queryParam}`)

@@ -81,8 +81,7 @@
                   icon
                   :to="{
                     name: 'RequestVerification',
-
-                    params: { documentId: id, type: intDoc.type },
+                    params: { documentId: id, schemaId: intDoc.schemaId },
                   }"
                   :disabled="docModified()"
                 >
@@ -158,7 +157,6 @@ export default {
     },
   },
   created() {
-    console.log("GET SCHEMA FROM STORE", this.$store.getters.getSchemas);
     if (this.id) {
       EventBus.$emit("title", "Edit Document");
       this.getDocument();
@@ -171,7 +169,6 @@ export default {
       this.document.isPublic = this.isProfile(this.document.type);
       this.isReady = true;
       this.intDoc = { ...this.document };
-      console.log("CREATE NEW DOCUMENT", this.type);
     }
   },
   data: () => {
@@ -257,7 +254,6 @@ export default {
           type: this.type,
           schemaId: this.schemaId,
         };
-        console.log("SAVE: ", docForSave);
         this.$axios
           .post(`${this.$apiBaseUrl}/wallet/document`, docForSave)
           .then((res) => {
