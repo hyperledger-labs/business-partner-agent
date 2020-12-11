@@ -22,9 +22,6 @@
         </div>
         <div v-else>
           {{ credential.typeLabel | capitalize }}
-          {{
-            store.getters.getSchemaLabel(credential.type, credential.schemaId)
-          }}
         </div>
         <v-layout align-end justify-end>
           <v-btn depressed color="red" icon @click="deleteCredential()">
@@ -113,7 +110,7 @@ export default {
   },
   methods: {
     getCredential() {
-      console.log(this.id);
+      console.log("Get Credential ID: ", this.id);
       this.$axios
         .get(`${this.$apiBaseUrl}/wallet/credential/${this.id}`)
         .then((result) => {

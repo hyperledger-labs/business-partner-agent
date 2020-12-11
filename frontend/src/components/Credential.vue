@@ -101,16 +101,15 @@ export default {
   },
   computed: {
     schema: function () {
-      let schemaTemplate = this.$store.getters.createTemplateFromSchemaId(
+      let schemaTemplate = this.createTemplateFromSchemaId(
         this.document.schemaId
       );
       if (!schemaTemplate) {
         schemaTemplate = this.createTemplateFromSchema(this.document);
-      } else {
-        console.log("No Schema Template found", this.document);
       }
       return schemaTemplate;
     },
+
     filteredSchemaField() {
       let fields = this.schema.fields;
       if (!this.isReadOnly) {

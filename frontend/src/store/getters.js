@@ -70,31 +70,6 @@ export const getSchemaLabel = (state) => (typeName, schemaId = undefined) => {
   return "";
 };
 
-export const createTemplateFromSchemaId = (state) => (schemaId, schemaType) => {
-  let schema = state.schemas.find((schema) => {
-    return (
-      schema.schemaId === schemaId &&
-      schemaType !== CredentialTypes.PROFILE.type
-    );
-  });
-  console.log("TRY GET ATTRIBUTENAME: ", schema);
-  if (schema) {
-    let objectTemplate = Object.assign(schema, {
-      fields: schema.schemaAttributeNames.map((key) => {
-        return {
-          type: key,
-          label: key
-            ? key.substring(0, 1).toUpperCase() +
-              key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2")
-            : "",
-        };
-      }),
-    });
-    return objectTemplate;
-  }
-  return null;
-};
-
 export const getSettingByKey = (state) => (key) => {
   if (state.settings && {}.hasOwnProperty.call(state.settings, key)) {
     return state.settings[key];
