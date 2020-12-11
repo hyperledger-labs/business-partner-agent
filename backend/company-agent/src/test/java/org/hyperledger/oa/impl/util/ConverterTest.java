@@ -67,9 +67,26 @@ class ConverterTest extends BaseTest {
         VerifiablePresentation<VerifiableIndyCredential> vp = loadAndConvertTo("files/verifiablePresentation.json",
                 Converter.VP_TYPEREF);
         final PartnerAPI partner = conv.toAPIObject(vp);
-        assertEquals(2, partner.getCredential().size());
-        assertEquals(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL, partner.getCredential().get(0).getType());
-        assertEquals(CredentialType.SCHEMA_BASED, partner.getCredential().get(1).getType());
+
+        assertEquals(3, partner.getCredential().size());
+
+        PartnerAPI.PartnerCredential c1 = partner.getCredential().get(0);
+        assertEquals(CredentialType.SCHEMA_BASED, c1.getType());
+        assertEquals("did:sov:iil:Ni2hE7fEHJ25xUBc7ZESf6", c1.getIssuer());
+        assertFalse(c1.getIndyCredential());
+        assertNotNull(c1.getTypeLabel());
+
+        PartnerAPI.PartnerCredential c2 = partner.getCredential().get(1);
+        assertEquals(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL, c2.getType());
+        assertFalse(c2.getIndyCredential());
+        assertNotNull(c2.getTypeLabel());
+
+        PartnerAPI.PartnerCredential c3 = partner.getCredential().get(2);
+        assertEquals(CredentialType.SCHEMA_BASED, c3.getType());
+        assertEquals("did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt", c3.getIssuer());
+        assertNotNull(c3.getTypeLabel());
+        assertTrue(c3.getIndyCredential());
+
         assertTrue(partner.getAlias().startsWith("Bosch Healthcare"));
     }
 

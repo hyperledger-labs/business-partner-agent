@@ -21,6 +21,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -30,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.oa.api.ApiConstants;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.MyDocumentAPI;
@@ -43,15 +48,13 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Singleton
 @NoArgsConstructor
 @AllArgsConstructor
+// TODO this is more a conversion service
 public class Converter {
 
     public static final TypeReference<Map<String, Object>> MAP_TYPEREF = new TypeReference<>() {
@@ -59,6 +62,9 @@ public class Converter {
 
     public static final TypeReference<VerifiablePresentation<VerifiableIndyCredential>> VP_TYPEREF = new TypeReference<>() {
     };
+
+    @Value("${oagent.did.prefix}")
+    private String ledgerPrefix;
 
     @Inject
     @Setter
@@ -104,12 +110,19 @@ public class Converter {
                     alias = getAttributeFromJsonNode(node, "legalName");
                 }
 
+                String schemaId = null;
+                if (indyCredential) {
+                    schemaId = c.getSchemaId();
+                } else if (CredentialType.SCHEMA_BASED.equals(type)){
+                    schemaId = getSchemaIdFromContext(c);
+                }
+
                 final PartnerCredential pCred = PartnerCredential
                         .builder()
                         .type(type)
-                        .typeLabel(resolveTypeLabel(type, c.getSchemaId()))
+                        .typeLabel(resolveTypeLabel(type, schemaId))
                         .issuer(indyCredential ? c.getIndyIssuer() : c.getIssuer())
-                        .schemaId(c.getSchemaId())
+                        .schemaId(schemaId)
                         .credentialData(node)
                         .indyCredential(indyCredential)
                         .build();
@@ -215,4 +228,22 @@ public class Converter {
         return result;
     }
 
+    private String getSchemaIdFromContext(VerifiableIndyCredential c) {
+        String schemaId = null;
+        JsonArray ja = GsonConfig.defaultConfig().toJsonTree(c.getContext()).getAsJsonArray();
+        for (JsonElement je : ja) {
+            if (je.isJsonObject()) {
+                JsonObject jo = je.getAsJsonObject();
+                JsonElement ctx = jo.getAsJsonObject("@context");
+                if (ctx != null) {
+                    JsonElement e = ctx.getAsJsonObject().get("sc");
+                    if (e != null) {
+                        schemaId = e.getAsString().replace(ledgerPrefix, "");
+                        break;
+                    }
+                }
+            }
+        }
+        return schemaId;
+    }
 }

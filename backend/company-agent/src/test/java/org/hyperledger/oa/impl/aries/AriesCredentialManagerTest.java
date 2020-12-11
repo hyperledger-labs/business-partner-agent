@@ -110,7 +110,7 @@ class AriesCredentialManagerTest extends BaseTest {
                 .build());
 
         String iss = mgmt.resolveIssuer(c);
-        assertEquals("Bosch Healthcare Solutions GmbH", iss);
+        assertEquals("Bosch Healthcare", iss);
     }
 
     @Test
