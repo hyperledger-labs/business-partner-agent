@@ -22,11 +22,11 @@
     @click:row="openPresentation"
   >
     <template v-slot:[`item.type`]="{ item }">
-      <div v-if="item.type === CredentialTypes.OTHER.name">
+      <div v-if="item.type === CredentialTypes.UNKNOWN.type">
         {{ item.credentialDefinitionId | credentialTag | capitalize }}
       </div>
       <div v-else>
-        {{ store.getters.getSchemaLabel(item.type, item.schemaId) }}
+        {{ item.typeLabel }}
       </div>
     </template>
     <template v-slot:[`item.state`]="{ item }">
