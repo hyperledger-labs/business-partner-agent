@@ -91,7 +91,7 @@ docker-compose down -v
 If you did not deploy your agent on a server with a public ip it won't have public endpoints to communicate with other agents.
 A simple way to get public endpoints for your agent is to setup [ngrok](https://ngrok.com/).
 
-If you have setup ngrok you can use the `start-with-tunnels.sh` script to start your agent with public endpoints.
+If you have set up ngrok you can use the `start-with-tunnels.sh` script to start your agent with public endpoints. Note that this scripts expects the `ngrok` command to be available in the global path, and additionally requires the `jq` command (which may need to be installed first on your machine).
 ```s
 ./start-with-tunnels.sh
 ```
@@ -100,7 +100,7 @@ To terminate all ngrok tunnels you can use
 ./kill-tunnels.sh
 ```
 
-***BE AWARE:*** If you don't have any security enabled the Business Partner API and and the frontend will be publicly available. This is in particular important when running in Aries mode where the public IP is written to the ledger.
+***BE AWARE:*** If you don't have any security enabled the Business Partner API and the frontend will be publicly available. This is in particular important when running in Aries mode where the public IP is written to the ledger.
 
 ### Setup Security
 
