@@ -9,11 +9,10 @@
 <template>
   <v-container>
     <v-data-table
-      :hide-default-footer="data.length < 10"
       v-model="selected"
       :loading="isBusy"
       :headers="headers"
-      :items="data"
+      :items="partners"
       :show-select="selectable"
       :sort-by="['updatedAt']"
       :sort-desc="[true]"
@@ -31,7 +30,7 @@
           v-bind:state="item.state"
         ></PartnerStateIndicator>
         <span v-bind:class="{ 'font-weight-medium': item.new }">
-          {{ item.name }}
+          {{ partnerName(item.id) }}
         </span>
       </template>
 
@@ -48,6 +47,7 @@
 
 <script>
 import { EventBus } from "../main";
+import { mapActions, mapGetters } from "vuex";
 import { getPartnerProfile, getPartnerName } from "../utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import NewMessageIcon from "@/components/NewMessageIcon";
@@ -86,21 +86,25 @@ export default {
     },
   },
   created() {
-    this.fetch();
+    // this.fetch();
+    this.fetchPartners();
   },
   data: () => {
     return {
       selected: [],
-      data: [],
-      isBusy: true,
     };
   },
   computed: {
-    expertMode() {
-      return this.$store.state.expertMode;
-    },
+    ...mapGetters({
+      isBusy: "isPartnersLoading",
+      expertMode: "expertMode",
+      partners: "getPartners",
+      partnerName: "getPartnerName",
+      // ...
+    }),
   },
   methods: {
+    ...mapActions(["fetchPartners"]),
     open(partner) {
       this.$router.push({
         name: "Partner",

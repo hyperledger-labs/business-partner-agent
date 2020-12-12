@@ -11,13 +11,13 @@ import Vuex from "vuex";
 import { CredentialTypes } from "../constants";
 import taa from "./modules/taa";
 import socketEvents from "./modules/socketevents";
+import partners from "./modules/partners.module";
 import * as actions from "./actions";
 
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
-    partners: [],
     editedDocument: {}, //document currently being edited
     documents: [],
     credentials: [],
@@ -84,6 +84,7 @@ const store = new Vuex.Store({
 
   modules: {
     taa,
+    partners,
     socketEvents,
   },
 });
