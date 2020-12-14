@@ -1,0 +1,47 @@
+<!--
+ Copyright (c) 2020 - for information on the respective copyright owner
+ see the NOTICE file and/or the repository at
+ https://github.com/hyperledger-labs/organizational-agent
+ 
+ SPDX-License-Identifier: Apache-2.0
+-->
+<template>
+  <v-container>
+    <h1>Licenses</h1>
+    <v-row v-for="(item, index) in Licenses" :key="index" class="mx-auto">
+      <v-card
+        v-if="item && !item.ignore"
+        class="mx-auto my-2"
+        style="width: 100%"
+      >
+        <v-card-title class="headline">
+          {{ item.name }}
+        </v-card-title>
+        <v-card-subtitle class="mx-auto">
+          <div>{{ item.authors }}</div>
+          <div><a v-html="item.url" :href="item.url" target="_blank"></a></div>
+          <div>Version: {{ item.version }}</div>
+        </v-card-subtitle>
+        <v-card-text>
+          <h3>{{ item.license }}</h3>
+          <span v-html="item.licenseText"></span>
+        </v-card-text>
+      </v-card>
+    </v-row>
+  </v-container>
+</template>
+
+<script>
+import Licenses from "../../licenses/licenseInfos.json";
+export default {
+  name: "About",
+  components: {},
+  created: () => {},
+  data: () => {
+    return {
+      Licenses,
+    };
+  },
+  methods: {},
+};
+</script>

@@ -26,6 +26,7 @@ import Settings from "../views/Settings.vue";
 import SchemaSettings from "../views/SchemaSettings.vue";
 import Schema from "../views/Schema.vue";
 import AddSchema from "../views/AddSchema.vue";
+import About from "../views/About.vue";
 
 Vue.use(VueRouter);
 
@@ -135,6 +136,11 @@ const routes = [
     name: "Schema",
     component: Schema,
     props: true,
+  },
+  {
+    path: "/app/about",
+    name: "About",
+    component: About,
   },
 ];
 
