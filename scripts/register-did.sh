@@ -14,7 +14,7 @@ elif [[ ${ARCHITECTURE} == "Darwin"* ]]; then
     ARCHITECTURE="Mac"
 fi
 
-if [ "$machine" != "Linux" ] && [ "$machine" != "Mac" ]; then
+if [ "$ARCHITECTURE" != "Linux" ] && [ "$ARCHITECTURE" != "Mac" ]; then
     echo "No Linux or Mac OSX detected. You might need to do some steps manually."
 fi
 
@@ -46,7 +46,7 @@ if curl --fail -s -d $PAYLOAD  -H "Content-Type: application/json" -X POST ${URL
         cp .env-example .env
     fi
     # sed on Mac and Linux work differently
-    if [ "$machine" = "Mac" ]; then
+    if [ "$ARCHITECTURE" = "Mac" ]; then
         sed -i '' '/AGENT_SEED=/c\
         AGENT_SEED='"${SEED}"'
         ' .env
