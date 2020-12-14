@@ -24,6 +24,7 @@ import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Optional;
 
@@ -39,6 +40,7 @@ public class AriesEventHandler extends EventHandler {
 
     private final ProofManager proofMgmt;
 
+    @Inject
     public AriesEventHandler(
             ConnectionManager conMgmt,
             Optional<PingManager> pingMgmt,
