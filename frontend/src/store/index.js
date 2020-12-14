@@ -8,10 +8,10 @@
 
 import Vue from "vue";
 import Vuex from "vuex";
-import { CredentialTypes } from "../constants";
 import taa from "./modules/taa";
 import socketEvents from "./modules/socketevents";
 import * as actions from "./actions";
+import * as getters from "./getters";
 
 Vue.use(Vuex);
 
@@ -27,38 +27,7 @@ const store = new Vuex.Store({
     settings: {},
   },
 
-  getters: {
-    isBusy: (state) => {
-      return state.busyStack > 0;
-    },
-    publicDocumentsAndCredentials: (state) => {
-      var retval = state.credentials
-        .concat(state.documents)
-        .filter((d) => d.isPublic == true);
-      return retval;
-    },
-    organizationalProfile: (state) => {
-      var documents = state.documents.filter(
-        (d) => d.type == CredentialTypes.PROFILE.name
-      );
-      if (documents.length == 1) return documents[0];
-      else return undefined;
-    },
-    getPartnerByDID: (state) => (did) => {
-      return state.partners.find((partner) => {
-        partner.did === did;
-      });
-    },
-    getSettingByKey: (state) => (key) => {
-      if (state.settings && {}.hasOwnProperty.call(state.settings, key)) {
-        return state.settings[key];
-      }
-    },
-    getSettings: (state) => {
-      return state.settings;
-    },
-  },
-
+  getters: getters,
   actions: actions,
 
   mutations: {
@@ -71,7 +40,7 @@ const store = new Vuex.Store({
     loadPartnersFinished(state, payload) {
       state.partners = payload.partners;
     },
-    loadSchemasFinished(state, payload) {
+    setSchemas(state, payload) {
       state.schemas = payload.schemas;
     },
     setExpertMode(state, payload) {

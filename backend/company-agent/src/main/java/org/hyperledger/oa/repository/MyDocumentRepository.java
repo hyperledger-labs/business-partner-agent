@@ -17,12 +17,14 @@
  */
 package org.hyperledger.oa.repository;
 
+import io.micronaut.data.annotation.Id;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.model.MyDocument;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,4 +39,7 @@ public interface MyDocumentRepository extends CrudRepository<MyDocument, UUID> {
     List<MyDocument> findByIsPublicTrue();
 
     boolean existsByTypeEqualsAndIsPublicTrue(CredentialType type);
+
+    // this one is for migration of old agent versions only
+    void updateSchemaId(@Id UUID id, @Nullable String schemaId);
 }

@@ -32,9 +32,9 @@
           </template>
           <v-list>
             <v-list-item
-              v-for="(type, i) in types"
+              v-for="(type, i) in newDocumentTypes"
               :key="i"
-              @click="createDocument(type.name)"
+              @click="createDocument(type)"
             >
               <v-list-item-title>{{ type.label }}</v-list-item-title>
             </v-list-item>
@@ -57,6 +57,11 @@
 import { CredentialTypes } from "../constants";
 import MyCredentialList from "@/components/MyCredentialList";
 import { EventBus } from "../main";
+import {
+  credHeaders,
+  docHeaders,
+} from "@/components/tableHeaders/WalletHeaders";
+
 export default {
   name: "Wallet",
   components: {
@@ -65,104 +70,38 @@ export default {
   created() {
     EventBus.$emit("title", "Wallet");
     this.$store.dispatch("loadDocuments");
-    this.fetchSchemas();
   },
   data: () => {
     return {
       search: "",
       scheams: [],
-      credHeaders: [
-        {
-          text: "Label",
-          value: "label",
-        },
-        {
-          text: "Type",
-          value: "type",
-        },
-        {
-          text: "Issuer",
-          value: "issuer",
-        },
-        {
-          text: "Issued at",
-          value: "issuedAt",
-        },
-        {
-          text: "Public",
-          value: "isPublic",
-        },
-      ],
-      docHeaders: [
-        {
-          text: "Label",
-          value: "label",
-        },
-        {
-          text: "Type",
-          value: "type",
-        },
-        {
-          text: "Created at",
-          value: "createdDate",
-        },
-        {
-          text: "Updated at",
-          value: "updatedDate",
-        },
-        {
-          text: "Public",
-          value: "isPublic",
-        },
-      ],
+      credHeaders: credHeaders,
+      docHeaders: docHeaders,
     };
   },
   methods: {
-    fetchSchemas() {
-      this.$axios
-        .get(`${this.$apiBaseUrl}/admin/schema`)
-        .then((result) => {
-          console.log(result);
-          if ({}.hasOwnProperty.call(result, "data")) {
-            this.schemas = result.data;
-          }
-        })
-        .catch((e) => {
-          this.isBusy = false;
-          if (e.response.status === 404) {
-            this.schemas = [];
-          } else {
-            console.error(e);
-            EventBus.$emit("error", e);
-          }
-        });
-    },
-    createDocument: function (type) {
-      console.log(type);
-
+    createDocument: function (documentType) {
+      documentType =
+        documentType && documentType.type
+          ? documentType
+          : CredentialTypes.UNKNOWN;
       this.$router.push({
         name: "DocumentAdd",
         params: {
-          type: type,
+          type: documentType.type,
+          schemaId: documentType.schemaId,
         },
       });
     },
   },
   computed: {
-    types() {
-      let docTypes = Object.values(CredentialTypes).filter((type) => {
-        return (
-          type.name !== CredentialTypes.OTHER.name &&
-          type.name !== CredentialTypes.COMMERCIAL_REGISTER_CREDENTIAL.name
+    newDocumentTypes() {
+      let docTypes = this.$store.getters.getSchemas;
+      if (this.$store.getters.getOrganizationalProfile) {
+        docTypes = docTypes.filter(
+          (schema) => schema.type !== CredentialTypes.PROFILE.type
         );
-      });
-      // here is the store really useful
-      if (this.$store.getters.organizationalProfile != undefined) {
-        docTypes = docTypes.filter((type) => {
-          return type.name !== CredentialTypes.PROFILE.name;
-        });
       }
-      // docTypes = docTypes.concat(this.schemas)
       return docTypes;
     },
   },

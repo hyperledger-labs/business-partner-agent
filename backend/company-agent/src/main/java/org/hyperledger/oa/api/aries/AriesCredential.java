@@ -18,7 +18,6 @@
 package org.hyperledger.oa.api.aries;
 
 import lombok.*;
-import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.model.MyCredential;
 
 import java.util.Map;
@@ -31,7 +30,6 @@ import java.util.UUID;
 public class AriesCredential {
     private UUID id;
     private Long issuedAt;
-    private CredentialType type;
     private String state;
     private Boolean isPublic;
 
@@ -41,6 +39,7 @@ public class AriesCredential {
     private String connectionId;
 
     private String label;
+    private String typeLabel;
     private Map<String, String> credentialData;
 
     public static class AriesCredentialBuilder {
@@ -51,7 +50,6 @@ public class AriesCredential {
                 .builder()
                 .id(c.getId())
                 .issuedAt(c.getIssuedAt() != null ? c.getIssuedAt().toEpochMilli() : null)
-                .type(c.getType())
                 .state(c.getState())
                 .isPublic(c.getIsPublic())
                 .issuer(c.getIssuer())

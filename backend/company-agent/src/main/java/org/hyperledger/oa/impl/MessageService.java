@@ -98,13 +98,4 @@ public class MessageService {
         log.debug("Found {} session(s), {} of them are stale.", connected.size(), stale.size());
         stale.forEach(connected::remove);
     }
-
-//    @Scheduled(fixedRate = "5s")
-//    public void sendTestMessage() {
-//        this.sendMessage(WebSocketMessageBody.of(WebSocketMessageBody.WebSocketMessage
-//                .builder()
-//                .type(WebSocketMessageBody.WebSocketMessageType.PARTNER)
-//                .build()));
-//        this.cleanupStaleSessions();
-//    }
 }

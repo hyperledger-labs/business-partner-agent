@@ -14,7 +14,6 @@ import vuetify from "./plugins/vuetify";
 import "@babel/polyfill";
 import router from "./router";
 import store from "./store";
-import { CredentialTypes } from "./constants";
 import SortUtil from "./utils/sortUtils";
 
 import VueJsonPretty from "vue-json-pretty";
@@ -79,14 +78,6 @@ Vue.prototype.$axios = axios;
 Vue.prototype.$apiBaseUrl = apiBaseUrl;
 Vue.config.productionTip = false;
 
-Vue.filter("credentialLabel", function (name) {
-  if (!name) return "";
-  let itemOfName = Object.values(CredentialTypes).find((item) => {
-    return item.name === name;
-  });
-  return itemOfName.label;
-});
-
 Vue.filter("credentialTag", function (credDefId) {
   if (!credDefId) return "";
   let pos = credDefId.lastIndexOf(":");
@@ -94,9 +85,9 @@ Vue.filter("credentialTag", function (credDefId) {
 });
 
 Vue.filter("capitalize", function (string) {
-  return string.replace(/\w\S*/g, (w) =>
-    w.replace(/^\w/, (c) => c.toUpperCase())
-  );
+  return string && string !== ""
+    ? string.replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()))
+    : "";
 });
 
 // Get Configuration
@@ -122,6 +113,7 @@ export { EventBus, axios, apiBaseUrl };
 
 console.log(Vue.prototype);
 store.dispatch("loadSettings");
+store.dispatch("loadSchemas");
 
 new Vue({
   vuetify,

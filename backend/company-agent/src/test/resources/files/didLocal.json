@@ -1,7 +1,7 @@
 {
     "didDocument": {
         "id": "did:web:localhost:8020",
-        "publicKey": [
+        "verificationMethod": [
             {
                 "id": "did:web:localhost:8020#key-1",
                 "type": "Ed25519VerificationKey2018",

@@ -30,8 +30,8 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @MicronautTest
 class MyCredentialRepositoryTest extends BaseTest {
@@ -52,7 +52,7 @@ class MyCredentialRepositoryTest extends BaseTest {
 
         MyCredential cred = MyCredential
                 .builder()
-                .type(CredentialType.BANK_ACCOUNT_CREDENTIAL)
+                .type(CredentialType.SCHEMA_BASED)
                 .isPublic(Boolean.TRUE)
                 .connectionId("1")
                 .state("active")

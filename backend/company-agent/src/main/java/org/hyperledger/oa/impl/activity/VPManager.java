@@ -33,11 +33,9 @@ import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.aries.config.TimeUtil;
 import org.hyperledger.oa.api.ApiConstants;
 import org.hyperledger.oa.api.CredentialType;
-import org.hyperledger.oa.api.aries.BankAccount;
-import org.hyperledger.oa.api.aries.BankAccountVC;
 import org.hyperledger.oa.impl.aries.SchemaService;
+import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.impl.util.Converter;
-import org.hyperledger.oa.model.BPASchema;
 import org.hyperledger.oa.model.DidDocWeb;
 import org.hyperledger.oa.model.MyCredential;
 import org.hyperledger.oa.model.MyDocument;
@@ -88,11 +86,7 @@ public class VPManager {
 
         docRepo.findByIsPublicTrue().forEach(doc -> vcs.add(buildFromDocument(doc, myDid)));
 
-        credRepo.findByIsPublicTrue().forEach(cred -> {
-            if (!CredentialType.OTHER.equals(cred.getType())) {
-                vcs.add(buildFromCredential(cred, myDid));
-            }
-        });
+        credRepo.findByIsPublicTrue().forEach(cred -> vcs.add(buildFromCredential(cred)));
 
         // only split up into own method, because of a weird issue that the second
         // thread does
@@ -118,23 +112,19 @@ public class VPManager {
     }
 
     protected VerifiableIndyCredential buildFromDocument(@NonNull MyDocument doc, @NonNull String myDid) {
-        Object subj;
-        if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(doc.getType())) {
-            BankAccount ba = converter.fromMap(doc.getDocument(), BankAccount.class);
-            subj = new BankAccountVC(myDid, ba);
-        } else {
-            final ObjectNode on = converter.fromMap(doc.getDocument(), ObjectNode.class);
-            on.remove("id");
-            on.put("id", myDid);
-            // this is needed because the java client serializes with GSON
-            // and cannot handle Jackson ObjectNode
-            subj = GsonConfig.defaultConfig().fromJson(on.toString(), Object.class);
-        }
+        final ObjectNode on = converter.fromMap(doc.getDocument(), ObjectNode.class);
+        on.remove("id");
+        on.put("id", myDid);
+
+        // this is needed because the java client serializes with GSON
+        // and cannot handle Jackson ObjectNode
+        Object subj = GsonConfig.defaultConfig().fromJson(on.toString(), Object.class);
+
         return VerifiableIndyCredential
                 .builder()
                 .id("urn:" + doc.getId().toString())
                 .type(doc.getType().getType())
-                .context(resolveContext(doc.getType()))
+                .context(resolveContext(doc.getType(), doc.getSchemaId()))
                 .issuanceDate(TimeUtil.currentTimeFormatted())
                 .issuer(myDid)
                 .label(doc.getLabel())
@@ -142,22 +132,14 @@ public class VPManager {
                 .build();
     }
 
-    protected VerifiableIndyCredential buildFromCredential(@NonNull MyCredential cred, @Nullable String myDid) {
+    protected VerifiableIndyCredential buildFromCredential(@NonNull MyCredential cred) {
         final ArrayList<String> type = new ArrayList<>(cred.getType().getType());
         type.add("IndyCredential");
 
-        final ArrayList<Object> context = new ArrayList<>(resolveContext(cred.getType()));
-        context.add(ApiConstants.INDY_CREDENTIAL_SCHEMA);
-
         Credential ariesCred = converter.fromMap(cred.getCredential(), Credential.class);
 
-        Object credSubj;
-        if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(cred.getType())) {
-            BankAccount ba = ariesCred.to(BankAccount.class);
-            credSubj = new BankAccountVC(myDid, ba);
-        } else {
-            credSubj = ariesCred.getAttrs();
-        }
+        final ArrayList<Object> context = new ArrayList<>(resolveContext(cred.getType(), ariesCred.getSchemaId()));
+        context.add(ApiConstants.INDY_CREDENTIAL_SCHEMA);
 
         @SuppressWarnings("rawtypes")
         VerifiableIndyCredentialBuilder builder = VerifiableIndyCredential.builder()
@@ -168,8 +150,8 @@ public class VPManager {
                 .schemaId(ariesCred.getSchemaId())
                 .credDefId(ariesCred.getCredentialDefinitionId())
                 .label(cred.getLabel())
-                .credentialSubject(credSubj);
-        partnerRepo.findByConnectionId(cred.getConnectionId()).ifPresent(p -> builder.indyIssuer(p.getDid()));
+                .indyIssuer(id.getDidPrefix() + AriesStringUtil.credDefIdGetDid(ariesCred.getCredentialDefinitionId()))
+                .credentialSubject(ariesCred.getAttrs());
         return builder.build();
     }
 
@@ -181,33 +163,29 @@ public class VPManager {
         return Optional.empty();
     }
 
-    protected List<Object> resolveContext(@NonNull CredentialType type) {
-        if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(type)
-                || CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(type)) {
+    protected List<Object> resolveContext(@NonNull CredentialType type, @Nullable String schemaId) {
+        if (CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(type)) {
             return type.getContext();
         }
 
         final ArrayList<Object> context = new ArrayList<>(type.getContext());
 
-        schemaService.ifPresent(s -> {
-            BPASchema schema = s.getSchemaFor(type);
-            if (schema != null) {
-                Set<String> attributeNames = schema.getSchemaAttributeNames();
+        schemaService.flatMap(s -> s.getSchemaFor(schemaId)).ifPresent(schema -> {
+            Set<String> attributeNames = schema.getSchemaAttributeNames();
 
-                JsonObject ctx = new JsonObject();
-                JsonObject content = new JsonObject();
-                ctx.add("@context", content);
-                content.add("sc", new JsonPrimitive(id.getDidPrefix() + schema.getSchemaId()));
+            JsonObject ctx = new JsonObject();
+            JsonObject content = new JsonObject();
+            ctx.add("@context", content);
+            content.add("sc", new JsonPrimitive(id.getDidPrefix() + schema.getSchemaId()));
 
-                // filter by did, otherwise there is a cyclic reference in the json-ld parser
-                attributeNames.stream().filter(a -> !"did".equals(a)).forEach(name -> {
-                    JsonObject id = new JsonObject();
-                    id.addProperty("@id", "sc:" + name);
-                    content.add(name, id);
-                });
+            // filter by did, otherwise there is a cyclic reference in the json-ld parser
+            attributeNames.stream().filter(a -> !"did".equals(a)).forEach(name -> {
+                JsonObject id = new JsonObject();
+                id.addProperty("@id", "sc:" + name);
+                content.add(name, id);
+            });
 
-                context.add(ctx);
-            }
+            context.add(ctx);
         });
 
         return context;

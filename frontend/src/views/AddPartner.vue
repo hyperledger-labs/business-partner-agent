@@ -58,7 +58,7 @@
             </v-text-field>
           </v-col>
         </v-row>
-        <Profile v-bind:partner="partner" />
+        <Profile v-if="partnerLoaded" v-bind:partner="partner" />
       </v-container>
       <v-card-actions>
         <v-layout justify-space-between>

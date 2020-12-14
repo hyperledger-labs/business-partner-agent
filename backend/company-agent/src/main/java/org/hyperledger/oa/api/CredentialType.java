@@ -19,12 +19,8 @@ package org.hyperledger.oa.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NonNull;
-import org.hyperledger.oa.impl.util.AriesStringUtil;
 
-import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Document and credential types that the company agent can process.
@@ -32,6 +28,11 @@ import java.util.Locale;
 @Getter
 @AllArgsConstructor
 public enum CredentialType {
+
+    /**
+     * A document that can never be a credential and that is not linked to a schema.
+     * Typed documents use a static context, like it is defined here.
+     */
     ORGANIZATIONAL_PROFILE_CREDENTIAL(
             List.of(
                     ApiConstants.CREDENTIALS_V1,
@@ -40,35 +41,19 @@ public enum CredentialType {
             List.of(
                     "VerifiableCredential",
                     "LabeledCredential",
-                    "OrganizationalProfileCredential"),
-            "masterdata"),
-    BANK_ACCOUNT_CREDENTIAL(
-            List.of(
-                    ApiConstants.CREDENTIALS_V1,
-                    "https://raw.githubusercontent.com/iil-network/contexts/master/bankaccount.json",
-                    "https://raw.githubusercontent.com/iil-network/contexts/master/labeled-credential.jsonld"),
-            List.of(
-                    "VerifiableCredential",
-                    "LabeledCredential",
-                    "BankAccountCredential"),
-            "bank_account"),
-    COMMERCIAL_REGISTER_CREDENTIAL(
+                    "OrganizationalProfileCredential")),
+    /**
+     * A document or indy credential that is linked to a schema and uses an ad hoc
+     * context
+     */
+    SCHEMA_BASED(
             List.of(ApiConstants.CREDENTIALS_V1),
-            List.of("VerifiableCredential"),
-            "commercialregister"),
-    OTHER(
-            List.of(ApiConstants.CREDENTIALS_V1),
-            List.of("VerifiableCredential"),
-            "other");
+            List.of("VerifiableCredential"));
 
     // json-ld
 
     private final List<Object> context;
     private final List<String> type;
-
-    // aries credential tag
-
-    private final String credentialTag;
 
     /**
      * Tries to get the type from the type list
@@ -76,36 +61,13 @@ public enum CredentialType {
      * @param type the list of credential types
      * @return {@link CredentialType} or null when no match was found
      */
-    public static @Nullable CredentialType fromType(List<String> type) {
+    public static CredentialType fromType(List<String> type) {
         for (String t : type) {
             if ("OrganizationalProfileCredential".equals(t)) {
                 return CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL;
-            } else if ("BankAccountCredential".equals(t)) {
-                return CredentialType.BANK_ACCOUNT_CREDENTIAL;
             }
         }
-        return null;
-    }
-
-    /**
-     * Maps the aries schema name to a {@link CredentialType}
-     *
-     * @param schemaId id of the schema, not the schema name
-     * @return {@link CredentialType}
-     */
-    public static CredentialType fromSchemaId(@NonNull String schemaId) {
-        String schemaName = AriesStringUtil.schemaGetName(schemaId);
-        String normalizedName = schemaName.toLowerCase(Locale.US);
-
-        if (ORGANIZATIONAL_PROFILE_CREDENTIAL.getCredentialTag().equals(normalizedName)) {
-            return ORGANIZATIONAL_PROFILE_CREDENTIAL;
-        } else if (COMMERCIAL_REGISTER_CREDENTIAL.getCredentialTag().equals(normalizedName)) {
-            return COMMERCIAL_REGISTER_CREDENTIAL;
-        } else if (normalizedName.contains("bankaccount")
-                || normalizedName.contains(BANK_ACCOUNT_CREDENTIAL.getCredentialTag())) {
-            return BANK_ACCOUNT_CREDENTIAL;
-        }
-        return OTHER;
+        return CredentialType.SCHEMA_BASED;
     }
 
 }

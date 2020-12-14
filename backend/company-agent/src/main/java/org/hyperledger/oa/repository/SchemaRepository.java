@@ -21,7 +21,6 @@ import io.micronaut.data.annotation.Id;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
-import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.model.BPASchema;
 
 import java.util.Optional;
@@ -30,8 +29,6 @@ import java.util.UUID;
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface SchemaRepository extends CrudRepository<BPASchema, UUID> {
     Optional<BPASchema> findBySchemaId(String schemaId);
-
-    Optional<BPASchema> findByType(CredentialType type);
 
     void updateDefaultAttributeName(@Id UUID id, String defaultAttributeName);
 

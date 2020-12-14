@@ -57,6 +57,7 @@ public class PartnerAPI {
     @AllArgsConstructor
     public static final class PartnerCredential {
         private CredentialType type;
+        private String typeLabel;
         private Boolean indyCredential;
         private String issuer;
         private String schemaId;

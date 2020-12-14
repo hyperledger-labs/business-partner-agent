@@ -46,7 +46,9 @@ micronaut:
       expire-after-write: 180s
     did-lookup-cache:
       expire-after-write: 3600s
-    schema-cache:
+    schema-attr-cache:
+      expire-after-write: 1d
+    schema-label-cache:
       expire-after-write: 1d
   executors:
     io:
@@ -110,8 +112,12 @@ oagent:
     username: ${BPA_BOOTSTRAP_UN:admin}
     password: ${BPA_BOOTSTRAP_PW:changeme}
   schemas:
-     #test ledger schemas, can be overwritten / extended when e.g. working with other ledger
-     bank-account:
+    #test ledger schemas, can be overwritten / extended when e.g. working with other ledger
+    bank-account:
       id: "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
       label: "Bank Account"
       defaultAttributeName: "iban"
+    commercial-register:
+      id: "3gLVpb3i5jzvZqWYyesSB3:2:commercialregister:1.2"
+      label: "Commercial Register"
+      defaultAttributeName: "companyName"

@@ -9,12 +9,10 @@
 import { CredentialTypes } from "../constants";
 
 export const getPartnerProfile = (partner) => {
-  if ({}.hasOwnProperty.call(partner, "credential")) {
-    console.log(partner.credential);
+  if (partner && {}.hasOwnProperty.call(partner, "credential")) {
     let partnerProfile = partner.credential.find((cred) => {
-      return cred.type === CredentialTypes.PROFILE.name;
+      return cred.type === CredentialTypes.PROFILE.type;
     });
-
     if (partnerProfile) {
       if ({}.hasOwnProperty.call(partnerProfile, "credentialData")) {
         return partnerProfile.credentialData;
@@ -23,22 +21,30 @@ export const getPartnerProfile = (partner) => {
       }
     }
   }
-
   return null;
 };
 
 export const getPartnerName = (partner) => {
-  if (typeof partner !== "object") {
-    return "";
-  } else if ({}.hasOwnProperty.call(partner, "alias")) {
-    return partner.alias;
-  } else if (
-    {}.hasOwnProperty.call(partner, "profile") &&
-    partner.profile !== null &&
-    {}.hasOwnProperty.call(partner.profile, "legalName")
+  let credential = partner;
+  if (
+    {}.hasOwnProperty.call(partner, "credential") &&
+    Array.isArray(partner.credential)
   ) {
-    return partner.profile.legalName;
-  } else {
-    return partner.id;
+    credential = partner.credential.find((p) => {
+      return p.type === CredentialTypes.PROFILE.type;
+    });
   }
+
+  if (typeof credential !== "object") {
+    return "";
+  }
+
+  if (
+    {}.hasOwnProperty.call(credential, "credentialData") &&
+    {}.hasOwnProperty.call(credential.credentialData, "legalName")
+  ) {
+    return credential.credentialData.legalName;
+  }
+
+  return "";
 };

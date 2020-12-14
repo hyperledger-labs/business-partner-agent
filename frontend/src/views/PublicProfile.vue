@@ -47,9 +47,6 @@ export default {
     Profile,
   },
   computed: {
-    document() {
-      return this.$store.getters.organizationalProfile;
-    },
     isBusy() {
       return this.$store.getters.isBusy;
     },
@@ -59,6 +56,7 @@ export default {
   },
   created() {
     EventBus.$emit("title", "Public Profile");
+    console.log("first load credentials");
     this.$store.dispatch("loadDocuments");
     this.$store.dispatch("loadCredentials");
   },

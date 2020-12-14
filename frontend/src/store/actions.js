@@ -1,4 +1,5 @@
 import moment from "moment";
+import { CredentialTypes } from "../constants";
 import { EventBus, axios, apiBaseUrl } from "../main";
 import { getPartnerProfile } from "../utils/partnerUtils";
 
@@ -6,13 +7,22 @@ export const loadSchemas = async ({ commit }) => {
   axios
     .get(`${apiBaseUrl}/admin/schema`)
     .then((result) => {
-      if ({}.hasOwnProperty.call(result, "data")) {
-        let schemas = result.data;
-        commit({
-          type: "loadSchemasFinished",
-          schemas: schemas,
-        });
-      }
+      let schemas = result.data;
+      schemas.map((schema) => {
+        if ({}.hasOwnProperty.call(schema, "schemaId")) {
+          schema.type = CredentialTypes.SCHEMA_BASED.type;
+        } else if (
+          !{}.hasOwnProperty.call(schema, "schemaId") &&
+          !{}.hasOwnProperty.call(schema, "type")
+        ) {
+          schema.type = CredentialTypes.UNKNOWN.type;
+        }
+      });
+      schemas.unshift(CredentialTypes.PROFILE);
+      commit({
+        type: "setSchemas",
+        schemas: schemas,
+      });
     })
     .catch((e) => {
       console.error(e);
@@ -47,7 +57,6 @@ export const loadDocuments = async ({ commit }) => {
   axios
     .get(`${apiBaseUrl}/wallet/document`)
     .then((result) => {
-      console.log(result);
       if ({}.hasOwnProperty.call(result, "data")) {
         var documents = result.data;
         documents.map((documentIn) => {
@@ -113,37 +122,3 @@ export const loadSettings = async ({ commit }) => {
       EventBus.$emit("error", e);
     });
 };
-// export const completeEditDocument = async ({ state }) => {
-//   if (state.editedDocument.add) {
-//     axios
-//       .post(`${apiBaseUrl}/wallet/document`, {
-//         document: state.editedDocument.document,
-//         isPublic: true, //TODO
-//         type: state.editedDocument.type
-//       })
-//       .then(() => {
-//         this.dispatch('loadDocuments')
-//         EventBus.$emit("success", "Success");
-//       })
-//       .catch((e) => {
-//         console.error(e);
-//         EventBus.$emit("error", e);
-//       });
-//   }
-//   else {
-//     axios
-//       .put(`${apiBaseUrl}/wallet/document/${state.editedDocument.id}`, {
-//         document: state.editedDocument.document,
-//         isPublic: true, //TODO
-//         type: state.editedDocument.type
-//       })
-//       .then(() => {
-//         this.dispatch('loadDocuments')
-//         EventBus.$emit("success", "Success");
-//       })
-//       .catch((e) => {
-//         console.error(e);
-//         EventBus.$emit("error", e);
-//       });
-//   }
-// }

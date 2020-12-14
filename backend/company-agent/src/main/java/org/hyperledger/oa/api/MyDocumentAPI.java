@@ -36,6 +36,8 @@ public class MyDocumentAPI {
     private Long createdDate;
     private Long updatedDate;
     private CredentialType type;
+    private String typeLabel;
+    private String schemaId;
     private Boolean isPublic;
     private String label;
     @Schema(example = "{}")
@@ -45,6 +47,7 @@ public class MyDocumentAPI {
         return MyDocumentAPI.builder()
                 // never set id or createdDate here!
                 .type(req.getType())
+                .schemaId(req.getSchemaId())
                 .isPublic(req.getIsPublic())
                 .label(req.getLabel())
                 .documentData(req.getDocument())

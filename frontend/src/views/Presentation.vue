@@ -12,10 +12,12 @@
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>mdi-chevron-left</v-icon>
         </v-btn>
-        <div v-if="presentation.type === CredentialTypes.OTHER.name">
+        <div v-if="presentation.type === CredentialTypes.UNKNOWN.type">
           {{ presentation.credentialDefinitionId | credentialTag }}
         </div>
-        <div v-else>{{ presentation.type | credentialLabel }}</div>
+        <div v-else>
+          {{ presentation.typeLabel }}
+        </div>
         <v-layout align-end justify-end>
           <v-btn depressed color="red" icon @click="deletePresentation()">
             <v-icon dark>mdi-delete</v-icon>

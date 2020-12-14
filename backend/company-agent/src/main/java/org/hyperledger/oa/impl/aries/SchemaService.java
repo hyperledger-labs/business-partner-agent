@@ -22,12 +22,11 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.oa.api.ApiConstants;
-import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.aries.SchemaAPI;
 import org.hyperledger.oa.api.exception.WrongApiUsageException;
 import org.hyperledger.oa.config.SchemaConfig;
 import org.hyperledger.oa.config.runtime.RequiresAries;
+import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.model.BPASchema;
 import org.hyperledger.oa.repository.SchemaRepository;
 
@@ -53,18 +52,18 @@ public class SchemaService {
 
     // CRUD Methods
 
-    public SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label) {
-        return addSchema(schemaId, label, null, false);
+    public SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label,
+            @Nullable String defaultAttributeName) {
+        return addSchema(schemaId, label, defaultAttributeName, false);
     }
 
     SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label,
             @Nullable String defaultAttributeName, boolean isReadOnly) {
         SchemaAPI result = null;
         String sId = StringUtils.strip(schemaId);
-        final CredentialType credType = CredentialType.fromSchemaId(sId);
 
-        if (schemaRepo.findByType(credType).isPresent()) {
-            throw new WrongApiUsageException("Credential with type: " + credType + " already exists.");
+        if (schemaRepo.findBySchemaId(sId).isPresent()) {
+            throw new WrongApiUsageException("Schema with id: " + sId + " already exists.");
         }
 
         try {
@@ -72,9 +71,8 @@ public class SchemaService {
             if (ariesSchema.isPresent()) {
                 BPASchema dbS = BPASchema.builder()
                         .label(label)
-                        .type(credType)
                         .schemaId(sId)
-                        .schemaAttributeNames(getSchemaAttributeNames(sId))
+                        .schemaAttributeNames(new LinkedHashSet<>(ariesSchema.get().getAttrNames()))
                         .defaultAttributeName(defaultAttributeName)
                         .seqNo(ariesSchema.get().getSeqNo())
                         .isReadOnly(isReadOnly)
@@ -113,20 +111,14 @@ public class SchemaService {
         schemaRepo.deleteById(id);
     }
 
-    public @Nullable BPASchema getSchemaFor(CredentialType type) {
-        BPASchema result = null;
-        final Optional<BPASchema> dbSchema = schemaRepo.findByType(type);
-        if (dbSchema.isPresent()) {
-            result = dbSchema.get();
-        } else if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(type)) {
-            // falling back to defaults
-            result = BPASchema.builder().schemaId(ApiConstants.BANK_ACCOUNT_SCHEMA_ID)
-                    .seqNo(ApiConstants.BANK_ACCOUNT_SCHEMA_SEQ).build();
+    public Optional<BPASchema> getSchemaFor(@Nullable String schemaId) {
+        if (StringUtils.isNotEmpty(schemaId)) {
+            return schemaRepo.findBySchemaId(schemaId);
         }
-        return result;
+        return Optional.empty();
     }
 
-    @Cacheable("schema-cache")
+    @Cacheable("schema-attr-cache")
     public Set<String> getSchemaAttributeNames(@NonNull String schemaId) {
         Set<String> result = new LinkedHashSet<>();
         try {
@@ -137,6 +129,19 @@ public class SchemaService {
             }
         } catch (IOException e) {
             log.error("aca-py not reachable", e);
+        }
+        return result;
+    }
+
+    @Cacheable("schema-label-cache")
+    public @Nullable String getSchemaLabel(@NonNull String schemaId) {
+        String result = null;
+        Optional<BPASchema> schema = schemaRepo.findBySchemaId(schemaId);
+        if (schema.isPresent()) {
+            result = schema.get().getLabel();
+        }
+        if (StringUtils.isEmpty(result)) {
+            result = AriesStringUtil.schemaGetName(schemaId);
         }
         return result;
     }

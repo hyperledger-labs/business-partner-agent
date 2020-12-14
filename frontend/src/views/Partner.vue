@@ -179,6 +179,11 @@ import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import { CredentialTypes } from "../constants";
 import { getPartnerProfile, getPartnerName } from "../utils/partnerUtils";
 import { EventBus } from "../main";
+import {
+  sentHeaders,
+  receivedHeaders,
+} from "@/components/tableHeaders/PartnerHeaders";
+
 export default {
   name: "Partner",
   props: ["id"],
@@ -211,50 +216,8 @@ export default {
       rules: {
         required: (value) => !!value || "Can't be empty",
       },
-      headersSent: [
-        {
-          text: "Type",
-          value: "type",
-        },
-        {
-          text: "Issuer",
-          value: "issuer",
-        },
-        {
-          text: "Sent at",
-          value: "sentAt",
-        },
-        {
-          text: "State",
-          value: "state",
-        },
-        {
-          text: " ",
-          value: "actions",
-        },
-      ],
-      headersReceived: [
-        {
-          text: "Type",
-          value: "type",
-        },
-        {
-          text: "Issuer",
-          value: "issuer",
-        },
-        {
-          text: "Received at",
-          value: "receivedAt",
-        },
-        {
-          text: "State",
-          value: "state",
-        },
-        {
-          text: " ",
-          value: "actions",
-        },
-      ],
+      headersSent: sentHeaders,
+      headersReceived: receivedHeaders,
     };
   },
   computed: {
@@ -408,7 +371,7 @@ export default {
               if ({}.hasOwnProperty.call(this.partner, "credential")) {
                 // Show only creds other than OrgProfile in credential list
                 this.credentials = this.partner.credential.filter((cred) => {
-                  return cred.type !== CredentialTypes.PROFILE.name;
+                  return cred.type !== CredentialTypes.PROFILE.type;
                 });
               }
 
@@ -450,7 +413,6 @@ export default {
           });
       } else {
         this.isBusy = false;
-        console.log("blub");
       }
     },
   },

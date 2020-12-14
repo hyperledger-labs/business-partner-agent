@@ -30,9 +30,7 @@ import org.junit.jupiter.api.Test;
 import javax.inject.Inject;
 import java.util.Optional;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @MicronautTest
 class AriesEventHandlerTest extends BaseTest {

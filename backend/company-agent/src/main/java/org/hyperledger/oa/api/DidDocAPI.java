@@ -18,12 +18,16 @@
 package org.hyperledger.oa.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
+import lombok.*;
+import org.hyperledger.aries.api.ledger.EndpointType;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * API Representation of a did document.
@@ -36,34 +40,43 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonPropertyOrder({ "context", "id", "verificationMethod", "authentication", "service" })
 public class DidDocAPI {
+
+    private static final TypeReference<List<VerificationMethod>> VM_TYPEREF = new TypeReference<>() {
+    };
+    private static final TypeReference<List<Authentication>> AU_TYPEREF = new TypeReference<>() {
+    };
 
     @JsonProperty("@context")
     private final String context = "https://www.w3.org/ns/did/v1";
 
     private String id;
 
-    private List<PublicKey> publicKey;
+    private JsonNode verificationMethod;
+
+    private JsonNode authentication;
 
     private List<Service> service;
 
-    // TODO not compatible with did:evan, because they use a different context,
-    // needs context sensitive parsing
-    // private List<Authentication> authentication;
-
-    /**
-     * @see <a href=
-     *      "https://www.w3.org/TR/did-core/#public-keys">did-core/#public-keys"</a>
-     */
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static final class PublicKey {
+    public static final class VerificationMethod {
         private String id;
         private String type;
-        private String controller;
         private String publicKeyBase58;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static final class Authentication {
+        private String id;
+        private String type;
+        private String verificationMethod;
     }
 
     /**
@@ -80,21 +93,34 @@ public class DidDocAPI {
         private String serviceEndpoint;
     }
 
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static final class Authentication {
-        private String id;
-        private String type;
-        private List<String> publicKey;
+    // workaround for
+    // https://github.com/decentralized-identity/uni-resolver-driver-did-sov/issues/2
+    public List<VerificationMethod> getVerificationMethod(@NonNull ObjectMapper mapper) {
+        List<VerificationMethod> result = List.of();
+        if (verificationMethod != null) {
+            if (JsonNodeType.OBJECT.equals(verificationMethod.getNodeType())) {
+                VerificationMethod meth = mapper.convertValue(verificationMethod, VerificationMethod.class);
+                result = List.of(meth);
+            } else if (JsonNodeType.ARRAY.equals(verificationMethod.getNodeType())) {
+                result = mapper.convertValue(verificationMethod, VM_TYPEREF);
+            }
+        }
+        return result;
     }
 
-    public List<PublicKey> getPublicKey() {
-        if (publicKey == null) {
-            return List.of();
+    // workaround for
+    // https://github.com/decentralized-identity/uni-resolver-driver-did-sov/issues/2
+    public List<Authentication> getAuthentication(@NonNull ObjectMapper mapper) {
+        List<Authentication> result = List.of();
+        if (authentication != null) {
+            if (JsonNodeType.OBJECT.equals(authentication.getNodeType())) {
+                Authentication au = mapper.convertValue(authentication, Authentication.class);
+                result = List.of(au);
+            } else if (JsonNodeType.ARRAY.equals(authentication.getNodeType())) {
+                result = mapper.convertValue(authentication, AU_TYPEREF);
+            }
         }
-        return publicKey;
+        return result;
     }
 
     public List<Service> getService() {
@@ -102,5 +128,22 @@ public class DidDocAPI {
             return List.of();
         }
         return service;
+    }
+
+    public Optional<String> findPublicProfileUrl() {
+        String url = null;
+        Optional<Service> service = getService()
+                .stream()
+                .filter(s -> EndpointType.Profile.getLedgerName().equals(s.getType()))
+                .findFirst();
+        if (service.isPresent()) {
+            url = service.get().getServiceEndpoint();
+        }
+        return Optional.ofNullable(url);
+    }
+
+    public boolean hasAriesEndpoint() {
+        return getService().stream()
+                .anyMatch(s -> EndpointType.Endpoint.getLedgerName().equals(s.getType()));
     }
 }

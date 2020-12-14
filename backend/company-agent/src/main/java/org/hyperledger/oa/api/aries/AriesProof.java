@@ -19,7 +19,6 @@ package org.hyperledger.oa.api.aries;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.*;
-import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.model.PartnerProof;
 
 import javax.annotation.Nullable;
@@ -40,7 +39,7 @@ public class AriesProof {
     // probably not available
     private Long issuedAt;
 
-    private CredentialType type;
+    private String typeLabel;
     private String state;
 
     private String issuer;
@@ -60,7 +59,6 @@ public class AriesProof {
         return b
                 .id(p.getId())
                 .partnerId(p.getPartnerId())
-                .type(p.getType())
                 .state(p.getState())
                 .issuer(p.getIssuer())
                 .schemaId(p.getSchemaId())

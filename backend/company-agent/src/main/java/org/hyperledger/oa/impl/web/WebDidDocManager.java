@@ -17,12 +17,12 @@
  */
 package org.hyperledger.oa.impl.web;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.ledger.EndpointType;
 import org.hyperledger.oa.api.ApiConstants;
 import org.hyperledger.oa.api.DidDocAPI;
-import org.hyperledger.oa.api.DidDocAPI.PublicKey;
 import org.hyperledger.oa.api.DidDocAPI.Service;
 import org.hyperledger.oa.config.runtime.RequiresWeb;
 import org.hyperledger.oa.impl.DidDocManager;
@@ -67,6 +67,12 @@ public class WebDidDocManager implements DidDocManager {
         String myDid = id.getMyDid();
         String myKeyId = id.getMyKeyId(myDid);
 
+        List<DidDocAPI.VerificationMethod> verificationMethods = List.of(DidDocAPI.VerificationMethod.builder()
+                .id(myKeyId)
+                .type(ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE)
+                .publicKeyBase58(verkey)
+                .build());
+
         DidDocAPI didDoc = DidDocAPI.builder()
                 .id(myDid)
                 .service(List.of(
@@ -75,12 +81,7 @@ public class WebDidDocManager implements DidDocManager {
                                 .id(myDid + "#" + EndpointType.Profile.getLedgerName())
                                 .type(EndpointType.Profile.getLedgerName())
                                 .build()))
-                .publicKey(List.of(
-                        PublicKey.builder()
-                                .id(myKeyId)
-                                .type(ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE)
-                                .publicKeyBase58(verkey)
-                                .build()))
+                .verificationMethod(mapper.convertValue(verificationMethods, JsonNode.class))
                 .build();
 
         try {
