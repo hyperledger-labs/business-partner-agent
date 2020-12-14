@@ -93,6 +93,26 @@ public class DidDocAPI {
         private String serviceEndpoint;
     }
 
+    @Deprecated
+    private List<PublicKey> publicKey;
+
+    /**
+     * Not part of the did doc's w3c specification any more, but the universal
+     * resolver still seems to need this for the did:web driver:
+     * 
+     * @deprecated {@link VerificationMethod}
+     */
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Deprecated
+    public static final class PublicKey {
+        private String id;
+        private String type;
+        private String publicKeyBase58;
+    }
+
     // workaround for
     // https://github.com/decentralized-identity/uni-resolver-driver-did-sov/issues/2
     public List<VerificationMethod> getVerificationMethod(@NonNull ObjectMapper mapper) {
@@ -103,21 +123,6 @@ public class DidDocAPI {
                 result = List.of(meth);
             } else if (JsonNodeType.ARRAY.equals(verificationMethod.getNodeType())) {
                 result = mapper.convertValue(verificationMethod, VM_TYPEREF);
-            }
-        }
-        return result;
-    }
-
-    // workaround for
-    // https://github.com/decentralized-identity/uni-resolver-driver-did-sov/issues/2
-    public List<Authentication> getAuthentication(@NonNull ObjectMapper mapper) {
-        List<Authentication> result = List.of();
-        if (authentication != null) {
-            if (JsonNodeType.OBJECT.equals(authentication.getNodeType())) {
-                Authentication au = mapper.convertValue(authentication, Authentication.class);
-                result = List.of(au);
-            } else if (JsonNodeType.ARRAY.equals(authentication.getNodeType())) {
-                result = mapper.convertValue(authentication, AU_TYPEREF);
             }
         }
         return result;

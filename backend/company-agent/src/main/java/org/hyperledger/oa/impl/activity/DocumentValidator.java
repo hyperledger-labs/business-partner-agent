@@ -45,7 +45,7 @@ public class DocumentValidator {
 
     @Inject
     @Setter
-    Optional<SchemaService> schemaService;
+    SchemaService schemaService;
 
     public void validateNew(MyDocumentAPI document) {
         verifyOnlyOneOrgProfile(document);
@@ -70,19 +70,17 @@ public class DocumentValidator {
                 throw new WrongApiUsageException("A document of type indy_credential must have a schema id set.");
             }
             // validate document data against schema
-            if (schemaService.isPresent()) {
-                Optional<BPASchema> schema = schemaService.get().getSchemaFor(document.getSchemaId());
-                if (schema.isPresent()) {
-                    Set<String> attributeNames = schema.get().getSchemaAttributeNames();
-                    // assuming flat structure
-                    document.getDocumentData().fieldNames().forEachRemaining(fn -> {
-                        if (!attributeNames.contains(fn)) {
-                            throw new WrongApiUsageException("Attribute: " + fn + " is not a part of the schema");
-                        }
-                    });
-                } else {
-                    throw new WrongApiUsageException("Schema with id: " + document.getSchemaId() + " does not exist.");
-                }
+            Optional<BPASchema> schema = schemaService.getSchemaFor(document.getSchemaId());
+            if (schema.isPresent()) {
+                Set<String> attributeNames = schema.get().getSchemaAttributeNames();
+                // assuming flat structure
+                document.getDocumentData().fieldNames().forEachRemaining(fn -> {
+                    if (!attributeNames.contains(fn)) {
+                        throw new WrongApiUsageException("Attribute: " + fn + " is not a part of the schema");
+                    }
+                });
+            } else {
+                throw new WrongApiUsageException("Schema with id: " + document.getSchemaId() + " does not exist.");
             }
         }
     }

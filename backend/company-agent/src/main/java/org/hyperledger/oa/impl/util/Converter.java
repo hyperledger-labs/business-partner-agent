@@ -71,7 +71,7 @@ public class Converter {
     ObjectMapper mapper;
 
     @Inject
-    Optional<SchemaService> schemaService;
+    SchemaService schemaService;
 
     public PartnerAPI toAPIObject(@NonNull Partner p) {
         PartnerAPI result;
@@ -113,7 +113,7 @@ public class Converter {
                 String schemaId = null;
                 if (indyCredential) {
                     schemaId = c.getSchemaId();
-                } else if (CredentialType.SCHEMA_BASED.equals(type)){
+                } else if (CredentialType.SCHEMA_BASED.equals(type)) {
                     schemaId = getSchemaIdFromContext(c);
                 }
 
@@ -219,9 +219,8 @@ public class Converter {
     private String resolveTypeLabel(@NonNull CredentialType type, @Nullable String schemaId) {
         String result = null;
         if (CredentialType.SCHEMA_BASED.equals(type)
-                && StringUtils.isNotEmpty(schemaId)
-                && schemaService.isPresent()) {
-            result = schemaService.get().getSchemaLabel(schemaId);
+                && StringUtils.isNotEmpty(schemaId)) {
+            result = schemaService.getSchemaLabel(schemaId);
         } else if (CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(type)) {
             result = ApiConstants.ORG_PROFILE_NAME;
         }

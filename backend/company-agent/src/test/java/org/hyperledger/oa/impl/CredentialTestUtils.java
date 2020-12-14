@@ -32,13 +32,13 @@ public class CredentialTestUtils {
     }
 
     public MyDocumentAPI createDummyCred(CredentialType credType, Boolean isPublic) throws JsonProcessingException {
-        String json = "{ \"f1\":\"Hello\" }";
+        String json = "{ \"iban\":\"Hello\" }";
         JsonNode jsonNode = mapper.readTree(json);
         return MyDocumentAPI.builder()
                 .type(credType)
                 .documentData(jsonNode)
                 .isPublic(isPublic)
-                .schemaId(CredentialType.SCHEMA_BASED.equals(credType) ? "testSchema" : null)
+                .schemaId(CredentialType.SCHEMA_BASED.equals(credType) ? "did:sov:iil:1234" : null)
                 .build();
     }
 }

@@ -60,7 +60,7 @@ public class Identity {
     CachingAriesClient acaCache;
 
     @Inject
-    private URClient ur;
+    URClient ur;
 
     @Inject
     ObjectMapper mapper;

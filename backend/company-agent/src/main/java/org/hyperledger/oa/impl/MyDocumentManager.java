@@ -18,6 +18,7 @@
 package org.hyperledger.oa.impl;
 
 import lombok.NonNull;
+import lombok.Setter;
 import org.hyperledger.oa.api.MyDocumentAPI;
 import org.hyperledger.oa.api.exception.WrongApiUsageException;
 import org.hyperledger.oa.impl.activity.DocumentValidator;
@@ -48,18 +49,19 @@ public class MyDocumentManager {
     Converter converter;
 
     @Inject
-    Optional<LabelStrategy> labelStrategy;
+    LabelStrategy labelStrategy;
 
     @Inject
-    Optional<SchemaService> schemaService;
+    SchemaService schemaService;
 
     @Inject
+    @Setter
     DocumentValidator validator;
 
     public MyDocumentAPI saveNewDocument(@NonNull MyDocumentAPI apiDoc) {
         validator.validateNew(apiDoc);
 
-        labelStrategy.ifPresent(strategy -> strategy.apply(apiDoc));
+        labelStrategy.apply(apiDoc);
         final MyDocument dbDoc = docRepo.save(converter.toModelObject(apiDoc));
 
         if (apiDoc.getIsPublic()) { // new credential, so no need to change the VP when it's private
@@ -73,7 +75,7 @@ public class MyDocumentManager {
         if (dbCred.isPresent()) {
             validator.validateExisting(dbCred, apiDoc);
 
-            labelStrategy.ifPresent(strategy -> strategy.apply(apiDoc));
+            labelStrategy.apply(apiDoc);
             MyDocument dbDoc = converter.updateMyCredential(apiDoc, dbCred.get());
             docRepo.update(dbDoc);
 

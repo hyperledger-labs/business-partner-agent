@@ -70,7 +70,6 @@ public class VPManager {
     @Inject
     CryptoManager crypto;
 
-    // TODO needs to be refactored once the web mode is replaced
     @Inject
     @Setter
     Optional<SchemaService> schemaService;
@@ -103,7 +102,7 @@ public class VPManager {
             vpBuilder.verifiableCredential(null);
         }
         crypto.sign(vpBuilder.build())
-                .ifPresent(vp -> getVerifiablePresentationInternal().ifPresentOrElse(
+                .ifPresent(vp -> didRepo.findDidDocSingle().ifPresentOrElse(
                         didWeb -> didRepo.updateProfileJson(didWeb.getId(), converter.toMap(vp)),
                         () -> didRepo.save(DidDocWeb
                                 .builder()
@@ -156,7 +155,7 @@ public class VPManager {
     }
 
     public Optional<VerifiablePresentation<VerifiableIndyCredential>> getVerifiablePresentation() {
-        final Optional<DidDocWeb> dbVP = getVerifiablePresentationInternal();
+        final Optional<DidDocWeb> dbVP = didRepo.findDidDocSingle();
         if (dbVP.isPresent() && dbVP.get().getProfileJson() != null) {
             return Optional.of(converter.fromMap(dbVP.get().getProfileJson(), Converter.VP_TYPEREF));
         }
@@ -191,15 +190,4 @@ public class VPManager {
         return context;
     }
 
-    private Optional<DidDocWeb> getVerifiablePresentationInternal() {
-        Optional<DidDocWeb> result = Optional.empty();
-        final Iterator<DidDocWeb> iterator = didRepo.findAll().iterator();
-        if (iterator.hasNext()) {
-            result = Optional.of(iterator.next());
-            if (iterator.hasNext()) {
-                throw new IllegalStateException("More than one did doc entity found");
-            }
-        }
-        return result;
-    }
 }

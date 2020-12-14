@@ -55,14 +55,12 @@ public class DBOperations {
     }
 
     private void createDefaultUser() {
-        userRepo.findByUsername(username).ifPresentOrElse(u -> {
-            log.info("Bootstrap user already exists, skipping creation");
-        }, () -> {
-            userRepo.save(BPAUser.builder()
-                    .username(username)
-                    .password(new BCryptPasswordEncoder().encode(password))
-                    .roles("ROLE_USER,ROLE_ADMIN")
-                    .build());
-        });
+        userRepo.findByUsername(username)
+                .ifPresentOrElse(u -> log.info("Bootstrap user already exists, skipping creation"),
+                        () -> userRepo.save(BPAUser.builder()
+                                .username(username)
+                                .password(new BCryptPasswordEncoder().encode(password))
+                                .roles("ROLE_USER,ROLE_ADMIN")
+                                .build()));
     }
 }

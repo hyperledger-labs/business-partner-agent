@@ -49,13 +49,13 @@
         <micronaut.openapi.version>2.2.0</micronaut.openapi.version>
         <micronaut.security.version>2.2.0</micronaut.security.version>
         <mockito.version>3.6.28</mockito.version>
-        <pmd.version>6.29.0</pmd.version>
+        <pmd.version>6.30.0</pmd.version>
         <spotbugs.version>4.2.0</spotbugs.version>
-        <testcontainers.version>1.15.0</testcontainers.version>
+        <testcontainers.version>1.15.1</testcontainers.version>
         <!-- Plugin Versions -->
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
         <maven.failsafe.plugin.version>2.22.2</maven.failsafe.plugin.version>
-        <maven.pmd.plugin.version>3.13.0</maven.pmd.plugin.version>
+        <maven.pmd.plugin.version>3.14.0</maven.pmd.plugin.version>
         <maven.spotbugs.plugin.version>4.1.4</maven.spotbugs.plugin.version>
         <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
     </properties>
@@ -101,7 +101,7 @@
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
-                <version>7.3.0</version>
+                <version>7.3.1</version>
             </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
@@ -152,7 +152,7 @@
             <plugin>
                 <groupId>io.micronaut.build</groupId>
                 <artifactId>micronaut-maven-plugin</artifactId>
-                <version>1.1.0</version>
+                <version>1.1.1</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

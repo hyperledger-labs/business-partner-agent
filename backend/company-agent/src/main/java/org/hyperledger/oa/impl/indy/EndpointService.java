@@ -15,7 +15,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.oa.impl.aries;
+package org.hyperledger.oa.impl.indy;
 
 import io.micronaut.context.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +29,7 @@ import org.hyperledger.aries.api.ledger.TAAInfo.TAARecord;
 import org.hyperledger.aries.api.wallet.SetDidEndpointRequest;
 import org.hyperledger.aries.api.wallet.WalletDidResponse;
 import org.hyperledger.oa.api.exception.NetworkException;
+import org.hyperledger.oa.config.runtime.RequiresIndy;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -46,13 +47,15 @@ import java.util.Optional;
  */
 @Slf4j
 @Singleton
+@RequiresIndy
 public class EndpointService {
-    @Inject
-    private AriesClient ac;
 
     private boolean endpointRegistrationRequired = false;
 
     private final Map<String, EndpointType> endpoints;
+
+    @Inject
+    AriesClient ac;
 
     @Inject
     public EndpointService(

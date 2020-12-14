@@ -7,7 +7,6 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.client.LedgerClient;
-import org.hyperledger.oa.config.runtime.RequiresAries;
 import org.hyperledger.oa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.impl.util.Converter;
@@ -21,7 +20,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Singleton
-@RequiresAries
 public class PartnerCredDefLookup {
 
     @Value("${oagent.did.prefix}")

@@ -46,10 +46,10 @@ import java.util.UUID;
 public class WalletController {
 
     @Inject
-    private MyDocumentManager docMgmt;
+    MyDocumentManager docMgmt;
 
     @Inject
-    private Optional<AriesCredentialManager> credMgmt;
+    AriesCredentialManager credMgmt;
 
     // -------------------------------------
     // Document Management
@@ -130,10 +130,7 @@ public class WalletController {
      */
     @Get("/credential")
     public HttpResponse<List<AriesCredential>> getCredentials() {
-        if (credMgmt.isPresent()) {
-            return HttpResponse.ok(credMgmt.get().listCredentials());
-        }
-        return HttpResponse.notFound();
+        return HttpResponse.ok(credMgmt.listCredentials());
     }
 
     /**
@@ -144,11 +141,9 @@ public class WalletController {
      */
     @Get("/credential/{id}")
     public HttpResponse<AriesCredential> getCredentialById(@PathVariable String id) {
-        if (credMgmt.isPresent()) {
-            final Optional<AriesCredential> cred = credMgmt.get().getAriesCredentialById(UUID.fromString(id));
-            if (cred.isPresent()) {
-                return HttpResponse.ok(cred.get());
-            }
+        final Optional<AriesCredential> cred = credMgmt.getAriesCredentialById(UUID.fromString(id));
+        if (cred.isPresent()) {
+            return HttpResponse.ok(cred.get());
         }
         return HttpResponse.notFound();
     }
@@ -164,12 +159,9 @@ public class WalletController {
     public HttpResponse<Void> updateCredential(
             @PathVariable String id,
             @Body WalletCredentialRequest req) {
-        if (credMgmt.isPresent()) {
-            final Optional<AriesCredential> apiCred = credMgmt.get()
-                    .updateCredentialById(UUID.fromString(id), req.getLabel());
-            if (apiCred.isPresent()) {
-                return HttpResponse.ok();
-            }
+        final Optional<AriesCredential> apiCred = credMgmt.updateCredentialById(UUID.fromString(id), req.getLabel());
+        if (apiCred.isPresent()) {
+            return HttpResponse.ok();
         }
         return HttpResponse.notFound();
     }
@@ -182,11 +174,8 @@ public class WalletController {
      */
     @Delete("/credential/{id}")
     public HttpResponse<Void> deleteCredential(@PathVariable String id) {
-        if (credMgmt.isPresent()) {
-            credMgmt.get().deleteCredentialById(UUID.fromString(id));
-            return HttpResponse.ok();
-        }
-        return HttpResponse.notFound();
+        credMgmt.deleteCredentialById(UUID.fromString(id));
+        return HttpResponse.ok();
     }
 
     /**
@@ -198,11 +187,9 @@ public class WalletController {
     @Put("/credential/{id}/toggle-visibility")
     public HttpResponse<Void> toggleCredentialVisibility(
             @PathVariable String id) {
-        if (credMgmt.isPresent()) {
-            final Optional<MyCredential> cred = credMgmt.get().toggleVisibility(UUID.fromString(id));
-            if (cred.isPresent()) {
-                return HttpResponse.ok();
-            }
+        final Optional<MyCredential> cred = credMgmt.toggleVisibility(UUID.fromString(id));
+        if (cred.isPresent()) {
+            return HttpResponse.ok();
         }
         return HttpResponse.notFound();
     }

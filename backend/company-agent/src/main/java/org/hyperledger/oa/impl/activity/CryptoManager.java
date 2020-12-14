@@ -39,10 +39,10 @@ public class CryptoManager {
 
     @Inject
     @Setter
-    private AriesClient acaPy;
+    AriesClient acaPy;
 
     @Inject
-    private Identity id;
+    Identity id;
 
     /**
      * Self sign a {@link VerifiablePresentation}

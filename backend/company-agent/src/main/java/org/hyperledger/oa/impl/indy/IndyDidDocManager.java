@@ -15,7 +15,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.oa.impl.aries;
+package org.hyperledger.oa.impl.indy;
 
 import io.micronaut.context.annotation.Value;
 import org.hyperledger.aries.api.wallet.WalletDidResponse;
@@ -23,7 +23,7 @@ import org.hyperledger.oa.api.DidDocAPI;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.client.CachingAriesClient;
 import org.hyperledger.oa.client.URClient;
-import org.hyperledger.oa.config.runtime.RequiresAries;
+import org.hyperledger.oa.config.runtime.RequiresIndy;
 import org.hyperledger.oa.impl.DidDocManager;
 
 import javax.inject.Inject;
@@ -32,8 +32,8 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Singleton
-@RequiresAries
-public class AriesDidDocManager implements DidDocManager {
+@RequiresIndy
+public class IndyDidDocManager implements DidDocManager {
 
     @Value("${oagent.did.prefix}")
     String didPrefix;

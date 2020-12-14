@@ -18,6 +18,7 @@
 package org.hyperledger.oa.impl;
 
 import io.micronaut.cache.annotation.CacheInvalidate;
+import io.micronaut.context.annotation.Value;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.oa.api.PartnerAPI;
@@ -42,17 +43,20 @@ import java.util.UUID;
 @Singleton
 public class PartnerManager {
 
+    @Value("${oagent.did.prefix}")
+    private String ledgerPrefix;
+
     @Inject
     PartnerRepository repo;
 
     @Inject
     Converter converter;
 
-    @Inject // conditional bean
-    Optional<ConnectionManager> cm;
+    @Inject
+    ConnectionManager cm;
 
     @Inject
-    Optional<PartnerCredDefLookup> credLookup;
+    PartnerCredDefLookup credLookup;
 
     @Inject
     PartnerLookup partnerLookup;
@@ -80,8 +84,8 @@ public class PartnerManager {
 
     public void removePartnerById(@NonNull UUID id) {
         repo.findById(id).ifPresent(p -> {
-            if (p.getConnectionId() != null && cm.isPresent()) {
-                cm.get().removeConnection(p.getConnectionId());
+            if (p.getConnectionId() != null) {
+                cm.removeConnection(p.getConnectionId());
             }
         });
         repo.deleteById(id);
@@ -101,9 +105,11 @@ public class PartnerManager {
                 .setAlias(alias)
                 .setState("requested");
         Partner result = repo.save(partner); // save before creating the connection
-        if (lookupP.getAriesSupport() && cm.isPresent()) {
-            cm.get().createConnection(did, connectionLabel, alias);
-            credLookup.ifPresent(PartnerCredDefLookup::lookupTypesForAllPartnersAsync);
+        if (did.startsWith(ledgerPrefix) && lookupP.getAriesSupport()) {
+            cm.createConnection(did, connectionLabel, alias);
+            credLookup.lookupTypesForAllPartnersAsync();
+        } else if (lookupP.getAriesSupport()) {
+            cm.createConnection(lookupP.getDidDocAPI(), connectionLabel, alias);
         }
         final PartnerAPI apiPartner = converter.toAPIObject(result);
         webhook.convertAndSend(WebhookEventType.PARTNER_ADD, apiPartner);

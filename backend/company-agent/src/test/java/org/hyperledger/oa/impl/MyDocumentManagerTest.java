@@ -31,23 +31,28 @@ import org.hyperledger.oa.api.MyDocumentAPI;
 import org.hyperledger.oa.api.exception.WrongApiUsageException;
 import org.hyperledger.oa.client.CachingAriesClient;
 import org.hyperledger.oa.impl.activity.CryptoManager;
+import org.hyperledger.oa.impl.activity.DocumentValidator;
 import org.hyperledger.oa.impl.activity.Identity;
 import org.hyperledger.oa.impl.activity.VPManager;
+import org.hyperledger.oa.impl.aries.SchemaService;
+import org.hyperledger.oa.model.BPASchema;
 import org.hyperledger.oa.repository.DidDocWebRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import javax.inject.Inject;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-@MicronautTest(environments = { Environment.TEST, "test-aries" })
+@MicronautTest(environments = { Environment.TEST, "test-web" })
 class MyDocumentManagerTest extends RunWithAries {
 
     private static final Gson PRETTY = GsonConfig.prettyPrinter();
@@ -70,6 +75,9 @@ class MyDocumentManagerTest extends RunWithAries {
     @Inject
     DidDocWebRepository didDocRepo;
 
+    @Inject
+    DocumentValidator validator;
+
     private CredentialTestUtils utils;
 
     @BeforeEach
@@ -82,6 +90,15 @@ class MyDocumentManagerTest extends RunWithAries {
         cryptoMgmt.setAcaPy(ac);
         id.setAcaPy(ac);
         cAC.setAc(ac);
+
+        SchemaService s = Mockito.mock(SchemaService.class);
+        Mockito.when(s.getSchemaFor(Mockito.anyString())).thenReturn(Optional.of(BPASchema
+                .builder()
+                .label("dummy")
+                .schemaAttributeNames(Set.of("iban"))
+                .build()));
+        validator.setSchemaService(s);
+        mgmt.setValidator(validator);
     }
 
     @AfterEach

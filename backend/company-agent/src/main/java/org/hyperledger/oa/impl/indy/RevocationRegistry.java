@@ -15,7 +15,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.oa.impl.aries;
+package org.hyperledger.oa.impl.indy;
 
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.util.CollectionUtils;
@@ -29,7 +29,7 @@ import org.hyperledger.aries.api.creddef.CredentialDefinition.CredentialDefiniti
 import org.hyperledger.aries.api.creddef.CredentialDefinition.CredentialDefinitionsCreated;
 import org.hyperledger.aries.api.creddef.CredentialDefinitionFilter;
 import org.hyperledger.aries.api.revocation.*;
-import org.hyperledger.oa.config.runtime.RequiresAries;
+import org.hyperledger.oa.config.runtime.RequiresIndy;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -44,7 +44,7 @@ import java.util.Optional;
  */
 @Slf4j
 @Singleton
-@RequiresAries
+@RequiresIndy
 public class RevocationRegistry {
 
     @Inject

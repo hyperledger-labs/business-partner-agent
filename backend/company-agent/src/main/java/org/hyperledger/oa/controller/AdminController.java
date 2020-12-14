@@ -32,7 +32,7 @@ import org.hyperledger.oa.config.RuntimeConfig;
 import org.hyperledger.oa.controller.api.admin.AddSchemaRequest;
 import org.hyperledger.oa.controller.api.admin.TAADigestRequest;
 import org.hyperledger.oa.controller.api.admin.UpdateSchemaRequest;
-import org.hyperledger.oa.impl.aries.EndpointService;
+import org.hyperledger.oa.impl.indy.EndpointService;
 import org.hyperledger.oa.impl.aries.SchemaService;
 
 import javax.inject.Inject;
@@ -48,7 +48,7 @@ import java.util.UUID;
 public class AdminController {
 
     @Inject
-    Optional<SchemaService> schemaService;
+    SchemaService schemaService;
 
     @Inject
     Optional<EndpointService> endpointService;
@@ -66,10 +66,7 @@ public class AdminController {
      */
     @Get("/schema")
     public HttpResponse<List<SchemaAPI>> listSchemas() {
-        if (schemaService.isPresent()) {
-            return HttpResponse.ok(schemaService.get().listSchemas());
-        }
-        return HttpResponse.notFound();
+        return HttpResponse.ok(schemaService.listSchemas());
     }
 
     /**
@@ -80,11 +77,9 @@ public class AdminController {
      */
     @Get("/schema/{id}")
     public HttpResponse<SchemaAPI> getSchema(@PathVariable UUID id) {
-        if (schemaService.isPresent()) {
-            final Optional<SchemaAPI> schema = schemaService.get().getSchema(id);
-            if (schema.isPresent()) {
-                return HttpResponse.ok(schema.get());
-            }
+        final Optional<SchemaAPI> schema = schemaService.getSchema(id);
+        if (schema.isPresent()) {
+            return HttpResponse.ok(schema.get());
         }
         return HttpResponse.notFound();
     }
@@ -97,11 +92,8 @@ public class AdminController {
      */
     @Post("/schema")
     public HttpResponse<SchemaAPI> addSchema(@Body AddSchemaRequest req) {
-        if (schemaService.isPresent()) {
-            return HttpResponse.ok(schemaService.get().addSchema(req.getSchemaId(), req.getLabel(),
-                    req.getDefaultAttributeName()));
-        }
-        return HttpResponse.notFound();
+        return HttpResponse.ok(schemaService.addSchema(req.getSchemaId(), req.getLabel(),
+                req.getDefaultAttributeName()));
     }
 
     /**
@@ -113,11 +105,9 @@ public class AdminController {
      */
     @Put("/schema/{id}")
     public HttpResponse<SchemaAPI> updateSchema(@PathVariable UUID id, @Body UpdateSchemaRequest req) {
-        if (schemaService.isPresent()) {
-            Optional<SchemaAPI> schemaAPI = schemaService.get().updateSchema(id, req.getDefaultAttribute());
-            if (schemaAPI.isPresent()) {
-                return HttpResponse.ok(schemaAPI.get());
-            }
+        Optional<SchemaAPI> schemaAPI = schemaService.updateSchema(id, req.getDefaultAttribute());
+        if (schemaAPI.isPresent()) {
+            return HttpResponse.ok(schemaAPI.get());
         }
         return HttpResponse.notFound();
     }
@@ -131,11 +121,10 @@ public class AdminController {
      */
     @Delete("/schema/{id}")
     public HttpResponse<Void> removeSchema(@PathVariable UUID id) {
-        if (schemaService.isPresent()) {
-            SchemaService sService = schemaService.get();
-            Optional<SchemaAPI> schema = sService.getSchema(id);
-            if (schema.isPresent() && !schema.get().getIsReadOnly()) {
-                sService.deleteSchema(id);
+        Optional<SchemaAPI> schema = schemaService.getSchema(id);
+        if (schema.isPresent()) {
+            if (!schema.get().getIsReadOnly()) {
+                schemaService.deleteSchema(id);
                 return HttpResponse.ok();
             }
             return HttpResponse.notAllowed();
@@ -178,8 +167,7 @@ public class AdminController {
         if (endpointService.isPresent()) {
             return HttpResponse.ok(endpointService.get().getEndpointRegistrationRequired());
         }
-
-        return HttpResponse.notFound();
+        return HttpResponse.ok(Boolean.FALSE); // not writing to the ledger in this case
     }
 
     /**
@@ -189,10 +177,12 @@ public class AdminController {
      */
     @Get("/taa/get")
     public HttpResponse<TAARecord> getTAARecord() {
-        if (endpointService.isPresent() && endpointService.get().getTAA().isPresent()) {
-            return HttpResponse.ok(endpointService.get().getTAA().get());
+        if (endpointService.isPresent()) {
+            Optional<TAARecord> taa = endpointService.get().getTAA();
+            if (taa.isPresent()) {
+                return HttpResponse.ok(taa.get());
+            }
         }
-
         return HttpResponse.notFound();
     }
 }

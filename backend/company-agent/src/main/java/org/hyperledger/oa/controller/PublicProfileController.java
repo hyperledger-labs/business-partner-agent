@@ -43,10 +43,10 @@ import java.util.Optional;
 public class PublicProfileController {
 
     @Inject
-    private VPManager vpMgmt;
+    VPManager vpMgmt;
 
     @Inject
-    private DidDocManager didDocManager;
+    DidDocManager didDocManager;
 
     @Get("/profile.jsonld")
     public HttpResponse<VerifiablePresentation<VerifiableIndyCredential>> getMasterdata() {

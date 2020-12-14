@@ -38,7 +38,6 @@ import org.hyperledger.oa.api.aries.AriesCredential.AriesCredentialBuilder;
 import org.hyperledger.oa.api.aries.ProfileVC;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.api.exception.PartnerException;
-import org.hyperledger.oa.config.runtime.RequiresAries;
 import org.hyperledger.oa.controller.api.WebSocketMessageBody;
 import org.hyperledger.oa.impl.MessageService;
 import org.hyperledger.oa.impl.activity.VPManager;
@@ -63,7 +62,6 @@ import java.util.UUID;
 
 @Slf4j
 @Singleton
-@RequiresAries
 public class AriesCredentialManager {
 
     @Value("${oagent.did.prefix}")

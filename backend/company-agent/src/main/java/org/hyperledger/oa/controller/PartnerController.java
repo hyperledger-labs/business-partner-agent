@@ -55,16 +55,14 @@ public class PartnerController {
     @Inject
     PartnerLookup partnerLookup;
 
-    // Aries Mode only Beans
+    @Inject
+    AriesCredentialManager credM;
 
     @Inject
-    Optional<AriesCredentialManager> credM;
+    ProofManager proofM;
 
     @Inject
-    Optional<ProofManager> proofM;
-
-    @Inject
-    Optional<PartnerCredDefLookup> credLookup;
+    PartnerCredDefLookup credLookup;
 
     /**
      * Get known partners
@@ -75,8 +73,8 @@ public class PartnerController {
     @Get
     public HttpResponse<List<PartnerAPI>> getPartners(
             @Parameter(description = "schema id") @Nullable @QueryValue String schemaId) {
-        if (StringUtils.isNotBlank(schemaId) && credLookup.isPresent()) {
-            return HttpResponse.ok(credLookup.get().getIssuersFor(schemaId));
+        if (StringUtils.isNotBlank(schemaId)) {
+            return HttpResponse.ok(credLookup.getIssuersFor(schemaId));
         }
         return HttpResponse.ok(pm.getPartners());
     }
@@ -174,14 +172,10 @@ public class PartnerController {
     public HttpResponse<Void> requestCredential(
             @PathVariable String id,
             @Body RequestCredentialRequest credReq) {
-        if (credM.isPresent()) {
-
-            credM.get().sendCredentialRequest(
-                    UUID.fromString(id),
-                    UUID.fromString(credReq.getDocumentId()));
-            return HttpResponse.ok();
-        }
-        return HttpResponse.notFound();
+        credM.sendCredentialRequest(
+                UUID.fromString(id),
+                UUID.fromString(credReq.getDocumentId()));
+        return HttpResponse.ok();
     }
 
     /**
@@ -192,15 +186,11 @@ public class PartnerController {
      */
     @Get("/{id}/credential-types")
     public HttpResponse<List<PartnerCredentialType>> partnerCredentialTypes(@PathVariable String id) {
-        if (credLookup.isPresent()) {
-            final Optional<List<PartnerCredentialType>> credDefs = credLookup.get()
-                    .getPartnerCredDefs(UUID.fromString(id));
-            if (credDefs.isPresent()) {
-                return HttpResponse.ok(credDefs.get());
-            }
-            return HttpResponse.notFound();
+        final Optional<List<PartnerCredentialType>> credDefs = credLookup.getPartnerCredDefs(UUID.fromString(id));
+        if (credDefs.isPresent()) {
+            return HttpResponse.ok(credDefs.get());
         }
-        return HttpResponse.ok();
+        return HttpResponse.notFound();
     }
 
     /**
@@ -214,11 +204,8 @@ public class PartnerController {
     public HttpResponse<Void> requestProof(
             @PathVariable String id,
             @Body RequestProofRequest req) {
-        if (proofM.isPresent()) {
-            proofM.get().sendPresentProofRequest(UUID.fromString(id), req.getCredentialDefinitionId());
-            return HttpResponse.ok();
-        }
-        return HttpResponse.notFound();
+        proofM.sendPresentProofRequest(UUID.fromString(id), req.getCredentialDefinitionId());
+        return HttpResponse.ok();
     }
 
     /**
@@ -232,11 +219,8 @@ public class PartnerController {
     public HttpResponse<Void> sendProof(
             @PathVariable String id,
             @Body SendProofRequest req) {
-        if (proofM.isPresent()) {
-            proofM.get().sendProofProposal(UUID.fromString(id), req.getMyCredentialId());
-            return HttpResponse.ok();
-        }
-        return HttpResponse.notFound();
+        proofM.sendProofProposal(UUID.fromString(id), req.getMyCredentialId());
+        return HttpResponse.ok();
     }
 
     /**
@@ -248,10 +232,7 @@ public class PartnerController {
     @Get("/{id}/proof")
     public HttpResponse<List<AriesProof>> getPartnerProofs(
             @PathVariable String id) {
-        if (proofM.isPresent()) {
-            return HttpResponse.ok(proofM.get().listPartnerProofs(UUID.fromString(id)));
-        }
-        return HttpResponse.notFound();
+        return HttpResponse.ok(proofM.listPartnerProofs(UUID.fromString(id)));
     }
 
     /**
@@ -265,11 +246,9 @@ public class PartnerController {
     public HttpResponse<AriesProof> getPartnerProofById(
             @PathVariable String id,
             @PathVariable String proofId) {
-        if (proofM.isPresent()) {
-            final Optional<AriesProof> proof = proofM.get().getPartnerProofById(UUID.fromString(proofId));
-            if (proof.isPresent()) {
-                return HttpResponse.ok(proof.get());
-            }
+        final Optional<AriesProof> proof = proofM.getPartnerProofById(UUID.fromString(proofId));
+        if (proof.isPresent()) {
+            return HttpResponse.ok(proof.get());
         }
         return HttpResponse.notFound();
     }
@@ -285,7 +264,7 @@ public class PartnerController {
     public HttpResponse<Void> deletePartnerProofById(
             @PathVariable String id,
             @PathVariable String proofId) {
-        proofM.ifPresent(pMgmt -> pMgmt.deletePartnerProof(UUID.fromString(proofId)));
+        proofM.deletePartnerProof(UUID.fromString(proofId));
         return HttpResponse.ok();
     }
 }

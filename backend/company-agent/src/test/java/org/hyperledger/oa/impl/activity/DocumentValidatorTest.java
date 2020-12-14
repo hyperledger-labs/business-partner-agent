@@ -58,7 +58,7 @@ public class DocumentValidatorTest {
 
     @BeforeEach
     void setup() {
-        validator.setSchemaService(Optional.of(schemaService));
+        validator.setSchemaService(schemaService);
     }
 
     @Test
