@@ -23,7 +23,7 @@ import org.hyperledger.oa.api.MyDocumentAPI;
 import org.hyperledger.oa.api.exception.WrongApiUsageException;
 import org.hyperledger.oa.impl.activity.DocumentValidator;
 import org.hyperledger.oa.impl.activity.VPManager;
-import org.hyperledger.oa.impl.aries.LabelStrategy;
+import org.hyperledger.oa.impl.activity.LabelStrategy;
 import org.hyperledger.oa.impl.aries.SchemaService;
 import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.model.MyDocument;

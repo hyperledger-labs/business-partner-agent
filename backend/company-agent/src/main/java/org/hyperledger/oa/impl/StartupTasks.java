@@ -28,8 +28,8 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.oa.impl.activity.VPManager;
 import org.hyperledger.oa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.oa.impl.aries.SchemaService;
-import org.hyperledger.oa.impl.indy.IndyStartupTasks;
-import org.hyperledger.oa.impl.web.WebStartupTasks;
+import org.hyperledger.oa.impl.mode.indy.IndyStartupTasks;
+import org.hyperledger.oa.impl.mode.web.WebStartupTasks;
 import org.hyperledger.oa.model.BPAState;
 import org.hyperledger.oa.repository.BPAStateRepository;
 

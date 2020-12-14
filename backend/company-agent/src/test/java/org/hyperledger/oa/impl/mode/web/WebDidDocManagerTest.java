@@ -15,7 +15,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.oa.impl.web;
+package org.hyperledger.oa.impl.mode.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.env.Environment;

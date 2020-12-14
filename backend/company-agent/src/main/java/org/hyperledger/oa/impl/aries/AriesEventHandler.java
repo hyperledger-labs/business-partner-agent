@@ -36,7 +36,7 @@ public class AriesEventHandler extends EventHandler {
 
     private final Optional<PingManager> pingMgmt;
 
-    private final AriesCredentialManager credMgmt;
+    private final CredentialManager credMgmt;
 
     private final ProofManager proofMgmt;
 
@@ -44,7 +44,7 @@ public class AriesEventHandler extends EventHandler {
     public AriesEventHandler(
             ConnectionManager conMgmt,
             Optional<PingManager> pingMgmt,
-            AriesCredentialManager credMgmt,
+            CredentialManager credMgmt,
             ProofManager proofMgmt) {
         this.conMgmt = conMgmt;
         this.pingMgmt = pingMgmt;

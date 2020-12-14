@@ -15,7 +15,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.oa.impl.indy;
+package org.hyperledger.oa.impl.mode.indy;
 
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.env.Environment;

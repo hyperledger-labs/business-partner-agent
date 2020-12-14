@@ -40,6 +40,7 @@ import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.api.exception.PartnerException;
 import org.hyperledger.oa.controller.api.WebSocketMessageBody;
 import org.hyperledger.oa.impl.MessageService;
+import org.hyperledger.oa.impl.activity.LabelStrategy;
 import org.hyperledger.oa.impl.activity.VPManager;
 import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.impl.util.Converter;
@@ -62,7 +63,7 @@ import java.util.UUID;
 
 @Slf4j
 @Singleton
-public class AriesCredentialManager {
+public class CredentialManager {
 
     @Value("${oagent.did.prefix}")
     String didPrefix;

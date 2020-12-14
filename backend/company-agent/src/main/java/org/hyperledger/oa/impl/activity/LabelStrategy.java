@@ -15,7 +15,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.oa.impl.aries;
+package org.hyperledger.oa.impl.activity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.NonNull;
@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.credential.Credential;
 import org.hyperledger.oa.api.MyDocumentAPI;
 import org.hyperledger.oa.api.aries.AriesCredential;
+import org.hyperledger.oa.impl.aries.SchemaService;
 import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.model.BPASchema;
 

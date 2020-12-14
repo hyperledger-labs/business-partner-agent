@@ -32,7 +32,7 @@ import org.hyperledger.oa.config.RuntimeConfig;
 import org.hyperledger.oa.controller.api.admin.AddSchemaRequest;
 import org.hyperledger.oa.controller.api.admin.TAADigestRequest;
 import org.hyperledger.oa.controller.api.admin.UpdateSchemaRequest;
-import org.hyperledger.oa.impl.indy.EndpointService;
+import org.hyperledger.oa.impl.mode.indy.EndpointService;
 import org.hyperledger.oa.impl.aries.SchemaService;
 
 import javax.inject.Inject;

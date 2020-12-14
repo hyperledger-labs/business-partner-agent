@@ -30,7 +30,7 @@ import org.hyperledger.oa.api.aries.AriesCredential;
 import org.hyperledger.oa.controller.api.wallet.WalletCredentialRequest;
 import org.hyperledger.oa.controller.api.wallet.WalletDocumentRequest;
 import org.hyperledger.oa.impl.MyDocumentManager;
-import org.hyperledger.oa.impl.aries.AriesCredentialManager;
+import org.hyperledger.oa.impl.aries.CredentialManager;
 import org.hyperledger.oa.model.MyCredential;
 
 import javax.inject.Inject;
@@ -49,7 +49,7 @@ public class WalletController {
     MyDocumentManager docMgmt;
 
     @Inject
-    AriesCredentialManager credMgmt;
+    CredentialManager credMgmt;
 
     // -------------------------------------
     // Document Management

@@ -32,7 +32,7 @@ import org.hyperledger.oa.api.aries.AriesProof;
 import org.hyperledger.oa.controller.api.partner.*;
 import org.hyperledger.oa.impl.PartnerManager;
 import org.hyperledger.oa.impl.activity.PartnerLookup;
-import org.hyperledger.oa.impl.aries.AriesCredentialManager;
+import org.hyperledger.oa.impl.aries.CredentialManager;
 import org.hyperledger.oa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.oa.impl.aries.ProofManager;
 
@@ -56,7 +56,7 @@ public class PartnerController {
     PartnerLookup partnerLookup;
 
     @Inject
-    AriesCredentialManager credM;
+    CredentialManager credM;
 
     @Inject
     ProofManager proofM;
