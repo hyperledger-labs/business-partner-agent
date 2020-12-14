@@ -72,6 +72,7 @@ services:
         --label '${AGENT_NAME}' \
         --log-level info \
         ${ACAPY_ADMIN_CONFIG} \
+        ${ACAPY_READ_ONLY_MODE} \
         "
       ]
   postgres:
