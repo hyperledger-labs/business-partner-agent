@@ -85,6 +85,10 @@ export default {
     return {
       settingsHeader: [
         {
+          text: "BPA Name",
+          value: "agentName",
+        },
+        {
           text: "Host",
           value: "host",
         },
@@ -99,18 +103,6 @@ export default {
         {
           text: "Ledger DID Prefix",
           value: "ledgerPrefix",
-        },
-        {
-          text: "Aries Agent Url",
-          value: "acaPyUrl",
-        },
-        {
-          text: "Aries API Key",
-          value: "acaPyApiKey",
-        },
-        {
-          text: "BPA Name",
-          value: "agentName",
         },
       ],
       isEditingColor: false,
