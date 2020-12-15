@@ -25,26 +25,22 @@ export const getPartnerProfile = (partner) => {
 };
 
 export const getPartnerName = (partner) => {
-  let credential = partner;
-  if (
-    {}.hasOwnProperty.call(partner, "credential") &&
-    Array.isArray(partner.credential)
-  ) {
-    credential = partner.credential.find((p) => {
-      return p.type === CredentialTypes.PROFILE.type;
-    });
-  }
-
-  if (typeof credential !== "object") {
+  if (typeof partner !== "object") {
     return "";
-  }
-
-  if (
-    {}.hasOwnProperty.call(credential, "credentialData") &&
-    {}.hasOwnProperty.call(credential.credentialData, "legalName")
+  } else if ({}.hasOwnProperty.call(partner, "alias")) {
+    return partner.alias;
+  } else if (
+    {}.hasOwnProperty.call(partner, "profile") &&
+    partner.profile !== null &&
+    {}.hasOwnProperty.call(partner.profile, "legalName")
   ) {
-    return credential.credentialData.legalName;
+    return partner.profile.legalName;
+  } else {
+    const profile = getPartnerProfile(partner);
+    if (profile && {}.hasOwnProperty.call(profile, "legalName")) {
+      return profile.legalName;
+    } else {
+      return partner.did;
+    }
   }
-
-  return "";
 };
