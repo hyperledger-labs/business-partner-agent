@@ -15,10 +15,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.oa.impl.web;
+package org.hyperledger.oa.impl.mode.web;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micronaut.context.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.ledger.EndpointType;
 import org.hyperledger.oa.api.ApiConstants;
@@ -33,7 +34,6 @@ import org.hyperledger.oa.repository.DidDocWebRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,20 +43,19 @@ import java.util.Optional;
 @RequiresWeb
 public class WebDidDocManager implements DidDocManager {
 
-    @Inject
-    private DidDocWebRepository didRepo;
+    @Value("${oagent.acapy.endpoint}")
+    String acapyEndpoint;
 
     @Inject
-    private ObjectMapper mapper;
+    DidDocWebRepository didRepo;
 
     @Inject
-    private Identity id;
+    ObjectMapper mapper;
 
-    public DidDocAPI createIfNeeded(String host) {
-        Optional<DidDocAPI> dbDid = getDidDocument();
-        if (dbDid.isPresent()) {
-            return dbDid.get();
-        }
+    @Inject
+    Identity id;
+
+    public void createDidDocument(String host) {
 
         String verkey = null;
         final Optional<String> ver = id.getVerkey();
@@ -73,6 +72,12 @@ public class WebDidDocManager implements DidDocManager {
                 .publicKeyBase58(verkey)
                 .build());
 
+        List<DidDocAPI.PublicKey> publicKey = List.of(DidDocAPI.PublicKey.builder()
+                .id(myKeyId)
+                .type(ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE)
+                .publicKeyBase58(verkey)
+                .build());
+
         DidDocAPI didDoc = DidDocAPI.builder()
                 .id(myDid)
                 .service(List.of(
@@ -80,34 +85,36 @@ public class WebDidDocManager implements DidDocManager {
                                 .serviceEndpoint("https://" + host + "/profile.jsonld")
                                 .id(myDid + "#" + EndpointType.Profile.getLedgerName())
                                 .type(EndpointType.Profile.getLedgerName())
+                                .build(),
+                        Service.builder()
+                                .serviceEndpoint(acapyEndpoint)
+                                .id(myDid + "#" + EndpointType.Endpoint.getLedgerName())
+                                .type(EndpointType.Endpoint.getLedgerName())
                                 .build()))
                 .verificationMethod(mapper.convertValue(verificationMethods, JsonNode.class))
+                .publicKey(publicKey)
                 .build();
 
         try {
             Map<String, Object> didDocDb = mapper.convertValue(didDoc, Converter.MAP_TYPEREF);
-            didRepo.save(DidDocWeb.builder().didDoc(didDocDb).build());
+            didRepo.findDidDocSingle().ifPresentOrElse(
+                    dd -> didRepo.updateDidDoc(dd.getId(), didDocDb),
+                    () -> didRepo.save(DidDocWeb.builder().didDoc(didDocDb).build()));
         } catch (IllegalArgumentException e) {
-            log.error("", e);
+            log.error("Could not convert did document", e);
         }
-
-        return didDoc;
     }
 
     @Override
     public Optional<DidDocAPI> getDidDocument() {
         Optional<DidDocAPI> result = Optional.empty();
-        Iterator<DidDocWeb> iterator = didRepo.findAll().iterator();
-        if (iterator.hasNext()) {
+        Optional<DidDocWeb> didDocDB = didRepo.findDidDocSingle();
+        if (didDocDB.isPresent()) {
             try {
-                DidDocWeb db = iterator.next();
-                DidDocAPI api = mapper.convertValue(db.getDidDoc(), DidDocAPI.class);
+                DidDocAPI api = mapper.convertValue(didDocDB.get().getDidDoc(), DidDocAPI.class);
                 result = Optional.of(api);
             } catch (IllegalArgumentException e) {
-                log.error("", e);
-            }
-            if (iterator.hasNext()) {
-                throw new IllegalStateException("More than one did document was found");
+                log.error("Could not convert persisted did document", e);
             }
         }
         return result;

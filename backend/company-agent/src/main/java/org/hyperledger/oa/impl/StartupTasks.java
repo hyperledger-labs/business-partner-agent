@@ -22,14 +22,20 @@ import io.micronaut.context.annotation.Value;
 import io.micronaut.context.env.Environment;
 import io.micronaut.context.event.StartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
+import io.micronaut.scheduling.annotation.Async;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.oa.impl.aries.AriesStartupTasks;
-import org.hyperledger.oa.impl.web.WebStartupTasks;
+import org.hyperledger.aries.AriesClient;
+import org.hyperledger.oa.impl.activity.VPManager;
+import org.hyperledger.oa.impl.aries.PartnerCredDefLookup;
+import org.hyperledger.oa.impl.aries.SchemaService;
+import org.hyperledger.oa.impl.mode.indy.IndyStartupTasks;
+import org.hyperledger.oa.impl.mode.web.WebStartupTasks;
 import org.hyperledger.oa.model.BPAState;
 import org.hyperledger.oa.repository.BPAStateRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.time.Duration;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -39,28 +45,57 @@ import java.util.Optional;
 public class StartupTasks {
 
     @Value("${oagent.web.only}")
-    private Boolean envState;
+    Boolean envState;
+
+    @Value("${oagent.host}")
+    String host;
 
     @Inject
-    private BPAStateRepository stateRepo;
+    BPAStateRepository stateRepo;
 
     @Inject
-    private Optional<WebStartupTasks> webTasks;
+    AriesClient ac;
 
     @Inject
-    private Optional<AriesStartupTasks> ariesTasks;
+    SchemaService schemaService;
 
+    @Inject
+    PartnerCredDefLookup credLookup;
+
+    @Inject
+    VPManager vpMgmt;
+
+    @Inject
+    Optional<WebStartupTasks> webTasks;
+
+    @Inject
+    Optional<IndyStartupTasks> ariesTasks;
+
+    @Async
     @EventListener
     public void onServiceStartedEvent(@SuppressWarnings("unused") StartupEvent startEvent) {
         checkModeChange();
+
+        ac.statusWaitUntilReady(Duration.ofSeconds(60));
+
+        createDefaultSchemas();
 
         if (envState) {
             log.info("Running in Web Only mode.");
             webTasks.ifPresent(WebStartupTasks::onServiceStartedEvent);
         } else {
             log.info("Running in Aries mode");
-            ariesTasks.ifPresent(AriesStartupTasks::onServiceStartedEvent);
+            ariesTasks.ifPresent(IndyStartupTasks::onServiceStartedEvent);
         }
+
+        vpMgmt.getVerifiablePresentation().ifPresentOrElse(
+                vp -> log.info("VP already exists, skipping: {}", host),
+                () -> {
+                    log.info("Creating default public profile for host: {}", host);
+                    vpMgmt.recreateVerifiablePresentation();
+                });
+
+        credLookup.lookupTypesForAllPartnersAsync();
     }
 
     private void checkModeChange() {
@@ -93,5 +128,11 @@ public class StartupTasks {
             }
         }
         return result;
+    }
+
+    private void createDefaultSchemas() {
+        log.debug("Purging and re-setting default schemas.");
+
+        schemaService.resetWriteOnlySchemas();
     }
 }

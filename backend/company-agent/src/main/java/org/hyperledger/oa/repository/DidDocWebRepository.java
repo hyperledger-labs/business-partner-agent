@@ -23,7 +23,9 @@ import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.oa.model.DidDocWeb;
 
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
@@ -32,5 +34,22 @@ public interface DidDocWebRepository extends CrudRepository<DidDocWeb, UUID> {
     void updateDidDoc(@Id UUID id, Map<String, Object> didDoc);
 
     void updateProfileJson(@Id UUID id, Map<String, Object> profileJson);
+
+    /**
+     * Like withe the highlander there can only be one.
+     * 
+     * @return {@link DidDocWeb}
+     */
+    default Optional<DidDocWeb> findDidDocSingle() {
+        Optional<DidDocWeb> result = Optional.empty();
+        final Iterator<DidDocWeb> iterator = findAll().iterator();
+        if (iterator.hasNext()) {
+            result = Optional.of(iterator.next());
+            if (iterator.hasNext()) {
+                throw new IllegalStateException("Found more than one did doc document.");
+            }
+        }
+        return result;
+    }
 
 }

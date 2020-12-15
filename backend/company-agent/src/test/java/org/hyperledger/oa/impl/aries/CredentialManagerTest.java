@@ -38,13 +38,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @MicronautTest
-class AriesCredentialManagerTest extends BaseTest {
+class CredentialManagerTest extends BaseTest {
 
     private static final String CRED_DEF_ID = "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:ba";
     private static final String DID = "did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt";
 
     @Inject
-    AriesCredentialManager mgmt;
+    CredentialManager mgmt;
 
     @Inject
     MyCredentialRepository credRepo;

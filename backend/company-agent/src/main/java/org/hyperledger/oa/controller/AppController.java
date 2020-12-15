@@ -50,7 +50,7 @@ import javax.inject.Inject;
 public class AppController {
 
     @Inject
-    private ResourceResolver res;
+    ResourceResolver res;
 
     @Get(value = "/app/{path:[^\\.]*}", produces = MediaType.TEXT_HTML)
     public HttpResponse<?> refresh(@PathVariable(name = "path") String path) {

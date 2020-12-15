@@ -25,7 +25,6 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.oa.api.aries.SchemaAPI;
 import org.hyperledger.oa.api.exception.WrongApiUsageException;
 import org.hyperledger.oa.config.SchemaConfig;
-import org.hyperledger.oa.config.runtime.RequiresAries;
 import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.model.BPASchema;
 import org.hyperledger.oa.repository.SchemaRepository;
@@ -38,7 +37,6 @@ import java.util.*;
 
 @Slf4j
 @Singleton
-@RequiresAries
 public class SchemaService {
 
     @Inject

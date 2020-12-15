@@ -97,9 +97,13 @@ public class URClient {
                     .url(url2.toString())
                     .build();
             try (Response response = okClient.newCall(request).execute()) {
-                String body = response.body().string();
-                VerifiablePresentation<VerifiableIndyCredential> md = mapper.readValue(body, Converter.VP_TYPEREF);
-                result = Optional.of(md);
+                if (response.isSuccessful() && response.body() != null) {
+                    String body = response.body().string();
+                    VerifiablePresentation<VerifiableIndyCredential> md = mapper.readValue(body, Converter.VP_TYPEREF);
+                    result = Optional.of(md);
+                } else {
+                    log.warn("Could not resolve public profile: {}, {}", response.code(), response.message());
+                }
             }
         } catch (MalformedURLException e) {
             String msg = "Malformed endpoint URL: " + url;

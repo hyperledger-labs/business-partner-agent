@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CredentialManagerIntegrationTest extends RunWithAries {
 
     @Inject
-    AriesCredentialManager mgmt;
+    CredentialManager mgmt;
 
     @Inject
     MyCredentialRepository credRepo;

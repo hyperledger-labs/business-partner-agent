@@ -32,22 +32,30 @@ import java.util.Optional;
 @Singleton
 public class AriesEventHandler extends EventHandler {
 
-    @Inject
-    private Optional<ConnectionManager> conMgmt;
+    private final ConnectionManager conMgmt;
+
+    private final Optional<PingManager> pingMgmt;
+
+    private final CredentialManager credMgmt;
+
+    private final ProofManager proofMgmt;
 
     @Inject
-    private Optional<PingManager> pingMgmt;
-
-    @Inject
-    private Optional<AriesCredentialManager> credMgmt;
-
-    @Inject
-    private Optional<ProofManager> proofMgmt;
+    public AriesEventHandler(
+            ConnectionManager conMgmt,
+            Optional<PingManager> pingMgmt,
+            CredentialManager credMgmt,
+            ProofManager proofMgmt) {
+        this.conMgmt = conMgmt;
+        this.pingMgmt = pingMgmt;
+        this.credMgmt = credMgmt;
+        this.proofMgmt = proofMgmt;
+    }
 
     @Override
     public void handleConnection(ConnectionRecord connection) {
         log.debug("Connection Event: {}", connection);
-        conMgmt.ifPresent(mgmt -> mgmt.handleConnectionEvent(connection));
+        conMgmt.handleConnectionEvent(connection);
     }
 
     @Override
@@ -59,12 +67,12 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleProof(PresentationExchangeRecord proof) {
         log.debug("Present Proof Event: {}", proof);
-        synchronized (this) {
+        synchronized (proofMgmt) {
             if (proof.isVerified() && "verifier".equals(proof.getRole())
                     || "presentation_acked".equals(proof.getState()) && "prover".equals(proof.getRole())) {
-                proofMgmt.ifPresent(mgmt -> mgmt.handleAckedOrVerifiedProofEvent(proof));
+                proofMgmt.handleAckedOrVerifiedProofEvent(proof);
             } else {
-                proofMgmt.ifPresent(mgmt -> mgmt.handleProofEvent(proof));
+                proofMgmt.handleProofEvent(proof);
             }
         }
     }
@@ -74,13 +82,13 @@ public class AriesEventHandler extends EventHandler {
         log.debug("Issue Credential Event: {}", credential);
         // holder events, because I could also be an issuer
         if ("holder".equals(credential.getRole())) {
-            synchronized (this) {
+            synchronized (credMgmt) {
                 if ("credential_received".equals(credential.getState())) {
-                    credMgmt.ifPresent(mgmt -> mgmt.handleStoreCredential(credential));
+                    credMgmt.handleStoreCredential(credential);
                 } else if ("credential_acked".equals(credential.getState())) {
-                    credMgmt.ifPresent(mgmt -> mgmt.handleCredentialAcked(credential));
+                    credMgmt.handleCredentialAcked(credential);
                 } else {
-                    credMgmt.ifPresent(mgmt -> mgmt.handleCredentialEvent(credential));
+                    credMgmt.handleCredentialEvent(credential);
                 }
             }
         }

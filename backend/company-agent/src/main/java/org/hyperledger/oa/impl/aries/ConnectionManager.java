@@ -17,18 +17,22 @@
  */
 package org.hyperledger.oa.impl.aries;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.scheduling.annotation.Async;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.connection.ReceiveInvitationRequest;
 import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.aries.api.ledger.EndpointType;
 import org.hyperledger.aries.api.proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
-import org.hyperledger.oa.config.runtime.RequiresAries;
+import org.hyperledger.oa.api.ApiConstants;
+import org.hyperledger.oa.api.DidDocAPI;
 import org.hyperledger.oa.controller.api.WebSocketMessageBody;
 import org.hyperledger.oa.impl.MessageService;
 import org.hyperledger.oa.impl.activity.DidResolver;
@@ -45,11 +49,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
-@RequiresAries
 public class ConnectionManager {
 
     @Value("${oagent.did.prefix}")
@@ -76,6 +80,16 @@ public class ConnectionManager {
     @Inject
     DidResolver didResolver;
 
+    @Inject
+    ObjectMapper mapper;
+
+    /**
+     * Create a connection based on a public did that is registered on a ledger.
+     * 
+     * @param did   the did like did:iil:123
+     * @param label the connection label
+     * @param alias optional connection alias
+     */
     @Async
     public void createConnection(@NonNull String did, @NonNull String label, @Nullable String alias) {
         try {
@@ -90,35 +104,86 @@ public class ConnectionManager {
         }
     }
 
-    public synchronized void handleConnectionEvent(ConnectionRecord connection) {
-        if (connection.isIncomingConnection()) {
-            partnerRepo.findByConnectionId(connection.getConnectionId())
-                    .ifPresentOrElse(dbP -> partnerRepo.updateState(dbP.getId(), connection.getState()), () -> {
-                        Partner p = Partner
-                                .builder()
-                                .ariesSupport(Boolean.TRUE)
-                                .alias(connection.getTheirLabel()) // event has no alias in this case
-                                .connectionId(connection.getConnectionId())
-                                .did(didPrefix + connection.getTheirDid())
-                                .label(connection.getTheirLabel())
-                                .state(connection.getState())
-                                .incoming(Boolean.TRUE)
-                                .build();
-                        p = partnerRepo.save(p);
-                        didResolver.lookupIncoming(p);
-                        messageService.sendMessage(WebSocketMessageBody.partnerReceived(conv.toAPIObject(p)));
-                    });
+    /**
+     * Create a connection based on information that is found in the partners did
+     * document. Requires at least the endpoint and a verification method to be
+     * present in the did document.
+     * 
+     * @param didDoc {@link DidDocAPI}
+     * @param label  the connection label
+     * @param alias  optional connection alias
+     */
+    @Async
+    public void createConnection(@NonNull DidDocAPI didDoc, @NonNull String label, @Nullable String alias) {
+        // resolve endpoint
+        String endpoint = null;
+        Optional<DidDocAPI.Service> acaPyEndpoint = didDoc.getService()
+                .stream()
+                .filter(s -> EndpointType.Endpoint.getLedgerName().equals(s.getType()))
+                .findFirst();
+        if (acaPyEndpoint.isPresent() && StringUtils.isNotEmpty(acaPyEndpoint.get().getServiceEndpoint())) {
+            endpoint = acaPyEndpoint.get().getServiceEndpoint();
         } else {
-            partnerRepo.findByLabel(connection.getTheirLabel()).ifPresent(dbP -> {
-                if (dbP.getConnectionId() == null) {
-                    dbP.setConnectionId(connection.getConnectionId());
-                    dbP.setState(connection.getState());
-                    partnerRepo.update(dbP);
-                } else {
-                    partnerRepo.updateState(dbP.getId(), connection.getState());
-                }
-            });
+            log.warn("No aca-py endpoint found in the partners did document.");
         }
+
+        // resolve public key
+        String pk = null;
+        Optional<DidDocAPI.VerificationMethod> verificationMethod = didDoc.getVerificationMethod(mapper)
+                .stream()
+                .filter(m -> ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE.equals(m.getType()))
+                .findFirst();
+        if (verificationMethod.isPresent() && StringUtils.isNotEmpty(verificationMethod.get().getPublicKeyBase58())) {
+            pk = verificationMethod.get().getPublicKeyBase58();
+        } else {
+            log.warn("No public key found in the partners did document.");
+        }
+
+        try {
+            if (endpoint != null && pk != null) {
+                ac.connectionsReceiveInvitation(
+                        ReceiveInvitationRequest.builder()
+                                .serviceEndpoint(endpoint)
+                                .recipientKeys(List.of(pk))
+                                .label(label)
+                                .build(),
+                        alias);
+            }
+        } catch (IOException e) {
+            log.error("Could not create aries connection", e);
+        }
+    }
+
+    public synchronized void handleConnectionEvent(ConnectionRecord connection) {
+        partnerRepo.findByLabel(connection.getTheirLabel()).ifPresentOrElse(
+                // connection that originated from this agent
+                dbP -> {
+                    if (dbP.getConnectionId() == null) {
+                        dbP.setConnectionId(connection.getConnectionId());
+                        dbP.setState(connection.getState());
+                        partnerRepo.update(dbP);
+                    } else {
+                        partnerRepo.updateState(dbP.getId(), connection.getState());
+                    }
+                },
+                // connection initiated externally
+                () -> partnerRepo.findByConnectionId(connection.getConnectionId()).ifPresentOrElse(
+                        dbP -> partnerRepo.updateState(dbP.getId(), connection.getState()),
+                        () -> {
+                            Partner p = Partner
+                                    .builder()
+                                    .ariesSupport(Boolean.TRUE)
+                                    .alias(connection.getTheirLabel()) // event has no alias in this case
+                                    .connectionId(connection.getConnectionId())
+                                    .did(didPrefix + connection.getTheirDid())
+                                    .label(connection.getTheirLabel())
+                                    .state(connection.getState())
+                                    .incoming(Boolean.TRUE)
+                                    .build();
+                            p = partnerRepo.save(p);
+                            didResolver.lookupIncoming(p);
+                            messageService.sendMessage(WebSocketMessageBody.partnerReceived(conv.toAPIObject(p)));
+                        }));
     }
 
     public void removeConnection(String connectionId) {

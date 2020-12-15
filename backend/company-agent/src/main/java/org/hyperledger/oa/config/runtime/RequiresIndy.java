@@ -1,7 +1,7 @@
 /*
   Copyright (c) 2020 - for information on the respective copyright owner
   see the NOTICE file and/or the repository at
-  https://github.com/hyperledger-labs/organizational-agent
+  https://github.com/hyperledger-labs/business-partner-agent
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -15,28 +15,18 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.oa.config;
+package org.hyperledger.oa.config.runtime;
 
-import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.context.env.Environment;
-import org.hyperledger.aries.AriesClient;
-import org.hyperledger.oa.RunWithAries;
-import org.mockito.Mockito;
 
-import javax.inject.Singleton;
+import java.lang.annotation.*;
 
-@Factory
-@Requires(env = Environment.TEST)
-public class TestBeans {
-
-    /**
-     * Needs to be injected individually via {@link RunWithAries}
-     *
-     * @return {@link AriesClient}
-     */
-    @Singleton
-    AriesClient getAriesClient() {
-        return Mockito.mock(AriesClient.class);
-    }
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.PACKAGE, ElementType.TYPE })
+@Requires(
+        property = "oagent.web.only",
+        value = "false")
+public @interface RequiresIndy {
+    //
 }

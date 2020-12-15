@@ -27,7 +27,6 @@ import org.hyperledger.aries.api.connection.ConnectionFilter;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.message.PingRequest;
-import org.hyperledger.oa.config.runtime.RequiresAries;
 import org.hyperledger.oa.repository.PartnerRepository;
 
 import javax.inject.Inject;
@@ -42,7 +41,6 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
-@RequiresAries
 @Requires(notEnv = { Environment.TEST })
 public class PingManager {
 

@@ -44,7 +44,7 @@ import javax.inject.Inject;
 public class AriesWebhookController {
 
     @Inject
-    private EventHandler handler;
+    EventHandler handler;
 
     @Post("/log/topic/{eventType}")
     public void logTopic(

@@ -52,13 +52,13 @@ import java.util.Optional;
 public class UserController {
 
     @Inject
-    private UserRepository userRepo;
+    UserRepository userRepo;
 
     @Inject
-    private BCryptPasswordEncoder enc;
+    BCryptPasswordEncoder enc;
 
     @Inject
-    private SessionLoginHandler session;
+    SessionLoginHandler session;
 
     @View("signin")
     @Get("/signin")

@@ -63,6 +63,7 @@ public class PartnerLookup {
                         publicProfileUrl.get(),
                         didDocument.get().getVerificationMethod(mapper));
                 partner.setAriesSupport(didDocument.get().hasAriesEndpoint());
+                partner.setDidDocAPI(didDocument.get());
                 return partner;
             }
             throw new PartnerException("Could not resolve profile endpoint from did document");
@@ -75,7 +76,6 @@ public class PartnerLookup {
         if (profile.isPresent()) {
 
             final PartnerAPI partner = converter.toAPIObject(profile.get());
-            partner.setVerifiablePresentation(profile.get());
 
             String verificationMethod = profile.get().getProof() != null
                     ? profile.get().getProof().getVerificationMethod()

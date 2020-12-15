@@ -36,13 +36,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class AriesEventHandlerTest extends BaseTest {
 
     @Inject
-    AriesEventHandler aeh;
-
-    @Inject
     PartnerProofRepository pRepo;
 
     @Inject
     PartnerRepository partnerRepo;
+
+    @Inject
+    AriesEventHandler aeh;
 
     private final EventParser ep = new EventParser();
 

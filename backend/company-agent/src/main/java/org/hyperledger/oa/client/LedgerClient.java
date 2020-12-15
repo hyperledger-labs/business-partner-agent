@@ -80,16 +80,20 @@ public class LedgerClient {
                     .url(b)
                     .build();
             try (Response response = ok.newCall(request).execute()) {
-                String body = response.body().string();
-                LedgerQueryResult md = mapper.readValue(body, LedgerQueryResult.class);
-                List<PartnerCredentialType> credDefIds = md.getResults()
-                        .stream()
-                        .map(DomainTransaction::getTxnMetadata)
-                        .map(TxnMetadata::getTxnId)
-                        .distinct()
-                        .map(PartnerCredentialType::fromCredDefId)
-                        .collect(Collectors.toList());
-                result = Optional.of(credDefIds);
+                if (response.isSuccessful() && response.body() != null) {
+                    String body = response.body().string();
+                    LedgerQueryResult md = mapper.readValue(body, LedgerQueryResult.class);
+                    List<PartnerCredentialType> credDefIds = md.getResults()
+                            .stream()
+                            .map(DomainTransaction::getTxnMetadata)
+                            .map(TxnMetadata::getTxnId)
+                            .distinct()
+                            .map(PartnerCredentialType::fromCredDefId)
+                            .collect(Collectors.toList());
+                    result = Optional.of(credDefIds);
+                } else {
+                    log.warn("Could not query ledger: {}, {}", response.code(), response.message());
+                }
             }
         } catch (IOException e) {
             log.error("Ledger Explorer Call Failed", e);

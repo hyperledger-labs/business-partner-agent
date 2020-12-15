@@ -15,28 +15,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.oa.config;
+package org.hyperledger.oa;
 
-import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.env.Environment;
-import org.hyperledger.aries.AriesClient;
-import org.hyperledger.oa.RunWithAries;
-import org.mockito.Mockito;
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 
-import javax.inject.Singleton;
-
-@Factory
-@Requires(env = Environment.TEST)
-public class TestBeans {
-
-    /**
-     * Needs to be injected individually via {@link RunWithAries}
-     *
-     * @return {@link AriesClient}
-     */
-    @Singleton
-    AriesClient getAriesClient() {
-        return Mockito.mock(AriesClient.class);
-    }
+@MicronautTest(environments = { Environment.TEST, "test-web" })
+public class ApplicationTestWeb {
 }

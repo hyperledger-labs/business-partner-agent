@@ -15,13 +15,14 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.oa.impl.aries;
+package org.hyperledger.oa.impl.activity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hyperledger.aries.api.credential.Credential;
 import org.hyperledger.oa.api.MyDocumentAPI;
 import org.hyperledger.oa.api.aries.AriesCredential;
+import org.hyperledger.oa.impl.aries.SchemaService;
 import org.hyperledger.oa.model.BPASchema;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
