@@ -95,7 +95,6 @@ public class Converter {
 
     public PartnerAPI toAPIObject(@NonNull VerifiablePresentation<VerifiableIndyCredential> partner) {
         List<PartnerCredential> pc = new ArrayList<>();
-        String alias = null;
         if (partner.getVerifiableCredential() != null) {
             for (VerifiableIndyCredential c : partner.getVerifiableCredential()) {
                 JsonNode node = mapper.convertValue(c.getCredentialSubject(), JsonNode.class);
@@ -106,9 +105,6 @@ public class Converter {
                 }
 
                 CredentialType type = CredentialType.fromType(c.getType());
-                if (CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(type)) {
-                    alias = getAttributeFromJsonNode(node, "legalName");
-                }
 
                 String schemaId = null;
                 if (indyCredential) {
@@ -131,16 +127,8 @@ public class Converter {
         }
         return PartnerAPI.builder()
                 .verifiablePresentation(partner)
-                .alias(alias)
-                .credential(pc).build();
-    }
-
-    public @Nullable String getAttributeFromJsonNode(@NonNull JsonNode node, @NonNull String attribute) {
-        List<String> values = node.findValuesAsText(attribute);
-        if (CollectionUtils.isNotEmpty(values)) {
-            return values.get(0);
-        }
-        return null;
+                .credential(pc)
+                .build();
     }
 
     public Partner toModelObject(String did, PartnerAPI api) {

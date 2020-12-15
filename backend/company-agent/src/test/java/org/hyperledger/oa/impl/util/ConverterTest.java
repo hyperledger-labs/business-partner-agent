@@ -86,8 +86,6 @@ class ConverterTest extends BaseTest {
         assertEquals("did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt", c3.getIssuer());
         assertNotNull(c3.getTypeLabel());
         assertTrue(c3.getIndyCredential());
-
-        assertTrue(partner.getAlias().startsWith("Bosch Healthcare"));
     }
 
     @Test

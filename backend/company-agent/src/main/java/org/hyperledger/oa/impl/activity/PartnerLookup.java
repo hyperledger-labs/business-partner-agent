@@ -76,7 +76,6 @@ public class PartnerLookup {
         if (profile.isPresent()) {
 
             final PartnerAPI partner = converter.toAPIObject(profile.get());
-            partner.setVerifiablePresentation(profile.get());
 
             String verificationMethod = profile.get().getProof() != null
                     ? profile.get().getProof().getVerificationMethod()
