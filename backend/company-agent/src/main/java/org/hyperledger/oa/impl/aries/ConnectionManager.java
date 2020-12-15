@@ -155,16 +155,19 @@ public class ConnectionManager {
     }
 
     public synchronized void handleConnectionEvent(ConnectionRecord connection) {
-        partnerRepo.findByLabel(connection.getTheirLabel()).ifPresentOrElse(dbP -> {
-            if (dbP.getConnectionId() == null) {
-                dbP.setConnectionId(connection.getConnectionId());
-                dbP.setState(connection.getState());
-                partnerRepo.update(dbP);
-            } else {
-                partnerRepo.updateState(dbP.getId(), connection.getState());
-            }
-        }, () -> partnerRepo.findByConnectionId(connection.getConnectionId())
-                .ifPresentOrElse(
+        partnerRepo.findByLabel(connection.getTheirLabel()).ifPresentOrElse(
+                // connection that originated from this agent
+                dbP -> {
+                    if (dbP.getConnectionId() == null) {
+                        dbP.setConnectionId(connection.getConnectionId());
+                        dbP.setState(connection.getState());
+                        partnerRepo.update(dbP);
+                    } else {
+                        partnerRepo.updateState(dbP.getId(), connection.getState());
+                    }
+                },
+                // connection initiated externally
+                () -> partnerRepo.findByConnectionId(connection.getConnectionId()).ifPresentOrElse(
                         dbP -> partnerRepo.updateState(dbP.getId(), connection.getState()),
                         () -> {
                             Partner p = Partner
