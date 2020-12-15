@@ -155,34 +155,32 @@ public class ConnectionManager {
     }
 
     public synchronized void handleConnectionEvent(ConnectionRecord connection) {
-        if (connection.isIncomingConnection()) {
-            partnerRepo.findByConnectionId(connection.getConnectionId())
-                    .ifPresentOrElse(dbP -> partnerRepo.updateState(dbP.getId(), connection.getState()), () -> {
-                        Partner p = Partner
-                                .builder()
-                                .ariesSupport(Boolean.TRUE)
-                                .alias(connection.getTheirLabel()) // event has no alias in this case
-                                .connectionId(connection.getConnectionId())
-                                .did(didPrefix + connection.getTheirDid())
-                                .label(connection.getTheirLabel())
-                                .state(connection.getState())
-                                .incoming(Boolean.TRUE)
-                                .build();
-                        p = partnerRepo.save(p);
-                        didResolver.lookupIncoming(p);
-                        messageService.sendMessage(WebSocketMessageBody.partnerReceived(conv.toAPIObject(p)));
-                    });
-        } else {
-            partnerRepo.findByLabel(connection.getTheirLabel()).ifPresent(dbP -> {
-                if (dbP.getConnectionId() == null) {
-                    dbP.setConnectionId(connection.getConnectionId());
-                    dbP.setState(connection.getState());
-                    partnerRepo.update(dbP);
-                } else {
-                    partnerRepo.updateState(dbP.getId(), connection.getState());
-                }
-            });
-        }
+        partnerRepo.findByLabel(connection.getTheirLabel()).ifPresentOrElse(dbP -> {
+            if (dbP.getConnectionId() == null) {
+                dbP.setConnectionId(connection.getConnectionId());
+                dbP.setState(connection.getState());
+                partnerRepo.update(dbP);
+            } else {
+                partnerRepo.updateState(dbP.getId(), connection.getState());
+            }
+        }, () -> partnerRepo.findByConnectionId(connection.getConnectionId())
+                .ifPresentOrElse(
+                        dbP -> partnerRepo.updateState(dbP.getId(), connection.getState()),
+                        () -> {
+                            Partner p = Partner
+                                    .builder()
+                                    .ariesSupport(Boolean.TRUE)
+                                    .alias(connection.getTheirLabel()) // event has no alias in this case
+                                    .connectionId(connection.getConnectionId())
+                                    .did(didPrefix + connection.getTheirDid())
+                                    .label(connection.getTheirLabel())
+                                    .state(connection.getState())
+                                    .incoming(Boolean.TRUE)
+                                    .build();
+                            p = partnerRepo.save(p);
+                            didResolver.lookupIncoming(p);
+                            messageService.sendMessage(WebSocketMessageBody.partnerReceived(conv.toAPIObject(p)));
+                        }));
     }
 
     public void removeConnection(String connectionId) {
