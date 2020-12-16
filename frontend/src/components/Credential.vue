@@ -74,10 +74,12 @@
 </template>
 
 <script>
-import { getSchema } from "../constants";
 export default {
   props: {
-    isReadOnly: Boolean,
+    isReadOnly: {
+      type: Boolean,
+      default: false,
+    },
     document: Object,
     showOnlyContent: Boolean,
     isNew: Boolean,
@@ -99,35 +101,15 @@ export default {
   },
   computed: {
     schema: function () {
-      let s = getSchema(this.document.type);
-      if (s && {}.hasOwnProperty.call(s, "fields")) {
-        return s;
-        // No known schema. Generate one from data
-        // Todo: Support arrays and objects as fields
-      } else {
-        const dataType = this.documentDataTypes.find((val) => {
-          if (this.document && {}.hasOwnProperty.call(this.document, val)) {
-            return val;
-          }
-        });
-        s = {
-          type: this.document.type,
-          label: "",
-          fields: Object.keys(
-            dataType ? this.intDoc[dataType] : this.intDoc
-          ).map((key) => {
-            return {
-              type: key,
-              label: key
-                ? key.substring(0, 1).toUpperCase() +
-                  key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2")
-                : "",
-            };
-          }),
-        };
-        return s;
+      let schemaTemplate = this.createTemplateFromSchemaId(
+        this.document.schemaId
+      );
+      if (!schemaTemplate) {
+        schemaTemplate = this.createTemplateFromSchema(this.document);
       }
+      return schemaTemplate;
     },
+
     filteredSchemaField() {
       let fields = this.schema.fields;
       if (!this.isReadOnly) {
@@ -162,6 +144,54 @@ export default {
       this.$emit("doc-data-field-changed", isDirty);
     },
 
+    createTemplateFromSchemaId(schemaId) {
+      const schemas = this.$store.getters.getSchemas;
+      let schema = schemas.find((schema) => {
+        return schema.schemaId === schemaId;
+      });
+      if (schema) {
+        //TODO check if fields already available
+        let objectTemplate = Object.assign(schema, {
+          fields: schema.schemaAttributeNames.map((key) => {
+            return {
+              type: key,
+              label: key
+                ? key.substring(0, 1).toUpperCase() +
+                  key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2")
+                : "",
+            };
+          }),
+        });
+        return objectTemplate;
+      }
+      return null;
+    },
+
+    createTemplateFromSchema(objData) {
+      const documentDataTypes = ["documentData", "credentialData", "proofData"];
+      const dataType = documentDataTypes.find((val) => {
+        if (objData && {}.hasOwnProperty.call(objData, val)) {
+          return val;
+        }
+      });
+      const s = {
+        type: objData.type,
+        label: "",
+        fields: Object.keys(dataType ? objData[dataType] : objData).map(
+          (key) => {
+            return {
+              type: key,
+              label: key
+                ? key.substring(0, 1).toUpperCase() +
+                  key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2")
+                : "",
+            };
+          }
+        ),
+      };
+      return s;
+    },
+
     docFieldChanged(propertyName, event) {
       if (this.origIntDoc[propertyName] != event) {
         this.intDoc[propertyName] = event;
@@ -173,10 +203,7 @@ export default {
 
     prepareDocument() {
       //New Document
-      if (
-        !this.document.id &&
-        !{}.hasOwnProperty.call(this.document, "schemaId")
-      ) {
+      if (!this.document.id && !this.document.credentialData) {
         this.documentDataType = this.documentDataTypes[0];
         this.intDoc.label = "";
         this.intDoc[this.documentDataType] = Object.fromEntries(

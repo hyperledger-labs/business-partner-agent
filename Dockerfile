@@ -1,4 +1,4 @@
-FROM maven:3-amazoncorretto-11
+FROM maven:3-amazoncorretto-15
 
 WORKDIR /home/maven/backend
 COPY backend/pom.xml backend/formatter.xml ./
@@ -12,10 +12,10 @@ COPY frontend ../frontend
 
 RUN mvn clean install -P build-frontend -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
 
-FROM adoptopenjdk/openjdk11-openj9:alpine-slim
+FROM amazoncorretto:15-alpine
 COPY --from=0 /home/maven/backend/company-agent/target/organizational-agent*SNAPSHOT.jar organizational-agent.jar
 # COPY --from=0 /home/maven/backend/company-agent/target/generated-resources/licenses ./licenses
 # COPY --from=0 /home/maven/backend/company-agent/target/generated-resources/licenses.xml .
 
 EXPOSE 8080
-CMD java -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dcom.sun.management.jmxremote -noverify ${JAVA_OPTS} -jar organizational-agent.jar
+CMD java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote -noverify ${JAVA_OPTS} -jar organizational-agent.jar

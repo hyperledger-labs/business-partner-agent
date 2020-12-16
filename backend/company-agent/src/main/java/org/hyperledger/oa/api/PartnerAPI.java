@@ -48,8 +48,12 @@ public class PartnerAPI {
     private String did;
     private List<PartnerCredential> credential;
 
-    @JsonIgnore // internal use only
+    // begin: internal use only
+    @JsonIgnore
     private transient VerifiablePresentation<VerifiableIndyCredential> verifiablePresentation;
+    @JsonIgnore
+    private transient DidDocAPI didDocAPI;
+    // end: internal use only
 
     @Data
     @Builder
@@ -57,6 +61,7 @@ public class PartnerAPI {
     @AllArgsConstructor
     public static final class PartnerCredential {
         private CredentialType type;
+        private String typeLabel;
         private Boolean indyCredential;
         private String issuer;
         private String schemaId;

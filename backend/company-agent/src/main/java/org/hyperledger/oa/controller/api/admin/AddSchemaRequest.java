@@ -27,5 +27,9 @@ import javax.annotation.Nullable;
 public class AddSchemaRequest {
     @Nullable
     private String label;
+
     private String schemaId;
+
+    @Nullable
+    private String defaultAttributeName;
 }

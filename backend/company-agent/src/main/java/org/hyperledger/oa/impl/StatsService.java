@@ -17,30 +17,20 @@
  */
 package org.hyperledger.oa.impl;
 
-import io.micronaut.context.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.aries.api.wallet.WalletDidResponse;
 import org.hyperledger.oa.api.CredentialType;
-import org.hyperledger.oa.client.CachingAriesClient;
 import org.hyperledger.oa.controller.api.stats.BPAStats;
+import org.hyperledger.oa.impl.activity.Identity;
 import org.hyperledger.oa.repository.MyCredentialRepository;
 import org.hyperledger.oa.repository.MyDocumentRepository;
 import org.hyperledger.oa.repository.PartnerRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.IOException;
-import java.util.Optional;
 
 @Slf4j
 @Singleton
 public class StatsService {
-
-    @Value("${oagent.did.prefix}")
-    String didPrefix;
-
-    @Inject
-    CachingAriesClient ac;
 
     @Inject
     PartnerRepository partnerRepo;
@@ -51,28 +41,17 @@ public class StatsService {
     @Inject
     MyDocumentRepository docRepo;
 
+    @Inject
+    Identity identity;
+
     public BPAStats collectStats() {
         return BPAStats
                 .builder()
-                .did(resolveMyPublicDid())
+                .did(identity.getMyDid())
                 .profile(docRepo
                         .existsByTypeEqualsAndIsPublicTrue(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL))
                 .partners(partnerRepo.count())
                 .credentials(credRepo.countByStateEquals("credential_acked"))
                 .build();
     }
-
-    private String resolveMyPublicDid() {
-        String did = null;
-        try {
-            final Optional<WalletDidResponse> pubDid = ac.walletDidPublic();
-            if (pubDid.isPresent()) {
-                did = didPrefix + pubDid.get().getDid();
-            }
-        } catch (IOException e) {
-            log.error("aca-py not reachable", e);
-        }
-        return did;
-    }
-
 }

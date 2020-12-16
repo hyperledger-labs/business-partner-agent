@@ -21,33 +21,40 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.config.GsonConfig;
+import org.hyperledger.oa.api.ApiConstants;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.MyDocumentAPI;
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.api.PartnerAPI.PartnerCredential;
+import org.hyperledger.oa.impl.aries.SchemaService;
 import org.hyperledger.oa.model.MyDocument;
 import org.hyperledger.oa.model.Partner;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Singleton
 @NoArgsConstructor
 @AllArgsConstructor
+// TODO this is more a conversion service
 public class Converter {
 
     public static final TypeReference<Map<String, Object>> MAP_TYPEREF = new TypeReference<>() {
@@ -56,9 +63,15 @@ public class Converter {
     public static final TypeReference<VerifiablePresentation<VerifiableIndyCredential>> VP_TYPEREF = new TypeReference<>() {
     };
 
+    @Value("${oagent.did.prefix}")
+    private String ledgerPrefix;
+
     @Inject
     @Setter
-    private ObjectMapper mapper;
+    ObjectMapper mapper;
+
+    @Inject
+    SchemaService schemaService;
 
     public PartnerAPI toAPIObject(@NonNull Partner p) {
         PartnerAPI result;
@@ -83,26 +96,39 @@ public class Converter {
     public PartnerAPI toAPIObject(@NonNull VerifiablePresentation<VerifiableIndyCredential> partner) {
         List<PartnerCredential> pc = new ArrayList<>();
         if (partner.getVerifiableCredential() != null) {
-            partner.getVerifiableCredential().forEach(c -> {
+            for (VerifiableIndyCredential c : partner.getVerifiableCredential()) {
                 JsonNode node = mapper.convertValue(c.getCredentialSubject(), JsonNode.class);
+
                 boolean indyCredential = false;
                 if (CollectionUtils.isNotEmpty(c.getType())) {
                     indyCredential = c.getType().stream().anyMatch("IndyCredential"::equals);
                 }
+
+                CredentialType type = CredentialType.fromType(c.getType());
+
+                String schemaId = null;
+                if (indyCredential) {
+                    schemaId = c.getSchemaId();
+                } else if (CredentialType.SCHEMA_BASED.equals(type)) {
+                    schemaId = getSchemaIdFromContext(c);
+                }
+
                 final PartnerCredential pCred = PartnerCredential
                         .builder()
-                        .type(CredentialType.fromType(c.getType()))
+                        .type(type)
+                        .typeLabel(resolveTypeLabel(type, schemaId))
                         .issuer(indyCredential ? c.getIndyIssuer() : c.getIssuer())
-                        .schemaId(c.getSchemaId())
+                        .schemaId(schemaId)
                         .credentialData(node)
                         .indyCredential(indyCredential)
                         .build();
                 pc.add(pCred);
-            });
+            }
         }
         return PartnerAPI.builder()
                 .verifiablePresentation(partner)
-                .credential(pc).build();
+                .credential(pc)
+                .build();
     }
 
     public Partner toModelObject(String did, PartnerAPI api) {
@@ -138,6 +164,7 @@ public class Converter {
                 .setDocument(data)
                 .setIsPublic(apiDoc.getIsPublic())
                 .setType(apiDoc.getType())
+                .setSchemaId(apiDoc.getSchemaId())
                 .setLabel(apiDoc.getLabel());
         return myDoc;
     }
@@ -150,6 +177,8 @@ public class Converter {
                 .documentData(fromMap(myDoc.getDocument(), JsonNode.class))
                 .isPublic(myDoc.getIsPublic())
                 .type(myDoc.getType())
+                .typeLabel(resolveTypeLabel(myDoc.getType(), myDoc.getSchemaId()))
+                .schemaId(myDoc.getSchemaId())
                 .label(myDoc.getLabel())
                 .build();
     }
@@ -175,4 +204,33 @@ public class Converter {
         return Optional.empty();
     }
 
+    private String resolveTypeLabel(@NonNull CredentialType type, @Nullable String schemaId) {
+        String result = null;
+        if (CredentialType.SCHEMA_BASED.equals(type)
+                && StringUtils.isNotEmpty(schemaId)) {
+            result = schemaService.getSchemaLabel(schemaId);
+        } else if (CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(type)) {
+            result = ApiConstants.ORG_PROFILE_NAME;
+        }
+        return result;
+    }
+
+    private String getSchemaIdFromContext(VerifiableIndyCredential c) {
+        String schemaId = null;
+        JsonArray ja = GsonConfig.defaultConfig().toJsonTree(c.getContext()).getAsJsonArray();
+        for (JsonElement je : ja) {
+            if (je.isJsonObject()) {
+                JsonObject jo = je.getAsJsonObject();
+                JsonElement ctx = jo.getAsJsonObject("@context");
+                if (ctx != null) {
+                    JsonElement e = ctx.getAsJsonObject().get("sc");
+                    if (e != null) {
+                        schemaId = e.getAsString().replace(ledgerPrefix, "");
+                        break;
+                    }
+                }
+            }
+        }
+        return schemaId;
+    }
 }

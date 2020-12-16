@@ -52,15 +52,8 @@ if [ "$MODE" = "diode" ]; then
 	BPA_HOST=$(diode config 2>&1 | awk '/Client address/ { print $5 }').diode.link
 else
     echo "Use ngrok"
-    # Run ngrok
-	if "$BPA_WEB_MODE"; then
-	    NGROK_TUNNELS="businesspartner"
-	    # Remove agent seed such that no public DID gets generated
-	    export AGENT_SEED=""
-	else
-	    NGROK_TUNNELS="acapyendpoint businesspartner"
-	fi
-	
+    NGROK_TUNNELS="acapyendpoint businesspartner"
+
 	echo "Starting ngrok..."	
 	if ! command -v ngrok &> /dev/null
 	then

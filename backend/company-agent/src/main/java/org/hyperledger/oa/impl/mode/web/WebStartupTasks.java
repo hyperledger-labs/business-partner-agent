@@ -15,18 +15,33 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.oa.config.runtime;
+package org.hyperledger.oa.impl.mode.web;
 
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Value;
+import io.micronaut.context.env.Environment;
+import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.oa.config.runtime.RequiresWeb;
 
-import java.lang.annotation.*;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PACKAGE, ElementType.TYPE })
-@Requires(
-        property = "oagent.web.only",
-        value = "false")
-public @interface RequiresAries {
-    //
+@Slf4j
+@Singleton
+@RequiresWeb
+@Requires(notEnv = { Environment.TEST })
+public class WebStartupTasks {
+
+    @Value("${oagent.host}")
+    String host;
+
+    @Inject
+    WebDidDocManager dicDocMgmt;
+
+    public void onServiceStartedEvent() {
+        log.debug("Running web mode startup tasks...");
+
+        log.info("Creating did document for host: {}", host);
+        dicDocMgmt.createDidDocument(host);
+    }
 }

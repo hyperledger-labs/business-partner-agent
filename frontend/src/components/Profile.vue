@@ -18,13 +18,16 @@
         <v-col cols="4">
           <v-row>
             <span class="grey--text text--darken-2 font-weight-medium">
-              <span v-if="item.type === CredentialTypes.OTHER.name">{{
+              <span v-if="item.type === CredentialTypes.UNKNOWN.type">{{
                 item.credentialDefinitionId | credentialTag
               }}</span>
-              <span v-else>{{ item.type | credentialLabel }}</span>
+              <span v-else>{{ item.typeLabel }}</span>
             </span>
           </v-row>
-          <v-row v-if="item.issuer" class="text-caption">
+          <v-row
+            v-if="item.issuer && profile.id !== item.issuer"
+            class="text-caption"
+          >
             verified by {{ item.issuer }}
           </v-row>
           <v-row v-if="item.credentialData && item.credentialData.validFrom">
@@ -57,7 +60,7 @@
 import { CredentialTypes } from "../constants";
 import OrganizationalProfile from "@/components/OrganizationalProfile";
 import Credential from "@/components/Credential";
-import { getPartnerProfile } from "../utils/partnerUtils";
+import { getPartnerProfile } from "@/utils/partnerUtils";
 import { mdiCalendarCheck } from "@mdi/js";
 import { mdiCalendarRemove } from "@mdi/js";
 
@@ -69,9 +72,7 @@ export default {
   props: {
     partner: Object,
   },
-  created() {
-    console.log("Partner: ", this.partner);
-  },
+  created() {},
   data: () => {
     return {
       CredentialTypes: CredentialTypes,
@@ -81,17 +82,13 @@ export default {
   },
   computed: {
     profile: function () {
-      if (this.partner.profile) {
-        return this.partner.profile;
-      } else {
-        return getPartnerProfile(this.partner);
-      }
+      return getPartnerProfile(this.partner);
     },
     credentials: function () {
       let creds = [];
       if ({}.hasOwnProperty.call(this.partner, "credential")) {
         creds = this.partner.credential.filter((cred) => {
-          if (cred.type !== CredentialTypes.PROFILE.name) {
+          if (cred.type !== CredentialTypes.PROFILE.type) {
             return this.prepareCredential(cred);
           }
         });

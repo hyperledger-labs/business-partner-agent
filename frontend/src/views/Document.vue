@@ -17,7 +17,7 @@
         >
           <v-icon dark>mdi-chevron-left</v-icon>
         </v-btn>
-        {{ intDoc.type | credentialLabel }}
+        {{ schemaLabel }}
         <v-layout align-end justify-end>
           <v-btn
             v-if="this.id"
@@ -53,7 +53,7 @@
           </v-list-item-content>
           <v-list-item-action>
             <v-switch
-              :disabled="document.type === CredentialTypes.OTHER.name"
+              :disabled="document.type === CredentialTypes.UNKNOWN.type"
               v-model="document.isPublic"
               @change="fieldModified()"
             ></v-switch>
@@ -75,12 +75,13 @@
               </v-list-item-content>
 
               <v-list-item-action>
+                <!-- TODO übergabe der parameter mit schemaId params {type: { type: meinType schemaId: schemaId }}-->
                 <v-btn
                   v-bind="attrs"
                   icon
                   :to="{
                     name: 'RequestVerification',
-                    params: { documentId: id, type: intDoc.type },
+                    params: { documentId: id, schemaId: intDoc.schemaId },
                   }"
                   :disabled="docModified()"
                 >
@@ -142,9 +143,17 @@ import Credential from "@/components/Credential";
 export default {
   name: "Document",
   props: {
-    id: String,
+    id: {
+      type: String,
+      required: false,
+    },
     type: {
       type: String,
+      required: false,
+    },
+    schemaId: {
+      type: String,
+      required: false,
     },
   },
   created() {
@@ -156,8 +165,8 @@ export default {
     } else {
       EventBus.$emit("title", "Create new Document");
       this.document.type = this.type;
-      this.document.isPublic =
-        this.document.type === CredentialTypes.PROFILE.name ? true : false;
+      this.document.schemaId = this.schemaId;
+      this.document.isPublic = this.isProfile(this.document.type);
       this.isReady = true;
       this.intDoc = { ...this.document };
     }
@@ -178,6 +187,15 @@ export default {
     expertMode() {
       return this.$store.state.expertMode;
     },
+    schemaLabel() {
+      if (this.schemaId) {
+        return this.$store.getters.getSchemaById(this.schemaId).label;
+      } else if (this.type) {
+        return this.$store.getters.getSchemaByType(this.type).label;
+      } else {
+        return null;
+      }
+    },
   },
   watch: {},
   methods: {
@@ -185,7 +203,6 @@ export default {
       this.$axios
         .get(`${this.$apiBaseUrl}/wallet/document/${this.id}`)
         .then((result) => {
-          console.log(result);
           if ({}.hasOwnProperty.call(result, "data")) {
             this.document = result.data;
             this.intDoc = { ...this.document };
@@ -208,6 +225,7 @@ export default {
               ? this.document.documentData.legalName
               : this.document.label,
             type: this.document.type,
+            schemaId: this.document.schemaId,
           })
           .then((res) => {
             console.log(res);
@@ -229,13 +247,15 @@ export default {
 
         // create new document
       } else {
+        const docForSave = {
+          document: this.$refs.doc.intDoc.documentData,
+          label: this.$refs.doc.intDoc.label,
+          isPublic: this.document.isPublic,
+          type: this.type,
+          schemaId: this.schemaId,
+        };
         this.$axios
-          .post(`${this.$apiBaseUrl}/wallet/document`, {
-            document: this.$refs.doc.intDoc.documentData,
-            label: this.$refs.doc.intDoc.label,
-            isPublic: this.document.isPublic,
-            type: this.type,
-          })
+          .post(`${this.$apiBaseUrl}/wallet/document`, docForSave)
           .then((res) => {
             console.log(res);
             this.isBusy = false;
@@ -255,7 +275,6 @@ export default {
       this.$axios
         .delete(`${this.$apiBaseUrl}/wallet/document/${this.id}`)
         .then((result) => {
-          console.log(result);
           if (result.status === 200) {
             EventBus.$emit("success", "Document deleted");
             this.$router.push({
@@ -273,8 +292,8 @@ export default {
         name: "Wallet",
       });
     },
-    isProfile(docType) {
-      return docType === CredentialTypes.PROFILE.name;
+    isProfile(schemaType) {
+      return !this.schemaId && schemaType === CredentialTypes.PROFILE.type;
     },
     fieldModified() {
       const isModified = Object.keys(this.intDoc).find((key) => {

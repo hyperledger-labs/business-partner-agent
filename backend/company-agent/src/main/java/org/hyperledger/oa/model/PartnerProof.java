@@ -26,7 +26,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.hyperledger.oa.api.CredentialType;
 
 import javax.annotation.Nullable;
 import javax.persistence.Entity;
@@ -57,9 +56,6 @@ public class PartnerProof {
 
     @Nullable
     private Instant issuedAt;
-
-    @Nullable
-    private CredentialType type;
 
     @Nullable
     private Boolean valid;

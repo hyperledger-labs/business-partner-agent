@@ -17,6 +17,7 @@
  */
 package org.hyperledger.oa.impl.activity;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.cache.annotation.Cacheable;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
@@ -24,11 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
-import org.hyperledger.aries.api.ledger.EndpointType;
 import org.hyperledger.oa.api.ApiConstants;
 import org.hyperledger.oa.api.DidDocAPI;
-import org.hyperledger.oa.api.DidDocAPI.PublicKey;
-import org.hyperledger.oa.api.DidDocAPI.Service;
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.api.exception.PartnerException;
 import org.hyperledger.oa.client.URClient;
@@ -37,67 +35,52 @@ import org.hyperledger.oa.impl.util.Converter;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
 public class PartnerLookup {
 
     @Inject
-    private Converter converter;
+    Converter converter;
 
     @Inject
-    private URClient ur;
+    URClient ur;
 
     @Inject
-    private CryptoManager crypto;
+    CryptoManager crypto;
+
+    @Inject
+    ObjectMapper mapper;
 
     @Cacheable(cacheNames = { "partner-lookup-cache" })
     public PartnerAPI lookupPartner(@NonNull String did) {
         Optional<DidDocAPI> didDocument = ur.getDidDocument(did);
         if (didDocument.isPresent()) {
-            Optional<Map<String, String>> services = filterServices(didDocument.get());
-            if (services.isPresent()) {
-                PartnerAPI partner = new PartnerAPI();
-                if (services.get().containsKey(EndpointType.Profile.getLedgerName())) {
-                    partner = lookupPartner(
-                            services.get().get(EndpointType.Profile.getLedgerName()),
-                            didDocument.get().getPublicKey());
-                }
-                if (services.get().containsKey(EndpointType.Endpoint.getLedgerName())) {
-                    partner.setAriesSupport(Boolean.TRUE);
-                } else {
-                    partner.setAriesSupport(Boolean.FALSE);
-                }
+            Optional<String> publicProfileUrl = didDocument.get().findPublicProfileUrl();
+            if (publicProfileUrl.isPresent()) {
+                PartnerAPI partner = lookupPartner(
+                        publicProfileUrl.get(),
+                        didDocument.get().getVerificationMethod(mapper));
+                partner.setAriesSupport(didDocument.get().hasAriesEndpoint());
+                partner.setDidDocAPI(didDocument.get());
                 return partner;
             }
-            throw new PartnerException("Could not resolve profile and/or aries endpoint from did document");
+            throw new PartnerException("Could not resolve profile endpoint from did document");
         }
         throw new PartnerException("Could not retrieve did document from universal resolver");
     }
 
-    static Optional<Map<String, String>> filterServices(@NonNull DidDocAPI doc) {
-        Map<String, String> result = null;
-        if (doc.getService() != null) {
-            result = doc.getService().stream()
-                    .filter(s -> EndpointType.Profile.getLedgerName().equals(s.getType())
-                            || EndpointType.Endpoint.getLedgerName().equals(s.getType()))
-                    .collect(Collectors.toMap(Service::getType, Service::getServiceEndpoint));
-        }
-        return Optional.ofNullable(result);
-    }
-
-    PartnerAPI lookupPartner(@NonNull String endpoint, List<PublicKey> publicKey) {
+    PartnerAPI lookupPartner(@NonNull String endpoint, List<DidDocAPI.VerificationMethod> verificationMethods) {
         Optional<VerifiablePresentation<VerifiableIndyCredential>> profile = ur.getPublicProfile(endpoint);
         if (profile.isPresent()) {
+
+            final PartnerAPI partner = converter.toAPIObject(profile.get());
+
             String verificationMethod = profile.get().getProof() != null
                     ? profile.get().getProof().getVerificationMethod()
                     : "";
-            Optional<String> pk = matchKey(verificationMethod, publicKey);
-            final PartnerAPI partner = converter.toAPIObject(profile.get());
-            partner.setVerifiablePresentation(profile.get());
+            Optional<String> pk = matchKey(verificationMethod, verificationMethods);
             if (pk.isPresent()) {
                 final Boolean valid = crypto.verify(pk.get(), profile.get());
                 partner.setValid(valid);
@@ -111,45 +94,30 @@ public class PartnerLookup {
      * Tries to find the the public key in the did document that matches the proofs
      * verification method
      *
-     * @param verificationMethod the proof verification method
-     * @param publicKeys         list of {@link PublicKey} from the did document
+     * @param verificationMethod  the proof verification method
+     * @param verificationMethods list of {@link DidDocAPI.VerificationMethod} from
+     *                            the did document
      * @return matching public key in Base58
      */
-    static Optional<String> matchKey(String verificationMethod, List<PublicKey> publicKeys) {
-        Optional<PublicKey> key = Optional.empty();
+    static Optional<String> matchKey(String verificationMethod,
+            List<DidDocAPI.VerificationMethod> verificationMethods) {
+        Optional<DidDocAPI.VerificationMethod> key = Optional.empty();
         String result = null;
-        if (StringUtils.isNotEmpty(verificationMethod) && CollectionUtils.isNotEmpty(publicKeys)) {
-            key = publicKeys.stream().filter(k -> verificationMethod.equals(k.getId())).findFirst();
+        if (StringUtils.isNotEmpty(verificationMethod) && CollectionUtils.isNotEmpty(verificationMethods)) {
+            key = verificationMethods.stream().filter(k -> verificationMethod.equals(k.getId())).findFirst();
         }
         if (key.isEmpty()) { // falling back to key list from did doc
-            key = resolvePublicKey(publicKeys);
+            key = verificationMethods.stream()
+                    .filter(k -> ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE.equals(k.getType())).findFirst();
         }
+
         if (key.isPresent()) {
             result = key.get().getPublicKeyBase58();
+        } else {
+            log.warn("Expected at least one " + ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE
+                    + " in the did document, but found none");
         }
         return Optional.ofNullable(result);
     }
 
-    /**
-     * Fallback method to find at least one matching default key in the did document
-     *
-     * @param publicKey list of {@link PublicKey} from the did document
-     * @return matching {@link PublicKey}
-     */
-    static Optional<PublicKey> resolvePublicKey(List<PublicKey> publicKey) {
-        Optional<PublicKey> key = Optional.empty();
-        if (CollectionUtils.isEmpty(publicKey)) {
-            log.warn("No public key found in the did document");
-        } else {
-            Optional<PublicKey> vk = publicKey.stream()
-                    .filter(k -> ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE.equals(k.getType())).findFirst();
-            if (vk.isPresent()) {
-                key = vk;
-            } else {
-                log.warn("Expected at least one " + ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE
-                        + " in the did document, but found none");
-            }
-        }
-        return key;
-    }
 }

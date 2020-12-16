@@ -47,6 +47,9 @@ public class RuntimeConfig {
     @Value("${oagent.name}")
     private String agentName;
 
+    @Value("${oagent.acapy.endpoint}")
+    private String acapyEndpoint;
+
     public String getAgentName() {
         return DidResolver.splitDidFrom(agentName).getLabel();
     }

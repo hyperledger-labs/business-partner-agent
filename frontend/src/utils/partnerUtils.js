@@ -9,12 +9,10 @@
 import { CredentialTypes } from "../constants";
 
 export const getPartnerProfile = (partner) => {
-  if ({}.hasOwnProperty.call(partner, "credential")) {
-    console.log(partner.credential);
+  if (partner && {}.hasOwnProperty.call(partner, "credential")) {
     let partnerProfile = partner.credential.find((cred) => {
-      return cred.type === CredentialTypes.PROFILE.name;
+      return cred.type === CredentialTypes.PROFILE.type;
     });
-
     if (partnerProfile) {
       if ({}.hasOwnProperty.call(partnerProfile, "credentialData")) {
         return partnerProfile.credentialData;
@@ -23,7 +21,6 @@ export const getPartnerProfile = (partner) => {
       }
     }
   }
-
   return null;
 };
 
@@ -39,6 +36,11 @@ export const getPartnerName = (partner) => {
   ) {
     return partner.profile.legalName;
   } else {
-    return partner.id;
+    const profile = getPartnerProfile(partner);
+    if (profile && {}.hasOwnProperty.call(profile, "legalName")) {
+      return profile.legalName;
+    } else {
+      return partner.did;
+    }
   }
 };

@@ -22,11 +22,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.DidDocAPI;
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.api.exception.PartnerException;
 import org.hyperledger.oa.client.URClient;
+import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.core.RegisteredWebhook;
 import org.hyperledger.oa.impl.WebhookService;
 import org.hyperledger.oa.impl.util.Converter;
@@ -62,16 +62,16 @@ public class DidResolver {
     WebhookService webhook;
 
     /**
-     * Tries to resolve the partners public profile based on the did
-     * contained withn a commercial register credential.
+     * Tries to resolve the partners public profile based on the did contained withn
+     * a commercial register credential.
+     * 
      * @param pp {@link PartnerProof}
      */
     @Async
     public void resolveDid(PartnerProof pp) {
         try {
             if (StringUtils.isNotEmpty(pp.getSchemaId())
-                    && CredentialType.COMMERCIAL_REGISTER_CREDENTIAL
-                            .equals(CredentialType.fromSchemaId(pp.getSchemaId()))) {
+                    && AriesStringUtil.schemaGetName(pp.getSchemaId()).equals("commercialregister")) {
                 partnerRepo.findById(pp.getPartnerId()).ifPresent(p -> {
                     if (p.getVerifiablePresentation() == null
                             && p.getIncoming() != null
@@ -103,8 +103,9 @@ public class DidResolver {
 
     /**
      * Tries to resolve the partners public profile based on a did that is embedded
-     * in the partners label. The label is supposed to adhere to the following format:
-     * did:sov:xxx:123:MyLabel
+     * in the partners label. The label is supposed to adhere to the following
+     * format: did:sov:xxx:123:MyLabel
+     * 
      * @param p {@link Partner}
      */
     @Async
@@ -125,8 +126,9 @@ public class DidResolver {
     }
 
     /**
-     * Extracts the did and label components from a label is supposed to adhere to the following format:
-     * did:sov:xxx:123:MyLabel.
+     * Extracts the did and label components from a label is supposed to adhere to
+     * the following format: did:sov:xxx:123:MyLabel.
+     * 
      * @param label the label
      * @return {@link ConnectionLabel}
      */

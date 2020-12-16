@@ -58,7 +58,7 @@
             </v-text-field>
           </v-col>
         </v-row>
-        <Profile v-bind:partner="partner" />
+        <Profile v-if="partnerLoaded" v-bind:partner="partner" />
       </v-container>
       <v-card-actions>
         <v-layout justify-space-between>
@@ -78,6 +78,7 @@
 
 <script>
 import Profile from "@/components/Profile";
+import { getPartnerName } from "../utils/partnerUtils";
 import { EventBus } from "../main";
 export default {
   name: "AddPartner",
@@ -111,7 +112,9 @@ export default {
             let partner = result.data;
             if ({}.hasOwnProperty.call(partner, "credential")) {
               this.partner = partner;
-              this.partnerLoaded = true;
+              this.alias = getPartnerName(partner);
+              if ({}.hasOwnProperty.call(partner, "credential"))
+                this.partnerLoaded = true;
             } else if (partner.ariesSupport) {
               // Todo I need to know if I'm in aries mode to allow connection using aries
               this.msg =

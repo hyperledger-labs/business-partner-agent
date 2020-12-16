@@ -29,8 +29,7 @@ import org.junit.jupiter.api.Test;
 import javax.inject.Inject;
 import java.util.Optional;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @MicronautTest
 class ConnectionManagerTest extends BaseTest {
@@ -103,7 +102,6 @@ class ConnectionManagerTest extends BaseTest {
             "    \"updated_at\": \"2020-09-17 08:03:10.632125Z\",\n" +
             "    \"initiator\": \"external\",\n" +
             "    \"routing_state\": \"none\",\n" +
-            "    \"request_id\": \"bc507da9-8358-4b5f-9a44-ea77b44485ed\",\n" +
             "    \"their_label\": \"33eb7945-a8c8-4cff-8046-727457dc4272\",\n" +
             "    \"my_did\": \"KkjJTaRczRtMDAEUoS1tDJ\",\n" +
             "    \"invitation_mode\": \"once\",\n" +

@@ -26,14 +26,13 @@ import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.hyperledger.oa.api.CredentialType;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.oa.api.PartnerAPI;
 import org.hyperledger.oa.api.aries.AriesProof;
-import org.hyperledger.oa.api.exception.WrongApiUsageException;
 import org.hyperledger.oa.controller.api.partner.*;
 import org.hyperledger.oa.impl.PartnerManager;
 import org.hyperledger.oa.impl.activity.PartnerLookup;
-import org.hyperledger.oa.impl.aries.AriesCredentialManager;
+import org.hyperledger.oa.impl.aries.CredentialManager;
 import org.hyperledger.oa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.oa.impl.aries.ProofManager;
 
@@ -56,32 +55,26 @@ public class PartnerController {
     @Inject
     PartnerLookup partnerLookup;
 
-    // Aries Mode only Beans
+    @Inject
+    CredentialManager credM;
 
     @Inject
-    Optional<AriesCredentialManager> credM;
+    ProofManager proofM;
 
     @Inject
-    Optional<ProofManager> proofM;
-
-    @Inject
-    Optional<PartnerCredDefLookup> credLookup;
+    PartnerCredDefLookup credLookup;
 
     /**
      * Get known partners
      *
-     * @param issuerFor Filter Partners by {@link CredentialType}
+     * @param schemaId Filter Partners by schema id
      * @return list of partners
      */
     @Get
     public HttpResponse<List<PartnerAPI>> getPartners(
-            @Parameter(description = "credential type") @Nullable @QueryValue CredentialType issuerFor) {
-        if (issuerFor != null && credLookup.isPresent()) {
-            if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(issuerFor)) {
-                return HttpResponse.ok(credLookup.get().getIssuersForBankAccount());
-            }
-            throw new WrongApiUsageException(
-                    "Currently you can only filter by " + CredentialType.BANK_ACCOUNT_CREDENTIAL);
+            @Parameter(description = "schema id") @Nullable @QueryValue String schemaId) {
+        if (StringUtils.isNotBlank(schemaId)) {
+            return HttpResponse.ok(credLookup.getIssuersFor(schemaId));
         }
         return HttpResponse.ok(pm.getPartners());
     }
@@ -179,14 +172,10 @@ public class PartnerController {
     public HttpResponse<Void> requestCredential(
             @PathVariable String id,
             @Body RequestCredentialRequest credReq) {
-        if (credM.isPresent()) {
-
-            credM.get().sendCredentialRequest(
-                    UUID.fromString(id),
-                    UUID.fromString(credReq.getDocumentId()));
-            return HttpResponse.ok();
-        }
-        return HttpResponse.notFound();
+        credM.sendCredentialRequest(
+                UUID.fromString(id),
+                UUID.fromString(credReq.getDocumentId()));
+        return HttpResponse.ok();
     }
 
     /**
@@ -197,15 +186,11 @@ public class PartnerController {
      */
     @Get("/{id}/credential-types")
     public HttpResponse<List<PartnerCredentialType>> partnerCredentialTypes(@PathVariable String id) {
-        if (credLookup.isPresent()) {
-            final Optional<List<PartnerCredentialType>> credDefs = credLookup.get()
-                    .getPartnerCredDefs(UUID.fromString(id));
-            if (credDefs.isPresent()) {
-                return HttpResponse.ok(credDefs.get());
-            }
-            return HttpResponse.notFound();
+        final Optional<List<PartnerCredentialType>> credDefs = credLookup.getPartnerCredDefs(UUID.fromString(id));
+        if (credDefs.isPresent()) {
+            return HttpResponse.ok(credDefs.get());
         }
-        return HttpResponse.ok();
+        return HttpResponse.notFound();
     }
 
     /**
@@ -219,11 +204,8 @@ public class PartnerController {
     public HttpResponse<Void> requestProof(
             @PathVariable String id,
             @Body RequestProofRequest req) {
-        if (proofM.isPresent()) {
-            proofM.get().sendPresentProofRequest(UUID.fromString(id), req.getCredentialDefinitionId());
-            return HttpResponse.ok();
-        }
-        return HttpResponse.notFound();
+        proofM.sendPresentProofRequest(UUID.fromString(id), req.getCredentialDefinitionId());
+        return HttpResponse.ok();
     }
 
     /**
@@ -237,11 +219,8 @@ public class PartnerController {
     public HttpResponse<Void> sendProof(
             @PathVariable String id,
             @Body SendProofRequest req) {
-        if (proofM.isPresent()) {
-            proofM.get().sendProofProposal(UUID.fromString(id), req.getMyCredentialId());
-            return HttpResponse.ok();
-        }
-        return HttpResponse.notFound();
+        proofM.sendProofProposal(UUID.fromString(id), req.getMyCredentialId());
+        return HttpResponse.ok();
     }
 
     /**
@@ -253,10 +232,7 @@ public class PartnerController {
     @Get("/{id}/proof")
     public HttpResponse<List<AriesProof>> getPartnerProofs(
             @PathVariable String id) {
-        if (proofM.isPresent()) {
-            return HttpResponse.ok(proofM.get().listPartnerProofs(UUID.fromString(id)));
-        }
-        return HttpResponse.notFound();
+        return HttpResponse.ok(proofM.listPartnerProofs(UUID.fromString(id)));
     }
 
     /**
@@ -270,11 +246,9 @@ public class PartnerController {
     public HttpResponse<AriesProof> getPartnerProofById(
             @PathVariable String id,
             @PathVariable String proofId) {
-        if (proofM.isPresent()) {
-            final Optional<AriesProof> proof = proofM.get().getPartnerProofById(UUID.fromString(proofId));
-            if (proof.isPresent()) {
-                return HttpResponse.ok(proof.get());
-            }
+        final Optional<AriesProof> proof = proofM.getPartnerProofById(UUID.fromString(proofId));
+        if (proof.isPresent()) {
+            return HttpResponse.ok(proof.get());
         }
         return HttpResponse.notFound();
     }
@@ -290,7 +264,7 @@ public class PartnerController {
     public HttpResponse<Void> deletePartnerProofById(
             @PathVariable String id,
             @PathVariable String proofId) {
-        proofM.ifPresent(pMgmt -> pMgmt.deletePartnerProof(UUID.fromString(proofId)));
+        proofM.deletePartnerProof(UUID.fromString(proofId));
         return HttpResponse.ok();
     }
 }

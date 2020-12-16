@@ -29,13 +29,17 @@
       </template>
       <template v-slot:[`item.type`]="{ item }">
         <div
-          v-if="item.type === CredentialTypes.OTHER.name"
+          v-if="
+            item.type === CredentialTypes.UNKNOWN.type &&
+            item.credentialDefinitionId
+          "
           v-bind:class="{ 'font-weight-medium': !item.new }"
         >
           {{ item.credentialDefinitionId | credentialTag | capitalize }}
         </div>
+
         <div v-else v-bind:class="{ 'font-weight-medium': item.new }">
-          {{ item.type | credentialLabel }}
+          {{ item.typeLabel }}
         </div>
       </template>
 
@@ -99,7 +103,6 @@ export default {
       this.$axios
         .get(`${this.$apiBaseUrl}/wallet/${type}`)
         .then((result) => {
-          console.log(result);
           if ({}.hasOwnProperty.call(result, "data")) {
             this.isBusy = false;
 
@@ -112,7 +115,6 @@ export default {
             } else {
               this.data = result.data;
             }
-            console.log(this.data);
           }
         })
         .catch((e) => {
@@ -126,15 +128,13 @@ export default {
         });
     },
     open(doc) {
-      console.log(doc);
-
+      console.log("Open Document: ", doc);
       if (this.type === "document") {
-        console.log(doc);
         this.$router.push({
           name: "Document",
           params: {
             id: doc.id,
-            type: doc.type,
+            // type: doc.type,
           },
         });
       } else {

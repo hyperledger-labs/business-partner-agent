@@ -34,14 +34,13 @@ import org.junit.jupiter.api.Test;
 import javax.inject.Inject;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @MicronautTest
 public class CredentialManagerIntegrationTest extends RunWithAries {
 
     @Inject
-    AriesCredentialManager mgmt;
+    CredentialManager mgmt;
 
     @Inject
     MyCredentialRepository credRepo;
@@ -94,7 +93,7 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
     private CredentialExchange createNewCredential() {
         credRepo.save(MyCredential
                 .builder()
-                .type(CredentialType.BANK_ACCOUNT_CREDENTIAL)
+                .type(CredentialType.SCHEMA_BASED)
                 .isPublic(Boolean.FALSE)
                 .connectionId("dummy")
                 .state("dummy")

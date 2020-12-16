@@ -17,10 +17,12 @@
         >
           <v-icon dark>mdi-chevron-left</v-icon>
         </v-btn>
-        <div v-if="credential.type === CredentialTypes.OTHER.name">
+        <div v-if="credential.type === CredentialTypes.UNKNOWN.type">
           {{ credential.credentialDefinitionId | credentialTag }}
         </div>
-        <div v-else>{{ credential.type | credentialLabel }}</div>
+        <div v-else>
+          {{ credential.typeLabel | capitalize }}
+        </div>
         <v-layout align-end justify-end>
           <v-btn depressed color="red" icon @click="deleteCredential()">
             <v-icon dark>mdi-delete</v-icon>
@@ -108,7 +110,7 @@ export default {
   },
   methods: {
     getCredential() {
-      console.log(this.id);
+      console.log("Get Credential ID: ", this.id);
       this.$axios
         .get(`${this.$apiBaseUrl}/wallet/credential/${this.id}`)
         .then((result) => {

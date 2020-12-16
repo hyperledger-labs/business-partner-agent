@@ -15,17 +15,16 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.oa.impl.aries;
+package org.hyperledger.oa.impl.activity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.credential.Credential;
-import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.MyDocumentAPI;
 import org.hyperledger.oa.api.aries.AriesCredential;
-import org.hyperledger.oa.config.runtime.RequiresAries;
+import org.hyperledger.oa.impl.aries.SchemaService;
 import org.hyperledger.oa.impl.util.Converter;
 import org.hyperledger.oa.model.BPASchema;
 
@@ -41,7 +40,6 @@ import java.util.Optional;
  * set a default value based on a schema attribute that has been configured in
  * the {@link org.hyperledger.oa.config.SchemaConfig}.
  */
-@RequiresAries
 @Singleton
 public class LabelStrategy {
 
@@ -54,8 +52,7 @@ public class LabelStrategy {
 
     public @Nullable String apply(@NonNull MyDocumentAPI document) {
         if (StringUtils.isBlank(document.getLabel())) {
-            // TODO broken for type other
-            Optional<String> attr = findDefaultAttribute(document.getType());
+            Optional<String> attr = findDefaultAttribute(document.getSchemaId());
             if (attr.isPresent()) {
                 JsonNode documentData = document.getDocumentData();
                 JsonNode value = documentData.findValue(attr.get());
@@ -70,11 +67,13 @@ public class LabelStrategy {
         return null;
     }
 
-    public @Nullable String apply(@NonNull CredentialType type, @Nullable Credential credential) {
-        Optional<String> attr = findDefaultAttribute(type);
-        if (attr.isPresent() && credential != null && credential.getAttrs() != null) {
-            Map<String, String> attrs = credential.getAttrs();
-            return attrs.get(attr.get());
+    public @Nullable String apply(@Nullable Credential credential) {
+        if (credential != null) {
+            Optional<String> attr = findDefaultAttribute(credential.getSchemaId());
+            if (attr.isPresent() && credential.getAttrs() != null) {
+                Map<String, String> attrs = credential.getAttrs();
+                return attrs.get(attr.get());
+            }
         }
         return null;
     }
@@ -84,7 +83,7 @@ public class LabelStrategy {
         if (StringUtils.isNotBlank(newLabel)) {
             mergedLabel = newLabel;
         } else {
-            Optional<String> attr = findDefaultAttribute(credential.getType());
+            Optional<String> attr = findDefaultAttribute(credential.getSchemaId());
             if (attr.isPresent() && credential.getCredentialData() != null) {
                 Map<String, String> attrs = credential.getCredentialData();
                 mergedLabel = attrs.get(attr.get());
@@ -93,12 +92,14 @@ public class LabelStrategy {
         return mergedLabel;
     }
 
-    private Optional<String> findDefaultAttribute(@NonNull CredentialType type) {
-        BPASchema schema = schemaService.getSchemaFor(type);
-        if (schema != null) {
-            String defaultAttributeName = schema.getDefaultAttributeName();
-            if (StringUtils.isNotEmpty(defaultAttributeName)) {
-                return Optional.of(defaultAttributeName);
+    private Optional<String> findDefaultAttribute(@Nullable String schemaId) {
+        if (StringUtils.isNotEmpty(schemaId)) {
+            Optional<BPASchema> schema = schemaService.getSchemaFor(schemaId);
+            if (schema.isPresent()) {
+                String defaultAttributeName = schema.get().getDefaultAttributeName();
+                if (StringUtils.isNotEmpty(defaultAttributeName)) {
+                    return Optional.of(defaultAttributeName);
+                }
             }
         }
         return Optional.empty();

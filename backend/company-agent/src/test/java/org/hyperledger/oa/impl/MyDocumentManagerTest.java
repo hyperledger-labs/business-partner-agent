@@ -31,25 +31,28 @@ import org.hyperledger.oa.api.MyDocumentAPI;
 import org.hyperledger.oa.api.exception.WrongApiUsageException;
 import org.hyperledger.oa.client.CachingAriesClient;
 import org.hyperledger.oa.impl.activity.CryptoManager;
+import org.hyperledger.oa.impl.activity.DocumentValidator;
 import org.hyperledger.oa.impl.activity.Identity;
 import org.hyperledger.oa.impl.activity.VPManager;
+import org.hyperledger.oa.impl.aries.SchemaService;
+import org.hyperledger.oa.model.BPASchema;
 import org.hyperledger.oa.repository.DidDocWebRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import javax.inject.Inject;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-@MicronautTest(environments = { Environment.TEST, "test-aries" })
+@MicronautTest(environments = { Environment.TEST, "test-web" })
 class MyDocumentManagerTest extends RunWithAries {
 
     private static final Gson PRETTY = GsonConfig.prettyPrinter();
@@ -72,6 +75,9 @@ class MyDocumentManagerTest extends RunWithAries {
     @Inject
     DidDocWebRepository didDocRepo;
 
+    @Inject
+    DocumentValidator validator;
+
     private CredentialTestUtils utils;
 
     @BeforeEach
@@ -84,6 +90,15 @@ class MyDocumentManagerTest extends RunWithAries {
         cryptoMgmt.setAcaPy(ac);
         id.setAcaPy(ac);
         cAC.setAc(ac);
+
+        SchemaService s = Mockito.mock(SchemaService.class);
+        Mockito.when(s.getSchemaFor(Mockito.anyString())).thenReturn(Optional.of(BPASchema
+                .builder()
+                .label("dummy")
+                .schemaAttributeNames(Set.of("iban"))
+                .build()));
+        validator.setSchemaService(s);
+        mgmt.setValidator(validator);
     }
 
     @AfterEach
@@ -96,7 +111,7 @@ class MyDocumentManagerTest extends RunWithAries {
         MyDocumentAPI myCred = createAndSaveDummyCredential();
         assertNotNull(myCred);
         assertNotNull(myCred.getId());
-        assertSame(CredentialType.BANK_ACCOUNT_CREDENTIAL, myCred.getType());
+        assertSame(CredentialType.SCHEMA_BASED, myCred.getType());
         assertFalse(myCred.getIsPublic());
         assertTrue(Instant.now().isAfter(Instant.ofEpochMilli(myCred.getCreatedDate())));
         assertTrue(Instant.now().minus(5L, ChronoUnit.MINUTES).isBefore(
@@ -117,14 +132,28 @@ class MyDocumentManagerTest extends RunWithAries {
     }
 
     @Test
+    void testSaveIndyDocumentNoSchemaId() {
+        Exception exception = assertThrows(WrongApiUsageException.class, () -> {
+            MyDocumentAPI document = new MyDocumentAPI();
+            document.setType(CredentialType.SCHEMA_BASED);
+            mgmt.saveNewDocument(document);
+        });
+
+        String expectedMessage = "A document of type indy_credential must have a schema id set";
+        String actualMessage = exception.getMessage();
+
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
     void testUpdateCredential() throws Exception {
         // create, save and verify
-        MyDocumentAPI credential = utils.createDummyCred(CredentialType.BANK_ACCOUNT_CREDENTIAL, Boolean.FALSE);
+        MyDocumentAPI credential = utils.createDummyCred(CredentialType.SCHEMA_BASED, Boolean.FALSE);
         MyDocumentAPI myCred = mgmt.saveNewDocument(credential);
 
         Optional<MyDocumentAPI> result = mgmt.getMyDocumentById(myCred.getId());
         assertTrue(result.isPresent());
-        assertSame(CredentialType.BANK_ACCOUNT_CREDENTIAL, result.get().getType());
+        assertSame(CredentialType.SCHEMA_BASED, result.get().getType());
         assertSame(Boolean.FALSE, result.get().getIsPublic());
 
         // update
@@ -134,13 +163,13 @@ class MyDocumentManagerTest extends RunWithAries {
         // verify modification
         result = mgmt.getMyDocumentById(myCred.getId());
         assertTrue(result.isPresent());
-        assertSame(CredentialType.BANK_ACCOUNT_CREDENTIAL, result.get().getType());
+        assertSame(CredentialType.SCHEMA_BASED, result.get().getType());
         assertSame(Boolean.TRUE, result.get().getIsPublic());
     }
 
     @Test
     void testGetMyCredentialById() throws Exception {
-        MyDocumentAPI credential = utils.createDummyCred(CredentialType.BANK_ACCOUNT_CREDENTIAL, Boolean.FALSE);
+        MyDocumentAPI credential = utils.createDummyCred(CredentialType.SCHEMA_BASED, Boolean.FALSE);
         MyDocumentAPI myCred = mgmt.saveNewDocument(credential);
         UUID ID = myCred.getId();
 
@@ -163,11 +192,11 @@ class MyDocumentManagerTest extends RunWithAries {
 
     @Test
     void testDeleteMyCredential() throws Exception {
-        MyDocumentAPI credential = utils.createDummyCred(CredentialType.BANK_ACCOUNT_CREDENTIAL, Boolean.FALSE);
+        MyDocumentAPI credential = utils.createDummyCred(CredentialType.SCHEMA_BASED, Boolean.FALSE);
         MyDocumentAPI myCred = mgmt.saveNewDocument(credential);
         UUID ID = myCred.getId();
 
-        MyDocumentAPI credential2 = utils.createDummyCred(CredentialType.BANK_ACCOUNT_CREDENTIAL, Boolean.FALSE);
+        MyDocumentAPI credential2 = utils.createDummyCred(CredentialType.SCHEMA_BASED, Boolean.FALSE);
         MyDocumentAPI myCred2 = mgmt.saveNewDocument(credential2);
         UUID ID2 = myCred2.getId();
 
@@ -213,11 +242,11 @@ class MyDocumentManagerTest extends RunWithAries {
     }
 
     private MyDocumentAPI createAndSaveDummyCredential() throws JsonProcessingException {
-        return createAndSaveDummyCredential(CredentialType.BANK_ACCOUNT_CREDENTIAL, Boolean.FALSE);
+        return createAndSaveDummyCredential(CredentialType.SCHEMA_BASED, Boolean.FALSE);
     }
 
     private MyDocumentAPI createAndSavePublicDummyCredential() throws JsonProcessingException {
-        return createAndSaveDummyCredential(CredentialType.BANK_ACCOUNT_CREDENTIAL, Boolean.TRUE);
+        return createAndSaveDummyCredential(CredentialType.SCHEMA_BASED, Boolean.TRUE);
     }
 
     private MyDocumentAPI createAndSaveDummyCredential(CredentialType credType, Boolean isPublic)

@@ -28,6 +28,7 @@ import lombok.Data;
 @Data
 public class WalletDocumentRequest {
     private CredentialType type;
+    private String schemaId;
     private Boolean isPublic;
     private String label;
     @JsonRawValue

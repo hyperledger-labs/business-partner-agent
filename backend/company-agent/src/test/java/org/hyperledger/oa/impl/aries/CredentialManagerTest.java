@@ -34,17 +34,17 @@ import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @MicronautTest
-class AriesCredentialManagerTest extends BaseTest {
+class CredentialManagerTest extends BaseTest {
 
     private static final String CRED_DEF_ID = "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:ba";
     private static final String DID = "did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt";
 
     @Inject
-    AriesCredentialManager mgmt;
+    CredentialManager mgmt;
 
     @Inject
     MyCredentialRepository credRepo;
@@ -59,7 +59,7 @@ class AriesCredentialManagerTest extends BaseTest {
     void testSaveNewCredential() {
         credRepo.save(MyCredential
                 .builder()
-                .type(CredentialType.BANK_ACCOUNT_CREDENTIAL)
+                .type(CredentialType.SCHEMA_BASED)
                 .isPublic(Boolean.FALSE)
                 .connectionId("dummy")
                 .state("dummy")
@@ -110,7 +110,7 @@ class AriesCredentialManagerTest extends BaseTest {
                 .build());
 
         String iss = mgmt.resolveIssuer(c);
-        assertEquals("Bosch Healthcare Solutions GmbH", iss);
+        assertEquals("Bosch Healthcare", iss);
     }
 
     @Test

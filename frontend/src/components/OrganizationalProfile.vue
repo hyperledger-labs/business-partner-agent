@@ -157,33 +157,13 @@
 </template>
 
 <script>
+import { profileModel } from "../model/model";
 export default {
   props: {
     isReadOnly: Boolean,
     documentData: {
       type: Object,
-      default: () => {
-        return {
-          type: "Legal Entity",
-          legalName: "",
-          altName: "",
-          identifier: [
-            {
-              id: "",
-              type: "",
-            },
-          ],
-          registeredSite: {
-            address: {
-              streetAddress: "",
-              zipCode: "",
-              city: "",
-              country: "",
-              region: "",
-            },
-          },
-        };
-      },
+      default: () => profileModel,
     },
   },
   created() {

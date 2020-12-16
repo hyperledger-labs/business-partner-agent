@@ -35,13 +35,12 @@ import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.aries.AriesCredential;
 import org.hyperledger.oa.api.aries.AriesCredential.AriesCredentialBuilder;
-import org.hyperledger.oa.api.aries.BankAccount;
 import org.hyperledger.oa.api.aries.ProfileVC;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.api.exception.PartnerException;
-import org.hyperledger.oa.config.runtime.RequiresAries;
 import org.hyperledger.oa.controller.api.WebSocketMessageBody;
 import org.hyperledger.oa.impl.MessageService;
+import org.hyperledger.oa.impl.activity.LabelStrategy;
 import org.hyperledger.oa.impl.activity.VPManager;
 import org.hyperledger.oa.impl.util.AriesStringUtil;
 import org.hyperledger.oa.impl.util.Converter;
@@ -64,8 +63,7 @@ import java.util.UUID;
 
 @Slf4j
 @Singleton
-@RequiresAries
-public class AriesCredentialManager {
+public class CredentialManager {
 
     @Value("${oagent.did.prefix}")
     String didPrefix;
@@ -110,32 +108,35 @@ public class AriesCredentialManager {
         if (dbPartner.isPresent()) {
             final Optional<MyDocument> dbDoc = docRepo.findById(myDocId);
             if (dbDoc.isPresent()) {
-                if (CredentialType.BANK_ACCOUNT_CREDENTIAL.equals(dbDoc.get().getType())) {
-                    final BankAccount bankAccount = conv.fromMap(dbDoc.get().getDocument(), BankAccount.class);
-                    try {
-                        final org.hyperledger.oa.model.BPASchema s = schemaService
-                                .getSchemaFor(CredentialType.BANK_ACCOUNT_CREDENTIAL);
-                        final Optional<String> baCredDefId = credLookup.findBACredentialDefinitionId(
-                                partnerId, s.getSeqNo());
-                        if (baCredDefId.isPresent()) {
+                if (!CredentialType.SCHEMA_BASED.equals(dbDoc.get().getType())) {
+                    throw new PartnerException("Only documents that are based on a " +
+                            "schema can be converted into a credential");
+                }
+                try {
+                    final Optional<org.hyperledger.oa.model.BPASchema> s = schemaService
+                            .getSchemaFor(dbDoc.get().getSchemaId());
+                    if (s.isPresent()) {
+                        final Optional<String> credDefId = credLookup.findCredentialDefinitionId(
+                                partnerId, s.get().getSeqNo());
+                        if (credDefId.isPresent()) {
                             ac.issueCredentialSendProposal(
                                     CredentialProposalRequest
                                             .builder()
                                             .connectionId(dbPartner.get().getConnectionId())
-                                            .schemaId(s.getSchemaId())
+                                            .schemaId(s.get().getSchemaId())
                                             .credentialProposal(
                                                     new CredentialPreview(
-                                                            CredentialAttributes.from(bankAccount)))
-                                            .credentialDefinitionId(baCredDefId.get())
+                                                            CredentialAttributes.from(dbDoc.get().getDocument())))
+                                            .credentialDefinitionId(credDefId.get())
                                             .build());
                         } else
                             throw new PartnerException("Found no matching credential definition id. "
                                     + "Partner can not issue bank account credentials");
-                    } catch (IOException e) {
-                        throw new NetworkException("No aries connection", e);
+                    } else {
+                        throw new PartnerException("No configured schema found for id: " + dbDoc.get().getSchemaId());
                     }
-                } else {
-                    throw new PartnerException("Currently only documents of type BANK_ACCOUNT are supported");
+                } catch (IOException e) {
+                    throw new NetworkException("No aries connection", e);
                 }
             } else {
                 throw new PartnerException("No document found for id: " + myDocId.toString());
@@ -178,12 +179,11 @@ public class AriesCredentialManager {
     public void handleCredentialAcked(CredentialExchange credEx) {
         credRepo.findByThreadId(credEx.getThreadId())
                 .ifPresentOrElse(cred -> {
-                    CredentialType credentialType = CredentialType.fromSchemaId(credEx.getSchemaId());
-                    String label = labelStrategy.apply(credentialType, credEx.getCredential());
+                    String label = labelStrategy.apply(credEx.getCredential());
                     cred
                             .setReferent(credEx.getCredential().getReferent())
                             .setCredential(conv.toMap(credEx.getCredential()))
-                            .setType(credentialType)
+                            .setType(CredentialType.SCHEMA_BASED)
                             .setState(credEx.getState())
                             .setIssuer(resolveIssuer(credEx.getCredential()))
                             .setIssuedAt(Instant.now())
@@ -223,6 +223,7 @@ public class AriesCredentialManager {
             myCred
                     .schemaId(ariesCred.getSchemaId())
                     .credentialDefinitionId(ariesCred.getCredentialDefinitionId())
+                    .typeLabel(schemaService.getSchemaLabel(ariesCred.getSchemaId()))
                     .credentialData(ariesCred.getAttrs());
             // TODO only for backwards compatibility, can be removed at some point
             if (dbCred.getIssuer() == null) {

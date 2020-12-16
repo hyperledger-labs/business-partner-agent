@@ -28,11 +28,9 @@ import org.hyperledger.aries.api.credential.Credential;
 import org.hyperledger.aries.api.proof.*;
 import org.hyperledger.aries.api.proof.PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
-import org.hyperledger.oa.api.CredentialType;
 import org.hyperledger.oa.api.aries.AriesProof;
 import org.hyperledger.oa.api.exception.NetworkException;
 import org.hyperledger.oa.api.exception.PartnerException;
-import org.hyperledger.oa.config.runtime.RequiresAries;
 import org.hyperledger.oa.controller.api.WebSocketMessageBody;
 import org.hyperledger.oa.impl.MessageService;
 import org.hyperledger.oa.impl.activity.DidResolver;
@@ -56,7 +54,6 @@ import java.util.UUID;
 
 @Slf4j
 @Singleton
-@RequiresAries
 public class ProofManager {
 
     @Value("${oagent.did.prefix}")
@@ -111,7 +108,6 @@ public class ProofManager {
                                     .role(proof.getRole())
                                     .credentialDefinitionId(credDefId)
                                     .schemaId(schema.get().getId())
-                                    .type(CredentialType.fromSchemaId(schema.get().getId()))
                                     .issuer(resolveIssuer(credDefId))
                                     .build();
                             pProofRepo.save(pp);
@@ -133,22 +129,20 @@ public class ProofManager {
 
     // handles all proof events to track state changes
     public void handleProofEvent(PresentationExchangeRecord proof) {
-        partnerRepo.findByConnectionId(proof.getConnectionId()).ifPresent(p -> {
-            pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId()).ifPresentOrElse(pp -> {
-                pProofRepo.updateState(pp.getId(), proof.getState());
-            }, () -> {
-                if ("proposal_received".equals(proof.getState())) {
-                    final PartnerProof pp = PartnerProof
-                            .builder()
-                            .partnerId(p.getId())
-                            .state(proof.getState())
-                            .presentationExchangeId(proof.getPresentationExchangeId())
-                            .role(proof.getRole())
-                            .build();
-                    pProofRepo.save(pp);
-                }
-            });
-        });
+        partnerRepo.findByConnectionId(proof.getConnectionId())
+                .ifPresent(p -> pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId())
+                        .ifPresentOrElse(pp -> pProofRepo.updateState(pp.getId(), proof.getState()), () -> {
+                            if ("proposal_received".equals(proof.getState())) {
+                                final PartnerProof pp = PartnerProof
+                                        .builder()
+                                        .partnerId(p.getId())
+                                        .state(proof.getState())
+                                        .presentationExchangeId(proof.getPresentationExchangeId())
+                                        .role(proof.getRole())
+                                        .build();
+                                pProofRepo.save(pp);
+                            }
+                        }));
     }
 
     // handle all acked or verified proof events
@@ -160,10 +154,8 @@ public class ProofManager {
                 String schemaId = proof.getIdentifiers().get(0).getSchemaId();
                 String credDefId = proof.getIdentifiers().get(0).getCredentialDefinitionId();
                 String issuer = resolveIssuer(credDefId);
-                CredentialType type = CredentialType.fromSchemaId(schemaId);
                 pp
                         .setIssuedAt(TimeUtil.parseZonedTimestamp(proof.getCreatedAt()))
-                        .setType(type)
                         .setValid(proof.isVerified())
                         .setState(proof.getState())
                         .setSchemaId(schemaId)
@@ -178,38 +170,33 @@ public class ProofManager {
     }
 
     public void sendProofProposal(@NonNull UUID partnerId, @NonNull UUID myCredentialId) {
-        partnerRepo.findById(partnerId).ifPresent(p -> {
-            credRepo.findById(myCredentialId).ifPresent(c -> {
-                Credential cred = conv.fromMap(c.getCredential(), Credential.class);
-                final PresentProofProposal req = PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred);
-                try {
-                    ac.presentProofSendProposal(req).ifPresent(proof -> {
-                        final PartnerProof pp = PartnerProof
-                                .builder()
-                                .partnerId(partnerId)
-                                .state(proof.getState())
-                                .presentationExchangeId(proof.getPresentationExchangeId())
-                                .role(proof.getRole())
-                                .credentialDefinitionId(cred.getCredentialDefinitionId())
-                                .schemaId(cred.getSchemaId())
-                                .type(CredentialType.fromSchemaId(cred.getSchemaId()))
-                                .issuer(resolveIssuer(cred.getCredentialDefinitionId()))
-                                .build();
-                        pProofRepo.save(pp);
-                    });
+        partnerRepo.findById(partnerId).ifPresent(p -> credRepo.findById(myCredentialId).ifPresent(c -> {
+            Credential cred = conv.fromMap(c.getCredential(), Credential.class);
+            final PresentProofProposal req = PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred);
+            try {
+                ac.presentProofSendProposal(req).ifPresent(proof -> {
+                    final PartnerProof pp = PartnerProof
+                            .builder()
+                            .partnerId(partnerId)
+                            .state(proof.getState())
+                            .presentationExchangeId(proof.getPresentationExchangeId())
+                            .role(proof.getRole())
+                            .credentialDefinitionId(cred.getCredentialDefinitionId())
+                            .schemaId(cred.getSchemaId())
+                            .issuer(resolveIssuer(cred.getCredentialDefinitionId()))
+                            .build();
+                    pProofRepo.save(pp);
+                });
 
-                } catch (IOException e) {
-                    log.error("aca-py not reachable.", e);
-                }
-            });
-        });
+            } catch (IOException e) {
+                log.error("aca-py not reachable.", e);
+            }
+        }));
     }
 
     public List<AriesProof> listPartnerProofs(@NonNull UUID partnerId) {
         List<AriesProof> result = new ArrayList<>();
-        pProofRepo.findByPartnerIdOrderByRole(partnerId).forEach(p -> {
-            result.add(toApiProof(p));
-        });
+        pProofRepo.findByPartnerIdOrderByRole(partnerId).forEach(p -> result.add(toApiProof(p)));
         return result;
     }
 
@@ -242,6 +229,10 @@ public class ProofManager {
     }
 
     private AriesProof toApiProof(@NonNull PartnerProof p) {
-        return AriesProof.from(p, p.getProof() != null ? conv.fromMap(p.getProof(), JsonNode.class) : null);
+        AriesProof proof = AriesProof.from(p, p.getProof() != null ? conv.fromMap(p.getProof(), JsonNode.class) : null);
+        if (StringUtils.isNotEmpty(p.getSchemaId())) {
+            proof.setTypeLabel(schemaService.getSchemaLabel(p.getSchemaId()));
+        }
+        return proof;
     }
 }
