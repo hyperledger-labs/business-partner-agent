@@ -5,7 +5,6 @@ pipeline {
    agent any
 
    environment {
-        REG_IMAGE = 'agent-registry'
         SETTINGS_ID = 'a77b84ea-0de6-4ede-8961-060229a96fcf'
         MVN_VERSION = 'maven-3.6.x'
     }

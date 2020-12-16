@@ -5,17 +5,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.hyperledger.organizational-agent</groupId>
-        <artifactId>organizational-agent-parent</artifactId>
+        <groupId>org.hyperledger.business-partner-agent</groupId>
+        <artifactId>business-partner-agent-parent</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>organizational-agent-core</artifactId>
+    <artifactId>business-partner-agent-core</artifactId>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>organizational-agent: shared core classes</description>
-    <url>https://github.com/hyperledger-labs/organizational-agent</url>
+    <description>business-partner-agent: shared core classes</description>
+    <url>https://github.com/hyperledger-labs/business-partner-agent</url>
 
     <properties>
         <skip.docker.build>true</skip.docker.build>

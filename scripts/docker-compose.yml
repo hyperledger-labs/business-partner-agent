@@ -3,7 +3,7 @@
 version: '3'
 
 services:
-  company-agent:
+  bpa:
     build:
       context: ..
     # image: ${BPA_DOCKER_IMAGE}
@@ -58,7 +58,7 @@ services:
         --plugin aries_cloudagent.messaging.jsonld \
         --inbound-transport http '0.0.0.0' ${AGENT_HTTP_PORT} \
         --outbound-transport http \
-        --webhook-url http://company-agent:${BPA_PORT}/log \
+        --webhook-url http://bpa:${BPA_PORT}/log \
         --genesis-url '${LEDGER_URL}/genesis' \
         --endpoint ${AGENT_ENDPOINT} \
         --wallet-type 'indy' \
