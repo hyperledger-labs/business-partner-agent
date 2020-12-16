@@ -28,18 +28,58 @@
         </v-card-text>
       </v-card>
     </v-row>
+    <v-row
+      v-for="(item, index) in backendLicenses"
+      :key="index"
+      class="mx-auto"
+    >
+      <v-card v-if="item" class="mx-auto my-2" style="width: 100%">
+        <v-card-title class="headline">
+          {{ item.name.text }}
+        </v-card-title>
+        <v-card-subtitle class="mx-auto">
+          <div>
+            <a
+              v-html="item.licenses.license.url.text"
+              :href="item.licenses.license.url.text"
+              target="_blank"
+            ></a>
+          </div>
+          <div>Version: {{ item.version.text }}</div>
+        </v-card-subtitle>
+        <v-card-text>
+          <h3>{{ item.licenses.license.name.text }}</h3>
+          <div>
+            License text:
+            <a
+              v-html="item.licenses.license.url.text"
+              :href="item.licenses.license.url.text"
+              target="_blank"
+            ></a>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-row>
   </v-container>
 </template>
 
 <script>
 import Licenses from "../../licenses/licenseInfos.json";
+
 export default {
   name: "About",
   components: {},
-  created: () => {},
+  created() {
+    let backendJson = require("../../licenses/attribution.json");
+    if (backendJson) {
+      backendJson = backendJson.attributionReport.dependencies.dependency;
+      this.backendLicenses = backendJson;
+    }
+  },
   data: () => {
     return {
       Licenses,
+      backendLicenses: {},
     };
   },
   methods: {},
