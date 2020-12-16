@@ -23,12 +23,12 @@
     </Match>
 
     <Match>
-       <Class name="~.*org.hyperledger.oa.client.*" />
+       <Class name="~.*org.hyperledger.bpa.client.*" />
        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
     </Match>
 
     <Match>
-       <Class name="org.hyperledger.oa.impl.WebhookService" />
+       <Class name="org.hyperledger.bpa.impl.WebhookService" />
        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
     </Match>
 

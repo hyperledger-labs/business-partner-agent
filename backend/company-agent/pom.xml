@@ -20,7 +20,7 @@
 
     <properties>
         <!-- Settings -->
-        <exec.mainClass>org.hyperledger.oa.Application</exec.mainClass>
+        <exec.mainClass>org.hyperledger.bpa.Application</exec.mainClass>
         <skip.docker.build>false</skip.docker.build>
     </properties>
 
