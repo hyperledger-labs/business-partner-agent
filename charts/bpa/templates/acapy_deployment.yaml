@@ -63,6 +63,9 @@ spec:
            --admin-insecure-mode \
            --label {{ .Values.acapy.agentName }} \
            --log-level debug \
+           {{- if .Values.acapy.readOnlyMode }}
+           --read-only-ledger \
+           {{- end }}
            "
           ]
           command:

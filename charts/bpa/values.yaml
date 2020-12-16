@@ -28,7 +28,7 @@ bpa:
   # -- Default password, overwrite default if running in production like environments
   password: changeme
 
-  # --  Run in web only mode without any ledger dependency and aries functionality
+  # --  Run in did:web mode with read only ledger. If set to true acapy.readOnlyMode has to be true too.
   webMode: false
 
   # --  Uni Resolver URL
@@ -111,6 +111,8 @@ acapy:
   adminURLApiKey: 2f9729eef0be49608c1cffd49ee3cc4a
 
   agentName: ca-aca-py
+
+  readOnlyMode: false
 
   imagePullSecrets: [] 
   nameOverride: ""
