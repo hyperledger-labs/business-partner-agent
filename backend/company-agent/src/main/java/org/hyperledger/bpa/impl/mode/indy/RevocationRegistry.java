@@ -51,7 +51,7 @@ public class RevocationRegistry {
     @Setter(value = AccessLevel.PACKAGE)
     AriesClient ac;
 
-    @Value("${oagent.host}")
+    @Value("${bpa.host}")
     @Setter(value = AccessLevel.PACKAGE)
     String host;
 

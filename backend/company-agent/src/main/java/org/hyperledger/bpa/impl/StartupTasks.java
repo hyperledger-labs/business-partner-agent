@@ -44,10 +44,10 @@ import java.util.Optional;
 @Requires(notEnv = { Environment.TEST })
 public class StartupTasks {
 
-    @Value("${oagent.web.only}")
+    @Value("${bpa.web.only}")
     Boolean envState;
 
-    @Value("${oagent.host}")
+    @Value("${bpa.host}")
     String host;
 
     @Inject

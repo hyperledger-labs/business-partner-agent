@@ -25,7 +25,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PACKAGE, ElementType.TYPE })
 @Requires(
-        property = "oagent.web.only",
+        property = "bpa.web.only",
         value = "false")
 public @interface RequiresIndy {
     //

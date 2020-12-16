@@ -29,25 +29,25 @@ import javax.inject.Singleton;
 @NoArgsConstructor
 public class RuntimeConfig {
 
-    @Value("${oagent.host}")
+    @Value("${bpa.host}")
     private String host;
 
-    @Value("${oagent.resolver.url}")
+    @Value("${bpa.resolver.url}")
     private String uniResolverUrl;
 
-    @Value("${oagent.ledger.browser}")
+    @Value("${bpa.ledger.browser}")
     private String ledgerBrowser;
 
-    @Value("${oagent.did.prefix}")
+    @Value("${bpa.did.prefix}")
     private String ledgerPrefix;
 
-    @Value("${oagent.web.only}")
+    @Value("${bpa.web.only}")
     private Boolean webOnly;
 
-    @Value("${oagent.name}")
+    @Value("${bpa.name}")
     private String agentName;
 
-    @Value("${oagent.acapy.endpoint}")
+    @Value("${bpa.acapy.endpoint}")
     private String acapyEndpoint;
 
     public String getAgentName() {

@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 public class LedgerClient {
 
     @Setter(AccessLevel.PROTECTED)
-    @Value("${oagent.ledger.browser}")
+    @Value("${bpa.ledger.browser}")
     private String url;
 
     @Inject
@@ -66,7 +66,7 @@ public class LedgerClient {
         Optional<List<PartnerCredentialType>> result = Optional.empty();
 
         if (StringUtils.isEmpty(url)) {
-            log.error("The system property: 'oagent.ledger.browser' is not set");
+            log.error("The system property: 'bpa.ledger.browser' is not set");
             return result;
         }
 

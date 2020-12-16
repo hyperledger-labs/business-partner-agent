@@ -24,9 +24,9 @@ import io.swagger.v3.oas.annotations.info.License;
 
 @OpenAPIDefinition(
         info = @Info(
-                title = "Organizational Agent",
+                title = "Business Partner Agent",
                 version = "0.1",
-                description = "Organizational Agent API",
+                description = "Business Partner Agent API",
                 license = @License(name = "Apache 2.0", url = "https://www.apache.org/licenses/LICENSE-2.0")))
 public class Application {
 

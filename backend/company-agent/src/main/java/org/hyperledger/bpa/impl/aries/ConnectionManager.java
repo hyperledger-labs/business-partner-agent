@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 @Singleton
 public class ConnectionManager {
 
-    @Value("${oagent.did.prefix}")
+    @Value("${bpa.did.prefix}")
     String didPrefix;
 
     @Inject

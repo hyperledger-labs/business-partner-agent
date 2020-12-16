@@ -54,7 +54,7 @@ import static io.micronaut.http.HttpRequest.GET;
 // https://github.com/decentralized-identity/universal-resolver/tree/master/resolver/java/uni-resolver-client
 public class URClient {
 
-    @Client("${oagent.resolver.url}")
+    @Client("${bpa.resolver.url}")
     @Inject
     private RxHttpClient client;
 

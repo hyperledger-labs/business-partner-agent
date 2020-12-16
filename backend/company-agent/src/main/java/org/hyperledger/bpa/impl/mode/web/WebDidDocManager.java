@@ -43,7 +43,7 @@ import java.util.Optional;
 @RequiresWeb
 public class WebDidDocManager implements DidDocManager {
 
-    @Value("${oagent.acapy.endpoint}")
+    @Value("${bpa.acapy.endpoint}")
     String acapyEndpoint;
 
     @Inject

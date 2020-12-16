@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Singleton
 public class PartnerCredDefLookup {
 
-    @Value("${oagent.did.prefix}")
+    @Value("${bpa.did.prefix}")
     @Setter(AccessLevel.PACKAGE)
     String didPrefix;
 

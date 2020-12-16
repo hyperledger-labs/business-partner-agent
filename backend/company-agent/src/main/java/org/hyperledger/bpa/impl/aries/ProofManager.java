@@ -56,7 +56,7 @@ import java.util.UUID;
 @Singleton
 public class ProofManager {
 
-    @Value("${oagent.did.prefix}")
+    @Value("${bpa.did.prefix}")
     String didPrefix;
 
     @Inject

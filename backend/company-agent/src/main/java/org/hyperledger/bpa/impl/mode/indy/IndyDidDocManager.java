@@ -35,7 +35,7 @@ import java.util.Optional;
 @RequiresIndy
 public class IndyDidDocManager implements DidDocManager {
 
-    @Value("${oagent.did.prefix}")
+    @Value("${bpa.did.prefix}")
     String didPrefix;
 
     @Inject

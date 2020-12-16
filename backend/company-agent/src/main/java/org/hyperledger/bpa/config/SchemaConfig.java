@@ -24,7 +24,7 @@ import lombok.Data;
 /**
  * Schema configuration bean that maps the default schema configuration.
  */
-@EachProperty("oagent.schemas")
+@EachProperty("bpa.schemas")
 @Data
 public class SchemaConfig {
 

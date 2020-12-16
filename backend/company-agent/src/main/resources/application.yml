@@ -60,19 +60,19 @@ micronaut:
 
 datasources:
   '*':
-    url: ${oagent.pg.url}
+    url: ${bpa.pg.url}
     driver-class-name: org.postgresql.Driver
-    username: ${oagent.pg.username}
-    password: ${oagent.pg.password}
+    username: ${bpa.pg.username}
+    password: ${bpa.pg.password}
     dialect: POSTGRES
-    schema: ${oagent.pg.schema}
+    schema: ${bpa.pg.schema}
     initialization-fail-timeout: -1 # wait forever until the db is ready
 
 flyway:
   datasources: 
     '*': 
       locations: classpath:databasemigrations
-      schemas: ${oagent.pg.schema}
+      schemas: ${bpa.pg.schema}
 
 jackson:
   serialization-inclusion: NON_ABSENT # Omit null and Optional.empty(), but include empty collections
@@ -85,7 +85,7 @@ jackson:
   json-view:
     enabled: true
 
-oagent:
+bpa:
   docker:
     #host where containers are running: typically localhost but might be an IP as well
     host: localhost
@@ -98,13 +98,13 @@ oagent:
   web:
     only: ${BPA_WEB_MODE:false}
   acapy:
-    url: http://${oagent.docker.host}:8031
+    url: http://${bpa.docker.host}:8031
     apiKey: empty
     endpoint: ${AGENT_ENDPOINT:`http://localhost:8030`}
   did:
     prefix: ${BPA_DID_PREFIX:`did:sov:iil:`}
   pg:
-    url: jdbc:postgresql://${oagent.docker.host}/alice
+    url: jdbc:postgresql://${bpa.docker.host}/alice
     username: alice
     password: alice1234
     schema: public

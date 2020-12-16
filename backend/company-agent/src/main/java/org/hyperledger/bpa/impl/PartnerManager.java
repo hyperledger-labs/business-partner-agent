@@ -43,7 +43,7 @@ import java.util.UUID;
 @Singleton
 public class PartnerManager {
 
-    @Value("${oagent.did.prefix}")
+    @Value("${bpa.did.prefix}")
     private String ledgerPrefix;
 
     @Inject

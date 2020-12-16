@@ -1,4 +1,4 @@
 # additional profile to be loaded for tests running in web mode
-oagent:
+bpa:
   web:
     only: true

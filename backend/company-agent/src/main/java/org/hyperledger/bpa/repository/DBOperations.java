@@ -38,10 +38,10 @@ public class DBOperations {
     @Inject
     private UserRepository userRepo;
 
-    @Value("${oagent.bootstrap.username}")
+    @Value("${bpa.bootstrap.username}")
     private String username;
 
-    @Value("${oagent.bootstrap.password}")
+    @Value("${bpa.bootstrap.password}")
     private String password;
 
     @Async

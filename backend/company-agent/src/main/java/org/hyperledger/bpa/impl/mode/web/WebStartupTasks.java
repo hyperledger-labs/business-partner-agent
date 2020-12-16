@@ -32,7 +32,7 @@ import javax.inject.Singleton;
 @Requires(notEnv = { Environment.TEST })
 public class WebStartupTasks {
 
-    @Value("${oagent.host}")
+    @Value("${bpa.host}")
     String host;
 
     @Inject

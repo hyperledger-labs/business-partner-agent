@@ -33,9 +33,9 @@ public class AriesClientFactory {
 
     private static final long FIVE = 300;
 
-    @Value("${oagent.acapy.url}")
+    @Value("${bpa.acapy.url}")
     private String url;
-    @Value("${oagent.acapy.apiKey}")
+    @Value("${bpa.acapy.apiKey}")
     private String apiKey;
 
     @Singleton

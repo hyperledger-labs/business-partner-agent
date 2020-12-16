@@ -41,7 +41,7 @@ public abstract class RunWithAries extends BaseTest {
 
     protected AriesClient ac;
 
-    @Value("${oagent.acapy.url}")
+    @Value("${bpa.acapy.url}")
     private String url;
 
     @Container

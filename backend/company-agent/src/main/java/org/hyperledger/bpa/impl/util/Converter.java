@@ -63,7 +63,7 @@ public class Converter {
     public static final TypeReference<VerifiablePresentation<VerifiableIndyCredential>> VP_TYPEREF = new TypeReference<>() {
     };
 
-    @Value("${oagent.did.prefix}")
+    @Value("${bpa.did.prefix}")
     private String ledgerPrefix;
 
     @Inject

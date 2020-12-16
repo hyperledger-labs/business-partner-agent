@@ -32,7 +32,7 @@ In you IDE e.g. Eclipse righ click Application.java Run As/Run Configurations an
 If you want to run in web only mode you also have to set:
 
 ```
--Doagent.web.only=true
+-Dbpa.web.only=true
 ```
 
 ### Aries Mode

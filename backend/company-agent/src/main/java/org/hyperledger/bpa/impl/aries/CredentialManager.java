@@ -65,7 +65,7 @@ import java.util.UUID;
 @Singleton
 public class CredentialManager {
 
-    @Value("${oagent.did.prefix}")
+    @Value("${bpa.did.prefix}")
     String didPrefix;
 
     @Inject

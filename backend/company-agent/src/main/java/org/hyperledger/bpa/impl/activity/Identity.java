@@ -41,14 +41,14 @@ import java.util.Optional;
 @Singleton
 public class Identity {
 
-    @Value("${oagent.host}")
+    @Value("${bpa.host}")
     String host;
 
-    @Value("${oagent.web.only}")
+    @Value("${bpa.web.only}")
     boolean webOnly;
 
     @Getter
-    @Value("${oagent.did.prefix}")
+    @Value("${bpa.did.prefix}")
     String didPrefix;
 
     @Inject
