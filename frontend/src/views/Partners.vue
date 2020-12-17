@@ -48,8 +48,8 @@ export default {
           value: "name",
         },
         {
-          text: "Created",
-          value: "createdAt",
+          text: "Address",
+          value: "address",
         },
         {
           text: "Last Updated",

@@ -35,6 +35,12 @@
         </span>
       </template>
 
+      <template v-slot:[`item.address`]="{ item }">
+        <span text-truncate>
+          {{ item.address }}
+        </span>
+      </template>
+
       <template v-slot:[`item.createdAt`]="{ item }">
         {{ item.createdAt | moment("YYYY-MM-DD HH:mm") }}
       </template>
@@ -51,6 +57,7 @@ import { EventBus } from "../main";
 import { getPartnerName } from "../utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import NewMessageIcon from "@/components/NewMessageIcon";
+import { CredentialTypes } from "../constants";
 
 export default {
   name: "PartnerList",
@@ -132,6 +139,7 @@ export default {
 
             this.data = result.data.map((partner) => {
               partner.name = getPartnerName(partner);
+              partner.address = this.getProfileAddress(partner);
               return partner;
             });
 
@@ -158,6 +166,26 @@ export default {
         }
       }
       return data;
+    },
+    getProfileAddress(credential) {
+      const profile = credential.credential.find((item) => {
+        return item.type === CredentialTypes.PROFILE.type;
+      });
+      let address = "";
+      if (profile) {
+        const registeredSiteAddress =
+          profile.credentialData.registeredSite.address;
+        if (registeredSiteAddress.city !== "") {
+          address = registeredSiteAddress.city;
+        }
+        if (registeredSiteAddress.zipCode !== "") {
+          address = registeredSiteAddress.zipCode + " " + address;
+        }
+        if (registeredSiteAddress.streetAddress !== "") {
+          address = registeredSiteAddress.streetAddress + ", " + address;
+        }
+      }
+      return address;
     },
   },
 };
