@@ -79,8 +79,8 @@
     </repositories>
 
     <modules>
-        <module>company-agent-core</module>
-        <module>company-agent</module>
+        <module>business-partner-agent-core</module>
+        <module>business-partner-agent</module>
     </modules>
 
     <dependencyManagement>
