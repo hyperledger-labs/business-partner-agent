@@ -57,14 +57,14 @@ spec:
                   key: postgresql-password            
             - name: JAVA_OPTS 
               value: |
-                -bpa.acapy.url=http://{{ include "acapy.fullname" . }}:{{ .Values.acapy.service.adminPort }} 
-                -bpa.acapy.apiKey={{ .Values.acapy.adminURLApiKey }}
+                -Dbpa.acapy.url=http://{{ include "acapy.fullname" . }}:{{ .Values.acapy.service.adminPort }} 
+                -Dbpa.acapy.apiKey={{ .Values.acapy.adminURLApiKey }}
                 -Dmicronaut.security.enabled={{ .Values.bpa.securityEnabled }} 
                 -Dmicronaut.server.port=8080
-                -bpa.pg.url=jdbc:postgresql://{{ include "global.postgresql.fullname" . }}/{{ .Values.postgresql.postgresqlUsername }}
-                -bpa.pg.username={{ .Values.postgresql.postgresqlUsername }}
-                -bpa.pg.password=$(POSTGRES_PASSWORD)
-                -bpa.host={{ (index .Values.bpa.ingress.hosts 0).host }}
+                -Dbpa.pg.url=jdbc:postgresql://{{ include "global.postgresql.fullname" . }}/{{ .Values.postgresql.postgresqlUsername }}
+                -Dbpa.pg.username={{ .Values.postgresql.postgresqlUsername }}
+                -Dbpa.pg.password=$(POSTGRES_PASSWORD)
+                -Dbpa.host={{ (index .Values.bpa.ingress.hosts 0).host }}
           resources:
             {{- toYaml .Values.bpa.resources | nindent 12 }}
       {{- with .Values.bpa.nodeSelector }}

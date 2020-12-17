@@ -11,14 +11,14 @@ services:
       - aca-py
     environment:
       JAVA_OPTS: >
-        -bpa.acapy.url=http://aca-py:${AGENT_ADMIN_PORT} 
-        -bpa.acapy.apiKey=${ACAPY_ADMIN_URL_API_KEY}
+        -Dbpa.acapy.url=http://aca-py:${AGENT_ADMIN_PORT} 
+        -Dbpa.acapy.apiKey=${ACAPY_ADMIN_URL_API_KEY}
         -Dmicronaut.security.enabled=${BPA_SECURITY_ENABLED} 
         -Dmicronaut.server.port=${BPA_PORT}
-        -bpa.pg.url=jdbc:postgresql://${POSTGRESQL_WALLET_HOST}/${POSTGRESQL_WALLET_USER} 
-        -bpa.pg.username=${POSTGRESQL_WALLET_USER} 
-        -bpa.pg.password=${POSTGRESQL_WALLET_PASSWORD} 
-        -bpa.host=${BPA_HOST}
+        -Dbpa.pg.url=jdbc:postgresql://${POSTGRESQL_WALLET_HOST}/${POSTGRESQL_WALLET_USER} 
+        -Dbpa.pg.username=${POSTGRESQL_WALLET_USER} 
+        -Dbpa.pg.password=${POSTGRESQL_WALLET_PASSWORD} 
+        -Dbpa.host=${BPA_HOST}
       BPA_WEB_MODE: ${BPA_WEB_MODE}
       BPA_RESOLVER_URL: ${BPA_RESOLVER_URL}
       BPA_LEDGER_BROWSER: ${BPA_LEDGER_BROWSER}
