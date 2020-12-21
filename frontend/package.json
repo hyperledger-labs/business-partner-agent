@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve",
     "test:unit": "vue-cli-service test:unit",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "license": "xml-js ./licenses/attribution.xml --spaces 2 --compact --text-key 'text' --trim --out ./licenses/attribution.json && generate-attribution -o ./licenses"
   },
   "dependencies": {
     "@babel/polyfill": "^7.11.5",
@@ -38,10 +39,12 @@
     "eslint-plugin-vue": "^6.2.2",
     "husky": "^4.3.0",
     "lint-staged": "^10.4.2",
+    "oss-attribution-generator": "^1.7.1",
     "prettier": "2.1.2",
     "vue-cli-plugin-vuetify": "^2.0.7",
     "vue-jest": "^3.0.7",
-    "vue-template-compiler": "^2.6.12"
+    "vue-template-compiler": "^2.6.12",
+    "xml-js": "^1.6.11"
   },
   "husky": {
     "hooks": {
