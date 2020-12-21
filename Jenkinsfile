@@ -21,7 +21,8 @@ pipeline {
                   jdk: "java-11",
                   maven: "${MVN_VERSION}",
                   globalMavenSettingsConfig: "${SETTINGS_ID}") {
-                  sh "mvn clean deploy -Pbuild-frontend -DaltDeploymentRepository=bds-nexus::default::https://nexus.bosch-digital.com/repository/bds-snapshots/"
+                  sh 'mvn -f business-partner-agent/pom.xml clean license:third-party-report xml:transform -Pgenerate-license-info'
+                  sh "mvn deploy -Pbuild-frontend -DaltDeploymentRepository=bds-nexus::default::https://nexus.bosch-digital.com/repository/bds-snapshots/"
                   sh "mvn docker:build docker:push -Ddocker.push.registry=nexus.bosch-digital.com:5000 -Ddocker.name=bds/%a"
                }
             }

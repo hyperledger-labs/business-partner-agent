@@ -11,7 +11,9 @@
                 <xsl:for-each select="xhtml:body/descendant::xhtml:table[2]/descendant::xhtml:tr">
                     <xsl:if test="descendant::xhtml:td[2]/xhtml:a">
                         <dependency>
-                            <name></name>
+                            <name>
+                                <xsl:value-of select="substring-before(substring-after(descendant::xhtml:td[2]/xhtml:a, ':'), ':')"/>
+                            </name>
                             <groupId>
                                 <xsl:value-of select="substring-before(descendant::xhtml:td[2]/xhtml:a, ':')"/>
                             </groupId>
@@ -27,6 +29,7 @@
                             <licenses>
                                 <license>
                                     <name><xsl:value-of select="descendant::xhtml:td[6]"/></name>
+                                    <url></url>
                                 </license>
                             </licenses>
                         </dependency>

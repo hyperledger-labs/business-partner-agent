@@ -78,6 +78,20 @@
         </repository>
     </repositories>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>plugin-snapshots</id>
+            <url>https://nexus.bosch-digital.com/repository/bds-snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+
+    </pluginRepositories>
+
     <modules>
         <module>business-partner-agent-core</module>
         <module>business-partner-agent</module>
@@ -282,23 +296,6 @@
                 </executions>
                 <configuration>
                     <configFile>../formatter.xml</configFile>
-                </configuration>
-            </plugin>
-            <!-- mvn attribution:generate-attribution-file -->
-            <plugin>
-                <groupId>com.github.jinnovations</groupId>
-                <artifactId>attribution-maven-plugin</artifactId>
-                <version>0.9.8</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate-attribution-file</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <outputFile>${project.build.directory}/attribution.xml</outputFile>
-                    <forceRegeneration>true</forceRegeneration>
                 </configuration>
             </plugin>
         </plugins>
