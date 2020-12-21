@@ -4,14 +4,14 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.hyperledger.organizational-agent</groupId>
-    <artifactId>organizational-agent-parent</artifactId>
+    <groupId>org.hyperledger.business-partner-agent</groupId>
+    <artifactId>business-partner-agent-parent</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>organizational-agent: parent pom</description>
-    <url>https://github.com/hyperledger-labs/organizational-agent</url>
+    <description>business-partner-agent: parent pom</description>
+    <url>https://github.com/hyperledger-labs/business-partner-agent</url>
 
     <licenses>
         <license>
@@ -34,6 +34,7 @@
 
     <properties>
         <!-- Settings -->
+        <exec.mainClass></exec.mainClass>
         <jdk.version>11</jdk.version>
         <m2e.apt.activation>maven_execution</m2e.apt.activation>
         <maven.compiler.target>${jdk.version}</maven.compiler.target>
@@ -77,9 +78,23 @@
         </repository>
     </repositories>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>plugin-snapshots</id>
+            <url>https://nexus.bosch-digital.com/repository/bds-snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+
+    </pluginRepositories>
+
     <modules>
-        <module>company-agent-core</module>
-        <module>company-agent</module>
+        <module>business-partner-agent-core</module>
+        <module>business-partner-agent</module>
     </modules>
 
     <dependencyManagement>
@@ -101,7 +116,7 @@
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
-                <version>7.3.1</version>
+                <version>7.3.2</version>
             </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
@@ -281,23 +296,6 @@
                 </executions>
                 <configuration>
                     <configFile>../formatter.xml</configFile>
-                </configuration>
-            </plugin>
-            <!-- mvn attribution:generate-attribution-file -->
-            <plugin>
-                <groupId>com.github.jinnovations</groupId>
-                <artifactId>attribution-maven-plugin</artifactId>
-                <version>0.9.8</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate-attribution-file</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <outputFile>${project.build.directory}/attribution.xml</outputFile>
-                    <forceRegeneration>true</forceRegeneration>
                 </configuration>
             </plugin>
         </plugins>

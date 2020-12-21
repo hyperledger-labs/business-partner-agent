@@ -56,26 +56,9 @@
           {{ item.name.text }}
         </v-card-title>
         <v-card-subtitle class="mx-auto">
-          <div>
-            <a
-              v-html="item.licenses.license.url.text"
-              :href="item.licenses.license.url.text"
-              target="_blank"
-            ></a>
-          </div>
           <div>Version: {{ item.version.text }}</div>
+          <div>License: {{ item.licenses.license.name.text }}</div>
         </v-card-subtitle>
-        <v-card-text>
-          <h3>{{ item.licenses.license.name.text }}</h3>
-          <div>
-            License text:
-            <a
-              v-html="item"
-              :href="item.licenses.license.url.text"
-              target="_blank"
-            ></a>
-          </div>
-        </v-card-text>
       </v-card>
     </v-row>
   </v-container>

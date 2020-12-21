@@ -3,7 +3,7 @@
 version: '3'
 
 services:
-  company-agent:
+  bpa:
     build:
       context: ..
     # image: ${BPA_DOCKER_IMAGE}
@@ -11,14 +11,14 @@ services:
       - aca-py
     environment:
       JAVA_OPTS: >
-        -Doagent.acapy.url=http://aca-py:${AGENT_ADMIN_PORT} 
-        -Doagent.acapy.apiKey=${ACAPY_ADMIN_URL_API_KEY}
+        -Dbpa.acapy.url=http://aca-py:${AGENT_ADMIN_PORT} 
+        -Dbpa.acapy.apiKey=${ACAPY_ADMIN_URL_API_KEY}
         -Dmicronaut.security.enabled=${BPA_SECURITY_ENABLED} 
         -Dmicronaut.server.port=${BPA_PORT}
-        -Doagent.pg.url=jdbc:postgresql://${POSTGRESQL_WALLET_HOST}/${POSTGRESQL_WALLET_USER} 
-        -Doagent.pg.username=${POSTGRESQL_WALLET_USER} 
-        -Doagent.pg.password=${POSTGRESQL_WALLET_PASSWORD} 
-        -Doagent.host=${BPA_HOST}
+        -Dbpa.pg.url=jdbc:postgresql://${POSTGRESQL_WALLET_HOST}/${POSTGRESQL_WALLET_USER} 
+        -Dbpa.pg.username=${POSTGRESQL_WALLET_USER} 
+        -Dbpa.pg.password=${POSTGRESQL_WALLET_PASSWORD} 
+        -Dbpa.host=${BPA_HOST}
       BPA_WEB_MODE: ${BPA_WEB_MODE}
       BPA_RESOLVER_URL: ${BPA_RESOLVER_URL}
       BPA_LEDGER_BROWSER: ${BPA_LEDGER_BROWSER}
@@ -60,7 +60,7 @@ services:
         --plugin aries_cloudagent.messaging.jsonld \
         --inbound-transport http '0.0.0.0' ${AGENT_HTTP_PORT} \
         --outbound-transport http \
-        --webhook-url http://company-agent:${BPA_PORT}/log \
+        --webhook-url http://bpa:${BPA_PORT}/log \
         --genesis-url '${LEDGER_URL}/genesis' \
         --endpoint ${AGENT_ENDPOINT} \
         --wallet-type 'indy' \

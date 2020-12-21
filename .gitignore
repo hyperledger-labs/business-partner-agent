@@ -51,10 +51,9 @@ formatter-maven-cache.properties
 
 # Build
 **/target/**
-/docker-compose-backend.yml
 
 # Ignore dynamically added frontend files
-backend/company-agent/src/main/resources/public/**
+backend/*/src/main/resources/public/**
 
 # --------------------------------------
 # Frontend
