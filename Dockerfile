@@ -12,12 +12,6 @@ COPY frontend ../frontend
 # Cache Maven Artefacts
 RUN mvn dependency:go-offline || true
 
-# Generate License Info
-RUN mvn clean install -N
-RUN mvn -f business-partner-agent-core/pom.xml clean install -Dspotbugs.skip=true -Dpmd.skip=true
-RUN mvn -f business-partner-agent/pom.xml license:third-party-report xml:transform -Pgenerate-license-info
-RUN cp ./business-partner-agent/target/generated-resources/xml/xslt/third-party-report.xml ../frontend/licenses/attribution.xml
-
 # Build .jar
 RUN mvn clean install -P build-frontend -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
 
