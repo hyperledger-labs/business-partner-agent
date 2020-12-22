@@ -21,12 +21,7 @@ pipeline {
                   jdk: "java-11",
                   maven: "${MVN_VERSION}",
                   globalMavenSettingsConfig: "${SETTINGS_ID}") {
-                     sh 'mvn clean'
-                     sh 'mvn install -N'
-                     sh 'mvn -f business-partner-agent-core/pom.xml install -Dspotbugs.skip=true -Dpmd.skip=true'
-                     sh 'mvn -f business-partner-agent/pom.xml license:third-party-report xml:transform -Pgenerate-license-info'
-                     sh 'cp ./business-partner-agent/target/generated-resources/xml/xslt/third-party-report.xml ../frontend/licenses/attribution.xml'
-                     sh "mvn deploy -Pbuild-frontend -DaltDeploymentRepository=bds-nexus::default::https://nexus.bosch-digital.com/repository/bds-snapshots/"
+                     sh "mvn clean deploy -Pbuild-frontend -DaltDeploymentRepository=bds-nexus::default::https://nexus.bosch-digital.com/repository/bds-snapshots/"
                      sh "mvn docker:build docker:push -Ddocker.push.registry=nexus.bosch-digital.com:5000 -Ddocker.name=bds/%a"
                }
             }

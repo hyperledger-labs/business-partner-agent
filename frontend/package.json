@@ -7,7 +7,7 @@
     "test:unit": "vue-cli-service test:unit",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "license": "xml-js ./licenses/attribution.xml --spaces 2 --compact --text-key 'text' --trim --out ./licenses/attribution.json && generate-attribution -o ./licenses"
+    "license": "xml-js ./licenses/third-party-report.xml --spaces 2 --compact --text-key 'text' --trim --out ./licenses/attribution.json && generate-attribution -o ./licenses"
   },
   "dependencies": {
     "@babel/polyfill": "^7.11.5",

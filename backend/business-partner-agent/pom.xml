@@ -273,90 +273,8 @@
 
     <profiles>
         <profile>
+            <!-- Fronted Build -->
             <id>build-frontend</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <!-- Fronted Build -->
-                    <plugin>
-                        <groupId>com.github.eirslett</groupId>
-                        <artifactId>frontend-maven-plugin</artifactId>
-                        <version>1.10.4</version>
-                        <configuration>
-                            <workingDirectory>../../frontend</workingDirectory>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>install node and npm</id>
-                                <goals>
-                                    <goal>install-node-and-npm</goal>
-                                </goals>
-                                <configuration>
-                                    <!-- See https://nodejs.org/en/download/ -->
-                                    <nodeVersion>v14.15.1</nodeVersion>
-                                    <npmVersion>6.14.8</npmVersion>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>npm install</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <configuration>
-                                    <arguments>install</arguments>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>npm run license</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <configuration>
-                                    <arguments>run license</arguments>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>npm run build</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <configuration>
-                                    <arguments>run build</arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- Copy frontend artifacts to resource folder -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.2.0</version>
-                        <executions>
-                            <execution>
-                                <id>copy-resources</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <encoding>${project.build.sourceEncoding}</encoding>
-                                    <outputDirectory>${basedir}/src/main/resources/public</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>../../frontend/dist</directory>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>generate-license-info</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
@@ -391,13 +309,14 @@
                         <version>1.0.2</version>
                         <executions>
                             <execution>
-                                <phase>process-resources</phase>
+                                <phase>generate-resources</phase>
                                 <goals>
                                     <goal>transform</goal>
                                 </goals>
                             </execution>
                         </executions>
                         <configuration>
+                            <forceCreation>true</forceCreation>
                             <transformationSets>
                                 <transformationSet>
                                     <dir>${project.build.directory}/site</dir>
@@ -417,6 +336,97 @@
                                 <version>10.3</version>
                             </dependency>
                         </dependencies>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>1.10.4</version>
+                        <configuration>
+                            <workingDirectory>../../frontend</workingDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>install node and npm</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- See https://nodejs.org/en/download/ -->
+                                    <nodeVersion>v14.15.1</nodeVersion>
+                                    <npmVersion>6.14.8</npmVersion>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm install</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>install</arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm run license</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>run license</arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm run build</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>run build</arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Copy frontend artifacts to resource folder -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-license-info</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>../../frontend/licenses</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.build.directory}/generated-resources/xml/xslt</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-frontend-resources</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <encoding>${project.build.sourceEncoding}</encoding>
+                                    <outputDirectory>${basedir}/src/main/resources/public</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>../../frontend/dist</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
