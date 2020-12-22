@@ -39,7 +39,7 @@ if curl --fail -s -d $PAYLOAD  -H "Content-Type: application/json" -X POST ${URL
     # Registration (probably) successfull
     echo ""
     echo ""Registration on $URL successful""
-    echo ""Setting AGENT_SEED in .env file""
+    echo ""Setting ACAPY_SEED in .env file""
     if [ ! -f .env ]; then
         echo "".env does not exist""
         echo ""Creating .env from .env-example""
@@ -47,12 +47,12 @@ if curl --fail -s -d $PAYLOAD  -H "Content-Type: application/json" -X POST ${URL
     fi
     # sed on Mac and Linux work differently
     if [ "$ARCHITECTURE" = "Mac" ]; then
-        sed -i '' '/AGENT_SEED=/c\
-        AGENT_SEED='"${SEED}"'
+        sed -i '' '/ACAPY_SEED=/c\
+        ACAPY_SEED='"${SEED}"'
         ' .env
     else
-         sed -i '/AGENT_SEED=/c\
-        AGENT_SEED='"${SEED}"'
+         sed -i '/ACAPY_SEED=/c\
+        ACAPY_SEED='"${SEED}"'
         ' .env
     fi 
     
