@@ -48,7 +48,7 @@ spec:
               value: {{ .Values.bpa.webMode | quote }}
             - name: AGENT_NAME
               value: {{ .Values.bpa.agentName | quote }}
-            - name: AGENT_ENDPOINT
+            - name: ACAPY_ENDPOINT
               value: https://{{ (index .Values.acapy.ingress.hosts 0).host }}
             - name: POSTGRES_PASSWORD
               valueFrom:
