@@ -13,29 +13,15 @@ services:
         "-c",
         "sleep 1;
         aca-py start \
-        --auto-accept-invites \
-        --auto-accept-requests \
-        --auto-respond-messages \
-        --auto-respond-credential-proposal \
-        --auto-respond-credential-offer \
-        --auto-respond-credential-request \
-        --auto-respond-presentation-proposal \
-        --auto-respond-presentation-request \
-        --auto-store-credential \
-        --auto-verify-presentation \
-        --auto-ping-connection \
-        --public-invites \
-        --plugin aries_cloudagent.messaging.jsonld \
+        --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY_HTTP_PORT} \
-        --outbound-transport http \
         --endpoint ${ACAPY_ENDPOINT} \
-        --profile-endpoint ${BPA_PROFILE_ENDPOINT} \
-        --webhook-url http://company-agent:${BPA_PORT}/log \
+        --profile-endpoint https://${BPA_HOST}/profile.jsonld \
+        --webhook-url http://localhost:${BPA_PORT}/log \
         --genesis-url '${ACAPY_GENESIS_URL}' \
-        --wallet-type 'indy' \
         --seed '${ACAPY_SEED}' \
         --admin '0.0.0.0' ${ACAPY_ADMIN_PORT} \
         --admin-insecure-mode \
         --label ${AGENT_NAME} \
-        --log-level info"
+        "
       ]

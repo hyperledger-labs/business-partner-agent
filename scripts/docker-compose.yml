@@ -42,26 +42,11 @@ services:
         "-c",
         "sleep 1;
         aca-py start \
-        --auto-accept-invites \
-        --auto-accept-requests \
-        --auto-respond-messages \
-        --auto-respond-credential-proposal \
-        --auto-respond-credential-offer \
-        --auto-respond-credential-request \
-        --auto-respond-presentation-proposal \
-        --auto-respond-presentation-request \
-        --auto-store-credential \
-        --auto-verify-presentation \
-        --auto-ping-connection \
-        --monitor-ping \
-        --public-invites \
-        --plugin aries_cloudagent.messaging.jsonld \
+        --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY_HTTP_PORT} \
-        --outbound-transport http \
         --webhook-url http://bpa:${BPA_PORT}/log \
         --genesis-url '${ACAPY_GENESIS_URL}' \
         --endpoint ${ACAPY_ENDPOINT} \
-        --wallet-type 'indy' \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \
         --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' \
         --wallet-storage-type '${ACAPY_WALLET_TYPE}' \
@@ -70,11 +55,12 @@ services:
         --seed '${ACAPY_SEED}' \
         --admin '0.0.0.0' ${ACAPY_ADMIN_PORT} \
         --label '${AGENT_NAME}' \
-        --log-level info \
         ${ACAPY_ADMIN_CONFIG} \
         ${ACAPY_READ_ONLY_MODE} \
         "
       ]
+    volumes:
+      - "./acapy-static-args.yml:/home/indy/acapy-static-args.yml"
   postgres:
     image: "postgres:12-alpine"
     environment:
