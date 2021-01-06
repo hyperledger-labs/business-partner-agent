@@ -90,10 +90,10 @@ fi
 
 # write public ip to env
 export BPA_HOST=$BPA_HOST
-export AGENT_ENDPOINT=$ACA_PY_ENDPOINT
+export ACAPY_ENDPOINT=$ACA_PY_ENDPOINT
 
 echo "Business Partner Agent Public URL: https://$BPA_HOST"
-echo "Public ACA-PY Endpoint: $AGENT_ENDPOINT"
+echo "Public ACA-PY Endpoint: $ACAPY_ENDPOINT"
 
 # Start agent
 docker-compose -f $DOCKERFILE up
