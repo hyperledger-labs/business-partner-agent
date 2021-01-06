@@ -22,6 +22,10 @@ services:
         --seed '${ACAPY_SEED}' \
         --admin '0.0.0.0' ${ACAPY_ADMIN_PORT} \
         --admin-insecure-mode \
-        --label ${AGENT_NAME} \
+        --wallet-name '${ACAPY_WALLET_DATABASE}' \
+        --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' \
+        --label '${AGENT_NAME}' \
         "
       ]
+    volumes:
+      - "./acapy-static-args.yml:/home/indy/acapy-static-args.yml"
