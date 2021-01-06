@@ -317,10 +317,13 @@
                         </executions>
                         <configuration>
                             <forceCreation>true</forceCreation>
+                            <catalogs>
+                                <catalog>src/test/resources/xml/catalog.xml</catalog>
+                            </catalogs>
                             <transformationSets>
                                 <transformationSet>
                                     <dir>${project.build.directory}/site</dir>
-                                    <stylesheet>src/main/resources/xml/stylesheet.xsl</stylesheet>
+                                    <stylesheet>src/test/resources/xml/stylesheet.xsl</stylesheet>
                                     <fileMappers>
                                         <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
                                             <targetExtension>.xml</targetExtension>
