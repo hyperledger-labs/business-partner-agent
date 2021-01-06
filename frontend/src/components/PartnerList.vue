@@ -168,24 +168,27 @@ export default {
       return data;
     },
     getProfileAddress(credential) {
-      const profile = credential.credential.find((item) => {
-        return item.type === CredentialTypes.PROFILE.type;
-      });
-      let address = "";
-      if (profile) {
-        const registeredSiteAddress =
-          profile.credentialData.registeredSite.address;
-        if (registeredSiteAddress.city !== "") {
-          address = registeredSiteAddress.city;
+      if (credential.credential && credential.credential.length > 0) {
+        const profile = credential.credential.find((item) => {
+          return item.type === CredentialTypes.PROFILE.type;
+        });
+        let address = "";
+        if (profile) {
+          const registeredSiteAddress =
+            profile.credentialData.registeredSite.address;
+          if (registeredSiteAddress.city !== "") {
+            address = registeredSiteAddress.city;
+          }
+          if (registeredSiteAddress.zipCode !== "") {
+            address = registeredSiteAddress.zipCode + " " + address;
+          }
+          if (registeredSiteAddress.streetAddress !== "") {
+            address = registeredSiteAddress.streetAddress + ", " + address;
+          }
         }
-        if (registeredSiteAddress.zipCode !== "") {
-          address = registeredSiteAddress.zipCode + " " + address;
-        }
-        if (registeredSiteAddress.streetAddress !== "") {
-          address = registeredSiteAddress.streetAddress + ", " + address;
-        }
+        return address;
       }
-      return address;
+      return "";
     },
   },
 };
