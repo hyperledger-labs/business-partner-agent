@@ -57,7 +57,7 @@ backend/*/src/main/resources/public/**
 
 # --------------------------------------
 # Frontend
-# 
+# --------------------------------------
 
 .env
 
@@ -66,11 +66,17 @@ frontend/node/**
 frontend/node_modules/**
 frontend/dist/**
 
+frontend/licenses/attribution.txt
+frontend/licenses/third-party-report.xml
+
 **/application-dev-*.yml
 node_modules
 package-lock.json
 
+# --------------------------------------
 # K8s / helm
+# --------------------------------------
+
 charts/**/charts/
 charts/**/manifests/
 my-values.yaml
