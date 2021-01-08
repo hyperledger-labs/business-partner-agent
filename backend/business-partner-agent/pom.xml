@@ -200,66 +200,50 @@
     </dependencies>
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven.compiler.plugin.version}</version>
-                    <configuration>
-                        <source>${jdk.version}</source>
-                        <target>${jdk.version}</target>
-                        <encoding>${project.build.sourceEncoding}</encoding>
-                        <fork>true</fork>
-                        <compilerArgs>
-                            <arg>-J-Dmicronaut.openapi.views.spec=rapidoc.enabled=true,swagger-ui.enabled=true,swagger-ui.theme=flattop</arg>
-                            <arg>-parameters</arg>
-                        </compilerArgs>
-                        <annotationProcessorPaths>
-                            <path>
-                                <groupId>org.projectlombok</groupId>
-                                <artifactId>lombok</artifactId>
-                                <version>${lombok.version}</version>
-                            </path>
-                            <path>
-                                <groupId>io.micronaut.openapi</groupId>
-                                <artifactId>micronaut-openapi</artifactId>
-                                <version>${micronaut.openapi.version}</version>
-                            </path>
-                            <path>
-                                <groupId>io.micronaut</groupId>
-                                <artifactId>micronaut-inject-java</artifactId>
-                                <version>${micronaut.version}</version>
-                            </path>
-                            <path>
-                                <groupId>io.micronaut.security</groupId>
-                                <artifactId>micronaut-security-annotations</artifactId>
-                                <version>${micronaut.security.version}</version>
-                            </path>
-                            <path>
-                                <groupId>io.micronaut.data</groupId>
-                                <artifactId>micronaut-data-processor</artifactId>
-                                <version>${micronaut.data.version}</version>
-                            </path>
-                        </annotationProcessorPaths>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>test-compile</id>
-                            <goals>
-                                <goal>testCompile</goal>
-                            </goals>
-                            <configuration>
-                                <compilerArgs>
-                                    <arg>-parameters</arg>
-                                </compilerArgs>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin.version}</version>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-J-Dmicronaut.openapi.views.spec=redoc.enabled=true,rapidoc.enabled=true,swagger-ui.enabled=true,swagger-ui.theme=flattop</arg>
+                        <arg>-Amicronaut.processing.group=org.hyperledger.business-partner-agent</arg>
+                        <arg>-Amicronaut.processing.module=business-partner-agent</arg>
+                    </compilerArgs>
+                    <annotationProcessorPaths combine.self="override">>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>io.micronaut.openapi</groupId>
+                            <artifactId>micronaut-openapi</artifactId>
+                            <version>${micronaut.openapi.version}</version>
+                        </path>
+                        <path>
+                            <groupId>io.micronaut</groupId>
+                            <artifactId>micronaut-inject-java</artifactId>
+                            <version>${micronaut.version}</version>
+                        </path>
+                        <path>
+                            <groupId>io.micronaut.security</groupId>
+                            <artifactId>micronaut-security-annotations</artifactId>
+                            <version>${micronaut.security.version}</version>
+                        </path>
+                        <path>
+                            <groupId>io.micronaut.data</groupId>
+                            <artifactId>micronaut-data-processor</artifactId>
+                            <version>${micronaut.data.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -428,6 +412,13 @@
                                         </resource>
                                     </resources>
                                 </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-all-resources</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>resources</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>
