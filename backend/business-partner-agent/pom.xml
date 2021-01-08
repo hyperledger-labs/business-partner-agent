@@ -413,6 +413,13 @@
                                     </resources>
                                 </configuration>
                             </execution>
+                            <execution>
+                                <id>copy-all-resources</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>resources</goal>
+                                </goals>
+                            </execution>
                         </executions>
                     </plugin>
                 </plugins>
