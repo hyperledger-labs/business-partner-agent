@@ -163,6 +163,30 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>se.ayoy.maven-plugins</groupId>
+                <artifactId>ayoy-license-verifier-maven-plugin</artifactId>
+                <version>1.2.0</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <licenseFile>licenses.xml</licenseFile>
+                    <failOnForbidden>true</failOnForbidden>
+                    <failOnMissing>true</failOnMissing>
+                    <failOnUnknown>true</failOnUnknown>
+                    <excludedScopes>
+                        <!-- Ignore all scopes that do not distribute artifacts -->
+                        <scope>test</scope>
+                        <scope>provided</scope>
+                    </excludedScopes>
+                </configuration>
+            </plugin>
             <!-- Quality -->
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
