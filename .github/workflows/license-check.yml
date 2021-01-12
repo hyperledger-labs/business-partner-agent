@@ -1,0 +1,30 @@
+name: Frontend license check
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+jobs:
+  license-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v2
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 12.x
+      - name: Authenticate with GitHub package registry
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
+      - name: Run npm install
+        run: npm install
+      - name: Check licenses
+        uses: tangro/actions-license-check@v1.0.7
+        with:
+          allowed-licenses: 'MIT; Python-2.0; Apache-2.0; BSD-2-Clause'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_CONTEXT: ${{ toJson(github) }}
