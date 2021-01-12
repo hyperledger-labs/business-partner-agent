@@ -262,6 +262,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
             </plugin>
+            <!-- mvn se.ayoy.maven-plugins:ayoy-license-verifier-maven-plugin:verify -->
             <plugin>
                 <groupId>se.ayoy.maven-plugins</groupId>
                 <artifactId>ayoy-license-verifier-maven-plugin</artifactId>
@@ -385,6 +386,16 @@
                                 </goals>
                                 <configuration>
                                     <arguments>install</arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm run license-check</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>run license-check</arguments>
                                 </configuration>
                             </execution>
                             <execution>
