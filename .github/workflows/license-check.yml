@@ -17,8 +17,8 @@ jobs:
         uses: actions/setup-node@v2.1.4
         with:
           node-version: 12.x
-      - name: Authenticate with GitHub package registry
-        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
+      # - name: Authenticate with GitHub package registry
+      #   run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
       - name: Run npm install
         run: npm install
       - name: Check licenses
