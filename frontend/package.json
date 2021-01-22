@@ -8,7 +8,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "license-check": "license-checker --production --json --onlyAllow 'MIT;Python-2.0;Apache-2.0;BSD-2-Clause;BSD-3-Clause' --excludePackages 'company-agent-frontend@0.1.0'",
-    "license": "xml-js ./licenses/third-party-report.xml --spaces 2 --compact --text-key 'text' --trim --out ./licenses/attribution.json && generate-attribution -o ./licenses"
+    "license": "generate-attribution -o ./licenses"
   },
   "dependencies": {
     "@babel/polyfill": "^7.11.5",

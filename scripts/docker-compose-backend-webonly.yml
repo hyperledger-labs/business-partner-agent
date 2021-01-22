@@ -5,7 +5,7 @@ version: '3'
 
 services:
   postgres:
-    image: "postgres"
+    image: "postgres:12-alpine"
     environment:
       - POSTGRES_USER=alice
       - POSTGRES_PASSWORD=alice1234
@@ -29,6 +29,7 @@ services:
         -e http://0.0.0.0:8030
         --admin '0.0.0.0' 8031 \
         --admin-insecure-mode \
+        --no-ledger \
         --plugin aries_cloudagent.messaging.jsonld \
         --log-level debug"
       ]

@@ -27,16 +27,9 @@
             </names>
         </license>
         <license>
-            <name>Eclipse Public License v. 2.0</name>
+            <name>GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1</name>
             <names>
-                <name>Eclipse Public License v. 2.0</name>
-                <name>EPL 2.0</name>
-            </names>
-        </license>
-        <license>
-            <name>GPL2 w/ CPE</name>
-            <names>
-                <name>GPL2 w/ CPE</name>
+                <name>GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1</name>
             </names>
         </license>
         <license>
@@ -52,9 +45,6 @@
             <names>
                 <name>GNU General Public License version 2</name>
             </names>
-            <urls>
-                <url>https://opensource.org/licenses/gpl-2.0.php</url>
-            </urls>
         </license>
     </forbidden>
 </licenses>
