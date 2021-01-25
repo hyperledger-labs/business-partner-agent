@@ -294,7 +294,7 @@
             <build>
                 <plugins>
                     <!-- mvn license:third-party-report -->
-                    <!-- license:aggregate-download-licenses -->
+                    <!-- mvn license:aggregate-download-licenses -->
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>license-maven-plugin</artifactId>
@@ -308,6 +308,7 @@
                             </execution>
                         </executions>
                         <configuration>
+                            <executeOnlyOnRootModule>false</executeOnlyOnRootModule>
                             <licensesOutputDirectory>${project.basedir}/src/main/resources/3rdPartyLicenses/licenses</licensesOutputDirectory>
                             <licensesOutputFile>${project.basedir}/src/main/resources/3rdPartyLicenses/backend-licenses.xml</licensesOutputFile>
                             <extendedInfo>true</extendedInfo>
@@ -407,7 +408,7 @@
                             </execution>
                             <execution>
                                 <id>copy-frontend-resources</id>
-                                <phase>process-resources</phase>
+                                <phase>generate-resources</phase>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
