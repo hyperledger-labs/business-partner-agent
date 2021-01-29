@@ -32,7 +32,7 @@ bpa:
   webMode: false
 
   # --  Uni Resolver URL
-  resolverURL: https://resolver.dev.economyofthings.io
+  resolverURL: https://resolver.stage.economyofthings.io
   
   # --  The ledger prefix that is configured with the Uni Resolver
   didPrefix: "did:sov:iil:"
