@@ -90,7 +90,7 @@ bpa:
     #host where containers are running: typically localhost but might be an IP as well
     host: localhost
   resolver:
-    url: ${BPA_RESOLVER_URL:`https://resolver.dev.economyofthings.io`}
+    url: ${BPA_RESOLVER_URL:`https://resolver.stage.economyofthings.io`}
   ledger:
     browser: ${BPA_LEDGER_BROWSER:`https://indy-test.bosch-digital.de`}
   host: localhost:${micronaut.server.port}

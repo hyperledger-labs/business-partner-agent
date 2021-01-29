@@ -221,7 +221,7 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | bpa.password | string | `"changeme"` | Default password, overwrite default if running in production like environments |
 | bpa.podAnnotations | object | `{}` |  |
 | bpa.podSecurityContext | object | `{}` |  |
-| bpa.resolverURL | string | `"https://resolver.dev.economyofthings.io"` | Uni Resolver URL |
+| bpa.resolverURL | string | `"https://resolver.stage.economyofthings.io"` | Uni Resolver URL |
 | bpa.resources | object | `{}` |  |
 | bpa.securityContext | object | `{}` |  |
 | bpa.securityEnabled | bool | `true` | enable security (username and password) |
