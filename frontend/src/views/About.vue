@@ -43,21 +43,14 @@
           <div><a v-html="item.url" :href="item.url" target="_blank"></a></div>
           <div>Version: {{ item.version }}</div>
           <div>License: {{ item.license }}</div>
-        </v-card-subtitle>
-      </v-card>
-    </v-row>
-    <v-row
-      v-for="(item, index) in backendLicenses"
-      :key="index"
-      class="mx-auto"
-    >
-      <v-card v-if="item" class="mx-auto my-2" style="width: 100%">
-        <v-card-title class="headline">
-          {{ item.name.text }}
-        </v-card-title>
-        <v-card-subtitle class="mx-auto">
-          <div>Version: {{ item.version.text }}</div>
-          <div>License: {{ item.licenses.license.name.text }}</div>
+          <v-expansion-panels accordion>
+            <v-expansion-panel>
+              <v-expansion-panel-header>License Text:</v-expansion-panel-header>
+              <v-expansion-panel-content>
+                {{ item.licenseText }}
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
         </v-card-subtitle>
       </v-card>
     </v-row>
@@ -72,16 +65,10 @@ export default {
   components: {},
   created() {
     EventBus.$emit("title", "About");
-    let backendJson = require("../../licenses/attribution.json");
-    if (backendJson) {
-      backendJson = backendJson.attributionReport.dependencies.dependency;
-      this.backendLicenses = backendJson;
-    }
   },
   data: () => {
     return {
       Licenses,
-      backendLicenses: {},
     };
   },
   methods: {},

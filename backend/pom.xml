@@ -45,11 +45,11 @@
         <!-- Dependency Versions -->
         <log4j2.version>2.14.0</log4j2.version>
         <lombok.version>1.18.16</lombok.version>
-        <micronaut.version>2.2.3</micronaut.version>
-        <micronaut.data.version>2.2.1</micronaut.data.version>
+        <micronaut.version>2.3.0</micronaut.version>
+        <micronaut.data.version>2.2.4</micronaut.data.version>
         <micronaut.openapi.version>2.2.2</micronaut.openapi.version>
-        <micronaut.security.version>2.2.1</micronaut.security.version>
-        <mockito.version>3.7.0</mockito.version>
+        <micronaut.security.version>2.3.0</micronaut.security.version>
+        <mockito.version>3.7.7</mockito.version>
         <pmd.version>6.30.0</pmd.version>
         <spotbugs.version>4.2.0</spotbugs.version>
         <testcontainers.version>1.15.1</testcontainers.version>
@@ -116,7 +116,7 @@
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
-                <version>7.4.0</version>
+                <version>7.5.1</version>
             </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
@@ -242,7 +242,7 @@
                 <plugin>
                     <groupId>io.micronaut.build</groupId>
                     <artifactId>micronaut-maven-plugin</artifactId>
-                    <version>1.1.3</version>
+                    <version>1.1.4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -253,6 +253,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.9.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -408,4 +413,25 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.1.1</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>dependencies</report>
+                            <report>dependency-convergence</report>
+                            <report>dependency-info</report>
+                            <report>modules</report>
+                            <report>licenses</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>

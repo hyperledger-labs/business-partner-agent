@@ -52,8 +52,11 @@ formatter-maven-cache.properties
 # Build
 **/target/**
 
-# Ignore dynamically added frontend files
+# Generated frontend files
 backend/*/src/main/resources/public/**
+# Generated license report
+backend/*/src/main/resources/3rdPartyLicenses/**
+!backend/*/src/main/resources/3rdPartyLicenses/spotbugs**.txt
 
 # --------------------------------------
 # Frontend
@@ -66,8 +69,7 @@ frontend/node/**
 frontend/node_modules/**
 frontend/dist/**
 
-frontend/licenses/attribution.txt
-frontend/licenses/third-party-report.xml
+frontend/licenses/**
 
 **/application-dev-*.yml
 node_modules
