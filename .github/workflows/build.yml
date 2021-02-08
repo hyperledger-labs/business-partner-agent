@@ -15,8 +15,15 @@ jobs:
           java-version: 1.11
           architecture: x64
 
-      #- name: Build with Maven
-      #  run: mvn -f backend/pom.xml clean install -Pbuild-frontend -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
+      - name: Build with Maven
+        run: mvn -f backend/pom.xml clean deploy -Pbuild-frontend -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
+
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
 
       - name: Publish docker images
         run: |
@@ -25,4 +32,4 @@ jobs:
               }
               trap logout EXIT
               echo ${{ secrets.CR_PAT }} | docker login ghcr.io --username ${{ secrets.CR_USER }} --password-stdin
-              mvn package docker:build docker:push -Ddocker.push.registry=ghcr.io/${GITHUB_REPOSITORY} -Ddocker.name=%a -Ddocker.tags.0=test
+              mvn docker:build docker:push -Ddocker.push.registry=ghcr.io/${GITHUB_REPOSITORY} -Ddocker.name=%a -Ddocker.tags.0=test
