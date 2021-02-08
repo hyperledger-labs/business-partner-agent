@@ -15,8 +15,8 @@ jobs:
           java-version: 1.11
           architecture: x64
 
-      - name: Build with Maven
-        run: mvn -f backend/pom.xml clean install -Pbuild-frontend -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
+      #- name: Build with Maven
+      #  run: mvn -f backend/pom.xml clean install -Pbuild-frontend -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
 
       - name: Publish docker images
         run: |
@@ -25,4 +25,4 @@ jobs:
               }
               trap logout EXIT
               echo ${{ secrets.CR_PAT }} | docker login ghcr.io --username ${{ secrets.CR_USER }} --password-stdin
-              mvn docker:build docker:push -Ddocker.push.registry=ghcr.io/${GITHUB_REPOSITORY} -Ddocker.name=%a -Ddocker.tags.0=test
+              mvn package docker:build docker:push -Ddocker.push.registry=ghcr.io/${GITHUB_REPOSITORY} -Ddocker.name=%a -Ddocker.tags.0=test
