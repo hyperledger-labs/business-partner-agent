@@ -27,8 +27,8 @@ jobs:
         with:
           plugin_groups: '[ "com.spotify" ]' 
 
-    #  - name: Build with Maven 
-    #    run: mvn -f backend/pom.xml test spotbugs:check pmd:check
+      - name: Build with Maven 
+        run: mvn -f backend/pom.xml package spotbugs:check pmd:check -Pbuild-frontend
 
       - name: Publish docker images
         run: |
@@ -37,4 +37,4 @@ jobs:
               }
               trap logout EXIT
               echo ${{ secrets.CR_PAT }} | docker login ghcr.io --username ${{ secrets.CR_USER }} --password-stdin
-              mvn -f backend/pom.xml package docker:build docker:push -Pbuild-frontend -Ddocker.push.registry=ghcr.io/${GITHUB_REPOSITORY} -Ddocker.name=%a -Ddocker.tags.0=justfortest
+              mvn -f backend/pom.xml docker:build docker:push -Ddocker.push.registry=ghcr.io/${GITHUB_REPOSITORY} -Ddocker.name=%a -Ddocker.tags.0=justfortest
