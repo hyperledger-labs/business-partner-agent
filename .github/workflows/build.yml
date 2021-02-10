@@ -40,6 +40,6 @@ jobs:
               }
               trap logout EXIT     
               echo ${{ secrets.CR_PAT }} | docker login ghcr.io --username ${{ secrets.CR_USER }} --password-stdin
-              docker pull  docker pull debian
+              docker pull debian
               docker tag debian ghcr.io/hyperledger-labs/business-partner-agent:justfortestnew
               docker push ghcr.io/hyperledger-labs/business-partner-agent:justfortestnew
