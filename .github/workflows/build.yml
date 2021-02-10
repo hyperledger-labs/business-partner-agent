@@ -28,7 +28,7 @@ jobs:
           plugin_groups: '[ "com.spotify" ]' 
 
       - name: Build with Maven 
-        run: mvn -f backend/pom.xml package spotbugs:check pmd:check -Pbuild-frontend
+        run: mvn -f backend/pom.xml install spotbugs:check pmd:check -Pbuild-frontend
 
       - name: Publish docker images
         run: |
