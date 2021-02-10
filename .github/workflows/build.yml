@@ -27,9 +27,9 @@ jobs:
         with:
           plugin_groups: '[ "com.spotify" ]' 
 
-      #- name: Test with Maven 
-      #  run: mvn -f backend/pom.xml test spotbugs:check pmd:check
-        
+      - name: Test with Maven 
+        run: mvn -f backend/pom.xml test spotbugs:check pmd:check
+
       - name: Publish docker images
         run: |
               function logout {
