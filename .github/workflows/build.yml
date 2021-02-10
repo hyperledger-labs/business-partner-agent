@@ -35,9 +35,5 @@ jobs:
       
       - name: Publish docker images
         run: |
-              function logout {
-                docker logout ghcr.io
-              }
-              trap logout EXIT
               echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io --username ${{ github.actor }} --password-stdin
               docker push ghcr.io/hyperledger-labs/business-partner-agent/business-partner-agent:justfortest
