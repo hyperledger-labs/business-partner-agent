@@ -27,11 +27,11 @@ jobs:
         with:
           plugin_groups: '[ "com.spotify" ]' 
 
-      #- name: Test with Maven 
-      #  run: mvn -f backend/pom.xml test spotbugs:check pmd:check
+      - name: Test with Maven 
+        run: mvn -f backend/pom.xml test spotbugs:check pmd:check
 
-      #- name: Build including docker image
-      # run:  mvn -f backend/pom.xml clean install -Pbuild-frontend -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true docker:build -Ddocker.name=business-partner-agent -Ddocker.tags.0=justfortest
+      - name: Build including docker image
+        run:  mvn -f backend/pom.xml clean install -Pbuild-frontend -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true docker:build -Ddocker.push.registry=docker.pkg.github.com -Ddocker.name=hyperledger-labs/business-partner-agent/%a -Ddocker.tags.0=latest
       
       - name: Publish docker images
         run: |
@@ -40,6 +40,4 @@ jobs:
               }
               trap logout EXIT     
               echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${{ github.actor }} --password-stdin
-              docker pull debian
-              docker tag debian  docker.pkg.github.com/hyperledger-labs/business-partner-agent/business-partner-agent:justfortestnew
-              docker push  docker.pkg.github.com/hyperledger-labs/business-partner-agent/business-partner-agent:justfortestnew
+              docker push  docker.pkg.github.com/hyperledger-labs/business-partner-agent/business-partner-agent
