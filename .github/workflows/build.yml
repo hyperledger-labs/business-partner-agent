@@ -31,7 +31,7 @@ jobs:
         run: mvn -f backend/pom.xml test spotbugs:check pmd:check
 
       - name: Build and publish docker images
-        if: {{ github.ref == 'ref/head/master' }}
+        if: ${{ github.ref == 'refs/heads/master' }}
         run: |
               function logout {
                 docker logout ghcr.io
