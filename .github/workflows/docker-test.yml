@@ -13,5 +13,5 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
-          repository: ghcr.io/${GITHUB_REPOSITORY}/business-partner-agent
+          repository: hyperledger-labs/business-partner-agent/business-partner-agent
           tag_with_ref: true
