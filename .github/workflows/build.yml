@@ -36,5 +36,5 @@ jobs:
                 docker logout ghcr.io
               }
               trap logout EXIT
-              echo ${{ secrets.CR_PAT }} | docker login ghcr.io --username ${{ secrets.CR_USER }} --password-stdin
+              echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io --username ${{ github.actor }} --password-stdin
               mvn -f backend/pom.xml docker:build docker:push -Ddocker.push.registry=ghcr.io/${GITHUB_REPOSITORY} -Ddocker.name=%a -Ddocker.tags.0=justfortest
