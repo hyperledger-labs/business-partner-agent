@@ -15,18 +15,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./
+      - uses: Surgo/docker-smart-tag-action@v1
         id: prepare1
         with:
           docker_image: name/app
       - run: echo ${{ steps.prepare1.outputs.tag }}
-      - uses: ./
+      - uses: Surgo/docker-smart-tag-action@v1
         id: prepare2
         with:
           docker_image: name/app
           tag_with_sha: true
       - run: echo ${{ steps.prepare2.outputs.tag }}
-      - uses: ./
+      - uses: Surgo/docker-smart-tag-action@v1
         id: prepare3
         with:
           docker_image: name/app
