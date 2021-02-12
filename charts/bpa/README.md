@@ -2,9 +2,9 @@
 
 The Business Partner Agent allows to manage and exchange master data between organizations.
 
-![Version: 0.1.0-alpha2.2](https://img.shields.io/badge/Version-0.1.0--alpha2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+![Version: 0.1.0-alpha2.10](https://img.shields.io/badge/Version-0.1.0--alpha2.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0-alpha2.10](https://img.shields.io/badge/AppVersion-0.1.0--alpha2.10-informational?style=flat-square)
 
-This chart will install a business partner agent (bpa-core & bpa-acapy) and Postgres. Be aware that in the standard configuration the database is not persistant, and kubernetes might redeploy your database at anytime.
+This chart will install a business partner agent (bpa-core & bpa-acapy) and Postgres.
 
 It will also create the default ingress routes.
 
@@ -14,8 +14,6 @@ It will also create the default ingress routes.
 helm repo add bpa https://hyperledger-labs.github.io/business-partner-agent/
 helm repo update
 helm upgrade \
-	--set bpa.image.repository=myrepo.io/bpa \
-	--set bpa.image.tag=latest \
 	--set bpa.acapy.agentSeed=12345678901234567890123456789012 \
    	mybpa bpa/bpa -i -n mynamespace --devel
 ```
@@ -39,30 +37,6 @@ This chart bootstraps a business partner agent deployment on a Kubernetes cluste
 
 The following steps have to be done only once.
 
-### Clone this git repository
-
-This  is required for the next preparation steps.
-
-```s
-git@github.com:hyperledger-labs/business-partner-agent.git
-cd business-partner-agent/docker
-```
-
-### Create and push docker image
-
-In the future we plan to have bpa image publically available, e.g. on docker hub.
-Currently you have to build it on your own and make it available in a registry (one that is reachable by your kubernetes cluster, e.g. docker hub).
-
-Build your image by executing the docker build command and push it to your registry.
-E.g.
-
-```s
-docker login --username=yourusername --password=yourpassword
-docker build -t myrepo.io/bpa:latest .
-docker push myrepo.io/bpa:latest
-```
-See also [docker command line documentation](https://docs.docker.com/engine/reference/commandline/cli/).
-
 ### Register a new DID
 
 Use the `./docker/register-did.sh` script to register a new DID on our test network (see also [docker setup](../../docker/README.md))
@@ -74,14 +48,12 @@ Just run:
 
 ## Installing the chart
 
-To install the chart with the release name `bpa`, the docker image `myrepo.io/bpa` and the seed `12345678901234567890123456789012` in the namespace `mynamespace`
+To install the chart with the release name `bpa` and the seed `12345678901234567890123456789012` in the namespace `mynamespace`
 
 ```sh
 helm repo add bpa https://hyperledger-labs.github.io/business-partner-agent/
 helm repo update
 helm upgrade \
-	--set bpa.image.repository=myrepo.io/bpa \
-	--set bpa.image.tag=latest \
 	--set bpa.acapy.agentSeed=12345678901234567890123456789012 \
    	mybpa bpa/bpa -i -n mynamespace --devel
 ```
@@ -104,9 +76,6 @@ Create a yaml file.
 ```yaml
 cat <<EOT >> values-mybpa.yaml
 bpa:
-   image:
-     repository: myrepo.io/bpa
-     tag: latest
    ingress:
      enabled: true
      hosts:
@@ -197,6 +166,7 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | acapy.nodeSelector | object | `{}` |  |
 | acapy.podAnnotations | object | `{}` |  |
 | acapy.podSecurityContext | object | `{}` |  |
+| acapy.readOnlyMode | bool | `false` |  |
 | acapy.resources | object | `{}` |  |
 | acapy.securityContext | object | `{}` |  |
 | acapy.service.adminPort | int | `8031` |  |
@@ -204,9 +174,10 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | acapy.service.type | string | `"ClusterIP"` |  |
 | acapy.tolerations | list | `[]` |  |
 | bpa.affinity | object | `{}` |  |
+| bpa.agentName | string | `"Business Partner Agent"` | The Agent Name as it should be displayed in the UI |
 | bpa.didPrefix | string | `"did:sov:iil:"` | The ledger prefix that is configured with the Uni Resolver |
 | bpa.image.pullPolicy | string | `"IfNotPresent"` |  |
-| bpa.image.repository | string | `"myrepo"` |  |
+| bpa.image.repository | string | `"docker.pkg.github.com/hyperledger-labs/business-partner-agent/business-partner-agent"` |  |
 | bpa.image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
 | bpa.imagePullSecrets | list | `[]` |  |
 | bpa.ingress.annotations | object | `{}` |  |
@@ -229,10 +200,11 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | bpa.service.type | string | `"ClusterIP"` |  |
 | bpa.tolerations | list | `[]` |  |
 | bpa.userName | string | `"admin"` | Default username |
-| bpa.webMode | bool | `false` | Run in web only mode without any ledger dependency and aries functionality |
+| bpa.webMode | bool | `false` | Run in did:web mode with read only ledger. If set to true acapy.readOnlyMode has to be true too. |
 | global.fullnameOverride | string | `""` |  |
 | global.nameOverride | string | `""` |  |
 | global.persistence.deployPostgres | bool | `true` | If true, the Postgres chart is deployed |
+| postgresql.image.tag | int | `12` |  |
 | postgresql.persistence | object | `{"enabled":false}` | Persistent Volume Storage configuration. ref: https://kubernetes.io/docs/user-guide/persistent-volumes |
 | postgresql.persistence.enabled | bool | `false` | Enable PostgreSQL persistence using Persistent Volume Claims. |
 | postgresql.postgresqlDatabase | string | `"bpa"` | PostgreSQL Database to create. |
@@ -243,7 +215,7 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 ## Chart dependencies
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami/ | postgresql | 9.7.2 |
+| https://charts.bitnami.com/bitnami/ | postgresql | 10.1.3 |
 
 ## Chart development
 

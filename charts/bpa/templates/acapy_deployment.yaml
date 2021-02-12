@@ -24,7 +24,7 @@ spec:
       securityContext:
         {{- toYaml .Values.acapy.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ .Values.acapy.name }}
           securityContext:
             {{- toYaml .Values.acapy.securityContext | nindent 12 }}
           image: "{{ .Values.acapy.image.repository }}:{{ .Values.acapy.image.tag | default .Chart.AppVersion }}"
