@@ -1,16 +1,14 @@
 name: CI/CD
 
 on: 
-  # Trigger the workflow on push or pull request,
-  # but only for the main branch
-  push:
-    branches:
-      - main
-    tags:        
-      - '**'   # Push events to every tag including hierarchical tags like v1.0/beta  
   pull_request:
     branches:
-      - main
+      - master
+  push:
+    branches:
+      - master
+    tags:        
+      - '**'   # Push events to every tag including hierarchical tags like v1.0/beta
 
 jobs:
   build:
