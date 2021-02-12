@@ -1,14 +1,6 @@
 name: CI/CD
 
-on: 
-  pull_request:
-    branches:
-      - master
-  push:
-    branches:
-      - master
-    tags:        
-      - '**'   # Push events to every tag including hierarchical tags like v1.0/beta
+on: [release]
 
 jobs:
   build:
@@ -39,7 +31,7 @@ jobs:
         run: mvn -f backend/pom.xml test spotbugs:check pmd:check
 
       - name: Build and publish docker images
-        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/') }}
+        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }}
         run: |
               function logout {
                 docker logout ghcr.io

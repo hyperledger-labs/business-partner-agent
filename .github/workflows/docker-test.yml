@@ -1,17 +1,34 @@
-name: Publish Docker image
-on: [release]
+name: Docker tags test
+
+on: 
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+    tags:        
+      - 'v**'   # Push events to every tag prefixed with v, including hierarchical tags like v1.0/beta
+
 jobs:
-  push_to_registry:
-    name: Push Docker image to GitHub Packages
+  main:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v2
-      - name: Push to GitHub Packages
-        uses: docker/build-push-action@v1
+      - uses: actions/checkout@v2
+      - uses: Surgo/docker-smart-tag-action@v1
+        id: prepare1
         with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          registry: docker.pkg.github.com
-          repository: hyperledger-labs/business-partner-agent/business-partner-agent
-          tag_with_ref: true
+          docker_image: name/app
+      - run: echo ${{ steps.prepare1.outputs.tag }}
+      - uses: Surgo/docker-smart-tag-action@v1
+        id: prepare2
+        with:
+          docker_image: name/app
+          tag_with_sha: true
+      - run: echo ${{ steps.prepare2.outputs.tag }}
+      - uses: Surgo/docker-smart-tag-action@v1
+        id: prepare3
+        with:
+          docker_image: name/app
+          default_branch: ${{ github.event.repository.default_branch }}
+      - run: echo ${{ steps.prepare3.outputs.tag }}
