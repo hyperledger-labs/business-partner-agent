@@ -15,13 +15,8 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v2
-      -
-        name: Docker meta
-        id: docker_meta
-        uses: crazy-max/ghaction-docker-meta@v1
-        with:
-          images: name/app
+      - name: Get the version
+        id: vars
+        run: echo ::set-output name=tag::$(echo ${GITHUB_REF:10})
       - name: Get tags
-        run: echo "${{ steps.docker_meta.outputs.tags }}" 
-      - name: Get labels
-        run: echo "${{ steps.docker_meta.outputs.labels }}"
+        run: echo "${{ steps.vars.outputs.tag }}" 
