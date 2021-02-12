@@ -4,9 +4,7 @@ version: '3'
 
 services:
   bpa:
-    build:
-      context: ..
-    # image: ${BPA_DOCKER_IMAGE}
+    image: ${BPA_DOCKER_IMAGE}
     depends_on:
       - aca-py
     environment:
