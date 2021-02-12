@@ -1,0 +1,27 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - '**'
+    tags:
+      - 'v*'
+  pull_request:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Docker meta
+        id: docker_meta
+        uses: crazy-max/ghaction-docker-meta@v1
+        with:
+          images: name/app
+      - name: Get tags
+        run: echo "${{ steps.docker_meta.outputs.tags }}" 
+      - name: Get labels
+        run: echo "${{ steps.docker_meta.outputs.labels }}"
