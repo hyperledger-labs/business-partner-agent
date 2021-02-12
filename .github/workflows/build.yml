@@ -6,6 +6,8 @@ on:
   push:
     branches:
       - main
+    tags:        
+      - '**'   # Push events to every tag including hierarchical tags like v1.0/beta  
   pull_request:
     branches:
       - main
@@ -39,14 +41,11 @@ jobs:
         run: mvn -f backend/pom.xml test spotbugs:check pmd:check
 
       - name: Build and publish docker images
-        if: ${{ github.ref == 'refs/heads/master' }}
+        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/') }}
         run: |
               function logout {
                 docker logout ghcr.io
               }
               trap logout EXIT     
               echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${{ github.actor }} --password-stdin
-              mvn -f backend/pom.xml clean install -Pbuild-frontend -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true docker:build docker:push -Ddocker.push.registry=docker.pkg.github.com -Ddocker.name=hyperledger-labs/business-partner-agent/%a -Ddocker.tags.0=latest
-
-
-  
+              mvn -f backend/pom.xml clean install -Pbuild-frontend -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true docker:build docker:push -Ddocker.push.registry=docker.pkg.github.com -Ddocker.name=hyperledger-labs/business-partner-agent/%a -Ddocker.tags.0=latest -Ddocker.tags.1=${GITHUB_REF:10}
