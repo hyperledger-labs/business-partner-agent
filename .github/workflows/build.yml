@@ -54,6 +54,16 @@ jobs:
               }
               trap logout EXIT  
               IN=${{ steps.preparetags.outputs.tag }} 
+              IN=${IN//:/ }
+              IN=(${IN//,/ })
+              TAGSTRING=""
+              index=0
+              for i in "${IN[@]}"
+              do
+                TAGSTRING+="-Ddocker.tags.$index=$i "
+                let "index += 1"
+              done
+              echo 
               arrIN=(${IN//,/ })
               echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${{ github.actor }} --password-stdin
-              mvn -f backend/pom.xml clean install -Pbuild-frontend -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true docker:build docker:push -Ddocker.push.registry=docker.pkg.github.com -Ddocker.name=hyperledger-labs/business-partner-agent/%a -Ddocker.tags.0=latest -Ddocker.tags.1=${arrIN[0]:1} -Ddocker.tags.1=${arrIN[1]:1}
+              mvn -f backend/pom.xml clean install -Pbuild-frontend -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true docker:build docker:push -Ddocker.push.registry=docker.pkg.github.com -Ddocker.name=hyperledger-labs/business-partner-agent/%a $TAGSTRING
