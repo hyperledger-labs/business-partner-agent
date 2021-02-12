@@ -24,7 +24,7 @@ spec:
       securityContext:
         {{- toYaml .Values.bpa.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ .Values.bpa.name }}
           securityContext:
             {{- toYaml .Values.bpa.securityContext | nindent 12 }}
           image: "{{ .Values.bpa.image.repository }}:{{ .Values.bpa.image.tag | default .Chart.AppVersion }}"

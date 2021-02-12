@@ -13,8 +13,6 @@ It will also create the default ingress routes.
 helm repo add bpa https://hyperledger-labs.github.io/business-partner-agent/
 helm repo update
 helm upgrade \
-	--set bpa.image.repository=myrepo.io/bpa \
-	--set bpa.image.tag=latest \
 	--set bpa.acapy.agentSeed=12345678901234567890123456789012 \
    	mybpa bpa/bpa -i -n mynamespace --devel
 ```
@@ -38,30 +36,6 @@ This chart bootstraps a business partner agent deployment on a Kubernetes cluste
 
 The following steps have to be done only once.
 
-### Clone this git repository
-
-This  is required for the next preparation steps.
-
-```s
-git@github.com:hyperledger-labs/business-partner-agent.git
-cd business-partner-agent/docker
-```
-
-### Create and push docker image
-
-In the future we plan to have bpa image publically available, e.g. on docker hub.
-Currently you have to build it on your own and make it available in a registry (one that is reachable by your kubernetes cluster, e.g. docker hub).
-
-Build your image by executing the docker build command and push it to your registry.
-E.g.
-
-```s
-docker login --username=yourusername --password=yourpassword
-docker build -t myrepo.io/bpa:latest .
-docker push myrepo.io/bpa:latest
-```
-See also [docker command line documentation](https://docs.docker.com/engine/reference/commandline/cli/).
-
 ### Register a new DID
 
 Use the `./docker/register-did.sh` script to register a new DID on our test network (see also [docker setup](../../docker/README.md))
@@ -73,14 +47,12 @@ Just run:
 
 ## Installing the chart
 
-To install the chart with the release name `bpa`, the docker image `myrepo.io/bpa` and the seed `12345678901234567890123456789012` in the namespace `mynamespace`
+To install the chart with the release name `bpa` and the seed `12345678901234567890123456789012` in the namespace `mynamespace`
 
 ```sh
 helm repo add bpa https://hyperledger-labs.github.io/business-partner-agent/
 helm repo update
 helm upgrade \
-	--set bpa.image.repository=myrepo.io/bpa \
-	--set bpa.image.tag=latest \
 	--set bpa.acapy.agentSeed=12345678901234567890123456789012 \
    	mybpa bpa/bpa -i -n mynamespace --devel
 ```
@@ -103,9 +75,6 @@ Create a yaml file.
 ```yaml
 cat <<EOT >> values-mybpa.yaml
 bpa:
-   image:
-     repository: myrepo.io/bpa
-     tag: latest
    ingress:
      enabled: true
      hosts:
