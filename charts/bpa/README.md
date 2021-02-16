@@ -2,7 +2,7 @@
 
 The Business Partner Agent allows to manage and exchange master data between organizations.
 
-![Version: 0.1.0-alpha2.10](https://img.shields.io/badge/Version-0.1.0--alpha2.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0-alpha2.10](https://img.shields.io/badge/AppVersion-0.1.0--alpha2.10-informational?style=flat-square)
+![Version: 0.1.0-alpha2.11](https://img.shields.io/badge/Version-0.1.0--alpha2.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0-alpha2.11](https://img.shields.io/badge/AppVersion-0.1.0--alpha2.11-informational?style=flat-square)
 
 This chart will install a business partner agent (bpa-core & bpa-acapy) and Postgres.
 
@@ -177,7 +177,7 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | bpa.agentName | string | `"Business Partner Agent"` | The Agent Name as it should be displayed in the UI |
 | bpa.didPrefix | string | `"did:sov:iil:"` | The ledger prefix that is configured with the Uni Resolver |
 | bpa.image.pullPolicy | string | `"IfNotPresent"` |  |
-| bpa.image.repository | string | `"docker.pkg.github.com/hyperledger-labs/business-partner-agent/business-partner-agent"` |  |
+| bpa.image.repository | string | `"ghcr.io/hyperledger-labs/business-partner-agent"` |  |
 | bpa.image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
 | bpa.imagePullSecrets | list | `[]` |  |
 | bpa.ingress.annotations | object | `{}` |  |
