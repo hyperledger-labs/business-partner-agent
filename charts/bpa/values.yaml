@@ -14,7 +14,7 @@ bpa:
   name: bpacore
  
   image:
-    repository: docker.pkg.github.com/hyperledger-labs/business-partner-agent/business-partner-agent
+    repository: ghcr.io/hyperledger-labs/business-partner-agent
     pullPolicy: IfNotPresent
     # --  Overrides the image tag whose default is the chart appVersion.
     tag: ""
