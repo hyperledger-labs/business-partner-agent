@@ -6,7 +6,7 @@ on:
       - master
   push:
     branches:
-      - master
+      - feature/switchDockerRegistry
     tags:        
       - 'v**'   # Push events to every tag prefixed with v, including hierarchical tags like v1.0/beta
 
@@ -35,8 +35,8 @@ jobs:
         with:
           plugin_groups: '[ "com.spotify" ]' 
 
-      - name: Test with Maven 
-        run: mvn -f backend/pom.xml test spotbugs:check pmd:check
+#- name: Test with Maven 
+#        run: mvn -f backend/pom.xml test spotbugs:check pmd:check
 
       - name: Prepare docker images
         uses: Surgo/docker-smart-tag-action@v1      
@@ -47,7 +47,7 @@ jobs:
           tag_with_sha: true  
 
       - name: Build and publish docker images
-        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ github.ref == 'refs/heads/feature/switchDockerRegistry' || startsWith(github.ref, 'refs/tags/v') }}
         run: |
               function logout {
                 docker logout ghcr.io
@@ -65,5 +65,5 @@ jobs:
               done
               echo 
               arrIN=(${IN//,/ })
-              echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${{ github.actor }} --password-stdin
-              mvn -f backend/pom.xml clean install -Pbuild-frontend -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true docker:build docker:push -Ddocker.push.registry=docker.pkg.github.com -Ddocker.name=hyperledger-labs/business-partner-agent/%a $TAGSTRING
+              echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io --username ${{ github.actor }} --password-stdin
+              mvn -f backend/pom.xml clean install -Pbuild-frontend -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true docker:build docker:push -Ddocker.push.registry=ghcr.io -Ddocker.name=hyperledger-labs/business-partner-agent/%a $TAGSTRING
