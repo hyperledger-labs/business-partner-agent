@@ -161,20 +161,6 @@ public class CredentialManager {
                 });
     }
 
-    // credential signed, but not in wallet yet
-    public void handleStoreCredential(CredentialExchange credEx) {
-        credRepo.findByThreadId(credEx.getThreadId())
-                .ifPresentOrElse(cred -> {
-                    try {
-                        credRepo.updateState(cred.getId(), credEx.getState());
-                        // TODO should not be necessary with --auto-store-credential set
-                        ac.issueCredentialRecordsStore(credEx.getCredentialExchangeId());
-                    } catch (IOException e) {
-                        log.error("aca-py not reachable", e);
-                    }
-                }, () -> log.error("Received store credential event without matching thread id"));
-    }
-
     // credential, signed and stored in wallet
     public void handleCredentialAcked(CredentialExchange credEx) {
         credRepo.findByThreadId(credEx.getThreadId())

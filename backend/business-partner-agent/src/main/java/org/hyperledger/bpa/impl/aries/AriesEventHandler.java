@@ -83,9 +83,7 @@ public class AriesEventHandler extends EventHandler {
         // holder events, because I could also be an issuer
         if ("holder".equals(credential.getRole())) {
             synchronized (credMgmt) {
-                if ("credential_received".equals(credential.getState())) {
-                    credMgmt.handleStoreCredential(credential);
-                } else if ("credential_acked".equals(credential.getState())) {
+                if ("credential_acked".equals(credential.getState())) {
                     credMgmt.handleCredentialAcked(credential);
                 } else {
                     credMgmt.handleCredentialEvent(credential);
