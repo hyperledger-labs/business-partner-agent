@@ -65,8 +65,8 @@ spec:
                 -Dbpa.pg.username={{ .Values.postgresql.postgresqlUsername }}
                 -Dbpa.pg.password=$(POSTGRES_PASSWORD)
                 -Dbpa.host={{ (index .Values.bpa.ingress.hosts 0).host }}
-                -Dbpa.schemas.bank-account.id={{ .Values.bpa.schemas.bank-account.id }}
-                -Dbpa.schemas.commercial-register.id={{ .Values.bpa.schemas.commercial-register.id}}
+                -Dbpa.schemas.bank-account.id={{ .Values.bpa.schemas.bankaccount.id }}
+                -Dbpa.schemas.commercial-register.id={{ .Values.bpa.schemas.commercialregister.id}}
           resources:
             {{- toYaml .Values.bpa.resources | nindent 12 }}
       {{- with .Values.bpa.nodeSelector }}

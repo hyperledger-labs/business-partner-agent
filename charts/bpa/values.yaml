@@ -48,9 +48,9 @@ bpa:
 
   # schemas to be configured initially (further schemas can be configured by the user in the frontend)
   schemas:
-    commercial-register:
+    commercialregister:
      id: "3gLVpb3i5jzvZqWYyesSB3:2:commercialregister:1.2"
-    bank-account:
+    bankaccount:
      id: "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
 
   imagePullSecrets: []
