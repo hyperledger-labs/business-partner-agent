@@ -2,7 +2,7 @@
 
 The Business Partner Agent allows to manage and exchange master data between organizations.
 
-![Version: 0.1.0-alpha2.11](https://img.shields.io/badge/Version-0.1.0--alpha2.11-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0-alpha2.11](https://img.shields.io/badge/AppVersion-0.1.0--alpha2.11-informational?style=flat-square)
+![Version: 0.1.0-alpha2.12](https://img.shields.io/badge/Version-0.1.0--alpha2.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0-alpha2.12](https://img.shields.io/badge/AppVersion-0.1.0--alpha2.12-informational?style=flat-square)
 
 This chart will install a business partner agent (bpa-core & bpa-acapy) and Postgres.
 
@@ -194,6 +194,8 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | bpa.podSecurityContext | object | `{}` |  |
 | bpa.resolverURL | string | `"https://resolver.stage.economyofthings.io"` | Uni Resolver URL |
 | bpa.resources | object | `{}` |  |
+| bpa.schemas.bank-account.id | string | `"M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"` |  |
+| bpa.schemas.commercial-register.id | string | `"3gLVpb3i5jzvZqWYyesSB3:2:commercialregister:1.2"` |  |
 | bpa.securityContext | object | `{}` |  |
 | bpa.securityEnabled | bool | `true` | enable security (username and password) |
 | bpa.service.port | int | `80` |  |
