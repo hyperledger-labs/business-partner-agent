@@ -81,7 +81,7 @@ public class URClient {
                     .getDidDocument();
         } catch (HttpClientResponseException e) {
             String msg = "Call to universal resolver failed - msg: " + e.getMessage() + ", status: " + e.getStatus();
-            log.error(msg);
+            log.error(msg, e);
             throw new PartnerException(msg);
         } catch (IOException e) {
             log.warn("Could not close connection", e);
@@ -111,7 +111,7 @@ public class URClient {
             throw new PartnerException(msg);
         } catch (IOException e) {
             String msg = "Call to partner web endpoint failed - msg: " + e.getMessage();
-            log.error(msg);
+            log.error(msg, e);
             throw new PartnerException(msg);
         }
         return result;

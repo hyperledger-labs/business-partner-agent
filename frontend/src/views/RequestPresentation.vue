@@ -109,7 +109,7 @@ export default {
           },
           {
             credentialDefinitionId:
-              "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc",
+              "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:Bank Account",
             label: "Bank Account",
             issuer: "Bank",
           },
@@ -123,7 +123,7 @@ export default {
           },
           {
             credentialDefinitionId:
-              "UmZ25DANwS6ngGWB4ye4tN:3:CL:104:Bank Account",
+              "SCf4pK5PTvc1LnbUAF2aHD:3:CL:104:Bank Account",
             label: "Bank Account",
             issuer: "Bank",
           },
