@@ -25,7 +25,7 @@ fi
 
 
 # Set URL
-URL=https://indy-test.bosch-digital.de
+URL=http://test.bcovrin.vonx.io
 
 # Set random alias
 ALIAS=BPA-$(cat /dev/urandom | env LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 4 | head -n 1)
