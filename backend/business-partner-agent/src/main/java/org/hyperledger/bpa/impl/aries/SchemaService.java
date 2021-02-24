@@ -77,6 +77,8 @@ public class SchemaService {
                         .build();
                 BPASchema saved = schemaRepo.save(dbS);
                 result = SchemaAPI.from(saved);
+            } else {
+                log.error("Schema with id: {} does not exist on the ledger, skipping.", schemaId);
             }
         } catch (IOException e) {
             log.error("aca-py not reachable", e);

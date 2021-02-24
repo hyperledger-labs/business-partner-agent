@@ -109,7 +109,7 @@ public class EndpointService {
         try {
             taa = ac.ledgerTaa();
             if (taa.isPresent())
-                return Optional.of(taa.get().getTaaRecord());
+                return Optional.ofNullable(taa.get().getTaaRecord());
 
         } catch (IOException e) {
             String message = "TAA could not be retrieved";
