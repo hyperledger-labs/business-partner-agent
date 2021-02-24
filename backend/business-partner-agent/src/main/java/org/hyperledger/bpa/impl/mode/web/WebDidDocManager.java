@@ -82,7 +82,7 @@ public class WebDidDocManager implements DidDocManager {
                 .id(myDid)
                 .service(List.of(
                         Service.builder()
-                                .serviceEndpoint("https://" + host + "/profile.jsonld")
+                                .serviceEndpoint("http://" + host + "/profile.jsonld")
                                 .id(myDid + "#" + EndpointType.Profile.getLedgerName())
                                 .type(EndpointType.Profile.getLedgerName())
                                 .build(),
