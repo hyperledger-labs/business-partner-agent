@@ -16,7 +16,7 @@ services:
         -Dbpa.pg.url=jdbc:postgresql://${POSTGRESQL_HOST}/${POSTGRESQL_USER} 
         -Dbpa.pg.username=${POSTGRESQL_USER} 
         -Dbpa.pg.password=${POSTGRESQL_PASSWORD} 
-        -Dbpa.host=${BPA_HOST}
+        -Dbpa.host=${BPA_HOST}:${BPA_PORT}
       BPA_WEB_MODE: ${BPA_WEB_MODE}
       BPA_RESOLVER_URL: ${BPA_RESOLVER_URL}
       BPA_LEDGER_BROWSER: ${BPA_LEDGER_BROWSER}
