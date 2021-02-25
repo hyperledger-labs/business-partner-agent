@@ -33,7 +33,7 @@ cd business-partner-agent
 docker build -t ghcr.io/hyperledger-labs/business-partner-agent:local .
 cd scripts
 cp .env-example1 .env
-./register-did.sh
+LEDGER_URL=http://test.bcovrin.vonx.io ./register-did.sh
 docker-compose -f docker-compose-1.yml up
 ```
 
@@ -50,6 +50,7 @@ git clone https://github.com/ianco/business-partner-agent.git
 cd business-partner-agent
 cd scripts
 cp .env-example2 .env
+LEDGER_URL=http://test.bcovrin.vonx.io ./register-did.sh
 docker-compose -f docker-compose-2.yml up
 ```
 
@@ -63,3 +64,22 @@ In one of the BP agent windows, copy their DID (e.g. `did:sov:6fM1wPUPd9E6jpxuVf
 
 In the other BP agent window, select "Business Partners" and click on the purple "+" to add a new BP.  Paste their DID and click on "Lookup Partner".
 
+## Shutting down the BP agents
+
+In each BP shell, run the following:
+
+```bash
+docker-compose -f docker-compose-1.yml rm
+```
+
+```bash
+docker-compose -f docker-compose-2.yml rm
+```
+
+Remove any docker volumes that are kicking around:
+
+```bash
+docker volume ls -q | xargs docker volume rm
+```
+
+If you start the BP agents again, it is recommended to create new DIDs for the agents.
