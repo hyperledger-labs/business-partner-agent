@@ -34,7 +34,7 @@ docker build -t ghcr.io/hyperledger-labs/business-partner-agent:local .
 cd scripts
 cp .env-example1 .env
 ./register-did.sh
-docker-compose up
+docker-compose -f docker-compose-1.yml up
 ```
 
 Once the app is running open a browser to http://localhost:8000
@@ -62,6 +62,4 @@ Login as admin/changeme
 In one of the BP agent windows, copy their DID (e.g. `did:sov:6fM1wPUPd9E6jpxuVfSGGD`).
 
 In the other BP agent window, select "Business Partners" and click on the purple "+" to add a new BP.  Paste their DID and click on "Lookup Partner".
-
-
 
