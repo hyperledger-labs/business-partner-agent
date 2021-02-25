@@ -60,9 +60,10 @@ public class EndpointService {
     @Inject
     public EndpointService(
             @Value(value = "${bpa.acapy.endpoint}") String acapyEndpoint,
+            @Value(value = "${bpa.https}") String https,
             @Value(value = "${bpa.host}") String host) {
         endpoints = new HashMap<>();
-        endpoints.put("http://" + host + "/profile.jsonld", EndpointType.Profile);
+        endpoints.put(https + "://" + host + "/profile.jsonld", EndpointType.Profile);
         endpoints.put(acapyEndpoint, EndpointType.Endpoint);
     }
 

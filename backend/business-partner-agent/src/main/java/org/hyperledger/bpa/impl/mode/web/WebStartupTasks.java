@@ -32,6 +32,8 @@ import javax.inject.Singleton;
 @Requires(notEnv = { Environment.TEST })
 public class WebStartupTasks {
 
+    @Value("${bpa.https}")
+    String https;
     @Value("${bpa.host}")
     String host;
 
@@ -42,6 +44,6 @@ public class WebStartupTasks {
         log.debug("Running web mode startup tasks...");
 
         log.info("Creating did document for host: {}", host);
-        dicDocMgmt.createDidDocument(host);
+        dicDocMgmt.createDidDocument(https, host);
     }
 }

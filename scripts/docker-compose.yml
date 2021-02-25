@@ -17,6 +17,7 @@ services:
         -Dbpa.pg.username=${POSTGRESQL_USER} 
         -Dbpa.pg.password=${POSTGRESQL_PASSWORD} 
         -Dbpa.host=${BPA_HOST}
+        -Dbpa.https=${BPA_HTTPS}
       BPA_WEB_MODE: ${BPA_WEB_MODE}
       BPA_RESOLVER_URL: ${BPA_RESOLVER_URL}
       BPA_LEDGER_BROWSER: ${BPA_LEDGER_BROWSER}
