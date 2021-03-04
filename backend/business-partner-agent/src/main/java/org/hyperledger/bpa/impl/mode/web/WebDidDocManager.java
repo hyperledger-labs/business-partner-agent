@@ -55,7 +55,7 @@ public class WebDidDocManager implements DidDocManager {
     @Inject
     Identity id;
 
-    public void createDidDocument(String https, String host) {
+    public void createDidDocument(String scheme, String host) {
 
         String verkey = null;
         final Optional<String> ver = id.getVerkey();
@@ -82,7 +82,7 @@ public class WebDidDocManager implements DidDocManager {
                 .id(myDid)
                 .service(List.of(
                         Service.builder()
-                                .serviceEndpoint(https + "://" + host + "/profile.jsonld")
+                                .serviceEndpoint(scheme + "://" + host + "/profile.jsonld")
                                 .id(myDid + "#" + EndpointType.Profile.getLedgerName())
                                 .type(EndpointType.Profile.getLedgerName())
                                 .build(),
