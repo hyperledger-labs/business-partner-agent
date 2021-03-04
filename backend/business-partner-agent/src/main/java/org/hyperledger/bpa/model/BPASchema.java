@@ -28,8 +28,11 @@ import lombok.NoArgsConstructor;
 
 import javax.annotation.Nullable;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -61,4 +64,7 @@ public class BPASchema {
     private String defaultAttributeName;
 
     private Integer seqNo;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema")
+    private List<BPACredentialDefinition> credentialDefinition;
 }

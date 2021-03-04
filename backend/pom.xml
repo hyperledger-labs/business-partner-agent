@@ -45,12 +45,12 @@
         <!-- Dependency Versions -->
         <log4j2.version>2.14.0</log4j2.version>
         <lombok.version>1.18.18</lombok.version>
-        <micronaut.version>2.3.2</micronaut.version>
+        <micronaut.version>2.3.4</micronaut.version>
         <micronaut.data.version>2.2.4</micronaut.data.version>
         <micronaut.openapi.version>2.3.1</micronaut.openapi.version>
         <micronaut.security.version>2.3.0</micronaut.security.version>
-        <mockito.version>3.7.7</mockito.version>
-        <pmd.version>6.31.0</pmd.version>
+        <mockito.version>3.8.0</mockito.version>
+        <pmd.version>6.32.0</pmd.version>
         <spotbugs.version>4.2.1</spotbugs.version>
         <testcontainers.version>1.15.2</testcontainers.version>
         <!-- Plugin Versions -->
@@ -116,7 +116,7 @@
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
-                <version>7.5.3</version>
+                <version>7.5.4</version>
             </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
@@ -242,7 +242,7 @@
                 <plugin>
                     <groupId>io.micronaut.build</groupId>
                     <artifactId>micronaut-maven-plugin</artifactId>
-                    <version>1.1.5</version>
+                    <version>1.1.6</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -385,7 +385,7 @@
                                     <type>properties</type>
                                     <mode>override</mode>
                                 </external>
-                                <name>bds/%a</name>
+                                <name>hyperledger/%a</name>
                                 <build>
                                     <skip>${skip.docker.build}</skip>
                                     <from>amazoncorretto:${jdk.version}</from>

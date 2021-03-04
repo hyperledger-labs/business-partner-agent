@@ -17,12 +17,17 @@
  */
 package org.hyperledger.bpa.api.aries;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.micronaut.core.util.CollectionUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.controller.api.admin.CredentialDefinitionConfiguration;
 import org.hyperledger.bpa.model.BPASchema;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -42,14 +47,25 @@ public class SchemaAPI {
 
     private Set<String> schemaAttributeNames;
 
+    @JsonIgnore
+    private Integer seqNo;
+
+    private List<CredentialDefinitionConfiguration> credentialDefinitionConfig;
+
     public static SchemaAPI from(BPASchema s) {
-        return SchemaAPI
-                .builder()
+        SchemaAPIBuilder builder = SchemaAPI.builder();
+        if (CollectionUtils.isNotEmpty(s.getCredentialDefinition())) {
+            List<CredentialDefinitionConfiguration> credDefs = new ArrayList<>();
+            s.getCredentialDefinition().forEach(cred -> credDefs.add(CredentialDefinitionConfiguration.from(cred)));
+            builder.credentialDefinitionConfig(credDefs);
+        }
+        return builder
                 .id(s.getId())
                 .label(s.getLabel())
                 .schemaId(s.getSchemaId())
                 .schemaAttributeNames(s.getSchemaAttributeNames())
                 .isReadOnly(s.getIsReadOnly())
+                .seqNo(s.getSeqNo())
                 .build();
     }
 }

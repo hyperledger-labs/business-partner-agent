@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.bpa.impl.activity.VPManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
-import org.hyperledger.bpa.impl.aries.SchemaService;
+import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.mode.indy.IndyStartupTasks;
 import org.hyperledger.bpa.impl.mode.web.WebStartupTasks;
 import org.hyperledger.bpa.model.BPAState;

@@ -25,7 +25,7 @@ import org.hyperledger.aries.api.credential.Credential;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
-import org.hyperledger.bpa.impl.aries.SchemaService;
+import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.model.MyCredential;

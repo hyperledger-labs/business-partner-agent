@@ -24,7 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.credential.Credential;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
-import org.hyperledger.bpa.impl.aries.SchemaService;
+import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.BPASchema;
 

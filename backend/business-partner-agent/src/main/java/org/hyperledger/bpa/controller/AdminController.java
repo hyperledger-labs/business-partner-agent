@@ -28,12 +28,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.TAAInfo.TAARecord;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.RuntimeConfig;
-import org.hyperledger.bpa.controller.api.admin.AddSchemaRequest;
-import org.hyperledger.bpa.controller.api.admin.TAADigestRequest;
-import org.hyperledger.bpa.controller.api.admin.UpdateSchemaRequest;
+import org.hyperledger.bpa.controller.api.admin.*;
+import org.hyperledger.bpa.impl.aries.config.CredentialDefinitionManager;
+import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.mode.indy.EndpointService;
-import org.hyperledger.bpa.impl.aries.SchemaService;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -54,10 +54,18 @@ public class AdminController {
     Optional<EndpointService> endpointService;
 
     @Inject
+    CredentialDefinitionManager credDefMgmt;
+
+    @Inject
     RuntimeConfig config;
 
     @Inject
     AriesClient ac;
+
+    // TODO
+    // endpoint schemas/credential definition id to store a list of ids to each
+    // schema
+    // proof request allows all restriction that aca-py allows (expert mode)
 
     /**
      * Aries: List configured schemas
@@ -130,6 +138,53 @@ public class AdminController {
             return HttpResponse.notAllowed();
         }
         return HttpResponse.notFound();
+    }
+
+    /**
+     * Aries: Append a credential definition configuration to a schema
+     * 
+     * @param id      the schema id
+     * @param request {@link CredentialDefinitionRequest}
+     * @return {@link CredentialDefinitionConfiguration}
+     */
+    @Post("/schema/{id}/credentialDefinition")
+    public HttpResponse<CredentialDefinitionConfiguration> addCredentialDefinition(@PathVariable UUID id,
+            @Body CredentialDefinitionRequest request) {
+        Optional<CredentialDefinitionConfiguration> res = credDefMgmt.addCredentialDefinition(
+                id, request.getCredentialDefinitionId(), request.getLabel());
+        if (res.isPresent()) {
+            return HttpResponse.ok(res.get());
+        }
+        throw new WrongApiUsageException("Credential definition could not be added. Check the logs");
+    }
+
+    /**
+     * Aries: Update a credential definition configuration
+     * 
+     * @param id        the schema id
+     * @param credDefId the credential definition configuration id
+     * @param request
+     * @return
+     */
+    @Put("/schema/{id}/credentialDefinition/{credDefId}")
+    public HttpResponse<?> updateCredentialDefinition(@PathVariable UUID id,
+            @PathVariable UUID credDefId,
+            @Body CredentialDefinitionRequest request) {
+        return HttpResponse.ok();
+    }
+
+    /**
+     * Aries: Delete a credential definition configuration
+     * 
+     * @param id        the schema id
+     * @param credDefId the credential definition configuration id
+     * @return
+     */
+    @Delete("/schema/{id}/credentialDefinition/{credDefId}")
+    public HttpResponse<?> deleteCredentialDefinition(
+            @PathVariable UUID id,
+            @PathVariable UUID credDefId) {
+        return HttpResponse.ok();
     }
 
     /**

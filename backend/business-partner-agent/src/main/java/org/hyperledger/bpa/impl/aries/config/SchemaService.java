@@ -15,7 +15,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.bpa.impl.aries;
+package org.hyperledger.bpa.impl.aries.config;
 
 import io.micronaut.cache.annotation.Cacheable;
 import lombok.NonNull;
@@ -27,7 +27,7 @@ import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.SchemaConfig;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.model.BPASchema;
-import org.hyperledger.bpa.repository.SchemaRepository;
+import org.hyperledger.bpa.repository.BPASchemaRepository;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -40,10 +40,13 @@ import java.util.*;
 public class SchemaService {
 
     @Inject
-    SchemaRepository schemaRepo;
+    BPASchemaRepository schemaRepo;
 
     @Inject
     AriesClient ac;
+
+    @Inject
+    CredentialDefinitionManager credentialDefinitionManager;
 
     @Inject
     List<SchemaConfig> schemas;
@@ -148,12 +151,21 @@ public class SchemaService {
 
     public void resetWriteOnlySchemas() {
         schemaRepo.deleteByIsReadOnly(Boolean.TRUE);
+        credentialDefinitionManager.resetReadOnly();
 
         for (SchemaConfig schema : schemas) {
             try {
-                addSchema(schema.getId(), schema.getLabel(), schema.getDefaultAttributeName(), true);
-            } catch (@SuppressWarnings("unused") Exception e) {
-                log.warn("Schema already exists: {}", schema.getId());
+                SchemaAPI schemaAPI = addSchema(schema.getId(), schema.getLabel(),
+                        schema.getDefaultAttributeName(), true);
+                credentialDefinitionManager.addCredentialDefinition(
+                        schemaAPI.getId(), schemaAPI.getSeqNo(), Boolean.TRUE, schema.getCredentialDefinitionId());
+            } catch (Exception e) {
+                if (e instanceof WrongApiUsageException) {
+                    log.warn("Schema already exists: {}", schema.getId());
+                } else {
+                    log.warn("Could not add schema id: {}", schema.getId(), e);
+                }
+
             }
         }
     }

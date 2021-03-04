@@ -33,7 +33,7 @@ import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.aries.config.TimeUtil;
 import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.api.CredentialType;
-import org.hyperledger.bpa.impl.aries.SchemaService;
+import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.DidDocWeb;

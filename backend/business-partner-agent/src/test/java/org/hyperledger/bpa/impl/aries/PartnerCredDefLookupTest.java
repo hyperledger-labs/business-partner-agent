@@ -6,7 +6,7 @@ import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.PartnerRepository;
-import org.hyperledger.bpa.repository.SchemaRepository;
+import org.hyperledger.bpa.repository.BPASchemaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +30,7 @@ class PartnerCredDefLookupTest {
     LedgerClient ledger;
 
     @Mock
-    SchemaRepository schemaRepo;
+    BPASchemaRepository schemaRepo;
 
     @Inject
     PartnerCredDefLookup lookup;

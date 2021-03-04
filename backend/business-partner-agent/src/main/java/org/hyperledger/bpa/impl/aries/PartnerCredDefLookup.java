@@ -12,7 +12,7 @@ import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.PartnerRepository;
-import org.hyperledger.bpa.repository.SchemaRepository;
+import org.hyperledger.bpa.repository.BPASchemaRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -35,7 +35,7 @@ public class PartnerCredDefLookup {
 
     @Inject
     @Setter(AccessLevel.PACKAGE)
-    SchemaRepository schemaRepo;
+    BPASchemaRepository schemaRepo;
 
     @Inject
     Converter conv;

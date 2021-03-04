@@ -34,7 +34,7 @@ import org.hyperledger.bpa.impl.activity.CryptoManager;
 import org.hyperledger.bpa.impl.activity.DocumentValidator;
 import org.hyperledger.bpa.impl.activity.Identity;
 import org.hyperledger.bpa.impl.activity.VPManager;
-import org.hyperledger.bpa.impl.aries.SchemaService;
+import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.DidDocWebRepository;
 import org.junit.jupiter.api.AfterEach;
