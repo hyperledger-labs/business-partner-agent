@@ -5,6 +5,7 @@ import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.bpa.model.BPACredentialDefinition;
+import org.hyperledger.bpa.model.BPASchema;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -14,7 +15,7 @@ public interface BPACredentialDefinitionRepository extends CrudRepository<BPACre
 
     void deleteByIsReadOnly(Boolean isReadOnly);
 
-    // Optional<BPACredentialDefinition> findBySchemaId(UUID schemaId);
+    void deleteBySchema(BPASchema schema);
 
     void updateLabel(@Id UUID id, @Nullable String label);
 }

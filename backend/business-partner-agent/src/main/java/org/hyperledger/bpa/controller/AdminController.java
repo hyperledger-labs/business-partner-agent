@@ -34,6 +34,7 @@ import org.hyperledger.bpa.controller.api.admin.*;
 import org.hyperledger.bpa.impl.aries.config.CredentialDefinitionManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.mode.indy.EndpointService;
+import org.hyperledger.bpa.model.BPACredentialDefinition;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -80,7 +81,7 @@ public class AdminController {
     /**
      * Aries: Get a schema configuration
      *
-     * @param id the schema id
+     * @param id {@link UUID} the schema id
      * @return {@link HttpResponse}
      */
     @Get("/schema/{id}")
@@ -107,7 +108,7 @@ public class AdminController {
     /**
      * Aries: Update a schema configuration
      *
-     * @param id  the schema id
+     * @param id {@link UUID} the schema id
      * @param req {@link UpdateSchemaRequest}
      * @return {@link HttpResponse}
      */
@@ -124,7 +125,7 @@ public class AdminController {
      * Aries: Removes a schema configuration. Doing so means the BPA will not
      * process requests containing this schema id any more.
      *
-     * @param id the schema id
+     * @param id {@link UUID} the schema id
      * @return {@link HttpResponse}
      */
     @Delete("/schema/{id}")
@@ -143,13 +144,13 @@ public class AdminController {
     /**
      * Aries: Append a credential definition configuration to a schema
      * 
-     * @param id      the schema id
-     * @param request {@link CredentialDefinitionRequest}
-     * @return {@link CredentialDefinitionConfiguration}
+     * @param id      {@link UUID} the schema id
+     * @param request {@link AddCredentialDefinition}
+     * @return        {@link CredentialDefinitionConfiguration}
      */
     @Post("/schema/{id}/credentialDefinition")
     public HttpResponse<CredentialDefinitionConfiguration> addCredentialDefinition(@PathVariable UUID id,
-            @Body CredentialDefinitionRequest request) {
+            @Body AddCredentialDefinition request) {
         Optional<CredentialDefinitionConfiguration> res = credDefMgmt.addCredentialDefinition(
                 id, request.getCredentialDefinitionId(), request.getLabel());
         if (res.isPresent()) {
@@ -161,30 +162,40 @@ public class AdminController {
     /**
      * Aries: Update a credential definition configuration
      * 
-     * @param id        the schema id
-     * @param credDefId the credential definition configuration id
-     * @param request
-     * @return
+     * @param id        {@link UUID} the schema id
+     * @param credDefId {@link UUID} the credential definition configuration id
+     * @param request   {@link UpdateCredentialDefinition}
+     * @return          {@link CredentialDefinitionConfiguration}
      */
     @Put("/schema/{id}/credentialDefinition/{credDefId}")
-    public HttpResponse<?> updateCredentialDefinition(@PathVariable UUID id,
+    public HttpResponse<CredentialDefinitionConfiguration> updateCredentialDefinition(
+            @SuppressWarnings("unused") @PathVariable UUID id,
             @PathVariable UUID credDefId,
-            @Body CredentialDefinitionRequest request) {
+            @Body UpdateCredentialDefinition request) {
+        credDefMgmt.updateLabel(credDefId, request.getLabel());
         return HttpResponse.ok();
     }
 
     /**
      * Aries: Delete a credential definition configuration
      * 
-     * @param id        the schema id
-     * @param credDefId the credential definition configuration id
-     * @return
+     * @param id        {@link UUID} the schema id
+     * @param credDefId {@link UUID} the credential definition configuration id
+     * @return          {@link HttpResponse}
      */
     @Delete("/schema/{id}/credentialDefinition/{credDefId}")
-    public HttpResponse<?> deleteCredentialDefinition(
-            @PathVariable UUID id,
+    public HttpResponse<Void> deleteCredentialDefinition(
+            @SuppressWarnings("unused") @PathVariable UUID id,
             @PathVariable UUID credDefId) {
-        return HttpResponse.ok();
+        Optional<BPACredentialDefinition> config = credDefMgmt.findById(credDefId);
+        if (config.isPresent()) {
+            if (!config.get().getIsReadOnly()) {
+                credDefMgmt.deleteCredentialDefinition(credDefId);
+                return HttpResponse.ok();
+            }
+            return HttpResponse.notAllowed();
+        }
+        return HttpResponse.notFound();
     }
 
     /**

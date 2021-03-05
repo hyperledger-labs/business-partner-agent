@@ -69,7 +69,6 @@ public class CredentialDefinitionManager {
                                         .isReadOnly(isReadOnly)
                                         .build();
                                 BPACredentialDefinition db = repo.save(def);
-                                System.out.println(db);
                                 result.setConfig(CredentialDefinitionConfiguration
                                         .builder()
                                         .id(db.getId())
@@ -92,6 +91,22 @@ public class CredentialDefinitionManager {
 
     void resetReadOnly() {
         repo.deleteByIsReadOnly(Boolean.TRUE);
+    }
+
+    public void deleteCredentialDefinition(@NonNull UUID id) {
+        repo.deleteById(id);
+    }
+
+    void deleteBySchema(@NonNull BPASchema schema) {
+        repo.deleteBySchema(schema);
+    }
+
+    public void updateLabel(@NonNull UUID id, String label) {
+        repo.updateLabel(id, label);
+    }
+
+    public Optional<BPACredentialDefinition> findById(@NonNull UUID id) {
+         return repo.findById(id);
     }
 
     @Data

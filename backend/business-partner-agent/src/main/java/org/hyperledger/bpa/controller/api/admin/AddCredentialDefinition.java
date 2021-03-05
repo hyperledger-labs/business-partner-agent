@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class CredentialDefinitionRequest {
+public class AddCredentialDefinition {
     private String label;
     private String credentialDefinitionId;
 }

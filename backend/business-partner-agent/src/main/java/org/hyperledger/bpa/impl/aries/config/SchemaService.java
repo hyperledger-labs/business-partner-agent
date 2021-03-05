@@ -46,7 +46,7 @@ public class SchemaService {
     AriesClient ac;
 
     @Inject
-    CredentialDefinitionManager credentialDefinitionManager;
+    CredentialDefinitionManager credDefMgmt;
 
     @Inject
     List<SchemaConfig> schemas;
@@ -111,7 +111,10 @@ public class SchemaService {
     }
 
     public void deleteSchema(@NonNull UUID id) {
-        schemaRepo.deleteById(id);
+        schemaRepo.findById(id).ifPresent(s -> {
+            schemaRepo.deleteById(id);
+            credDefMgmt.deleteBySchema(s);
+        });
     }
 
     public Optional<BPASchema> getSchemaFor(@Nullable String schemaId) {
@@ -151,13 +154,13 @@ public class SchemaService {
 
     public void resetWriteOnlySchemas() {
         schemaRepo.deleteByIsReadOnly(Boolean.TRUE);
-        credentialDefinitionManager.resetReadOnly();
+        credDefMgmt.resetReadOnly();
 
         for (SchemaConfig schema : schemas) {
             try {
                 SchemaAPI schemaAPI = addSchema(schema.getId(), schema.getLabel(),
                         schema.getDefaultAttributeName(), true);
-                credentialDefinitionManager.addCredentialDefinition(
+                credDefMgmt.addCredentialDefinition(
                         schemaAPI.getId(), schemaAPI.getSeqNo(), Boolean.TRUE, schema.getCredentialDefinitionId());
             } catch (Exception e) {
                 if (e instanceof WrongApiUsageException) {
