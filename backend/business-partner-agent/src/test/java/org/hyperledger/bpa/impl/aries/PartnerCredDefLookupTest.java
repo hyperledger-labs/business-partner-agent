@@ -40,7 +40,7 @@ class PartnerCredDefLookupTest {
 
     @BeforeEach
     public void setup() {
-        lookup.setLedger(ledger);
+        lookup.setLedger(Optional.of(ledger));
         lookup.setSchemaRepo(schemaRepo);
         lookup.setDidPrefix("");
     }

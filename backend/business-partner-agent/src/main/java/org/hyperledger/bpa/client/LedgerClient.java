@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.client.api.LedgerQueryResult;
 import org.hyperledger.bpa.client.api.LedgerQueryResult.DomainTransaction;
 import org.hyperledger.bpa.client.api.LedgerQueryResult.DomainTransaction.TxnMetadata;
+import org.hyperledger.bpa.config.runtime.RequiresLedgerExplorer;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
+@RequiresLedgerExplorer
 public class LedgerClient {
 
     @Setter(AccessLevel.PROTECTED)
@@ -51,7 +53,7 @@ public class LedgerClient {
 
     @Inject
     @Setter(value = AccessLevel.PROTECTED)
-    private ObjectMapper mapper;
+    ObjectMapper mapper;
 
     private final OkHttpClient ok = new OkHttpClient();
 

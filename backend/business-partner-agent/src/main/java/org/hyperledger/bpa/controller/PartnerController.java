@@ -179,21 +179,6 @@ public class PartnerController {
     }
 
     /**
-     * Aries: Get credential types that the partner can issue
-     *
-     * @param id the partner id
-     * @return HTTP status
-     */
-    @Get("/{id}/credential-types")
-    public HttpResponse<List<PartnerCredentialType>> partnerCredentialTypes(@PathVariable String id) {
-        final Optional<List<PartnerCredentialType>> credDefs = credLookup.getPartnerCredDefs(UUID.fromString(id));
-        if (credDefs.isPresent()) {
-            return HttpResponse.ok(credDefs.get());
-        }
-        return HttpResponse.notFound();
-    }
-
-    /**
      * Aries: Request proof from partner
      *
      * @param id  the partner id

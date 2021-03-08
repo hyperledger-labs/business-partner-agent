@@ -106,7 +106,7 @@ public class CredentialDefinitionManager {
     }
 
     public Optional<BPACredentialDefinition> findById(@NonNull UUID id) {
-         return repo.findById(id);
+        return repo.findById(id);
     }
 
     @Data

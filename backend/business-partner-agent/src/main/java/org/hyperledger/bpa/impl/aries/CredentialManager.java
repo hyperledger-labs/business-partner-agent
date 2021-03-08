@@ -117,22 +117,15 @@ public class CredentialManager {
                     final Optional<org.hyperledger.bpa.model.BPASchema> s = schemaService
                             .getSchemaFor(dbDoc.get().getSchemaId());
                     if (s.isPresent()) {
-                        final Optional<String> credDefId = credLookup.findCredentialDefinitionId(
-                                partnerId, s.get().getSeqNo());
-                        if (credDefId.isPresent()) {
-                            ac.issueCredentialSendProposal(
-                                    CredentialProposalRequest
-                                            .builder()
-                                            .connectionId(dbPartner.get().getConnectionId())
-                                            .schemaId(s.get().getSchemaId())
-                                            .credentialProposal(
-                                                    new CredentialPreview(
-                                                            CredentialAttributes.from(dbDoc.get().getDocument())))
-                                            .credentialDefinitionId(credDefId.get())
-                                            .build());
-                        } else
-                            throw new PartnerException("Found no matching credential definition id. "
-                                    + "Partner can not issue bank account credentials");
+                        ac.issueCredentialSendProposal(
+                                CredentialProposalRequest
+                                        .builder()
+                                        .connectionId(dbPartner.get().getConnectionId())
+                                        .schemaId(s.get().getSchemaId())
+                                        .credentialProposal(
+                                                new CredentialPreview(
+                                                        CredentialAttributes.from(dbDoc.get().getDocument())))
+                                        .build());
                     } else {
                         throw new PartnerException("No configured schema found for id: " + dbDoc.get().getSchemaId());
                     }

@@ -92,7 +92,7 @@ bpa:
   resolver:
     url: ${BPA_RESOLVER_URL:`https://resolver.stage.economyofthings.io`}
   ledger:
-    browser: ${BPA_LEDGER_BROWSER:`https://indy-test.bosch-digital.de`}
+    browser: ${BPA_LEDGER_BROWSER:}
   host: localhost:${micronaut.server.port}
   name: ${AGENT_NAME:`Business Partner Agent`}
   web:
@@ -104,9 +104,9 @@ bpa:
   did:
     prefix: ${BPA_DID_PREFIX:`did:sov:iil:`}
   pg:
-    url: jdbc:postgresql://${bpa.docker.host}/alice
-    username: alice
-    password: alice1234
+    url: jdbc:postgresql://${bpa.docker.host}/${bpa.pg.username}
+    username: walletuser
+    password: walletpassword
     schema: public
   bootstrap:
     username: ${BPA_BOOTSTRAP_UN:admin}

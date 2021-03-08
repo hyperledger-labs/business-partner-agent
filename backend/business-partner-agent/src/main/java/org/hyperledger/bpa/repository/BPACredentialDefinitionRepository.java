@@ -8,6 +8,7 @@ import org.hyperledger.bpa.model.BPACredentialDefinition;
 import org.hyperledger.bpa.model.BPASchema;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
@@ -18,4 +19,6 @@ public interface BPACredentialDefinitionRepository extends CrudRepository<BPACre
     void deleteBySchema(BPASchema schema);
 
     void updateLabel(@Id UUID id, @Nullable String label);
+
+    List<BPACredentialDefinition> findBySchema(BPASchema schema);
 }
