@@ -9,12 +9,14 @@ import org.hyperledger.bpa.client.LedgerClient;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
+import org.hyperledger.bpa.repository.BPACredentialDefinitionRepository;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Singleton
 public class PartnerCredDefLookup {
@@ -35,19 +37,64 @@ public class PartnerCredDefLookup {
     BPASchemaRepository schemaRepo;
 
     @Inject
+    @Setter(AccessLevel.PACKAGE)
+    BPACredentialDefinitionRepository credDefRepo;
+
+    @Inject
     Converter conv;
 
+    /**
+     * Get/filter partners that can issue credentials that are based on the schemas
+     * id.
+     * 
+     * @param schemaId the schema id
+     * @return {@link List<PartnerAPI>}
+     */
     public List<PartnerAPI> getIssuersFor(@NonNull String schemaId) {
         List<PartnerAPI> result = new ArrayList<>();
-
-        // TODO filter
-
-        schemaRepo.findBySchemaId(schemaId)
-                .ifPresent(s -> partnerRepo.findBySupportedCredential(s.getSeqNo().toString()).forEach(
-                        dbPartner -> result.add(conv.toAPIObject(dbPartner))));
+        ledger.ifPresentOrElse(
+                l -> filterBySupportedCredential(schemaId, result),
+                () -> filterByConfiguredCredentialDefs(schemaId, result));
         return result;
     }
 
+    /**
+     * If a ledger explorer is configured. Finds partners that can issue credentials
+     * that are based on the schema id.
+     * 
+     * @param schemaId the schema id
+     * @param result   {@link List} that should contain the result
+     */
+    void filterBySupportedCredential(String schemaId, List<PartnerAPI> result) {
+        schemaRepo.findBySchemaId(schemaId)
+                .ifPresent(s -> partnerRepo.findBySupportedCredential(s.getSeqNo().toString()).forEach(
+                        dbPartner -> result.add(conv.toAPIObject(dbPartner))));
+    }
+
+    /**
+     * If NO ledger explorer is configured, statically match configured credential
+     * definition ids to partner did's to find partners that can issue a credential
+     * based on the schema id.
+     * 
+     * @param schemaId the schema id
+     * @param result   {@link List} that should contain the result
+     */
+    void filterByConfiguredCredentialDefs(@NonNull String schemaId, List<PartnerAPI> result) {
+        schemaRepo.findBySchemaId(schemaId).ifPresent(s -> {
+            List<String> did = credDefRepo.findBySchema(s)
+                    .stream()
+                    .map(c -> didPrefix + AriesStringUtil.credDefIdGetDid(c.getCredentialDefinitionId()))
+                    .collect(Collectors.toList());
+            partnerRepo.findByDidIn(did).forEach(dbPartner -> result.add(conv.toAPIObject(dbPartner)));
+        });
+    }
+
+    /**
+     * If a BCGov ledger explorer is configured, looks up all credential definition
+     * ids on the ledger that match a configured schema. If the did in the
+     * credential definition id matches a partner's did, the partner is considered a
+     * issuer of credentials that are based on that schema.
+     */
     @Scheduled(cron = "0 15 2 ? * *")
     public void lookupTypesForAllPartners() {
         ledger.ifPresent(l -> {

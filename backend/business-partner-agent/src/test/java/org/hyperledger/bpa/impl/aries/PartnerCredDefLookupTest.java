@@ -1,98 +1,63 @@
 package org.hyperledger.bpa.impl.aries;
 
+import io.micronaut.context.annotation.Value;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import org.hyperledger.bpa.client.LedgerClient;
-import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
+import org.hyperledger.bpa.api.PartnerAPI;
+import org.hyperledger.bpa.model.BPACredentialDefinition;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.repository.BPACredentialDefinitionRepository;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
-import org.junit.jupiter.api.BeforeEach;
+import org.hyperledger.bpa.repository.PartnerRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import java.util.Set;
 
 @MicronautTest
-@ExtendWith(MockitoExtension.class)
-class PartnerCredDefLookupTest {
+public class PartnerCredDefLookupTest {
 
-    @Mock
-    LedgerClient ledger;
-
-    @Mock
-    BPASchemaRepository schemaRepo;
+    @Value("${bpa.did.prefix}")
+    String didPrefix;
 
     @Inject
     PartnerCredDefLookup lookup;
 
     @Inject
-    PartnerRepository pRepo;
+    BPASchemaRepository schemaRepo;
 
-    @BeforeEach
-    public void setup() {
-        lookup.setLedger(Optional.of(ledger));
-        lookup.setSchemaRepo(schemaRepo);
-        lookup.setDidPrefix("");
-    }
+    @Inject
+    BPACredentialDefinitionRepository credRepo;
+
+    @Inject
+    PartnerRepository partnerRepo;
 
     @Test
-    void testLookup() {
-        String did1 = "did-1";
-        String did2 = "did-2";
+    void testFilterByConfiguredCredentialDefs() {
+        String schemaId = "schema1";
+        String did1 = didPrefix + "did1";
+        String did2 = didPrefix + "did2";
 
-        pRepo.save(Partner
-                .builder()
-                .ariesSupport(Boolean.TRUE)
-                .did(did1)
-                .connectionId(did1)
+        partnerRepo.save(Partner.builder().did(did1).ariesSupport(Boolean.TRUE).build());
+        partnerRepo.save(Partner.builder().did(did2).ariesSupport(Boolean.TRUE).build());
+
+        BPASchema dbSchema = schemaRepo.save(BPASchema.builder()
+                .schemaId(schemaId).seqNo(1).label("dummy").schemaAttributeNames(Set.of("name")).build());
+        credRepo.save(BPACredentialDefinition.builder().schema(dbSchema).credentialDefinitionId("did1:1:CL:10:dummy")
+                .build());
+        credRepo.save(BPACredentialDefinition.builder().schema(dbSchema).credentialDefinitionId("did2:1:CL:10:dummy")
+                .build());
+        credRepo.save(BPACredentialDefinition.builder().schema(dbSchema).credentialDefinitionId("did3:1:CL:10:dummy")
                 .build());
 
-        pRepo.save(Partner
-                .builder()
-                .ariesSupport(Boolean.TRUE)
-                .did(did2)
-                .connectionId(did2)
-                .build());
+        List<PartnerAPI> result = new ArrayList<>();
+        lookup.filterByConfiguredCredentialDefs(schemaId, result);
 
-        when(schemaRepo.findAll()).thenReturn(List.of(
-                BPASchema.builder().seqNo(1077).build(),
-                BPASchema.builder().seqNo(977).build(),
-                BPASchema.builder().seqNo(9999).build()));
-
-        when(ledger.queryCredentialDefinitions(anyString()))
-                .thenReturn(Optional.of(List.of(
-                        PartnerCredentialType.fromCredDefId("did-1:3:CL:1077:commercial register entry"),
-                        PartnerCredentialType.fromCredDefId("did-1:3:CL:1077:commereg test"),
-                        PartnerCredentialType.fromCredDefId("other:3:CL:1077:commreg"))))
-                .thenReturn(Optional.of(List.of(
-                        PartnerCredentialType.fromCredDefId("did-1:3:CL:977:bank"),
-                        PartnerCredentialType.fromCredDefId("did-2:3:CL:977:my-bank"))))
-                .thenReturn(Optional.empty());
-
-        lookup.lookupTypesForAllPartners();
-
-        List<Partner> partners = pRepo.findBySupportedCredential("1077");
-        assertEquals(1, partners.size());
-        assertEquals(did1, partners.get(0).getDid());
-
-        partners = pRepo.findBySupportedCredential("977");
-        assertEquals(2, partners.size());
-        final List<String> pList = partners.stream().map(Partner::getDid).collect(Collectors.toList());
-        assertTrue(pList.contains(did1));
-        assertTrue(pList.contains(did2));
-
-        partners = pRepo.findBySupportedCredential("9999");
-        assertEquals(0, partners.size());
+        Assertions.assertEquals(2, result.size());
+        Assertions.assertEquals(did1, result.get(0).getDid());
+        Assertions.assertEquals(did2, result.get(1).getDid());
     }
-
 }

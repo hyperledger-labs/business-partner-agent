@@ -50,6 +50,8 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     Optional<Partner> findByConnectionId(String connectionId);
 
+    List<Partner> findByDidIn(List<String> did);
+
     @Query("SELECT distinct partner.* FROM partner,jsonb_to_recordset(partner.supported_credentials->'wrapped') as items(seqno text) where items.seqno = :seqNo")
     List<Partner> findBySupportedCredential(String seqNo);
 
