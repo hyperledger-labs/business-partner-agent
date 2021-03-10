@@ -196,6 +196,12 @@ class PartnerRepositoryTest {
         assertEquals(2, partner.size());
     }
 
+    @Test
+    void testFindByDidInNoResult() {
+        List<Partner> partner = repo.findByDidIn(List.of());
+        assertEquals(0, partner.size());
+    }
+
     private void createPartnerWithCredentialType(int seqno) {
         final String did = RandomStringUtils.random(16);
         repo.save(Partner

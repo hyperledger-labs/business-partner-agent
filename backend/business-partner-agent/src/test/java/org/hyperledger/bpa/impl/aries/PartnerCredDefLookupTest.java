@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @MicronautTest
@@ -76,5 +77,19 @@ public class PartnerCredDefLookupTest {
         Assertions.assertEquals(2, result.size());
         Assertions.assertEquals(did1, result.get(0).getDid());
         Assertions.assertEquals(did2, result.get(1).getDid());
+    }
+
+    @Test
+    void testNoCredDefConfigured() {
+        String schemaId = "schema_1";
+        BPASchema foo = schemaRepo.save(BPASchema.builder()
+                .schemaId(schemaId).seqNo(1).label("dummy").schemaAttributeNames(Set.of("name")).build());
+
+        Optional<BPASchema> dbSchema = schemaRepo.findBySchemaId(schemaId);
+        Assertions.assertTrue(dbSchema.isPresent());
+
+        List<PartnerAPI> result = new ArrayList<>();
+        lookup.filterByConfiguredCredentialDefs(schemaId, result);
+        Assertions.assertEquals(0, result.size());
     }
 }
