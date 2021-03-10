@@ -25,13 +25,13 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;
 
-class LedgerClientTest extends BaseTest {
+class LedgerExplorerClientTest extends BaseTest {
 
     @Test
     @Disabled
     // TODO migrate to okhttp mock
     void test() {
-        LedgerClient c = new LedgerClient();
+        LedgerExplorerClient c = new LedgerExplorerClient();
         c.setUrl("https://indy-test.bosch-digital.de");
         c.setMapper(mapper);
 

@@ -229,7 +229,7 @@ public class PartnerController {
      */
     @Get("/{id}/proof/{proofId}")
     public HttpResponse<AriesProof> getPartnerProofById(
-            @PathVariable String id,
+            @SuppressWarnings("unused ") @PathVariable String id,
             @PathVariable String proofId) {
         final Optional<AriesProof> proof = proofM.getPartnerProofById(UUID.fromString(proofId));
         if (proof.isPresent()) {
@@ -247,7 +247,7 @@ public class PartnerController {
      */
     @Delete("/{id}/proof/{proofId}")
     public HttpResponse<Void> deletePartnerProofById(
-            @PathVariable String id,
+            @SuppressWarnings("unused ") @PathVariable String id,
             @PathVariable String proofId) {
         proofM.deletePartnerProof(UUID.fromString(proofId));
         return HttpResponse.ok();
