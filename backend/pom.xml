@@ -173,6 +173,13 @@
                     <threshold>Low</threshold>
                     <xmlOutput>true</xmlOutput>
                     <excludeFilterFile>src/test/resources/spotbugs-exclude.xml</excludeFilterFile>
+                    <plugins>
+                        <plugin>
+                            <groupId>com.h3xstream.findsecbugs</groupId>
+                            <artifactId>findsecbugs-plugin</artifactId>
+                            <version>LATEST</version>
+                        </plugin>
+                    </plugins>
                 </configuration>
                 <executions>
                     <execution>
