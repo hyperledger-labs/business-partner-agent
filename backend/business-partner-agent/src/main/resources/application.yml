@@ -117,14 +117,14 @@ bpa:
       id: "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
       label: "Bank Account"
       defaultAttributeName: "iban"
-      # Note: this also works json style credDefId: [{id: 123, label: myLabel}]
-      credentialDefinitionId:
-        - id: "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:Bank Account"
-          label: "Bank Account"
+      # Note: this also works json style restrictions: [{id: 123, label: myLabel}]
+      restrictions:
+        - issuerDid: "M6Mbe3qx7vB4wpZF4sBRjt"
+          label: "Demo Bank"
     commercial-register:
       id: "5mwQSWnRePrZ3oF67C4KqD:2:commercialregister:1.0"
       label: "Commercial Register"
       defaultAttributeName: "companyName"
-      credentialDefinitionId:
-        - id: "5mwQSWnRePrZ3oF67C4KqD:3:CL:1077:commercial register entry"
-          label: "Commercial Registry Entry"
+      restrictions:
+        - issuerDid: "5mwQSWnRePrZ3oF67C4KqD"
+          label: "Commercial Register"

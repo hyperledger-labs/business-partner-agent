@@ -19,9 +19,10 @@ package org.hyperledger.bpa.impl.aries.config;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.creddef.CredentialDefinition;
+import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.aries.api.ledger.DidVerkeyResponse;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
-import org.hyperledger.bpa.controller.api.admin.CredentialDefinitionConfiguration;
+import org.hyperledger.bpa.controller.api.admin.RestrictionResponse;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
 import org.junit.jupiter.api.Assertions;
@@ -34,12 +35,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @MicronautTest
-public class CredentialDefinitionManagerTest {
+public class RestrictionsManagerTest {
 
     private final AriesClient ac = Mockito.mock(AriesClient.class);
 
     @Inject
-    CredentialDefinitionManager mgmt;
+    RestrictionsManager mgmt;
 
     @Inject
     BPASchemaRepository schemaRepo;
@@ -50,50 +51,40 @@ public class CredentialDefinitionManagerTest {
     }
 
     @Test
-    void testAddConfigurationNoSchema() {
+    void testAddRestrictionNoSchema() {
         Assertions.assertThrows(WrongApiUsageException.class,
-                () -> mgmt.addCredentialDefinition(UUID.randomUUID(), "123", null));
+                () -> mgmt.addRestriction(UUID.randomUUID(), "123", null));
     }
 
     @Test
-    void testNoCredDefOnLedger() {
+    void testNoIssuerDidOnLedger() throws Exception {
         String schemaId = "schemaId";
+
+        Mockito.when(ac.ledgerDidVerkey(Mockito.anyString()))
+                .thenThrow(new AriesException(404, "test"));
+
         BPASchema dbSchema = schemaRepo.save(BPASchema.builder()
                 .schemaId(schemaId)
                 .seqNo(571)
                 .build());
-        Optional<CredentialDefinitionConfiguration> credDefId = mgmt
-                .addCredentialDefinition(dbSchema.getId(), "credDefId", null);
-        Assertions.assertTrue(credDefId.isEmpty());
+        Optional<RestrictionResponse> restriction = mgmt
+                .addRestriction(dbSchema.getId(), "5mwQSWnRePrZ3oF67C4Kqe", null);
+
+        Assertions.assertTrue(restriction.isEmpty());
     }
 
     @Test
-    void testSeqNoMissMatch() throws Exception {
-        CredentialDefinition definition = new CredentialDefinition();
-        definition.setSchemaId("11");
-        Mockito.when(ac.credentialDefinitionsGetById(Mockito.anyString()))
-                .thenReturn(Optional.of(definition));
+    void testAddRestrictionSuccess() throws Exception {
+        DidVerkeyResponse verkey = new DidVerkeyResponse();
+        verkey.setVerkey("dummy");
+        Mockito.when(ac.ledgerDidVerkey(Mockito.anyString()))
+                .thenReturn(Optional.of(verkey));
         BPASchema dbSchema = schemaRepo.save(BPASchema.builder()
                 .schemaId("1234")
                 .seqNo(571)
                 .build());
-        Optional<CredentialDefinitionConfiguration> credDefId = mgmt
-                .addCredentialDefinition(dbSchema.getId(), "credDefId", null);
-        Assertions.assertTrue(credDefId.isEmpty());
-    }
-
-    @Test
-    void testAddCredentialConfigSuccess() throws Exception {
-        CredentialDefinition definition = new CredentialDefinition();
-        definition.setSchemaId("571");
-        Mockito.when(ac.credentialDefinitionsGetById(Mockito.anyString()))
-                .thenReturn(Optional.of(definition));
-        BPASchema dbSchema = schemaRepo.save(BPASchema.builder()
-                .schemaId("1234")
-                .seqNo(571)
-                .build());
-        Optional<CredentialDefinitionConfiguration> credDefId = mgmt
-                .addCredentialDefinition(dbSchema.getId(), "credDefId", null);
+        Optional<RestrictionResponse> credDefId = mgmt
+                .addRestriction(dbSchema.getId(), "5mwQSWnRePrZ3oF67C4KqD", null);
         Assertions.assertTrue(credDefId.isPresent());
 
         Optional<BPASchema> reloaded = schemaRepo.findBySchemaId(dbSchema.getSchemaId());

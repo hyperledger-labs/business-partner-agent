@@ -63,5 +63,5 @@ public class BPASchema {
     private Integer seqNo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = CascadeType.ALL)
-    private List<BPACredentialDefinition> credentialDefinition;
+    private List<BPARestrictions> restrictions;
 }

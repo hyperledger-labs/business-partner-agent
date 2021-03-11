@@ -40,7 +40,7 @@ public class SchemaConfig {
     private String id;
     private String defaultAttributeName;
     // Generic structure - [{key: value, key: value}, {key: value}]
-    private List<Map<String, String>> credentialDefinitionId;
+    private List<Map<String, String>> restrictions;
 
     public SchemaConfig(@Parameter String name) {
         this.name = name;

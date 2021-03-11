@@ -23,7 +23,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.controller.api.admin.CredentialDefinitionConfiguration;
+import org.hyperledger.bpa.controller.api.admin.RestrictionResponse;
 import org.hyperledger.bpa.model.BPASchema;
 
 import java.util.ArrayList;
@@ -50,13 +50,13 @@ public class SchemaAPI {
     @JsonIgnore
     private Integer seqNo;
 
-    private List<CredentialDefinitionConfiguration> credentialDefinitionConfig;
+    private List<RestrictionResponse> credentialDefinitionConfig;
 
     public static SchemaAPI from(BPASchema s) {
         SchemaAPIBuilder builder = SchemaAPI.builder();
-        if (CollectionUtils.isNotEmpty(s.getCredentialDefinition())) {
-            List<CredentialDefinitionConfiguration> credDefs = new ArrayList<>();
-            s.getCredentialDefinition().forEach(cred -> credDefs.add(CredentialDefinitionConfiguration.from(cred)));
+        if (CollectionUtils.isNotEmpty(s.getRestrictions())) {
+            List<RestrictionResponse> credDefs = new ArrayList<>();
+            s.getRestrictions().forEach(cred -> credDefs.add(RestrictionResponse.from(cred)));
             builder.credentialDefinitionConfig(credDefs);
         }
         return builder

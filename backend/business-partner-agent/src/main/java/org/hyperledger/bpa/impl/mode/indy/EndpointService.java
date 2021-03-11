@@ -34,6 +34,8 @@ import org.hyperledger.bpa.config.runtime.RequiresIndy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -181,7 +183,8 @@ public class EndpointService {
             // this session)
             TAAInfo taaInfo = taa.get();
             TAARecord taaRecord = taaInfo.getTaaRecord();
-            if (tAADigest.equals(taaRecord.getDigest())) {
+            if (MessageDigest.isEqual(tAADigest.getBytes(StandardCharsets.UTF_8),
+                    taaRecord.getDigest().getBytes(StandardCharsets.UTF_8))) {
                 ac.ledgerTaaAccept(TAAAccept.builder()
                         // TODO use suitable mechanism, e.g. "session type".For the time being we just
                         // use a random one.
