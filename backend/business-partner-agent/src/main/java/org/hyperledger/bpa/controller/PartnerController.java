@@ -36,7 +36,7 @@ import org.hyperledger.bpa.impl.aries.CredentialManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.ProofManager;
 
-import javax.annotation.Nullable;
+import io.micronaut.core.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;

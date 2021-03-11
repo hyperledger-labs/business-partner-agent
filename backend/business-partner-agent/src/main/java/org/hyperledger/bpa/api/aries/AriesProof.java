@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.*;
 import org.hyperledger.bpa.model.PartnerProof;
 
-import javax.annotation.Nullable;
+import io.micronaut.core.annotation.Nullable;
 import java.util.UUID;
 
 @Data

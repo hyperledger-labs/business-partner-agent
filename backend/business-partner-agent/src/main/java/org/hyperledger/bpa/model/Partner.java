@@ -31,7 +31,7 @@ import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 
-import javax.annotation.Nullable;
+import io.micronaut.core.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.time.Instant;

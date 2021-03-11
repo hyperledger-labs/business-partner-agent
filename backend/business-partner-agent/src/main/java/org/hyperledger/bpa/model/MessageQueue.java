@@ -26,7 +26,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.annotation.Nullable;
+import io.micronaut.core.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.time.Instant;

@@ -29,7 +29,7 @@ import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
 
-import javax.annotation.Nullable;
+import io.micronaut.core.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -53,11 +53,12 @@ public class SchemaService {
 
     // CRUD Methods
 
-    public SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label,
+    public @Nullable SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label,
             @Nullable String defaultAttributeName) {
         return addSchema(schemaId, label, defaultAttributeName, false);
     }
 
+    @Nullable
     SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label,
             @Nullable String defaultAttributeName, boolean isReadOnly) {
         SchemaAPI result = null;
@@ -160,8 +161,10 @@ public class SchemaService {
             try {
                 SchemaAPI schemaAPI = addSchema(schema.getId(), schema.getLabel(),
                         schema.getDefaultAttributeName(), true);
-                credDefMgmt.addCredentialDefinition(
-                        schemaAPI.getId(), schemaAPI.getSeqNo(), Boolean.TRUE, schema.getCredentialDefinitionId());
+                if (schemaAPI != null) {
+                    credDefMgmt.addCredentialDefinition(
+                            schemaAPI.getId(), schemaAPI.getSeqNo(), Boolean.TRUE, schema.getCredentialDefinitionId());
+                }
             } catch (Exception e) {
                 if (e instanceof WrongApiUsageException) {
                     log.warn("Schema already exists: {}", schema.getId());

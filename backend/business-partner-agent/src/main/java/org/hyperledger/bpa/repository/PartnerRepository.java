@@ -24,7 +24,7 @@ import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.bpa.model.Partner;
 
-import javax.annotation.Nullable;
+import io.micronaut.core.annotation.Nullable;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;

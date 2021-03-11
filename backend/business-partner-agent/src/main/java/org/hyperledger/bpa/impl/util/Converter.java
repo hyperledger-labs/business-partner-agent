@@ -44,7 +44,7 @@ import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.model.Partner;
 
-import javax.annotation.Nullable;
+import io.micronaut.core.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
