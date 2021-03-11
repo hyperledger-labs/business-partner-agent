@@ -28,6 +28,7 @@ import io.micronaut.core.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -36,7 +37,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-public class BPACredentialDefinition {
+@Table(name = "bpa_restrictions")
+public class BPARestrictions {
 
     @Id
     @AutoPopulated
@@ -53,5 +55,5 @@ public class BPACredentialDefinition {
 
     private Boolean isReadOnly;
 
-    private String credentialDefinitionId;
+    private String issuerDid;
 }

@@ -26,7 +26,7 @@ import org.hyperledger.bpa.client.LedgerExplorerClient;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.repository.BPACredentialDefinitionRepository;
+import org.hyperledger.bpa.repository.BPARestrictionsRepository;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
@@ -55,7 +55,7 @@ public class PartnerCredDefLookup {
 
     @Inject
     @Setter(AccessLevel.PACKAGE)
-    BPACredentialDefinitionRepository credDefRepo;
+    BPARestrictionsRepository restrictionsRepo;
 
     @Inject
     Converter conv;
@@ -98,9 +98,9 @@ public class PartnerCredDefLookup {
      */
     void filterByConfiguredCredentialDefs(@NonNull String schemaId, List<PartnerAPI> result) {
         schemaRepo.findBySchemaId(schemaId).ifPresent(s -> {
-            List<String> did = credDefRepo.findBySchema(s)
+            List<String> did = restrictionsRepo.findBySchema(s)
                     .stream()
-                    .map(c -> didPrefix + AriesStringUtil.credDefIdGetDid(c.getCredentialDefinitionId()))
+                    .map(c -> didPrefix + c.getIssuerDid())
                     .collect(Collectors.toList());
             partnerRepo.findByDidIn(did).forEach(dbPartner -> result.add(conv.toAPIObject(dbPartner)));
         });

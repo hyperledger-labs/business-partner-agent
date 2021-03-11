@@ -31,10 +31,10 @@ import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.admin.*;
-import org.hyperledger.bpa.impl.aries.config.CredentialDefinitionManager;
+import org.hyperledger.bpa.impl.aries.config.RestrictionsManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.mode.indy.EndpointService;
-import org.hyperledger.bpa.model.BPACredentialDefinition;
+import org.hyperledger.bpa.model.BPARestrictions;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -55,7 +55,7 @@ public class AdminController {
     Optional<EndpointService> endpointService;
 
     @Inject
-    CredentialDefinitionManager credDefMgmt;
+    RestrictionsManager restrictionsManager;
 
     @Inject
     RuntimeConfig config;
@@ -66,7 +66,17 @@ public class AdminController {
     // TODO
     // endpoint schemas/credential definition id to store a list of ids to each
     // schema
+
     // proof request allows all restriction that aca-py allows (expert mode)
+
+    //
+    // when no ledger explorer configured fall back to not filtering partners in the
+    // can issue api
+    // can issue endpoint compares configured cred def ids with the partners did if
+    // match partner can issue
+    // when no cred defs configured show no partners
+
+    // check issuer with /ledger/did-verkey
 
     /**
      * Aries: List configured schemas
@@ -108,7 +118,7 @@ public class AdminController {
     /**
      * Aries: Update a schema configuration
      *
-     * @param id {@link UUID} the schema id
+     * @param id  {@link UUID} the schema id
      * @param req {@link UpdateSchemaRequest}
      * @return {@link HttpResponse}
      */
@@ -142,17 +152,18 @@ public class AdminController {
     }
 
     /**
-     * Aries: Append a credential definition configuration to a schema
+     * Aries: Add a restriction configuration to a schema
      * 
      * @param id      {@link UUID} the schema id
-     * @param request {@link AddCredentialDefinition}
-     * @return        {@link CredentialDefinitionConfiguration}
+     * @param request {@link AddRestrictionRequest}
+     * @return {@link RestrictionResponse}
      */
-    @Post("/schema/{id}/credentialDefinition")
-    public HttpResponse<CredentialDefinitionConfiguration> addCredentialDefinition(@PathVariable UUID id,
-            @Body AddCredentialDefinition request) {
-        Optional<CredentialDefinitionConfiguration> res = credDefMgmt.addCredentialDefinition(
-                id, request.getCredentialDefinitionId(), request.getLabel());
+    @Post("/schema/{id}/restriction")
+    public HttpResponse<RestrictionResponse> addRestriction(
+            @PathVariable UUID id,
+            @Body AddRestrictionRequest request) {
+        Optional<RestrictionResponse> res = restrictionsManager.addRestriction(
+                id, request.getIssuerDid(), request.getLabel());
         if (res.isPresent()) {
             return HttpResponse.ok(res.get());
         }
@@ -160,37 +171,37 @@ public class AdminController {
     }
 
     /**
-     * Aries: Update a credential definition configuration
+     * Aries: Update a restriction configuration
      * 
-     * @param id        {@link UUID} the schema id
-     * @param credDefId {@link UUID} the credential definition configuration id
-     * @param request   {@link UpdateCredentialDefinition}
-     * @return          {@link CredentialDefinitionConfiguration}
+     * @param id            {@link UUID} the schema id
+     * @param restrictionId {@link UUID} the credential definition configuration id
+     * @param request       {@link UpdateCredentialDefinition}
+     * @return {@link RestrictionResponse}
      */
-    @Put("/schema/{id}/credentialDefinition/{credDefId}")
-    public HttpResponse<CredentialDefinitionConfiguration> updateCredentialDefinition(
+    @Put("/schema/{id}/restriction/{restrictionId}")
+    public HttpResponse<RestrictionResponse> updateRestriction(
             @SuppressWarnings("unused") @PathVariable UUID id,
-            @PathVariable UUID credDefId,
+            @PathVariable UUID restrictionId,
             @Body UpdateCredentialDefinition request) {
-        credDefMgmt.updateLabel(credDefId, request.getLabel());
+        restrictionsManager.updateLabel(restrictionId, request.getLabel());
         return HttpResponse.ok();
     }
 
     /**
-     * Aries: Delete a credential definition configuration
+     * Aries: Delete a restriction configuration
      * 
-     * @param id        {@link UUID} the schema id
-     * @param credDefId {@link UUID} the credential definition configuration id
-     * @return          {@link HttpResponse}
+     * @param id            {@link UUID} the schema id
+     * @param restrictionId {@link UUID} the restriction id
+     * @return {@link HttpResponse}
      */
-    @Delete("/schema/{id}/credentialDefinition/{credDefId}")
-    public HttpResponse<Void> deleteCredentialDefinition(
+    @Delete("/schema/{id}/restriction/{restrictionId}")
+    public HttpResponse<Void> deleteRestriction(
             @SuppressWarnings("unused") @PathVariable UUID id,
-            @PathVariable UUID credDefId) {
-        Optional<BPACredentialDefinition> config = credDefMgmt.findById(credDefId);
+            @PathVariable UUID restrictionId) {
+        Optional<BPARestrictions> config = restrictionsManager.findById(restrictionId);
         if (config.isPresent()) {
             if (!config.get().getIsReadOnly()) {
-                credDefMgmt.deleteCredentialDefinition(credDefId);
+                restrictionsManager.deleteCredentialDefinition(restrictionId);
                 return HttpResponse.ok();
             }
             return HttpResponse.notAllowed();

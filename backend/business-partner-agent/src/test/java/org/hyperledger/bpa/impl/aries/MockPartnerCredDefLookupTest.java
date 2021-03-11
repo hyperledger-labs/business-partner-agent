@@ -22,7 +22,7 @@ import org.hyperledger.bpa.client.LedgerExplorerClient;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.repository.BPACredentialDefinitionRepository;
+import org.hyperledger.bpa.repository.BPARestrictionsRepository;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,14 +58,14 @@ class MockPartnerCredDefLookupTest {
     PartnerRepository pRepo;
 
     @Inject
-    BPACredentialDefinitionRepository credDefRepo;
+    BPARestrictionsRepository restrictionsRepo;
 
     @BeforeEach
     public void setup() {
         lookup.setLedger(Optional.of(ledger));
         lookup.setSchemaRepo(schemaRepo);
         lookup.setDidPrefix("");
-        lookup.setCredDefRepo(credDefRepo);
+        lookup.setRestrictionsRepo(restrictionsRepo);
     }
 
     @Test
