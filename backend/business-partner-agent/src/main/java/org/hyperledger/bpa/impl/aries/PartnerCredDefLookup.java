@@ -65,7 +65,7 @@ public class PartnerCredDefLookup {
      * id.
      * 
      * @param schemaId the schema id
-     * @return {@link List<PartnerAPI>}
+     * @return {@link PartnerAPI} list
      */
     public List<PartnerAPI> getIssuersFor(@NonNull String schemaId) {
         List<PartnerAPI> result = new ArrayList<>();
