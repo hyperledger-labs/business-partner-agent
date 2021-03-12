@@ -189,7 +189,7 @@ public class PartnerController {
     public HttpResponse<Void> requestProof(
             @PathVariable String id,
             @Body RequestProofRequest req) {
-        proofM.sendPresentProofRequest(UUID.fromString(id), req.getCredentialDefinitionId());
+        proofM.sendPresentProofRequest(UUID.fromString(id), req);
         return HttpResponse.ok();
     }
 

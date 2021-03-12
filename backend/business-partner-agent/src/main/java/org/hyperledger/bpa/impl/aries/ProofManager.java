@@ -19,6 +19,7 @@ package org.hyperledger.bpa.impl.aries;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
 import lombok.NonNull;
@@ -26,12 +27,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credential.Credential;
 import org.hyperledger.aries.api.proof.*;
-import org.hyperledger.aries.api.proof.PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.bpa.api.aries.AriesProof;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
+import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
@@ -44,7 +45,6 @@ import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
-import io.micronaut.core.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -85,9 +85,9 @@ public class ProofManager {
     MessageService messageService;
 
     // request proof from partner
-    public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull String credDefId) {
+    public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {
         try {
-            final Optional<Schema> schema = ac.schemasGetById(AriesStringUtil.credDefIdGetSquenceNo(credDefId));
+            final Optional<Schema> schema = ac.schemasGetById(req.getSchemaId());
             if (schema.isPresent()) {
                 final Optional<Partner> p = partnerRepo.findById(partnerId);
                 if (p.isPresent()) {
@@ -95,10 +95,7 @@ public class ProofManager {
                     if (p.get().getConnectionId() != null) {
                         PresentProofRequestConfig config = PresentProofRequestConfig.builder()
                                 .connectionId(p.get().getConnectionId())
-                                .appendAttribute(schema.get().getAttrNames(), ProofRestrictions.builder()
-                                        .schemaId(schema.get().getId())
-                                        .credentialDefinitionId(credDefId)
-                                        .build())
+                                .appendAttribute(schema.get().getAttrNames(), req.buildRestrictions())
                                 .build();
                         ac.presentProofSendRequest(PresentProofRequest.build(config)).ifPresent(proof -> {
                             final PartnerProof pp = PartnerProof
@@ -107,9 +104,9 @@ public class ProofManager {
                                     .state(proof.getState())
                                     .presentationExchangeId(proof.getPresentationExchangeId())
                                     .role(proof.getRole())
-                                    .credentialDefinitionId(credDefId)
+                                    .credentialDefinitionId(req.getCredentialDefinitionId())
                                     .schemaId(schema.get().getId())
-                                    .issuer(resolveIssuer(credDefId))
+                                    .issuer(resolveIssuer(req.getCredentialDefinitionId()))
                                     .build();
                             pProofRepo.save(pp);
                         });

@@ -17,11 +17,33 @@
  */
 package org.hyperledger.bpa.controller.api.partner;
 
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.util.StringUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.aries.api.proof.PresentProofRequest;
 
 @Data
 @NoArgsConstructor
 public class RequestProofRequest {
+    private String schemaId;
+    @Nullable
     private String credentialDefinitionId;
+    @Nullable
+    private String issuerDid;
+
+    public PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions buildRestrictions() {
+        PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions.ProofRestrictionsBuilder builder = PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions
+                .builder();
+        if (StringUtils.isNotEmpty(schemaId)) {
+            builder.schemaId(schemaId);
+        }
+        if (StringUtils.isNotEmpty(credentialDefinitionId)) {
+            builder.credentialDefinitionId(credentialDefinitionId);
+        }
+        if (StringUtils.isNotEmpty(issuerDid)) {
+            builder.issuerDid(issuerDid);
+        }
+        return builder.build();
+    }
 }
