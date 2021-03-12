@@ -21,6 +21,9 @@ import io.micronaut.context.annotation.EachProperty;
 import io.micronaut.context.annotation.Parameter;
 import lombok.Data;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Schema configuration bean that maps the default schema configuration.
  */
@@ -36,6 +39,8 @@ public class SchemaConfig {
     private String label;
     private String id;
     private String defaultAttributeName;
+    // Generic structure - [{key: value, key: value}, {key: value}]
+    private List<Map<String, String>> restrictions;
 
     public SchemaConfig(@Parameter String name) {
         this.name = name;

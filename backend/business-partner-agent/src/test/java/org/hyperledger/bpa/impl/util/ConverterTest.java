@@ -108,6 +108,7 @@ class ConverterTest extends BaseTest {
 
         assertEquals(c.getType(), result.getType());
         assertEquals(c.getIsPublic(), result.getIsPublic());
+        assertNotNull(result.getDocument());
         assertTrue(result.getDocument().containsValue("Hello"));
         assertEquals(c.getIsPublic(), result.getIsPublic());
         assertNull(result.getCreatedAt());

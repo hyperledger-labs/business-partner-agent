@@ -15,34 +15,33 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.bpa.impl.mode.web;
+package org.hyperledger.bpa.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.micronaut.context.env.Environment;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import org.hyperledger.bpa.RunWithAries;
-import org.hyperledger.bpa.api.DidDocAPI;
-import org.junit.jupiter.api.Assertions;
+import org.hyperledger.bpa.model.BPAUser;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
 import java.util.Optional;
 
-@MicronautTest(environments = { Environment.TEST, "test-web" })
-public class WebDidDocManagerTest extends RunWithAries {
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@MicronautTest
+class BPAUserRepositoryTest {
 
     @Inject
-    WebDidDocManager didDoc;
-
-    @Inject
-    ObjectMapper mapper;
+    BPAUserRepository userRepo;
 
     @Test
-    void testDidDocCreation() {
-        didDoc.createDidDocument("localhost");
-        Optional<DidDocAPI> didDocument = didDoc.getDidDocument();
-        Assertions.assertTrue(didDocument.isPresent());
-        Assertions.assertEquals(2, didDocument.get().getService().size());
-        // System.out.println(mapper.writeValueAsString(didDocument.get()));
+    void test() {
+        userRepo.save(BPAUser.builder()
+                .username("testuser123")
+                .password("dummy")
+                .roles("ROLE_USER,ROLE_ADMIN")
+                .build());
+
+        Optional<BPAUser> user = userRepo.findByUsername("testuser123");
+        assertTrue(user.isPresent());
     }
+
 }

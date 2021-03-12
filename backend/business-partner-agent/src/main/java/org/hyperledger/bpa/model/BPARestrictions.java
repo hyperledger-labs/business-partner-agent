@@ -19,65 +19,41 @@ package org.hyperledger.bpa.model;
 
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
-import io.micronaut.data.annotation.TypeDef;
-import io.micronaut.data.model.DataType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 
 import io.micronaut.core.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.time.Instant;
-import java.util.Map;
 import java.util.UUID;
 
-/**
- * Aries proof that I received from a partner (aka connection).
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Accessors(chain = true)
-public class PartnerProof {
+@Table(name = "bpa_restrictions")
+public class BPARestrictions {
 
     @Id
     @AutoPopulated
     private UUID id;
 
-    private UUID partnerId;
-
     @DateCreated
     private Instant createdAt;
 
-    @Nullable
-    private Instant issuedAt;
+    @ManyToOne
+    private BPASchema schema;
 
     @Nullable
-    private Boolean valid;
+    private String label;
 
-    @Nullable
-    private String state;
+    private Boolean isReadOnly;
 
-    private String presentationExchangeId;
-
-    @Nullable
-    private String issuer;
-
-    @Nullable
-    private String schemaId;
-
-    @Nullable
-    private String credentialDefinitionId;
-
-    @Nullable
-    private String role;
-
-    @Nullable
-    @TypeDef(type = DataType.JSON)
-    private Map<String, Object> proof;
+    private String issuerDid;
 }

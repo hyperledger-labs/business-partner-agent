@@ -26,10 +26,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.annotation.Nullable;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import io.micronaut.core.annotation.Nullable;
+import javax.persistence.*;
 import java.time.Instant;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -61,4 +61,7 @@ public class BPASchema {
     private String defaultAttributeName;
 
     private Integer seqNo;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = CascadeType.ALL)
+    private List<BPARestrictions> restrictions;
 }

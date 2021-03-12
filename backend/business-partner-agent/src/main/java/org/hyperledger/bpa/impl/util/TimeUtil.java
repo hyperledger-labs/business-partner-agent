@@ -35,10 +35,6 @@ public class TimeUtil {
     private static final DateTimeFormatter ZONED_FORMATTER = DateTimeFormatter.ofPattern(
             "yyyy-MM-dd' 'HH:mm:ss[.SSSSSS]X");
 
-    public static String currentTimeFormatted() {
-        return currentTimeFormatted(Instant.now());
-    }
-
     public static String currentTimeFormatted(@NonNull Instant instant) {
         return ISO_INSTANT_FORMATTER.format(instant.truncatedTo(ChronoUnit.SECONDS));
     }

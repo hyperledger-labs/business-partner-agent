@@ -15,22 +15,18 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.bpa.repository;
+package org.hyperledger.bpa.controller.api.admin;
 
-import io.micronaut.data.annotation.Id;
-import io.micronaut.data.jdbc.annotation.JdbcRepository;
-import io.micronaut.data.model.query.builder.sql.Dialect;
-import io.micronaut.data.repository.CrudRepository;
-import org.hyperledger.bpa.model.BPASchema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.Optional;
-import java.util.UUID;
-
-@JdbcRepository(dialect = Dialect.POSTGRES)
-public interface SchemaRepository extends CrudRepository<BPASchema, UUID> {
-    Optional<BPASchema> findBySchemaId(String schemaId);
-
-    void updateDefaultAttributeName(@Id UUID id, String defaultAttributeName);
-
-    void deleteByIsReadOnly(Boolean isReadOnly);
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class AddRestrictionRequest {
+    private String label;
+    private String issuerDid;
 }

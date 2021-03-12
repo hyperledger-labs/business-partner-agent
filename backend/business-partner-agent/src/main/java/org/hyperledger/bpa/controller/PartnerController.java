@@ -36,7 +36,7 @@ import org.hyperledger.bpa.impl.aries.CredentialManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.ProofManager;
 
-import javax.annotation.Nullable;
+import io.micronaut.core.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
@@ -179,21 +179,6 @@ public class PartnerController {
     }
 
     /**
-     * Aries: Get credential types that the partner can issue
-     *
-     * @param id the partner id
-     * @return HTTP status
-     */
-    @Get("/{id}/credential-types")
-    public HttpResponse<List<PartnerCredentialType>> partnerCredentialTypes(@PathVariable String id) {
-        final Optional<List<PartnerCredentialType>> credDefs = credLookup.getPartnerCredDefs(UUID.fromString(id));
-        if (credDefs.isPresent()) {
-            return HttpResponse.ok(credDefs.get());
-        }
-        return HttpResponse.notFound();
-    }
-
-    /**
      * Aries: Request proof from partner
      *
      * @param id  the partner id
@@ -244,7 +229,7 @@ public class PartnerController {
      */
     @Get("/{id}/proof/{proofId}")
     public HttpResponse<AriesProof> getPartnerProofById(
-            @PathVariable String id,
+            @SuppressWarnings("unused ") @PathVariable String id,
             @PathVariable String proofId) {
         final Optional<AriesProof> proof = proofM.getPartnerProofById(UUID.fromString(proofId));
         if (proof.isPresent()) {
@@ -262,7 +247,7 @@ public class PartnerController {
      */
     @Delete("/{id}/proof/{proofId}")
     public HttpResponse<Void> deletePartnerProofById(
-            @PathVariable String id,
+            @SuppressWarnings("unused ") @PathVariable String id,
             @PathVariable String proofId) {
         proofM.deletePartnerProof(UUID.fromString(proofId));
         return HttpResponse.ok();

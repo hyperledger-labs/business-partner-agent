@@ -24,16 +24,18 @@ import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.TAAInfo.TAARecord;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.RuntimeConfig;
-import org.hyperledger.bpa.controller.api.admin.AddSchemaRequest;
-import org.hyperledger.bpa.controller.api.admin.TAADigestRequest;
-import org.hyperledger.bpa.controller.api.admin.UpdateSchemaRequest;
+import org.hyperledger.bpa.controller.api.admin.*;
+import org.hyperledger.bpa.impl.aries.config.RestrictionsManager;
+import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.mode.indy.EndpointService;
-import org.hyperledger.bpa.impl.aries.SchemaService;
+import org.hyperledger.bpa.model.BPARestrictions;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -54,6 +56,9 @@ public class AdminController {
     Optional<EndpointService> endpointService;
 
     @Inject
+    RestrictionsManager restrictionsManager;
+
+    @Inject
     RuntimeConfig config;
 
     @Inject
@@ -72,7 +77,7 @@ public class AdminController {
     /**
      * Aries: Get a schema configuration
      *
-     * @param id the schema id
+     * @param id {@link UUID} the schema id
      * @return {@link HttpResponse}
      */
     @Get("/schema/{id}")
@@ -93,13 +98,13 @@ public class AdminController {
     @Post("/schema")
     public HttpResponse<SchemaAPI> addSchema(@Body AddSchemaRequest req) {
         return HttpResponse.ok(schemaService.addSchema(req.getSchemaId(), req.getLabel(),
-                req.getDefaultAttributeName()));
+                req.getDefaultAttributeName(), req.getRestrictions()));
     }
 
     /**
      * Aries: Update a schema configuration
      *
-     * @param id  the schema id
+     * @param id  {@link UUID} the schema id
      * @param req {@link UpdateSchemaRequest}
      * @return {@link HttpResponse}
      */
@@ -116,15 +121,77 @@ public class AdminController {
      * Aries: Removes a schema configuration. Doing so means the BPA will not
      * process requests containing this schema id any more.
      *
-     * @param id the schema id
+     * @param id {@link UUID} the schema id
      * @return {@link HttpResponse}
      */
     @Delete("/schema/{id}")
+    @ApiResponse(responseCode = "404", description = "If the schema does not exist")
+    @ApiResponse(responseCode = "405", description = "If the schema is read only")
     public HttpResponse<Void> removeSchema(@PathVariable UUID id) {
         Optional<SchemaAPI> schema = schemaService.getSchema(id);
         if (schema.isPresent()) {
             if (!schema.get().getIsReadOnly()) {
                 schemaService.deleteSchema(id);
+                return HttpResponse.ok();
+            }
+            return HttpResponse.notAllowed();
+        }
+        return HttpResponse.notFound();
+    }
+
+    /**
+     * Aries: Add a restriction configuration to a schema
+     *
+     * @param id      {@link UUID} the schema id
+     * @param request {@link AddRestrictionRequest}
+     * @return {@link RestrictionResponse}
+     */
+    @Post("/schema/{id}/restriction")
+    public HttpResponse<RestrictionResponse> addRestriction(
+            @PathVariable UUID id,
+            @Body AddRestrictionRequest request) {
+        Optional<RestrictionResponse> res = restrictionsManager.addRestriction(
+                id, request.getIssuerDid(), request.getLabel());
+        if (res.isPresent()) {
+            return HttpResponse.ok(res.get());
+        }
+        throw new WrongApiUsageException("Credential definition could not be added. Check the logs");
+    }
+
+    /**
+     * Aries: Update a restriction configuration
+     *
+     * @param id            {@link UUID} the schema id
+     * @param restrictionId {@link UUID} the restriction id
+     * @param request       {@link UpdateRestrictionRequest}
+     * @return {@link RestrictionResponse}
+     */
+    @Put("/schema/{id}/restriction/{restrictionId}")
+    public HttpResponse<RestrictionResponse> updateRestriction(
+            @SuppressWarnings("unused") @PathVariable UUID id,
+            @PathVariable UUID restrictionId,
+            @Body UpdateRestrictionRequest request) {
+        restrictionsManager.updateLabel(restrictionId, request.getLabel());
+        return HttpResponse.ok();
+    }
+
+    /**
+     * Aries: Delete a restriction configuration
+     *
+     * @param id            {@link UUID} the schema id
+     * @param restrictionId {@link UUID} the restriction id
+     * @return {@link HttpResponse}
+     */
+    @Delete("/schema/{id}/restriction/{restrictionId}")
+    @ApiResponse(responseCode = "404", description = "If the restriction does not exist")
+    @ApiResponse(responseCode = "405", description = "If the restriction is read only")
+    public HttpResponse<Void> deleteRestriction(
+            @SuppressWarnings("unused") @PathVariable UUID id,
+            @PathVariable UUID restrictionId) {
+        Optional<BPARestrictions> config = restrictionsManager.findById(restrictionId);
+        if (config.isPresent()) {
+            if (!config.get().getIsReadOnly()) {
+                restrictionsManager.deleteCredentialDefinition(restrictionId);
                 return HttpResponse.ok();
             }
             return HttpResponse.notAllowed();

@@ -1,7 +1,7 @@
 /*
   Copyright (c) 2020 - for information on the respective copyright owner
   see the NOTICE file and/or the repository at
-  https://github.com/hyperledger-labs/organizational-agent
+  https://github.com/hyperledger-labs/business-partner-agent
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -15,39 +15,15 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.bpa.model;
+package org.hyperledger.bpa.controller.api.admin;
 
-import io.micronaut.data.annotation.AutoPopulated;
-import io.micronaut.data.annotation.DateCreated;
-import io.micronaut.data.annotation.TypeDef;
-import io.micronaut.data.model.DataType;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import io.micronaut.core.annotation.Nullable;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import java.time.Instant;
-import java.util.Map;
-import java.util.UUID;
-
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Data
-@Entity
-public class MessageQueue {
-
-    @Id
-    @AutoPopulated
-    private UUID id;
-
-    @DateCreated
-    private Instant createdAt;
-
-    @Nullable
-    @TypeDef(type = DataType.JSON)
-    private Map<String, Object> message;
+public class UpdateRestrictionRequest {
+    private String label;
 }

@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class TimeUtilTest {
 
@@ -37,6 +38,7 @@ class TimeUtilTest {
     void testParseZoned() {
         final String ts = "2020-07-30 08:36:19.461968Z";
         final Instant i = TimeUtil.parseZonedTimestamp(ts);
+        assertNotNull(i);
         String time = TimeUtil.currentTimeFormatted(i);
         assertEquals("2020-07-30T08:36:19Z", time);
     }

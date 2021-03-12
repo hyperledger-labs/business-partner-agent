@@ -30,7 +30,7 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.client.CachingAriesClient;
 import org.hyperledger.bpa.client.URClient;
 
-import javax.annotation.Nullable;
+import io.micronaut.core.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;

@@ -42,6 +42,7 @@ import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.activity.VPManager;
+import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.MyCredential;
@@ -51,7 +52,7 @@ import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.MyDocumentRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
-import javax.annotation.Nullable;
+import io.micronaut.core.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -116,22 +117,15 @@ public class CredentialManager {
                     final Optional<org.hyperledger.bpa.model.BPASchema> s = schemaService
                             .getSchemaFor(dbDoc.get().getSchemaId());
                     if (s.isPresent()) {
-                        final Optional<String> credDefId = credLookup.findCredentialDefinitionId(
-                                partnerId, s.get().getSeqNo());
-                        if (credDefId.isPresent()) {
-                            ac.issueCredentialSendProposal(
-                                    CredentialProposalRequest
-                                            .builder()
-                                            .connectionId(dbPartner.get().getConnectionId())
-                                            .schemaId(s.get().getSchemaId())
-                                            .credentialProposal(
-                                                    new CredentialPreview(
-                                                            CredentialAttributes.from(dbDoc.get().getDocument())))
-                                            .credentialDefinitionId(credDefId.get())
-                                            .build());
-                        } else
-                            throw new PartnerException("Found no matching credential definition id. "
-                                    + "Partner can not issue bank account credentials");
+                        ac.issueCredentialSendProposal(
+                                CredentialProposalRequest
+                                        .builder()
+                                        .connectionId(dbPartner.get().getConnectionId())
+                                        .schemaId(s.get().getSchemaId())
+                                        .credentialProposal(
+                                                new CredentialPreview(
+                                                        CredentialAttributes.from(dbDoc.get().getDocument())))
+                                        .build());
                     } else {
                         throw new PartnerException("No configured schema found for id: " + dbDoc.get().getSchemaId());
                     }

@@ -25,7 +25,7 @@ import org.hyperledger.aries.api.credential.Credential;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
-import org.hyperledger.bpa.impl.aries.SchemaService;
+import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.model.MyCredential;
@@ -42,6 +42,7 @@ import java.time.Instant;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -81,6 +82,7 @@ class VPManagerTest {
                 .setDocument(d);
         final VerifiableCredential vp = vpm.buildFromDocument(doc, "xxyyyzzz");
 
+        assertNotNull(vp.getCredentialSubject());
         assertEquals("{type=LegalEntity, id=xxyyyzzz}",
                 vp.getCredentialSubject().toString());
         assertEquals(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.getContext(), vp.getContext());
@@ -97,6 +99,7 @@ class VPManagerTest {
         String myDid = "xxyyyzzz";
         final VerifiableCredential vp = vpm.buildFromDocument(doc, myDid);
 
+        assertNotNull(vp.getCredentialSubject());
         assertEquals("{iban=1234, bic=4321, id=xxyyyzzz}",
                 vp.getCredentialSubject().toString());
         assertEquals(myDid, vp.getIssuer());

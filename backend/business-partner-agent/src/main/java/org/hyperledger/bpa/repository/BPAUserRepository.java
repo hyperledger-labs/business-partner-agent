@@ -1,7 +1,7 @@
 /*
   Copyright (c) 2020 - for information on the respective copyright owner
   see the NOTICE file and/or the repository at
-  https://github.com/hyperledger-labs/organizational-agent
+  https://github.com/hyperledger-labs/business-partner-agent
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,31 +17,16 @@
  */
 package org.hyperledger.bpa.repository;
 
-import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.query.builder.sql.Dialect;
+import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.bpa.model.BPAUser;
-import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
 import java.util.Optional;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+@JdbcRepository(dialect = Dialect.POSTGRES)
+public interface BPAUserRepository extends CrudRepository<BPAUser, UUID> {
 
-@MicronautTest
-class UserRepositoryTest {
-
-    @Inject
-    UserRepository userRepo;
-
-    @Test
-    void test() {
-        userRepo.save(BPAUser.builder()
-                .username("testuser123")
-                .password("dummy")
-                .roles("ROLE_USER,ROLE_ADMIN")
-                .build());
-
-        Optional<BPAUser> user = userRepo.findByUsername("testuser123");
-        assertTrue(user.isPresent());
-    }
-
+    Optional<BPAUser> findByUsername(String username);
 }

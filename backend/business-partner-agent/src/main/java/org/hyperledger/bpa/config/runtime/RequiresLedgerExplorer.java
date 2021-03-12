@@ -15,30 +15,18 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.admin;
+package org.hyperledger.bpa.config.runtime;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.micronaut.context.annotation.Requires;
 
-import io.micronaut.core.annotation.Nullable;
+import java.lang.annotation.*;
 
-import java.util.List;
-
-@Builder
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class AddSchemaRequest {
-    @Nullable
-    private String label;
-
-    private String schemaId;
-
-    @Nullable
-    private String defaultAttributeName;
-
-    @Nullable
-    private List<AddRestrictionRequest> restrictions;
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.PACKAGE, ElementType.TYPE })
+@Requires(
+        property = "bpa.ledger.browser",
+        pattern = "^(http|https)://.*")
+public @interface RequiresLedgerExplorer {
+    //
 }
