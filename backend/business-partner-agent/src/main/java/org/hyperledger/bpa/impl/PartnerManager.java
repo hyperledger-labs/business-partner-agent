@@ -146,7 +146,9 @@ public class PartnerManager {
             invalidatePartnerLookupCache();
             PartnerAPI pAPI = partnerLookup.lookupPartner(dbP.getDid());
             dbP.setValid(pAPI.getValid());
-            dbP.setVerifiablePresentation(converter.toMap(pAPI.getVerifiablePresentation()));
+            dbP.setVerifiablePresentation(pAPI.getVerifiablePresentation() != null
+                    ? converter.toMap(pAPI.getVerifiablePresentation())
+                    : null);
             dbP = repo.update(dbP);
             result = Optional.of(converter.toAPIObject(dbP));
             webhook.convertAndSend(WebhookEventType.PARTNER_UPDATE, result.get());

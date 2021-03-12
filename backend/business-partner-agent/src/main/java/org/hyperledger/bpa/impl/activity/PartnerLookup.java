@@ -66,7 +66,12 @@ public class PartnerLookup {
                 partner.setDidDocAPI(didDocument.get());
                 return partner;
             }
-            throw new PartnerException("Could not resolve profile endpoint from did document");
+            log.warn("Did: {} has no profile endpoint on the ledger, probably not a BPA", did);
+            return PartnerAPI
+                    .builder()
+                    .ariesSupport(didDocument.get().hasAriesEndpoint())
+                    .didDocAPI(didDocument.get())
+                    .build();
         }
         throw new PartnerException("Could not retrieve did document from universal resolver");
     }
