@@ -89,17 +89,19 @@
       <button class="btn btn-lg btn-primary btn-block" type="submit">Sign In</button>
     </form>
 
+    {{#if footer}}
     <footer class="footer mt-auto py-3">
         <div class="container">
             <span class="text-muted">
                 {{#if imprint-url}}
-                    <a href="{{imprint-url}}">Imprint</a>
+                <a href="{{imprint-url}}" target="_blank">Imprint</a>
                 {{/if}}
                 {{#if policy-url}}
-                    <a href="{{policy-url}}">Privacy Policy</a>
+                <a href="{{policy-url}}" target="_blank">Privacy Policy</a>
                 {{/if}}
             </span>
         </div>
     </footer>
+    {{/if}}
   </body>
 </html>

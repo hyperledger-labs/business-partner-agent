@@ -86,6 +86,9 @@ public class UserController {
         if (StringUtils.isNotEmpty(dataPrivacyPolicy)) {
             model.put("policy-url", dataPrivacyPolicy);
         }
+        if (StringUtils.isNotEmpty(imprint) || StringUtils.isNotEmpty(dataPrivacyPolicy)) {
+            model.put("footer", Boolean.TRUE);
+        }
         return model;
     }
 
