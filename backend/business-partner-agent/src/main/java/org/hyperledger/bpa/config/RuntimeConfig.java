@@ -50,6 +50,10 @@ public class RuntimeConfig {
     @Value("${bpa.acapy.endpoint}")
     private String acapyEndpoint;
 
+    private String imprint;
+
+    private String dataPrivacyPolicy;
+
     public String getAgentName() {
         return DidResolver.splitDidFrom(agentName).getLabel();
     }
