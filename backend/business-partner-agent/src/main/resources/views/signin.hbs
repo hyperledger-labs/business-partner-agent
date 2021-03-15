@@ -14,12 +14,6 @@
 
     <style type="text/css">
 
-      @media ( min-width : 768px) {
-       .bd-placeholder-img-lg {
-        font-size: 3.5rem;
-       }
-      }
-
       html, body {
        height: 100%;
       }
@@ -71,7 +65,7 @@
       }
 
       .footer a {
-          padding: 10px;
+       padding: 10px;
       }
 
     </style>
@@ -87,7 +81,7 @@
       {{/if}}
 
       <label for="username" class="sr-only">Username</label>
-      <input type="text" name="username" id="username"class="form-control" placeholder="Username" required autofocus />
+      <input type="text" name="username" id="username" class="form-control" placeholder="Username" required autofocus />
 
       <label for="password" class="sr-only">Password</label>
       <input type="password" name="password" id="password" class="form-control" placeholder="Password" required />
@@ -98,10 +92,10 @@
     <footer class="footer mt-auto py-3">
         <div class="container">
             <span class="text-muted">
-                {{#if imprint}}
+                {{#if imprint-url}}
                     <a href="{{imprint-url}}">Imprint</a>
                 {{/if}}
-                {{#if policy}}
+                {{#if policy-url}}
                     <a href="{{policy-url}}">Privacy Policy</a>
                 {{/if}}
             </span>

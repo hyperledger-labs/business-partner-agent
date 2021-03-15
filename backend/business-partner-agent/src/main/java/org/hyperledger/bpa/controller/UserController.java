@@ -68,7 +68,7 @@ public class UserController {
     @View("signin")
     @Get("/signin")
     public HttpResponse<?> loginView() {
-        return HttpResponse.ok(buildModel("register", Boolean.FALSE));
+        return HttpResponse.ok(buildModel("errors", Boolean.FALSE));
     }
 
     @View("signin")
@@ -81,11 +81,9 @@ public class UserController {
         Map<String, Object> model = new LinkedHashMap<>();
         model.put(method, enabled);
         if (StringUtils.isNotEmpty(imprint)) {
-            model.put("imprint", Boolean.TRUE);
             model.put("imprint-url", imprint);
         }
         if (StringUtils.isNotEmpty(dataPrivacyPolicy)) {
-            model.put("policy", Boolean.TRUE);
             model.put("policy-url", dataPrivacyPolicy);
         }
         return model;
