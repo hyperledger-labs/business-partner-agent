@@ -128,3 +128,8 @@ bpa:
       restrictions:
         - issuerDid: "5mwQSWnRePrZ3oF67C4KqD"
           label: "Commercial Register"
+  imprint:
+    url: ${BPA_IMPRINT_URL:}
+  privacy:
+    policy:
+      url: ${BPA_PRIVACY_POLICY_URL:}

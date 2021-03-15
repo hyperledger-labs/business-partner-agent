@@ -30,25 +30,31 @@ import javax.inject.Singleton;
 public class RuntimeConfig {
 
     @Value("${bpa.host}")
-    private String host;
+    String host;
 
     @Value("${bpa.resolver.url}")
-    private String uniResolverUrl;
+    String uniResolverUrl;
 
     @Value("${bpa.ledger.browser}")
-    private String ledgerBrowser;
+    String ledgerBrowser;
 
     @Value("${bpa.did.prefix}")
-    private String ledgerPrefix;
+    String ledgerPrefix;
 
     @Value("${bpa.web.only}")
-    private Boolean webOnly;
+    Boolean webOnly;
 
     @Value("${bpa.name}")
-    private String agentName;
+    String agentName;
 
     @Value("${bpa.acapy.endpoint}")
-    private String acapyEndpoint;
+    String acapyEndpoint;
+
+    @Value("${bpa.imprint.url}")
+    String imprint;
+
+    @Value("${bpa.privacy.policy.url}")
+    String dataPrivacyPolicy;
 
     public String getAgentName() {
         return DidResolver.splitDidFrom(agentName).getLabel();
