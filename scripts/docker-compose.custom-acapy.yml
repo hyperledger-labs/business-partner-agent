@@ -25,6 +25,8 @@ services:
       BPA_BOOTSTRAP_PW: ${BPA_BOOTSTRAP_PW}
       ACAPY_ENDPOINT: ${ACAPY_ENDPOINT}
       AGENT_NAME: ${AGENT_NAME}
+      BPA_IMPRINT_URL: ${BPA_IMPRINT_URL}
+      BPA_PRIVACY_POLICY_URL: ${BPA_PRIVACY_POLICY_URL}
     ports:
       - ${BPA_PORT}:${BPA_PORT}
     restart: always
