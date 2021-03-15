@@ -17,7 +17,8 @@
  */
 package org.hyperledger.bpa.controller;
 
-import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.context.annotation.Value;
+import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
@@ -32,16 +33,14 @@ import io.micronaut.security.session.SessionLoginHandler;
 import io.micronaut.views.View;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.model.BPAUser;
 import org.hyperledger.bpa.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Secured(SecurityRule.IS_ANONYMOUS)
@@ -50,6 +49,12 @@ import java.util.Optional;
 @Tag(name = "User")
 @ExecuteOn(TaskExecutors.IO)
 public class UserController {
+
+    @Value("${bpa.imprint.url}")
+    String imprint;
+
+    @Value("${bpa.privacy.policy.url}")
+    String dataPrivacyPolicy;
 
     @Inject
     UserRepository userRepo;
@@ -63,13 +68,28 @@ public class UserController {
     @View("signin")
     @Get("/signin")
     public HttpResponse<?> loginView() {
-        return HttpResponse.ok(CollectionUtils.mapOf("register", Boolean.FALSE));
+        return HttpResponse.ok(buildModel("errors", Boolean.FALSE));
     }
 
     @View("signin")
     @Get("/authFailed")
     public Map<String, Object> authFailed() {
-        return Collections.singletonMap("errors", Boolean.TRUE);
+        return buildModel("errors", Boolean.TRUE);
+    }
+
+    private Map<String, Object> buildModel(@NonNull String method, @NonNull Boolean enabled) {
+        Map<String, Object> model = new LinkedHashMap<>();
+        model.put(method, enabled);
+        if (StringUtils.isNotEmpty(imprint)) {
+            model.put("imprint-url", imprint);
+        }
+        if (StringUtils.isNotEmpty(dataPrivacyPolicy)) {
+            model.put("policy-url", dataPrivacyPolicy);
+        }
+        if (StringUtils.isNotEmpty(imprint) || StringUtils.isNotEmpty(dataPrivacyPolicy)) {
+            model.put("footer", Boolean.TRUE);
+        }
+        return model;
     }
 
     @Secured({ "ROLE_ADMIN" })

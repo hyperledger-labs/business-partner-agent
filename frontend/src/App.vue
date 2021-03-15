@@ -100,7 +100,6 @@
         </v-list-item>
       </v-list>
       <template v-slot:append>
-        <v-divider></v-divider>
         <v-list dense>
           <v-list-item bottom link :to="{ name: 'About' }">
             <v-list-item-action>
@@ -130,6 +129,7 @@
       <router-view
         v-if="!sessionDialog && !$store.getters.taaRequired"
       ></router-view>
+      {{ $store.state.settings }}
     </v-main>
 
     <v-snackbar
@@ -165,8 +165,15 @@
       </v-card>
     </v-dialog>
 
-    <v-footer app>
-      <span></span>
+    <v-footer v-if="showFooter" app>
+      <v-col cols="12" class="text-center">
+        <span v-if="imprintUrl" class="mr-4 subtitle-2"
+          ><a :href="imprintUrl">Corporate Information</a></span
+        >
+        <span v-if="privacyPolicyUrl" class="subtitle-2"
+          ><a :href="privacyPolicyUrl">Privacy Policy</a></span
+        >
+      </v-col>
     </v-footer>
   </v-app>
 </template>
@@ -197,6 +204,28 @@ export default {
   computed: {
     expertMode() {
       return this.$store.state.expertMode;
+    },
+    showFooter() {
+      if (
+        (this.$store.state.settings.imprint &&
+          typeof this.$store.state.settings.imprint === "string") ||
+        (this.$store.state.settings.dataPrivacyPolicy &&
+          typeof this.$store.state.settings.dataPrivacyPolicy === "string")
+      ) {
+        return (
+          this.$store.state.settings.imprint.length +
+            this.$store.state.settings.dataPrivacyPolicy.length >
+          0
+        );
+      } else {
+        return null;
+      }
+    },
+    imprintUrl() {
+      return this.$store.state.settings.imprint;
+    },
+    privacyPolicyUrl() {
+      return this.$store.state.settings.dataPrivacyPolicy;
     },
     newPartnersCount() {
       return this.$store.getters.newPartnersCount;
@@ -269,5 +298,8 @@ export default {
 <style>
 .bg-light {
   background-color: #fafafa;
+}
+a {
+  text-decoration: none;
 }
 </style>
