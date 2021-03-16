@@ -61,7 +61,6 @@
                   hide-default-footer
                   v-model="selectedIssuer"
                   :show-select="true"
-                  single-select
                   :items="
                     selectedSchema.length > 0
                       ? selectedSchema[0].trustedIssuer

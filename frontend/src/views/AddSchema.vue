@@ -50,6 +50,10 @@
         </v-list-item-subtitle>
       </v-list-item>
 
+      <v-card-text>
+        <trusted-issuer ref="trustedIssuers" />
+      </v-card-text>
+
       <v-card-actions>
         <v-layout justify-end>
           <v-btn
@@ -68,10 +72,14 @@
 
 <script>
 import { EventBus } from "../main";
+import TrustedIssuer from "../components/TrustedIssuers.vue";
 export default {
   name: "AddSchema",
-  components: {},
+  components: {
+    TrustedIssuer,
+  },
   created: () => {},
+
   data: () => {
     return {
       schema: {
@@ -94,6 +102,15 @@ export default {
   methods: {
     addSchema() {
       this.isBusyAddSchema = true;
+      let trustedIssuers = this.$refs.trustedIssuers.$props.trustedIssuers;
+      console.log(trustedIssuers);
+      if (trustedIssuers.length > 0) {
+        trustedIssuers.forEach((entry) => {
+          delete entry.isEdit;
+        });
+        this.schema.trustedIssuer = trustedIssuers;
+      }
+      console.log(this.schema);
 
       this.$axios
         .post(`${this.$apiBaseUrl}/admin/schema`, this.schema)
