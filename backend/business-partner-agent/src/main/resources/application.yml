@@ -122,3 +122,8 @@ bpa:
       id: "3gLVpb3i5jzvZqWYyesSB3:2:commercialregister:1.2"
       label: "Commercial Register"
       defaultAttributeName: "companyName"
+  imprint:
+    url: ${BPA_IMPRINT_URL:}
+  privacy:
+    policy:
+      url: ${BPA_PRIVACY_POLICY_URL:}
