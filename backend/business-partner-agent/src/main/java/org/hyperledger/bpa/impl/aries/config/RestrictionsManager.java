@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.impl.aries.config;
 
+import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
@@ -26,6 +27,7 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.model.BPARestrictions;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPARestrictionsRepository;
@@ -45,6 +47,9 @@ import java.util.UUID;
 @Slf4j
 @Singleton
 public class RestrictionsManager {
+
+    @Value("${bpa.did.prefix}")
+    String didPrefix;
 
     @Inject
     @Setter(AccessLevel.PACKAGE)
@@ -76,10 +81,10 @@ public class RestrictionsManager {
                 String issuerDid = c.get("issuerDid");
                 if (StringUtils.isNotEmpty(issuerDid)) {
                     try {
-                        ac.ledgerDidVerkey(issuerDid).ifPresent(verkey -> {
+                        ac.ledgerDidVerkey(AriesStringUtil.getLastSegment(issuerDid)).ifPresent(verkey -> {
                             BPARestrictions def = BPARestrictions
                                     .builder()
-                                    .issuerDid(issuerDid)
+                                    .issuerDid(issuerDid.startsWith("did:") ? issuerDid : didPrefix + issuerDid)
                                     .label(c.get("label"))
                                     .schema(BPASchema.builder().id(schemaId).build())
                                     .isReadOnly(isReadOnly)

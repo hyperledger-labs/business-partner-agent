@@ -119,14 +119,14 @@ bpa:
       defaultAttributeName: "iban"
       # Note: this also works json style restrictions: [{id: 123, label: myLabel}]
       restrictions:
-        - issuerDid: "M6Mbe3qx7vB4wpZF4sBRjt"
+        - issuerDid: "${bpa.did.prefix}M6Mbe3qx7vB4wpZF4sBRjt"
           label: "Demo Bank"
     commercial-register:
       id: "5mwQSWnRePrZ3oF67C4KqD:2:commercialregister:1.0"
       label: "Commercial Register"
       defaultAttributeName: "companyName"
       restrictions:
-        - issuerDid: "5mwQSWnRePrZ3oF67C4KqD"
+        - issuerDid: "${bpa.did.prefix}5mwQSWnRePrZ3oF67C4KqD"
           label: "Commercial Register"
   imprint:
     url: ${BPA_IMPRINT_URL:}

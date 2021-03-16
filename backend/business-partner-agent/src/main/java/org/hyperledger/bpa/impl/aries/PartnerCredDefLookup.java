@@ -100,7 +100,7 @@ public class PartnerCredDefLookup {
         schemaRepo.findBySchemaId(schemaId).ifPresent(s -> {
             List<String> did = restrictionsRepo.findBySchema(s)
                     .stream()
-                    .map(c -> didPrefix + c.getIssuerDid())
+                    .map(c -> c.getIssuerDid())
                     .collect(Collectors.toList());
             partnerRepo.findByDidIn(did).forEach(dbPartner -> result.add(conv.toAPIObject(dbPartner)));
         });

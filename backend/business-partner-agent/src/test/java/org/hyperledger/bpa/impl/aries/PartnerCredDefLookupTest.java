@@ -56,11 +56,11 @@ public class PartnerCredDefLookupTest {
     @Test
     void testFilterByConfiguredCredentialDefs() {
         String schemaId = "schema1";
-        String did1 = "did1";
-        String did2 = "did2";
+        String did1 = didPrefix + "did1";
+        String did2 = didPrefix + "did2";
 
-        partnerRepo.save(Partner.builder().did(didPrefix + did1).ariesSupport(Boolean.TRUE).build());
-        partnerRepo.save(Partner.builder().did(didPrefix + did2).ariesSupport(Boolean.TRUE).build());
+        partnerRepo.save(Partner.builder().did(did1).ariesSupport(Boolean.TRUE).build());
+        partnerRepo.save(Partner.builder().did(did2).ariesSupport(Boolean.TRUE).build());
 
         BPASchema dbSchema = schemaRepo.save(BPASchema.builder()
                 .schemaId(schemaId).seqNo(1).label("dummy").schemaAttributeNames(Set.of("name")).build());
@@ -75,8 +75,8 @@ public class PartnerCredDefLookupTest {
         lookup.filterByConfiguredCredentialDefs(schemaId, result);
 
         Assertions.assertEquals(2, result.size());
-        Assertions.assertTrue(result.get(0).getDid().endsWith(did1));
-        Assertions.assertTrue(result.get(1).getDid().endsWith(did2));
+        Assertions.assertEquals(did1, result.get(0).getDid());
+        Assertions.assertEquals(did2, result.get(1).getDid());
     }
 
     @Test
