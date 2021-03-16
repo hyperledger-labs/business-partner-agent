@@ -154,30 +154,24 @@ export default {
     },
     submitRequest() {
       this.isBusy = true;
-      if (this.selected.length === 1 || this.credDefId.length > 0) {
-        let credDefId =
-          this.selected.length === 1
-            ? this.selected[0].credentialDefinitionId
-            : this.credDefId;
 
-        this.$axios
-          .post(`${this.$apiBaseUrl}/partners/${this.id}/proof-request`, {
-            credentialDefinitionId: credDefId,
-          })
-          .then(() => {
-            this.isBusy = false;
-            EventBus.$emit("success", "Presentation request sent");
-            this.$router.go(-1);
-          })
-          .catch((e) => {
-            this.isBusy = false;
-            console.error(e);
-            EventBus.$emit("error", e);
-          });
-      } else {
-        this.isBusy = false;
-        EventBus.$emit("error", "No credential type selected");
-      }
+      let request = {
+        schemaId: this.selectedSchema[0].schemaId,
+        issuerDid: this.selectedIssuer.filter((entry) => entry.issuerDid),
+      };
+
+      this.$axios
+        .post(`${this.$apiBaseUrl}/partners/${this.id}/proof-request`, request)
+        .then(() => {
+          this.isBusy = false;
+          EventBus.$emit("success", "Presentation request sent");
+          this.$router.go(-1);
+        })
+        .catch((e) => {
+          this.isBusy = false;
+          console.error(e);
+          EventBus.$emit("error", e);
+        });
     },
     cancel() {
       this.$router.go(-1);
