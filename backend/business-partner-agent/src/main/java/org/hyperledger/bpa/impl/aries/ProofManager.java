@@ -87,38 +87,40 @@ public class ProofManager {
     // request proof from partner
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {
         try {
-            final Optional<Schema> schema = ac.schemasGetById(req.getSchemaId());
-            if (schema.isPresent()) {
-                final Optional<Partner> p = partnerRepo.findById(partnerId);
-                if (p.isPresent()) {
-                    // only when aries partner
-                    if (p.get().getConnectionId() != null) {
-                        PresentProofRequestConfig config = PresentProofRequestConfig.builder()
-                                .connectionId(p.get().getConnectionId())
-                                .appendAttribute(schema.get().getAttrNames(), req.buildRestrictions())
-                                .build();
-                        ac.presentProofSendRequest(PresentProofRequest.build(config)).ifPresent(proof -> {
-                            final PartnerProof pp = PartnerProof
-                                    .builder()
-                                    .partnerId(partnerId)
-                                    .state(proof.getState())
-                                    .presentationExchangeId(proof.getPresentationExchangeId())
-                                    .role(proof.getRole())
-                                    .credentialDefinitionId(req.getCredentialDefinitionId())
-                                    .schemaId(schema.get().getId())
-                                    .issuer(resolveIssuer(req.getCredentialDefinitionId()))
-                                    .build();
-                            pProofRepo.save(pp);
-                        });
-
+            final Optional<Partner> p = partnerRepo.findById(partnerId);
+            if (p.isPresent()) {
+                // only when aries partner
+                if (p.get().getConnectionId() != null) {
+                    if (req.getRequestBySchema() != null) {
+                        final Optional<Schema> schema = ac.schemasGetById(req.getRequestBySchema().getSchemaId());
+                        if (schema.isPresent()) {
+                            PresentProofRequest proofRequest = PresentProofRequestHelper
+                                    .buildForAllAttributes(p.get().getConnectionId(),
+                                            schema.get().getAttrNames(), req.buildRestrictions());
+                            ac.presentProofSendRequest(proofRequest).ifPresent(proof -> {
+                                final PartnerProof pp = PartnerProof
+                                        .builder()
+                                        .partnerId(partnerId)
+                                        .state(proof.getState())
+                                        .presentationExchangeId(proof.getPresentationExchangeId())
+                                        .role(proof.getRole())
+                                        .schemaId(schema.get().getId())
+                                        .build();
+                                pProofRepo.save(pp);
+                            });
+                        } else {
+                            throw new PartnerException("Could not resolve schema for id: "
+                                    + req.getRequestBySchema().getSchemaId());
+                        }
                     } else {
-                        throw new PartnerException("Partner has no aca-py connection");
+                        // TODO: request raw
+                        log.debug("raw");
                     }
                 } else {
-                    throw new PartnerException("Partner not found");
+                    throw new PartnerException("Partner has no aca-py connection");
                 }
             } else {
-                throw new PartnerException("Could not resolve schema for credential definition id");
+                throw new PartnerException("Partner not found");
             }
         } catch (IOException e) {
             throw new NetworkException("aca-py not reachable", e);

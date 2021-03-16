@@ -17,33 +17,61 @@
  */
 package org.hyperledger.bpa.controller.api.partner;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.proof.PresentProofRequest;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
+@Schema(oneOf = { RequestProofRequest.RequestBySchema.class, JsonNode.class })
 public class RequestProofRequest {
-    private String schemaId;
-    @Nullable
-    private String credentialDefinitionId;
-    @Nullable
-    private String issuerDid;
 
-    public PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions buildRestrictions() {
-        PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions.ProofRestrictionsBuilder builder = PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions
-                .builder();
-        if (StringUtils.isNotEmpty(schemaId)) {
-            builder.schemaId(schemaId);
+    @JsonAlias("request_by_schema")
+    private RequestBySchema requestBySchema;
+
+    @JsonRawValue
+    @Schema(example = "{}")
+    @JsonAlias("request_raw")
+    private JsonNode requestRaw;
+
+    @Data
+    @NoArgsConstructor
+    public static final class RequestBySchema {
+        private String schemaId;
+        @Nullable
+        private List<String> issuerDid;
+    }
+
+    public List<PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions> buildRestrictions() {
+        List<PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions> restrictions = new ArrayList<>();
+        if (requestBySchema != null) {
+            if (CollectionUtils.isNotEmpty(requestBySchema.getIssuerDid())) {
+                requestBySchema.getIssuerDid().forEach(iss -> {
+                    PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions.ProofRestrictionsBuilder builder = PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions
+                            .builder();
+                    builder.issuerDid(AriesStringUtil.getLastSegment(iss));
+                    if (StringUtils.isNotEmpty(requestBySchema.getSchemaId())) {
+                        builder.schemaId(requestBySchema.getSchemaId());
+                    }
+                    restrictions.add(builder.build());
+                });
+            } else {
+                restrictions.add(PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions.builder()
+                        .schemaId(requestBySchema.getSchemaId())
+                        .build());
+            }
         }
-        if (StringUtils.isNotEmpty(credentialDefinitionId)) {
-            builder.credentialDefinitionId(credentialDefinitionId);
-        }
-        if (StringUtils.isNotEmpty(issuerDid)) {
-            builder.issuerDid(issuerDid);
-        }
-        return builder.build();
+        return restrictions;
     }
 }
