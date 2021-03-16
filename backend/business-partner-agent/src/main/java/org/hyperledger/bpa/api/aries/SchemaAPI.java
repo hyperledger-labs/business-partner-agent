@@ -22,7 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.controller.api.admin.RestrictionResponse;
+import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
 import org.hyperledger.bpa.model.BPASchema;
 
 import java.util.ArrayList;
@@ -46,14 +46,14 @@ public class SchemaAPI {
 
     private Set<String> schemaAttributeNames;
 
-    private List<RestrictionResponse> restrictions;
+    private List<TrustedIssuer> trustedIssuer;
 
     public static SchemaAPI from(BPASchema s) {
         SchemaAPIBuilder builder = SchemaAPI.builder();
         if (CollectionUtils.isNotEmpty(s.getRestrictions())) {
-            List<RestrictionResponse> restrictions = new ArrayList<>();
-            s.getRestrictions().forEach(r -> restrictions.add(RestrictionResponse.from(r)));
-            builder.restrictions(restrictions);
+            List<TrustedIssuer> ti = new ArrayList<>();
+            s.getRestrictions().forEach(r -> ti.add(TrustedIssuer.from(r)));
+            builder.trustedIssuer(ti);
         }
         return builder
                 .id(s.getId())

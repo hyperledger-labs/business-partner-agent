@@ -21,12 +21,27 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.model.BPARestrictions;
+
+import java.util.UUID;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddRestrictionRequest {
+@Builder
+public class TrustedIssuer {
+    private UUID id;
+    private Boolean isReadOnly;
     private String label;
     private String issuerDid;
+
+    public static TrustedIssuer from(BPARestrictions db) {
+        return TrustedIssuer
+                .builder()
+                .id(db.getId())
+                .isReadOnly(db.getIsReadOnly())
+                .label(db.getLabel())
+                .issuerDid(db.getIssuerDid())
+                .build();
+    }
 }

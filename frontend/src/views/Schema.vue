@@ -57,7 +57,7 @@
           <v-col cols="4" class="py-0">
             <v-text-field
               label="DID"
-              :disabled="entry.readOnly || !entry.isEdit"
+              :disabled="entry.isReadOnly || !entry.isEdit"
               v-model="entry.issuerDid"
               outlined
               dense
@@ -66,7 +66,7 @@
           <v-col class="py-0">
             <v-text-field
               label="Name"
-              :disabled="entry.readOnly || !entry.isEdit"
+              :disabled="entry.isReadOnly || !entry.isEdit"
               v-model="entry.label"
               outlined
               dense
@@ -74,7 +74,7 @@
           </v-col>
           <v-col cols="3" class="py-0">
             <v-btn
-              v-if="!entry.readOnly && !entry.isEdit"
+              v-if="!entry.isReadOnly && !entry.isEdit"
               :disabled="isEdit"
               color="primary"
               text
@@ -83,7 +83,7 @@
             >
 
             <v-btn
-              v-if="!entry.readOnly && entry.isEdit"
+              v-if="!entry.isReadOnly && entry.isEdit"
               :loading="isBusy"
               color="primary"
               text
@@ -92,7 +92,7 @@
             >
 
             <v-btn
-              v-if="!entry.readOnly && entry.isEdit"
+              v-if="!entry.isReadOnly && entry.isEdit"
               color="secondary"
               text
               @click="cancelEditTrustedIssuer(index)"
@@ -101,7 +101,7 @@
 
             <v-btn
               icon
-              v-if="!entry.readOnly && !entry.isEdit"
+              v-if="!entry.isReadOnly && !entry.isEdit"
               @click="deleteTrustedIssuer(index)"
             >
               <v-icon color="error">mdi-delete</v-icon>
@@ -129,15 +129,10 @@ export default {
     id: String, //schema ID
     schema: Object,
   },
-  created() {
+  mounted() {
     EventBus.$emit("title", "Schema");
     console.log("SCHEMA", this.schema);
-    if (this.schema) {
-      this.isLoading = false;
-      this.data = this.schema;
-    } else {
-      this.fetch();
-    }
+    this.fetch();
   },
   data: () => {
     return {
@@ -164,9 +159,9 @@ export default {
           console.log(result);
           if ({}.hasOwnProperty.call(result, "data")) {
             this.data = result.data;
-            // Init restrictions
-            if ({}.hasOwnProperty.call(this.data, "trustedIussuers")) {
-              this.trustedIssuers = this.data.trustedIssuers;
+            // Init trusted issuers
+            if ({}.hasOwnProperty.call(this.data, "trustedIssuer")) {
+              this.trustedIssuers = this.data.trustedIssuer;
             }
             this.isLoading = false;
           }
@@ -201,22 +196,25 @@ export default {
     },
     deleteTrustedIssuer(index) {
       let trustedIssuer = this.trustedIssuers[index];
-      this.$axios
-        .delete(
-          `${this.$apiBaseUrl}/admin/schema/${this.id}/trustedIssuer/${trustedIssuer.id}`
-        )
-        .then((result) => {
-          console.log(result);
-          this.trustedIssuers.splice(index, 1);
-        })
-        .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
-        });
+      if (trustedIssuer.id) {
+        this.$axios
+          .delete(
+            `${this.$apiBaseUrl}/admin/schema/${this.id}/trustedIssuer/${trustedIssuer.id}`
+          )
+          .then((result) => {
+            console.log(result);
+            this.trustedIssuers.splice(index, 1);
+          })
+          .catch((e) => {
+            console.error(e);
+            EventBus.$emit("error", e);
+          });
+      } else {
+        this.trustedIssuers.splice(index, 1);
+      }
     },
 
     saveTrustedIssuer(trustedIssuer) {
-      // delete trustedIssuer.isEdit;
       if (trustedIssuer.id) {
         this.updateTrustedIssuer(trustedIssuer);
       } else {

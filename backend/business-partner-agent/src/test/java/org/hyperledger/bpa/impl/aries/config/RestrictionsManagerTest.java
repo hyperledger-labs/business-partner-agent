@@ -22,7 +22,7 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.ledger.DidVerkeyResponse;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
-import org.hyperledger.bpa.controller.api.admin.RestrictionResponse;
+import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
 import org.junit.jupiter.api.Assertions;
@@ -67,7 +67,7 @@ public class RestrictionsManagerTest {
                 .schemaId(schemaId)
                 .seqNo(571)
                 .build());
-        Optional<RestrictionResponse> restriction = mgmt
+        Optional<TrustedIssuer> restriction = mgmt
                 .addRestriction(dbSchema.getId(), "5mwQSWnRePrZ3oF67C4Kqe", null);
 
         Assertions.assertTrue(restriction.isEmpty());
@@ -83,7 +83,7 @@ public class RestrictionsManagerTest {
                 .schemaId("1234")
                 .seqNo(571)
                 .build());
-        Optional<RestrictionResponse> credDefId = mgmt
+        Optional<TrustedIssuer> credDefId = mgmt
                 .addRestriction(dbSchema.getId(), "5mwQSWnRePrZ3oF67C4KqD", null);
         Assertions.assertTrue(credDefId.isPresent());
 

@@ -26,7 +26,7 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.SchemaConfig;
-import org.hyperledger.bpa.controller.api.admin.AddRestrictionRequest;
+import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
@@ -56,7 +56,7 @@ public class SchemaService {
     // CRUD Methods
 
     public @Nullable SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label,
-            @Nullable String defaultAttributeName, @Nullable List<AddRestrictionRequest> restrictions) {
+            @Nullable String defaultAttributeName, @Nullable List<AddTrustedIssuerRequest> restrictions) {
         SchemaAPI schema = addSchema(schemaId, label, defaultAttributeName, false);
         if (schema == null) {
             throw new WrongApiUsageException("Schema config could not be added");
