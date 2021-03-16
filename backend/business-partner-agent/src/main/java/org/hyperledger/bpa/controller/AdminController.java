@@ -65,7 +65,7 @@ public class AdminController {
     AriesClient ac;
 
     /**
-     * Aries: List configured schemas
+     * List configured schemas
      *
      * @return list of {@link SchemaAPI}
      */
@@ -75,7 +75,7 @@ public class AdminController {
     }
 
     /**
-     * Aries: Get a schema configuration
+     * Get a configured schema
      *
      * @param id {@link UUID} the schema id
      * @return {@link HttpResponse}
@@ -90,7 +90,7 @@ public class AdminController {
     }
 
     /**
-     * Aries: Add a schema configuration
+     * Add a schema configuration
      *
      * @param req {@link AddSchemaRequest}
      * @return {@link HttpResponse}
@@ -98,11 +98,11 @@ public class AdminController {
     @Post("/schema")
     public HttpResponse<SchemaAPI> addSchema(@Body AddSchemaRequest req) {
         return HttpResponse.ok(schemaService.addSchema(req.getSchemaId(), req.getLabel(),
-                req.getDefaultAttributeName(), req.getRestrictions()));
+                req.getDefaultAttributeName(), req.getTrustedIssuer()));
     }
 
     /**
-     * Aries: Update a schema configuration
+     * Update a schema configuration
      *
      * @param id  {@link UUID} the schema id
      * @param req {@link UpdateSchemaRequest}
@@ -118,8 +118,8 @@ public class AdminController {
     }
 
     /**
-     * Aries: Removes a schema configuration. Doing so means the BPA will not
-     * process requests containing this schema id any more.
+     * Removes a schema configuration. Doing so means the BPA will not process
+     * requests containing this schema id any more.
      *
      * @param id {@link UUID} the schema id
      * @return {@link HttpResponse}
@@ -140,58 +140,58 @@ public class AdminController {
     }
 
     /**
-     * Aries: Add a restriction configuration to a schema
+     * Add a trusted issuer to a schema
      *
      * @param id      {@link UUID} the schema id
-     * @param request {@link AddRestrictionRequest}
-     * @return {@link RestrictionResponse}
+     * @param request {@link AddTrustedIssuerRequest}
+     * @return {@link TrustedIssuer}
      */
-    @Post("/schema/{id}/restriction")
-    public HttpResponse<RestrictionResponse> addRestriction(
+    @Post("/schema/{id}/trustedIssuer")
+    public HttpResponse<TrustedIssuer> addTrustedIssuer(
             @PathVariable UUID id,
-            @Body AddRestrictionRequest request) {
-        Optional<RestrictionResponse> res = restrictionsManager.addRestriction(
+            @Body AddTrustedIssuerRequest request) {
+        Optional<TrustedIssuer> res = restrictionsManager.addRestriction(
                 id, request.getIssuerDid(), request.getLabel());
         if (res.isPresent()) {
             return HttpResponse.ok(res.get());
         }
-        throw new WrongApiUsageException("Credential definition could not be added. Check the logs");
+        throw new WrongApiUsageException("Trusted issuer could not be added. Check the logs");
     }
 
     /**
-     * Aries: Update a restriction configuration
+     * Update a trusted issuer
      *
-     * @param id            {@link UUID} the schema id
-     * @param restrictionId {@link UUID} the restriction id
-     * @param request       {@link UpdateRestrictionRequest}
-     * @return {@link RestrictionResponse}
+     * @param id              {@link UUID} the schema id
+     * @param trustedIssuerId {@link UUID} the trusted issuer id
+     * @param request         {@link UpdateTrustedIssuerRequest}
+     * @return {@link TrustedIssuer}
      */
-    @Put("/schema/{id}/restriction/{restrictionId}")
-    public HttpResponse<RestrictionResponse> updateRestriction(
+    @Put("/schema/{id}/trustedIssuer/{trustedIssuerId}")
+    public HttpResponse<TrustedIssuer> updateTrustedIssuer(
             @SuppressWarnings("unused") @PathVariable UUID id,
-            @PathVariable UUID restrictionId,
-            @Body UpdateRestrictionRequest request) {
-        restrictionsManager.updateLabel(restrictionId, request.getLabel());
+            @PathVariable UUID trustedIssuerId,
+            @Body UpdateTrustedIssuerRequest request) {
+        restrictionsManager.updateLabel(trustedIssuerId, request.getLabel());
         return HttpResponse.ok();
     }
 
     /**
-     * Aries: Delete a restriction configuration
+     * Delete a trusted issuer
      *
-     * @param id            {@link UUID} the schema id
-     * @param restrictionId {@link UUID} the restriction id
+     * @param id              {@link UUID} the schema id
+     * @param trustedIssuerId {@link UUID} the trusted issuer id
      * @return {@link HttpResponse}
      */
-    @Delete("/schema/{id}/restriction/{restrictionId}")
-    @ApiResponse(responseCode = "404", description = "If the restriction does not exist")
-    @ApiResponse(responseCode = "405", description = "If the restriction is read only")
-    public HttpResponse<Void> deleteRestriction(
+    @Delete("/schema/{id}/trustedIssuer/{trustedIssuerId}")
+    @ApiResponse(responseCode = "404", description = "If the trusted issuer does not exist")
+    @ApiResponse(responseCode = "405", description = "If the trusted issuer is read only")
+    public HttpResponse<Void> deleteTrustedIssuer(
             @SuppressWarnings("unused") @PathVariable UUID id,
-            @PathVariable UUID restrictionId) {
-        Optional<BPARestrictions> config = restrictionsManager.findById(restrictionId);
+            @PathVariable UUID trustedIssuerId) {
+        Optional<BPARestrictions> config = restrictionsManager.findById(trustedIssuerId);
         if (config.isPresent()) {
             if (!config.get().getIsReadOnly()) {
-                restrictionsManager.deleteCredentialDefinition(restrictionId);
+                restrictionsManager.deleteById(trustedIssuerId);
                 return HttpResponse.ok();
             }
             return HttpResponse.notAllowed();

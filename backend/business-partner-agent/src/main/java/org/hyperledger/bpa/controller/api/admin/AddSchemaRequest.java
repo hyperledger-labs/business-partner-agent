@@ -40,5 +40,5 @@ public class AddSchemaRequest {
     private String defaultAttributeName;
 
     @Nullable
-    private List<AddRestrictionRequest> restrictions;
+    private List<AddTrustedIssuerRequest> trustedIssuer;
 }

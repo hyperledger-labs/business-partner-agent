@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
-import org.hyperledger.bpa.controller.api.admin.RestrictionResponse;
+import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
 import org.hyperledger.bpa.model.BPARestrictions;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPARestrictionsRepository;
@@ -56,7 +56,7 @@ public class RestrictionsManager {
     @Inject
     BPASchemaRepository schemaRepo;
 
-    public Optional<RestrictionResponse> addRestriction(
+    public Optional<TrustedIssuer> addRestriction(
             @NonNull UUID sId, @NonNull String issuerDid, @Nullable String label) {
         Optional<BPASchema> dbSchema = schemaRepo.findById(sId);
         if (dbSchema.isEmpty()) {
@@ -66,7 +66,7 @@ public class RestrictionsManager {
                 List.of(Map.of("issuerDid", issuerDid, "label", label != null ? label : "")));
     }
 
-    Optional<RestrictionResponse> addRestriction(
+    Optional<TrustedIssuer> addRestriction(
             @NonNull UUID schemaId,
             @NonNull Boolean isReadOnly,
             @Nullable List<Map<String, String>> config) {
@@ -85,7 +85,7 @@ public class RestrictionsManager {
                                     .isReadOnly(isReadOnly)
                                     .build();
                             BPARestrictions db = repo.save(def);
-                            result.setConfig(RestrictionResponse
+                            result.setConfig(TrustedIssuer
                                     .builder()
                                     .id(db.getId())
                                     .label(db.getLabel())
@@ -110,7 +110,7 @@ public class RestrictionsManager {
         repo.deleteByIsReadOnly(Boolean.TRUE);
     }
 
-    public void deleteCredentialDefinition(@NonNull UUID id) {
+    public void deleteById(@NonNull UUID id) {
         repo.deleteById(id);
     }
 
@@ -129,6 +129,6 @@ public class RestrictionsManager {
     @Data
     @NoArgsConstructor
     private static final class ResultWrapper {
-        private RestrictionResponse config;
+        private TrustedIssuer config;
     }
 }

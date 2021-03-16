@@ -24,6 +24,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateRestrictionRequest {
+public class UpdateTrustedIssuerRequest {
     private String label;
 }
