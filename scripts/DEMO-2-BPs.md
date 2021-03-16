@@ -10,7 +10,9 @@ cd uni-resolver-driver-did-sov
 docker build -f ./docker/Dockerfile . -t universalresolver/driver-did-sov
 ```
 
-Now run the universal resolver (the only profile is for our bcovrin resolver)
+The sets up the "sovrin" resolver plug-in to point to the BC Gov (BCovrin) test ledger.
+
+Now run the universal resolver (the only profile is for our bcovrin resolver):
 
 ```bash
 git clone https://github.com/ianco/universal-resolver.git
@@ -18,6 +20,8 @@ cd universal-resolver
 docker pull universalresolver/uni-resolver-web:latest
 docker-compose -f docker-compose.yml up
 ```
+
+This runs a local universal resolver with only one plug-in (for the BCovrin ledger) to reduce local system requirements.
 
 Once the uni resolver is running you should be able to curl a DID on the ledger, for example:
 
@@ -27,8 +31,10 @@ curl -X GET http://localhost:8080/1.0/identifiers/did:sov:MTMagrM95WXayAHfwTNY17
 
 ## Run the first BP Agent
 
+Note that the docker build step is not strictly necessary, since the scripts will pull down a published image if necessary.  However the steps are included in the documentation for completeness, in case local changes are required.
+
 ```bash
-git clone https://github.com/ianco/business-partner-agent.git
+git clone https://github.com/hyperledger-labs/business-partner-agent.git
 cd business-partner-agent
 docker build -t ghcr.io/hyperledger-labs/business-partner-agent:local .
 cd scripts
@@ -46,7 +52,7 @@ Login as admin/changeme
 In a different shell/directory:
 
 ```bash
-git clone https://github.com/ianco/business-partner-agent.git
+git clone https://github.com/hyperledger-labs/business-partner-agent.git
 cd business-partner-agent
 cd scripts
 cp .env-example2 .env
