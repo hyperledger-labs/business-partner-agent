@@ -109,7 +109,7 @@
           </v-col>
         </v-row>
         <v-btn :disabled="isEdit" color="primary" text @click="addTrustedIssuer"
-          >Add</v-btn
+          >Add trusted issuer</v-btn
         >
       </v-container>
       <v-card-actions>
@@ -141,12 +141,7 @@ export default {
       editingTrustedIssuer: {},
       isLoading: true,
       isBusy: false,
-      trustedIssuers: [
-        {
-          issuerDid: "",
-          label: "",
-        },
-      ],
+      trustedIssuers: [],
     };
   },
   computed: {},
@@ -190,9 +185,13 @@ export default {
       this.trustedIssuers[index].isEdit = true;
     },
     cancelEditTrustedIssuer(index) {
-      this.trustedIssuers[index] = this.editingTrustedIssuer;
       this.isEdit = false;
-      this.trustedIssuers[index].isEdit = false;
+      if (!this.trustedIssuers[index].id) {
+        this.trustedIssuers.splice(index, 1);
+      } else {
+        this.trustedIssuers[index] = this.editingTrustedIssuer;
+        this.trustedIssuers[index].isEdit = false;
+      }
     },
     deleteTrustedIssuer(index) {
       let trustedIssuer = this.trustedIssuers[index];
