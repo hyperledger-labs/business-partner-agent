@@ -155,8 +155,10 @@ export default {
       this.isBusy = true;
 
       let request = {
-        schemaId: this.selectedSchema[0].schemaId,
-        issuerDid: this.selectedIssuer.filter((entry) => entry.issuerDid),
+        requestBySchema: {
+          schemaId: this.selectedSchema[0].schemaId,
+          issuerDid: this.selectedIssuer.map((entry) => entry.issuerDid),
+        },
       };
 
       this.$axios
@@ -179,12 +181,18 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .bg-light {
   background-color: #fafafa;
 }
 
 .bg-light-2 {
   background-color: #ececec;
+}
+
+@media only screen and (max-width: 959px) {
+  .v-stepper:not(.v-stepper--vertical) .v-stepper__label {
+    display: flex !important;
+  }
 }
 </style>
