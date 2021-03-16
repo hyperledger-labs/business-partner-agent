@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.controller;
 
+import io.micronaut.context.annotation.Value;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
@@ -52,6 +53,9 @@ import java.util.UUID;
 @MicronautTest
 public class AdminControllerTest {
 
+    @Value("${bpa.did.prefix}")
+    String didPrefix;
+
     @Inject
     @Client("/api/admin/schema")
     HttpClient client;
@@ -77,7 +81,7 @@ public class AdminControllerTest {
         Assertions.assertEquals(schemaId, schema.getSchemaId());
         Assertions.assertNotNull(schema.getTrustedIssuer());
         Assertions.assertEquals(1, schema.getTrustedIssuer().size());
-        Assertions.assertEquals("issuer1", schema.getTrustedIssuer().get(0).getIssuerDid());
+        Assertions.assertEquals(didPrefix + "issuer1", schema.getTrustedIssuer().get(0).getIssuerDid());
 
         // add a restriction to the schema
         URI uri = UriBuilder.of("/{id}/trustedIssuer")
@@ -94,7 +98,7 @@ public class AdminControllerTest {
         schema = getSchema(addedSchema.getBody().get().getId());
         Assertions.assertNotNull(schema.getTrustedIssuer());
         Assertions.assertEquals(2, schema.getTrustedIssuer().size());
-        Assertions.assertEquals("issuer2", schema.getTrustedIssuer().get(1).getIssuerDid());
+        Assertions.assertEquals(didPrefix + "issuer2", schema.getTrustedIssuer().get(1).getIssuerDid());
 
         // delete the first restriction
         URI delete = UriBuilder.of("/{id}/trustedIssuer/{trustedIssuerId}")
@@ -107,7 +111,7 @@ public class AdminControllerTest {
         schema = getSchema(addedSchema.getBody().get().getId());
         Assertions.assertNotNull(schema.getTrustedIssuer());
         Assertions.assertEquals(1, schema.getTrustedIssuer().size());
-        Assertions.assertEquals("issuer2", schema.getTrustedIssuer().get(0).getIssuerDid());
+        Assertions.assertEquals(didPrefix + "issuer2", schema.getTrustedIssuer().get(0).getIssuerDid());
 
         // update the remaining restriction
         URI put = UriBuilder.of("/{id}/trustedIssuer/{trustedIssuerId}")
