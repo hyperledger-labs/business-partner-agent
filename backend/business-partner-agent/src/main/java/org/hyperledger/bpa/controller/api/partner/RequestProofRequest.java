@@ -38,13 +38,11 @@ import java.util.List;
 public class RequestProofRequest {
 
     @JsonAlias("request_by_schema")
-    @Nullable
     private RequestBySchema requestBySchema;
 
     @JsonRawValue
     @JsonAlias("request_raw")
     @Schema(example = "{}", description = "Any valid proof request")
-    @Nullable
     private JsonNode requestRaw;
 
     @Data
@@ -63,7 +61,7 @@ public class RequestProofRequest {
     @JsonIgnore
     public @Nullable String getFirstIssuerDid() {
         String issuerDid = null;
-        if (requestBySchema != null && CollectionUtils.isNotEmpty(requestBySchema.getIssuerDid())) {
+        if (isRequestBySchema() && CollectionUtils.isNotEmpty(requestBySchema.getIssuerDid())) {
             issuerDid = requestBySchema.getIssuerDid().get(0);
         }
         return issuerDid;
@@ -71,7 +69,7 @@ public class RequestProofRequest {
 
     public List<PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions> buildRestrictions() {
         List<PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions> restrictions = new ArrayList<>();
-        if (requestBySchema != null) {
+        if (isRequestBySchema()) {
             if (CollectionUtils.isNotEmpty(requestBySchema.getIssuerDid())) {
                 requestBySchema.getIssuerDid().forEach(iss -> {
                     PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions.ProofRestrictionsBuilder builder = PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions
