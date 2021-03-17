@@ -34,6 +34,7 @@ import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import io.micronaut.core.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
@@ -105,5 +106,10 @@ public class Partner {
     @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> supportedCredentials;
+
+    @Transient
+    public boolean hasConnectionId() {
+        return connectionId != null;
+    }
 
 }

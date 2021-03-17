@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.controller.api.partner;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.core.annotation.Nullable;
@@ -51,6 +52,19 @@ public class RequestProofRequest {
         private String schemaId;
         @Nullable
         private List<String> issuerDid;
+    }
+
+    public boolean isRequestBySchema() {
+        return requestBySchema != null;
+    }
+
+    @JsonIgnore
+    public @Nullable String getFirstIssuerDid() {
+        String issuerDid = null;
+        if (requestBySchema != null && CollectionUtils.isNotEmpty(requestBySchema.getIssuerDid())) {
+            issuerDid = requestBySchema.getIssuerDid().get(0);
+        }
+        return issuerDid;
     }
 
     public List<PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions> buildRestrictions() {

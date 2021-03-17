@@ -90,8 +90,8 @@ public class ProofManager {
             final Optional<Partner> p = partnerRepo.findById(partnerId);
             if (p.isPresent()) {
                 // only when aries partner
-                if (p.get().getConnectionId() != null) {
-                    if (req.getRequestBySchema() != null) {
+                if (p.get().hasConnectionId()) {
+                    if (req.isRequestBySchema()) {
                         final Optional<Schema> schema = ac.schemasGetById(req.getRequestBySchema().getSchemaId());
                         if (schema.isPresent()) {
                             PresentProofRequest proofRequest = PresentProofRequestHelper
@@ -105,16 +105,25 @@ public class ProofManager {
                                         .presentationExchangeId(proof.getPresentationExchangeId())
                                         .role(proof.getRole())
                                         .schemaId(schema.get().getId())
+                                        .issuer(req.getFirstIssuerDid())
                                         .build();
                                 pProofRepo.save(pp);
                             });
                         } else {
-                            throw new PartnerException("Could not resolve schema for id: "
+                            throw new PartnerException("Could not find any schema on the ledger for id: "
                                     + req.getRequestBySchema().getSchemaId());
                         }
                     } else {
-                        // TODO: request raw
-                        log.debug("raw");
+                        ac.presentProofSendRequest(req.getRequestRaw().toString()).ifPresent(exchange -> {
+                            final PartnerProof pp = PartnerProof
+                                    .builder()
+                                    .partnerId(partnerId)
+                                    .state(exchange.getState())
+                                    .presentationExchangeId(exchange.getPresentationExchangeId())
+                                    .role(exchange.getRole())
+                                    .build();
+                            pProofRepo.save(pp);
+                        });
                     }
                 } else {
                     throw new PartnerException("Partner has no aca-py connection");
@@ -123,7 +132,7 @@ public class ProofManager {
                 throw new PartnerException("Partner not found");
             }
         } catch (IOException e) {
-            throw new NetworkException("aca-py not reachable", e);
+            throw new NetworkException("aca-py not available", e);
         }
     }
 

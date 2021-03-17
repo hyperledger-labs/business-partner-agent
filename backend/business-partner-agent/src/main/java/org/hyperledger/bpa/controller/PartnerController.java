@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.controller;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
@@ -29,6 +30,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesProof;
+import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.partner.*;
 import org.hyperledger.bpa.impl.PartnerManager;
 import org.hyperledger.bpa.impl.activity.PartnerLookup;
@@ -36,7 +38,6 @@ import org.hyperledger.bpa.impl.aries.CredentialManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.ProofManager;
 
-import io.micronaut.core.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
@@ -189,6 +190,12 @@ public class PartnerController {
     public HttpResponse<Void> requestProof(
             @PathVariable String id,
             @Body RequestProofRequest req) {
+        if (req.getRequestBySchema() != null && req.getRequestRaw() != null) {
+            throw new WrongApiUsageException("One of requestBySchema or requestRaw must be set.");
+        }
+        if (req.isRequestBySchema() && StringUtils.isEmpty(req.getRequestBySchema().getSchemaId())) {
+            throw new WrongApiUsageException("Schema id must not be empty");
+        }
         proofM.sendPresentProofRequest(UUID.fromString(id), req);
         return HttpResponse.ok();
     }
