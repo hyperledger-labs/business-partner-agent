@@ -70,6 +70,7 @@ export default {
   created() {
     EventBus.$emit("title", "Wallet");
     this.$store.dispatch("loadDocuments");
+    this.$store.dispatch("loadSchemas");
   },
   data: () => {
     return {
