@@ -35,20 +35,22 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-@Schema(oneOf = { RequestProofRequest.RequestBySchema.class, JsonNode.class })
 public class RequestProofRequest {
 
     @JsonAlias("request_by_schema")
+    @Nullable
     private RequestBySchema requestBySchema;
 
     @JsonRawValue
-    @Schema(example = "{}")
     @JsonAlias("request_raw")
+    @Schema(example = "{}", description = "Any valid proof request")
+    @Nullable
     private JsonNode requestRaw;
 
     @Data
     @NoArgsConstructor
     public static final class RequestBySchema {
+        @Schema(required = true)
         private String schemaId;
         @Nullable
         private List<String> issuerDid;

@@ -26,6 +26,7 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.PartnerAPI;
@@ -189,7 +190,7 @@ public class PartnerController {
     @Post("/{id}/proof-request")
     public HttpResponse<Void> requestProof(
             @PathVariable String id,
-            @Body RequestProofRequest req) {
+            @RequestBody(description = "One of requestBySchema or requestRaw") @Body RequestProofRequest req) {
         if (req.getRequestBySchema() != null && req.getRequestRaw() != null) {
             throw new WrongApiUsageException("One of requestBySchema or requestRaw must be set.");
         }
