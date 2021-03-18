@@ -14,8 +14,8 @@
 
 ## Tutorials
 
-- [Setup a business partner agent with Docker Compose](https://github.com/hyperledger-labs/business-partner-agent/tree/master/scripts)
-- [Setup a business partner agent with Kubernetes and Helm](https://github.com/hyperledger-labs/business-partner-agent/tree/master/charts/bpa)
+- [Setup a business partner agent with Docker Compose](https://github.com/hyperledger-labs/business-partner-agent/tree/master/scripts/README.md)
+- [Setup a business partner agent with Kubernetes and Helm](https://github.com/hyperledger-labs/business-partner-agent/tree/master/charts/bpa/README.md)
 - [Setup two business partners agents with Docker Compose]()
 - [Setup your own Universal Resolver instance with a custom Indy network]()
 - [Get a verified bank account](../demo.md)
