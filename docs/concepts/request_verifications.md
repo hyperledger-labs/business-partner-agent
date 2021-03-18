@@ -32,7 +32,7 @@ We assume that the issuer is able to identify the holder already in the process 
 
 ## Possible Improvements
 
-- In practice, the verification process might trigger a workflow that includes one or more proof requests from the issuer
+- In practice, the verification process might trigger a workflow that includes one or more proof requests from the issuer. This could be implemented using [Coprotocols](https://github.com/hyperledger/aries-rfcs/blob/master/concepts/0478-coprotocols/README.md)
 - Show all possible issuers for a document in the UI based on ledger data. If an issuer is not already a business partner provide a link to add it. 
 
 ## Used Aries protocols
