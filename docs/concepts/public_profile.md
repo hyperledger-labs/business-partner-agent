@@ -2,7 +2,7 @@
 
 The public profile allows an organization to share public information about itself in the form of a W3C Verifiable Presentation (VP). 
 
-The public profile can be seen as a very simple, limited implementation of the Identity Hub concept for an organisation.
+The public profile can be seen as a very simple, limited implementation of the Identity Hub concept for an organization.
 
 ## Rationale
 
@@ -33,7 +33,7 @@ Hence it supports a richer structure with nested objects and arrays. The JSON-LD
 
 ### Indy Credentials
 
-In order to embed Indy Anconcreds in the public profile, we wrap their content in a dynamically generated VC with an additional [Indy Credential JSON-LD context](https://raw.githubusercontent.com/iil-network/contexts/master/indycredential.jsonld). The VC itself is not directly cryptographically verifiable, but contains all information required to request a presentation (proof) via DIDcomm. The intent is that, an organization self-attests that it holds these credentials and provides the content. A business partner supporting DIDcomm is able to request a verification if required. 
+In order to embed Indy Anconcreds in the public profile, we wrap their content in a dynamically generated VC with an additional [Indy Credential JSON-LD context](https://raw.githubusercontent.com/iil-network/contexts/master/indycredential.jsonld). The VC itself is not directly cryptographically verifiable, but contains all information required to request a presentation (proof) via DIDcomm. The intent is that an organization self-attests that it holds these credentials and provides the content. A business partner supporting DIDcomm is able to request a verification if required. 
 
 #### Example of a wrapped in Indy Credential
 
