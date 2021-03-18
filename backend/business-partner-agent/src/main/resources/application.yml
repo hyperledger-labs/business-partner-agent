@@ -70,7 +70,7 @@ datasources:
 
 flyway:
   datasources: 
-    '*': 
+    '*':
       locations: classpath:databasemigrations
       schemas: ${bpa.pg.schema}
 
@@ -95,6 +95,7 @@ bpa:
     browser: ${BPA_LEDGER_BROWSER:`https://indy-test.bosch-digital.de`}
   host: localhost:${micronaut.server.port}
   name: ${AGENT_NAME:`Business Partner Agent`}
+  scheme: https
   web:
     only: ${BPA_WEB_MODE:false}
   acapy:
