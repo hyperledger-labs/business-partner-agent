@@ -11,3 +11,7 @@ BPA currenty uses an ACA-PY with auto flags concerning connections enabled, i.e.
 If a business partner does not support DIDcomm, but provides only a `profile` endpoint, it won't know if it got added. If a business partner supports DIDcomm, a new entry will appear in its list of business partners. However,  the connection protocol uses peer DIDs for every connection. Therefore, the entry won't be the public DID of the requesting business partner, and the profile endpoint can't be resolved.
 
 We manually approach this issue currently by issuing `identity credentials` to the business partners that include their public DID. This identity credential can be requested and the connection gets upgraded.
+
+## Used Aries protocols
+
+[0160: Connection Protocol](https://github.com/hyperledger/aries-rfcs/blob/master/features/0160-connection-protocol/README.md)

@@ -1,7 +1,7 @@
 # Business Partner Agent Documentation
 
 ## Architecture
-
+ 
 ## Concepts
 
 - [Indy and web mode](concepts/indy_web_mode.md)
