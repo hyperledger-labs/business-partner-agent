@@ -50,33 +50,42 @@
             {{ attribute }}
           </p>
         </v-list-item>
+
+        <trusted-issuers :id="id" :trustedIssuers="trustedIssuers" />
       </v-container>
+      <v-card-actions>
+        <v-layout align-end justify-end>
+          <v-btn color="primary" text :to="{ name: 'SchemaSettings' }"
+            >Close</v-btn
+          >
+        </v-layout>
+      </v-card-actions>
     </v-card>
   </v-container>
 </template>
 
 <script>
 import { EventBus } from "../main";
+import TrustedIssuers from "../components/TrustedIssuers";
 export default {
   name: "Schema",
   props: {
     id: String, //schema ID
     schema: Object,
   },
-  created() {
+  components: {
+    TrustedIssuers,
+  },
+  mounted() {
     EventBus.$emit("title", "Schema");
     console.log("SCHEMA", this.schema);
-    if (this.schema) {
-      this.isLoading = false;
-      this.data = this.schema;
-    } else {
-      this.fetch();
-    }
+    this.fetch();
   },
   data: () => {
     return {
       data: [],
       isLoading: true,
+      trustedIssuers: [],
     };
   },
   computed: {},
@@ -89,6 +98,10 @@ export default {
           console.log(result);
           if ({}.hasOwnProperty.call(result, "data")) {
             this.data = result.data;
+            // Init trusted issuers
+            if ({}.hasOwnProperty.call(this.data, "trustedIssuer")) {
+              this.trustedIssuers = this.data.trustedIssuer;
+            }
             this.isLoading = false;
           }
         })
@@ -102,7 +115,6 @@ export default {
           }
         });
     },
-
     deleteSchema() {
       this.$axios
         .delete(`${this.$apiBaseUrl}/admin/schema/${this.id}`)

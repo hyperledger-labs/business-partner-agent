@@ -36,7 +36,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.model.BPAUser;
-import org.hyperledger.bpa.repository.UserRepository;
+import org.hyperledger.bpa.repository.BPAUserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.inject.Inject;
@@ -57,7 +57,7 @@ public class UserController {
     String dataPrivacyPolicy;
 
     @Inject
-    UserRepository userRepo;
+    BPAUserRepository userRepo;
 
     @Inject
     BCryptPasswordEncoder enc;

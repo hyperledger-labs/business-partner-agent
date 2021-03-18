@@ -23,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.TAAInfo;
 import org.hyperledger.bpa.config.runtime.RequiresIndy;
-import org.hyperledger.bpa.repository.migration.V1_9_1__RepairSchemaIds;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -42,15 +41,8 @@ public class IndyStartupTasks {
     @Inject
     EndpointService endpointService;
 
-    // TODO delete
-    @Inject
-    V1_9_1__RepairSchemaIds migration;
-
     public void onServiceStartedEvent() {
         log.debug("Running aries startup tasks...");
-
-        // TODO delete
-        migration.setSchemaIdsWhereNull();
 
         if (endpointService.endpointsNewOrChanged()) {
             // register endpoints if no TTA acceptance is required,

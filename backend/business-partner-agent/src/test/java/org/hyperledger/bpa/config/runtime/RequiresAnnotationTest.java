@@ -1,7 +1,7 @@
 /*
   Copyright (c) 2020 - for information on the respective copyright owner
   see the NOTICE file and/or the repository at
-  https://github.com/hyperledger-labs/organizational-agent
+  https://github.com/hyperledger-labs/business-partner-agent
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -15,28 +15,24 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-package org.hyperledger.bpa.client;
+package org.hyperledger.bpa.config.runtime;
 
-import org.hyperledger.bpa.BaseTest;
-import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
-import org.junit.jupiter.api.Disabled;
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import org.hyperledger.bpa.client.LedgerExplorerClient;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import javax.inject.Inject;
 import java.util.Optional;
 
-class LedgerClientTest extends BaseTest {
+@MicronautTest
+public class RequiresAnnotationTest {
+
+    @Inject
+    Optional<LedgerExplorerClient> ledger;
 
     @Test
-    @Disabled
-    // TODO migrate to okhttp mock
-    void test() {
-        LedgerClient c = new LedgerClient();
-        c.setUrl("https://indy-test.bosch-digital.de");
-        c.setMapper(mapper);
-
-        final Optional<List<PartnerCredentialType>> credDefIds = c.queryCredentialDefinitions(
-                "CHysca6fY8n8ytCDLAJGZj");
-        System.err.println(credDefIds.get());
+    void testNotPresent() {
+        Assertions.assertTrue(ledger.isEmpty());
     }
 }

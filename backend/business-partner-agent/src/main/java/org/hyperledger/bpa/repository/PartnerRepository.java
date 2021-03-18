@@ -24,7 +24,7 @@ import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.bpa.model.Partner;
 
-import javax.annotation.Nullable;
+import io.micronaut.core.annotation.Nullable;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +49,8 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
     Optional<Partner> findByLabel(String label);
 
     Optional<Partner> findByConnectionId(String connectionId);
+
+    List<Partner> findByDidIn(List<String> did);
 
     @Query("SELECT distinct partner.* FROM partner,jsonb_to_recordset(partner.supported_credentials->'wrapped') as items(seqno text) where items.seqno = :seqNo")
     List<Partner> findBySupportedCredential(String seqNo);

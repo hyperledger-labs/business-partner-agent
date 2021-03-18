@@ -38,7 +38,7 @@ public class WebDidDocManagerTest extends RunWithAries {
     ObjectMapper mapper;
 
     @Test
-    void testDidDocCreation() throws Exception {
+    void testDidDocCreation() {
         didDoc.createDidDocument("https", "localhost");
         Optional<DidDocAPI> didDocument = didDoc.getDidDocument();
         Assertions.assertTrue(didDocument.isPresent());

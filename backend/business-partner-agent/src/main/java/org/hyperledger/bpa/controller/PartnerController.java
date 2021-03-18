@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.controller;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
@@ -25,10 +26,12 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesProof;
+import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.partner.*;
 import org.hyperledger.bpa.impl.PartnerManager;
 import org.hyperledger.bpa.impl.activity.PartnerLookup;
@@ -36,7 +39,6 @@ import org.hyperledger.bpa.impl.aries.CredentialManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.ProofManager;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
@@ -179,21 +181,6 @@ public class PartnerController {
     }
 
     /**
-     * Aries: Get credential types that the partner can issue
-     *
-     * @param id the partner id
-     * @return HTTP status
-     */
-    @Get("/{id}/credential-types")
-    public HttpResponse<List<PartnerCredentialType>> partnerCredentialTypes(@PathVariable String id) {
-        final Optional<List<PartnerCredentialType>> credDefs = credLookup.getPartnerCredDefs(UUID.fromString(id));
-        if (credDefs.isPresent()) {
-            return HttpResponse.ok(credDefs.get());
-        }
-        return HttpResponse.notFound();
-    }
-
-    /**
      * Aries: Request proof from partner
      *
      * @param id  the partner id
@@ -203,8 +190,14 @@ public class PartnerController {
     @Post("/{id}/proof-request")
     public HttpResponse<Void> requestProof(
             @PathVariable String id,
-            @Body RequestProofRequest req) {
-        proofM.sendPresentProofRequest(UUID.fromString(id), req.getCredentialDefinitionId());
+            @RequestBody(description = "One of requestBySchema or requestRaw") @Body RequestProofRequest req) {
+        if (req.getRequestBySchema() != null && req.getRequestRaw() != null) {
+            throw new WrongApiUsageException("One of requestBySchema or requestRaw must be set.");
+        }
+        if (req.isRequestBySchema() && StringUtils.isEmpty(req.getRequestBySchema().getSchemaId())) {
+            throw new WrongApiUsageException("Schema id must not be empty");
+        }
+        proofM.sendPresentProofRequest(UUID.fromString(id), req);
         return HttpResponse.ok();
     }
 
@@ -244,7 +237,7 @@ public class PartnerController {
      */
     @Get("/{id}/proof/{proofId}")
     public HttpResponse<AriesProof> getPartnerProofById(
-            @PathVariable String id,
+            @SuppressWarnings("unused ") @PathVariable String id,
             @PathVariable String proofId) {
         final Optional<AriesProof> proof = proofM.getPartnerProofById(UUID.fromString(proofId));
         if (proof.isPresent()) {
@@ -262,7 +255,7 @@ public class PartnerController {
      */
     @Delete("/{id}/proof/{proofId}")
     public HttpResponse<Void> deletePartnerProofById(
-            @PathVariable String id,
+            @SuppressWarnings("unused ") @PathVariable String id,
             @PathVariable String proofId) {
         proofM.deletePartnerProof(UUID.fromString(proofId));
         return HttpResponse.ok();

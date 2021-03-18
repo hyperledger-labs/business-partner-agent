@@ -36,7 +36,7 @@ public interface DidDocWebRepository extends CrudRepository<DidDocWeb, UUID> {
     void updateProfileJson(@Id UUID id, Map<String, Object> profileJson);
 
     /**
-     * Like withe the highlander there can only be one.
+     * Like with the highlander there can only be one.
      * 
      * @return {@link DidDocWeb}
      */

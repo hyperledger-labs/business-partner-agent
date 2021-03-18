@@ -9,6 +9,7 @@ auto-respond-presentation-request: true
 auto-store-credential: true
 auto-verify-presentation: true
 auto-ping-connection: true
+auto-provision: true
 monitor-ping: true
 public-invites: true
 plugin: 'aries_cloudagent.messaging.jsonld'

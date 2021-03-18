@@ -24,7 +24,7 @@ import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.model.MyDocument;
 
-import javax.annotation.Nullable;
+import io.micronaut.core.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 

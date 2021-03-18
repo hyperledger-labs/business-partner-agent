@@ -15,56 +15,86 @@
         Create a Presentation Request
       </v-card-title>
       <v-card-text>
-        <h4 class="pt-4">Select a credential type to request</h4>
-        <v-data-table
-          hide-default-footer
-          v-model="selected"
-          :show-select="true"
-          single-select
-          :headers="headers"
-          :items="templates[this.$config.ledger]"
-          item-key="credentialDefinitionId"
-        >
-          <template v-slot:[`item.credentialDefinitionId`]="{ item }">
-            <span v-if="item.label"> {{ item.label }} </span>
-            <span v-else>
-              {{ item.credentialDefinitionId | credentialTag }}
-            </span>
-          </template>
-        </v-data-table>
-        <div v-if="expertMode">
-          <h4 class="pt-4">Or enter a custom Credential Definition ID</h4>
-          <v-text-field
-            label="Credential Definition ID"
-            placeholder=""
-            v-model="credDefId"
-            outlined
-            dense
-          >
-          </v-text-field>
-        </div>
-      </v-card-text>
+        <template>
+          <v-stepper class="elevation-0" v-model="step" flat>
+            <v-stepper-header>
+              <v-stepper-step :complete="step > 1" step="1">
+                Select Credential Type (Schema)
+              </v-stepper-step>
 
-      <v-card-actions>
-        <v-layout align-end justify-end>
-          <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
-          <v-btn
-            :loading="this.isBusy"
-            color="primary"
-            text
-            @click="submitRequest()"
-            >Submit</v-btn
-          >
-        </v-layout>
-      </v-card-actions>
+              <v-stepper-step :complete="step > 2" step="2">
+                Select allowed Issuers
+              </v-stepper-step>
+            </v-stepper-header>
+
+            <v-stepper-items>
+              <v-stepper-content step="1">
+                <v-data-table
+                  hide-default-footer
+                  v-model="selectedSchema"
+                  :show-select="true"
+                  single-select
+                  :headers="headers"
+                  :items="schemas"
+                  item-key="id"
+                  hide-default-header
+                >
+                </v-data-table>
+
+                <v-card-actions>
+                  <v-layout align-end justify-end>
+                    <v-btn color="secondary" text @click="cancel()"
+                      >Cancel</v-btn
+                    >
+                    <v-btn
+                      :disabled="selectedSchema.length === 0"
+                      color="primary"
+                      @click="step = 2"
+                      >Continue</v-btn
+                    >
+                  </v-layout>
+                </v-card-actions>
+              </v-stepper-content>
+
+              <v-stepper-content step="2">
+                <v-data-table
+                  hide-default-footer
+                  v-model="selectedIssuer"
+                  :show-select="true"
+                  :items="
+                    selectedSchema.length > 0
+                      ? selectedSchema[0].trustedIssuer
+                      : []
+                  "
+                  item-key="id"
+                  :headers="headersIssuer"
+                  hide-default-header
+                >
+                </v-data-table>
+
+                <v-card-actions>
+                  <v-layout align-end justify-end>
+                    <v-btn color="secondary" text @click="step = 1">Back</v-btn>
+
+                    <v-btn
+                      :loading="this.isBusy"
+                      color="primary"
+                      @click="submitRequest()"
+                      >Send Request</v-btn
+                    >
+                  </v-layout>
+                </v-card-actions>
+              </v-stepper-content>
+            </v-stepper-items>
+          </v-stepper>
+        </template>
+      </v-card-text>
     </v-card>
   </v-container>
 </template>
 
 <script>
 import { EventBus } from "../main";
-
-import { CredentialTypes } from "../constants";
 
 export default {
   name: "RequestPresentation",
@@ -74,67 +104,27 @@ export default {
   },
   created() {
     EventBus.$emit("title", "Request Presentation");
+    this.fetchSchemas();
   },
   data: () => {
     return {
       isBusy: false,
-      credDefId: "",
-      selected: [],
-      CredentialTypes: CredentialTypes,
+      step: 1,
+      schemas: [],
+      selectedSchema: [],
+      selectedIssuer: [],
       headers: [
         {
-          text: "Type",
-          value: "credentialDefinitionId",
-        },
-        {
-          text: "Issuer",
-          value: "issuer",
+          text: "",
+          value: "label",
         },
       ],
-      templates: {
-        iil: [
-          // {
-          //   credentialDefinitionId: {
-          //     iiL: "nJvGcV7hBSLRSUvwGk2hT:3:CL:734:IATF Certificate",
-          //     idu: ""
-          //   }
-          //     ,
-          //   issuer: "IATF Proxy Issuer",
-          // },
-          {
-            credentialDefinitionId:
-              "5mwQSWnRePrZ3oF67C4KqD:3:CL:1077:commercial register entry",
-            label: "Commercial Registry Entry",
-            issuer: "Commercial Registry",
-          },
-          {
-            credentialDefinitionId:
-              "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:Bank Account V2",
-            label: "Bank Account",
-            issuer: "Bank",
-          },
-        ],
-        idu: [
-          {
-            credentialDefinitionId:
-              "R6WR6n7CQVDjvvmwofHK6S:3:CL:109:Commercial Registry Entry",
-            label: "Commercial Registry Entry",
-            issuer: "Trust Service Provider",
-          },
-          {
-            credentialDefinitionId:
-              "SCf4pK5PTvc1LnbUAF2aHD:3:CL:104:Bank Account V2",
-            label: "Bank Account",
-            issuer: "Bank",
-          },
-          {
-            credentialDefinitionId:
-              "3QowxFtwciWceMFr7WbwnM:3:CL:104:Bank Account",
-            label: "Bank Account",
-            issuer: "CommerzBank",
-          },
-        ],
-      },
+      headersIssuer: [
+        {
+          text: "Name",
+          value: "label",
+        },
+      ],
     };
   },
   computed: {
@@ -143,32 +133,46 @@ export default {
     },
   },
   methods: {
-    submitRequest() {
-      this.isBusy = true;
-      if (this.selected.length === 1 || this.credDefId.length > 0) {
-        let credDefId =
-          this.selected.length === 1
-            ? this.selected[0].credentialDefinitionId
-            : this.credDefId;
-
-        this.$axios
-          .post(`${this.$apiBaseUrl}/partners/${this.id}/proof-request`, {
-            credentialDefinitionId: credDefId,
-          })
-          .then(() => {
-            this.isBusy = false;
-            EventBus.$emit("success", "Presentation request sent");
-            this.$router.go(-1);
-          })
-          .catch((e) => {
-            this.isBusy = false;
+    fetchSchemas() {
+      this.$axios
+        .get(`${this.$apiBaseUrl}/admin/schema`)
+        .then((result) => {
+          console.log(result);
+          if ({}.hasOwnProperty.call(result, "data")) {
+            this.schemas = result.data;
+          }
+        })
+        .catch((e) => {
+          if (e.response.status === 404) {
+            this.schemas = [];
+          } else {
             console.error(e);
             EventBus.$emit("error", e);
-          });
-      } else {
-        this.isBusy = false;
-        EventBus.$emit("error", "No credential type selected");
-      }
+          }
+        });
+    },
+    submitRequest() {
+      this.isBusy = true;
+
+      let request = {
+        requestBySchema: {
+          schemaId: this.selectedSchema[0].schemaId,
+          issuerDid: this.selectedIssuer.map((entry) => entry.issuerDid),
+        },
+      };
+
+      this.$axios
+        .post(`${this.$apiBaseUrl}/partners/${this.id}/proof-request`, request)
+        .then(() => {
+          this.isBusy = false;
+          EventBus.$emit("success", "Presentation request sent");
+          this.$router.go(-1);
+        })
+        .catch((e) => {
+          this.isBusy = false;
+          console.error(e);
+          EventBus.$emit("error", e);
+        });
     },
     cancel() {
       this.$router.go(-1);
@@ -177,12 +181,18 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .bg-light {
   background-color: #fafafa;
 }
 
 .bg-light-2 {
   background-color: #ececec;
+}
+
+@media only screen and (max-width: 959px) {
+  .v-stepper:not(.v-stepper--vertical) .v-stepper__label {
+    display: flex !important;
+  }
 }
 </style>

@@ -129,7 +129,6 @@
       <router-view
         v-if="!sessionDialog && !$store.getters.taaRequired"
       ></router-view>
-      {{ $store.state.settings }}
     </v-main>
 
     <v-snackbar

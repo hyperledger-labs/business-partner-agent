@@ -168,7 +168,7 @@ class PartnerRepositoryTest {
     }
 
     @Test
-    void testFinBySupportedCredentials() {
+    void testFindBySupportedCredentials() {
         createPartnerWithCredentialType(571);
         createPartnerWithCredentialType(573);
         createPartnerWithCredentialType(573);
@@ -184,6 +184,22 @@ class PartnerRepositoryTest {
 
         found = repo.findBySupportedCredential("575");
         assertEquals(3, found.size());
+    }
+
+    @Test
+    void testFindByDidIn() {
+        repo.save(Partner.builder().ariesSupport(Boolean.TRUE).did("did1").connectionId("con1").build());
+        repo.save(Partner.builder().ariesSupport(Boolean.TRUE).did("did2").connectionId("con2").build());
+        repo.save(Partner.builder().ariesSupport(Boolean.TRUE).did("did3").connectionId("con3").build());
+
+        List<Partner> partner = repo.findByDidIn(List.of("did1", "did2"));
+        assertEquals(2, partner.size());
+    }
+
+    @Test
+    void testFindByDidInNoResult() {
+        List<Partner> partner = repo.findByDidIn(List.of());
+        assertEquals(0, partner.size());
     }
 
     private void createPartnerWithCredentialType(int seqno) {

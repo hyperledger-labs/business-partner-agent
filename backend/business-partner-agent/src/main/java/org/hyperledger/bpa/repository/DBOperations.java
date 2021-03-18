@@ -36,7 +36,7 @@ import javax.inject.Singleton;
 public class DBOperations {
 
     @Inject
-    private UserRepository userRepo;
+    private BPAUserRepository userRepo;
 
     @Value("${bpa.bootstrap.username}")
     private String username;

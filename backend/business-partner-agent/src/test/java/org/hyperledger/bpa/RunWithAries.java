@@ -35,7 +35,7 @@ import java.net.URL;
 @MicronautTest
 public abstract class RunWithAries extends BaseTest {
 
-    private static final String ARIES_VERSION = "bcgovimages/aries-cloudagent:py36-1.15-0_0.5.6";
+    private static final String ARIES_VERSION = "bcgovimages/aries-cloudagent:py36-1.16-0_0.6.0";
     /** Container local port, the mapped port is random */
     private static final Integer ARIES_ADMIN_PORT = 8031;
 

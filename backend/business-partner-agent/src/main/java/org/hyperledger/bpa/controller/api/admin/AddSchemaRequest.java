@@ -17,13 +17,19 @@
  */
 package org.hyperledger.bpa.controller.api.admin;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.annotation.Nullable;
+import io.micronaut.core.annotation.Nullable;
 
+import java.util.List;
+
+@Builder
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class AddSchemaRequest {
     @Nullable
     private String label;
@@ -32,4 +38,7 @@ public class AddSchemaRequest {
 
     @Nullable
     private String defaultAttributeName;
+
+    @Nullable
+    private List<AddTrustedIssuerRequest> trustedIssuer;
 }

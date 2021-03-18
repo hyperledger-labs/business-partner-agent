@@ -17,16 +17,31 @@
  */
 package org.hyperledger.bpa.repository;
 
+import io.micronaut.core.annotation.NonNull;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.Join;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
-import org.hyperledger.bpa.model.BPAUser;
+import org.hyperledger.bpa.model.BPASchema;
 
 import java.util.Optional;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface UserRepository extends CrudRepository<BPAUser, UUID> {
+public interface BPASchemaRepository extends CrudRepository<BPASchema, UUID> {
 
-    Optional<BPAUser> findByUsername(String username);
+    Optional<BPASchema> findBySchemaId(String schemaId);
+
+    @NonNull
+    @Join(value = "restrictions", type = Join.Type.LEFT_FETCH)
+    Iterable<BPASchema> findAll();
+
+    @NonNull
+    @Join(value = "restrictions", type = Join.Type.LEFT_FETCH)
+    Optional<BPASchema> findById(@NonNull UUID id);
+
+    void updateDefaultAttributeName(@Id UUID id, String defaultAttributeName);
+
+    void deleteByIsReadOnly(Boolean isReadOnly);
 }

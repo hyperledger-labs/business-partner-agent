@@ -19,6 +19,7 @@ package org.hyperledger.bpa.impl.aries;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
 import lombok.NonNull;
@@ -26,14 +27,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credential.Credential;
 import org.hyperledger.aries.api.proof.*;
-import org.hyperledger.aries.api.proof.PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.bpa.api.aries.AriesProof;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
+import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
+import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.TimeUtil;
@@ -43,7 +45,6 @@ import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -84,46 +85,54 @@ public class ProofManager {
     MessageService messageService;
 
     // request proof from partner
-    public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull String credDefId) {
+    public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {
         try {
-            final Optional<Schema> schema = ac.schemasGetById(AriesStringUtil.credDefIdGetSquenceNo(credDefId));
-            if (schema.isPresent()) {
-                final Optional<Partner> p = partnerRepo.findById(partnerId);
-                if (p.isPresent()) {
-                    // only when aries partner
-                    if (p.get().getConnectionId() != null) {
-                        PresentProofRequestConfig config = PresentProofRequestConfig.builder()
-                                .connectionId(p.get().getConnectionId())
-                                .appendAttribute(schema.get().getAttrNames(), ProofRestrictions.builder()
+            final Optional<Partner> p = partnerRepo.findById(partnerId);
+            if (p.isPresent()) {
+                // only when aries partner
+                if (p.get().hasConnectionId()) {
+                    if (req.isRequestBySchema()) {
+                        final Optional<Schema> schema = ac.schemasGetById(req.getRequestBySchema().getSchemaId());
+                        if (schema.isPresent()) {
+                            PresentProofRequest proofRequest = PresentProofRequestHelper
+                                    .buildForAllAttributes(p.get().getConnectionId(),
+                                            schema.get().getAttrNames(), req.buildRestrictions());
+                            ac.presentProofSendRequest(proofRequest).ifPresent(proof -> {
+                                final PartnerProof pp = PartnerProof
+                                        .builder()
+                                        .partnerId(partnerId)
+                                        .state(proof.getState())
+                                        .presentationExchangeId(proof.getPresentationExchangeId())
+                                        .role(proof.getRole())
                                         .schemaId(schema.get().getId())
-                                        .credentialDefinitionId(credDefId)
-                                        .build())
-                                .build();
-                        ac.presentProofSendRequest(PresentProofRequest.build(config)).ifPresent(proof -> {
+                                        .issuer(req.getFirstIssuerDid())
+                                        .build();
+                                pProofRepo.save(pp);
+                            });
+                        } else {
+                            throw new PartnerException("Could not find any schema on the ledger for id: "
+                                    + req.getRequestBySchema().getSchemaId());
+                        }
+                    } else {
+                        ac.presentProofSendRequest(req.getRequestRaw().toString()).ifPresent(exchange -> {
                             final PartnerProof pp = PartnerProof
                                     .builder()
                                     .partnerId(partnerId)
-                                    .state(proof.getState())
-                                    .presentationExchangeId(proof.getPresentationExchangeId())
-                                    .role(proof.getRole())
-                                    .credentialDefinitionId(credDefId)
-                                    .schemaId(schema.get().getId())
-                                    .issuer(resolveIssuer(credDefId))
+                                    .state(exchange.getState())
+                                    .presentationExchangeId(exchange.getPresentationExchangeId())
+                                    .role(exchange.getRole())
                                     .build();
                             pProofRepo.save(pp);
                         });
-
-                    } else {
-                        throw new PartnerException("Partner has no aca-py connection");
                     }
                 } else {
-                    throw new PartnerException("Partner not found");
+                    throw new PartnerException("Partner has no aca-py connection");
                 }
             } else {
-                throw new PartnerException("Could not resolve schema for credential definition id");
+                throw new PartnerException("Partner not found");
             }
         } catch (IOException e) {
-            throw new NetworkException("aca-py not reachable", e);
+            throw new NetworkException("aca-py not available", e);
         }
     }
 

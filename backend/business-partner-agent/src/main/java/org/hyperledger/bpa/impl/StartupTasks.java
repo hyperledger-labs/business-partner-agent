@@ -22,12 +22,11 @@ import io.micronaut.context.annotation.Value;
 import io.micronaut.context.env.Environment;
 import io.micronaut.context.event.StartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
-import io.micronaut.scheduling.annotation.Async;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.bpa.impl.activity.VPManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
-import org.hyperledger.bpa.impl.aries.SchemaService;
+import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.mode.indy.IndyStartupTasks;
 import org.hyperledger.bpa.impl.mode.web.WebStartupTasks;
 import org.hyperledger.bpa.model.BPAState;
@@ -69,9 +68,8 @@ public class StartupTasks {
     Optional<WebStartupTasks> webTasks;
 
     @Inject
-    Optional<IndyStartupTasks> ariesTasks;
+    Optional<IndyStartupTasks> indyTasks;
 
-    @Async
     @EventListener
     public void onServiceStartedEvent(@SuppressWarnings("unused") StartupEvent startEvent) {
         checkModeChange();
@@ -84,8 +82,8 @@ public class StartupTasks {
             log.info("Running in Web Only mode.");
             webTasks.ifPresent(WebStartupTasks::onServiceStartedEvent);
         } else {
-            log.info("Running in Aries mode");
-            ariesTasks.ifPresent(IndyStartupTasks::onServiceStartedEvent);
+            log.info("Running in Indy mode");
+            indyTasks.ifPresent(IndyStartupTasks::onServiceStartedEvent);
         }
 
         vpMgmt.getVerifiablePresentation().ifPresentOrElse(
@@ -132,7 +130,6 @@ public class StartupTasks {
 
     private void createDefaultSchemas() {
         log.debug("Purging and re-setting default schemas.");
-
         schemaService.resetWriteOnlySchemas();
     }
 }

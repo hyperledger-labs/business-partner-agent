@@ -92,7 +92,7 @@ bpa:
   resolver:
     url: ${BPA_RESOLVER_URL:`https://resolver.stage.economyofthings.io`}
   ledger:
-    browser: ${BPA_LEDGER_BROWSER:`https://indy-test.bosch-digital.de`}
+    browser: ${BPA_LEDGER_BROWSER:}
   host: localhost:${micronaut.server.port}
   name: ${AGENT_NAME:`Business Partner Agent`}
   scheme: https
@@ -105,9 +105,9 @@ bpa:
   did:
     prefix: ${BPA_DID_PREFIX:`did:sov:iil:`}
   pg:
-    url: jdbc:postgresql://${bpa.docker.host}/alice
-    username: alice
-    password: alice1234
+    url: jdbc:postgresql://${bpa.docker.host}/${bpa.pg.username}
+    username: walletuser
+    password: walletpassword
     schema: public
   bootstrap:
     username: ${BPA_BOOTSTRAP_UN:admin}
@@ -118,10 +118,17 @@ bpa:
       id: "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
       label: "Bank Account"
       defaultAttributeName: "iban"
+      # Note: this also works json style restrictions: [{id: 123, label: myLabel}]
+      restrictions:
+        - issuerDid: "${bpa.did.prefix}M6Mbe3qx7vB4wpZF4sBRjt"
+          label: "Demo Bank"
     commercial-register:
-      id: "3gLVpb3i5jzvZqWYyesSB3:2:commercialregister:1.2"
+      id: "5mwQSWnRePrZ3oF67C4KqD:2:commercialregister:1.0"
       label: "Commercial Register"
       defaultAttributeName: "companyName"
+      restrictions:
+        - issuerDid: "${bpa.did.prefix}5mwQSWnRePrZ3oF67C4KqD"
+          label: "Commercial Register"
   imprint:
     url: ${BPA_IMPRINT_URL:}
   privacy:

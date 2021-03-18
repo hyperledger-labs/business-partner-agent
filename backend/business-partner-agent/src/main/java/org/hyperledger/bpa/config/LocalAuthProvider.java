@@ -21,7 +21,7 @@ import io.micronaut.http.HttpRequest;
 import io.micronaut.security.authentication.*;
 import io.reactivex.Maybe;
 import org.hyperledger.bpa.model.BPAUser;
-import org.hyperledger.bpa.repository.UserRepository;
+import org.hyperledger.bpa.repository.BPAUserRepository;
 import org.reactivestreams.Publisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -35,7 +35,7 @@ import java.util.Optional;
 public class LocalAuthProvider implements AuthenticationProvider {
 
     @Inject
-    private UserRepository userRepo;
+    private BPAUserRepository userRepo;
 
     @Inject
     private BCryptPasswordEncoder enc;

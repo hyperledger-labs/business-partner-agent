@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.client.api.LedgerQueryResult;
 import org.hyperledger.bpa.client.api.LedgerQueryResult.DomainTransaction;
 import org.hyperledger.bpa.client.api.LedgerQueryResult.DomainTransaction.TxnMetadata;
+import org.hyperledger.bpa.config.runtime.RequiresLedgerExplorer;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 
@@ -41,17 +42,34 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Client that connects to a bcgov ledger explorer:
+ * https://github.com/bcgov/von-network.git The client is not active if no
+ * browser URL is configured. Installing a ledger explorer can be done in three
+ * steps: 1. Clone the repository 2. Provide a genesis file 3. Create a systemd
+ * service unit like
+ *
+ * [Unit] Description=IndyNode Requires=docker.service After=docker.service
+ *
+ * [Service] Type=oneshot RemainAfterExit=yes User=indy Group=docker
+ * ExecStart=/opt/von-network/manage start-web
+ * GENESIS_FILE=/home/indy/genesis/idu_genesis LEDGER_INSTANCE_NAME=MyName
+ * ExecStop=/opt/von-network/manage stop
+ *
+ * [Install] WantedBy=multi-user.target
+ */
 @Slf4j
 @Singleton
-public class LedgerClient {
+@RequiresLedgerExplorer
+public class LedgerExplorerClient {
 
     @Setter(AccessLevel.PROTECTED)
     @Value("${bpa.ledger.browser}")
-    private String url;
+    String url;
 
     @Inject
     @Setter(value = AccessLevel.PROTECTED)
-    private ObjectMapper mapper;
+    ObjectMapper mapper;
 
     private final OkHttpClient ok = new OkHttpClient();
 

@@ -17,12 +17,16 @@
  */
 package org.hyperledger.bpa.api.aries;
 
+import io.micronaut.core.util.CollectionUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
 import org.hyperledger.bpa.model.BPASchema;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -42,9 +46,16 @@ public class SchemaAPI {
 
     private Set<String> schemaAttributeNames;
 
+    private List<TrustedIssuer> trustedIssuer;
+
     public static SchemaAPI from(BPASchema s) {
-        return SchemaAPI
-                .builder()
+        SchemaAPIBuilder builder = SchemaAPI.builder();
+        if (CollectionUtils.isNotEmpty(s.getRestrictions())) {
+            List<TrustedIssuer> ti = new ArrayList<>();
+            s.getRestrictions().forEach(r -> ti.add(TrustedIssuer.from(r)));
+            builder.trustedIssuer(ti);
+        }
+        return builder
                 .id(s.getId())
                 .label(s.getLabel())
                 .schemaId(s.getSchemaId())

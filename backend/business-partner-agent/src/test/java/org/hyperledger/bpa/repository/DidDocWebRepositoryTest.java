@@ -25,8 +25,7 @@ import javax.inject.Inject;
 import java.util.Iterator;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @MicronautTest
 class DidDocWebRepositoryTest {
@@ -45,6 +44,7 @@ class DidDocWebRepositoryTest {
         final Iterator<DidDocWeb> it = repo.findAll().iterator();
         assertTrue(it.hasNext());
         DidDocWeb found = it.next();
+        assertNotNull(found.getDidDoc());
         assertEquals(json, found.getDidDoc().get("key"));
     }
 

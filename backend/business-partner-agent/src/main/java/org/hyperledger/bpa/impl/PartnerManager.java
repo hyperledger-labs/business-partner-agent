@@ -32,7 +32,7 @@ import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
-import javax.annotation.Nullable;
+import io.micronaut.core.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -146,7 +146,9 @@ public class PartnerManager {
             invalidatePartnerLookupCache();
             PartnerAPI pAPI = partnerLookup.lookupPartner(dbP.getDid());
             dbP.setValid(pAPI.getValid());
-            dbP.setVerifiablePresentation(converter.toMap(pAPI.getVerifiablePresentation()));
+            dbP.setVerifiablePresentation(pAPI.getVerifiablePresentation() != null
+                    ? converter.toMap(pAPI.getVerifiablePresentation())
+                    : null);
             dbP = repo.update(dbP);
             result = Optional.of(converter.toAPIObject(dbP));
             webhook.convertAndSend(WebhookEventType.PARTNER_UPDATE, result.get());
