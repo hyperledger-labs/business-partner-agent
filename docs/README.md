@@ -19,3 +19,16 @@
 - [Setup two business partners agents with Docker Compose]()
 - [Setup your own Universal Resolver instance with a custom Indy network]()
 - [Get a verified bank account](../demo.md)
+
+
+## Demos
+
+- [Demonstration of integration with SAP Master Data Service (MDS) at Bosch](https://tube.video.bosch.com/media/Business+Partner+Agent+-+MDS+Integration/0_v1m86cyp)
+
+### Short Clips
+
+- [Setting up a public profile](https://drive.google.com/file/d/12jUpGmSWGEubfHeUQ_Z6tybzjAErT2Bx/view?usp=sharing)
+- [Updating the public profile](https://drive.google.com/file/d/1I6T55dH-3mf_8vGx72INmPK3tCMyRCin/view?usp=sharing)
+- [Adding a business partner and requesting an identity credential](https://drive.google.com/file/d/1IE05pZgGy-kiReyEBtftGOlPzGOA6hjQ/view?usp=sharing)
+- [Sending proof of a bank account to a business partner](https://drive.google.com/file/d/1JESTjCkq_RuIX_uoI_BaUUC6iwA04rgT/view?usp=sharing)
+- [Getting a verified bank account](https://drive.google.com/file/d/1UKj0p6YNMn3Kv89YCyfgxajQFxgKWKTg/view?usp=sharing)
