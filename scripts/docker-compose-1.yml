@@ -3,20 +3,20 @@
 version: '3'
 
 services:
-  bpa:
+  bpa1:
     image: ${BPA_DOCKER_IMAGE}
     depends_on:
-      - aca-py
+      - aca-py1
     environment:
       JAVA_OPTS: >
-        -Dbpa.acapy.url=http://aca-py:${ACAPY_ADMIN_PORT} 
+        -Dbpa.acapy.url=http://aca-py1:${ACAPY_ADMIN_PORT} 
         -Dbpa.acapy.apiKey=${ACAPY_ADMIN_URL_API_KEY}
         -Dmicronaut.security.enabled=${BPA_SECURITY_ENABLED} 
         -Dmicronaut.server.port=${BPA_PORT}
         -Dbpa.pg.url=jdbc:postgresql://${POSTGRESQL_HOST}/${POSTGRESQL_USER} 
         -Dbpa.pg.username=${POSTGRESQL_USER} 
         -Dbpa.pg.password=${POSTGRESQL_PASSWORD} 
-        -Dbpa.host=${BPA_HOST}
+        -Dbpa.host=${BPA_HOST}:${BPA_PORT}
         -Dbpa.scheme=${BPA_SCHEME}
       BPA_WEB_MODE: ${BPA_WEB_MODE}
       BPA_RESOLVER_URL: ${BPA_RESOLVER_URL}
@@ -26,18 +26,16 @@ services:
       BPA_BOOTSTRAP_PW: ${BPA_BOOTSTRAP_PW}
       ACAPY_ENDPOINT: ${ACAPY_ENDPOINT}
       AGENT_NAME: ${AGENT_NAME}
-      BPA_IMPRINT_URL: ${BPA_IMPRINT_URL}
-      BPA_PRIVACY_POLICY_URL: ${BPA_PRIVACY_POLICY_URL}
     ports:
       - ${BPA_PORT}:${BPA_PORT}
     restart: always
-  aca-py:
-    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.6.0
+  aca-py1:
+    image: bcgovimages/aries-cloudagent:py36-1.15-0_0.5.6
     ports:
       - ${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}
       - ${ACAPY_HTTP_PORT}:${ACAPY_HTTP_PORT}
     depends_on:
-      - postgres
+      - postgres1
     entrypoint: /bin/bash
     command: [
         "-c",
@@ -45,13 +43,13 @@ services:
         aca-py start \
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY_HTTP_PORT} \
-        --webhook-url http://bpa:${BPA_PORT}/log \
+        --webhook-url http://bpa1:${BPA_PORT}/log \
         --genesis-url '${ACAPY_GENESIS_URL}' \
         --endpoint ${ACAPY_ENDPOINT} \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \
         --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' \
         --wallet-storage-type '${ACAPY_WALLET_TYPE}' \
-        --wallet-storage-config '{\"url\":\"${POSTGRESQL_HOST}:${POSTGRESQL_PORT}\",\"max_connections\":5}' \
+        --wallet-storage-config '{\"url\":\"${POSTGRESQL_HOST}:5432\",\"max_connections\":5}' \
         --wallet-storage-creds '{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}' \
         --seed '${ACAPY_SEED}' \
         --admin '0.0.0.0' ${ACAPY_ADMIN_PORT} \
@@ -62,14 +60,14 @@ services:
       ]
     volumes:
       - "./acapy-static-args.yml:/home/indy/acapy-static-args.yml"
-  postgres:
+  postgres1:
     image: "postgres:12-alpine"
     environment:
       - POSTGRES_USER=${POSTGRESQL_USER}
       - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
     ports:
-      - ${POSTGRESQL_PORT}:${POSTGRESQL_PORT}
+      - ${POSTGRESQL_PORT}:5432
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data1:/var/lib/postgresql/data
 volumes:
-  postgres-data:
+  postgres-data1:
