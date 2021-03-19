@@ -17,7 +17,7 @@
 - [Setup a business partner agent with Docker Compose](https://github.com/hyperledger-labs/business-partner-agent/tree/master/scripts/README.md)
 - [Setup a business partner agent with Kubernetes and Helm](https://github.com/hyperledger-labs/business-partner-agent/tree/master/charts/bpa/README.md)
 - [Setup two business partners agents with Docker Compose](../scripts/DEMO-2-BPs.md)
-- [Get a verified bank account](../demo.md)
+- [Get a verified bank account](tutorials/demo.md)
 
 
 ## Demos
