@@ -38,7 +38,7 @@ The agent is started in Indy mode per default and tries to connect with our test
 
 You can either run the agent [via docker-compose](scripts/) (recommended for e.g. development / debugging) or deploy it into a [kubernetes cluster (via helm)](charts/bpa).
 
-## Documentation and Tutorials
+# Documentation and Tutorials
 
 See [docs](./docs/README.md)
 
