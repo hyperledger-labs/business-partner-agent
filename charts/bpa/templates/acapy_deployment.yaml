@@ -32,28 +32,13 @@ spec:
           args: [
            "-c",
            "sleep 15; \
-           aca-py start \     
-           --auto-accept-invites \
-           --auto-accept-requests \
-           --auto-respond-messages \
-           --auto-respond-credential-proposal \
-           --auto-respond-credential-offer \
-           --auto-respond-credential-request \
-           --auto-respond-presentation-proposal \
-           --auto-respond-presentation-request \
-           --auto-store-credential \
-           --auto-verify-presentation \
-           --auto-ping-connection \
-           --monitor-ping \
-           --public-invites \
-           --plugin aries_cloudagent.messaging.jsonld \
+           aca-py start \  
+           --arg-file acapy-static-args.yml \   
            --inbound-transport http '0.0.0.0' {{ .Values.acapy.service.httpPort }} \ 
-           --outbound-transport http \ 
            --webhook-url http://{{ include "bpa.fullname" . }}:{{ .Values.bpa.service.port }}/log \
            --genesis-url '{{ .Values.bpa.ledgerURL }}/genesis' \
            --endpoint https://{{ (index .Values.acapy.ingress.hosts 0).host }} \
            --wallet-storage-type 'postgres_storage' \
-           --wallet-type 'indy' \
            --wallet-name 'mywallet' \
            --wallet-key '123' \
            --wallet-storage-config '{\"url\":\"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.service.port }}\",\"max_connections\":5}' \
@@ -82,9 +67,21 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ template "global.postgresql.fullname" . }}
-                  key: postgresql-password        
+                  key: postgresql-password  
+          volumeMounts:
+          - name: config
+            mountPath: "/home/indy/acapy-static-args.yml"
+            subPath: "acapy-static-args.yml"
+            readOnly: true        
           resources:
             {{- toYaml .Values.acapy.resources | nindent 12 }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "acapy.fullname" . }}
+            items:
+            - key: "acapy-static-args.yaml"
+              path: "acapy-static-args.yml"              
       {{- with .Values.acapy.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

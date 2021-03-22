@@ -49,9 +49,15 @@ bpa:
   # schemas to be configured initially (further schemas can be configured by the user in the frontend)
   schemas:
     commercialregister:
-     id: "3gLVpb3i5jzvZqWYyesSB3:2:commercialregister:1.2"
+     id: "5mwQSWnRePrZ3oF67C4KqD:2:commercialregister:1.2"
+     restrictions: "[{id: did:sov:iil:5mwQSWnRePrZ3oF67C4KqD, label: Commercial Register}]"
     bankaccount:
      id: "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
+     restrictions: "[{id: did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt, label: Bank Account}]"
+
+  imprintURL: 
+  
+  privacyPolicyURL:   
 
   imagePullSecrets: []
  
@@ -110,7 +116,7 @@ acapy:
     repository: bcgovimages/aries-cloudagent
     pullPolicy: IfNotPresent
     # --  Overrides the image tag whose default is the chart appVersion.
-    tag: py36-1.15-0_0.5.6
+    tag: py36-1.16-0_0.6.0
 
   # -- (String) The agent seed, 32 characters. See main documentation. 
   agentSeed:
