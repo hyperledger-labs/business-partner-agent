@@ -97,7 +97,18 @@ export default {
       CredentialTypes: CredentialTypes,
     };
   },
-  computed: {},
+  computed: {
+    newCredentials() {
+      return this.$store.getters.newCredentials;
+    },
+  },
+  watch: {
+    newCredentials: function (newValue) {
+      if (newValue && this.type === "credential") {
+        this.fetch(this.type);
+      }
+    },
+  },
   methods: {
     fetch(type) {
       this.$axios
