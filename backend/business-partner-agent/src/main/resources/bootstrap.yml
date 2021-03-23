@@ -1,0 +1,8 @@
+micronaut:
+  config-client:
+    enabled: true
+kubernetes:
+  client:
+    config-maps:
+      pod-labels:
+        - "app.kubernetes.io/instance"    
