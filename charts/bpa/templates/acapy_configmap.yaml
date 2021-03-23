@@ -23,4 +23,4 @@ data:
     plugin: 'aries_cloudagent.messaging.jsonld'
     outbound-transport: http
     wallet-type: 'indy'
-    log-level: info
+    log-level: debug
