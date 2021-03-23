@@ -1,0 +1,24 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "bpa.fullname" . }}
+  labels:
+    {{- include "bpa.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["services", "endpoints", "configmaps", "secrets", "pods"]
+    verbs: ["get", "watch", "list"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "bpa.fullname" . }}
+  labels:
+    {{- include "bpa.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "bpa.serviceAccountName" . }}
+roleRef:
+  kind: Role
+  name: {{ include "bpa.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io

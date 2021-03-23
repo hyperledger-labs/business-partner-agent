@@ -21,6 +21,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "bpa.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.bpa.podSecurityContext | nindent 8 }}
       containers:
@@ -58,11 +59,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ template "global.postgresql.fullname" . }}
-                  key: postgresql-password 
-            - name: BANKACCOUNT_RESTRICTIONS
-              value: {{ .Values.bpa.schemas.bankaccount.restrictions | quote }}  
-            - name: COMMERCIALREGISTER_RESTRICTIONS
-              value: {{ .Values.bpa.schemas.commercialregister.restrictions | quote }}                                             
+                  key: postgresql-password                                             
             - name: JAVA_OPTS
               value: |
                 -Dbpa.acapy.url=http://{{ include "acapy.fullname" . }}:{{ .Values.acapy.service.adminPort }} 
@@ -73,10 +70,6 @@ spec:
                 -Dbpa.pg.username={{ .Values.postgresql.postgresqlUsername }}
                 -Dbpa.pg.password=$(POSTGRES_PASSWORD)
                 -Dbpa.host={{ (index .Values.bpa.ingress.hosts 0).host }}
-                -Dbpa.schemas.bank-account.id={{ .Values.bpa.schemas.bankaccount.id }}
-                -Dbpa.schemas.bank-account.restrictions=$(BANKACCOUNT_RESTRICTIONS)
-                -Dbpa.schemas.commercial-register.id={{ .Values.bpa.schemas.commercialregister.id }}
-                -Dbpa.schemas.commercial-register.restrictions=$(COMMERCIALREGISTER_RESTRICTIONS)
           resources:
             {{- toYaml .Values.bpa.resources | nindent 12 }}
       {{- with .Values.bpa.nodeSelector }}

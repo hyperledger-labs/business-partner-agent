@@ -19,6 +19,15 @@ bpa:
     # --  Overrides the image tag whose default is the chart appVersion.
     tag: ""
 
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+    # Annotations to add to the service account
+    annotations: {}
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""  
+
   # -- enable security (username and password)
   securityEnabled: true
   
@@ -45,15 +54,6 @@ bpa:
 
   # -- The Agent Name as it should be displayed in the UI
   agentName: "Business Partner Agent"
-
-  # schemas to be configured initially (further schemas can be configured by the user in the frontend)
-  schemas:
-    commercialregister:
-     id: "5mwQSWnRePrZ3oF67C4KqD:2:commercialregister:1.2"
-     restrictions: "[{id: did:sov:iil:5mwQSWnRePrZ3oF67C4KqD, label: Commercial Register}]"
-    bankaccount:
-     id: "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
-     restrictions: "[{id: did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt, label: Bank Account}]"
 
   imprintURL: 
   
