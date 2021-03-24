@@ -36,7 +36,7 @@ spec:
            --arg-file acapy-static-args.yml \   
            --inbound-transport http '0.0.0.0' {{ .Values.acapy.service.httpPort }} \ 
            --webhook-url http://{{ include "bpa.fullname" . }}:{{ .Values.bpa.service.port }}/log \
-           --genesis-url '{{ .Values.bpa.ledgerURL }}/genesis' \
+           --genesis-url '{{ .Values.bpa.config.ledger.browser }}/genesis' \
            --endpoint https://{{ (index .Values.acapy.ingress.hosts 0).host }} \
            --wallet-storage-type 'postgres_storage' \
            --wallet-name 'mywallet' \

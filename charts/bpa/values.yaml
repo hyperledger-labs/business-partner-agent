@@ -28,56 +28,40 @@ bpa:
     # If not set and create is true, a name is generated using the fullname template
     name: ""  
 
-  # -- enable security (username and password)
-  securityEnabled: true
-  
-  # -- Default username
-  userName: admin
-  
-  # -- Default password, overwrite default if running in production like environments
-  password: changeme
-
-  # --  Run in did:web mode with read only ledger. If set to true acapy.readOnlyMode has to be true too.
-  webMode: false
-
-  # --  Uni Resolver URL
-  resolverURL: https://resolver.stage.economyofthings.io
-  
-  # --  The ledger prefix that is configured with the Uni Resolver
-  didPrefix: "did:sov:iil:"
-
-  # --  The Ledger URL
-  ledgerURL: https://indy-test.bosch-digital.de
-  
-  # --  The Ledger Explorer  
-  ledgerBrowser: https://indy-test.bosch-digital.de
-
-  # -- The Agent Name as it should be displayed in the UI
-  agentName: "Business Partner Agent"
-
   # -- application config (remark: all new configuration values will sit here, the other ones can be migrated step by step)
   config: 
-    #test ledger schemas, can be overwritten / extended when e.g. working with other ledger
-    schemas:
-      bank-account:
-        id: "UmZ25DANwS6ngGWB4ye4tN:2:BankAccount:0.1"
-        label: "Bank Account"
-        defaultAttributeName: "iban"
-        # Note: this also works json style restrictions: [{id: 123, label: myLabel}]
-        restrictions:
-          - issuerDid: "did:sov:iil:UmZ25DANwS6ngGWB4ye4tN"
-            label: "Demo Bank"
-      commercial-register:
-        id: "R6WR6n7CQVDjvvmwofHK6S:2:commercialregister:0.1"
-        label: "Commercial Register"
-        defaultAttributeName: "companyName"
-        restrictions:
-          - issuerDid: "did:sov:iil:R6WR6n7CQVDjvvmwofHK6S"
-            label: "Commercial Register"
-            
-  imprintURL: 
-  
-  privacyPolicyURL:   
+    security:
+      enabled: true  
+    bootstrap:
+      username: admin
+      password: changeme      
+    resolver:
+      url: https://resolver.stage.economyofthings.io
+    ledger:
+      browser: https://indy-test.bosch-digital.de
+    name: Business Partner Agent
+    web:
+      only: false
+    #schemas:
+    #  bank-account:
+    #    id: "UmZ25DANwS6ngGWB4ye4tN:2:BankAccount:0.1"
+    #    label: "Bank Account"
+    #    defaultAttributeName: "iban"
+    #    restrictions:
+    #      - issuerDid: "did:sov:iil:UmZ25DANwS6ngGWB4ye4tN"
+    #        label: "Demo Bank"
+    #  commercial-register:
+    #    id: "R6WR6n7CQVDjvvmwofHK6S:2:commercialregister:0.1"
+    #    label: "Commercial Register"
+    #    defaultAttributeName: "companyName"
+    #    restrictions:
+    #      - issuerDid: "did:sov:iil:R6WR6n7CQVDjvvmwofHK6S"
+    #        label: "Commercial Register"
+    #imprint:
+    #  url: 
+    #privacy:
+    #  policy:
+    #    url:   
 
   imagePullSecrets: []
  
