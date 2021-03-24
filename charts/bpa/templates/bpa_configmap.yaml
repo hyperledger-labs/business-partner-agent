@@ -5,6 +5,18 @@ metadata:
   labels:
     {{- include "bpa.labels" . | nindent 4 }}
 data:
-  application.yaml: |-
+  application.yaml: |-  
     bpa:           
 {{ toYaml .Values.bpa.config | indent 6 }}   
+      acapy:
+        url: http://{{ include "acapy.fullname" . }}:{{ .Values.acapy.service.adminPort }} 
+        apiKey: {{ .Values.acapy.adminURLApiKey }}
+        endpoint: https://{{ (index .Values.acapy.ingress.hosts 0).host }}  
+      pg:
+        url: jdbc:postgresql://{{ include "global.postgresql.fullname" . }}/{{ .Values.postgresql.postgresqlUsername }}
+        username: {{ .Values.postgresql.postgresqlUsername }}
+        password: $(POSTGRES_PASSWORD)
+      host: {{ (index .Values.bpa.ingress.hosts 0).host }}
+      micronaut:
+        security:
+          enabled: {{ .Values.bpa.config.security.enabled }}
