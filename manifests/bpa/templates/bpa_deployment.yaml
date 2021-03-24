@@ -1,0 +1,76 @@
+---
+# Source: bpa/templates/bpa_deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pupsi-bpa-bpacore
+  labels:
+    helm.sh/chart: bpa-0.1.0-alpha5.1
+    app.kubernetes.io/name: pupsi-bpa-bpacore
+    app.kubernetes.io/instance: pupsi
+    app.kubernetes.io/version: "0.1.0-alpha5.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pupsi-bpa-bpacore
+      app.kubernetes.io/instance: pupsi
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: pupsi-bpa-bpacore
+        app.kubernetes.io/instance: pupsi
+    spec:
+      serviceAccountName: pupsi-bpa-bpacore
+      securityContext:
+        {}
+      containers:
+        - name: bpacore
+          securityContext:
+            {}
+          image: "ghcr.io/hyperledger-labs/business-partner-agent:0.1.0-alpha5.1"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: BPA_BOOTSTRAP_PW
+              value: "bodai2020"
+            - name: BPA_BOOTSTRAP_UN
+              value: "masterdata"   
+            - name: BPA_DID_PREFIX
+              value: "did:sov:idu:"
+            - name: BPA_LEDGER_BROWSER
+              value: "https://explorer.idu.network"
+            - name: BPA_RESOLVER_URL
+              value: "https://resolver.stage.economyofthings.io"
+            - name: BPA_WEB_MODE
+              value: "false"
+            - name: AGENT_NAME
+              value: "Business Partner Agent"
+            - name: ACAPY_ENDPOINT
+              value: https://pupsi-acapy.stage.economyofthings.io
+            - name: BPA_IMPRINT_URL
+              value: "https://bpa.stage.economyofthings.io/"
+            - name: BPA_PRIVACY_POLICY_URL
+              value: "https://bpa.stage.economyofthings.io/privacyPolicy"                            
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pupsi-postgresql
+                  key: postgresql-password                                             
+            - name: JAVA_OPTS
+              value: |
+                -Dbpa.acapy.url=http://pupsi-bpa-acapy:8031 
+                -Dbpa.acapy.apiKey=2f9729eef0be49608c1cffd49ee3cc4a
+                -Dmicronaut.security.enabled=true 
+                -Dmicronaut.server.port=8080
+                -Dbpa.pg.url=jdbc:postgresql://pupsi-postgresql/bpa
+                -Dbpa.pg.username=bpa
+                -Dbpa.pg.password=$(POSTGRES_PASSWORD)
+                -Dbpa.host=pupsi.stage.economyofthings.io
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi

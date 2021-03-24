@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "bpa.fullname" . }}
+  labels:
+    {{- include "bpa.labels" . | nindent 4 }}
+data:
+  application.yaml: |-
+    bpa:           
+{{ toYaml .Values.bpa.config | indent 6 }}   

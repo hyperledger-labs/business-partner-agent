@@ -68,6 +68,17 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Create the name of the service account to use
+*/}}
+{{- define "bpa.serviceAccountName" -}}
+{{- if .Values.bpa.serviceAccount.create }}
+{{- default (include "bpa.fullname" .) .Values.bpa.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.bpa.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
 Common acapy labels
 */}}
 {{- define "acapy.labels" -}}
