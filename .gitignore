@@ -81,3 +81,4 @@ package-lock.json
 
 charts/**/charts/
 my-values.yaml
+manifests/
