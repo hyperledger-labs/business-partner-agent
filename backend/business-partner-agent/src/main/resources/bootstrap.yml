@@ -3,6 +3,9 @@ micronaut:
     enabled: true
 kubernetes:
   client:
+    discovery:
+      enabled: false
     config-maps:
+      watch: false
       pod-labels:
-        - "app.kubernetes.io/instance"    
+        - "app.kubernetes.io/instance"

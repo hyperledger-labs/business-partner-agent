@@ -1,9 +1,15 @@
+---
+# Source: bpa/templates/acapy_configmap.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "acapy.fullname" . }}
+  name: pupsi-bpa-acapy
   labels:
-    {{- include "acapy.labels" . | nindent 4 }}
+    helm.sh/chart: bpa-0.1.0-alpha5.1
+    app.kubernetes.io/name: pupsi-bpa-acapy
+    app.kubernetes.io/instance: pupsi
+    app.kubernetes.io/version: "0.1.0-alpha5.1"
+    app.kubernetes.io/managed-by: Helm
 data:
   acapy-static-args.yaml: |
     auto-accept-invites: true

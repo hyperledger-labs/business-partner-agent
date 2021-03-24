@@ -55,6 +55,26 @@ bpa:
   # -- The Agent Name as it should be displayed in the UI
   agentName: "Business Partner Agent"
 
+  # -- application config (remark: all new configuration values will sit here, the other ones can be migrated step by step)
+  config: 
+    #test ledger schemas, can be overwritten / extended when e.g. working with other ledger
+    schemas:
+      bank-account:
+        id: "UmZ25DANwS6ngGWB4ye4tN:2:BankAccount:0.1"
+        label: "Bank Account"
+        defaultAttributeName: "iban"
+        # Note: this also works json style restrictions: [{id: 123, label: myLabel}]
+        restrictions:
+          - issuerDid: "did:sov:iil:UmZ25DANwS6ngGWB4ye4tN"
+            label: "Demo Bank"
+      commercial-register:
+        id: "R6WR6n7CQVDjvvmwofHK6S:2:commercialregister:0.1"
+        label: "Commercial Register"
+        defaultAttributeName: "companyName"
+        restrictions:
+          - issuerDid: "did:sov:iil:R6WR6n7CQVDjvvmwofHK6S"
+            label: "Commercial Register"
+            
   imprintURL: 
   
   privacyPolicyURL:   
@@ -116,7 +136,7 @@ acapy:
     repository: bcgovimages/aries-cloudagent
     pullPolicy: IfNotPresent
     # --  Overrides the image tag whose default is the chart appVersion.
-    tag: py36-1.16-0_0.6.0
+    tag: py36-1.15-0_0.5.6
 
   # -- (String) The agent seed, 32 characters. See main documentation. 
   agentSeed:
@@ -136,13 +156,13 @@ acapy:
   podSecurityContext: {}
     # fsGroup: 2000
 
-  securityContext: {}
+  securityContext:
     # capabilities:
     #   drop:
     #   - ALL
     # readOnlyRootFilesystem: true
     # runAsNonRoot: true
-    # runAsUser: 1000
+    runAsUser: 1001
 
   service:
     type: ClusterIP

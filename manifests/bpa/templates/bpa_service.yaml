@@ -1,0 +1,22 @@
+---
+# Source: bpa/templates/bpa_service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: pupsi-bpa-bpacore
+  labels:
+    helm.sh/chart: bpa-0.1.0-alpha5.1
+    app.kubernetes.io/name: pupsi-bpa-bpacore
+    app.kubernetes.io/instance: pupsi
+    app.kubernetes.io/version: "0.1.0-alpha5.1"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: pupsi-bpa-bpacore
+    app.kubernetes.io/instance: pupsi

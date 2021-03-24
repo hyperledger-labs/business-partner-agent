@@ -5,16 +5,6 @@ metadata:
   labels:
     {{- include "bpa.labels" . | nindent 4 }}
 data:
-  my-conf.yml: |
-    bpa:
-      schemas:
-        commercialregister:
-          id: "R6WR6n7CQVDjvvmwofHK6S:2:commercialregister:0.1"
-          restrictions: 
-          - id: "did:sov:iil:R6WR6n7CQVDjvvmwofHK6S"
-            label: CommercialRegister
-        bankaccount:
-          id: "UmZ25DANwS6ngGWB4ye4tN:2:BankAccount:0.1"
-          restrictions:
-          - id: "did:sov:iil:UmZ25DANwS6ngGWB4ye4tN"
-            label: BankAccount
+  application.yaml: |-
+    bpa:           
+{{ toYaml .Values.bpa.config | indent 6 }}   
