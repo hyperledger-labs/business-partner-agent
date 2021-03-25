@@ -33,13 +33,16 @@ spec:
           ports:
             - name: http
               containerPort: 8080
-              protocol: TCP
+              protocol: TCP              
           env:                        
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ template "global.postgresql.fullname" . }}
-                  key: postgresql-password                                             
+                  key: postgresql-password          
+            - name: JAVA_OPTS 
+              value: |
+                -Dbpa.pg.password=$(POSTGRES_PASSWORD)                                                            
           resources:
             {{- toYaml .Values.bpa.resources | nindent 12 }}
       {{- with .Values.bpa.nodeSelector }}

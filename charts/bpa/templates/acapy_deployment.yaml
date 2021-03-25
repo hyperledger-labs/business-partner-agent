@@ -67,6 +67,12 @@ spec:
                 secretKeyRef:
                   name: {{ template "global.postgresql.fullname" . }}
                   key: postgresql-password  
+          livenessProbe:
+            httpGet:
+              path: /status/live 
+              port: 8031
+            initialDelaySeconds: 15
+            periodSeconds: 3        
           volumeMounts:
           - name: config
             mountPath: "/home/indy/acapy-static-args.yml"
