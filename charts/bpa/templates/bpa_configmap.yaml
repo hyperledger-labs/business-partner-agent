@@ -15,7 +15,6 @@ data:
       pg:
         url: jdbc:postgresql://{{ include "global.postgresql.fullname" . }}/{{ .Values.postgresql.postgresqlUsername }}
         username: {{ .Values.postgresql.postgresqlUsername }}
-        password: $(POSTGRES_PASSWORD)
       host: {{ (index .Values.bpa.ingress.hosts 0).host }}
       micronaut:
         security:

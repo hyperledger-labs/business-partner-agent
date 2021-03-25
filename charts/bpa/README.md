@@ -2,7 +2,7 @@
 
 The Business Partner Agent allows to manage and exchange master data between organizations.
 
-![Version: 0.1.0-alpha4](https://img.shields.io/badge/Version-0.1.0--alpha4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0-alpha4](https://img.shields.io/badge/AppVersion-0.1.0--alpha4-informational?style=flat-square)
+![Version: 0.1.0-alpha5](https://img.shields.io/badge/Version-0.1.0--alpha5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0-alpha5.4](https://img.shields.io/badge/AppVersion-0.1.0--alpha5.4-informational?style=flat-square)
 
 This chart will install a business partner agent (bpa-core & bpa-acapy) and Postgres.
 
@@ -154,7 +154,7 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | acapy.fullnameOverride | string | `""` |  |
 | acapy.image.pullPolicy | string | `"IfNotPresent"` |  |
 | acapy.image.repository | string | `"bcgovimages/aries-cloudagent"` |  |
-| acapy.image.tag | string | `"py36-1.15-0_0.5.6"` | Overrides the image tag whose default is the chart appVersion. |
+| acapy.image.tag | string | `"py36-1.16-0_0.6.0"` | Overrides the image tag whose default is the chart appVersion. |
 | acapy.imagePullSecrets | list | `[]` |  |
 | acapy.ingress.annotations | object | `{}` |  |
 | acapy.ingress.enabled | bool | `false` |  |
@@ -168,14 +168,13 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | acapy.podSecurityContext | object | `{}` |  |
 | acapy.readOnlyMode | bool | `false` |  |
 | acapy.resources | object | `{}` |  |
-| acapy.securityContext | object | `{}` |  |
+| acapy.securityContext.runAsUser | int | `1001` |  |
 | acapy.service.adminPort | int | `8031` |  |
 | acapy.service.httpPort | int | `8030` |  |
 | acapy.service.type | string | `"ClusterIP"` |  |
 | acapy.tolerations | list | `[]` |  |
 | bpa.affinity | object | `{}` |  |
-| bpa.agentName | string | `"Business Partner Agent"` | The Agent Name as it should be displayed in the UI |
-| bpa.didPrefix | string | `"did:sov:iil:"` | The ledger prefix that is configured with the Uni Resolver |
+| bpa.config | object | `{"bootstrap":{"password":"changeme","username":"admin"},"ledger":{"browser":"https://indy-test.bosch-digital.de"},"name":"Business Partner Agent","resolver":{"url":"https://resolver.stage.economyofthings.io"},"security":{"enabled":true},"web":{"only":false}}` | application config (remark: all new configuration values will sit here, the other ones can be migrated step by step) |
 | bpa.image.pullPolicy | string | `"IfNotPresent"` |  |
 | bpa.image.repository | string | `"ghcr.io/hyperledger-labs/business-partner-agent"` |  |
 | bpa.image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
@@ -185,24 +184,18 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | bpa.ingress.hosts[0].host | string | `"my-bpa.local"` |  |
 | bpa.ingress.hosts[0].paths | list | `[]` |  |
 | bpa.ingress.tls | list | `[]` |  |
-| bpa.ledgerBrowser | string | `"https://indy-test.bosch-digital.de"` | The Ledger Explorer   |
-| bpa.ledgerURL | string | `"https://indy-test.bosch-digital.de"` | The Ledger URL |
 | bpa.name | string | `"bpacore"` |  |
 | bpa.nodeSelector | object | `{}` |  |
-| bpa.password | string | `"changeme"` | Default password, overwrite default if running in production like environments |
 | bpa.podAnnotations | object | `{}` |  |
 | bpa.podSecurityContext | object | `{}` |  |
-| bpa.resolverURL | string | `"https://resolver.stage.economyofthings.io"` | Uni Resolver URL |
 | bpa.resources | object | `{}` |  |
-| bpa.schemas.bankaccount.id | string | `"M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"` |  |
-| bpa.schemas.commercialregister.id | string | `"3gLVpb3i5jzvZqWYyesSB3:2:commercialregister:1.2"` |  |
 | bpa.securityContext | object | `{}` |  |
-| bpa.securityEnabled | bool | `true` | enable security (username and password) |
 | bpa.service.port | int | `80` |  |
 | bpa.service.type | string | `"ClusterIP"` |  |
+| bpa.serviceAccount.annotations | object | `{}` |  |
+| bpa.serviceAccount.create | bool | `true` |  |
+| bpa.serviceAccount.name | string | `""` |  |
 | bpa.tolerations | list | `[]` |  |
-| bpa.userName | string | `"admin"` | Default username |
-| bpa.webMode | bool | `false` | Run in did:web mode with read only ledger. If set to true acapy.readOnlyMode has to be true too. |
 | global.fullnameOverride | string | `""` |  |
 | global.nameOverride | string | `""` |  |
 | global.persistence.deployPostgres | bool | `true` | If true, the Postgres chart is deployed |
@@ -211,13 +204,13 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | postgresql.persistence.enabled | bool | `false` | Enable PostgreSQL persistence using Persistent Volume Claims. |
 | postgresql.postgresqlDatabase | string | `"bpa"` | PostgreSQL Database to create. |
 | postgresql.postgresqlPassword | string | `"change-me"` | PostgreSQL Password for the new user. If not set, a random 10 characters password will be used. |
-| postgresql.postgresqlUsername | string | `"bpa"` | PostgreSQL User to create. |
+| postgresql.postgresqlUsername | string | `"postgres"` | PostgreSQL User to create. Do not change - otherwise non-admin user is created! |
 | postgresql.service | object | `{"port":5432}` | PostgreSQL service configuration |
 
 ## Chart dependencies
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami/ | postgresql | 10.1.3 |
+| https://charts.bitnami.com/bitnami/ | postgresql | 10.3.13 |
 
 ## Chart development
 
