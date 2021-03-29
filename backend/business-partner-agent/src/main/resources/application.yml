@@ -6,7 +6,9 @@ micronaut:
   server:
     port: 8080
     cors:
-      enabled: true
+      enabled: true # potential security risk
+      cofigurations:
+        allowCredentials: false
     idle-timeout: 30m
   security:
     authentication: session
@@ -57,6 +59,14 @@ micronaut:
     scheduled:
       type: scheduled
       core-pool-size: 5
+
+endpoints:
+  all:
+    enabled: false
+  health:
+    enabled: true
+    sensitive: false
+    details-visible: never
 
 datasources:
   '*':

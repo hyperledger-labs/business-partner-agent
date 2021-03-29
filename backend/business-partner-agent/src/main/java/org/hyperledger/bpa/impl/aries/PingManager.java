@@ -69,7 +69,7 @@ public class PingManager {
         }
     }
 
-    @Scheduled(fixedRate = "1m", initialDelay = "1m")
+    @Scheduled(fixedRate = "1m", initialDelay = "90s") // init delay needs to be > than aca-py connection timeout
     public void checkConnections() {
         try {
             List<String> activeConnections = aries.connectionIds(

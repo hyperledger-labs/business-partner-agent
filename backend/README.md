@@ -15,7 +15,7 @@ https://maven.apache.org/download.cgi
 
 ## Docker
 
-To run the backends dependencies, and the unit tests you need to have docker setup on your development machine.
+To run the backends dependencies, and the unit tests you need to have docker and docker-compose setup on your development machine.
 
 # Setup IDE
 
@@ -57,9 +57,12 @@ This assumes you kept the default usernames and passwords from the .env example.
 
 ```
 -Dmicronaut.environments=dev
--Dbpa.host=<Same as .env/BPA_HOST>
--Dbpa.acapy.endpoint=<Same as .env/ACAPY_ENDPOINT>
+-Dbpa.host=<BPA_HOST>
+-Dbpa.acapy.endpoint=<ACAPY_ENDPOINT>
 ```
+
+Depending on your set up, the values for `BPA_HOST` and `ACAPY_ENDPOINT` are either set in the .env file, or the output of the start-with-tunnels.sh script.
+
 If you want to run in web only mode you also have to set:
 
 ```
