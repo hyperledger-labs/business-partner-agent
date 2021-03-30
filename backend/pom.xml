@@ -32,6 +32,15 @@
         <developerConnection>scm:git:git@github.com:hyperledger-labs/business-partner-agent.git</developerConnection>
     </scm>
 
+    <developers>
+        <developer>
+            <id>github</id>
+            <name>github contributors</name>
+            <organization>github</organization>
+            <organizationUrl>https://github.com/hyperledger-labs/business-partner-agent/graphs/contributors</organizationUrl>
+        </developer>
+    </developers>
+
     <properties>
         <!-- Settings -->
         <exec.mainClass />
@@ -48,7 +57,7 @@
         <micronaut.version>2.4.1</micronaut.version>
         <micronaut.data.version>2.3.1</micronaut.data.version>
         <micronaut.openapi.version>2.3.1</micronaut.openapi.version>
-        <micronaut.security.version>2.3.1</micronaut.security.version>
+        <micronaut.security.version>2.3.2</micronaut.security.version>
         <mockito.version>3.8.0</mockito.version>
         <pmd.version>6.33.0</pmd.version>
         <spotbugs.version>4.2.2</spotbugs.version>
@@ -89,7 +98,6 @@
                 <enabled>true</enabled>
             </snapshots>
         </pluginRepository>
-
     </pluginRepositories>
 
     <modules>
