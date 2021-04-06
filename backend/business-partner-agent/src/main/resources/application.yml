@@ -7,8 +7,6 @@ micronaut:
     port: 8080
     cors:
       enabled: true # potential security risk
-      cofigurations:
-        allowCredentials: false
     idle-timeout: 30m
   security:
     authentication: session
