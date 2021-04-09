@@ -1,0 +1,134 @@
+version: "3"
+services:
+#######
+# Business Partner Application
+# (Docker Backend/Frontend + agent + wallet)
+#######
+  partner-app:
+    image: ${BPA_DOCKER_IMAGE}
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    depends_on:
+      - partner-agent
+    environment:
+      JAVA_OPTS: >
+        -Dbpa.acapy.url=http://${ACAPY1_SERVICE}:${ACAPY1_ADMIN_PORT}
+        -Dbpa.acapy.apiKey=${ACAPY_ADMIN_URL_API_KEY}
+        -Dmicronaut.security.enabled=${BPA_SECURITY_ENABLED}
+        -Dmicronaut.server.port=${BPA1_PORT}
+        -Dbpa.pg.url=jdbc:postgresql://${POSTGRESQL1_HOST}/${POSTGRESQL_USER}
+        -Dbpa.pg.username=${POSTGRESQL_USER}
+        -Dbpa.pg.password=${POSTGRESQL_PASSWORD}
+        -Dbpa.host=${BPA_HOST}:${BPA1_PORT}
+        -Dbpa.scheme=${BPA_SCHEME}
+        -Dmicronaut.environments=dev
+        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${BPA1_DEBUG_PORT}
+      BPA_WEB_MODE: ${BPA_WEB_MODE}
+      BPA_RESOLVER_URL: ${BPA_RESOLVER_URL}
+      BPA_LEDGER_BROWSER: ${BPA_LEDGER_BROWSER}
+      BPA_DID_PREFIX: ${BPA_DID_PREFIX}
+      BPA_BOOTSTRAP_UN: ${BPA_BOOTSTRAP_UN}
+      BPA_BOOTSTRAP_PW: ${BPA_BOOTSTRAP_PW}
+      ACAPY_ENDPOINT: ${ACAPY1_ENDPOINT}
+      AGENT_NAME: ${AGENT1_NAME}
+    ports:
+      - ${BPA1_PORT}:${BPA1_PORT}
+      - ${BPA1_DEBUG_PORT}:${BPA1_DEBUG_PORT}
+    restart: always
+    #extra_hosts:
+    #  - host.docker.internal:host-gateway
+  partner-agent:
+    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.6.0
+    ports:
+      - ${ACAPY1_ADMIN_PORT}:${ACAPY1_ADMIN_PORT}
+      - ${ACAPY1_HTTP_PORT}:${ACAPY1_HTTP_PORT}
+    depends_on:
+      - partner-wallet-db
+    entrypoint: /bin/bash
+    command: [
+        "-c",
+        "sleep 1;
+        aca-py start \
+        --arg-file acapy-static-args.yml \
+        --inbound-transport http '0.0.0.0' ${ACAPY1_HTTP_PORT} \
+        --webhook-url http://${BPA1_SERVICE}:${BPA1_PORT}/log \
+        --genesis-url '${ACAPY_GENESIS_URL}' \
+        --endpoint ${ACAPY1_ENDPOINT} \
+        --wallet-name '${ACAPY_WALLET_DATABASE}' \
+        --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' \
+        --wallet-storage-type '${ACAPY_WALLET_TYPE}' \
+        --wallet-storage-config '{\"url\":\"${POSTGRESQL1_HOST}:5432\",\"max_connections\":5}' \
+        --wallet-storage-creds '{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}' \
+        --seed '${ACAPY1_SEED}' \
+        --admin '0.0.0.0' ${ACAPY1_ADMIN_PORT} \
+        --label '${AGENT1_NAME}' \
+        ${ACAPY_ADMIN_CONFIG} \
+        ${ACAPY_READ_ONLY_MODE} \
+        "
+      ]
+    volumes:
+      - "./acapy-static-args.yml:/home/indy/acapy-static-args.yml"
+    #extra_hosts:
+    #  - host.docker.internal:host-gateway
+  partner-wallet-db:
+    image: "postgres:12-alpine"
+    environment:
+      - POSTGRES_USER=${POSTGRESQL_USER}
+      - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
+    ports:
+      - ${POSTGRESQL1_PORT}:5432
+    volumes:
+      - partner-wallet-data:/var/lib/postgresql/data
+
+#######
+# Development Agent / Wallet
+#######
+
+  dev-agent:
+    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.6.0
+    ports:
+      - ${ACAPY2_ADMIN_PORT}:${ACAPY2_ADMIN_PORT}
+      - ${ACAPY2_HTTP_PORT}:${ACAPY2_HTTP_PORT}
+    depends_on:
+      - dev-wallet-db
+    entrypoint: /bin/bash
+    command: [
+        "-c",
+        "sleep 1;
+        aca-py start \
+        --arg-file acapy-static-args.yml \
+        --inbound-transport http '0.0.0.0' ${ACAPY2_HTTP_PORT} \
+        --webhook-url http://${BPA2_SERVICE}:${BPA2_PORT}/log \
+        --genesis-url '${ACAPY_GENESIS_URL}' \
+        --endpoint ${ACAPY2_ENDPOINT} \
+        --wallet-name '${ACAPY_WALLET_DATABASE}' \
+        --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' \
+        --wallet-storage-type '${ACAPY_WALLET_TYPE}' \
+        --wallet-storage-config '{\"url\":\"${POSTGRESQL2_HOST}:5432\",\"max_connections\":5}' \
+        --wallet-storage-creds '{\"account\":\"${POSTGRESQL_USER}\",\"password\":\"${POSTGRESQL_PASSWORD}\",\"admin_account\":\"${POSTGRESQL_USER}\",\"admin_password\":\"${POSTGRESQL_PASSWORD}\"}' \
+        --seed '${ACAPY2_SEED}' \
+        --admin '0.0.0.0' ${ACAPY2_ADMIN_PORT} \
+        --label '${AGENT2_NAME}' \
+        ${ACAPY_ADMIN_CONFIG} \
+        ${ACAPY_READ_ONLY_MODE} \
+        "
+      ]
+    volumes:
+      - "./acapy-static-args-dev.yml:/home/indy/acapy-static-args.yml"
+    #extra_hosts:
+    #  - host.docker.internal:host-gateway
+  dev-wallet-db:
+    image: "postgres:12-alpine"
+    environment:
+      - POSTGRES_USER=${POSTGRESQL_USER}
+      - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
+    ports:
+      - ${POSTGRESQL2_PORT}:5432
+    volumes:
+      - dev-wallet-data:/var/lib/postgresql/data
+
+volumes:
+  partner-wallet-data:
+  dev-wallet-data:
+
