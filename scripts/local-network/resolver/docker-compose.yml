@@ -1,0 +1,16 @@
+version: "3.5"
+networks:
+  default:
+    name: universal-resolver
+services:
+  driver-did-sov:
+    image: universalresolver/driver-did-sov
+    environment:
+      uniresolver_driver_did_sov_libIndyPath:
+      uniresolver_driver_did_sov_poolConfigs: "_;./local/localhost_9000.txn"
+      uniresolver_driver_did_sov_poolVersions: _;2;
+      uniresolver_driver_did_sov_walletName: wallet
+    ports:
+      - "7776:8080"
+    volumes:
+      - ./:/opt/driver-did-sov/local
