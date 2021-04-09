@@ -25,6 +25,7 @@ import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.bpa.model.Partner;
 
 import io.micronaut.core.annotation.Nullable;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,8 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
     void updateState(@Id UUID id, String state);
 
     int updateAlias(@Id UUID id, @Nullable String alias);
+
+    int updateDid(@Id UUID id, String did);
 
     Number updateByDid(String did, Map<String, Object> supportedCredentials);
 

@@ -63,6 +63,7 @@ backend/*/src/main/resources/3rdPartyLicenses/**
 # --------------------------------------
 
 .env
+!frontend/.env
 
 # Ignore Node
 frontend/node/**
@@ -82,6 +83,6 @@ package-lock.json
 charts/**/charts/
 my-values.yaml
 manifests/
-scripts/local-network/von-network/
 
-scripts/local-network/resolver/*.txn
+scripts/local-network/von-network/
+scripts/**/*.txn
