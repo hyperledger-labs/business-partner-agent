@@ -39,7 +39,7 @@ services:
     extra_hosts:
      - host.docker.internal:host-gateway
   bpa-agent1:
-    image: bcgovimages/aries-cloudagent:py36-1.15-0_0.5.6
+    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.6.0
     ports:
       - ${ACAPY1_ADMIN_PORT}:${ACAPY1_ADMIN_PORT}
       - ${ACAPY1_HTTP_PORT}:${ACAPY1_HTTP_PORT}
@@ -50,6 +50,7 @@ services:
         "-c",
         "sleep 1;
         aca-py start \
+        --auto-provision
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY1_HTTP_PORT} \
         --webhook-url http://bpa1:${BPA1_PORT}/log \
@@ -117,7 +118,7 @@ services:
     extra_hosts:
      - host.docker.internal:host-gateway
   bpa-agent2:
-    image: bcgovimages/aries-cloudagent:py36-1.15-0_0.5.6
+    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.6.0
     ports:
       - ${ACAPY2_ADMIN_PORT}:${ACAPY2_ADMIN_PORT}
       - ${ACAPY2_HTTP_PORT}:${ACAPY2_HTTP_PORT}
@@ -128,6 +129,7 @@ services:
         "-c",
         "sleep 1;
         aca-py start \
+        --auto-provision
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY2_HTTP_PORT} \
         --webhook-url http://bpa2:${BPA2_PORT}/log \
