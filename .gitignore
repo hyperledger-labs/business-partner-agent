@@ -83,4 +83,6 @@ charts/**/charts/
 my-values.yaml
 manifests/
 
+scripts/local-network/von-network/
 scripts/**/*.txn
+
