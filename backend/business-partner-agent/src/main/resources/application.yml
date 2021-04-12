@@ -92,6 +92,8 @@ jackson:
     acceptEmptyArrayAsNullObject: true
   json-view:
     enabled: true
+  mapper:
+    acceptCaseInsensitiveEnums: true
 
 bpa:
   docker:

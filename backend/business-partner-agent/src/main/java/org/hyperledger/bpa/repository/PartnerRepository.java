@@ -22,6 +22,7 @@ import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
+import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.model.Partner;
 
 import io.micronaut.core.annotation.Nullable;
@@ -34,7 +35,7 @@ import java.util.UUID;
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
-    void updateState(@Id UUID id, String state);
+    void updateState(@Id UUID id, ConnectionState state);
 
     int updateAlias(@Id UUID id, @Nullable String alias);
 
@@ -60,8 +61,8 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
     // below indicate changes made by jobs.
 
     @Query("UPDATE partner SET state = :newState WHERE connection_id = :connectionId AND (state IS NULL OR state != :newState)")
-    void updateStateByConnectionId(String connectionId, String newState);
+    void updateStateByConnectionId(String connectionId, ConnectionState newState);
 
     @Query("UPDATE partner SET state = :newState, last_seen = :lastSeen WHERE connection_id = :connectionId")
-    void updateStateAndLastSeenByConnectionId(String connectionId, String newState, Instant lastSeen);
+    void updateStateAndLastSeenByConnectionId(String connectionId, ConnectionState newState, Instant lastSeen);
 }

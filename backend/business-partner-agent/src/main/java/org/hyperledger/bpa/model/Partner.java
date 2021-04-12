@@ -27,6 +27,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
@@ -75,7 +76,7 @@ public class Partner {
     private String connectionId; // aries connection id
 
     @Nullable
-    private String state; // aries connection state
+    private ConnectionState state; // aries connection state
 
     @Nullable
     private String label; // aries connection label

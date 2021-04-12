@@ -22,6 +22,7 @@ import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.model.MyCredential;
 
 import io.micronaut.core.annotation.Nullable;
@@ -34,7 +35,7 @@ public interface MyCredentialRepository extends CrudRepository<MyCredential, UUI
 
     void updateIsPublic(@Id UUID id, Boolean isPublic);
 
-    void updateState(@Id UUID id, String state);
+    void updateState(@Id UUID id, CredentialExchangeState state);
 
     void updateLabel(@Id UUID id, String label);
 
@@ -52,6 +53,6 @@ public interface MyCredentialRepository extends CrudRepository<MyCredential, UUI
             + "AND credential->>'credentialDefinitionId' = :credentialDefinitionId")
     List<MyCredential> findBySchemaIdAndCredentialDefinitionId(String schemaId, String credentialDefinitionId);
 
-    Long countByStateEquals(String state);
+    Long countByStateEquals(CredentialExchangeState state);
 
 }

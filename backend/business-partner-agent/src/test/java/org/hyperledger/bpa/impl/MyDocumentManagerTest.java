@@ -216,7 +216,7 @@ class MyDocumentManagerTest extends RunWithAries {
         assertTrue(vp.isPresent());
         assertTrue(vp.get().getVerifiableCredential().isEmpty());
         assertNotNull(vp.get().getProof());
-        log.debug(PRETTY.toJson(vp));
+        log.debug(PRETTY.toJson(vp.get()));
     }
 
     @Test
@@ -231,7 +231,7 @@ class MyDocumentManagerTest extends RunWithAries {
         assertTrue(vp.isPresent());
         assertNotNull(vp.get().getVerifiableCredential());
         assertEquals(1, vp.get().getVerifiableCredential().size());
-        log.debug(PRETTY.toJson(vp));
+        log.debug(PRETTY.toJson(vp.get()));
 
         vc.setIsPublic(Boolean.FALSE);
         mgmt.updateDocument(vc.getId(), vc);
