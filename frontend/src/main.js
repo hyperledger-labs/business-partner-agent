@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 */
 
@@ -23,22 +23,15 @@ Vue.component("vue-json-pretty", VueJsonPretty);
 Vue.use(require("vue-moment"));
 Vue.use(SortUtil);
 
-var apiBaseUrl;
-var socketApi;
+var apiBaseUrl = process.env.VUE_APP_API_BASE_URL;
+var eventsHost = process.env.VUE_APP_EVENTS_HOST ? process.env.VUE_APP_EVENTS_HOST : window.location.host;
+var socketApi = `${window.location.protocol === "https:" ? "wss" : "ws"}://${eventsHost}/${process.env.VUE_APP_EVENTS_PATH}`;
+
 if (process.env.NODE_ENV === "development") {
-  apiBaseUrl = "http://localhost:8080/api";
-  socketApi = `${
-    window.location.protocol === "https:" ? "wss" : "ws"
-  }://localhost:8080/events`;
   store.commit({
     type: "setExpertMode",
     isExpert: true,
   });
-} else {
-  apiBaseUrl = "/api";
-  socketApi = `${window.location.protocol === "https:" ? "wss" : "ws"}://${
-    window.location.host
-  }/events`;
 }
 
 Vue.use(VueNativeSock, socketApi, {
