@@ -29,8 +29,8 @@ import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.connection.ReceiveInvitationRequest;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.ledger.EndpointType;
-import org.hyperledger.aries.api.proof.PresentProofRecordsFilter;
-import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
+import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.api.DidDocAPI;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
@@ -119,7 +119,7 @@ public class ConnectionManager {
         String endpoint = null;
         Optional<DidDocAPI.Service> acaPyEndpoint = didDoc.getService()
                 .stream()
-                .filter(s -> EndpointType.Endpoint.getLedgerName().equals(s.getType()))
+                .filter(s -> EndpointType.ENDPOINT.getLedgerName().equals(s.getType()))
                 .findFirst();
         if (acaPyEndpoint.isPresent() && StringUtils.isNotEmpty(acaPyEndpoint.get().getServiceEndpoint())) {
             endpoint = acaPyEndpoint.get().getServiceEndpoint();

@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.controller.api;
 
 import lombok.*;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.api.aries.AriesProof;
@@ -82,7 +83,7 @@ public class WebSocketMessageBody {
 
     public static WebSocketMessageBody proofReceived(AriesProof proof) {
         WebSocketMessageState state;
-        if ("verifier".equals(proof.getRole())) {
+        if (PresentationExchangeRole.VERIFIER.equals(proof.getRole())) {
             state = WebSocketMessageState.RECEIVED;
         } else {
             state = WebSocketMessageState.SENT;
