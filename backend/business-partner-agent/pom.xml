@@ -80,9 +80,9 @@
             <artifactId>micronaut-jdbc-hikari</artifactId>
         </dependency>
         <dependency>
-    		<groupId>io.micronaut.kubernetes</groupId>
-    		<artifactId>micronaut-kubernetes-discovery-client</artifactId>
-		</dependency>
+            <groupId>io.micronaut.kubernetes</groupId>
+            <artifactId>micronaut-kubernetes-discovery-client</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
@@ -223,7 +223,7 @@
                         <arg>-Amicronaut.processing.group=org.hyperledger.business-partner-agent</arg>
                         <arg>-Amicronaut.processing.module=business-partner-agent</arg>
                     </compilerArgs>
-                    <annotationProcessorPaths combine.self="override">>
+                    <annotationProcessorPaths combine.self="override">
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
