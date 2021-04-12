@@ -40,3 +40,8 @@ This folder enables easy setup of an entire isolated network for local developme
   ``` 
   followed by whatever startup commmand you are using (e.g. `docker-compose up`), this assumes you didn't tear down the resolver or von-network, if you did, just run `./start_infra.sh` first.
   
+
+## Building
+  None of the commands above will check if the source code has changed and re-build the ap. To rebuild the app with new source code, run `docker-compose build`, 
+
+  This may take up to 20 minutes, if you have a small change you want quickly to test, consider applying a hot fix to your existing image by connecting a [debugger](../../docs/DEBUGGING.md)
