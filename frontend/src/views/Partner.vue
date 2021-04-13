@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 
@@ -43,11 +43,36 @@
           v-bind:state="partner.state"
         ></PartnerStateIndicator>
         <v-layout align-center justify-end>
-          <v-icon small>mdi-fingerprint</v-icon
-          ><span
-            class="grey--text text--darken-2 font-weight-medium text-caption pl-1 pr-4"
-            >{{ partner.did }}</span
+          <v-btn icon @click="isUpdatingDid = !isUpdatingDid">
+            <v-icon small dark>mdi-fingerprint</v-icon>
+          </v-btn>
+          <span v-if="!isUpdatingDid"
+                class="grey--text text--darken-2 font-weight-medium text-caption pl-1 pr-4"
+          >{{ partner.did }}</span>
+          <v-text-field
+              class="mt-4 col-lg-6 col-md-6 col-sm-8"
+              v-else
+              label="DID"
+              append-icon="mdi-done"
+              v-model="did"
+              outlined
+              :rules="[rules.required]"
+              dense
           >
+            <template v-slot:append>
+              <v-btn class="pb-1" text @click="isUpdatingDid = false"
+              >Cancel</v-btn
+              >
+              <v-btn
+                  class="pb-1"
+                  text
+                  color="primary"
+                  :loading="isBusy"
+                  @click="submitDidUpdate()"
+              >Save</v-btn
+              >
+            </template>
+          </v-text-field>
           <v-btn icon @click="isUpdatingName = !isUpdatingName">
             <v-icon dark>mdi-pencil</v-icon>
           </v-btn>
@@ -203,11 +228,13 @@ export default {
     return {
       isReady: false,
       isBusy: false,
+      isUpdatingDid: false,
       isLoading: true,
       isUpdatingName: false,
       attentionPartnerStateDialog: false,
       goTo: {},
       alias: "",
+      did: "",
       partner: {},
       rawData: {},
       credentials: [],
@@ -325,6 +352,7 @@ export default {
             // Todo: Make this consistent. Probably in backend
             this.partner.name = getPartnerName(this.partner);
             this.alias = this.partner.name;
+            this.did = this.partner.did;
             this.isReady = true;
             this.isLoading = false;
             console.log(this.partner);
@@ -379,6 +407,7 @@ export default {
               // Todo: Make this consistent. Probably in backend
               this.partner.name = getPartnerName(this.partner);
               this.alias = this.partner.name;
+              this.did = this.partner.did;
               console.log(this.partner);
               this.isReady = true;
               this.isLoading = false;
@@ -408,6 +437,30 @@ export default {
           .catch((e) => {
             this.isBusy = false;
             this.isUpdatingName = false;
+            console.error(e);
+            EventBus.$emit("error", e);
+          });
+      } else {
+        this.isBusy = false;
+      }
+    },
+    submitDidUpdate() {
+      this.isBusy = true;
+      if (this.did && this.did !== "") {
+        this.$axios
+          .put(`${this.$apiBaseUrl}/partners/${this.id}/did`, {
+            did: this.did,
+          })
+          .then((result) => {
+            if (result.status === 200) {
+              this.isBusy = false;
+              this.partner.did = this.did;
+              this.isUpdatingDid = false;
+            }
+          })
+          .catch((e) => {
+            this.isBusy = false;
+            this.isUpdatingDid = false;
             console.error(e);
             EventBus.$emit("error", e);
           });
