@@ -23,6 +23,8 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.schema.SchemaSendRequest;
+import org.hyperledger.aries.api.schema.SchemaSendResponse;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.SchemaConfig;
@@ -32,6 +34,7 @@ import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
 
 import io.micronaut.core.annotation.Nullable;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -67,6 +70,33 @@ public class SchemaService {
         }
 
         return schema;
+    }
+
+    public SchemaAPI createSchema(@NonNull String schemaName, @NonNull String schemaVersion,
+            @NonNull List<String> attributes, @NonNull String schemaLabel, String defaultAttributeName) {
+        SchemaAPI result = null;
+        // ensure no leading or trailing spaces on attribute names... bad things happen
+        // when crypto signing.
+        attributes.replaceAll(s -> AriesStringUtil.schemaNameContent(s));
+        try {
+            SchemaSendRequest request = SchemaSendRequest.builder()
+                    .schemaName(AriesStringUtil.schemaNameContent(schemaName))
+                    .schemaVersion(schemaVersion)
+                    .attributes(attributes)
+                    .build();
+            Optional<SchemaSendResponse> response = ac.schemas(request);
+            if (response.isPresent()) {
+                // save it to the db...
+                SchemaSendResponse ssr = response.get();
+                result = this.addSchema(ssr.getSchemaId(), schemaLabel, defaultAttributeName, false);
+            } else {
+                log.error("Schema not created.");
+            }
+
+        } catch (IOException e) {
+            log.error("aca-py not reachable", e);
+        }
+        return result;
     }
 
     @Nullable
@@ -186,4 +216,5 @@ public class SchemaService {
             }
         }
     }
+
 }

@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
@@ -113,7 +113,7 @@ export default {
       console.log(this.schema);
 
       this.$axios
-        .post(`${this.$apiBaseUrl}/admin/schema`, this.schema)
+        .post(`${this.$apiBaseUrl}/admin/schema/import`, this.schema)
         .then((result) => {
           console.log(result);
           this.isBusyAddSchema = false;

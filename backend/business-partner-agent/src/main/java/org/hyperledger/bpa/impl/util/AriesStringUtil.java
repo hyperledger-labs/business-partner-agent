@@ -59,6 +59,30 @@ public class AriesStringUtil {
         return parts[4];
     }
 
+    /**
+     * Transform value to an acceptable value for schema name or attribute name.
+     * Cannot whitespace. Leading and trailing removed, other replaced with
+     * replaceChar.
+     *
+     * @param value String value to use as a schema name or attribute name
+     * @return String with no whitespace
+     */
+    public static String schemaNameContent(@NonNull String value, @NonNull Character replaceChar) {
+        return value.trim().replaceAll("\\s+", String.valueOf(replaceChar));
+    }
+
+    /**
+     * Transform value to an acceptable value for schema name or attribute name.
+     * Cannot whitespace. Leading and trailing removed, other replaced with
+     * underscore.
+     *
+     * @param value String value to use as a schema name or attribute name
+     * @return String with no whitespace
+     */
+    public static String schemaNameContent(@NonNull String value) {
+        return schemaNameContent(value, '_');
+    }
+
     private static String[] credDefIdSplit(String credDefId) {
         final String[] parts = credDefId.split(":");
         if (parts.length != 5) {

@@ -30,12 +30,10 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.DidVerkeyResponse;
+import org.hyperledger.aries.api.schema.SchemaSendRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
-import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
-import org.hyperledger.bpa.controller.api.admin.AddSchemaRequest;
-import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
-import org.hyperledger.bpa.controller.api.admin.UpdateTrustedIssuerRequest;
+import org.hyperledger.bpa.controller.api.admin.*;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -44,10 +42,7 @@ import org.mockito.Mockito;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @MicronautTest
@@ -131,6 +126,28 @@ public class AdminControllerTest {
         Assertions.assertThrows(HttpClientResponseException.class, () -> getSchema(deleteId));
     }
 
+    @Test
+    void testCreateSchema() throws Exception {
+        mockCreateSchema();
+        String schemaLabel = "create schema label";
+        String schemaName = "create-schema-name";
+
+        // create schema
+        HttpResponse<SchemaAPI> createdSchema = createSchema(schemaLabel, schemaName);
+        Assertions.assertEquals(HttpStatus.OK, createdSchema.getStatus());
+        Assertions.assertTrue(createdSchema.getBody().isPresent());
+
+        // check created schema
+        SchemaAPI schema = getSchema(createdSchema.getBody().get().getId());
+        Assertions.assertEquals(schemaLabel, schema.getLabel());
+
+        // delete schema
+        UUID deleteId = createdSchema.getBody().get().getId();
+        client.toBlocking().exchange(HttpRequest.DELETE("/" + deleteId));
+        // check if the schema was deleted
+        Assertions.assertThrows(HttpClientResponseException.class, () -> getSchema(deleteId));
+    }
+
     private SchemaAPI getSchema(@NonNull UUID id) {
         return client.toBlocking()
                 .retrieve(HttpRequest.GET("/" + id), SchemaAPI.class);
@@ -138,7 +155,7 @@ public class AdminControllerTest {
 
     private HttpResponse<SchemaAPI> addSchemaWithRestriction(@NonNull String schemaId) {
         return client.toBlocking()
-                .exchange(HttpRequest.POST("",
+                .exchange(HttpRequest.POST("/import",
                         AddSchemaRequest.builder()
                                 .schemaId(schemaId)
                                 .defaultAttributeName("name")
@@ -148,6 +165,19 @@ public class AdminControllerTest {
                                         .issuerDid("issuer1")
                                         .label("Demo Issuer")
                                         .build()))
+                                .build()),
+                        SchemaAPI.class);
+    }
+
+    private HttpResponse<SchemaAPI> createSchema(@NonNull String schemaLabel, @NonNull String schemaName) {
+        return client.toBlocking()
+                .exchange(HttpRequest.POST("",
+                        CreateSchemaRequest.builder()
+                                .schemaLabel(schemaLabel)
+                                .schemaName(schemaName)
+                                .schemaVersion("0.0")
+                                .attributes(List.of("fieldA","fieldB"))
+                                .defaultAttributeName("fieldA")
                                 .build()),
                         SchemaAPI.class);
     }
@@ -163,5 +193,24 @@ public class AdminControllerTest {
 
         Mockito.when(ac.ledgerDidVerkey(Mockito.anyString()))
                 .thenReturn(Optional.of(new DidVerkeyResponse("verkey")));
+    }
+
+    private void mockCreateSchema() throws IOException {
+        SchemaSendResponse.Schema s  = SchemaSendResponse.Schema
+                .builder()
+                .id("schema2")
+                .seqNo(1)
+                .attrNames(List.of("fieldA","fieldB"))
+                .name("fieldA")
+                .build();
+
+        SchemaSendResponse r = SchemaSendResponse
+                .builder()
+                .schemaId("schema2")
+                .schema(s)
+                .build();
+
+        Mockito.when(ac.schemas(Mockito.any(SchemaSendRequest.class))).thenReturn(Optional.of(r));
+        Mockito.when(ac.schemasGetById(Mockito.anyString())).thenReturn(Optional.of(s));
     }
 }

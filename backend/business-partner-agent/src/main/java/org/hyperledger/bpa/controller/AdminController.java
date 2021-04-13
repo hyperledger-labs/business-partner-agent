@@ -95,10 +95,22 @@ public class AdminController {
      * @param req {@link AddSchemaRequest}
      * @return {@link HttpResponse}
      */
-    @Post("/schema")
+    @Post("/schema/import")
     public HttpResponse<SchemaAPI> addSchema(@Body AddSchemaRequest req) {
         return HttpResponse.ok(schemaService.addSchema(req.getSchemaId(), req.getLabel(),
                 req.getDefaultAttributeName(), req.getTrustedIssuer()));
+    }
+
+    /**
+     * Aries: Create a schema configuration
+     *
+     * @param req {@link CreateSchemaRequest}
+     * @return {@link HttpResponse}
+     */
+    @Post("/schema")
+    public HttpResponse<SchemaAPI> createSchema(@Body CreateSchemaRequest req) {
+        return HttpResponse.ok(schemaService.createSchema(req.getSchemaName(), req.getSchemaVersion(),
+                req.getAttributes(), req.getSchemaLabel(), req.getDefaultAttributeName()));
     }
 
     /**
@@ -213,7 +225,7 @@ public class AdminController {
      * Trigger the backend to write configured endpoints to the ledger. TAA digest
      * has to be passed to explicitly confirm prior TTA acceptance by the user for
      * this ledger interaction / session.
-     * 
+     *
      * @param tAADigest {@link TAADigestRequest}
      * @return {@link HttpResponse}
      */
@@ -239,7 +251,7 @@ public class AdminController {
 
     /**
      * Get TAA record (digest, text, version)
-     * 
+     *
      * @return {@link TAARecord}
      */
     @Get("/taa/get")
