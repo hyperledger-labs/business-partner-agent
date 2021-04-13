@@ -80,9 +80,9 @@
             <artifactId>micronaut-jdbc-hikari</artifactId>
         </dependency>
         <dependency>
-    		<groupId>io.micronaut.kubernetes</groupId>
-    		<artifactId>micronaut-kubernetes-discovery-client</artifactId>
-		</dependency>
+            <groupId>io.micronaut.kubernetes</groupId>
+            <artifactId>micronaut-kubernetes-discovery-client</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
@@ -95,6 +95,7 @@
         </dependency>
         <!-- Micronaut license overwrites -->
         <!-- Drop in for javax.annotation-api -->
+        <!-- TODO delete once micronaut has removed javax annotations -->
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>annotations-api</artifactId>
@@ -119,7 +120,7 @@
         <dependency>
             <groupId>org.hyperledger</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.6.1-SNAPSHOT</version>
+            <version>0.13.0</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>
@@ -136,7 +137,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.11</version>
+            <version>3.12.0</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
@@ -223,7 +224,7 @@
                         <arg>-Amicronaut.processing.group=org.hyperledger.business-partner-agent</arg>
                         <arg>-Amicronaut.processing.module=business-partner-agent</arg>
                     </compilerArgs>
-                    <annotationProcessorPaths combine.self="override">>
+                    <annotationProcessorPaths combine.self="override">
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
@@ -354,7 +355,7 @@
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
                         <artifactId>frontend-maven-plugin</artifactId>
-                        <version>1.11.2</version>
+                        <version>1.11.3</version>
                         <configuration>
                             <workingDirectory>../../frontend</workingDirectory>
                         </configuration>
@@ -367,8 +368,8 @@
                                 </goals>
                                 <configuration>
                                     <!-- See https://nodejs.org/en/download/ -->
-                                    <nodeVersion>v14.15.5</nodeVersion>
-                                    <npmVersion>6.14.11</npmVersion>
+                                    <nodeVersion>v14.16.1</nodeVersion>
+                                    <npmVersion>6.14.12</npmVersion>
                                 </configuration>
                             </execution>
                             <execution>

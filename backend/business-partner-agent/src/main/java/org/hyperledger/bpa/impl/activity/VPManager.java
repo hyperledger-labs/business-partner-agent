@@ -24,7 +24,7 @@ import io.micronaut.scheduling.annotation.Async;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.Setter;
-import org.hyperledger.aries.api.credential.Credential;
+import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential.VerifiableIndyCredentialBuilder;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;

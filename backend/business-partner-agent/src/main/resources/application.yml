@@ -6,7 +6,7 @@ micronaut:
   server:
     port: 8080
     cors:
-      enabled: true
+      enabled: true # potential security risk
     idle-timeout: 30m
   security:
     authentication: session
@@ -58,6 +58,14 @@ micronaut:
       type: scheduled
       core-pool-size: 5
 
+endpoints:
+  all:
+    enabled: false
+  health:
+    enabled: true
+    sensitive: false
+    details-visible: never
+
 datasources:
   '*':
     url: ${bpa.pg.url}
@@ -84,6 +92,8 @@ jackson:
     acceptEmptyArrayAsNullObject: true
   json-view:
     enabled: true
+  mapper:
+    acceptCaseInsensitiveEnums: true
 
 bpa:
   docker:

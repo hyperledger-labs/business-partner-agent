@@ -18,7 +18,8 @@
 package org.hyperledger.bpa.impl.aries;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.webhook.EventParser;
 import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.model.Partner;
@@ -77,7 +78,7 @@ class AriesEventHandlerTest extends BaseTest {
         assertTrue(dbProof.isPresent());
         assertEquals(Boolean.TRUE, dbProof.get().getValid());
         assertNotNull(dbProof.get().getProof());
-        assertEquals("verified", dbProof.get().getState());
+        assertEquals(PresentationExchangeState.VERIFIED, dbProof.get().getState());
         assertNotNull(dbProof.get().getProof());
     }
 
@@ -114,7 +115,7 @@ class AriesEventHandlerTest extends BaseTest {
         Optional<PartnerProof> dbProof = pRepo.findByPresentationExchangeId(exPresSent.getPresentationExchangeId());
         assertTrue(dbProof.isPresent());
         assertEquals(Boolean.FALSE, dbProof.get().getValid());
-        assertEquals("presentation_acked", dbProof.get().getState());
+        assertEquals(PresentationExchangeState.PRESENTATION_ACKED, dbProof.get().getState());
         assertNotNull(dbProof.get().getProof());
     }
 

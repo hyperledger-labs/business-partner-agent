@@ -71,7 +71,7 @@ public abstract class RunWithAries extends BaseTest {
         final String ariesTestUrl = "http://"
                 + endp.getHost() + ":" + ariesContainer.getMappedPort(ARIES_ADMIN_PORT);
         log.debug("Aries test URL: {}", ariesTestUrl);
-        ac = new AriesClient(ariesTestUrl);
+        ac = AriesClient.builder().url(ariesTestUrl).build();
     }
 
     protected void runWithProxyIfConfigured(GenericContainer<?> container) {

@@ -32,6 +32,15 @@
         <developerConnection>scm:git:git@github.com:hyperledger-labs/business-partner-agent.git</developerConnection>
     </scm>
 
+    <developers>
+        <developer>
+            <id>github</id>
+            <name>github contributors</name>
+            <organization>github</organization>
+            <organizationUrl>https://github.com/hyperledger-labs/business-partner-agent/graphs/contributors</organizationUrl>
+        </developer>
+    </developers>
+
     <properties>
         <!-- Settings -->
         <exec.mainClass />
@@ -43,15 +52,15 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <skip.docker.build>true</skip.docker.build>
         <!-- Dependency Versions -->
-        <log4j2.version>2.14.0</log4j2.version>
-        <lombok.version>1.18.18</lombok.version>
-        <micronaut.version>2.4.0</micronaut.version>
+        <log4j2.version>2.14.1</log4j2.version>
+        <lombok.version>1.18.20</lombok.version>
+        <micronaut.version>2.4.2</micronaut.version>
         <micronaut.data.version>2.3.1</micronaut.data.version>
         <micronaut.openapi.version>2.3.1</micronaut.openapi.version>
-        <micronaut.security.version>2.3.1</micronaut.security.version>
-        <mockito.version>3.8.0</mockito.version>
-        <pmd.version>6.32.0</pmd.version>
-        <spotbugs.version>4.2.1</spotbugs.version>
+        <micronaut.security.version>2.4.0</micronaut.security.version>
+        <mockito.version>3.9.0</mockito.version>
+        <pmd.version>6.33.0</pmd.version>
+        <spotbugs.version>4.2.2</spotbugs.version>
         <testcontainers.version>1.15.2</testcontainers.version>
         <!-- Plugin Versions -->
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
@@ -64,9 +73,9 @@
     <repositories>
         <repository>
             <id>bds-snapshots</id>
-            <url>https://nexus.bosch-digital.com/repository/bds-snapshots</url>
+            <url>https://nexus.bosch-digital.com/repository/bds-all</url>
             <releases>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>true</enabled>
@@ -89,7 +98,6 @@
                 <enabled>true</enabled>
             </snapshots>
         </pluginRepository>
-
     </pluginRepositories>
 
     <modules>
@@ -116,7 +124,7 @@
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
-                <version>7.6.0</version>
+                <version>7.7.3</version>
             </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
@@ -230,7 +238,7 @@
             <plugin>
                 <groupId>net.revelc.code.formatter</groupId>
                 <artifactId>formatter-maven-plugin</artifactId>
-                <version>2.14.0</version>
+                <version>2.15.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -384,7 +392,7 @@
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.34.1</version>
+                    <version>0.35.0</version>
                     <configuration>
                         <images>
                             <image>

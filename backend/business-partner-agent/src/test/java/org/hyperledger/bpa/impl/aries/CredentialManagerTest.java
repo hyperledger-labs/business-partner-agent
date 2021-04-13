@@ -18,8 +18,9 @@
 package org.hyperledger.bpa.impl.aries;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import org.hyperledger.aries.api.credential.Credential;
-import org.hyperledger.aries.api.credential.CredentialExchange;
+import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.config.GsonConfig;
@@ -62,10 +63,10 @@ class CredentialManagerTest extends BaseTest {
                 .type(CredentialType.SCHEMA_BASED)
                 .isPublic(Boolean.FALSE)
                 .connectionId("dummy")
-                .state("dummy")
+                .state(CredentialExchangeState.CREDENTIAL_ACKED)
                 .threadId("cab34089-446c-411d-948e-9ed39ba6777f").build());
         final String ex = loader.load("files/credentialExchange.json");
-        final CredentialExchange credEx = GsonConfig.defaultConfig().fromJson(ex, CredentialExchange.class);
+        final V1CredentialExchange credEx = GsonConfig.defaultConfig().fromJson(ex, V1CredentialExchange.class);
         mgmt.handleCredentialAcked(credEx);
         assertEquals(1, credRepo.count());
     }

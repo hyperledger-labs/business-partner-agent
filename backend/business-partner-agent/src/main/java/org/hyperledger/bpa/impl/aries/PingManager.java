@@ -69,11 +69,11 @@ public class PingManager {
         }
     }
 
-    @Scheduled(fixedRate = "1m", initialDelay = "1m")
+    @Scheduled(fixedRate = "1m", initialDelay = "90s") // init delay needs to be > than aca-py connection timeout
     public void checkConnections() {
         try {
             List<String> activeConnections = aries.connectionIds(
-                    ConnectionFilter.builder().state(ConnectionState.active).build());
+                    ConnectionFilter.builder().state(ConnectionState.ACTIVE).build());
             if (CollectionUtils.isNotEmpty(activeConnections)) {
                 if (!firstRun) {
                     setNewState();
@@ -90,12 +90,12 @@ public class PingManager {
 
     private void setNewState() {
         sent.forEach((k, v) -> {
-            String state;
+            ConnectionState state;
             if (received.containsKey(k)) {
-                state = ConnectionState.active.toString();
+                state = ConnectionState.ACTIVE;
                 repo.updateStateAndLastSeenByConnectionId(v, state, Instant.now());
             } else {
-                state = ConnectionState.inactive.toString();
+                state = ConnectionState.INACTIVE;
                 repo.updateStateByConnectionId(v, state);
             }
         });
