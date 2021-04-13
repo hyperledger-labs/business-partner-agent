@@ -31,19 +31,32 @@ spec:
           imagePullPolicy: {{ .Values.acapy.image.pullPolicy }}
           args: [
            "-c",
-           "sleep 15; \
-           aca-py start \  
-           --arg-file acapy-static-args.yml \   
+           "curl -d '{\"seed\":\"$(WALLET_SEED)\", \"role\":\"TRUST_ANCHOR\", \"alias\":\"{{ include "bpa.fullname" . }}\"}' -X POST {{ .Values.bpa.ledgerURL }}/register; \
+           sleep 15; \
+           aca-py provision \
+           --endpoint http://{{ .Release.Name }}-{{ (index .Values.acapy.ingress.hosts 0).host }} \
+           --genesis-url '{{ .Values.bpa.ledgerURL }}/genesis' \
+           --wallet-type 'indy' \
+           --wallet-name 'mywallet' \
+           --wallet-key '123' \
+           --wallet-storage-type 'postgres_storage' \
+           --wallet-storage-config '{\"url\":\"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.service.port }}\",\"max_connections\":5}' \
+           --wallet-storage-creds '{\"account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"password\":\"$(POSTGRES_PASSWORD)\",\"admin_account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"admin_password\":\"$(POSTGRES_PASSWORD)\"}' \ 
+           --seed \"$(WALLET_SEED)\" \
+           --log-level 'error'; \
+           sleep 5; \
+           aca-py start \     
+           --plugin aries_cloudagent.messaging.jsonld \
            --inbound-transport http '0.0.0.0' {{ .Values.acapy.service.httpPort }} \ 
            --webhook-url http://{{ include "bpa.fullname" . }}:{{ .Values.bpa.service.port }}/log \
-           --genesis-url '{{ .Values.bpa.config.ledger.browser }}/genesis' \
-           --endpoint https://{{ (index .Values.acapy.ingress.hosts 0).host }} \
+           --endpoint http://{{ .Release.Name }}-{{ (index .Values.acapy.ingress.hosts 0).host }} \
+           --genesis-url '{{ .Values.bpa.ledgerURL }}/genesis' \
            --wallet-storage-type 'postgres_storage' \
            --wallet-name 'mywallet' \
            --wallet-key '123' \
            --wallet-storage-config '{\"url\":\"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.service.port }}\",\"max_connections\":5}' \
            --wallet-storage-creds '{\"account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"password\":\"$(POSTGRES_PASSWORD)\",\"admin_account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"admin_password\":\"$(POSTGRES_PASSWORD)\"}' \ 
-           --seed '{{ .Values.acapy.agentSeed }}' \
+           --seed \"$(WALLET_SEED)\" \
            --admin '0.0.0.0' {{ .Values.acapy.service.adminPort }} \
            --admin-insecure-mode \
            --label {{ .Values.acapy.agentName }} \
@@ -66,7 +79,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ template "global.postgresql.fullname" . }}
-                  key: postgresql-password  
+                  key: postgresql-password         
+            - name: WALLET_SEED
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "acapy.fullname" . }}
+                  key: seed 
           livenessProbe:
             httpGet:
               path: /status/live 
