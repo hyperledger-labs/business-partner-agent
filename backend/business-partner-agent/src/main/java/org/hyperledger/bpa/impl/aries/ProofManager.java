@@ -25,8 +25,8 @@ import io.micronaut.core.util.StringUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.credential.Credential;
-import org.hyperledger.aries.api.proof.*;
+import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.present_proof.*;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.bpa.api.aries.AriesProof;
 import org.hyperledger.bpa.api.exception.NetworkException;
@@ -141,7 +141,7 @@ public class ProofManager {
         partnerRepo.findByConnectionId(proof.getConnectionId())
                 .ifPresent(p -> pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId())
                         .ifPresentOrElse(pp -> pProofRepo.updateState(pp.getId(), proof.getState()), () -> {
-                            if ("proposal_received".equals(proof.getState())) {
+                            if (PresentationExchangeState.PROPOSAL_RECEIVED.equals(proof.getState())) {
                                 final PartnerProof pp = PartnerProof
                                         .builder()
                                         .partnerId(p.getId())

@@ -28,6 +28,9 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import io.micronaut.core.annotation.Nullable;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.time.Instant;
@@ -61,7 +64,7 @@ public class PartnerProof {
     private Boolean valid;
 
     @Nullable
-    private String state;
+    private PresentationExchangeState state;
 
     private String presentationExchangeId;
 
@@ -75,7 +78,7 @@ public class PartnerProof {
     private String credentialDefinitionId;
 
     @Nullable
-    private String role;
+    private PresentationExchangeRole role;
 
     @Nullable
     @TypeDef(type = DataType.JSON)

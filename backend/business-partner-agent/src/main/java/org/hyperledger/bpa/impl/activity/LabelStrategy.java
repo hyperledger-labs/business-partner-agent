@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.aries.api.credential.Credential;
+import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;

@@ -139,7 +139,7 @@ public class DidDocAPI {
         String url = null;
         Optional<Service> service = getService()
                 .stream()
-                .filter(s -> EndpointType.Profile.getLedgerName().equals(s.getType()))
+                .filter(s -> EndpointType.PROFILE.getLedgerName().equals(s.getType()))
                 .findFirst();
         if (service.isPresent()) {
             url = service.get().getServiceEndpoint();
@@ -149,6 +149,6 @@ public class DidDocAPI {
 
     public boolean hasAriesEndpoint() {
         return getService().stream()
-                .anyMatch(s -> EndpointType.Endpoint.getLedgerName().equals(s.getType()));
+                .anyMatch(s -> EndpointType.PROFILE.getLedgerName().equals(s.getType()));
     }
 }

@@ -18,7 +18,8 @@
 package org.hyperledger.bpa.repository;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import org.hyperledger.aries.api.credential.CredentialExchange;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.api.CredentialType;
@@ -48,14 +49,14 @@ class MyCredentialRepositoryTest extends BaseTest {
         String credDefId = "VoSfM3eGaPxduty34ySygw:3:CL:571:sparta_bank";
 
         final String json = loader.load("files/credentialExchange.json");
-        final CredentialExchange ex = GsonConfig.defaultConfig().fromJson(json, CredentialExchange.class);
+        final V1CredentialExchange ex = GsonConfig.defaultConfig().fromJson(json, V1CredentialExchange.class);
 
         MyCredential cred = MyCredential
                 .builder()
                 .type(CredentialType.SCHEMA_BASED)
                 .isPublic(Boolean.TRUE)
                 .connectionId("1")
-                .state("active")
+                .state(CredentialExchangeState.CREDENTIAL_ACKED)
                 .threadId("1")
                 .credential(conv.toMap(ex.getCredential()))
                 .build();
@@ -95,10 +96,10 @@ class MyCredentialRepositoryTest extends BaseTest {
     void testCountByState() {
         String connectionId = UUID.randomUUID().toString();
         repo.save(createDummyCredential(connectionId));
-        repo.save(createDummyCredential(connectionId).setState("credential_verified"));
+        repo.save(createDummyCredential(connectionId).setState(CredentialExchangeState.CREDENTIAL_ISSUED));
         repo.save(createDummyCredential("other"));
 
-        assertEquals(2, repo.countByStateEquals("credential_acked"));
+        assertEquals(2, repo.countByStateEquals(CredentialExchangeState.CREDENTIAL_ACKED));
     }
 
     private static MyCredential createDummyCredential(String connectionId) {
@@ -106,7 +107,7 @@ class MyCredentialRepositoryTest extends BaseTest {
                 .builder()
                 .connectionId(connectionId)
                 .threadId(UUID.randomUUID().toString())
-                .state("credential_acked")
+                .state(CredentialExchangeState.CREDENTIAL_ACKED)
                 .isPublic(Boolean.FALSE)
                 .build();
     }

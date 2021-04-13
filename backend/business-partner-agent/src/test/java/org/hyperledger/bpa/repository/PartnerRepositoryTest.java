@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
@@ -75,21 +76,21 @@ class PartnerRepositoryTest {
         Optional<Partner> reload = repo.findByConnectionId(connectionId);
         assertTrue(reload.isPresent());
 
-        repo.updateStateByConnectionId(connectionId, "custom");
+        repo.updateStateByConnectionId(connectionId, ConnectionState.ACTIVE);
 
         Optional<Partner> mod = repo.findByConnectionId(connectionId);
 
         assertTrue(mod.isPresent());
         assertEquals(0, reload.get().getUpdatedAt().compareTo(mod.get().getUpdatedAt()));
-        assertEquals("custom", mod.get().getState());
+        assertEquals(ConnectionState.ACTIVE, mod.get().getState());
 
-        repo.updateStateByConnectionId(connectionId, "custom2");
+        repo.updateStateByConnectionId(connectionId, ConnectionState.ABANDONED);
 
         mod = repo.findByConnectionId(connectionId);
 
         assertTrue(mod.isPresent());
         assertEquals(0, reload.get().getUpdatedAt().compareTo(mod.get().getUpdatedAt()));
-        assertEquals("custom2", mod.get().getState());
+        assertEquals(ConnectionState.ABANDONED, mod.get().getState());
     }
 
     @Test
@@ -100,7 +101,7 @@ class PartnerRepositoryTest {
                 .ariesSupport(Boolean.FALSE)
                 .did("did:fit:123")
                 .connectionId(p1CId)
-                .state("state-1")
+                .state(ConnectionState.ACTIVE)
                 .build());
 
         final String p2Cid = "id-2";
@@ -109,7 +110,7 @@ class PartnerRepositoryTest {
                 .ariesSupport(Boolean.FALSE)
                 .did("did:bit:321")
                 .connectionId(p2Cid)
-                .state("state-2")
+                .state(ConnectionState.INIT)
                 .build());
 
         final String p3Cid = "id-3";
@@ -120,15 +121,15 @@ class PartnerRepositoryTest {
                 .connectionId(p3Cid)
                 .build());
 
-        repo.updateStateByConnectionId(p1CId, "custom");
+        repo.updateStateByConnectionId(p1CId, ConnectionState.ERROR);
 
         Optional<Partner> p1 = repo.findByConnectionId(p1CId);
         assertTrue(p1.isPresent());
-        assertEquals("custom", p1.get().getState());
+        assertEquals(ConnectionState.ERROR, p1.get().getState());
 
         Optional<Partner> p2 = repo.findByConnectionId(p2Cid);
         assertTrue(p2.isPresent());
-        assertEquals("state-2", p2.get().getState());
+        assertEquals(ConnectionState.INIT, p2.get().getState());
 
         Optional<Partner> p3 = repo.findByConnectionId(p3Cid);
         assertTrue(p3.isPresent());
@@ -154,11 +155,11 @@ class PartnerRepositoryTest {
                 .build());
 
         Instant now = Instant.now().truncatedTo(ChronoUnit.MILLIS);
-        repo.updateStateAndLastSeenByConnectionId(p1CId, "state-1", now);
+        repo.updateStateAndLastSeenByConnectionId(p1CId, ConnectionState.START, now);
 
         Optional<Partner> p1 = repo.findByConnectionId(p1CId);
         assertTrue(p1.isPresent());
-        assertEquals("state-1", p1.get().getState());
+        assertEquals(ConnectionState.START, p1.get().getState());
         assertEquals(now, p1.get().getLastSeen());
 
         Optional<Partner> p2 = repo.findByConnectionId(p2Cid);

@@ -69,7 +69,7 @@ class PingManagerTest {
 
         ping.checkConnections();
 
-        verify(repo, never()).updateStateByConnectionId(anyString(), anyString());
+        verify(repo, never()).updateStateByConnectionId(anyString(), any(ConnectionState.class));
         verify(repo, never()).updateStateAndLastSeenByConnectionId(any(), any(), any());
 
         assertEquals(2, ping.getSentSize());
@@ -77,8 +77,8 @@ class PingManagerTest {
 
         ping.checkConnections();
 
-        verify(repo, times(1)).updateStateByConnectionId("1", ConnectionState.inactive.toString());
-        verify(repo, times(1)).updateStateByConnectionId("2", ConnectionState.inactive.toString());
+        verify(repo, times(1)).updateStateByConnectionId("1", ConnectionState.INACTIVE);
+        verify(repo, times(1)).updateStateByConnectionId("2", ConnectionState.INACTIVE);
         verify(repo, never()).updateStateAndLastSeenByConnectionId(any(), any(), any());
 
         assertEquals(2, ping.getSentSize());
@@ -94,11 +94,11 @@ class PingManagerTest {
 
         verify(repo, times(1)).updateStateAndLastSeenByConnectionId(
                 argThat(a -> a.equals("1")),
-                argThat(a -> a.equals(ConnectionState.active.toString())),
+                argThat(a -> a.equals(ConnectionState.ACTIVE)),
                 argThat(a -> a.isBefore(Instant.now())));
         verify(repo, times(1)).updateStateAndLastSeenByConnectionId(
                 argThat(a -> a.equals("2")),
-                argThat(a -> a.equals(ConnectionState.active.toString())),
+                argThat(a -> a.equals(ConnectionState.ACTIVE)),
                 argThat(a -> a.isBefore(Instant.now())));
 
         assertEquals(2, ping.getSentSize());
@@ -109,7 +109,7 @@ class PingManagerTest {
         when(aries.connectionIds(any(ConnectionFilter.class))).thenReturn(List.of("1", "2"));
 
         ping.checkConnections();
-        verify(repo, never()).updateStateByConnectionId(anyString(), anyString());
+        verify(repo, never()).updateStateByConnectionId(anyString(), any(ConnectionState.class));
 
         assertEquals(0, ping.getSentSize());
     }

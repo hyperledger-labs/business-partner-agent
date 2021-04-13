@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import org.hyperledger.aries.api.credential.Credential;
+import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;

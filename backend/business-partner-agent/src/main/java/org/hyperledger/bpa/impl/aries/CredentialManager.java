@@ -19,17 +19,18 @@ package org.hyperledger.bpa.impl.aries;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.credential.Credential;
-import org.hyperledger.aries.api.credential.CredentialAttributes;
-import org.hyperledger.aries.api.credential.CredentialExchange;
-import org.hyperledger.aries.api.credential.CredentialProposalRequest;
-import org.hyperledger.aries.api.credential.CredentialProposalRequest.CredentialPreview;
+import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
+import org.hyperledger.aries.api.credentials.CredentialPreview;
 import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialProposalRequest;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.api.CredentialType;
@@ -52,7 +53,6 @@ import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.MyDocumentRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
-import io.micronaut.core.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -118,7 +118,7 @@ public class CredentialManager {
                             .getSchemaFor(dbDoc.get().getSchemaId());
                     if (s.isPresent()) {
                         ac.issueCredentialSendProposal(
-                                CredentialProposalRequest
+                                V1CredentialProposalRequest
                                         .builder()
                                         .connectionId(dbPartner.get().getConnectionId())
                                         .schemaId(s.get().getSchemaId())
@@ -133,15 +133,15 @@ public class CredentialManager {
                     throw new NetworkException("No aries connection", e);
                 }
             } else {
-                throw new PartnerException("No document found for id: " + myDocId.toString());
+                throw new PartnerException("No document found for id: " + myDocId);
             }
         } else {
-            throw new PartnerException("No partner found for id: " + partnerId.toString());
+            throw new PartnerException("No partner found for id: " + partnerId);
         }
     }
 
     // all other state changes that are not store or acked
-    public void handleCredentialEvent(CredentialExchange credEx) {
+    public void handleCredentialEvent(V1CredentialExchange credEx) {
         credRepo.findByThreadId(credEx.getThreadId())
                 .ifPresentOrElse(cred -> credRepo.updateState(cred.getId(), credEx.getState()), () -> {
                     MyCredential dbCred = MyCredential
@@ -156,7 +156,7 @@ public class CredentialManager {
     }
 
     // credential, signed and stored in wallet
-    public void handleCredentialAcked(CredentialExchange credEx) {
+    public void handleCredentialAcked(V1CredentialExchange credEx) {
         credRepo.findByThreadId(credEx.getThreadId())
                 .ifPresentOrElse(cred -> {
                     String label = labelStrategy.apply(credEx.getCredential());

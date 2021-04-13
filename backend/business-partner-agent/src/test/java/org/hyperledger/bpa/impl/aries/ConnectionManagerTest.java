@@ -20,6 +20,7 @@ package org.hyperledger.bpa.impl.aries;
 import com.google.gson.Gson;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
+import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.model.Partner;
@@ -49,7 +50,7 @@ class ConnectionManagerTest extends BaseTest {
                 .ariesSupport(Boolean.TRUE)
                 .label("33eb7945-a8c8-4cff-8046-727457dc4272")
                 .alias("Alice")
-                .state("new")
+                .state(ConnectionState.INIT)
                 .did("dummy")
                 .build());
         final ConnectionRecord invite = gson.fromJson(createInvite, ConnectionRecord.class);
@@ -63,7 +64,7 @@ class ConnectionManagerTest extends BaseTest {
 
         p = repo.findByConnectionId(active.getConnectionId());
         assertTrue(p.isPresent());
-        assertEquals("active", p.get().getState());
+        assertEquals(ConnectionState.ACTIVE, p.get().getState());
     }
 
     @Test
@@ -79,7 +80,7 @@ class ConnectionManagerTest extends BaseTest {
 
         p = repo.findByConnectionId(active.getConnectionId());
         assertTrue(p.isPresent());
-        assertEquals("active", p.get().getState());
+        assertEquals(ConnectionState.ACTIVE, p.get().getState());
     }
 
     private final String createInvite = "{\n" +
