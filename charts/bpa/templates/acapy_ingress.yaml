@@ -28,7 +28,7 @@ spec:
   {{- end }}
   rules:
     {{- range .Values.acapy.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ printf "%s-%s" $.Release.Name .host | quote }}
       http:
         paths:
           {{- range .paths }}
