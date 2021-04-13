@@ -65,8 +65,8 @@ public class EndpointService {
             @Value(value = "${bpa.scheme}") String scheme,
             @Value(value = "${bpa.host}") String host) {
         endpoints = new HashMap<>();
-        endpoints.put(scheme + "://" + host + "/profile.jsonld", EndpointType.Profile);
-        endpoints.put(acapyEndpoint, EndpointType.Endpoint);
+        endpoints.put(scheme + "://" + host + "/profile.jsonld", EndpointType.PROFILE);
+        endpoints.put(acapyEndpoint, EndpointType.ENDPOINT);
     }
 
     /**

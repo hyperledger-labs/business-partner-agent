@@ -62,9 +62,8 @@ public class SchemaService {
             throw new WrongApiUsageException("Schema config could not be added");
         }
         if (CollectionUtils.isNotEmpty(restrictions)) {
-            restrictions.forEach(r -> {
-                restrictionsManager.addRestriction(schema.getId(), r.getIssuerDid(), r.getLabel());
-            });
+            restrictions
+                    .forEach(r -> restrictionsManager.addRestriction(schema.getId(), r.getIssuerDid(), r.getLabel()));
         }
 
         return schema;

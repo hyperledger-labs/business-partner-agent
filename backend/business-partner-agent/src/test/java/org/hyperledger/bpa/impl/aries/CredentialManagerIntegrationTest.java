@@ -18,7 +18,8 @@
 package org.hyperledger.bpa.impl.aries;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import org.hyperledger.aries.api.credential.CredentialExchange;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.RunWithAries;
 import org.hyperledger.bpa.api.CredentialType;
@@ -69,7 +70,7 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
     @Test
     void testDeleteCredential() throws Exception {
         // create credential
-        final CredentialExchange credEx = createNewCredential();
+        final V1CredentialExchange credEx = createNewCredential();
         mgmt.handleCredentialAcked(credEx);
         assertEquals(1, credRepo.count());
         assertTrue(vpMgmt.getVerifiablePresentation().isEmpty());
@@ -90,15 +91,15 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
         assertTrue(vpMgmt.getVerifiablePresentation().get().getVerifiableCredential().isEmpty());
     }
 
-    private CredentialExchange createNewCredential() {
+    private V1CredentialExchange createNewCredential() {
         credRepo.save(MyCredential
                 .builder()
                 .type(CredentialType.SCHEMA_BASED)
                 .isPublic(Boolean.FALSE)
                 .connectionId("dummy")
-                .state("dummy")
+                .state(CredentialExchangeState.CREDENTIAL_ISSUED)
                 .threadId("cab34089-446c-411d-948e-9ed39ba6777f").build());
         final String ex = loader.load("files/credentialExchange.json");
-        return GsonConfig.defaultConfig().fromJson(ex, CredentialExchange.class);
+        return GsonConfig.defaultConfig().fromJson(ex, V1CredentialExchange.class);
     }
 }

@@ -83,13 +83,13 @@ public class WebDidDocManager implements DidDocManager {
                 .service(List.of(
                         Service.builder()
                                 .serviceEndpoint(scheme + "://" + host + "/profile.jsonld")
-                                .id(myDid + "#" + EndpointType.Profile.getLedgerName())
-                                .type(EndpointType.Profile.getLedgerName())
+                                .id(myDid + "#" + EndpointType.PROFILE.getLedgerName())
+                                .type(EndpointType.PROFILE.getLedgerName())
                                 .build(),
                         Service.builder()
                                 .serviceEndpoint(acapyEndpoint)
-                                .id(myDid + "#" + EndpointType.Endpoint.getLedgerName())
-                                .type(EndpointType.Endpoint.getLedgerName())
+                                .id(myDid + "#" + EndpointType.ENDPOINT.getLedgerName())
+                                .type(EndpointType.ENDPOINT.getLedgerName())
                                 .build()))
                 .verificationMethod(mapper.convertValue(verificationMethods, JsonNode.class))
                 .publicKey(publicKey)

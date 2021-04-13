@@ -19,6 +19,8 @@ package org.hyperledger.bpa.api.aries;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.*;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.model.PartnerProof;
 
 import io.micronaut.core.annotation.Nullable;
@@ -40,18 +42,18 @@ public class AriesProof {
     private Long issuedAt;
 
     private String typeLabel;
-    private String state;
+    private PresentationExchangeState state;
 
     private String issuer;
     private String schemaId;
     private String credentialDefinitionId;
-    private String role;
+    private PresentationExchangeRole role;
     private JsonNode proofData;
 
     public static AriesProof from(@NonNull PartnerProof p, @Nullable JsonNode poofData) {
         final AriesProofBuilder b = AriesProof.builder();
         final Long created = p.getCreatedAt().toEpochMilli();
-        if (ProofRole.PROVER.getValue().equals(p.getRole())) {
+        if (PresentationExchangeRole.PROVER.equals(p.getRole())) {
             b.sentAt(created);
         } else {
             b.receivedAt(created);
@@ -66,16 +68,5 @@ public class AriesProof {
                 .proofData(poofData)
                 .role(p.getRole())
                 .build();
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public enum ProofRole {
-        /** Proofs that I received */
-        VERIFIER("verifier"),
-        /** Proofs that I have sent */
-        PROVER("prover");
-
-        private final String value;
     }
 }

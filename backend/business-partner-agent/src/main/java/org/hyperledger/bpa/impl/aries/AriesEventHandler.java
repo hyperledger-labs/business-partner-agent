@@ -19,9 +19,13 @@ package org.hyperledger.bpa.impl.aries;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
-import org.hyperledger.aries.api.credential.CredentialExchange;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.message.PingEvent;
-import org.hyperledger.aries.api.proof.PresentationExchangeRecord;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.webhook.EventHandler;
 
 import javax.inject.Inject;
@@ -68,8 +72,9 @@ public class AriesEventHandler extends EventHandler {
     public void handleProof(PresentationExchangeRecord proof) {
         log.debug("Present Proof Event: {}", proof);
         synchronized (proofMgmt) {
-            if (proof.isVerified() && "verifier".equals(proof.getRole())
-                    || "presentation_acked".equals(proof.getState()) && "prover".equals(proof.getRole())) {
+            if (proof.isVerified() && PresentationExchangeRole.VERIFIER.equals(proof.getRole())
+                    || PresentationExchangeState.PRESENTATION_ACKED.equals(proof.getState())
+                            && PresentationExchangeRole.PROVER.equals(proof.getRole())) {
                 proofMgmt.handleAckedOrVerifiedProofEvent(proof);
             } else {
                 proofMgmt.handleProofEvent(proof);
@@ -78,12 +83,12 @@ public class AriesEventHandler extends EventHandler {
     }
 
     @Override
-    public void handleCredential(CredentialExchange credential) {
+    public void handleCredential(V1CredentialExchange credential) {
         log.debug("Issue Credential Event: {}", credential);
         // holder events, because I could also be an issuer
-        if ("holder".equals(credential.getRole())) {
+        if (CredentialExchangeRole.HOLDER.equals(credential.getRole())) {
             synchronized (credMgmt) {
-                if ("credential_acked".equals(credential.getState())) {
+                if (CredentialExchangeState.CREDENTIAL_ACKED.equals(credential.getState())) {
                     credMgmt.handleCredentialAcked(credential);
                 } else {
                     credMgmt.handleCredentialEvent(credential);

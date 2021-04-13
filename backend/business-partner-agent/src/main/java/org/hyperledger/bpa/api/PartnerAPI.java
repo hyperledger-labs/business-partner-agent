@@ -25,6 +25,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 
@@ -43,7 +44,7 @@ public class PartnerAPI {
     private Boolean valid;
     private Boolean ariesSupport;
     private Boolean incoming;
-    private String state;
+    private ConnectionState state;
     private String alias;
     private String did;
     private List<PartnerCredential> credential;

@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.controller.api.stats.BPAStats;
 import org.hyperledger.bpa.impl.activity.Identity;
@@ -51,7 +52,7 @@ public class StatsService {
                 .profile(docRepo
                         .existsByTypeEqualsAndIsPublicTrue(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL))
                 .partners(partnerRepo.count())
-                .credentials(credRepo.countByStateEquals("credential_acked"))
+                .credentials(credRepo.countByStateEquals(CredentialExchangeState.CREDENTIAL_ACKED))
                 .build();
     }
 }

@@ -25,6 +25,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
 
 import io.micronaut.core.annotation.Nullable;
@@ -69,7 +70,7 @@ public class MyCredential {
     @Nullable
     private String connectionId;
 
-    private String state;
+    private CredentialExchangeState state;
 
     private String threadId;
 

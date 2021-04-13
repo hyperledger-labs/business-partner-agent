@@ -27,7 +27,7 @@ import io.micronaut.core.util.StringUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hyperledger.aries.api.proof.PresentProofRequest;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 
 import java.util.ArrayList;

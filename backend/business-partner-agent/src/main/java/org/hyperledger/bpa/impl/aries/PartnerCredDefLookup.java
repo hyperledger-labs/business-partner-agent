@@ -26,6 +26,7 @@ import org.hyperledger.bpa.client.LedgerExplorerClient;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
+import org.hyperledger.bpa.model.BPARestrictions;
 import org.hyperledger.bpa.repository.BPARestrictionsRepository;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
@@ -100,7 +101,7 @@ public class PartnerCredDefLookup {
         schemaRepo.findBySchemaId(schemaId).ifPresent(s -> {
             List<String> did = restrictionsRepo.findBySchema(s)
                     .stream()
-                    .map(c -> c.getIssuerDid())
+                    .map(BPARestrictions::getIssuerDid)
                     .collect(Collectors.toList());
             partnerRepo.findByDidIn(did).forEach(dbPartner -> result.add(conv.toAPIObject(dbPartner)));
         });
