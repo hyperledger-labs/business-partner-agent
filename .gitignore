@@ -83,3 +83,6 @@ package-lock.json
 charts/**/charts/
 my-values.yaml
 manifests/
+scripts/local-network/von-network/
+
+scripts/local-network/resolver/*.txn
