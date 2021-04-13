@@ -21,7 +21,7 @@ COPY --from=VUE /frontend/dist ./business-partner-agent/src/main/resources/publi
 RUN mvn dependency:go-offline || true
 
 # Build .jar
-RUN mvn clean install -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
+RUN mvn clean install -P backend-license -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
 
 # Runtime Container
 FROM amazoncorretto:15-alpine
