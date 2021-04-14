@@ -33,19 +33,9 @@ spec:
            "-c",
            "curl -d '{\"seed\":\"$(WALLET_SEED)\", \"role\":\"TRUST_ANCHOR\", \"alias\":\"{{ include "bpa.fullname" . }}\"}' -X POST {{ .Values.bpa.config.ledger.browser }}/register; \
            sleep 15; \
-           aca-py provision \
-           --endpoint http://{{ .Release.Name }}-{{ (index .Values.acapy.ingress.hosts 0).host }} \
-           --genesis-url '{{ .Values.bpa.config.ledger.browser }}/genesis' \
-           --wallet-type 'indy' \
-           --wallet-name 'mywallet' \
-           --wallet-key '123' \
-           --wallet-storage-type 'postgres_storage' \
-           --wallet-storage-config '{\"url\":\"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.service.port }}\",\"max_connections\":5}' \
-           --wallet-storage-creds '{\"account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"password\":\"$(POSTGRES_PASSWORD)\",\"admin_account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"admin_password\":\"$(POSTGRES_PASSWORD)\"}' \ 
-           --seed \"$(WALLET_SEED)\" \
-           --log-level 'error'; \
-           sleep 5; \
            aca-py start \     
+           --auto-provision \
+           --arg-file acapy-static-args.yml \   
            --plugin aries_cloudagent.messaging.jsonld \
            --inbound-transport http '0.0.0.0' {{ .Values.acapy.service.httpPort }} \ 
            --webhook-url http://{{ include "bpa.fullname" . }}:{{ .Values.bpa.service.port }}/log \
