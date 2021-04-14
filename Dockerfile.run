@@ -1,7 +1,12 @@
 # Dockerfile that only runs the backend (with or without frontend), mainly used within the build pipeline
 
 FROM adoptopenjdk/openjdk15:alpine
-COPY ./backend/business-partner-agent/target/business-partner-agent*SNAPSHOT.jar business-partner-agent.jar
+
+RUN adduser --disabled-password app
+USER app
+WORKDIR /home/app
 
 EXPOSE 8080
-CMD java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote -noverify ${JAVA_OPTS} -jar business-partner-agent.jar
+CMD java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote ${JAVA_OPTS} -jar business-partner-agent.jar
+
+COPY ./backend/business-partner-agent/target/business-partner-agent*SNAPSHOT.jar business-partner-agent.jar
