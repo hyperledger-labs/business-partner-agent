@@ -77,7 +77,7 @@ jobs:
       
       - name: Prepare docker tags license image
         uses: Surgo/docker-smart-tag-action@v1      
-        #if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }} 
+        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }} 
         id: preparetagslicense
         with:
           docker_image: hyperledger-labs/business-partner-agent-license
@@ -85,28 +85,28 @@ jobs:
           tag_with_sha: true 
 
       - name: Build and push license container
-        #if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }}
         uses: docker/build-push-action@v2
         with:
           context: .
-          push: false
+          push: true
           file: Dockerfile.license
           tags: ${{ steps.preparetagslicense.outputs.tag }}
           
       - name: Prepare docker images bpa
         uses: Surgo/docker-smart-tag-action@v1      
-        #if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }} 
+        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }} 
         id: preparetags
         with:
-          docker_image: hyperledger-labs/business-partner-agent-license
+          docker_image: hyperledger-labs/business-partner-agent
           default_branch: ${{ github.event.repository.default_branch }}
           tag_with_sha: true           
 
-      - name: Build and push license container
-        #if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }}
+      - name: Build and push container
+        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }}
         uses: docker/build-push-action@v2
         with:
           context: .
-          push: false
+          push: true
           file: Dockerfile.run
           tags: ${{ steps.preparetags.outputs.tag }}
