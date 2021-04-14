@@ -1,0 +1,8 @@
+# Dockerfile to ship 3rd party license information, mainly used withon the build pipeline
+
+FROM busybox
+
+RUN mkdir 3rdPartyLicenses
+
+COPY frontend/licenses/[^attribution]* ./3rdPartyLicenses
+COPY backend/business-partner-agent/src/main/resources/3rdPartyLicenses ./3rdPartyLicenses

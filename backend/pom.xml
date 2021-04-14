@@ -404,9 +404,11 @@
                                 <build>
                                     <skip>${skip.docker.build}</skip>
                                     <from>amazoncorretto:${jdk.version}</from>
-                                    <assembly>
-                                        <descriptorRef>artifact</descriptorRef>
-                                    </assembly>
+                                    <assemblies>
+                                        <assembly>
+                                            <descriptorRef>artifact</descriptorRef>
+                                        </assembly>
+                                    </assemblies>
                                     <cmd>java -jar -XX:+UnlockExperimentalVMOptions $JAVA_OPTS maven/${project.artifactId}-${project.version}.jar</cmd>
                                     <ports>
                                         <port>8080/tcp</port>
