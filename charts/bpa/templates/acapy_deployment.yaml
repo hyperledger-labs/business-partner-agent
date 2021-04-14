@@ -31,11 +31,11 @@ spec:
           imagePullPolicy: {{ .Values.acapy.image.pullPolicy }}
           args: [
            "-c",
-           "curl -d '{\"seed\":\"$(WALLET_SEED)\", \"role\":\"TRUST_ANCHOR\", \"alias\":\"{{ include "bpa.fullname" . }}\"}' -X POST {{ .Values.bpa.ledgerURL }}/register; \
+           "curl -d '{\"seed\":\"$(WALLET_SEED)\", \"role\":\"TRUST_ANCHOR\", \"alias\":\"{{ include "bpa.fullname" . }}\"}' -X POST {{ .Values.bpa.config.ledger.browser }}/register; \
            sleep 15; \
            aca-py provision \
            --endpoint http://{{ .Release.Name }}-{{ (index .Values.acapy.ingress.hosts 0).host }} \
-           --genesis-url '{{ .Values.bpa.ledgerURL }}/genesis' \
+           --genesis-url '{{ .Values.bpa.config.ledger.browser }}/genesis' \
            --wallet-type 'indy' \
            --wallet-name 'mywallet' \
            --wallet-key '123' \
@@ -50,7 +50,7 @@ spec:
            --inbound-transport http '0.0.0.0' {{ .Values.acapy.service.httpPort }} \ 
            --webhook-url http://{{ include "bpa.fullname" . }}:{{ .Values.bpa.service.port }}/log \
            --endpoint http://{{ .Release.Name }}-{{ (index .Values.acapy.ingress.hosts 0).host }} \
-           --genesis-url '{{ .Values.bpa.ledgerURL }}/genesis' \
+           --genesis-url '{{ .Values.bpa.config.ledger.browser }}/genesis' \
            --wallet-storage-type 'postgres_storage' \
            --wallet-name 'mywallet' \
            --wallet-key '123' \
