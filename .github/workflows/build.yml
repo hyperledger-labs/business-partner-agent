@@ -17,53 +17,96 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      # Setup Phase
+
+      - name: Setup node and install deps
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          check-latest: true
+      - run: npm --prefix frontend install
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '15'
+          check-latest: true
+
       - name: Cache Maven packages
         uses: actions/cache@v2
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      
-      - name: Set up JDK 1.11
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.11
-          architecture: x64
 
       - name: maven-settings-xml-action
         uses: whelk-io/maven-settings-xml-action@v14  
         with:
           plugin_groups: '[ "com.spotify" ]' 
 
+      # Test Phase
+
+      - name: Test with npm
+        ## TODO are there any frontend tests?
+        run: npm --prefix frontend run license-check
+
       - name: Test with Maven 
         run: mvn -f backend/pom.xml test spotbugs:check pmd:check
 
-      - name: Prepare docker images
+      # Attribution Phase
+
+      - name: Frontend attribution
+        run: npm --prefix frontend run license
+      
+      - name: Backend attribution
+        run: mvn -f backend/pom.xml generate-resources -Pbackend-license
+
+      # Build Phase
+ 
+      - name: Build frontend
+        run: npm --prefix frontend run build
+
+      - name: Copy dist folder to backend
+        run: cp -r ./frontend/dist ./backend/business-partner-agent/src/main/resources/public
+
+      - name: Build backend
+        run: mvn -f backend/pom.xml clean package -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
+
+      # Docker Phase (triggered only on master or tag)
+      
+      - name: Prepare docker tags license image
+        uses: Surgo/docker-smart-tag-action@v1      
+        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }} 
+        id: preparetagslicense
+        with:
+          docker_image: hyperledger-labs/business-partner-agent-license
+          default_branch: ${{ github.event.repository.default_branch }}
+          tag_with_sha: true 
+
+      - name: Build and push license container
+        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }}
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          file: Dockerfile.license
+          tags: ${{ steps.preparetagslicense.outputs.tag }}
+          
+      - name: Prepare docker images bpa
         uses: Surgo/docker-smart-tag-action@v1      
         if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }} 
         id: preparetags
         with:
+          docker_image: hyperledger-labs/business-partner-agent
           default_branch: ${{ github.event.repository.default_branch }}
-          tag_with_sha: true  
+          tag_with_sha: true           
 
-      - name: Build and publish docker images
+      - name: Build and push container
         if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }}
-        run: |
-              function logout {
-                docker logout ghcr.io
-              }
-              trap logout EXIT  
-              IN=${{ steps.preparetags.outputs.tag }} 
-              IN=${IN//:/ }
-              IN=(${IN//,/ })
-              TAGSTRING=""
-              index=0
-              for i in "${IN[@]}"
-              do
-                TAGSTRING+="-Ddocker.tags.$index=$i "
-                let "index += 1"
-              done
-              echo 
-              arrIN=(${IN//,/ })
-              echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io --username ${{ github.actor }} --password-stdin
-              mvn -f backend/pom.xml clean install -Pbuild-frontend -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true docker:build docker:push -Ddocker.push.registry=ghcr.io -Ddocker.name=hyperledger-labs/%a $TAGSTRING
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          file: Dockerfile.run
+          tags: ${{ steps.preparetags.outputs.tag }}
