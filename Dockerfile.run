@@ -1,6 +1,6 @@
 # Dockerfile that only runs the backend (with or without frontend), mainly used within the build pipeline
 
-FROM amazoncorretto:15-alpine
+FROM adoptopenjdk/openjdk15:alpine
 COPY ./backend/business-partner-agent/target/business-partner-agent*SNAPSHOT.jar business-partner-agent.jar
 
 EXPOSE 8080
