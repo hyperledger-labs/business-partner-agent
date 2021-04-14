@@ -122,9 +122,6 @@ acapy:
     # --  Overrides the image tag whose default is the chart appVersion.
     tag: py36-1.16-0_0.6.0
 
-  # -- (String) The agent seed, 32 characters. See main documentation. 
-  agentSeed:
-
   adminURLApiKey: 2f9729eef0be49608c1cffd49ee3cc4a
 
   agentName: ca-aca-py
