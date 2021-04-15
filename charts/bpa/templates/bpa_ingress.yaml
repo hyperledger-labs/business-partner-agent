@@ -1,6 +1,7 @@
 {{- if .Values.bpa.ingress.enabled -}}
 {{- $fullName := include "bpa.fullname" . -}}
 {{- $svcPort := .Values.bpa.service.port -}}
+{{- $bpaIngressHosts := include "bpa.ingressHosts" .hosts -}}
 {{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1beta1
 {{- else -}}
@@ -27,8 +28,8 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.bpa.ingress.hosts }}
-    - host: {{ printf "%s-%s" $.Release.Name .host | quote }}
+    {{- range $acapyIngressHosts }}
+    - host: {{ .host | quote }}
       http:
         paths:
           {{- range .paths }}

@@ -1,3 +1,4 @@
+{{- $acapyIngressHosts := include "acapy.ingressHosts" .hosts -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -11,11 +12,11 @@ data:
       acapy:
         url: http://{{ include "acapy.fullname" . }}:{{ .Values.acapy.service.adminPort }} 
         apiKey: {{ .Values.acapy.adminURLApiKey }}
-        endpoint: https://{{ (index .Values.acapy.ingress.hosts 0).host }}  
+        endpoint: https://{{ (index $acapyIngressHosts 0).host }}  
       pg:
         url: jdbc:postgresql://{{ include "global.postgresql.fullname" . }}/{{ .Values.postgresql.postgresqlUsername }}
         username: {{ .Values.postgresql.postgresqlUsername }}
-      host: {{ (index .Values.bpa.ingress.hosts 0).host }}
+      host: {{ (index $acapyIngressHosts 0).host }}
       micronaut:
         security:
           enabled: {{ .Values.bpa.config.security.enabled }}

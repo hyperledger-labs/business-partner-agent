@@ -79,6 +79,22 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
+generate hosts if not overriden
+*/}}
+{{- define "bpa.ingressHosts" -}}
+{{- if .Values.acapy.ingress.hosts -}}
+{{- .Values.acapy.ingress.hosts -}}
+{{- else }}
+hosts:
+- host: {{ printf "%s-%s-%s" $.Release.Name ( include "bpa.fullname" . ) $.Values.global.ingressSuffix | quote }}
+  http:
+  paths:
+    - path: /
+{{- end -}}
+{{- end }}
+
+
+{{/*
 Common acapy labels
 */}}
 {{- define "acapy.labels" -}}
@@ -97,6 +113,22 @@ Selector acapy labels
 app.kubernetes.io/name: {{ include "global.fullname" . }}-{{ .Values.acapy.name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/*
+generate hosts if not overriden
+*/}}
+{{- define "acapy.ingressHosts" -}}
+{{- if .Values.acapy.ingress.hosts -}}
+{{- .Values.acapy.ingress.hosts -}}
+{{- else }}
+hosts:
+- host: {{ printf "%s-%s-%s" $.Release.Name ( include "acapy.fullname" . ) $.Values.global.ingressSuffix | quote }}
+  http:
+  paths:
+    - path: /
+{{- end -}}
+{{- end }}
+
 
 {{/*
 Create a default fully qualified app name for the postgres requirement.
