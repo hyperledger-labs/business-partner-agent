@@ -28,7 +28,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range $acapyIngressHosts }}
+    {{- range $bpaIngressHosts }}
     - host: {{ .host | quote }}
       http:
         paths:
