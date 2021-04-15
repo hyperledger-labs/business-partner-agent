@@ -84,7 +84,7 @@ jobs:
         #if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }} 
         with:
           registry: ghcr.io
-          username: ${{ github.actor}}
+          username: ${{ github.repository_owner}}
           password: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Prepare docker tags license image
