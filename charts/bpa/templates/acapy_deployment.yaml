@@ -39,7 +39,7 @@ spec:
            --inbound-transport http '0.0.0.0' {{ .Values.acapy.service.httpPort }} \ 
            --webhook-url http://{{ include "bpa.fullname" . }}:{{ .Values.bpa.service.port }}/log \
            --genesis-url '{{ .Values.bpa.config.ledger.browser }}/genesis' \
-           --endpoint http://{{ .Release.Name }}-{{ (index .Values.acapy.ingress.hosts 0).host }} \
+           --endpoint http://{{ (index .acapy.ingressHosts 0).host }} \
            --wallet-storage-type 'postgres_storage' \
            --wallet-name 'mywallet' \
            --wallet-key '123' \

@@ -6,6 +6,10 @@ global:
   nameOverride: ""
   fullnameOverride: ""
 
+  #Define domain and allow auto-generated hostpaths 
+  ## define <service>.ingress.hosts.host to override
+  ingressSuffix: f6b17d-dev.apps.silver.devops.gov.bc.ca
+
   persistence:
     # -- If true, the Postgres chart is deployed
     deployPostgres: true
@@ -83,13 +87,14 @@ bpa:
     port: 80
 
   ingress:
-    enabled: false
+    enabled: true
     annotations: {}
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: my-bpa.local
-        paths: []
+    # Uncomment this to define your own hosts and override global.ingressSuffix
+    # hosts: 
+    #     host:
+    #     paths: ['/']
     tls: []
     #  - secretName: my-bpa-tls
     #    hosts:
@@ -151,13 +156,15 @@ acapy:
     httpPort: 8030
 
   ingress:
-    enabled: false
+    enabled: true
     annotations: {}
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: my-acapy.local
-        paths: []
+
+    # Uncomment this to define your own hosts and override global.ingressSuffix
+    # hosts: 
+    #     host:
+    #     paths: ['/']
     tls: []
     #  - secretName: my-acapy-tls
     #    hosts:
