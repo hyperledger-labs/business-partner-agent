@@ -103,7 +103,7 @@ jobs:
           context: .
           push: true
           file: Dockerfile.license
-          tags: ghcr.io/${{ steps.preparetagslicense.outputs.tag }}
+          tags: ${{ steps.preparetagslicense.outputs.tag }}
           
       - name: Prepare docker images bpa
         uses: Surgo/docker-smart-tag-action@v1      
