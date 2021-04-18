@@ -23,6 +23,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
+import org.hyperledger.bpa.controller.api.issuer.CredDef;
 import org.hyperledger.bpa.model.BPASchema;
 
 import java.util.ArrayList;
@@ -48,12 +49,19 @@ public class SchemaAPI {
 
     private List<TrustedIssuer> trustedIssuer;
 
+    private List<CredDef> credentialDefinition;
+
     public static SchemaAPI from(BPASchema s) {
         SchemaAPIBuilder builder = SchemaAPI.builder();
         if (CollectionUtils.isNotEmpty(s.getRestrictions())) {
             List<TrustedIssuer> ti = new ArrayList<>();
             s.getRestrictions().forEach(r -> ti.add(TrustedIssuer.from(r)));
             builder.trustedIssuer(ti);
+        }
+        if (CollectionUtils.isNotEmpty(s.getCredentialDefinitions())) {
+            List<CredDef> cd = new ArrayList<>();
+            s.getCredentialDefinitions().forEach(r -> cd.add(CredDef.from(r)));
+            builder.credentialDefinition(cd);
         }
         return builder
                 .id(s.getId())
