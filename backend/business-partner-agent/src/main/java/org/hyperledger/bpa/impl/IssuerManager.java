@@ -46,7 +46,7 @@ public class IssuerManager {
     BPACredentialDefinitionRepository credDefRepo;
 
     public SchemaAPI createSchema(@NonNull String schemaName, @NonNull String schemaVersion,
-                                  @NonNull List<String> attributes, @NonNull String schemaLabel, String defaultAttributeName) {
+            @NonNull List<String> attributes, @NonNull String schemaLabel, String defaultAttributeName) {
         SchemaAPI result = null;
         // ensure no leading or trailing spaces on attribute names... bad things happen
         // when crypto signing.
@@ -93,7 +93,7 @@ public class IssuerManager {
     }
 
     public CredDef createCredDef(@NonNull String schemaId, @NonNull String tag, boolean supportRevocation,
-                                 int revocationRegistrySize) {
+            int revocationRegistrySize) {
         CredDef result = null;
         try {
             String sId = StringUtils.strip(schemaId);
@@ -106,10 +106,10 @@ public class IssuerManager {
             if (!bpaSchema.isPresent()) {
                 // schema exists on ledger, but no in db, let's add it.
                 SchemaAPI schema = schemaService.addSchema(ariesSchema.get().getId(), null, null, null);
-                bpaSchema = schemaService.getSchemaFor(schema.getSchemaId());
-                if (!bpaSchema.isPresent()) {
+                if (schema == null) {
                     throw new IssuerException(String.format("Could not add schema with id '%s' to database.", sId));
                 }
+                bpaSchema = schemaService.getSchemaFor(schema.getSchemaId());
             }
             // send creddef to ledger...
             CredentialDefinitionRequest request = CredentialDefinitionRequest.builder()

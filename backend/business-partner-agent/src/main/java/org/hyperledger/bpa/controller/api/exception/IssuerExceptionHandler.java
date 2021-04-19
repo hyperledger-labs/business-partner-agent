@@ -12,7 +12,7 @@ import javax.inject.Singleton;
 
 @Produces
 @Singleton
-@Requires(classes = {IssuerException.class, ExceptionHandler.class})
+@Requires(classes = { IssuerException.class, ExceptionHandler.class })
 public class IssuerExceptionHandler implements ExceptionHandler<IssuerException, HttpResponse<?>> {
 
     @Override
