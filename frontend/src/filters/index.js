@@ -13,7 +13,7 @@ import moment from 'moment';
  */
 export function formatDate(value) {
   if (value) {
-    return moment(value).format('MMMM D YYYY');
+    return moment(value).format('YYYY-MM-DD');
   }
 }
 
@@ -25,7 +25,7 @@ export function formatDate(value) {
  */
 export function formatDateLong(value) {
   if (value) {
-    return moment(value).format('MMMM D YYYY, h:mm:ss a');
+    return moment(value).format('YYYY-MM-DD HH:mm');
   }
 }
 

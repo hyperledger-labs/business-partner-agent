@@ -9,7 +9,8 @@ import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
-import org.hyperledger.bpa.controller.api.issuer.*;
+import org.hyperledger.bpa.controller.api.issuer.CreateCredDefRequest;
+import org.hyperledger.bpa.controller.api.issuer.CreateSchemaRequest;
 import org.hyperledger.bpa.impl.IssuerManager;
 
 import javax.inject.Inject;

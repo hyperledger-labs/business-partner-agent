@@ -9,7 +9,10 @@ import org.hyperledger.aries.api.credential_definition.CredentialDefinition.Cred
 import org.hyperledger.aries.api.schema.SchemaSendRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.api.exception.IssuerException;
+import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.controller.api.issuer.CredDef;
 import org.hyperledger.bpa.impl.activity.Identity;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
@@ -43,7 +46,7 @@ public class IssuerManager {
     BPACredentialDefinitionRepository credDefRepo;
 
     public SchemaAPI createSchema(@NonNull String schemaName, @NonNull String schemaVersion,
-            @NonNull List<String> attributes, @NonNull String schemaLabel, String defaultAttributeName) {
+                                  @NonNull List<String> attributes, @NonNull String schemaLabel, String defaultAttributeName) {
         SchemaAPI result = null;
         // ensure no leading or trailing spaces on attribute names... bad things happen
         // when crypto signing.
@@ -62,10 +65,12 @@ public class IssuerManager {
                 result = schemaService.addSchema(ssr.getSchemaId(), schemaLabel, defaultAttributeName, null);
             } else {
                 log.error("Schema not created.");
+                throw new IssuerException("Schema not created; could not complete request with ledger");
             }
 
         } catch (IOException e) {
             log.error("aca-py not reachable", e);
+            throw new NetworkException("No aries connection", e);
         }
         return result;
     }
@@ -87,25 +92,25 @@ public class IssuerManager {
         return schemaService.getSchema(id);
     }
 
-    public Object createCredDef(@NonNull String schemaId, @NonNull String tag, boolean supportRevocation,
-            int revocationRegistrySize) {
-        Object result = null;
+    public CredDef createCredDef(@NonNull String schemaId, @NonNull String tag, boolean supportRevocation,
+                                 int revocationRegistrySize) {
+        CredDef result = null;
         try {
             String sId = StringUtils.strip(schemaId);
             Optional<SchemaSendResponse.Schema> ariesSchema = ac.schemasGetById(sId);
             if (!ariesSchema.isPresent()) {
-                throw new WrongApiUsageException("No schema with id " + sId + " found on ledger.");
+                throw new WrongApiUsageException(String.format("No schema with id '%s' found on ledger.", sId));
             }
 
             Optional<BPASchema> bpaSchema = schemaService.getSchemaFor(sId);
             if (!bpaSchema.isPresent()) {
                 // schema exists on ledger, but no in db, let's add it.
                 SchemaAPI schema = schemaService.addSchema(ariesSchema.get().getId(), null, null, null);
-                if (schema != null) {
-                    bpaSchema = schemaService.getSchemaFor(schema.getSchemaId());
+                bpaSchema = schemaService.getSchemaFor(schema.getSchemaId());
+                if (!bpaSchema.isPresent()) {
+                    throw new IssuerException(String.format("Could not add schema with id '%s' to database.", sId));
                 }
             }
-
             // send creddef to ledger...
             CredentialDefinitionRequest request = CredentialDefinitionRequest.builder()
                     .schemaId(schemaId)
@@ -124,12 +129,15 @@ public class IssuerManager {
                         .revocationRegistrySize(revocationRegistrySize)
                         .tag(tag)
                         .build();
-                result = credDefRepo.save(cdef);
+                BPACredentialDefinition saved = credDefRepo.save(cdef);
+                result = CredDef.from(saved);
             } else {
                 log.error("Credential Definition not created.");
+                throw new IssuerException("Credential Definition not created; could not complete request with ledger");
             }
         } catch (IOException e) {
             log.error("aca-py not reachable", e);
+            throw new NetworkException("No aries connection", e);
         }
         return result;
     }
