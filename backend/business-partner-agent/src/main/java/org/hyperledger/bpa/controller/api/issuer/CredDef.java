@@ -6,13 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.model.BPACredentialDefinition;
 
-import java.util.Date;
 import java.util.UUID;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class CredDef {
     private UUID id;
     private String schemaId;
@@ -20,7 +19,7 @@ public class CredDef {
     private String tag;
     private Boolean isSupportRevocation;
     private Integer revocationRegistrySize;
-    private Date createdAt;
+    private Long createdAt;
 
     public static CredDef from(BPACredentialDefinition db) {
         return CredDef
@@ -31,7 +30,7 @@ public class CredDef {
                 .tag(db.getTag())
                 .isSupportRevocation(db.getIsSupportRevocation())
                 .revocationRegistrySize(db.getRevocationRegistrySize())
-                .createdAt(Date.from(db.getCreatedAt()))
+                .createdAt(db.getCreatedAt().toEpochMilli())
                 .build();
     }
 }

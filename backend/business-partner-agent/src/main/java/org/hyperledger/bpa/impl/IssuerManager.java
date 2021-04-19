@@ -4,7 +4,8 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.credential_definition.CredentialDefinition.*;
+import org.hyperledger.aries.api.credential_definition.CredentialDefinition.CredentialDefinitionRequest;
+import org.hyperledger.aries.api.credential_definition.CredentialDefinition.CredentialDefinitionResponse;
 import org.hyperledger.aries.api.schema.SchemaSendRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
@@ -19,13 +20,11 @@ import org.hyperledger.bpa.repository.BPACredentialDefinitionRepository;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @Singleton
@@ -71,12 +70,17 @@ public class IssuerManager {
         return result;
     }
 
+    @NonNull
+    String getDid() {
+        return id.getMyDid() == null ? "" : id.getMyDid();
+    }
+
     public List<SchemaAPI> listSchemas() {
-        Predicate<SchemaAPI> byDid = s -> s.getSchemaId().startsWith(AriesStringUtil.getLastSegment(id.getMyDid()));
+        String did = AriesStringUtil.getLastSegment(getDid());
+        Predicate<SchemaAPI> byDid = s -> s.getSchemaId().startsWith(did);
         List<SchemaAPI> schemas = schemaService.listSchemas();
         // only want mine...
-        List<SchemaAPI> filtered = schemas.stream().filter(byDid).collect(Collectors.toList());
-        return filtered;
+        return schemas.stream().filter(byDid).collect(Collectors.toList());
     }
 
     public Optional<SchemaAPI> readSchema(@NonNull UUID id) {
@@ -88,7 +92,7 @@ public class IssuerManager {
         Object result = null;
         try {
             String sId = StringUtils.strip(schemaId);
-            Optional<org.hyperledger.aries.api.schema.SchemaSendResponse.Schema> ariesSchema = ac.schemasGetById(sId);
+            Optional<SchemaSendResponse.Schema> ariesSchema = ac.schemasGetById(sId);
             if (!ariesSchema.isPresent()) {
                 throw new WrongApiUsageException("No schema with id " + sId + " found on ledger.");
             }
@@ -97,7 +101,9 @@ public class IssuerManager {
             if (!bpaSchema.isPresent()) {
                 // schema exists on ledger, but no in db, let's add it.
                 SchemaAPI schema = schemaService.addSchema(ariesSchema.get().getId(), null, null, null);
-                bpaSchema = schemaService.getSchemaFor(schema.getSchemaId());
+                if (schema != null) {
+                    bpaSchema = schemaService.getSchemaFor(schema.getSchemaId());
+                }
             }
 
             // send creddef to ledger...
