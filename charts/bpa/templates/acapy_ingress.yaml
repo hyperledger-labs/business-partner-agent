@@ -1,6 +1,7 @@
 {{- if .Values.acapy.ingress.enabled -}}
 {{- $fullName := include "acapy.fullname" . -}}
 {{- $svcPort := .Values.acapy.service.httpPort -}}
+{{- $acapyIngressHosts := include "acapy.ingressHosts" .hosts -}}
 {{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1beta1
 {{- else -}}
@@ -27,7 +28,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.acapy.ingress.hosts }}
+    {{- range $acapyIngressHosts }}
     - host: {{ .host | quote }}
       http:
         paths:
