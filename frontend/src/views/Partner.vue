@@ -151,6 +151,25 @@
             ></PresentationList>
           </v-col>
         </v-row>
+        <v-row class="mx-4">
+          <v-divider></v-divider>
+        </v-row>
+        <v-row v-if="partner.ariesSupport" class="mx-4">
+          <v-col cols="4">
+            <v-row>
+              <p class="grey--text text--darken-2 font-weight-medium">
+                Issued Credentials
+              </p>
+            </v-row>
+            <v-row>The credentials you issued to your partner</v-row>
+            <v-row class="mt-4">
+              <v-btn small @click="issueCredential">Issue Credential</v-btn>
+            </v-row>
+          </v-col>
+          <v-col cols="8">
+
+          </v-col>
+        </v-row>
       </v-card-text>
 
       <v-card-actions>
@@ -208,6 +227,8 @@ import {
   sentHeaders,
   receivedHeaders,
 } from "@/components/tableHeaders/PartnerHeaders";
+
+import {issuerService} from "@/services";
 
 export default {
   name: "Partner",
@@ -468,6 +489,31 @@ export default {
         this.isBusy = false;
       }
     },
+    async issueCredential() {
+      const schemaR = await issuerService.listSchemas();
+      const schemas = schemaR.data;
+      const schema = schemas.find(x => x.credentialDefinition.length > 0);
+      const credDef = schema.credentialDefinition[0];
+
+      const document = {};
+      schema.schemaAttributeNames.forEach((key) => {
+        document[key] = key;
+      });
+      const data = {
+        credDefId: credDef.id,
+        partnerId: this.partner.id,
+        document: document
+      }
+      try {
+        const resp = await issuerService.issueCredentialSend(data);
+        if (resp.status === 200) {
+          return resp.data;
+        }
+      } catch(error) {
+        EventBus.$emit("error", error);
+      }
+
+    }
   },
 };
 </script>

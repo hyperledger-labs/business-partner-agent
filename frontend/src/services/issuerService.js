@@ -22,4 +22,7 @@ export default {
     return appAxios().post(`${ApiRoutes.ISSUER}/creddef`, data);
   },
 
+  issueCredentialSend(data) {
+    return appAxios().post(`${ApiRoutes.ISSUER}/issue-credential/send`, data);
+  }
 };
