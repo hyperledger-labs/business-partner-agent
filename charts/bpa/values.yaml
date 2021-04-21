@@ -6,9 +6,9 @@ global:
   nameOverride: ""
   fullnameOverride: ""
 
-  #Define domain and allow auto-generated hostpaths 
+  #Define domain suffix  and allow auto-generated hostpaths
   ## define <service>.ingress.hosts.host to override
-  ingressSuffix: f6b17d-dev.apps.silver.devops.gov.bc.ca
+  ingressSuffix: .example.com
 
   persistence:
     # -- If true, the Postgres chart is deployed
