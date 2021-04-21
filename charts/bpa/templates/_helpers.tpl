@@ -81,18 +81,13 @@ Create the name of the service account to use
 {{/*
 generate hosts if not overriden
 */}}
-{{- define "bpa.ingressHosts" -}}
-{{- if .Values.acapy.ingress.hosts -}}
-{{- .Values.acapy.ingress.hosts -}}
+{{- define "bpa.host" -}}
+{{- if .Values.bpa.ingress.hosts -}}
+{{- (index .Values.bpa.ingress.hosts 0).host -}}
 {{- else }}
-hosts:
-- host: {{ printf "%s-%s-%s" $.Release.Name ( include "bpa.fullname" . ) $.Values.global.ingressSuffix | quote }}
-  http:
-  paths:
-    - path: /
+{{- include "global.fullname" . }}{{ .Values.global.ingressSuffix -}}
 {{- end -}}
 {{- end }}
-
 
 {{/*
 Common acapy labels
@@ -114,21 +109,17 @@ app.kubernetes.io/name: {{ include "global.fullname" . }}-{{ .Values.acapy.name 
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+
 {{/*
 generate hosts if not overriden
 */}}
-{{- define "acapy.ingressHosts" -}}
+{{- define "acapy.host" -}}
 {{- if .Values.acapy.ingress.hosts -}}
-{{- .Values.acapy.ingress.hosts -}}
+{{- (index .Values.acapy.ingress.hosts 0).host -}}
 {{- else }}
-hosts:
-- host: {{ printf "%s-%s-%s" $.Release.Name ( include "acapy.fullname" . ) $.Values.global.ingressSuffix | quote }}
-  http:
-  paths:
-    - path: /
+{{- include "acapy.fullname" . }}{{ .Values.global.ingressSuffix -}}
 {{- end -}}
 {{- end }}
-
 
 {{/*
 Create a default fully qualified app name for the postgres requirement.
