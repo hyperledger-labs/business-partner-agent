@@ -85,7 +85,7 @@
         <v-container>
           <v-form v-model="isCredDefFormValid">
             <v-row>
-              <v-col cols="4" class="pb-0">
+              <v-col class="pb-0">
                 <v-text-field
                     label="Tag"
                     class="mt-6"
@@ -101,25 +101,12 @@
               <v-col cols="4" class="pb-0">
                 <v-checkbox
                     class="mt-6"
-                    label="Support Revocation"
+                    label="Revocable"
                     v-model="supportRevocation"
                     outlined
                     dense
                 >
                 </v-checkbox>
-              </v-col>
-              <v-col cols="4" class="pb-0">
-                <v-text-field
-                    label="Revocation Registry Size"
-                    class="mt-6"
-                    placeholder="Revocation Registry Size (integer)"
-                    v-model="revocationRegistrySize"
-                    outlined
-                    dense
-                    v-bind:disabled="!supportRevocation"
-                    :rules="revocationSizeRules"
-                >
-                </v-text-field>
               </v-col>
             </v-row>
             <v-card-actions>
@@ -175,12 +162,8 @@
             value: "tag",
           },
           {
-            text: "Revokable",
+            text: "Revocable",
             value: "isSupportRevocation",
-          },
-          {
-            text: "Revoke Registry Size",
-            value: "revocationRegistrySize",
           },
           {
             text: "Created Date",
@@ -192,7 +175,6 @@
         addingNewCredDef: false,
         tag: "",
         supportRevocation: false,
-        revocationRegistrySize: 4,
       };
     },
     computed: {
@@ -214,25 +196,6 @@
           }
         ]
       },
-      revocationSizeRules() {
-        return [
-          (value) => {
-            if (this.addingNewCredDef && this.supportRevocation) {
-              // value is required
-              return !!value || "Can't be empty";
-            }
-            return true;
-          },
-          (value) => {
-            if (this.addingNewCredDef && this.supportRevocation) {
-              // value is required and must be numeric
-              return (value && /^\d+$/.test(value) && (value >= 4 && value <= 32768)) || "Size must be integer between 4 and 32768";
-            }
-            return true;
-          }
-        ]
-      }
-
     },
     methods: {
       fetch() {
@@ -242,8 +205,8 @@
             //console.log(result);
             if ({}.hasOwnProperty.call(result, "data")) {
               this.data = result.data;
-              if ({}.hasOwnProperty.call(result.data, "credentialDefinition")) {
-                this.credentialDefinitions = result.data.credentialDefinition;
+              if ({}.hasOwnProperty.call(result.data, "credentialDefinitions")) {
+                this.credentialDefinitions = result.data.credentialDefinitions;
               }
               this.isLoading = false;
             }
@@ -282,9 +245,8 @@
       cancelCredDef() {
         if (this.addingNewCredDef) {
           this.addingNewCredDef = false;
-          this.tag ="default";
+          this.tag ="";
           this.supportRevocation = false;
-          this.revocationRegistrySize = 4;
         }
       },
       async submitCredDef() {
@@ -294,7 +256,6 @@
             schemaId: this.data.schemaId,
             tag: this.tag,
             supportRevocation: this.supportRevocation,
-            revocationRegistrySize: this.revocationRegistrySize,
           }
           const resp = await issuerService.createCredDef(credDefForm);
           if (resp.status === 200) {
@@ -304,7 +265,7 @@
             const r = await issuerService.readSchema(this.id);
             if (r.status === 200) {
               this.data = r.data;
-              this.credentialDefinitions = r.data.credentialDefinition;
+              this.credentialDefinitions = r.data.credentialDefinitions;
             }
           }
           this.cancelCredDef();

@@ -73,8 +73,7 @@ public class IssuerController {
      */
     @Post("/creddef")
     public HttpResponse<Object> createCredDef(@Body CreateCredDefRequest req) {
-        return HttpResponse.ok(im.createCredDef(req.getSchemaId(), req.getTag(), req.isSupportRevocation(),
-                req.getRevocationRegistrySize()));
+        return HttpResponse.ok(im.createCredDef(req.getSchemaId(), req.getTag(), req.isSupportRevocation()));
     }
 
 }

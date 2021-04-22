@@ -23,8 +23,13 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.schema.SchemaSendRequest;
+import org.hyperledger.aries.api.schema.SchemaSendResponse;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.api.exception.SchemaException;
+import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.config.SchemaConfig;
 import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
@@ -36,6 +41,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
@@ -53,7 +60,39 @@ public class SchemaService {
     @Inject
     List<SchemaConfig> schemas;
 
+    @Inject
+    RuntimeConfig rc;
+
     // CRUD Methods
+    public SchemaAPI createSchema(@NonNull String schemaName, @NonNull String schemaVersion,
+            @NonNull List<String> attributes, @NonNull String schemaLabel, String defaultAttributeName) {
+        SchemaAPI result = null;
+        // ensure no leading or trailing spaces on attribute names... bad things happen
+        // when crypto signing.
+        attributes.replaceAll(s -> AriesStringUtil.schemaAttributeFormat(s));
+        try {
+            // send schema to ledger...
+            SchemaSendRequest request = SchemaSendRequest.builder()
+                    .schemaName(AriesStringUtil.schemaAttributeFormat(schemaName))
+                    .schemaVersion(schemaVersion)
+                    .attributes(attributes)
+                    .build();
+            Optional<SchemaSendResponse> response = ac.schemas(request);
+            if (response.isPresent()) {
+                // save it to the db...
+                SchemaSendResponse ssr = response.get();
+                result = this.addSchema(ssr.getSchemaId(), schemaLabel, defaultAttributeName, null);
+            } else {
+                log.error("Schema not created.");
+                throw new SchemaException("Schema not created; could not complete request with ledger");
+            }
+
+        } catch (IOException e) {
+            log.error("aca-py not reachable", e);
+            throw new NetworkException("No aries connection", e);
+        }
+        return result;
+    }
 
     public @Nullable SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label,
             @Nullable String defaultAttributeName, @Nullable List<AddTrustedIssuerRequest> restrictions) {
@@ -80,7 +119,7 @@ public class SchemaService {
         }
 
         try {
-            Optional<org.hyperledger.aries.api.schema.SchemaSendResponse.Schema> ariesSchema = ac.schemasGetById(sId);
+            Optional<SchemaSendResponse.Schema> ariesSchema = ac.schemasGetById(sId);
             if (ariesSchema.isPresent()) {
                 BPASchema dbS = BPASchema.builder()
                         .label(label)
@@ -117,6 +156,17 @@ public class SchemaService {
         return result;
     }
 
+    public List<SchemaAPI> listSchemas(@NonNull String did) {
+        String creatorDid = did;
+        if (did.startsWith(rc.getLedgerPrefix())) {
+            creatorDid = AriesStringUtil.getLastSegment(did);
+        }
+        String finalCreatorDid = creatorDid;
+        Predicate<SchemaAPI> byDid = s -> s.getSchemaId().startsWith(finalCreatorDid);
+        List<SchemaAPI> schemas = this.listSchemas();
+        return schemas.stream().filter(byDid).collect(Collectors.toList());
+    }
+
     public Optional<SchemaAPI> getSchema(@NonNull UUID id) {
         Optional<BPASchema> schema = schemaRepo.findById(id);
         return schema.map(SchemaAPI::from);
@@ -140,7 +190,7 @@ public class SchemaService {
     public Set<String> getSchemaAttributeNames(@NonNull String schemaId) {
         Set<String> result = new LinkedHashSet<>();
         try {
-            final Optional<org.hyperledger.aries.api.schema.SchemaSendResponse.Schema> schema = ac
+            final Optional<SchemaSendResponse.Schema> schema = ac
                     .schemasGetById(schemaId);
             if (schema.isPresent()) {
                 result = new LinkedHashSet<>(schema.get().getAttrNames());

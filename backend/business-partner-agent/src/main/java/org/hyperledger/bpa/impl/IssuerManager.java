@@ -25,16 +25,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credential_definition.CredentialDefinition.CredentialDefinitionRequest;
 import org.hyperledger.aries.api.credential_definition.CredentialDefinition.CredentialDefinitionResponse;
-import org.hyperledger.aries.api.schema.SchemaSendRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.IssuerException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.issuer.CredDef;
 import org.hyperledger.bpa.impl.activity.Identity;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.model.BPACredentialDefinition;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPACredentialDefinitionRepository;
@@ -45,8 +44,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
@@ -64,34 +61,12 @@ public class IssuerManager {
     @Inject
     BPACredentialDefinitionRepository credDefRepo;
 
-    public SchemaAPI createSchema(@NonNull String schemaName, @NonNull String schemaVersion,
-            @NonNull List<String> attributes, @NonNull String schemaLabel, String defaultAttributeName) {
-        SchemaAPI result = null;
-        // ensure no leading or trailing spaces on attribute names... bad things happen
-        // when crypto signing.
-        attributes.replaceAll(s -> AriesStringUtil.schemaAttributeFormat(s));
-        try {
-            // send schema to ledger...
-            SchemaSendRequest request = SchemaSendRequest.builder()
-                    .schemaName(AriesStringUtil.schemaAttributeFormat(schemaName))
-                    .schemaVersion(schemaVersion)
-                    .attributes(attributes)
-                    .build();
-            Optional<SchemaSendResponse> response = ac.schemas(request);
-            if (response.isPresent()) {
-                // save it to the db...
-                SchemaSendResponse ssr = response.get();
-                result = schemaService.addSchema(ssr.getSchemaId(), schemaLabel, defaultAttributeName, null);
-            } else {
-                log.error("Schema not created.");
-                throw new IssuerException("Schema not created; could not complete request with ledger");
-            }
+    @Inject
+    RuntimeConfig config;
 
-        } catch (IOException e) {
-            log.error("aca-py not reachable", e);
-            throw new NetworkException("No aries connection", e);
-        }
-        return result;
+    public SchemaAPI createSchema(@NonNull String schemaName, @NonNull String schemaVersion,
+                                  @NonNull List<String> attributes, @NonNull String schemaLabel, String defaultAttributeName) {
+        return schemaService.createSchema(schemaName, schemaVersion, attributes, schemaLabel, defaultAttributeName);
     }
 
     String getDid() {
@@ -99,19 +74,14 @@ public class IssuerManager {
     }
 
     public List<SchemaAPI> listSchemas() {
-        String did = AriesStringUtil.getLastSegment(getDid());
-        Predicate<SchemaAPI> byDid = s -> s.getSchemaId().startsWith(did);
-        List<SchemaAPI> schemas = schemaService.listSchemas();
-        // only want mine...
-        return schemas.stream().filter(byDid).collect(Collectors.toList());
+        return schemaService.listSchemas(getDid());
     }
 
     public Optional<SchemaAPI> readSchema(@NonNull UUID id) {
         return schemaService.getSchema(id);
     }
 
-    public CredDef createCredDef(@NonNull String schemaId, @NonNull String tag, boolean supportRevocation,
-            int revocationRegistrySize) {
+    public CredDef createCredDef(@NonNull String schemaId, @NonNull String tag, boolean supportRevocation) {
         CredDef result = null;
         try {
             String sId = StringUtils.strip(schemaId);
@@ -134,7 +104,7 @@ public class IssuerManager {
                     .schemaId(schemaId)
                     .tag(tag)
                     .supportRevocation(supportRevocation)
-                    .revocationRegistrySize(revocationRegistrySize)
+                    .revocationRegistrySize(config.getRevocationRegistrySize())
                     .build();
             Optional<CredentialDefinitionResponse> response = ac.credentialDefinitionsCreate(request);
             if (response.isPresent()) {
@@ -144,7 +114,7 @@ public class IssuerManager {
                         .schema(bpaSchema.get())
                         .credentialDefinitionId(cdr.getCredentialDefinitionId())
                         .isSupportRevocation(supportRevocation)
-                        .revocationRegistrySize(revocationRegistrySize)
+                        .revocationRegistrySize(config.getRevocationRegistrySize())
                         .tag(tag)
                         .build();
                 BPACredentialDefinition saved = credDefRepo.save(cdef);

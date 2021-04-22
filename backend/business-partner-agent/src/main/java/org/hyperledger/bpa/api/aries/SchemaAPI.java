@@ -49,7 +49,7 @@ public class SchemaAPI {
 
     private List<TrustedIssuer> trustedIssuer;
 
-    private List<CredDef> credentialDefinition;
+    private List<CredDef> credentialDefinitions;
 
     public static SchemaAPI from(BPASchema s) {
         SchemaAPIBuilder builder = SchemaAPI.builder();
@@ -61,7 +61,7 @@ public class SchemaAPI {
         if (CollectionUtils.isNotEmpty(s.getCredentialDefinitions())) {
             List<CredDef> cd = new ArrayList<>();
             s.getCredentialDefinitions().forEach(r -> cd.add(CredDef.from(r)));
-            builder.credentialDefinition(cd);
+            builder.credentialDefinitions(cd);
         }
         return builder
                 .id(s.getId())
