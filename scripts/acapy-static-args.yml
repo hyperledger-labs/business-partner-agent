@@ -1,5 +1,3 @@
-auto-accept-invites: true
-auto-accept-requests: true
 auto-respond-messages: true
 auto-respond-credential-proposal: true
 auto-respond-credential-offer: true

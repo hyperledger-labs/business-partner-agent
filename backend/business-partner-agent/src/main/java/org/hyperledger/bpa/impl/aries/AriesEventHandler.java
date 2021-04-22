@@ -18,7 +18,9 @@
 package org.hyperledger.bpa.impl.aries;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.aries.api.connection.ConnectionAcceptance;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
+import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
@@ -60,6 +62,9 @@ public class AriesEventHandler extends EventHandler {
     public void handleConnection(ConnectionRecord connection) {
         log.debug("Connection Event: {}", connection);
         conMgmt.handleConnectionEvent(connection);
+        if (isConnectionRequest(connection)) {
+            conMgmt.handleConnectionRequest(connection.getConnectionId());
+        }
     }
 
     @Override
@@ -100,5 +105,10 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleRaw(String eventType, String json) {
         log.trace(json);
+    }
+
+    private boolean isConnectionRequest(ConnectionRecord connection) {
+        return ConnectionAcceptance.MANUAL.equals(connection.getAccept())
+                && ConnectionState.REQUEST.equals(connection.getState());
     }
 }
