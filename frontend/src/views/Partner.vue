@@ -492,8 +492,8 @@ export default {
     async issueCredential() {
       const schemaR = await issuerService.listSchemas();
       const schemas = schemaR.data;
-      const schema = schemas.find(x => x.credentialDefinition.length > 0);
-      const credDef = schema.credentialDefinition[0];
+      const schema = schemas.find(x => x.credentialDefinitions.length > 0);
+      const credDef = schema.credentialDefinitions[0];
 
       const document = {};
       schema.schemaAttributeNames.forEach((key) => {
