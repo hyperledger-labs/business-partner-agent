@@ -44,5 +44,8 @@ spec:
       http:
         paths:
           - path: /
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: {{ $svcPort }}         
 {{- end -}}
 {{- end }}
