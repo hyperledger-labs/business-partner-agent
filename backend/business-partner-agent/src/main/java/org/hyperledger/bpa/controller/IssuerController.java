@@ -11,10 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.controller.api.issuer.CreateCredDefRequest;
 import org.hyperledger.bpa.controller.api.issuer.CreateSchemaRequest;
-import org.hyperledger.bpa.controller.api.issuer.CredDef;
-import org.hyperledger.bpa.controller.api.issuer.IssueCredentialSendRequest;
 import org.hyperledger.bpa.impl.IssuerManager;
-import org.hyperledger.bpa.impl.util.Converter;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -30,9 +27,6 @@ public class IssuerController {
 
     @Inject
     IssuerManager im;
-
-    @Inject
-    Converter conv;
 
     /**
      * List configured schemas
@@ -78,22 +72,8 @@ public class IssuerController {
      * @return {@link HttpResponse}
      */
     @Post("/creddef")
-    public HttpResponse<CredDef> createCredDef(@Body CreateCredDefRequest req) {
-        return HttpResponse.ok(im.createCredDef(req.getSchemaId(), req.getTag(), req.isSupportRevocation(),
-                req.getRevocationRegistrySize()));
-    }
-
-    /**
-     * Create a new credential definition
-     *
-     * @param req {@link IssueCredentialSendRequest}
-     * @return {@link HttpResponse}
-     */
-    @Post("/issue-credential/send")
-    public HttpResponse<Object> issueCredentialSend(@Body IssueCredentialSendRequest req) {
-        return HttpResponse.ok(im.issueCredentialSend(UUID.fromString(req.getCredDefId()),
-                UUID.fromString(req.getPartnerId()),
-                conv.toMap(req.getDocument())));
+    public HttpResponse<Object> createCredDef(@Body CreateCredDefRequest req) {
+        return HttpResponse.ok(im.createCredDef(req.getSchemaId(), req.getTag(), req.isSupportRevocation()));
     }
 
 }

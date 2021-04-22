@@ -16,28 +16,17 @@
  * limitations under the License.
  *
  */
+package org.hyperledger.bpa.api.exception;
 
-package org.hyperledger.bpa.controller.api.issuer;
+public class SchemaException extends RuntimeException {
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+    private static final long serialVersionUID = -7238940733903128511L;
 
-@Builder
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class CreateCredDefRequest {
+    public SchemaException(String message) {
+        super(message);
+    }
 
-    // aries cred def fields
-    private String schemaId;
-
-    private String tag;
-
-    // we will use a runtime configuration to set a default size
-    // private int revocationRegistrySize;
-
-    private boolean supportRevocation;
-
+    public SchemaException(String message, Throwable t) {
+        super(message, t);
+    }
 }

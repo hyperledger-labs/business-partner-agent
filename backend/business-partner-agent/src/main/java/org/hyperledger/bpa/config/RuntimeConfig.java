@@ -56,6 +56,9 @@ public class RuntimeConfig {
     @Value("${bpa.privacy.policy.url}")
     String dataPrivacyPolicy;
 
+    @Value("${bpa.creddef.revocationRegistrySize}")
+    Integer revocationRegistrySize;
+
     public String getAgentName() {
         return DidResolver.splitDidFrom(agentName).getLabel();
     }
