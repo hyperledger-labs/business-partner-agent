@@ -1,4 +1,5 @@
 {{- $acapyIngressHost := include "acapy.host" . -}}
+{{- $bpaIngressHost := include "bpa.host" . -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -16,7 +17,7 @@ data:
       pg:
         url: jdbc:postgresql://{{ include "global.postgresql.fullname" . }}/{{ .Values.postgresql.postgresqlUsername }}
         username: {{ .Values.postgresql.postgresqlUsername }}
-      host: {{ $acapyIngressHost }}
+      host: {{ $bpaIngressHost }}
       micronaut:
         security:
           enabled: {{ .Values.bpa.config.security.enabled }}
