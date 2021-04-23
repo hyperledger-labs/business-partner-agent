@@ -30,6 +30,7 @@ import About from "../views/About.vue";
 import IssuerCreateSchema from "@/views/issuer/CreateSchema.vue";
 import IssuerSchema from "@/views/issuer/Schema.vue";
 import IssuerSchemaList from "@/views/issuer/SchemaList.vue";
+import IssueCredential from "@/views/issuer/IssueCredential.vue";
 
 Vue.use(VueRouter);
 
@@ -159,6 +160,12 @@ const routes = [
     path: "/app/issuer/schema/:id",
     name: "IssuerSchema",
     component: IssuerSchema,
+    props: true,
+  },
+  {
+    path: "/app/issuer/issue-credential/",
+    name: "IssueCredential",
+    component: IssueCredential,
     props: true,
   },
 ];

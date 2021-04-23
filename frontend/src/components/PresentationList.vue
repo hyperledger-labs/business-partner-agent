@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 
@@ -40,10 +40,16 @@
       </span>
     </template>
     <template v-slot:[`item.sentAt`]="{ item }">
-      {{ item.sentAt | moment("YYYY-MM-DD HH:mm") }}
+      {{ item.sentAt | formatDateLong }}
     </template>
     <template v-slot:[`item.receivedAt`]="{ item }">
-      {{ item.receivedAt | moment("YYYY-MM-DD HH:mm") }}
+      {{ item.receivedAt | formatDateLong }}
+    </template>
+    <template v-slot:[`item.updatedAt`]="{ item }">
+      {{ item.updatedAt | formatDateLong }}
+    </template>
+    <template v-slot:[`item.createdAt`]="{ item }">
+      {{ item.createdAt | formatDateLong }}
     </template>
     <template v-slot:expanded-item="{ headers, item }">
       <td :colspan="headers.length">

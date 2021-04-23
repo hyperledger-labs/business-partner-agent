@@ -33,6 +33,9 @@ import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface BPACredentialDefinitionRepository extends CrudRepository<BPACredentialDefinition, UUID> {
+    @NonNull
+    @Join(value = "schema", type = Join.Type.LEFT_FETCH)
+    Iterable<BPACredentialDefinition> findAll();
 
     @NonNull
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)

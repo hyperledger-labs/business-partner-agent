@@ -167,7 +167,13 @@
             </v-row>
           </v-col>
           <v-col cols="8">
-
+            <PresentationList
+                v-if="isReady"
+                v-bind:credentials="issuedCredentials"
+                v-bind:headers="headersIssued"
+                v-on:removedItem="removeIssuedCredential"
+                :expandable="false"
+            ></PresentationList>
           </v-col>
         </v-row>
       </v-card-text>
@@ -227,8 +233,8 @@ import {
   sentHeaders,
   receivedHeaders,
 } from "@/components/tableHeaders/PartnerHeaders";
+import { issuerService } from "@/services";
 
-import {issuerService} from "@/services";
 
 export default {
   name: "Partner",
@@ -242,7 +248,7 @@ export default {
     EventBus.$emit("title", "Partner");
     this.getPartner();
     this.getPresentationRecords();
-
+    this.getIssuedCredentials();
     this.$store.commit("partnerSeen", { id: this.id });
   },
   data: () => {
@@ -261,11 +267,34 @@ export default {
       credentials: [],
       presentationsSent: [],
       presentationsReceived: [],
+      issuedCredentials: [],
       rules: {
         required: (value) => !!value || "Can't be empty",
       },
       headersSent: sentHeaders,
       headersReceived: receivedHeaders,
+      headersIssued: [
+        {
+          text: "Schema",
+          value: "schema.label",
+        },
+        {
+          text: "Version",
+          value: "schema.version",
+        },
+        {
+          text: "Tag",
+          value: "credDef.tag",
+        },
+        {
+          text: "Updated at",
+          value: "updatedAt",
+        },
+        {
+          text: "State",
+          value: "state",
+        },
+      ]
     };
   },
   computed: {
@@ -350,6 +379,25 @@ export default {
     },
     removePresentationSent(id) {
       this.presentationsSent = this.presentationsSent.filter((item) => {
+        return item.id !== id;
+      });
+    },
+    getIssuedCredentials() {
+      console.log("Getting issued credential records...");
+      issuerService.listCredentialExchangesAsIssuer()
+        .then((result) => {
+          if ({}.hasOwnProperty.call(result, "data")) {
+            let data = result.data;
+            this.issuedCredentials = data;
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+          // EventBus.$emit("error", e);
+        });
+    },
+    removeIssuedCredential(id) {
+      this.issuedCredentials = this.issuedCredentials.filter((item) => {
         return item.id !== id;
       });
     },
@@ -490,6 +538,27 @@ export default {
       }
     },
     async issueCredential() {
+      if (
+        this.partner.state === "response" ||
+        this.partner.state === "active"
+      ) {
+        this.$router.push({
+          name: "IssueCredential",
+          params: {
+            partnerId: this.id,
+          },
+        });
+      } else {
+        this.attentionPartnerStateDialog = true;
+        this.goTo = {
+          name: "IssueCredential",
+          params: {
+            partnerId: this.id,
+          },
+        };
+      }
+
+      /*
       const schemaR = await issuerService.listSchemas();
       const schemas = schemaR.data;
       const schema = schemas.find(x => x.credentialDefinitions.length > 0);
@@ -512,7 +581,7 @@ export default {
       } catch(error) {
         EventBus.$emit("error", error);
       }
-
+      */
     }
   },
 };

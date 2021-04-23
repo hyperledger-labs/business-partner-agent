@@ -1,5 +1,6 @@
 package org.hyperledger.bpa.controller;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
@@ -7,11 +8,10 @@ import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
-import org.hyperledger.bpa.controller.api.issuer.CreateCredDefRequest;
-import org.hyperledger.bpa.controller.api.issuer.CreateSchemaRequest;
-import org.hyperledger.bpa.controller.api.issuer.IssueCredentialSendRequest;
+import org.hyperledger.bpa.controller.api.issuer.*;
 import org.hyperledger.bpa.impl.IssuerManager;
 import org.hyperledger.bpa.impl.util.Converter;
 
@@ -71,13 +71,23 @@ public class IssuerController {
     }
 
     /**
+     * List cred defs, items that i can issue
+     *
+     * @return list of {@link SchemaAPI}
+     */
+    @Get("/creddef")
+    public HttpResponse<List<CredDef>> listCredDefs() {
+        return HttpResponse.ok(im.listCredDefs());
+    }
+
+    /**
      * Create a new credential definition
      *
      * @param req {@link CreateCredDefRequest}
      * @return {@link HttpResponse}
      */
     @Post("/creddef")
-    public HttpResponse<Object> createCredDef(@Body CreateCredDefRequest req) {
+    public HttpResponse<CredDef> createCredDef(@Body CreateCredDefRequest req) {
         return HttpResponse.ok(im.createCredDef(req.getSchemaId(), req.getTag(), req.isSupportRevocation()));
     }
 
@@ -88,10 +98,21 @@ public class IssuerController {
      * @return {@link HttpResponse}
      */
     @Post("/issue-credential/send")
-    public HttpResponse<Object> issueCredentialSend(@Body IssueCredentialSendRequest req) {
+    public HttpResponse<CredEx> issueCredentialSend(@Body IssueCredentialSendRequest req) {
         return HttpResponse.ok(im.issueCredentialSend(UUID.fromString(req.getCredDefId()),
                 UUID.fromString(req.getPartnerId()),
                 conv.toMap(req.getDocument())));
+    }
+
+    /**
+     * Issue a credential
+     *
+     * @return {@link HttpResponse}
+     */
+    @Get("/exchanges")
+    public HttpResponse<List<CredEx>> listCredentialExchanges(
+            @Parameter(description = "issuer or holder") @Nullable @QueryValue String role) {
+        return HttpResponse.ok(im.listCredentialExchanges(role));
     }
 
 }

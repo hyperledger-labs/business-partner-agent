@@ -29,6 +29,7 @@ import org.hyperledger.aries.api.credential_definition.CredentialDefinition.Cred
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.credentials.CredentialPreview;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialProposalRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
@@ -39,6 +40,7 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.issuer.CredDef;
+import org.hyperledger.bpa.controller.api.issuer.CredEx;
 import org.hyperledger.bpa.impl.activity.Identity;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
@@ -106,6 +108,12 @@ public class IssuerManager {
         return schemaService.getSchema(id);
     }
 
+    public List<CredDef> listCredDefs() {
+        List<CredDef> result = new ArrayList<>();
+        credDefRepo.findAll().forEach(db -> result.add(CredDef.from(db)));
+        return result;
+    }
+
     public CredDef createCredDef(@NonNull String schemaId, @NonNull String tag, boolean supportRevocation) {
         CredDef result = null;
         try {
@@ -155,7 +163,7 @@ public class IssuerManager {
         return result;
     }
 
-    public Object issueCredentialSend(@NonNull UUID credDefId, @NonNull UUID partnerId,
+    public CredEx issueCredentialSend(@NonNull UUID credDefId, @NonNull UUID partnerId,
             @NonNull Map<String, Object> document) {
         // find all the data
         // find cred def - will give us schema id and credential definition id
@@ -203,7 +211,7 @@ public class IssuerManager {
                         .build();
 
                 BPACredentialExchange saved = credExRepo.save(cex);
-                return saved;
+                return CredEx.from(saved);
             } else {
                 throw new IssuerException(String.format("Could not issue the credential for definition '%s'",
                         dbCredDef.get().getCredentialDefinitionId()));
@@ -211,6 +219,50 @@ public class IssuerManager {
         } catch (IOException e) {
             throw new NetworkException("No aries connection", e);
         }
+    }
+
+    public List<CredEx> listCredentialExchanges(String role) {
+        List<BPACredentialExchange> exchanges = new ArrayList<>();
+        credExRepo.findAll().forEach(exchanges::add);
+        // now, lets get credentials...
+        return exchanges.stream()
+                .filter(x -> {
+                    if (StringUtils.isNotEmpty(role)) {
+                        return StringUtils.equalsIgnoreCase(x.getRole(), role);
+                    }
+                    return true;
+                })
+                .map(o -> {
+                    // for issuers, let's return a nearly complete credential (attrs, schema id,
+                    // cred def id)
+                    // instead of what is stored (only the attrs)
+                    if (StringUtils.equalsIgnoreCase(CredentialExchangeRole.ISSUER.name(), o.getRole())) {
+                        Credential c = this.buildFromProposal(o);
+                        o.setCredential(conv.toMap(c));
+                    }
+                    return CredEx.from(o);
+                })
+                .collect(Collectors.toList());
+    }
+
+    private Credential buildFromProposal(@NonNull BPACredentialExchange exchange) {
+        Credential result = null;
+        LinkedHashMap credentialProposal = (LinkedHashMap) exchange.getCredentialProposal().get("credential_proposal");
+        if (credentialProposal != null) {
+            ArrayList<LinkedHashMap> attributes = (ArrayList) credentialProposal.get("attributes");
+            if (attributes != null) {
+                final Map<String, String> attrs = attributes
+                        .stream()
+                        .collect(Collectors.toMap(s -> (String) s.get("name"),
+                                s -> (String) s.get("value")));
+
+                result = new Credential();
+                result.setSchemaId(exchange.getSchema().getSchemaId());
+                result.setCredentialDefinitionId(exchange.getCredDef().getCredentialDefinitionId());
+                result.setAttrs(attrs);
+            }
+        }
+        return result;
     }
 
     private void updateCredentialExchange(@NonNull String credentialExchangeId,
@@ -226,22 +278,9 @@ public class IssuerManager {
                     cex.get().setLabel(labelStrategy.apply(credential));
                 } else {
                     // grab it from the proposal...
-                    LinkedHashMap credentialProposal = (LinkedHashMap) cex.get().getCredentialProposal()
-                            .get("credential_proposal");
-                    if (credentialProposal != null) {
-                        ArrayList<LinkedHashMap> attributes = (ArrayList) credentialProposal.get("attributes");
-                        if (attributes != null) {
-                            final Map<String, String> attrs = attributes
-                                    .stream()
-                                    .collect(Collectors.toMap(s -> (String) s.get("name"),
-                                            s -> (String) s.get("value")));
-
-                            Credential c = new Credential();
-                            c.setSchemaId(credential.getSchemaId());
-                            c.setCredentialDefinitionId(credential.getCredentialDefinitionId());
-                            c.setAttrs(attrs);
-                            cex.get().setLabel(labelStrategy.apply(c));
-                        }
+                    Credential c = this.buildFromProposal(cex.get());
+                    if (c != null) {
+                        cex.get().setLabel(labelStrategy.apply(c));
                     }
                 }
             }
