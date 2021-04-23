@@ -122,6 +122,46 @@ generate hosts if not overriden
 {{- end }}
 
 {{/*
+Get the password secret.
+*/}}
+{{- define "acapy.secretName" -}}
+{{- if .Values.acapy.existingSecret -}}
+    {{- printf "%s" (tpl .Values.acapy.existingSecret $) -}}
+{{- else -}}
+    {{- printf "%s" (include "acapy.fullname" .) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return true if we should use an existingSecret.
+*/}}
+{{- define "acapy.useExistingSecret" -}}
+{{- if .Values.existingSecret -}}
+    {{- true -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return true if a secret object should be created
+*/}}
+{{- define "acapy.createSecret" -}}
+{{- if not (include "acapy.useExistingSecret" .) -}}
+    {{- true -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return seed
+*/}}
+{{- define "acapy.seed" -}}
+{{- if .Values.acapy.agentSeed -}}
+    {{- .Values.acapy.agentSeed -}}
+{{- else -}}
+    {{- randAlphaNum 32 -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create a default fully qualified app name for the postgres requirement.
 */}}
 {{- define "global.postgresql.fullname" -}}
