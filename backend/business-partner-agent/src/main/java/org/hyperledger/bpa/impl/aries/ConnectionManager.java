@@ -96,7 +96,7 @@ public class ConnectionManager {
      */
     public Optional<CreateInvitationResponse> createConnectionInvitation(@NonNull String alias) {
         try {
-            ac.connectionsCreateInvitation(
+            Optional<CreateInvitationResponse> result = ac.connectionsCreateInvitation(
                     CreateInvitationRequest.builder()
                             .serviceEndpoint(acapyEndpoint)
                             .build(),
@@ -104,6 +104,7 @@ public class ConnectionManager {
                             .alias(alias)
                             .build()
                             );
+            return result;
         } catch (IOException e) {
             log.error("Could not create aries connection invitation", e);
         }
