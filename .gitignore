@@ -81,8 +81,9 @@ package-lock.json
 # --------------------------------------
 
 charts/**/charts/
-my-values.yaml
-manifests/
+my-values*.yaml
+values-dev.yaml
+manifests*/
 scripts/local-network/von-network/
 
 scripts/local-network/resolver/*.txn
