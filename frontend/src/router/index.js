@@ -22,6 +22,7 @@ import Presentation from "../views/Presentation.vue";
 import Partners from "../views/Partners.vue";
 import Partner from "../views/Partner.vue";
 import AddPartner from "../views/AddPartner.vue";
+import AddPartnerbyURL from "../views/AddPartnerbyURL.vue";
 import Settings from "../views/Settings.vue";
 import SchemaSettings from "../views/SchemaSettings.vue";
 import Schema from "../views/Schema.vue";
@@ -115,6 +116,11 @@ const routes = [
     path: "/app/partners/add",
     name: "AddPartner",
     component: AddPartner,
+  },
+  {
+    path: "/app/add_partner",
+    name: "AddPartnerbyURL",
+    component: AddPartnerbyURL,
   },
   {
     path: "/app/settings",
