@@ -2,7 +2,7 @@
 
 The Business Partner Agent allows to manage and exchange master data between organizations.
 
-![Version: 0.1.0-alpha8](https://img.shields.io/badge/Version-0.1.0--alpha8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0-alpha5.4](https://img.shields.io/badge/AppVersion-0.1.0--alpha5.4-informational?style=flat-square)
+![Version: 0.1.0-alpha9](https://img.shields.io/badge/Version-0.1.0--alpha9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0-alpha5.4](https://img.shields.io/badge/AppVersion-0.1.0--alpha5.4-informational?style=flat-square)
 
 This chart will install a business partner agent (bpa-core & bpa-acapy) and Postgres.
 
@@ -165,6 +165,8 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | acapy.adminURLApiKey | string | `"2f9729eef0be49608c1cffd49ee3cc4a"` |  |
 | acapy.affinity | object | `{}` |  |
 | acapy.agentName | string | `"ca-aca-py"` |  |
+| acapy.agentSeed | String | `nil` | The agent seed, 32 characters. Will be generated if not defined here |
+| acapy.existingSecret | bool | `false` | If true an existing secret with the acapy service full name is queried for the seed |
 | acapy.fullnameOverride | string | `""` |  |
 | acapy.image.pullPolicy | string | `"IfNotPresent"` |  |
 | acapy.image.repository | string | `"bcgovimages/aries-cloudagent"` |  |
