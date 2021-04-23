@@ -31,8 +31,8 @@ import javax.inject.Singleton;
 @Singleton
 @Requires(classes = { EntityNotFoundException.class, ExceptionHandler.class })
 public class EntityNotFoundExceptionHandler implements ExceptionHandler<EntityNotFoundException, HttpResponse<?>> {
-        @Override
-        public HttpResponse<?> handle(HttpRequest request, EntityNotFoundException exception) {
+    @Override
+    public HttpResponse<?> handle(HttpRequest request, EntityNotFoundException exception) {
         return HttpResponse.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorMessage(exception.getMessage()));
     }

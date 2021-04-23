@@ -23,4 +23,5 @@ import lombok.NoArgsConstructor;
  * Thrown in case something e.g. an entity was not found
  */
 @NoArgsConstructor
-public class EntityNotFoundException extends RuntimeException {}
+public class EntityNotFoundException extends RuntimeException {
+}

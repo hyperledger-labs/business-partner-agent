@@ -60,7 +60,7 @@
         <micronaut.security.version>2.4.1</micronaut.security.version>
         <mockito.version>3.9.0</mockito.version>
         <pmd.version>6.33.0</pmd.version>
-        <spotbugs.version>4.2.2</spotbugs.version>
+        <spotbugs.version>4.2.3</spotbugs.version>
         <testcontainers.version>1.15.3</testcontainers.version>
         <!-- Plugin Versions -->
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
@@ -257,7 +257,7 @@
                 <plugin>
                     <groupId>io.micronaut.build</groupId>
                     <artifactId>micronaut-maven-plugin</artifactId>
-                    <version>1.1.7</version>
+                    <version>1.1.8</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

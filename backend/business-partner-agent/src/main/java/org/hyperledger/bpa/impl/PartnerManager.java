@@ -144,6 +144,7 @@ public class PartnerManager {
         }
         return result;
     }
+
     /**
      * Same as add partner, with the difference that refresh only works on existing
      * partners

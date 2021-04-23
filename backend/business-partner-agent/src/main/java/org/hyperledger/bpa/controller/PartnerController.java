@@ -99,7 +99,7 @@ public class PartnerController {
     /**
      * Update partner
      *
-     * @param id {@link UUID} the partner id
+     * @param id     {@link UUID} the partner id
      * @param update {@link UpdatePartnerRequest}
      * @return {@link PartnerAPI}
      */
@@ -117,7 +117,7 @@ public class PartnerController {
     /**
      * Update partner's did
      *
-     * @param id {@link UUID} the partner id
+     * @param id     {@link UUID} the partner id
      * @param update {@link UpdatePartnerRequest}
      * @return {@link PartnerAPI}
      */
@@ -157,6 +157,7 @@ public class PartnerController {
 
     /**
      * Accept partner connection request
+     * 
      * @param id {@link UUID} the partner id
      * @return HTTP status, no body
      */
@@ -195,7 +196,7 @@ public class PartnerController {
     /**
      * Aries: Request credential from partner
      *
-     * @param id {@link UUID} the partner id
+     * @param id      {@link UUID} the partner id
      * @param credReq {@link RequestCredentialRequest}
      * @return HTTP status
      */
@@ -212,7 +213,7 @@ public class PartnerController {
     /**
      * Aries: Request proof from partner
      *
-     * @param id {@link UUID} the partner id
+     * @param id  {@link UUID} the partner id
      * @param req {@link RequestProofRequest}
      * @return HTTP status
      */
@@ -233,7 +234,7 @@ public class PartnerController {
     /**
      * Aries: Send proof to partner
      *
-     * @param id {@link UUID} the partner id
+     * @param id  {@link UUID} the partner id
      * @param req {@link SendProofRequest}
      * @return HTTP status
      */
@@ -260,7 +261,7 @@ public class PartnerController {
     /**
      * Aries: Get a proof exchange by id
      *
-     * @param id {@link UUID} the partner id
+     * @param id      {@link UUID} the partner id
      * @param proofId the proof id
      * @return HTTP status
      */
@@ -278,7 +279,7 @@ public class PartnerController {
     /**
      * Aries: Deletes a partners proof by id
      *
-     * @param id {@link UUID} the partner id
+     * @param id      {@link UUID} the partner id
      * @param proofId the proof id
      * @return HTTP status
      */
