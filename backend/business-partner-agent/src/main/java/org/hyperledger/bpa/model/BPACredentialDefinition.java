@@ -41,9 +41,6 @@ import java.util.UUID;
 @Table(name = "bpa_cred_def")
 public class BPACredentialDefinition {
 
-    public final static Integer REVOCATION_REGISTRY_MIN_SIZE = 4;
-    public final static Integer REVOCATION_REGISTRY_MAX_SIZE = 32768;
-
     @Id
     @AutoPopulated
     private UUID id;
@@ -60,5 +57,5 @@ public class BPACredentialDefinition {
 
     private Boolean isSupportRevocation = Boolean.FALSE;
 
-    private Integer revocationRegistrySize = REVOCATION_REGISTRY_MIN_SIZE;
+    private Integer revocationRegistrySize;
 }
