@@ -288,17 +288,13 @@ public class PartnerController {
     /**
      * Aries: Create a connection-invitation
      *
-     * @param id      the partner id
-     * @param proofId the proof id
-     * @return HTTP status
+     * @param req {@link CreatePartnerInvitationRequest}
+     * @return {@link PartnerAPI}
      */
-    @Post("/partner-invitation")
+    @Post("/invitation")
     public HttpResponse<CreateInvitationResponse> requestConnectionInvitation(
-          @Body requestConnectionInvitationRequest bodyreq) {
-        final Optional<CreatePartnerInvitationRequest> invitation = cm.createConnectionInvitation(bodyreq.alias);
-        if (invitation.isPresent()) {
-            return HttpResponse.ok(invitation.get());
-        }
-        return HttpResponse.notFound();
+          @Body CreatePartnerInvitationRequest req) {
+        final Optional<CreateInvitationResponse> invitation = cm.createConnectionInvitation(req.alias);
+        return HttpResponse.ok(invitation.get());
     }
 }

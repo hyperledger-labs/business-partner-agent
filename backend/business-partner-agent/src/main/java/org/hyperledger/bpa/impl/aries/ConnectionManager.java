@@ -29,6 +29,7 @@ import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.connection.ReceiveInvitationRequest;
 import org.hyperledger.aries.api.connection.CreateInvitationParams;
 import org.hyperledger.aries.api.connection.CreateInvitationRequest;
+import org.hyperledger.aries.api.connection.CreateInvitationResponse;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.ledger.EndpointType;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
@@ -93,7 +94,7 @@ public class ConnectionManager {
      * 
      * @param alias optional connection alias
      */
-    public void createConnectionInvitation(@NonNull String alias) {
+    public Optional<CreateInvitationResponse> createConnectionInvitation(@NonNull String alias) {
         try {
             ac.connectionsCreateInvitation(
                     CreateInvitationRequest.builder()
@@ -106,6 +107,7 @@ public class ConnectionManager {
         } catch (IOException e) {
             log.error("Could not create aries connection invitation", e);
         }
+        return null;
     }
 
     /**
