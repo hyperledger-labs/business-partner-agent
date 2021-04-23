@@ -27,6 +27,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
+{{- if .Values.acapy.ingress.hosts -}}
     {{- range .Values.acapy.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
@@ -38,4 +39,13 @@ spec:
               servicePort: {{ $svcPort }}
           {{- end }}
     {{- end }}
-  {{- end }}
+{{- else }}
+    - host: {{ include "acapy.host" . | quote }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: {{ $svcPort }}         
+{{- end -}}
+{{- end }}
