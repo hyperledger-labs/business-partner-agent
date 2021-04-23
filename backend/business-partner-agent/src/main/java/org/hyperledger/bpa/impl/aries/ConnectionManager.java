@@ -25,16 +25,14 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.connection.ConnectionAcceptRequestFilter;
-import org.hyperledger.aries.api.connection.ConnectionReceiveInvitationFilter;
-import org.hyperledger.aries.api.connection.ConnectionRecord;
-import org.hyperledger.aries.api.connection.ReceiveInvitationRequest;
+import org.hyperledger.aries.api.connection.*;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.ledger.EndpointType;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.api.DidDocAPI;
+import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.MessageService;
@@ -168,41 +166,49 @@ public class ConnectionManager {
         }
     }
 
-    public synchronized void handleConnectionEvent(ConnectionRecord connection) {
-        partnerRepo.findByLabel(connection.getTheirLabel()).ifPresentOrElse(
+    public synchronized void handleConnectionEvent(ConnectionRecord record) {
+        partnerRepo.findByLabel(record.getTheirLabel()).ifPresentOrElse(
                 // connection that originated from this agent
                 dbP -> {
                     if (dbP.getConnectionId() == null) {
-                        dbP.setConnectionId(connection.getConnectionId());
-                        dbP.setState(connection.getState());
+                        dbP.setConnectionId(record.getConnectionId());
+                        dbP.setState(record.getState());
                         partnerRepo.update(dbP);
                     } else {
-                        partnerRepo.updateState(dbP.getId(), connection.getState());
+                        partnerRepo.updateState(dbP.getId(), record.getState());
                     }
                 },
                 // connection initiated externally
-                () -> partnerRepo.findByConnectionId(connection.getConnectionId()).ifPresentOrElse(
-                        dbP -> partnerRepo.updateState(dbP.getId(), connection.getState()),
+                () -> partnerRepo.findByConnectionId(record.getConnectionId()).ifPresentOrElse(
+                        dbP -> partnerRepo.updateState(dbP.getId(), record.getState()),
                         () -> {
                             Partner p = Partner
                                     .builder()
                                     .ariesSupport(Boolean.TRUE)
-                                    .alias(connection.getTheirLabel()) // event has no alias in this case
-                                    .connectionId(connection.getConnectionId())
-                                    .did(didPrefix + connection.getTheirDid())
-                                    .label(connection.getTheirLabel())
-                                    .state(connection.getState())
+                                    .alias(record.getTheirLabel()) // event has no alias in this case
+                                    .connectionId(record.getConnectionId())
+                                    .did(didPrefix + record.getTheirDid())
+                                    .label(record.getTheirLabel())
+                                    .state(record.getState())
                                     .incoming(Boolean.TRUE)
                                     .build();
                             p = partnerRepo.save(p);
                             didResolver.lookupIncoming(p);
-                            messageService.sendMessage(WebSocketMessageBody.partnerReceived(conv.toAPIObject(p)));
+                            sendConnectionEvent(record,conv.toAPIObject(p));
                         }));
     }
 
-    public void handleConnectionRequest(@NonNull String connectionId) {
-        partnerRepo.findByConnectionId(connectionId).ifPresent(p -> messageService
-                .sendMessage(WebSocketMessageBody.partnerConnectionRequest(conv.toAPIObject(p))));
+    public void sendConnectionEvent(@NonNull ConnectionRecord record, @NonNull PartnerAPI p) {
+        // TODO both or either?
+        messageService.sendMessage(WebSocketMessageBody.partnerReceived(p));
+        if (isConnectionRequest(record)) {
+            messageService.sendMessage(WebSocketMessageBody.partnerConnectionRequest(p));
+        }
+    }
+
+    private boolean isConnectionRequest(ConnectionRecord connection) {
+        return ConnectionAcceptance.MANUAL.equals(connection.getAccept())
+                && ConnectionState.REQUEST.equals(connection.getState());
     }
 
     public void removeConnection(String connectionId) {
