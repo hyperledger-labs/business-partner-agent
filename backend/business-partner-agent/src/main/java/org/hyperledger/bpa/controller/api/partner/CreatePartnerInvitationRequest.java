@@ -20,8 +20,6 @@ package org.hyperledger.bpa.controller.api.partner;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Data
 @NoArgsConstructor
 public class CreatePartnerInvitationRequest {
