@@ -95,19 +95,20 @@ public class ConnectionManager {
      * @param alias optional connection alias
      */
     public Optional<CreateInvitationResponse> createConnectionInvitation(@NonNull String alias) {
+        Optional<CreateInvitationResponse> result = Optional.empty();
         try {
-            Optional<CreateInvitationResponse> result = ac.connectionsCreateInvitation(
+            result = ac.connectionsCreateInvitation(
                     CreateInvitationRequest.builder()
                             .serviceEndpoint(acapyEndpoint)
                             .build(),
                     CreateInvitationParams.builder()
                             .alias(alias)
                             .build());
-            return result;
         } catch (IOException e) {
             log.error("Could not create aries connection invitation", e);
         }
-    } 
+        return result;
+    }
 
     /**
      * Create a connection based on a public did that is registered on a ledger.
