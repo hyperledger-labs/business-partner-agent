@@ -28,8 +28,9 @@
           dark
           absolute
           bottom
-          right
+          left
           fab
+          style="margin-left:50px"
           :to="{ name: 'AddPartnerbyURL' }"
         >
           <v-icon>mdi-qrcode</v-icon>
