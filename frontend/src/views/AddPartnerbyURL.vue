@@ -12,23 +12,6 @@
         Add new Business Partner
       </v-card-title>
       <v-container>
-        <v-row class="mx-2">
-          <v-col cols="4">
-            <p class="grey--text text--darken-2 font-weight-medium">
-              Set a name
-            </p>
-          </v-col>
-          <v-col cols="8">
-            <v-text-field
-              label="Name"
-              placeholder=""
-              v-model="alias"
-              outlined
-              dense
-            >
-            </v-text-field>
-          </v-col>
-        </v-row>
         <v-row v-if="!invitationURL">
           <v-col cols="12">
               <v-btn color="Primary" text @click="createInvitation()">GenerateURL</v-btn>
