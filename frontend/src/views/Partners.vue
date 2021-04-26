@@ -22,6 +22,18 @@
         >
           <v-icon>mdi-plus</v-icon>
         </v-btn>
+        <v-btn
+          color="primary"
+          small
+          dark
+          absolute
+          bottom
+          right
+          fab
+          :to="{ name: 'AddPartnerbyURL' }"
+        >
+          <v-icon>mdi-qrcode</v-icon>
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-container>

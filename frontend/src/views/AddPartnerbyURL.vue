@@ -35,9 +35,11 @@
           </v-col>
         </v-row>
         <v-row v-else>
-          <v-layout justify-center>
-            <span class="font-weight-medium">{{ invitationURL }}</span>
-          </v-layout>
+          <v-col>
+            <v-layout justify-center>
+              <span class="font-weight-medium">{{ invitationURL }}</span>
+            </v-layout>
+          </v-col>
         </v-row>      
       </v-container>
       <v-card-actions>

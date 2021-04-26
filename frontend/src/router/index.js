@@ -118,7 +118,7 @@ const routes = [
     component: AddPartner,
   },
   {
-    path: "/app/add_partner",
+    path: "/app/partners/create-qr",
     name: "AddPartnerbyURL",
     component: AddPartnerbyURL,
   },
