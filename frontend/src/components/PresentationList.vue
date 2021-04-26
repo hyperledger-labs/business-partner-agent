@@ -31,7 +31,7 @@
     </template>
     <template v-slot:[`item.state`]="{ item }">
       <v-icon
-        v-if="item.state === 'verified' || item.state == 'presentation_acked'"
+        v-if="isItemActive(item)"
         color="green"
         >mdi-check</v-icon
       >
@@ -87,6 +87,10 @@ export default {
       type: Array,
       default: () => presentationListHeaders,
     },
+    isActiveFn: {
+      type: Function,
+      default: (item) => (item.state === 'verified' || item.state == 'presentation_acked')
+    }
   },
   data: () => {
     return {
@@ -126,9 +130,7 @@ export default {
         });
     },
     openPresentation(presentation) {
-      if (
-        presentation.state === "verified" ||
-        presentation.state == "presentation_acked"
+      if (this.isActiveFn(presentation)
       ) {
         if (presentation.id) {
           this.$router.push({
@@ -146,6 +148,9 @@ export default {
         // Need to fix Presentation.vue for unfinished presentations
       }
     },
+    isItemActive(item) {
+      return this.isActiveFn(item);
+    }
   },
   components: {
     Credential,

@@ -167,13 +167,13 @@
             </v-row>
           </v-col>
           <v-col cols="8">
-            <PresentationList
+            <CredExList
                 v-if="isReady"
-                v-bind:credentials="issuedCredentials"
+                v-bind:items="issuedCredentials"
                 v-bind:headers="headersIssued"
-                v-on:removedItem="removeIssuedCredential"
-                :expandable="false"
-            ></PresentationList>
+                v-on:openItem="openIssuedCredential"
+                v-bind:isActiveFn="isIssuedCredentialActive"
+            ></CredExList>
           </v-col>
         </v-row>
       </v-card-text>
@@ -234,7 +234,7 @@ import {
   receivedHeaders,
 } from "@/components/tableHeaders/PartnerHeaders";
 import { issuerService } from "@/services";
-
+import CredExList from "@/components/CredExList";
 
 export default {
   name: "Partner",
@@ -243,6 +243,7 @@ export default {
     Profile,
     PresentationList,
     PartnerStateIndicator,
+    CredExList,
   },
   created() {
     EventBus.$emit("title", "Partner");
@@ -396,10 +397,23 @@ export default {
           // EventBus.$emit("error", e);
         });
     },
-    removeIssuedCredential(id) {
-      this.issuedCredentials = this.issuedCredentials.filter((item) => {
-        return item.id !== id;
-      });
+    openIssuedCredential(item) {
+      if (this.isIssuedCredentialActive(item))  {
+        // ok, lets show this credential
+        this.$router.push({
+          name: "ViewCredentialContent",
+          params: {
+            credential: item.credential,
+            title: `${item.schema.label} (${item.schema.version}) - ${item.credDef.tag}`
+          },
+        });
+      }
+    },
+    isIssuedCredentialActive(item) {
+      if (item) {
+        return (item.state === 'credential_issued' || item.state === 'credential_acked')
+      }
+      return false;
     },
     getPartner() {
       console.log("Getting partner...");
@@ -557,31 +571,6 @@ export default {
           },
         };
       }
-
-      /*
-      const schemaR = await issuerService.listSchemas();
-      const schemas = schemaR.data;
-      const schema = schemas.find(x => x.credentialDefinitions.length > 0);
-      const credDef = schema.credentialDefinitions[0];
-
-      const document = {};
-      schema.schemaAttributeNames.forEach((key) => {
-        document[key] = key;
-      });
-      const data = {
-        credDefId: credDef.id,
-        partnerId: this.partner.id,
-        document: document
-      }
-      try {
-        const resp = await issuerService.issueCredentialSend(data);
-        if (resp.status === 200) {
-          return resp.data;
-        }
-      } catch(error) {
-        EventBus.$emit("error", error);
-      }
-      */
     }
   },
 };

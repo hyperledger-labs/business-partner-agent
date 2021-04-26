@@ -31,6 +31,7 @@ import IssuerCreateSchema from "@/views/issuer/CreateSchema.vue";
 import IssuerSchema from "@/views/issuer/Schema.vue";
 import IssuerSchemaList from "@/views/issuer/SchemaList.vue";
 import IssueCredential from "@/views/issuer/IssueCredential.vue";
+import ViewCredentialContent from "@/views/ViewCredentialContent.vue";
 
 Vue.use(VueRouter);
 
@@ -166,6 +167,12 @@ const routes = [
     path: "/app/issuer/issue-credential/",
     name: "IssueCredential",
     component: IssueCredential,
+    props: true,
+  },
+  {
+    path: "/app/credential/view/",
+    name: "ViewCredentialContent",
+    component: ViewCredentialContent,
     props: true,
   },
 ];
