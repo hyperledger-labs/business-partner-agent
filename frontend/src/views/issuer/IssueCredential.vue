@@ -164,7 +164,7 @@
       async submit() {
         this.isBusy = true;
         try {
-          const _credex = this.issueCredential();
+          const _credex = await this.issueCredential();
           this.isBusy = false;
           this.credDef = {};
           if (_credex) {
