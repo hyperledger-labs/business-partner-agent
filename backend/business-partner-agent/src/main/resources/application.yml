@@ -77,7 +77,7 @@ datasources:
     initialization-fail-timeout: -1 # wait forever until the db is ready
 
 flyway:
-  datasources: 
+  datasources:
     '*':
       locations: classpath:databasemigrations
       schemas: ${bpa.pg.schema}
@@ -144,3 +144,5 @@ bpa:
   privacy:
     policy:
       url: ${BPA_PRIVACY_POLICY_URL:}
+  creddef:
+    revocationRegistrySize: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE:3000}
