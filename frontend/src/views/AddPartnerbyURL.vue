@@ -36,9 +36,12 @@
         </v-row>
         <v-row v-else>
           <v-col>
-            <v-layout justify-center>
-              <span class="font-weight-medium">{{ invitationURL }}</span>
-            </v-layout>
+            <div>
+              <qrcode-vue :value="invitationURL" :size="400" level="H" ></qrcode-vue>
+              <br />
+              <br />
+              <span class="font-weight-light">{{ invitationURL }}</span>
+            </div>
           </v-col>
         </v-row>      
       </v-container>
@@ -53,9 +56,13 @@
 
 <script>
 import { EventBus } from "../main";
+import QrcodeVue from 'qrcode.vue'
 export default {
   name: "AddPartnerbyURL",
   created: () => {},
+  components: {
+    QrcodeVue,
+  },
   data: () => {
     return {
       partnerLoading: false,
@@ -77,7 +84,6 @@ export default {
         .then((result) => {
           console.log(result);
           this.invitationURL = result.data.invitationUrl;
-          console.log(this.invitationURL);
 
           if (result.status === 201) {
             //   this.$axios.get(`${this.$apiBaseUrl}/partners/${result.data.id}`).then( res => {
@@ -99,7 +105,12 @@ export default {
             EventBus.$emit("error", e);
           }
         });
-    },
+    },    
   },
 };
 </script>
+<style scoped>
+span {
+  width: 100%;
+}
+</style>
