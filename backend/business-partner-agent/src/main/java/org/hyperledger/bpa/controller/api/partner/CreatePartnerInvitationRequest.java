@@ -25,9 +25,9 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 public class CreatePartnerInvitationRequest {
-    
+
     public String alias;
-    //public boolean autoAccept;
-    //public boolean multiUse;
-    //public boolean public;
+    // public boolean autoAccept;
+    // public boolean multiUse;
+    // public boolean public;
 }

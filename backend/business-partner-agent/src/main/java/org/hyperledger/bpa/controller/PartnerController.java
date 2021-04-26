@@ -293,7 +293,7 @@ public class PartnerController {
      */
     @Post("/invitation")
     public HttpResponse<CreateInvitationResponse> requestConnectionInvitation(
-          @Body CreatePartnerInvitationRequest req) {
+            @Body CreatePartnerInvitationRequest req) {
         final Optional<CreateInvitationResponse> invitation = cm.createConnectionInvitation(req.alias);
         return HttpResponse.ok(invitation.get());
     }

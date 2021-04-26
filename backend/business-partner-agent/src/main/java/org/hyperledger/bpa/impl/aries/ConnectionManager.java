@@ -102,8 +102,7 @@ public class ConnectionManager {
                             .build(),
                     CreateInvitationParams.builder()
                             .alias(alias)
-                            .build()
-                            );
+                            .build());
             return result;
         } catch (IOException e) {
             log.error("Could not create aries connection invitation", e);
