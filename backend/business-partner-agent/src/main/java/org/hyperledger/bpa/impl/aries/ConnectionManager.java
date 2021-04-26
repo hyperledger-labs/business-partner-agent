@@ -107,8 +107,7 @@ public class ConnectionManager {
         } catch (IOException e) {
             log.error("Could not create aries connection invitation", e);
         }
-        return null;
-    }
+    } 
 
     /**
      * Create a connection based on a public did that is registered on a ledger.
