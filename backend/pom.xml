@@ -63,6 +63,7 @@
         <spotbugs.version>4.2.2</spotbugs.version>
         <testcontainers.version>1.15.2</testcontainers.version>
         <!-- Plugin Versions -->
+        <license-maven-plugin.version>4.1</license-maven-plugin.version>
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
         <maven.failsafe.plugin.version>2.22.2</maven.failsafe.plugin.version>
         <maven.pmd.plugin.version>3.14.0</maven.pmd.plugin.version>
@@ -254,7 +255,7 @@
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>4.0</version>
+                <version>${license-maven-plugin.version}</version>
                 <configuration>
                     <licenseSets>
                         <licenseSet>
@@ -265,9 +266,16 @@
                         </licenseSet>
                     </licenseSets>
                     <properties>
-                        <inceptionYear>2021</inceptionYear>
+                        <project.inceptionYear>2020</project.inceptionYear>
                     </properties>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.mycila</groupId>
+                        <artifactId>license-maven-plugin-git</artifactId>
+                        <version>${license-maven-plugin.version}</version>
+                    </dependency>
+                </dependencies>
                 <executions>
                     <execution>
                         <goals>
