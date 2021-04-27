@@ -99,7 +99,6 @@ public class ConnectionManager {
         try {
             result = ac.connectionsCreateInvitation(
                     CreateInvitationRequest.builder()
-                            .serviceEndpoint(acapyEndpoint)
                             .build(),
                     CreateInvitationParams.builder()
                             .alias(alias)
