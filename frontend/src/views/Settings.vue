@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
@@ -29,6 +29,19 @@
         </v-list-item-content>
         <v-list-item-action>
           <v-btn icon :to="{ name: 'SchemaSettings' }">
+            <v-icon color="grey">mdi-chevron-right</v-icon>
+          </v-btn>
+        </v-list-item-action>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title
+              class="grey--text text--darken-2 font-weight-medium"
+          >Issuer Schemas and Credential Definitions</v-list-item-title
+          >
+        </v-list-item-content>
+        <v-list-item-action>
+          <v-btn icon :to="{ name: 'IssuerSchemaList' }">
             <v-icon color="grey">mdi-chevron-right</v-icon>
           </v-btn>
         </v-list-item-action>

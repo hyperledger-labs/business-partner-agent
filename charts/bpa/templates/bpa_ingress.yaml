@@ -27,6 +27,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
+    {{- if .Values.bpa.ingress.hosts -}}
     {{- range .Values.bpa.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
@@ -38,4 +39,13 @@ spec:
               servicePort: {{ $svcPort }}
           {{- end }}
     {{- end }}
-  {{- end }}
+{{- else }}
+    - host: {{ include "bpa.host" . | quote }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: {{ $svcPort }}         
+{{- end -}}
+{{- end }}

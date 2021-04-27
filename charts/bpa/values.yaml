@@ -6,6 +6,10 @@ global:
   nameOverride: ""
   fullnameOverride: ""
 
+  #Define domain suffix  and allow auto-generated hostpaths
+  ## define <service>.ingress.hosts.host to override
+  ingressSuffix: .example.com
+
   persistence:
     # -- If true, the Postgres chart is deployed
     deployPostgres: true
@@ -83,13 +87,14 @@ bpa:
     port: 80
 
   ingress:
-    enabled: false
+    enabled: true
     annotations: {}
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: my-bpa.local
-        paths: []
+    # Uncomment this to define your own hosts and override global.ingressSuffix
+    # hosts: 
+    #     host:
+    #     paths: ['/']
     tls: []
     #  - secretName: my-bpa-tls
     #    hosts:
@@ -122,12 +127,15 @@ acapy:
     # --  Overrides the image tag whose default is the chart appVersion.
     tag: py36-1.16-0_0.6.0
 
-  # -- (String) The agent seed, 32 characters. See main documentation. 
-  agentSeed:
-
   adminURLApiKey: 2f9729eef0be49608c1cffd49ee3cc4a
 
   agentName: ca-aca-py
+
+  # -- (String) The agent seed, 32 characters. Will be generated if not defined here
+  agentSeed:
+
+  # -- If true an existing secret with the acapy service full name is queried for the seed
+  existingSecret: false
 
   readOnlyMode: false
 
@@ -154,13 +162,15 @@ acapy:
     httpPort: 8030
 
   ingress:
-    enabled: false
+    enabled: true
     annotations: {}
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
-    hosts:
-      - host: my-acapy.local
-        paths: []
+
+    # Uncomment this to define your own hosts and override global.ingressSuffix
+    # hosts: 
+    #     host:
+    #     paths: ['/']
     tls: []
     #  - secretName: my-acapy-tls
     #    hosts:
