@@ -259,7 +259,7 @@
                 <configuration>
                     <licenseSets>
                         <licenseSet>
-                            <header>header.txt</header>
+                            <header>${maven.multiModuleProjectDirectory}/header.txt</header>
                             <includes>
                                 <include>src/*/java/**/*.java</include>
                             </includes>
