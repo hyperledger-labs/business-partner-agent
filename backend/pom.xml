@@ -250,6 +250,32 @@
                     <configFile>../formatter.xml</configFile>
                 </configuration>
             </plugin>
+            <!-- mvn license:format to add missing headers -->
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>4.0</version>
+                <configuration>
+                    <licenseSets>
+                        <licenseSet>
+                            <header>header.txt</header>
+                            <includes>
+                                <include>src/*/java/**/*.java</include>
+                            </includes>
+                        </licenseSet>
+                    </licenseSets>
+                    <properties>
+                        <inceptionYear>2021</inceptionYear>
+                    </properties>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
