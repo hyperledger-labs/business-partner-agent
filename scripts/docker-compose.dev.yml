@@ -18,6 +18,7 @@ services:
         -Dbpa.pg.username=${POSTGRESQL_USER} 
         -Dbpa.pg.password=${POSTGRESQL_PASSWORD} 
         -Dbpa.host=${BPA_HOST}
+        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${BPA_DEBUG_PORT}
       BPA_WEB_MODE: ${BPA_WEB_MODE}
       BPA_RESOLVER_URL: ${BPA_RESOLVER_URL}
       BPA_LEDGER_BROWSER: ${BPA_LEDGER_BROWSER}
@@ -30,6 +31,7 @@ services:
       BPA_PRIVACY_POLICY_URL: ${BPA_PRIVACY_POLICY_URL}
     ports:
       - ${BPA_PORT}:${BPA_PORT}
+      - ${BPA_DEBUG_PORT}:${BPA_DEBUG_PORT}
     restart: always
   aca-py:
     image: bcgovimages/aries-cloudagent:py36-1.16-0_0.6.0
