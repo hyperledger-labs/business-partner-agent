@@ -9,13 +9,13 @@ services:
       - aca-py
     environment:
       JAVA_OPTS: >
-        -Dbpa.acapy.url=http://aca-py:${ACAPY_ADMIN_PORT} 
+        -Dbpa.acapy.url=http://aca-py:${ACAPY_ADMIN_PORT}
         -Dbpa.acapy.apiKey=${ACAPY_ADMIN_URL_API_KEY}
-        -Dmicronaut.security.enabled=${BPA_SECURITY_ENABLED} 
+        -Dmicronaut.security.enabled=${BPA_SECURITY_ENABLED}
         -Dmicronaut.server.port=${BPA_PORT}
-        -Dbpa.pg.url=jdbc:postgresql://${POSTGRESQL_HOST}/${POSTGRESQL_USER} 
-        -Dbpa.pg.username=${POSTGRESQL_USER} 
-        -Dbpa.pg.password=${POSTGRESQL_PASSWORD} 
+        -Dbpa.pg.url=jdbc:postgresql://${POSTGRESQL_HOST}/${POSTGRESQL_USER}
+        -Dbpa.pg.username=${POSTGRESQL_USER}
+        -Dbpa.pg.password=${POSTGRESQL_PASSWORD}
         -Dbpa.host=${BPA_HOST}
       BPA_WEB_MODE: ${BPA_WEB_MODE}
       BPA_RESOLVER_URL: ${BPA_RESOLVER_URL}
@@ -27,6 +27,7 @@ services:
       AGENT_NAME: ${AGENT_NAME}
       BPA_IMPRINT_URL: ${BPA_IMPRINT_URL}
       BPA_PRIVACY_POLICY_URL: ${BPA_PRIVACY_POLICY_URL}
+      BPA_CREDDEF_REVOCATION_REGISTRY_SIZE: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE}
     ports:
       - ${BPA_PORT}:${BPA_PORT}
     restart: always

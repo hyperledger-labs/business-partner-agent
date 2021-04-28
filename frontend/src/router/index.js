@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 */
 
@@ -28,6 +28,9 @@ import SchemaSettings from "../views/SchemaSettings.vue";
 import Schema from "../views/Schema.vue";
 import AddSchema from "../views/AddSchema.vue";
 import About from "../views/About.vue";
+import IssuerCreateSchema from "@/views/issuer/CreateSchema.vue";
+import IssuerSchema from "@/views/issuer/Schema.vue";
+import IssuerSchemaList from "@/views/issuer/SchemaList.vue";
 
 Vue.use(VueRouter);
 
@@ -147,6 +150,22 @@ const routes = [
     path: "/app/about",
     name: "About",
     component: About,
+  },
+  {
+    path: "/app/issuer/schema",
+    name: "IssuerSchemaList",
+    component: IssuerSchemaList,
+  },
+  {
+    path: "/app/issuer/schema/create",
+    name: "IssuerCreateSchema",
+    component: IssuerCreateSchema,
+  },
+  {
+    path: "/app/issuer/schema/:id",
+    name: "IssuerSchema",
+    component: IssuerSchema,
+    props: true,
   },
 ];
 

@@ -73,3 +73,12 @@ If you want to run in web only mode you also have to set:
 
 Swagger UI: http://localhost:8080/swagger-ui   
 Frontend: http://localhost:8080
+
+# Websocket Events
+
+see: WebSocketMessageBody.java
+
+1. Connection Request (no auto flags)
+2. Partner Received (with auto flags)
+3. Credential Received
+4. Proof Received
