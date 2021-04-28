@@ -35,10 +35,12 @@ public interface BPASchemaRepository extends CrudRepository<BPASchema, UUID> {
 
     @NonNull
     @Join(value = "restrictions", type = Join.Type.LEFT_FETCH)
+    @Join(value = "credentialDefinitions", type = Join.Type.LEFT_FETCH)
     Iterable<BPASchema> findAll();
 
     @NonNull
     @Join(value = "restrictions", type = Join.Type.LEFT_FETCH)
+    @Join(value = "credentialDefinitions", type = Join.Type.LEFT_FETCH)
     Optional<BPASchema> findById(@NonNull UUID id);
 
     void updateDefaultAttributeName(@Id UUID id, String defaultAttributeName);

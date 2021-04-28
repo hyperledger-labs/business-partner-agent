@@ -21,6 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import lombok.NonNull;
 
+import java.util.UUID;
+
 public class AriesStringUtil {
 
     /**
@@ -59,11 +61,47 @@ public class AriesStringUtil {
         return parts[4];
     }
 
+    /**
+     * Transform value to an acceptable value for schema name or attribute name.
+     * Cannot contain whitespace. Leading and trailing removed, other replaced with
+     * replaceChar.
+     *
+     * @param value String value to use as a schema name or attribute name
+     * @return String with no whitespace
+     */
+    public static String schemaAttributeFormat(@NonNull String value, @NonNull Character replaceChar) {
+        return value.trim().replaceAll("\\s+", String.valueOf(replaceChar));
+    }
+
+    /**
+     * Transform value to an acceptable value for schema name or attribute name.
+     * Cannot contain whitespace. Leading and trailing removed, other replaced with
+     * underscore.
+     *
+     * @param value String value to use as a schema name or attribute name
+     * @return String with no whitespace
+     */
+    public static String schemaAttributeFormat(@NonNull String value) {
+        return schemaAttributeFormat(value, '_');
+    }
+
     private static String[] credDefIdSplit(String credDefId) {
         final String[] parts = credDefId.split(":");
         if (parts.length != 5) {
             throw new IllegalArgumentException("Not a credential definition id");
         }
         return parts;
+    }
+
+    public static boolean isUUID(String input) {
+        if (StringUtils.isAllBlank(input)) {
+            return false;
+        }
+        try {
+            UUID.fromString(input);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }

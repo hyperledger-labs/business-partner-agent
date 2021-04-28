@@ -64,4 +64,7 @@ public class BPASchema {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = CascadeType.ALL)
     private List<BPARestrictions> restrictions;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = CascadeType.ALL)
+    private List<BPACredentialDefinition> credentialDefinitions;
 }

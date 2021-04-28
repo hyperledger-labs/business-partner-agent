@@ -19,7 +19,9 @@ package org.hyperledger.bpa.impl.util;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class AriesStringUtilTest {
 
@@ -45,4 +47,26 @@ class AriesStringUtilTest {
                 .credDefIdGetTag("nJvGcV7hBSLRSUvwGk2hT:3:CL:734:IATF Certificate"));
     }
 
+    @Test
+    void schemaAttributeFormat() {
+        // remove trailing and ending whitespace
+        assertEquals("pass", AriesStringUtil.schemaAttributeFormat(" pass "));
+        // remove trailing and ending whitespace, replace other whitespace with default
+        // char (underscore)
+        assertEquals("one_two_three", AriesStringUtil.schemaAttributeFormat(" one two three "));
+        // remove trailing and ending whitespace, replace other whitespace with another
+        // char (dash)
+        assertEquals("one-two-three", AriesStringUtil.schemaAttributeFormat(" one two three ", '-'));
+        // use more whitespace, should be a single replacement
+        assertEquals("one-two-three", AriesStringUtil.schemaAttributeFormat(" one   two    three ", '-'));
+    }
+
+    @Test
+    void testIsUUID() {
+        assertFalse(AriesStringUtil.isUUID(null));
+        assertFalse(AriesStringUtil.isUUID(""));
+        assertFalse(AriesStringUtil.isUUID("   "));
+        assertFalse(AriesStringUtil.isUUID("Test String"));
+        assertTrue(AriesStringUtil.isUUID(UUID.randomUUID().toString()));
+    }
 }

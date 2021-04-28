@@ -23,6 +23,7 @@ import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.api.PartnerAPI;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.core.RegisteredWebhook.WebhookEventType;
 import org.hyperledger.bpa.impl.activity.PartnerLookup;
@@ -45,7 +46,7 @@ import java.util.UUID;
 public class PartnerManager {
 
     @Value("${bpa.did.prefix}")
-    private String ledgerPrefix;
+    String ledgerPrefix;
 
     @Inject
     PartnerRepository repo;
@@ -143,6 +144,7 @@ public class PartnerManager {
         }
         return result;
     }
+
     /**
      * Same as add partner, with the difference that refresh only works on existing
      * partners
@@ -172,6 +174,13 @@ public class PartnerManager {
     @CacheInvalidate(cacheNames = { "partner-lookup-cache" }, all = true)
     public void invalidatePartnerLookupCache() {
         //
+    }
+
+    public void acceptPartner(@NonNull UUID partnerId) {
+        String connectionId = repo.findById(partnerId)
+                .map(Partner::getConnectionId)
+                .orElseThrow(EntityNotFoundException::new);
+        cm.acceptConnection(connectionId);
     }
 
 }
