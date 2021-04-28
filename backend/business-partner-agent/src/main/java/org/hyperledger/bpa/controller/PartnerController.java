@@ -84,7 +84,7 @@ public class PartnerController {
     /**
      * Get partner by id
      *
-     * @param id the partner id
+     * @param id {@link UUID} the partner id
      * @return partner
      */
     @Get("/{id}")
@@ -99,7 +99,7 @@ public class PartnerController {
     /**
      * Update partner
      *
-     * @param id     the partner id
+     * @param id     {@link UUID} the partner id
      * @param update {@link UpdatePartnerRequest}
      * @return {@link PartnerAPI}
      */
@@ -117,7 +117,7 @@ public class PartnerController {
     /**
      * Update partner's did
      *
-     * @param id     the partner id
+     * @param id     {@link UUID} the partner id
      * @param update {@link UpdatePartnerRequest}
      * @return {@link PartnerAPI}
      */
@@ -135,7 +135,7 @@ public class PartnerController {
     /**
      * Remove partner
      *
-     * @param id the partner id
+     * @param id {@link UUID} the partner id
      * @return HTTP status, no body
      */
     @Delete("/{id}")
@@ -156,6 +156,18 @@ public class PartnerController {
     }
 
     /**
+     * Accept partner connection request
+     * 
+     * @param id {@link UUID} the partner id
+     * @return HTTP status, no body
+     */
+    @Put("/{id}/accept")
+    public HttpResponse<Void> acceptPartnerRequest(@PathVariable String id) {
+        pm.acceptPartner(UUID.fromString(id));
+        return HttpResponse.ok();
+    }
+
+    /**
      * Lookup/Preview a partners public profile before adding
      *
      * @param did the partners did
@@ -169,7 +181,7 @@ public class PartnerController {
     /**
      * Reload/Re- lookup a partners public profile
      *
-     * @param id the partner id
+     * @param id {@link UUID} the partner id
      * @return {@link PartnerAPI}
      */
     @Get("/{id}/refresh")
@@ -184,7 +196,7 @@ public class PartnerController {
     /**
      * Aries: Request credential from partner
      *
-     * @param id      the partner id
+     * @param id      {@link UUID} the partner id
      * @param credReq {@link RequestCredentialRequest}
      * @return HTTP status
      */
@@ -201,7 +213,7 @@ public class PartnerController {
     /**
      * Aries: Request proof from partner
      *
-     * @param id  the partner id
+     * @param id  {@link UUID} the partner id
      * @param req {@link RequestProofRequest}
      * @return HTTP status
      */
@@ -222,7 +234,7 @@ public class PartnerController {
     /**
      * Aries: Send proof to partner
      *
-     * @param id  the partner id
+     * @param id  {@link UUID} the partner id
      * @param req {@link SendProofRequest}
      * @return HTTP status
      */
@@ -237,7 +249,7 @@ public class PartnerController {
     /**
      * Aries: List proof exchange records
      *
-     * @param id the partner id
+     * @param id {@link UUID} the partner id
      * @return HTTP status
      */
     @Get("/{id}/proof")
@@ -249,7 +261,7 @@ public class PartnerController {
     /**
      * Aries: Get a proof exchange by id
      *
-     * @param id      the partner id
+     * @param id      {@link UUID} the partner id
      * @param proofId the proof id
      * @return HTTP status
      */
@@ -267,7 +279,7 @@ public class PartnerController {
     /**
      * Aries: Deletes a partners proof by id
      *
-     * @param id      the partner id
+     * @param id      {@link UUID} the partner id
      * @param proofId the proof id
      * @return HTTP status
      */
