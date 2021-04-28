@@ -100,8 +100,8 @@ public class ConnectionManager {
                     CreateInvitationRequest.builder()
                             .build(),
                     CreateInvitationParams.builder()
-                            .alias(StringUtils.isNotEmpty(alias) ? alias :
-                                    "Invitation " + TimeUtil.currentTimeFormatted(Instant.now()))
+                            .alias(StringUtils.isNotEmpty(alias) ? alias
+                                    : "Invitation " + TimeUtil.currentTimeFormatted(Instant.now()))
                             .autoAccept(Boolean.TRUE)
                             .build());
         } catch (IOException e) {
@@ -205,7 +205,8 @@ public class ConnectionManager {
     }
 
     public synchronized void handleIncomingConnectionEvent(ConnectionRecord record) {
-        // as state can be invite or request here we might not have all the information yet
+        // as state can be invite or request here we might not have all the information
+        // yet
         // so we have to set some fields again in the update case
         partnerRepo.findByConnectionId(record.getConnectionId()).ifPresentOrElse(
                 dbP -> {
@@ -221,10 +222,12 @@ public class ConnectionManager {
                             .builder()
                             .ariesSupport(Boolean.TRUE)
                             .alias(StringUtils.isNotEmpty(record.getAlias()) // invite case
-                                    ? record.getAlias() : record.getTheirLabel())
+                                    ? record.getAlias()
+                                    : record.getTheirLabel())
                             .connectionId(record.getConnectionId())
                             .did(StringUtils.isNotEmpty(record.getTheirDid())
-                                    ? didPrefix + record.getTheirDid() : didPrefix + "unknown")
+                                    ? didPrefix + record.getTheirDid()
+                                    : didPrefix + "unknown")
                             .label(record.getTheirLabel())
                             .state(record.getState())
                             .incoming(Boolean.TRUE)
