@@ -31,6 +31,10 @@ import org.hyperledger.bpa.impl.MessageService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+/**
+ * Handles frontend websocket connections. TODO: does not work when scaled to
+ * multiple instances, if this is the case redis pub/sub is required
+ */
 @Slf4j
 @Singleton
 @ServerWebSocket("/events")

@@ -21,6 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import lombok.NonNull;
 
+import java.util.UUID;
+
 public class AriesStringUtil {
 
     /**
@@ -89,5 +91,17 @@ public class AriesStringUtil {
             throw new IllegalArgumentException("Not a credential definition id");
         }
         return parts;
+    }
+
+    public static boolean isUUID(String input) {
+        if (StringUtils.isAllBlank(input)) {
+            return false;
+        }
+        try {
+            UUID.fromString(input);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }

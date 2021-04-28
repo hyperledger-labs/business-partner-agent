@@ -19,7 +19,9 @@ package org.hyperledger.bpa.impl.util;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class AriesStringUtilTest {
 
@@ -57,5 +59,14 @@ class AriesStringUtilTest {
         assertEquals("one-two-three", AriesStringUtil.schemaAttributeFormat(" one two three ", '-'));
         // use more whitespace, should be a single replacement
         assertEquals("one-two-three", AriesStringUtil.schemaAttributeFormat(" one   two    three ", '-'));
+    }
+
+    @Test
+    void testIsUUID() {
+        assertFalse(AriesStringUtil.isUUID(null));
+        assertFalse(AriesStringUtil.isUUID(""));
+        assertFalse(AriesStringUtil.isUUID("   "));
+        assertFalse(AriesStringUtil.isUUID("Test String"));
+        assertTrue(AriesStringUtil.isUUID(UUID.randomUUID().toString()));
     }
 }
