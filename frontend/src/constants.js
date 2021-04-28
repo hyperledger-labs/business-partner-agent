@@ -26,8 +26,8 @@ export const ApiRoutes = Object.freeze({
 });
 
 export const CredentialExchangeRoles = Object.freeze( {
-  ISSUER: 'issuer',
-  HOLDER: 'holder'
+  ISSUER: 'ISSUER',
+  HOLDER: 'HOLDER'
 });
 
 export const CredentialExchangeStates = Object.freeze( {

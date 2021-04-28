@@ -3,12 +3,13 @@ package org.hyperledger.bpa.model;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
 import io.micronaut.data.annotation.TypeDef;
-import io.micronaut.data.jdbc.annotation.ColumnTransformer;
 import io.micronaut.data.model.DataType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
 
 import javax.annotation.Nullable;
@@ -53,11 +54,9 @@ public class BPACredentialExchange {
 
     private String credentialExchangeId;
 
-    @ColumnTransformer(write = "LOWER(?)", read = "LOWER(@.role)")
-    private String role;
+    private CredentialExchangeRole role;
 
-    @ColumnTransformer(write = "LOWER(?)", read = "LOWER(@.state)")
-    private String state;
+    private CredentialExchangeState state;
 
     @Nullable
     @TypeDef(type = DataType.JSON)

@@ -63,7 +63,7 @@
               color="primary"
               text
               @click="submit()"
-              :disabled="credentialFieldsEmpty"
+              :disabled="submitDisabled"
           >Submit</v-btn>
         </v-layout>
       </v-card-actions>
@@ -97,10 +97,11 @@
         credDef: {},
         credential: {},
         credentialFields: {},
-        credentialFieldsEmpty: true
+        submitDisabled: true,
       };
     },
-    computed: {},
+    computed: {
+    },
     methods: {
       async load() {
         this.isLoading = true;
@@ -150,7 +151,6 @@
           partnerId: this.partner.id,
           document: this.credentialFields
         }
-
         try {
           const resp = await issuerService.issueCredentialSend(data);
           if (resp.status === 200) {
@@ -164,11 +164,12 @@
       async submit() {
         this.isBusy = true;
         try {
-          const _credex = await this.issueCredential();
+          const _credexId = await this.issueCredential();
           this.isBusy = false;
-          this.credDef = {};
-          if (_credex) {
+          if (_credexId) {
             EventBus.$emit("success", "Credential issued.");
+            this.credDef = {};
+            this.submitDisabled = true
           }
         } catch(error) {
           this.isBusy = false;
@@ -181,13 +182,21 @@
 
       credDefSelected() {
         this.credentialFields = {};
-        this.credentialFieldsEmpty = true;
+        this.credDef.fields.forEach(x => this.credentialFields[x.type] = '');
+        this.submitDisabled = true;
       },
 
       fieldChanged(propertyName, event) {
         this.credentialFields[propertyName] = event;
-        this.credentialFieldsEmpty = !(event && event.trim().length> 0);
+        // once all fields are populated, then enable the submit button
+        let allPopulated = false;
+        if (this.credDef && this.credDef.fields && this.credDef.fields.length) {
+          //ok, we have some fields to check.
+          allPopulated = this.credDef.fields.every(x => this.credentialFields[x.type] && this.credentialFields[x.type].trim().length > 0);
+        }
+        this.submitDisabled = !allPopulated;
       },
+
     },
   };
 </script>
