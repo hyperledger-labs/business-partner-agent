@@ -27,6 +27,7 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.webhook.EventHandler;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -59,7 +60,11 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleConnection(ConnectionRecord connection) {
         log.debug("Connection Event: {}", connection);
-        conMgmt.handleConnectionEvent(connection);
+        if (!connection.isIncomingConnection() || AriesStringUtil.isUUID(connection.getTheirLabel())) {
+            conMgmt.handleOutgoingConnectionEvent(connection);
+        } else {
+            conMgmt.handleIncomingConnectionEvent(connection);
+        }
     }
 
     @Override

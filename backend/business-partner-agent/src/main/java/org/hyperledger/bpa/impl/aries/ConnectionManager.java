@@ -39,6 +39,7 @@ import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
+import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
@@ -49,6 +50,7 @@ import io.micronaut.core.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -85,6 +87,28 @@ public class ConnectionManager {
 
     @Inject
     ObjectMapper mapper;
+
+    /**
+     * Create a connection based on a public did that is registered on a ledger.
+     *
+     * @param alias optional connection alias
+     */
+    public Optional<CreateInvitationResponse> createConnectionInvitation(@NonNull String alias) {
+        Optional<CreateInvitationResponse> result = Optional.empty();
+        try {
+            result = ac.connectionsCreateInvitation(
+                    CreateInvitationRequest.builder()
+                            .build(),
+                    CreateInvitationParams.builder()
+                            .alias(StringUtils.isNotEmpty(alias) ? alias
+                                    : "Invitation " + TimeUtil.currentTimeFormatted(Instant.now()))
+                            .autoAccept(Boolean.TRUE)
+                            .build());
+        } catch (IOException e) {
+            log.error("Could not create aries connection invitation", e);
+        }
+        return result;
+    }
 
     /**
      * Create a connection based on a public did that is registered on a ledger.
@@ -166,9 +190,9 @@ public class ConnectionManager {
         }
     }
 
-    public synchronized void handleConnectionEvent(ConnectionRecord record) {
-        partnerRepo.findByLabel(record.getTheirLabel()).ifPresentOrElse(
-                // connection that originated from this agent
+    public synchronized void handleOutgoingConnectionEvent(ConnectionRecord record) {
+        // connection that originated from this agent
+        partnerRepo.findByLabel(record.getTheirLabel()).ifPresent(
                 dbP -> {
                     if (dbP.getConnectionId() == null) {
                         dbP.setConnectionId(record.getConnectionId());
@@ -177,28 +201,51 @@ public class ConnectionManager {
                     } else {
                         partnerRepo.updateState(dbP.getId(), record.getState());
                     }
-                },
-                // connection initiated externally
-                () -> partnerRepo.findByConnectionId(record.getConnectionId()).ifPresentOrElse(
-                        dbP -> partnerRepo.updateState(dbP.getId(), record.getState()),
-                        () -> {
-                            Partner p = Partner
-                                    .builder()
-                                    .ariesSupport(Boolean.TRUE)
-                                    .alias(record.getTheirLabel()) // event has no alias in this case
-                                    .connectionId(record.getConnectionId())
-                                    .did(didPrefix + record.getTheirDid())
-                                    .label(record.getTheirLabel())
-                                    .state(record.getState())
-                                    .incoming(Boolean.TRUE)
-                                    .build();
-                            p = partnerRepo.save(p);
-                            didResolver.lookupIncoming(p);
-                            sendConnectionEvent(record,conv.toAPIObject(p));
-                        }));
+                });
     }
 
-    public void sendConnectionEvent(@NonNull ConnectionRecord record, @NonNull PartnerAPI p) {
+    public synchronized void handleIncomingConnectionEvent(ConnectionRecord record) {
+        // as state can be invite or request here we might not have all the information
+        // yet
+        // so we have to set some fields again in the update case
+        partnerRepo.findByConnectionId(record.getConnectionId()).ifPresentOrElse(
+                dbP -> {
+                    dbP.setLabel(record.getTheirLabel());
+                    dbP.setAlias(record.getTheirLabel()); // if invite we want the label, regular request has none
+                    dbP.setDid(didPrefix + record.getTheirDid());
+                    dbP.setState(record.getState());
+                    partnerRepo.update(dbP);
+                    resolveAndSend(record, dbP);
+                },
+                () -> {
+                    Partner p = Partner
+                            .builder()
+                            .ariesSupport(Boolean.TRUE)
+                            .alias(StringUtils.isNotEmpty(record.getAlias()) // invite case
+                                    ? record.getAlias()
+                                    : record.getTheirLabel())
+                            .connectionId(record.getConnectionId())
+                            .did(StringUtils.isNotEmpty(record.getTheirDid())
+                                    ? didPrefix + record.getTheirDid()
+                                    : didPrefix + "unknown")
+                            .label(record.getTheirLabel())
+                            .state(record.getState())
+                            .incoming(Boolean.TRUE)
+                            .build();
+                    p = partnerRepo.save(p);
+                    resolveAndSend(record, p);
+                });
+    }
+
+    private void resolveAndSend(ConnectionRecord record, Partner p) {
+        // only incoming connections in state request
+        if (ConnectionState.REQUEST.equals(record.getState())) {
+            didResolver.lookupIncoming(p);
+            sendConnectionEvent(record, conv.toAPIObject(p));
+        }
+    }
+
+    private void sendConnectionEvent(@NonNull ConnectionRecord record, @NonNull PartnerAPI p) {
         // TODO both or either?
         messageService.sendMessage(WebSocketMessageBody.partnerReceived(p));
         if (isConnectionRequest(record)) {

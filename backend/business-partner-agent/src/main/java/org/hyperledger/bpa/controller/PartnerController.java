@@ -36,8 +36,11 @@ import org.hyperledger.bpa.controller.api.partner.*;
 import org.hyperledger.bpa.impl.PartnerManager;
 import org.hyperledger.bpa.impl.activity.PartnerLookup;
 import org.hyperledger.bpa.impl.aries.CredentialManager;
+import org.hyperledger.bpa.impl.aries.ConnectionManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.ProofManager;
+
+import org.hyperledger.aries.api.connection.CreateInvitationResponse;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -62,6 +65,9 @@ public class PartnerController {
 
     @Inject
     ProofManager proofM;
+
+    @Inject
+    ConnectionManager cm;
 
     @Inject
     PartnerCredDefLookup credLookup;
@@ -289,5 +295,18 @@ public class PartnerController {
             @PathVariable String proofId) {
         proofM.deletePartnerProof(UUID.fromString(proofId));
         return HttpResponse.ok();
+    }
+
+    /**
+     * Aries: Create a connection-invitation
+     *
+     * @param req {@link CreatePartnerInvitationRequest}
+     * @return {@link PartnerAPI}
+     */
+    @Post("/invitation")
+    public HttpResponse<CreateInvitationResponse> requestConnectionInvitation(
+            @Body CreatePartnerInvitationRequest req) {
+        final Optional<CreateInvitationResponse> invitation = cm.createConnectionInvitation(req.alias);
+        return HttpResponse.ok(invitation.get());
     }
 }
