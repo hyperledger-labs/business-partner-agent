@@ -54,13 +54,13 @@ class ConnectionManagerTest extends BaseTest {
                 .did("dummy")
                 .build());
         final ConnectionRecord invite = gson.fromJson(createInvite, ConnectionRecord.class);
-        mgmt.handleConnectionEvent(invite);
+        mgmt.handleOutgoingConnectionEvent(invite);
 
         Optional<Partner> p = repo.findByConnectionId(invite.getConnectionId());
         assertTrue(p.isPresent());
 
         final ConnectionRecord active = gson.fromJson(createActive, ConnectionRecord.class);
-        mgmt.handleConnectionEvent(active);
+        mgmt.handleOutgoingConnectionEvent(active);
 
         p = repo.findByConnectionId(active.getConnectionId());
         assertTrue(p.isPresent());
@@ -70,13 +70,13 @@ class ConnectionManagerTest extends BaseTest {
     @Test
     void testReceiveConnectionEvents() {
         final ConnectionRecord invite = gson.fromJson(receiveInvite, ConnectionRecord.class);
-        mgmt.handleConnectionEvent(invite);
+        mgmt.handleIncomingConnectionEvent(invite);
 
         Optional<Partner> p = repo.findByConnectionId(invite.getConnectionId());
         assertTrue(p.isPresent());
 
         final ConnectionRecord active = gson.fromJson(receiveActive, ConnectionRecord.class);
-        mgmt.handleConnectionEvent(active);
+        mgmt.handleIncomingConnectionEvent(active);
 
         p = repo.findByConnectionId(active.getConnectionId());
         assertTrue(p.isPresent());
