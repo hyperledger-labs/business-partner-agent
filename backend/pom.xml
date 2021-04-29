@@ -44,7 +44,7 @@
     <properties>
         <!-- Settings -->
         <exec.mainClass />
-        <jdk.version>11</jdk.version>
+        <jdk.version>16</jdk.version>
         <m2e.apt.activation>maven_execution</m2e.apt.activation>
         <maven.compiler.target>${jdk.version}</maven.compiler.target>
         <maven.compiler.source>${jdk.version}</maven.compiler.source>

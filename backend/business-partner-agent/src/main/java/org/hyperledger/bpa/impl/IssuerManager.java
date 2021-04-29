@@ -82,16 +82,16 @@ public class IssuerManager {
     }
 
     public CredDef createCredDef(@NonNull String schemaId, @NonNull String tag, boolean supportRevocation) {
-        CredDef result = null;
+        CredDef result;
         try {
             String sId = StringUtils.strip(schemaId);
             Optional<SchemaSendResponse.Schema> ariesSchema = ac.schemasGetById(sId);
-            if (!ariesSchema.isPresent()) {
+            if (ariesSchema.isEmpty()) {
                 throw new WrongApiUsageException(String.format("No schema with id '%s' found on ledger.", sId));
             }
 
             Optional<BPASchema> bpaSchema = schemaService.getSchemaFor(sId);
-            if (!bpaSchema.isPresent()) {
+            if (bpaSchema.isEmpty()) {
                 // schema exists on ledger, but no in db, let's add it.
                 SchemaAPI schema = schemaService.addSchema(ariesSchema.get().getId(), null, null, null);
                 if (schema == null) {

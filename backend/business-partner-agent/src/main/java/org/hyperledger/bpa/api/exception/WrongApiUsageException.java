@@ -17,8 +17,11 @@
  */
 package org.hyperledger.bpa.api.exception;
 
+import java.io.Serial;
+
 public class WrongApiUsageException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 6881906711787289141L;
 
     public WrongApiUsageException(String message) {

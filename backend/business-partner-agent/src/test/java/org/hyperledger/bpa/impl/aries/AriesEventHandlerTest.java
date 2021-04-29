@@ -52,9 +52,9 @@ class AriesEventHandlerTest extends BaseTest {
         String reqSent = loader.load("files/request-proof/01-verifier-request-sent.json");
         String presRec = loader.load("files/request-proof/02-verifier-presentation-received.json");
         String verified = loader.load("files/request-proof/03-verifier-verified.json");
-        PresentationExchangeRecord exReqSent = ep.parsePresentProof(reqSent).get();
-        PresentationExchangeRecord exPresRec = ep.parsePresentProof(presRec).get();
-        PresentationExchangeRecord exVerified = ep.parsePresentProof(verified).get();
+        PresentationExchangeRecord exReqSent = ep.parsePresentProof(reqSent).orElseThrow();
+        PresentationExchangeRecord exPresRec = ep.parsePresentProof(presRec).orElseThrow();
+        PresentationExchangeRecord exVerified = ep.parsePresentProof(verified).orElseThrow();
 
         Partner p = Partner.builder()
                 .connectionId(exReqSent.getConnectionId())
@@ -88,10 +88,10 @@ class AriesEventHandlerTest extends BaseTest {
         String reqRec = loader.load("files/send-proof/02-prover-request-received.json");
         String presSent = loader.load("files/send-proof/03-prover-presentation-sent.json");
         String presAcked = loader.load("files/send-proof/04-prover-presentation-acked.json");
-        PresentationExchangeRecord exPropSent = ep.parsePresentProof(propSent).get();
-        PresentationExchangeRecord exReqRec = ep.parsePresentProof(reqRec).get();
-        PresentationExchangeRecord exPresSent = ep.parsePresentProof(presSent).get();
-        PresentationExchangeRecord exPresAcked = ep.parsePresentProof(presAcked).get();
+        PresentationExchangeRecord exPropSent = ep.parsePresentProof(propSent).orElseThrow();
+        PresentationExchangeRecord exReqRec = ep.parsePresentProof(reqRec).orElseThrow();
+        PresentationExchangeRecord exPresSent = ep.parsePresentProof(presSent).orElseThrow();
+        PresentationExchangeRecord exPresAcked = ep.parsePresentProof(presAcked).orElseThrow();
 
         Partner p = Partner.builder()
                 .connectionId(exPropSent.getConnectionId())

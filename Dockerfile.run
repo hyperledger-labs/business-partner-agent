@@ -1,6 +1,6 @@
 # Dockerfile that only runs the backend (with or without frontend), mainly used within the build pipeline
 
-FROM adoptopenjdk/openjdk15:alpine
+FROM adoptopenjdk/openjdk16:alpine
 
 RUN adduser --disabled-password app
 USER app

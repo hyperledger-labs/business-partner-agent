@@ -66,10 +66,10 @@ public class SchemaService {
     // CRUD Methods
     public SchemaAPI createSchema(@NonNull String schemaName, @NonNull String schemaVersion,
             @NonNull List<String> attributes, @NonNull String schemaLabel, String defaultAttributeName) {
-        SchemaAPI result = null;
+        SchemaAPI result;
         // ensure no leading or trailing spaces on attribute names... bad things happen
         // when crypto signing.
-        attributes.replaceAll(s -> AriesStringUtil.schemaAttributeFormat(s));
+        attributes.replaceAll(AriesStringUtil::schemaAttributeFormat);
         try {
             // send schema to ledger...
             SchemaSendRequest request = SchemaSendRequest.builder()

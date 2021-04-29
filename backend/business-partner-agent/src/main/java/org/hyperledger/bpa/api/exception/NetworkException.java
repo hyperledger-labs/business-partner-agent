@@ -17,8 +17,11 @@
  */
 package org.hyperledger.bpa.api.exception;
 
+import java.io.Serial;
+
 public class NetworkException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = 6881906711787289141L;
 
     public NetworkException(String message) {

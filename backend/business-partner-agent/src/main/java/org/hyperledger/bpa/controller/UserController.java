@@ -68,18 +68,18 @@ public class UserController {
     @View("signin")
     @Get("/signin")
     public HttpResponse<?> loginView() {
-        return HttpResponse.ok(buildModel("errors", Boolean.FALSE));
+        return HttpResponse.ok(buildModel(Boolean.FALSE));
     }
 
     @View("signin")
     @Get("/authFailed")
     public Map<String, Object> authFailed() {
-        return buildModel("errors", Boolean.TRUE);
+        return buildModel(Boolean.TRUE);
     }
 
-    private Map<String, Object> buildModel(@NonNull String method, @NonNull Boolean enabled) {
+    private Map<String, Object> buildModel(@NonNull Boolean errorsEnabled) {
         Map<String, Object> model = new LinkedHashMap<>();
-        model.put(method, enabled);
+        model.put("errors", errorsEnabled);
         if (StringUtils.isNotEmpty(imprint)) {
             model.put("imprint-url", imprint);
         }
