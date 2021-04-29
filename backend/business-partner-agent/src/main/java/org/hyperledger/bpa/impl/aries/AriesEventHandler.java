@@ -28,6 +28,7 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
+import org.hyperledger.bpa.impl.IssuerManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -45,16 +46,20 @@ public class AriesEventHandler extends EventHandler {
 
     private final ProofManager proofMgmt;
 
+    private final IssuerManager issuerMgr;
+
     @Inject
     public AriesEventHandler(
             ConnectionManager conMgmt,
             Optional<PingManager> pingMgmt,
             CredentialManager credMgmt,
-            ProofManager proofMgmt) {
+            ProofManager proofMgmt,
+            IssuerManager issuerMgr) {
         this.conMgmt = conMgmt;
         this.pingMgmt = pingMgmt;
         this.credMgmt = credMgmt;
         this.proofMgmt = proofMgmt;
+        this.issuerMgr = issuerMgr;
     }
 
     @Override
@@ -98,6 +103,10 @@ public class AriesEventHandler extends EventHandler {
                 } else {
                     credMgmt.handleCredentialEvent(credential);
                 }
+            }
+        } else if (CredentialExchangeRole.ISSUER.equals(credential.getRole())) {
+            synchronized (issuerMgr) {
+                issuerMgr.handleCredentialExchange(credential);
             }
         }
     }

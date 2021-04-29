@@ -1,5 +1,5 @@
 import { appAxios } from '@/services/interceptors';
-import { ApiRoutes } from '@/utils/constants';
+import {ApiRoutes, CredentialExchangeRoles} from '@/constants';
 
 export default {
   //
@@ -20,6 +20,26 @@ export default {
 
   createCredDef(data) {
     return appAxios().post(`${ApiRoutes.ISSUER}/creddef`, data);
+  },
+
+  listCredDefs() {
+    return appAxios().get(`${ApiRoutes.ISSUER}/creddef`);
+  },
+
+  issueCredentialSend(data) {
+    return appAxios().post(`${ApiRoutes.ISSUER}/issue-credential/send`, data);
+  },
+
+  listCredentialExchanges() {
+    return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`);
+  },
+
+  listCredentialExchangesAsIssuer() {
+    return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, { params: {role: CredentialExchangeRoles.ISSUER}});
+  },
+
+  listCredentialExchangesAsHolder() {
+    return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, { params: {role: CredentialExchangeRoles.HOLDER}});
   },
 
 };
