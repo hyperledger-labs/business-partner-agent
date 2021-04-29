@@ -33,9 +33,8 @@ import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 
 import io.micronaut.core.annotation.Nullable;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+
+import javax.persistence.*;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
@@ -76,6 +75,7 @@ public class Partner {
     private String connectionId; // aries connection id
 
     @Nullable
+    @Enumerated(EnumType.STRING)
     private ConnectionState state; // aries connection state
 
     @Nullable

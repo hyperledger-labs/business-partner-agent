@@ -29,6 +29,8 @@ import org.hyperledger.bpa.api.CredentialType;
 
 import io.micronaut.core.annotation.Nullable;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import java.time.Instant;
 import java.util.Map;
@@ -57,6 +59,7 @@ public class MyDocument {
     @DateUpdated
     private Instant updatedAt;
 
+    @Enumerated(EnumType.STRING)
     private CredentialType type;
 
     @Nullable
