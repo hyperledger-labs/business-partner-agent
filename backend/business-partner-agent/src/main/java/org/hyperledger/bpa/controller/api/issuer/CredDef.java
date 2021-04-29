@@ -47,7 +47,7 @@ public class CredDef {
                 .builder()
                 .id(db.getId())
                 .schemaId(db.getSchema().getSchemaId())
-                .schema(SchemaAPI.from(db.getSchema()))
+                .schema(SchemaAPI.from(db.getSchema(), true, false))
                 .credentialDefinitionId(db.getCredentialDefinitionId())
                 .tag(db.getTag())
                 .isSupportRevocation(db.getIsSupportRevocation())
