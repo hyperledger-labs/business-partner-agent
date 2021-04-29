@@ -55,13 +55,17 @@ public class SchemaAPI {
     private List<CredDef> credentialDefinitions;
 
     public static SchemaAPI from(BPASchema s) {
+        return from(s, true, true);
+    }
+
+    public static SchemaAPI from(BPASchema s, boolean includeRestrictions, boolean includeCredDefs) {
         SchemaAPIBuilder builder = SchemaAPI.builder();
-        if (CollectionUtils.isNotEmpty(s.getRestrictions())) {
+        if (includeRestrictions && CollectionUtils.isNotEmpty(s.getRestrictions())) {
             List<TrustedIssuer> ti = new ArrayList<>();
             s.getRestrictions().forEach(r -> ti.add(TrustedIssuer.from(r)));
             builder.trustedIssuer(ti);
         }
-        if (CollectionUtils.isNotEmpty(s.getCredentialDefinitions())) {
+        if (includeCredDefs && CollectionUtils.isNotEmpty(s.getCredentialDefinitions())) {
             List<CredDef> cd = new ArrayList<>();
             s.getCredentialDefinitions().forEach(r -> cd.add(CredDef.from(r)));
             builder.credentialDefinitions(cd);
