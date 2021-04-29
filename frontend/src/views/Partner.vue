@@ -176,6 +176,23 @@
             ></CredExList>
           </v-col>
         </v-row>
+        <v-row v-if="partner.ariesSupport" class="mx-4">
+          <v-col cols="4">
+            <v-row>
+              <p class="grey--text text--darken-2 font-weight-medium">
+                Presentation Requests
+              </p>
+            </v-row>
+            <v-row>The proofs requested from this partner</v-row>
+          </v-col>
+          <v-col cols="8">
+            <PresentationRequestList
+                v-if="isReady"
+                v-bind:items="presentationRequests"
+                v-bind:headers="headersPresRequests"
+            ></PresentationRequestList>
+          </v-col>
+        </v-row>
       </v-card-text>
 
       <v-card-actions>
@@ -235,6 +252,7 @@ import {
 } from "@/components/tableHeaders/PartnerHeaders";
 import { issuerService } from "@/services";
 import CredExList from "@/components/CredExList";
+import PresentationRequestList from "@/components/PresentationRequestList";
 
 export default {
   name: "Partner",
@@ -244,12 +262,14 @@ export default {
     PresentationList,
     PartnerStateIndicator,
     CredExList,
+    PresentationRequestList,
   },
   created() {
     EventBus.$emit("title", "Partner");
     this.getPartner();
     this.getPresentationRecords();
     this.getIssuedCredentials();
+    //this.getPresentationRequests();
     this.$store.commit("partnerSeen", { id: this.id });
   },
   data: () => {
@@ -269,6 +289,7 @@ export default {
       presentationsSent: [],
       presentationsReceived: [],
       issuedCredentials: [],
+      presentationRequests: [],
       rules: {
         required: (value) => !!value || "Can't be empty",
       },
@@ -295,7 +316,21 @@ export default {
           text: "State",
           value: "state",
         },
-      ]
+      ],
+      headersPresRequests: [ 
+        {
+          text: "Presentation Exchange ID",
+          value: "presentation_exchange_id",
+        },
+        {
+          text: "Updated at",
+          value: "updatedAt",
+        },
+        {
+          text: "State",
+          value: "state",
+        },
+      ],
     };
   },
   computed: {
@@ -308,6 +343,7 @@ export default {
       this.attentionPartnerStateDialog = false;
       this.$router.push(this.goTo);
     },
+    // Presentations
     requestPresentation() {
       if (
         this.partner.state === "response" ||
@@ -383,6 +419,7 @@ export default {
         return item.id !== id;
       });
     },
+    // Issue Credentials
     getIssuedCredentials() {
       console.log("Getting issued credential records...");
       issuerService.listCredentialExchangesAsIssuer()
@@ -571,7 +608,18 @@ export default {
           },
         };
       }
-    }
+    },
+    // Respond to Presentation Requests
+    getPresentationRequests(){
+       this.$axios
+        .get(`${this.$apiBaseUrl}/partners/${this.id}/proof-requests`)
+        .then((result) => {
+          if (result.status==200) {
+            this.presentationRequests = result.data.results;
+          }
+        });
+        
+    },
   },
 };
 </script>
