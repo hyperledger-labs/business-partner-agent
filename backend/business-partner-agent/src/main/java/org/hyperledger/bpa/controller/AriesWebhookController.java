@@ -33,7 +33,7 @@ import org.hyperledger.aries.webhook.EventHandler;
 import javax.inject.Inject;
 
 /**
- * Handles aries webhooks
+ * Handles incoming aca-py webhook events
  */
 @Slf4j
 @Hidden
@@ -43,17 +43,12 @@ import javax.inject.Inject;
 @ExecuteOn(TaskExecutors.IO)
 public class AriesWebhookController {
 
+    public static final String WEBHOOK_CONTROLLER_PATH = "/log/topic";
+
     @Inject
     EventHandler handler;
 
-    @Post("/log/topic/{eventType}")
-    public void logTopic(
-            @PathVariable String eventType,
-            @Body String eventBody) {
-        logEvent(eventType, eventBody);
-    }
-
-    @Post("/log/{eventType}")
+    @Post(WEBHOOK_CONTROLLER_PATH + "/{eventType}")
     public void logEvent(
             @PathVariable String eventType,
             @Body String eventBody) {

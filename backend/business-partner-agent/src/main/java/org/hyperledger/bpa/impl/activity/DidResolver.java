@@ -152,6 +152,7 @@ public class DidResolver {
     @Builder
     public static final class ConnectionLabel {
         private final String label;
-        private final Optional<String> did;
+        @Builder.Default
+        private final Optional<String> did = Optional.empty();
     }
 }

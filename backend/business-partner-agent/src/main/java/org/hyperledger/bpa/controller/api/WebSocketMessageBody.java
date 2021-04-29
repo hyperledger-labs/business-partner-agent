@@ -50,15 +50,26 @@ public class WebSocketMessageBody {
     }
 
     public enum WebSocketMessageType {
-        PROOF,
+        CONNECTION_REQUEST,
         CREDENTIAL,
-        PARTNER
+        PARTNER,
+        PROOF
     }
 
     public enum WebSocketMessageState {
         RECEIVED,
         UPDATED,
         SENT
+    }
+
+    public static WebSocketMessageBody partnerConnectionRequest(PartnerAPI partner) {
+        return WebSocketMessageBody.of(WebSocketMessage
+                .builder()
+                .type(WebSocketMessageType.CONNECTION_REQUEST)
+                .state(WebSocketMessageState.RECEIVED)
+                .linkId(partner.getId())
+                .info(partner)
+                .build());
     }
 
     public static WebSocketMessageBody partnerReceived(PartnerAPI partner) {

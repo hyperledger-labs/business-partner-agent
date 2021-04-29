@@ -63,7 +63,7 @@ public class IssuerManager {
     RuntimeConfig config;
 
     public SchemaAPI createSchema(@NonNull String schemaName, @NonNull String schemaVersion,
-                                  @NonNull List<String> attributes, @NonNull String schemaLabel, String defaultAttributeName) {
+            @NonNull List<String> attributes, @NonNull String schemaLabel, String defaultAttributeName) {
         return schemaService.createSchema(schemaName, schemaVersion, attributes, schemaLabel, defaultAttributeName);
     }
 
