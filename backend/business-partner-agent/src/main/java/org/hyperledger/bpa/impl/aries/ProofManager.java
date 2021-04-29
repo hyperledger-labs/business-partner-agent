@@ -20,6 +20,7 @@ package org.hyperledger.bpa.impl.aries;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.cli.Option;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
 import lombok.NonNull;
@@ -31,7 +32,9 @@ import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.bpa.api.aries.AriesProof;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
+import org.hyperledger.bpa.controller.api.partner.ProofRequestsRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
@@ -83,6 +86,32 @@ public class ProofManager {
 
     @Inject
     MessageService messageService;
+
+    public Optional<List<PresentationExchangeRecord>> getProofRequests(Optional<UUID> partnerId,
+            @Nullable ProofRequestsRequest req) {
+        Optional<List<PresentationExchangeRecord>> result = Optional.empty();
+        try {
+            if (partnerId.isPresent()) {
+                String connectionId = partnerRepo.findById(partnerId.get())
+                        .map(Partner::getConnectionId)
+                        .orElseThrow(EntityNotFoundException::new);
+
+                final PresentProofRecordsFilter params = PresentProofRecordsFilter
+                        .builder()
+                        .connectionId(connectionId)
+                        // todo add req as params here if provided
+                        .build();
+                result = ac.presentProofRecords(params);
+            } else {
+                result = ac.presentProofRecords(null);
+            }
+        } catch (IOException e) {
+            throw new NetworkException("aca-py not available", e);
+        } catch (EntityNotFoundException e) {
+            throw new PartnerException("Partner not found");
+        }
+        return result;
+    }
 
     // request proof from partner
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {

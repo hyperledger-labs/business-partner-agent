@@ -41,6 +41,7 @@ import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.ProofManager;
 
 import org.hyperledger.aries.api.connection.CreateInvitationResponse;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -214,6 +215,20 @@ public class PartnerController {
                 UUID.fromString(id),
                 UUID.fromString(credReq.getDocumentId()));
         return HttpResponse.ok();
+    }
+
+    /**
+     * Aries: Get Proofs requested from a partner
+     *
+     * @param id  {@link UUID} the partner id
+     * @return list of pending proof requests from partners
+     */
+    @Get("/{id}/proof-requests")
+    public HttpResponse<List<PresentationExchangeRecord>> fetchProofRequests(
+            @PathVariable String id) {
+        List<PresentationExchangeRecord> results = proofM.getProofRequests(Optional.of(UUID.fromString(id)), null)
+                .get();
+        return HttpResponse.ok(results);
     }
 
     /**
