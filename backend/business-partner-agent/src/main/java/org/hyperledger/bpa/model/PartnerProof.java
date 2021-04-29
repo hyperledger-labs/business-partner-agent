@@ -32,6 +32,8 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import java.time.Instant;
 import java.util.Map;
@@ -64,6 +66,7 @@ public class PartnerProof {
     private Boolean valid;
 
     @Nullable
+    @Enumerated(EnumType.STRING)
     private PresentationExchangeState state;
 
     private String presentationExchangeId;
@@ -78,6 +81,7 @@ public class PartnerProof {
     private String credentialDefinitionId;
 
     @Nullable
+    @Enumerated(EnumType.STRING)
     private PresentationExchangeRole role;
 
     @Nullable

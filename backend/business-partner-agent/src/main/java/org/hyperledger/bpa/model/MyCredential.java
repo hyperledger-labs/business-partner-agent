@@ -30,6 +30,8 @@ import org.hyperledger.bpa.api.CredentialType;
 
 import io.micronaut.core.annotation.Nullable;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import java.time.Instant;
 import java.util.Map;
@@ -60,6 +62,7 @@ public class MyCredential {
     // No update date here, if a credential needs to change a new one is issued
 
     @Nullable
+    @Enumerated(EnumType.STRING)
     private CredentialType type;
 
     private Boolean isPublic;
@@ -70,6 +73,7 @@ public class MyCredential {
     @Nullable
     private String connectionId;
 
+    @Enumerated(EnumType.STRING)
     private CredentialExchangeState state;
 
     private String threadId;
