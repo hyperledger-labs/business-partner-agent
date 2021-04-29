@@ -13,10 +13,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
 
 import javax.annotation.Nullable;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
@@ -45,6 +42,7 @@ public class BPACredentialExchange {
     @OneToOne
     private Partner partner;
 
+    @Enumerated(EnumType.STRING)
     private CredentialType type;
 
     @Nullable
@@ -54,8 +52,10 @@ public class BPACredentialExchange {
 
     private String credentialExchangeId;
 
+    @Enumerated(EnumType.STRING)
     private CredentialExchangeRole role;
 
+    @Enumerated(EnumType.STRING)
     private CredentialExchangeState state;
 
     @Nullable
