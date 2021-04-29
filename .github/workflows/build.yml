@@ -16,6 +16,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          # needed for the license header check
+          fetch-depth: 0
 
       # Setup Phase
 
