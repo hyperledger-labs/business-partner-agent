@@ -151,6 +151,31 @@
             ></PresentationList>
           </v-col>
         </v-row>
+        <v-row class="mx-4">
+          <v-divider></v-divider>
+        </v-row>
+        <v-row v-if="partner.ariesSupport" class="mx-4">
+          <v-col cols="4">
+            <v-row>
+              <p class="grey--text text--darken-2 font-weight-medium">
+                Issued Credentials
+              </p>
+            </v-row>
+            <v-row>The credentials you issued to your partner</v-row>
+            <v-row class="mt-4">
+              <v-btn small @click="issueCredential">Issue Credential</v-btn>
+            </v-row>
+          </v-col>
+          <v-col cols="8">
+            <CredExList
+                v-if="isReady"
+                v-bind:items="issuedCredentials"
+                v-bind:headers="headersIssued"
+                v-on:openItem="openIssuedCredential"
+                v-bind:isActiveFn="isIssuedCredentialActive"
+            ></CredExList>
+          </v-col>
+        </v-row>
       </v-card-text>
 
       <v-card-actions>
@@ -208,6 +233,8 @@ import {
   sentHeaders,
   receivedHeaders,
 } from "@/components/tableHeaders/PartnerHeaders";
+import { issuerService } from "@/services";
+import CredExList from "@/components/CredExList";
 
 export default {
   name: "Partner",
@@ -216,12 +243,13 @@ export default {
     Profile,
     PresentationList,
     PartnerStateIndicator,
+    CredExList,
   },
   created() {
     EventBus.$emit("title", "Partner");
     this.getPartner();
     this.getPresentationRecords();
-
+    this.getIssuedCredentials();
     this.$store.commit("partnerSeen", { id: this.id });
   },
   data: () => {
@@ -240,11 +268,34 @@ export default {
       credentials: [],
       presentationsSent: [],
       presentationsReceived: [],
+      issuedCredentials: [],
       rules: {
         required: (value) => !!value || "Can't be empty",
       },
       headersSent: sentHeaders,
       headersReceived: receivedHeaders,
+      headersIssued: [
+        {
+          text: "Schema",
+          value: "schema.label",
+        },
+        {
+          text: "Version",
+          value: "schema.version",
+        },
+        {
+          text: "Tag",
+          value: "credDef.tag",
+        },
+        {
+          text: "Updated at",
+          value: "updatedAt",
+        },
+        {
+          text: "State",
+          value: "state",
+        },
+      ]
     };
   },
   computed: {
@@ -331,6 +382,38 @@ export default {
       this.presentationsSent = this.presentationsSent.filter((item) => {
         return item.id !== id;
       });
+    },
+    getIssuedCredentials() {
+      console.log("Getting issued credential records...");
+      issuerService.listCredentialExchangesAsIssuer()
+        .then((result) => {
+          if ({}.hasOwnProperty.call(result, "data")) {
+            let data = result.data;
+            this.issuedCredentials = data;
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+          // EventBus.$emit("error", e);
+        });
+    },
+    openIssuedCredential(item) {
+      if (this.isIssuedCredentialActive(item))  {
+        // ok, lets show this credential
+        this.$router.push({
+          name: "ViewCredentialContent",
+          params: {
+            credential: item.credential,
+            title: `${item.schema.label} (${item.schema.version}) - ${item.credDef.tag}`
+          },
+        });
+      }
+    },
+    isIssuedCredentialActive(item) {
+      if (item) {
+        return (item.state === 'credential_issued' || item.state === 'credential_acked')
+      }
+      return false;
     },
     getPartner() {
       console.log("Getting partner...");
@@ -468,6 +551,27 @@ export default {
         this.isBusy = false;
       }
     },
+    async issueCredential() {
+      if (
+        this.partner.state === "response" ||
+        this.partner.state === "active"
+      ) {
+        this.$router.push({
+          name: "IssueCredential",
+          params: {
+            partnerId: this.id,
+          },
+        });
+      } else {
+        this.attentionPartnerStateDialog = true;
+        this.goTo = {
+          name: "IssueCredential",
+          params: {
+            partnerId: this.id,
+          },
+        };
+      }
+    }
   },
 };
 </script>

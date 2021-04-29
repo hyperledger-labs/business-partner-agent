@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 
@@ -31,7 +31,7 @@
     </template>
     <template v-slot:[`item.state`]="{ item }">
       <v-icon
-        v-if="item.state === 'verified' || item.state == 'presentation_acked'"
+        v-if="isItemActive(item)"
         color="green"
         >mdi-check</v-icon
       >
@@ -40,10 +40,16 @@
       </span>
     </template>
     <template v-slot:[`item.sentAt`]="{ item }">
-      {{ item.sentAt | moment("YYYY-MM-DD HH:mm") }}
+      {{ item.sentAt | formatDateLong }}
     </template>
     <template v-slot:[`item.receivedAt`]="{ item }">
-      {{ item.receivedAt | moment("YYYY-MM-DD HH:mm") }}
+      {{ item.receivedAt | formatDateLong }}
+    </template>
+    <template v-slot:[`item.updatedAt`]="{ item }">
+      {{ item.updatedAt | formatDateLong }}
+    </template>
+    <template v-slot:[`item.createdAt`]="{ item }">
+      {{ item.createdAt | formatDateLong }}
     </template>
     <template v-slot:expanded-item="{ headers, item }">
       <td :colspan="headers.length">
@@ -81,6 +87,10 @@ export default {
       type: Array,
       default: () => presentationListHeaders,
     },
+    isActiveFn: {
+      type: Function,
+      default: (item) => (item.state === 'verified' || item.state == 'presentation_acked')
+    }
   },
   data: () => {
     return {
@@ -120,9 +130,7 @@ export default {
         });
     },
     openPresentation(presentation) {
-      if (
-        presentation.state === "verified" ||
-        presentation.state == "presentation_acked"
+      if (this.isActiveFn(presentation)
       ) {
         if (presentation.id) {
           this.$router.push({
@@ -140,6 +148,9 @@ export default {
         // Need to fix Presentation.vue for unfinished presentations
       }
     },
+    isItemActive(item) {
+      return this.isActiveFn(item);
+    }
   },
   components: {
     Credential,
