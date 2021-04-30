@@ -220,7 +220,7 @@ public class PartnerController {
     /**
      * Aries: Get Proofs requested from a partner
      *
-     * @param id  {@link UUID} the partner id
+     * @param id {@link UUID} the partner id
      * @return list of pending proof requests from partners
      */
     @Get("/{id}/proof-requests")
