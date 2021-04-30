@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 package org.hyperledger.bpa.impl.aries;
+import com.google.gson.JsonObject;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.context.annotation.Value;
