@@ -23,6 +23,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.model.BPACredentialDefinition;
 
 import java.util.UUID;
@@ -39,12 +40,14 @@ public class CredDef {
     private Boolean isSupportRevocation;
     private Integer revocationRegistrySize;
     private Long createdAt;
+    private SchemaAPI schema;
 
     public static CredDef from(BPACredentialDefinition db) {
         return CredDef
                 .builder()
                 .id(db.getId())
                 .schemaId(db.getSchema().getSchemaId())
+                .schema(SchemaAPI.from(db.getSchema(), true, false))
                 .credentialDefinitionId(db.getCredentialDefinitionId())
                 .tag(db.getTag())
                 .isSupportRevocation(db.getIsSupportRevocation())

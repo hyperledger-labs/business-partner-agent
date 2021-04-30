@@ -6,8 +6,7 @@
  SPDX-License-Identifier: Apache-2.0
 */
 
-import { CredentialTypes } from "../constants";
-import { PartnerState } from "@/models/partnerState";
+import { CredentialTypes, PartnerStates } from "../constants";
 
 export const getPartnerProfile = (partner) => {
   if (partner && {}.hasOwnProperty.call(partner, "credential")) {
@@ -47,23 +46,20 @@ export const getPartnerName = (partner) => {
 };
 
 export const getPartnerState = (partner) => {
-  console.log(partner.state);
-  console.log(PartnerState.REQUEST.value);
-  console.log(partner.incoming);
   if ({}.hasOwnProperty.call(partner, "state")) {
-    if (partner.state === PartnerState.REQUEST.value) {
+    if (partner.state === PartnerStates.REQUEST.value) {
       if (partner.incoming) {
-        return PartnerState.CONNECTION_REQUEST_RECEIVED;
+        return PartnerStates.CONNECTION_REQUEST_RECEIVED;
       } else {
-        return PartnerState.CONNECTION_REQUEST_SENT;
+        return PartnerStates.CONNECTION_REQUEST_SENT;
       }
     } else if (
       partner.state ===
-      (PartnerState.ACTIVE.value || PartnerState.RESPONSE.value)
+      (PartnerStates.ACTIVE.value || PartnerStates.RESPONSE.value)
     ) {
-      return PartnerState.ACTIVE_OR_RESPONSE;
+      return PartnerStates.ACTIVE_OR_RESPONSE;
     } else {
-      return Object.values(PartnerState).find((state) => {
+      return Object.values(PartnerStates).find((state) => {
         return partner.state === state.value;
       });
     }
