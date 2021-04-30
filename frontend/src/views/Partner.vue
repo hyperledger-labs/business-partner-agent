@@ -46,30 +46,32 @@
           <v-btn icon @click="isUpdatingDid = !isUpdatingDid">
             <v-icon small dark>mdi-fingerprint</v-icon>
           </v-btn>
-          <span v-if="!isUpdatingDid"
-                class="grey--text text--darken-2 font-weight-medium text-caption pl-1 pr-4"
-          >{{ partner.did }}</span>
+          <span
+            v-if="!isUpdatingDid"
+            class="grey--text text--darken-2 font-weight-medium text-caption pl-1 pr-4"
+            >{{ partner.did }}</span
+          >
           <v-text-field
-              class="mt-4 col-lg-6 col-md-6 col-sm-8"
-              v-else
-              label="DID"
-              append-icon="mdi-done"
-              v-model="did"
-              outlined
-              :rules="[rules.required]"
-              dense
+            class="mt-4 col-lg-6 col-md-6 col-sm-8"
+            v-else
+            label="DID"
+            append-icon="mdi-done"
+            v-model="did"
+            outlined
+            :rules="[rules.required]"
+            dense
           >
             <template v-slot:append>
               <v-btn class="pb-1" text @click="isUpdatingDid = false"
-              >Cancel</v-btn
+                >Cancel</v-btn
               >
               <v-btn
-                  class="pb-1"
-                  text
-                  color="primary"
-                  :loading="isBusy"
-                  @click="submitDidUpdate()"
-              >Save</v-btn
+                class="pb-1"
+                text
+                color="primary"
+                :loading="isBusy"
+                @click="submitDidUpdate()"
+                >Save</v-btn
               >
             </template>
           </v-text-field>
@@ -99,6 +101,50 @@
       <v-progress-linear v-if="isLoading" indeterminate></v-progress-linear>
 
       <v-card-text>
+        <template
+          v-if="partner.bpa_state === PartnerState.CONNECTION_REQUEST_RECEIVED"
+        >
+          <v-banner two-line>
+            <v-avatar slot="icon" color="white" size="40">
+              <v-icon icon="mdi-alert-circle-outline" color="primary">
+                mdi-alert-circle-outline
+              </v-icon>
+            </v-avatar>
+
+            <v-row>
+              <span class="font-weight-medium">
+                Connection request received
+              </span>
+            </v-row>
+            <v-row
+              >{{ this.alias }} wants to create a connection with you.</v-row
+            >
+            <template v-slot:actions>
+              <v-btn text color="seconday" @click="deletePartner">
+                Remove Partner
+              </v-btn>
+              <v-btn text color="primary" @click="acceptPartnerRequest">
+                Accept
+              </v-btn>
+            </template>
+          </v-banner>
+        </template>
+        <template
+          v-if="partner.bpa_state === PartnerState.CONNECTION_REQUEST_SENT"
+        >
+          <v-banner two-line>
+            <v-avatar slot="icon" color="white" size="40">
+              <v-icon icon="mdi-clock-time-three-outline" color="primary">
+                mdi-clock-time-three-outline
+              </v-icon>
+            </v-avatar>
+
+            <v-row>
+              <span class="font-weight-medium"> Connection request sent </span>
+            </v-row>
+            <v-row>Waiting for response...</v-row>
+          </v-banner>
+        </template>
         <Profile v-if="isReady" v-bind:partner="partner"></Profile>
         <v-row v-if="partner.ariesSupport" class="mx-4">
           <v-col cols="4">
@@ -109,7 +155,7 @@
             </v-row>
             <v-row>The presentations you received from your partner</v-row>
             <v-row class="mt-4">
-              <v-btn small @click="requestPresentation"
+              <v-btn small @click="requestPresentation" :disabled="!isActive"
                 >Request Presentation</v-btn
               >
             </v-row>
@@ -138,7 +184,9 @@
             </v-row>
             <v-row>The presentations you sent to your partner</v-row>
             <v-row class="mt-4">
-              <v-btn small @click="sendPresentation"> Send Presentation</v-btn>
+              <v-btn small @click="sendPresentation" :disabled="!isActive">
+                Send Presentation</v-btn
+              >
             </v-row>
           </v-col>
           <v-col cols="8">
@@ -202,7 +250,12 @@ import Profile from "@/components/Profile";
 import PresentationList from "@/components/PresentationList";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import { CredentialTypes } from "../constants";
-import { getPartnerProfile, getPartnerName } from "../utils/partnerUtils";
+import {
+  getPartnerProfile,
+  getPartnerName,
+  getPartnerState,
+} from "@/utils/partnerUtils";
+import { PartnerState } from "@/models/partnerState";
 import { EventBus } from "../main";
 import {
   sentHeaders,
@@ -245,11 +298,15 @@ export default {
       },
       headersSent: sentHeaders,
       headersReceived: receivedHeaders,
+      PartnerState: PartnerState,
     };
   },
   computed: {
     expertMode() {
       return this.$store.state.expertMode;
+    },
+    isActive() {
+      return this.partner.bpa_state === PartnerState.ACTIVE_OR_RESPONSE;
     },
   },
   methods: {
@@ -258,10 +315,7 @@ export default {
       this.$router.push(this.goTo);
     },
     requestPresentation() {
-      if (
-        this.partner.state === "response" ||
-        this.partner.state === "active"
-      ) {
+      if (this.isActive) {
         this.$router.push({
           name: "RequestPresentation",
           params: {
@@ -279,10 +333,7 @@ export default {
       }
     },
     sendPresentation() {
-      if (
-        this.partner.state === "response" ||
-        this.partner.state === "active"
-      ) {
+      if (this.isActive) {
         this.$router.push({
           name: "SendPresentation",
           params: {
@@ -348,6 +399,8 @@ export default {
               },
             };
 
+            this.partner.bpa_state = getPartnerState(this.partner);
+
             // Hacky way to define a partner name
             // Todo: Make this consistent. Probably in backend
             this.partner.name = getPartnerName(this.partner);
@@ -381,6 +434,21 @@ export default {
           EventBus.$emit("error", e);
         });
     },
+    acceptPartnerRequest() {
+      this.$axios
+        .put(`${this.$apiBaseUrl}/partners/${this.id}/accept`, {})
+        .then((result) => {
+          console.log(result);
+          if (result.status === 200) {
+            EventBus.$emit("success", "Connection request accepted");
+            this.getPartner();
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+          EventBus.$emit("error", e);
+        });
+    },
     refreshPartner() {
       this.isLoading = true;
       this.$axios
@@ -406,6 +474,7 @@ export default {
               // Hacky way to define a partner name
               // Todo: Make this consistent. Probably in backend
               this.partner.name = getPartnerName(this.partner);
+              this.partner.bpa_state = getPartnerState(this.partner);
               this.alias = this.partner.name;
               this.did = this.partner.did;
               console.log(this.partner);

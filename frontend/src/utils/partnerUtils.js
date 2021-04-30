@@ -7,6 +7,7 @@
 */
 
 import { CredentialTypes } from "../constants";
+import { PartnerState } from "@/models/partnerState";
 
 export const getPartnerProfile = (partner) => {
   if (partner && {}.hasOwnProperty.call(partner, "credential")) {
@@ -42,5 +43,34 @@ export const getPartnerName = (partner) => {
     } else {
       return partner.did;
     }
+  }
+};
+
+export const getPartnerState = (partner) => {
+  console.log(partner.state);
+  console.log(PartnerState.REQUEST.value);
+  console.log(partner.incoming);
+  if ({}.hasOwnProperty.call(partner, "state")) {
+    if (partner.state === PartnerState.REQUEST.value) {
+      if (partner.incoming) {
+        return PartnerState.CONNECTION_REQUEST_RECEIVED;
+      } else {
+        return PartnerState.CONNECTION_REQUEST_SENT;
+      }
+    } else if (
+      partner.state ===
+      (PartnerState.ACTIVE.value || PartnerState.RESPONSE.value)
+    ) {
+      return PartnerState.ACTIVE_OR_RESPONSE;
+    } else {
+      return Object.values(PartnerState).find((state) => {
+        return partner.state === state.value;
+      });
+    }
+  } else {
+    return {
+      value: "",
+      label: "",
+    };
   }
 };

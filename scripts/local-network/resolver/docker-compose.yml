@@ -11,6 +11,6 @@ services:
       uniresolver_driver_did_sov_poolVersions: _;2;
       uniresolver_driver_did_sov_walletName: wallet
     ports:
-      - "7776:8080"
+      - 7776:8080
     volumes:
       - ./:/opt/driver-did-sov/local

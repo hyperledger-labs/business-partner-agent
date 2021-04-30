@@ -30,7 +30,7 @@
           bottom
           left
           fab
-          style="margin-left:50px"
+          style="margin-left: 50px"
           :to="{ name: 'AddPartnerbyURL' }"
         >
           <v-icon>mdi-qrcode</v-icon>
@@ -67,6 +67,10 @@ export default {
         {
           text: "Last Updated",
           value: "updatedAt",
+        },
+        {
+          text: "State",
+          value: "state",
         },
       ],
       partners: [],

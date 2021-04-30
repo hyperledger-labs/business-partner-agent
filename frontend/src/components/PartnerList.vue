@@ -48,6 +48,10 @@
       <template v-slot:[`item.updatedAt`]="{ item }">
         {{ item.updatedAt | moment("YYYY-MM-DD HH:mm") }}
       </template>
+
+      <template v-slot:[`item.state`]="{ item }">
+        {{ getPartnerState(item).label }}
+      </template>
     </v-data-table>
   </v-container>
 </template>
@@ -56,6 +60,7 @@
 import { EventBus } from "../main";
 import { getPartnerName } from "../utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
+import { getPartnerState } from "@/utils/partnerUtils";
 import NewMessageIcon from "@/components/NewMessageIcon";
 import { CredentialTypes } from "../constants";
 
@@ -83,6 +88,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    onlyActive: {
+      type: Boolean,
+      default: false,
+    },
     indicateNew: {
       type: Boolean,
       default: false,
@@ -100,6 +109,7 @@ export default {
       selected: [],
       data: [],
       isBusy: true,
+      getPartnerState: getPartnerState,
     };
   },
   computed: {
@@ -116,6 +126,7 @@ export default {
         },
       });
     },
+
     fetch() {
       // Query only for partners that can issue credentials of specified schema
       let queryParam = "";
