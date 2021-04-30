@@ -17,13 +17,6 @@
  */
 package org.hyperledger.bpa.controller;
 
-import javax.inject.Inject;
-
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
-import org.hyperledger.aries.webhook.EventHandler;
-import org.hyperledger.aries.webhook.EventParser;
-import org.hyperledger.bpa.impl.aries.ProofManager;
-
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.PathVariable;
@@ -35,6 +28,9 @@ import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.aries.webhook.EventHandler;
+
+import javax.inject.Inject;
 
 /**
  * Handles incoming aca-py webhook events
@@ -48,13 +44,9 @@ import lombok.extern.slf4j.Slf4j;
 public class AriesWebhookController {
 
     public static final String WEBHOOK_CONTROLLER_PATH = "/log/topic";
-    private final EventParser parser = new EventParser();
 
     @Inject
-    EventHandler handler;   
-    
-    @Inject
-    ProofManager proofM;
+    EventHandler handler;
 
     @Post(WEBHOOK_CONTROLLER_PATH + "/{eventType}")
     public void logEvent(
@@ -62,34 +54,7 @@ public class AriesWebhookController {
             @Body String eventBody) {
 
         log.info("Webhook received, type: {}", eventType);
-        String json = parser.prettyJson(eventBody);
-        
-        try {
-            /*if ("connections".equals(eventType)) {
-                parser.parseValueSave(json, ConnectionRecord.class).ifPresent(this::handleConnection);
-            } else*/
-            if ("present_proof".equals(eventType)) {
-                parser.parsePresentProof(json).ifPresent(this::handleProof);
-            }
-            // } else if ("issue_credential".equals(eventType)) {
-            //     parser.parseValueSave(json, CredentialExchange.class).ifPresent(this::handleCredential);
-            // } else if ("basicmessages".equals(eventType)) {
-            //     parser.parseValueSave(json, BasicMessage.class).ifPresent(this::handleBasicMessage);
-            // } else if ("ping".equals(eventType)) {
-            //     parser.parseValueSave(json, PingEvent.class).ifPresent(this::handlePing);
-            // } else if ("issuer_cred_rev".equals(eventType)) {
-            //     parser.parseValueSave(json, RevocationEvent.class).ifPresent(this::handleRevocation);
-            // } else { // default cause
-                handler.handleEvent(eventType, eventBody);
-            } catch (Exception e) {
-                log.error("Error in webhook event handler:", e);
-            }
+
+        handler.handleEvent(eventType, eventBody);
     }
-        public void handleProof(PresentationExchangeRecord proof) {
-            proofM.presentProof(proof);
-        }
-
-
-
-    
 }
