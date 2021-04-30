@@ -13,7 +13,7 @@
       v-model="selected"
       :loading="isBusy"
       :headers="headers"
-      :items="data"
+      :items="filteredData"
       :show-select="selectable"
       :sort-by="['updatedAt']"
       :sort-desc="[true]"
@@ -58,9 +58,9 @@
 
 <script>
 import { EventBus } from "../main";
-import { getPartnerName } from "../utils/partnerUtils";
+import { getPartnerName, getPartnerState } from "../utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
-import { getPartnerState } from "@/utils/partnerUtils";
+import { PartnerState } from "@/models/partnerState";
 import NewMessageIcon from "@/components/NewMessageIcon";
 import { CredentialTypes } from "../constants";
 
@@ -88,7 +88,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    onlyActive: {
+    showInvitations: {
       type: Boolean,
       default: false,
     },
@@ -115,6 +115,15 @@ export default {
   computed: {
     expertMode() {
       return this.$store.state.expertMode;
+    },
+    filteredData() {
+      if (!this.showInvitations) {
+        return this.data.filter((partner) => {
+          return partner.state !== PartnerState.INVITATION.value;
+        });
+      } else {
+        return this.data;
+      }
     },
   },
   methods: {
