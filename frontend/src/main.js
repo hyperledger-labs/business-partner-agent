@@ -5,6 +5,7 @@
 
  SPDX-License-Identifier: Apache-2.0
 */
+import '@/assets/scss/style.scss';
 
 import Vue from "vue";
 import axios from "axios";
@@ -71,18 +72,6 @@ Vue.use(VueNativeSock, socketApi, {
 Vue.prototype.$axios = axios;
 Vue.prototype.$apiBaseUrl = apiBaseUrl;
 Vue.config.productionTip = false;
-
-Vue.filter("credentialTag", function (credDefId) {
-  if (!credDefId) return "";
-  let pos = credDefId.lastIndexOf(":");
-  return credDefId.substring(pos + 1);
-});
-
-Vue.filter("capitalize", function (string) {
-  return string && string !== ""
-    ? string.replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()))
-    : "";
-});
 
 // Get Configuration
 Vue.prototype.$config = {

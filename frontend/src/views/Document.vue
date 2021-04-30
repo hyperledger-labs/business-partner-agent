@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
@@ -15,7 +15,7 @@
           icon
           @click="$router.push({ name: 'Wallet' })"
         >
-          <v-icon dark>mdi-chevron-left</v-icon>
+          <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
         {{ schemaLabel }}
         <v-layout align-end justify-end>
@@ -26,7 +26,7 @@
             icon
             @click="deleteDocument()"
           >
-            <v-icon dark>mdi-delete</v-icon>
+            <v-icon dark>$vuetify.icons.delete</v-icon>
           </v-btn>
         </v-layout>
       </v-card-title>
@@ -85,7 +85,7 @@
                   }"
                   :disabled="docModified()"
                 >
-                  <v-icon color="grey">mdi-chevron-right</v-icon>
+                  <v-icon color="grey">$vuetify.icons.next</v-icon>
                 </v-btn>
               </v-list-item-action>
             </template>

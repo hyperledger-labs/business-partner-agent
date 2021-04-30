@@ -21,7 +21,7 @@
       <v-icon
           v-if="isItemActive(item)"
           color="green"
-      >mdi-check</v-icon
+      >$vuetify.icons.check</v-icon
       >
       <span v-else>
         {{ item.state.replace("_", " ") }}

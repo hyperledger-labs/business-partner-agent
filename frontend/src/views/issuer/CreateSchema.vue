@@ -10,7 +10,7 @@
     <v-card class="mx-auto">
       <v-card-title class="bg-light">
         <v-btn depressed color="secondary" icon @click="$router.push({name: 'IssuerSchemaList'})">
-          <v-icon dark>mdi-chevron-left</v-icon>
+          <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
         <span>Create Schema</span>
       </v-card-title>
@@ -99,13 +99,13 @@
                       text
                       @click="addAttribute"
                   >
-                    <v-icon color="primary">mdi-plus</v-icon></v-btn>
+                    <v-icon color="primary">$vuetify.icons.add</v-icon></v-btn>
                   <v-btn
                       icon
                       v-if="index !== schemaAttributes.length - 1"
                       @click="deleteAttribute(index)"
                   >
-                    <v-icon color="error">mdi-delete</v-icon>
+                    <v-icon color="error">$vuetify.icons.delete</v-icon>
                   </v-btn>
                 </v-layout>
               </v-col>

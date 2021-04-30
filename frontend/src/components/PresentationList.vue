@@ -33,7 +33,7 @@
       <v-icon
         v-if="isItemActive(item)"
         color="green"
-        >mdi-check</v-icon
+        >$vuetify.icons.check</v-icon
       >
       <span v-else>
         {{ item.state.replace("_", " ") }}
@@ -61,7 +61,7 @@
       </td>
     </template>
     <template v-slot:[`item.actions`]="{ item }">
-      <v-icon small @click.stop="deletePresentation(item)"> mdi-delete </v-icon>
+      <v-icon small @click.stop="deletePresentation(item)"> $vuetify.icons.delete </v-icon>
     </template>
   </v-data-table>
 </template>

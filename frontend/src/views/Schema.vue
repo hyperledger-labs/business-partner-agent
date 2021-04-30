@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
@@ -10,12 +10,12 @@
     <v-card v-if="!isLoading" class="mx-auto">
       <v-card-title class="bg-light">
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
-          <v-icon dark>mdi-chevron-left</v-icon>
+          <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
         <span>{{ data.label }}</span>
         <v-layout align-end justify-end>
           <!-- <v-btn depressed icon @click="isUpdatingName = !isUpdatingName">
-                    <v-icon dark>mdi-pencil</v-icon>
+                    <v-icon dark>$vuetify.icons.pencil</v-icon>
                 </v-btn> -->
           <v-btn
             depressed
@@ -24,7 +24,7 @@
             :disabled="data.isReadOnly"
             @click="deleteSchema"
           >
-            <v-icon dark>mdi-delete</v-icon>
+            <v-icon dark>$vuetify.icons.delete</v-icon>
           </v-btn>
         </v-layout>
       </v-card-title>

@@ -10,12 +10,12 @@
     <v-card v-if="!isLoading" class="mx-auto">
       <v-card-title class="bg-light">
         <v-btn depressed color="secondary" icon @click="$router.push({name: 'IssuerSchemaList'})">
-          <v-icon dark>mdi-chevron-left</v-icon>
+          <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
         <span>{{ data.label }}</span>
         <v-layout align-end justify-end>
           <!-- <v-btn depressed icon @click="isUpdatingName = !isUpdatingName">
-                    <v-icon dark>mdi-pencil</v-icon>
+                    <v-icon dark>$vuetify.icons.pencil</v-icon>
                 </v-btn> -->
           <v-btn
               depressed
@@ -24,7 +24,7 @@
               :disabled="data.isReadOnly"
               @click="deleteSchema"
           >
-            <v-icon dark>mdi-delete</v-icon>
+            <v-icon dark>$vuetify.icons.delete</v-icon>
           </v-btn>
         </v-layout>
       </v-card-title>
@@ -74,7 +74,7 @@
                 fab
                 @click="addNewCredDef"
             >
-              <v-icon>mdi-plus</v-icon>
+              <v-icon>$vuetify.icons.add</v-icon>
             </v-btn>
           </v-card-actions>
         </v-card>
