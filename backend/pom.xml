@@ -59,6 +59,7 @@
         <micronaut.openapi.version>2.4.0</micronaut.openapi.version>
         <micronaut.security.version>2.4.2</micronaut.security.version>
         <mockito.version>3.9.0</mockito.version>
+        <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <pmd.version>6.34.0</pmd.version>
         <spotbugs.version>4.2.3</spotbugs.version>
         <testcontainers.version>1.15.3</testcontainers.version>
