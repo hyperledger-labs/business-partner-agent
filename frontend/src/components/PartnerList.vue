@@ -60,9 +60,8 @@
 import { EventBus } from "../main";
 import { getPartnerName, getPartnerState } from "../utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
-import { PartnerState } from "@/models/partnerState";
 import NewMessageIcon from "@/components/NewMessageIcon";
-import { CredentialTypes } from "../constants";
+import { CredentialTypes, PartnerStates } from "../constants";
 
 export default {
   name: "PartnerList",
@@ -119,7 +118,7 @@ export default {
     filteredData() {
       if (!this.showInvitations) {
         return this.data.filter((partner) => {
-          return partner.state !== PartnerState.INVITATION.value;
+          return partner.state !== PartnerStates.INVITATION.value;
         });
       } else {
         return this.data;
