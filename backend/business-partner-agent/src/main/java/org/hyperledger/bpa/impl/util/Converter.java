@@ -74,23 +74,12 @@ public class Converter {
     SchemaService schemaService;
 
     public PartnerAPI toAPIObject(@NonNull Partner p) {
-        PartnerAPI result;
-        if (p.getVerifiablePresentation() == null) {
-            result = new PartnerAPI();
-        } else {
+        PartnerAPI result = PartnerAPI.from(p);
+        if (p.getVerifiablePresentation() != null) {
             result = toAPIObject(fromMap(p.getVerifiablePresentation(), VP_TYPEREF));
+            PartnerAPI.copyFrom(result, p);
         }
-        return result
-                .setCreatedAt(p.getCreatedAt().toEpochMilli())
-                .setUpdatedAt(p.getUpdatedAt().toEpochMilli())
-                .setLastSeen(p.getLastSeen() != null ? p.getLastSeen().toEpochMilli() : null)
-                .setId(p.getId().toString())
-                .setValid(p.getValid())
-                .setAriesSupport(p.getAriesSupport())
-                .setState(p.getState())
-                .setAlias(p.getAlias())
-                .setDid(p.getDid())
-                .setIncoming(p.getIncoming() != null ? p.getIncoming() : Boolean.FALSE);
+        return result;
     }
 
     public PartnerAPI toAPIObject(@NonNull VerifiablePresentation<VerifiableIndyCredential> partner) {

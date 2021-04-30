@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.controller;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
@@ -24,11 +25,13 @@ import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
-import org.hyperledger.bpa.controller.api.issuer.CreateCredDefRequest;
-import org.hyperledger.bpa.controller.api.issuer.CreateSchemaRequest;
+import org.hyperledger.bpa.controller.api.issuer.*;
 import org.hyperledger.bpa.impl.IssuerManager;
+import org.hyperledger.bpa.impl.util.Converter;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -44,6 +47,9 @@ public class IssuerController {
 
     @Inject
     IssuerManager im;
+
+    @Inject
+    Converter conv;
 
     /**
      * List configured schemas
@@ -83,14 +89,54 @@ public class IssuerController {
     }
 
     /**
+     * List cred defs, items that i can issue
+     *
+     * @return list of {@link SchemaAPI}
+     */
+    @Get("/creddef")
+    public HttpResponse<List<CredDef>> listCredDefs() {
+        return HttpResponse.ok(im.listCredDefs());
+    }
+
+    /**
      * Create a new credential definition
      *
      * @param req {@link CreateCredDefRequest}
      * @return {@link HttpResponse}
      */
     @Post("/creddef")
-    public HttpResponse<Object> createCredDef(@Body CreateCredDefRequest req) {
+    public HttpResponse<CredDef> createCredDef(@Body CreateCredDefRequest req) {
         return HttpResponse.ok(im.createCredDef(req.getSchemaId(), req.getTag(), req.isSupportRevocation()));
+    }
+
+    /**
+     * Issue a credential
+     *
+     * @param req {@link IssueCredentialSendRequest}
+     * @return {@link HttpResponse}
+     */
+    @Post("/issue-credential/send")
+    public HttpResponse<String> issueCredentialSend(@Body IssueCredentialSendRequest req) {
+        Optional<V1CredentialExchange> exchange = im.issueCredentialSend(UUID.fromString(req.getCredDefId()),
+                UUID.fromString(req.getPartnerId()),
+                conv.toMap(req.getDocument()));
+        if (exchange.isPresent()) {
+            // just return the id and not the full Aries Object.
+            // Event handlers will create the db cred ex records
+            return HttpResponse.ok(exchange.get().getCredentialExchangeId());
+        }
+        return HttpResponse.badRequest();
+    }
+
+    /**
+     * Issue a credential
+     *
+     * @return {@link HttpResponse}
+     */
+    @Get("/exchanges")
+    public HttpResponse<List<CredEx>> listCredentialExchanges(
+            @Parameter(description = "issuer or holder") @Nullable @QueryValue String role) {
+        return HttpResponse.ok(im.listCredentialExchanges(role));
     }
 
 }

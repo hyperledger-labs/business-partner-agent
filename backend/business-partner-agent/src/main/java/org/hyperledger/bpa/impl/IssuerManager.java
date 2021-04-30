@@ -17,31 +17,47 @@
  */
 package org.hyperledger.bpa.impl;
 
+import com.google.gson.Gson;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credential_definition.CredentialDefinition.CredentialDefinitionRequest;
 import org.hyperledger.aries.api.credential_definition.CredentialDefinition.CredentialDefinitionResponse;
+import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
+import org.hyperledger.aries.api.credentials.CredentialPreview;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialProposalRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.IssuerException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.issuer.CredDef;
+import org.hyperledger.bpa.controller.api.issuer.CredEx;
 import org.hyperledger.bpa.impl.activity.Identity;
+import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.util.Converter;
+import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.model.BPACredentialDefinition;
+import org.hyperledger.bpa.model.BPACredentialExchange;
 import org.hyperledger.bpa.model.BPASchema;
+import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.BPACredentialDefinitionRepository;
+import org.hyperledger.bpa.repository.BPACredentialExchangeRepository;
+import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
@@ -58,6 +74,18 @@ public class IssuerManager {
 
     @Inject
     BPACredentialDefinitionRepository credDefRepo;
+
+    @Inject
+    PartnerRepository partnerRepo;
+
+    @Inject
+    BPACredentialExchangeRepository credExRepo;
+
+    @Inject
+    LabelStrategy labelStrategy;
+
+    @Inject
+    Converter conv;
 
     @Inject
     RuntimeConfig config;
@@ -77,6 +105,12 @@ public class IssuerManager {
 
     public Optional<SchemaAPI> readSchema(@NonNull UUID id) {
         return schemaService.getSchema(id);
+    }
+
+    public List<CredDef> listCredDefs() {
+        List<CredDef> result = new ArrayList<>();
+        credDefRepo.findAll().forEach(db -> result.add(CredDef.from(db)));
+        return result;
     }
 
     public CredDef createCredDef(@NonNull String schemaId, @NonNull String tag, boolean supportRevocation) {
@@ -126,5 +160,164 @@ public class IssuerManager {
             throw new NetworkException("No aries connection", e);
         }
         return result;
+    }
+
+    public Optional<V1CredentialExchange> issueCredentialSend(@NonNull UUID credDefId, @NonNull UUID partnerId,
+            @NonNull Map<String, Object> document) {
+        final Optional<Partner> dbPartner = partnerRepo.findById(partnerId);
+        if (!dbPartner.isPresent()) {
+            throw new IssuerException(String.format("Could not find partner with id '%s'", partnerId));
+        }
+        final Optional<BPACredentialDefinition> dbCredDef = credDefRepo.findById(credDefId);
+        if (!dbCredDef.isPresent()) {
+            throw new IssuerException(String.format("Could not find credential definition with id '%s'", credDefId));
+        }
+        // ok, we have partner/connection, we have a cred def/schema
+        // let's make sure the document matches up with the schema.
+        // attribute names must match exactly
+        Set<String> documentAttributeNames = document.keySet();
+        Set<String> schemaAttributeNames = dbCredDef.get().getSchema().getSchemaAttributeNames();
+        if (!documentAttributeNames.equals(schemaAttributeNames)) {
+            throw new IssuerException(String.format("Document attributes %s do not match schema attributes %s",
+                    documentAttributeNames, schemaAttributeNames));
+        }
+
+        try {
+            Optional<V1CredentialExchange> exchange = ac.issueCredentialSend(
+                    V1CredentialProposalRequest
+                            .builder()
+                            .connectionId(dbPartner.get().getConnectionId())
+                            .schemaId(dbCredDef.get().getSchema().getSchemaId())
+                            .credentialProposal(
+                                    new CredentialPreview(
+                                            CredentialAttributes.from(document)))
+                            .credentialDefinitionId(dbCredDef.get().getCredentialDefinitionId())
+                            .build());
+            return exchange;
+        } catch (IOException e) {
+            throw new NetworkException("No aries connection", e);
+        }
+    }
+
+    public List<CredEx> listCredentialExchanges(String role) {
+        List<BPACredentialExchange> exchanges = new ArrayList<>();
+        credExRepo.findAll().forEach(exchanges::add);
+        // now, lets get credentials...
+        return exchanges.stream()
+                .filter(x -> {
+                    if (StringUtils.isNotEmpty(role)) {
+                        return StringUtils.equalsIgnoreCase(x.getRole().name(), role);
+                    }
+                    return true;
+                })
+                .map(o -> {
+                    // for issuers, let's return a nearly complete credential (attrs, schema id,
+                    // cred def id)
+                    // instead of what is stored (only the attrs)
+                    if (CredentialExchangeRole.ISSUER.equals(o.getRole())) {
+                        Credential c = this.buildFromProposal(o);
+                        o.setCredential(conv.toMap(c));
+                    }
+                    return CredEx.from(o);
+                })
+                .collect(Collectors.toList());
+    }
+
+    private Credential buildFromProposal(@NonNull BPACredentialExchange exchange) {
+        Credential result = null;
+        LinkedHashMap credentialProposal = (LinkedHashMap) exchange.getCredentialProposal().get("credential_proposal");
+        if (credentialProposal != null) {
+            ArrayList<LinkedHashMap> attributes = (ArrayList) credentialProposal.get("attributes");
+            if (attributes != null) {
+                final Map<String, String> attrs = attributes
+                        .stream()
+                        .collect(Collectors.toMap(s -> (String) s.get("name"),
+                                s -> (String) s.get("value")));
+
+                result = new Credential();
+                result.setSchemaId(exchange.getSchema().getSchemaId());
+                result.setCredentialDefinitionId(exchange.getCredDef().getCredentialDefinitionId());
+                result.setAttrs(attrs);
+            }
+        }
+        return result;
+    }
+
+    private BPACredentialExchange createCredentialExchange(@NonNull V1CredentialExchange exchange) {
+
+        HashMap<String, Object> cp = new Gson().fromJson(exchange.getCredentialProposalDict(),
+                HashMap.class);
+        HashMap<String, Object> co = new Gson().fromJson(exchange.getCredentialOfferDict(),
+                HashMap.class);
+        // these should exist as we used them to issue the credential...
+        Optional<BPACredentialDefinition> dbCredDef = credDefRepo
+                .findByCredentialDefinitionId(exchange.getCredentialDefinitionId());
+        Optional<Partner> dbPartner = partnerRepo.findByConnectionId(exchange.getConnectionId());
+        if (dbCredDef.isPresent() && dbPartner.isPresent()) {
+            BPACredentialExchange cex = BPACredentialExchange.builder()
+                    .type(CredentialType.SCHEMA_BASED)
+                    .schema(dbCredDef.get().getSchema())
+                    .partner(dbPartner.get())
+                    .credDef(dbCredDef.get())
+                    .role(exchange.getRole())
+                    .state(exchange.getState())
+                    .threadId(exchange.getThreadId())
+                    .credentialExchangeId(exchange.getCredentialExchangeId())
+                    .credentialProposal(cp)
+                    .credentialOffer(co)
+                    .updatedAt(TimeUtil.parseZonedTimestamp(exchange.getUpdatedAt()))
+                    .build();
+
+            return credExRepo.save(cex);
+        } else {
+            log.error(String.format(
+                    "Could not create credential exchange record. Cred. Def ID (%s) or Partner/Connection id ($s) not found"),
+                    exchange.getCredentialDefinitionId(), exchange.getConnectionId());
+        }
+        return null;
+    }
+
+    private void updateCredentialExchange(@NonNull String credentialExchangeId,
+            @NonNull CredentialExchangeState state,
+            @NonNull String updatedAt,
+            Credential credential) {
+        Optional<BPACredentialExchange> cex = credExRepo.findByCredentialExchangeId(credentialExchangeId);
+        if (cex.isPresent()) {
+            if (credential != null) {
+                cex.get().setCredential(conv.toMap(credential));
+                // label, try to get the value of the schema's default attribute
+                if (credential.getAttrs() != null) {
+                    cex.get().setLabel(labelStrategy.apply(credential));
+                } else {
+                    // grab it from the proposal...
+                    Credential c = this.buildFromProposal(cex.get());
+                    if (c != null) {
+                        cex.get().setLabel(labelStrategy.apply(c));
+                    }
+                }
+            }
+            cex.get().setState(state);
+            cex.get().setUpdatedAt(TimeUtil.parseZonedTimestamp(updatedAt));
+            credExRepo.update(cex.get());
+        }
+    }
+
+    public void handleCredentialExchange(@NonNull V1CredentialExchange exchange) {
+        switch (exchange.getState()) {
+        case OFFER_SENT:
+            // create a record...
+            createCredentialExchange(exchange);
+            break;
+        case REQUEST_RECEIVED:
+        case CREDENTIAL_ISSUED:
+        case CREDENTIAL_ACKED:
+            updateCredentialExchange(exchange.getCredentialExchangeId(), exchange.getState(),
+                    exchange.getUpdatedAt(), exchange.getCredential());
+            break;
+        default:
+            log.debug(String.format("Unhandled credential exchange: role = %s, state = %s", exchange.getRole(),
+                    exchange.getState()));
+            break;
+        }
     }
 }
