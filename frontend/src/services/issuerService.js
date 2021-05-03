@@ -1,5 +1,5 @@
-import { appAxios } from '@/services/interceptors';
-import {ApiRoutes, CredentialExchangeRoles} from '@/constants';
+import { appAxios } from "@/services/interceptors";
+import { ApiRoutes, CredentialExchangeRoles } from "@/constants";
 
 export default {
   //
@@ -35,11 +35,14 @@ export default {
   },
 
   listCredentialExchangesAsIssuer() {
-    return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, { params: {role: CredentialExchangeRoles.ISSUER}});
+    return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
+      params: { role: CredentialExchangeRoles.ISSUER },
+    });
   },
 
   listCredentialExchangesAsHolder() {
-    return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, { params: {role: CredentialExchangeRoles.HOLDER}});
+    return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
+      params: { role: CredentialExchangeRoles.HOLDER },
+    });
   },
-
 };

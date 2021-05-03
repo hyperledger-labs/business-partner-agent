@@ -157,7 +157,7 @@
 </template>
 
 <script>
-import { profileModel } from "../model/model";
+import { profileModel } from "../models/model";
 export default {
   props: {
     isReadOnly: Boolean,
