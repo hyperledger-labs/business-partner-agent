@@ -22,8 +22,8 @@
         <v-expansion-panels v-if="expertMode" accordion flat>
           <v-expansion-panel>
             <v-expansion-panel-header
-                class="grey--text text--darken-2 font-weight-medium bg-light"
-            >Show raw data</v-expansion-panel-header
+              class="grey--text text--darken-2 font-weight-medium bg-light"
+              >Show raw data</v-expansion-panel-header
             >
             <v-expansion-panel-content class="bg-light">
               <vue-json-pretty :data="credential"></vue-json-pretty>
@@ -36,53 +36,52 @@
 </template>
 
 <script>
-  import { EventBus } from "../main";
+import { EventBus } from "../main";
 
-  import Cred from "@/components/Credential";
-  import { CredentialTypes } from "../constants";
+import Cred from "@/components/Credential";
+import { CredentialTypes } from "../constants";
 
-  export default {
-    name: "ViewCredentialContent",
-    props: {
-      credential: Object,
-      title: String,
+export default {
+  name: "ViewCredentialContent",
+  props: {
+    credential: Object,
+    title: String,
+  },
+  created() {
+    EventBus.$emit("title", "View Credential Content");
+    // transform this to work with the Credential component
+    this.document = {
+      credentialData: { ...this.credential.attrs },
+      schemaId: this.credential.schemaId,
+      credentialDefinitionId: this.credential.credentialDefinitionId,
+    };
+  },
+  data: () => {
+    return {
+      isBusy: false,
+      isReady: false,
+      CredentialTypes: CredentialTypes,
+      document: {},
+    };
+  },
+  computed: {
+    expertMode() {
+      return this.$store.state.expertMode;
     },
-    created() {
-      EventBus.$emit("title", "View Credential Content");
-      // transform this to work with the Credential component
-      this.document = {
-        credentialData: {... this.credential.attrs},
-        schemaId: this.credential.schemaId,
-        credentialDefinitionId: this.credential.credentialDefinitionId
-      };
-    },
-    data: () => {
-      return {
-        isBusy: false,
-        isReady: false,
-        CredentialTypes: CredentialTypes,
-        document: {}
-      };
-    },
-    computed: {
-      expertMode() {
-        return this.$store.state.expertMode;
-      },
-    },
-    methods: {
-    },
-    components: {
-      Cred,
-    },
-  };
+  },
+  methods: {},
+  components: {
+    Cred,
+  },
+};
 </script>
 
 <style scoped>
-  .bg-light {
-    background-color: #fafafa;
-  }
+.bg-light {
+  background-color: #fafafa;
+}
 
-  .bg-light-2 {
-    background-color: #ececec;
-  }
+.bg-light-2 {
+  background-color: #ececec;
+}
 </style>

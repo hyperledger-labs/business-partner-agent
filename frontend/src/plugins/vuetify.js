@@ -27,7 +27,7 @@ import {
   mdiQrcode,
   mdiGlobeModel,
   mdiLogout,
-  mdiHandshake
+  mdiHandshake, mdiAlertCircleOutline, mdiClockTimeThreeOutline
 } from '@mdi/js';
 
 Vue.use(Vuetify);
@@ -78,7 +78,9 @@ export default new Vuetify({
       newMessage: mdiShapePolygonPlus,
       qrCode: mdiQrcode,
       credentialManagement:'fas fa-file-signature',
-      proofRequests: 'fas fa-exchange-alt'
+      proofRequests: 'fas fa-exchange-alt',
+      connectionAlert: mdiAlertCircleOutline,
+      connectionWaiting: mdiClockTimeThreeOutline
     }
   },
   theme: {

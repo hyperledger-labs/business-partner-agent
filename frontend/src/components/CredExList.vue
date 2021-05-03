@@ -8,21 +8,17 @@
 
 <template>
   <v-data-table
-      :hide-default-footer="itemsWithIndex.length < 10"
-      :headers="headers"
-      :items="itemsWithIndex"
-      item-key="index"
-      :sort-by="['createdAt']"
-      :sort-desc="[false]"
-      single-select
-      @click:row="openItem"
+    :hide-default-footer="itemsWithIndex.length < 10"
+    :headers="headers"
+    :items="itemsWithIndex"
+    item-key="index"
+    :sort-by="['createdAt']"
+    :sort-desc="[false]"
+    single-select
+    @click:row="openItem"
   >
     <template v-slot:[`item.state`]="{ item }">
-      <v-icon
-          v-if="isItemActive(item)"
-          color="green"
-      >$vuetify.icons.check</v-icon
-      >
+      <v-icon v-if="isItemActive(item)" color="green">$vuetify.icons.check</v-icon>
       <span v-else>
         {{ item.state.replace("_", " ") }}
       </span>
@@ -37,41 +33,39 @@
 </template>
 
 <script>
-
-  export default {
-    props: {
-      items: Array,
-      headers: {
-        type: Array,
-        default: () => [],
-      },
-      isActiveFn: {
-        type: Function,
-        default: (item) => (item.state === 'credential_issued' || item.state == 'credential_acked')
-      }
+export default {
+  props: {
+    items: Array,
+    headers: {
+      type: Array,
+      default: () => [],
     },
-    data: () => {
-      return {
-      };
+    isActiveFn: {
+      type: Function,
+      default: (item) =>
+        item.state === "credential_issued" || item.state == "credential_acked",
     },
-    computed: {
-      // Add an unique index, because elements do not have unique id
-      itemsWithIndex: function () {
-        return this.items.map((item, index) => ({
-          ...item,
-          index: index + 1,
-        }));
-      },
+  },
+  data: () => {
+    return {};
+  },
+  computed: {
+    // Add an unique index, because elements do not have unique id
+    itemsWithIndex: function () {
+      return this.items.map((item, index) => ({
+        ...item,
+        index: index + 1,
+      }));
     },
-    methods: {
-      openItem(item) {
-        this.$emit('openItem', item);
-      },
-      isItemActive(item) {
-        return this.isActiveFn(item);
-      }
+  },
+  methods: {
+    openItem(item) {
+      this.$emit("openItem", item);
     },
-    components: {
+    isItemActive(item) {
+      return this.isActiveFn(item);
     },
-  };
+  },
+  components: {},
+};
 </script>
