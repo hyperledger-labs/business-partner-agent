@@ -77,7 +77,8 @@ export default new Vuetify({
       partnerState: mdiBrightness1,
       newMessage: mdiShapePolygonPlus,
       qrCode: mdiQrcode,
-      credentialManagement: 'fas fa-exchange-alt',
+      credentialManagement:'fas fa-file-signature',
+      proofRequests: 'fas fa-exchange-alt'
     }
   },
   theme: {
