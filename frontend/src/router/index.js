@@ -176,12 +176,6 @@ const routes = [
     props: true,
   },
   {
-    path: "/app/credential/view/",
-    name: "ViewCredentialContent",
-    component: ViewCredentialContent,
-    props: true,
-  },
-  {
     path: "/credentialManagement",
     name: "CredentialManagement",
     component: CredentialManagement
