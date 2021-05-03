@@ -30,11 +30,7 @@
       </div>
     </template>
     <template v-slot:[`item.state`]="{ item }">
-      <v-icon
-        v-if="isItemActive(item)"
-        color="green"
-        >mdi-check</v-icon
-      >
+      <v-icon v-if="isItemActive(item)" color="green">mdi-check</v-icon>
       <span v-else>
         {{ item.state.replace("_", " ") }}
       </span>
@@ -89,8 +85,9 @@ export default {
     },
     isActiveFn: {
       type: Function,
-      default: (item) => (item.state === 'verified' || item.state == 'presentation_acked')
-    }
+      default: (item) =>
+        item.state === "verified" || item.state == "presentation_acked",
+    },
   },
   data: () => {
     return {
@@ -130,8 +127,7 @@ export default {
         });
     },
     openPresentation(presentation) {
-      if (this.isActiveFn(presentation)
-      ) {
+      if (this.isActiveFn(presentation)) {
         if (presentation.id) {
           this.$router.push({
             path: `presentation/${presentation.id}`,
@@ -150,7 +146,7 @@ export default {
     },
     isItemActive(item) {
       return this.isActiveFn(item);
-    }
+    },
   },
   components: {
     Credential,
