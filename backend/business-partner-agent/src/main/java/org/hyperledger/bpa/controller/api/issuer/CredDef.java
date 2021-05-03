@@ -39,8 +39,11 @@ public class CredDef {
     private Integer revocationRegistrySize;
     private Long createdAt;
     private SchemaAPI schema;
+    private String displayText;
 
     public static CredDef from(BPACredentialDefinition db) {
+        SchemaAPI schemaAPI = SchemaAPI.from(db.getSchema(), false, false);
+        String displayText = String.format("%s (%s) - %s", schemaAPI.getLabel(), schemaAPI.getVersion(), db.getTag());
         return CredDef
                 .builder()
                 .id(db.getId())
@@ -51,6 +54,7 @@ public class CredDef {
                 .isSupportRevocation(db.getIsSupportRevocation())
                 .revocationRegistrySize(db.getRevocationRegistrySize())
                 .createdAt(db.getCreatedAt().toEpochMilli())
+                .displayText(displayText)
                 .build();
     }
 }

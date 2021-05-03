@@ -131,7 +131,7 @@ export default {
         this.credDefs = cresp.data.map((c) => {
           return {
             value: c.id,
-            text: `${c.schema.label} (${c.schema.version}) - ${c.tag}`,
+            text: c.displayText,
             fields: c.schema.schemaAttributeNames.map((key) => {
               return {
                 type: key,

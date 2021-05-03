@@ -7,6 +7,7 @@
 -->
 
 <template>
+  <v-container>
   <v-data-table
     :hide-default-footer="itemsWithIndex.length < 10"
     :headers="headers"
@@ -30,9 +31,25 @@
       {{ item.createdAt | formatDateLong }}
     </template>
   </v-data-table>
+  <v-dialog v-model="dialog" max-width="600px">
+    <v-card>
+      <v-card-title class="bg-light">
+        <span class="headline">Credential Data</span>
+      </v-card-title>
+      <v-card-text>
+        <Cred v-bind:document="document" isReadOnly showOnlyContent></Cred>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" text @click="dialog = false">Close</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+  </v-container>
 </template>
-
 <script>
+  import Cred from "@/components/Credential.vue"
+
 export default {
   props: {
     items: Array,
@@ -47,7 +64,10 @@ export default {
     },
   },
   data: () => {
-    return {};
+    return {
+      dialog: false,
+      document: {}
+    };
   },
   computed: {
     // Add an unique index, because elements do not have unique id
@@ -60,12 +80,20 @@ export default {
   },
   methods: {
     openItem(item) {
+      this.dialog = true;
+      this.document = {
+        credentialData: { ...item.credential.attrs },
+        schemaId: item.credential.schemaId,
+        credentialDefinitionId: item.credential.credentialDefinitionId,
+      };
       this.$emit("openItem", item);
     },
     isItemActive(item) {
       return this.isActiveFn(item);
     },
   },
-  components: {},
+  components: {
+    Cred
+  },
 };
 </script>

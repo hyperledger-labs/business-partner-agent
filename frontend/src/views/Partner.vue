@@ -217,8 +217,6 @@
               v-if="isReady"
               v-bind:items="issuedCredentials"
               v-bind:headers="headersIssued"
-              v-on:openItem="openIssuedCredential"
-              v-bind:isActiveFn="isIssuedCredentialActive"
             ></CredExList>
           </v-col>
         </v-row>
@@ -327,16 +325,8 @@ export default {
       PartnerStates: PartnerStates,
       headersIssued: [
         {
-          text: "Schema",
-          value: "schema.label",
-        },
-        {
-          text: "Version",
-          value: "schema.version",
-        },
-        {
-          text: "Tag",
-          value: "credDef.tag",
+          text: "Type",
+          value: "displayText",
         },
         {
           text: "Updated at",
@@ -445,27 +435,6 @@ export default {
           console.error(e);
           // EventBus.$emit("error", e);
         });
-    },
-    openIssuedCredential(item) {
-      if (this.isIssuedCredentialActive(item)) {
-        // ok, lets show this credential
-        this.$router.push({
-          name: "ViewCredentialContent",
-          params: {
-            credential: item.credential,
-            title: `${item.schema.label} (${item.schema.version}) - ${item.credDef.tag}`,
-          },
-        });
-      }
-    },
-    isIssuedCredentialActive(item) {
-      if (item) {
-        return (
-          item.state === "credential_issued" ||
-          item.state === "credential_acked"
-        );
-      }
-      return false;
     },
     getPartner() {
       console.log("Getting partner...");

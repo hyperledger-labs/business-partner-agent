@@ -40,6 +40,14 @@ p {
   line-height: 1.7;
 }
 
+.bg-light {
+  background-color: #fafafa;
+}
+
+.bg-light-2 {
+  background-color: #ececec;
+}
+
 // buttons in v-card
 .v-card__actions > .v-btn {
   padding: 0 16px !important;
@@ -86,5 +94,4 @@ div {
       }
     }
   }
-
 }
