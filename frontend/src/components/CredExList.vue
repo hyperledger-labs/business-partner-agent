@@ -13,8 +13,8 @@
     :headers="headers"
     :items="itemsWithIndex"
     item-key="index"
-    :sort-by="['createdAt']"
-    :sort-desc="[false]"
+    :sort-by="['updatedAt']"
+    :sort-desc="[true]"
     single-select
     @click:row="openItem"
   >
@@ -37,7 +37,7 @@
         <span class="headline">Credential Data</span>
       </v-card-title>
       <v-card-text>
-        <Cred v-bind:document="document" isReadOnly showOnlyContent></Cred>
+        <Cred :document="document" isReadOnly showOnlyContent></Cred>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -55,7 +55,24 @@ export default {
     items: Array,
     headers: {
       type: Array,
-      default: () => [],
+      default: () => [
+        {
+          text: "Type",
+          value: "displayText",
+        },
+        {
+          text: "Issued To",
+          value: "partner.alias",
+        },
+        {
+          text: "Updated At",
+          value: "updatedAt",
+        },
+        {
+          text: "State",
+          value: "state",
+        },
+      ],
     },
     isActiveFn: {
       type: Function,

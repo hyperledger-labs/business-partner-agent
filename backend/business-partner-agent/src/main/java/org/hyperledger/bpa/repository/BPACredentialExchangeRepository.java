@@ -44,4 +44,9 @@ public interface BPACredentialExchangeRepository extends CrudRepository<BPACrede
     @Join(value = "credDef", type = Join.Type.LEFT_FETCH)
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     Optional<BPACredentialExchange> findByCredentialExchangeId(@NonNull String credentialExchangeId);
+
+    @Join(value = "schema", type = Join.Type.LEFT_FETCH)
+    @Join(value = "credDef", type = Join.Type.LEFT_FETCH)
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    Iterable<BPACredentialExchange> listOrderByUpdatedAtDesc();
 }

@@ -201,7 +201,7 @@ public class IssuerManager {
 
     public List<CredEx> listCredentialExchanges(String role) {
         List<BPACredentialExchange> exchanges = new ArrayList<>();
-        credExRepo.findAll().forEach(exchanges::add);
+        credExRepo.listOrderByUpdatedAtDesc().forEach(exchanges::add);
         // now, lets get credentials...
         return exchanges.stream()
                 .filter(x -> {
