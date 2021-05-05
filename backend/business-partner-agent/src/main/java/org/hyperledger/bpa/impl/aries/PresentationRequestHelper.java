@@ -32,7 +32,7 @@ public class PresentationRequestHelper {
                 .build());
     }
 
-    public static Map<String, PresentationRequest.IndyRequestedCredsRequestedAttr> buildRequestedAttributes(
+    private static Map<String, PresentationRequest.IndyRequestedCredsRequestedAttr> buildRequestedAttributes(
             Map<String, PresentProofRequest.ProofRequest.ProofAttributes> requestedAttributes,
             List<PresentationRequestCredentials> validCredentials) {
 
@@ -60,7 +60,7 @@ public class PresentationRequestHelper {
 
     };
 
-    public static Map<String, PresentationRequest.IndyRequestedCredsRequestedPred> buildRequestedPredicates(
+    private static Map<String, PresentationRequest.IndyRequestedCredsRequestedPred> buildRequestedPredicates(
             Map<String, PresentProofRequest.ProofRequest.ProofAttributes> requestedPredicates,
             List<PresentationRequestCredentials> validCredentials) {
         Map<String, PresentationRequest.IndyRequestedCredsRequestedPred> result = new HashMap<>();
