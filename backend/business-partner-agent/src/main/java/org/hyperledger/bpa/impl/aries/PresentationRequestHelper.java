@@ -4,6 +4,9 @@ import lombok.NonNull;
 
 import org.hyperledger.aries.api.present_proof.*;
 import org.hyperledger.aries.pojo.PojoProcessor;
+import org.hyperledger.bpa.api.exception.PresentationConstructionException;
+
+import io.micronaut.core.cli.Option;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -22,7 +25,9 @@ public class PresentationRequestHelper {
     public static Optional<PresentationRequest> buildAny(
             PresentationExchangeRecord presentationExchange,
             List<PresentationRequestCredentials> validCredentials) {
-        return Optional.of(PresentationRequest.builder()
+        Optional<PresentationRequest> result = Optional.empty();
+        try{
+            result = Optional.of(PresentationRequest.builder()
                 .requestedAttributes(buildRequestedAttributes(
                         presentationExchange.getPresentationRequest().getRequestedAttributes(),
                         validCredentials))
@@ -30,11 +35,17 @@ public class PresentationRequestHelper {
                         presentationExchange.getPresentationRequest().getRequestedPredicates(), 
                         validCredentials))
                 .build());
+        } catch (PresentationConstructionException e){
+            // unable to construct valid proof
+        } 
+        return result;
+        
     }
 
     private static Map<String, PresentationRequest.IndyRequestedCredsRequestedAttr> buildRequestedAttributes(
             Map<String, PresentProofRequest.ProofRequest.ProofAttributes> requestedAttributes,
-            List<PresentationRequestCredentials> validCredentials) {
+            List<PresentationRequestCredentials> validCredentials) 
+            throws PresentationConstructionException {
 
         Map<String, PresentationRequest.IndyRequestedCredsRequestedAttr> result = new HashMap<>();
 
@@ -52,7 +63,7 @@ public class PresentationRequestHelper {
                         .revealed(true)
                         .build());
             }, () -> {
-                log.info("No cred found that satisfies proof request restrictions");
+                throw new PresentationConstructionException("Provided Credentials cannot satisfy proof request");
             });
         }
 
@@ -62,7 +73,8 @@ public class PresentationRequestHelper {
 
     private static Map<String, PresentationRequest.IndyRequestedCredsRequestedPred> buildRequestedPredicates(
             Map<String, PresentProofRequest.ProofRequest.ProofAttributes> requestedPredicates,
-            List<PresentationRequestCredentials> validCredentials) {
+            List<PresentationRequestCredentials> validCredentials) 
+            throws PresentationConstructionException{
         Map<String, PresentationRequest.IndyRequestedCredsRequestedPred> result = new HashMap<>();
 
 
@@ -79,11 +91,13 @@ public class PresentationRequestHelper {
                         .credId(c.getCredentialInfo().getReferent())
                         .build());
             }, () -> {
-                log.info("No cred found that satisfies proof request restrictions");
+                throw new PresentationConstructionException("Provided Credentials cannot satisfy proof request");
             });
         }
 
         return result;
     };
 
+
 }
+
