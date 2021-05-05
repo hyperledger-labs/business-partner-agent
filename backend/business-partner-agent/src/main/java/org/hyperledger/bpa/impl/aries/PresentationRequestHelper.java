@@ -26,7 +26,9 @@ public class PresentationRequestHelper {
                 .requestedAttributes(buildRequestedAttributes(
                         presentationExchange.getPresentationRequest().getRequestedAttributes(),
                         validCredentials))
-                .requestedPredicates(buildRequestedPredicates(presentationExchange, validCredentials))
+                .requestedPredicates(buildRequestedPredicates(
+                        presentationExchange.getPresentationRequest().getRequestedPredicates(), 
+                        validCredentials))
                 .build());
     }
 
@@ -50,7 +52,7 @@ public class PresentationRequestHelper {
                         .revealed(true)
                         .build());
             }, () -> {
-                // log.info("No cred found that satisfies proof request restrictions");
+                log.info("No cred found that satisfies proof request restrictions");
             });
         }
 
@@ -59,9 +61,28 @@ public class PresentationRequestHelper {
     };
 
     public static Map<String, PresentationRequest.IndyRequestedCredsRequestedPred> buildRequestedPredicates(
-            PresentationExchangeRecord presentationExchange,
+            Map<String, PresentProofRequest.ProofRequest.ProofAttributes> requestedPredicates,
             List<PresentationRequestCredentials> validCredentials) {
         Map<String, PresentationRequest.IndyRequestedCredsRequestedPred> result = new HashMap<>();
+
+
+        for (Map.Entry<String, PresentProofRequest.ProofRequest.ProofAttributes> reqPred : requestedPredicates
+                .entrySet()) {
+            List<JsonObject> restrictions = reqPred.getValue().getRestrictions();
+            Optional<PresentationRequestCredentials> cred = validCredentials.stream()
+                    .filter(vc -> vc.getCredentialInfo().getSchemaId().equals(
+                            restrictions.get(0).get("schema_id").getAsString()))
+                    .findFirst();
+
+            cred.ifPresentOrElse(c -> {
+                result.put(reqPred.getKey(), PresentationRequest.IndyRequestedCredsRequestedPred.builder()
+                        .credId(c.getCredentialInfo().getReferent())
+                        .build());
+            }, () -> {
+                log.info("No cred found that satisfies proof request restrictions");
+            });
+        }
+
         return result;
     };
 
