@@ -233,13 +233,6 @@
             </v-row>
             <v-row>The proofs requested from this partner</v-row>
           </v-col>
-          <v-col cols="8">
-            <PresentationRequestList
-                v-if="isReady"
-                v-bind:items="presentationRequests"
-                v-bind:headers="headersPresRequests"
-            ></PresentationRequestList>
-          </v-col>
         </v-row>
       </v-card-text>
 
@@ -304,7 +297,7 @@ import {
 } from "@/components/tableHeaders/PartnerHeaders";
 import { issuerService } from "@/services";
 import CredExList from "@/components/CredExList";
-import PresentationRequestList from "@/components/PresentationRequestList";
+// import PresentationRequestList from "@/components/PresentationRequestList";
 
 export default {
   name: "Partner",
@@ -314,7 +307,7 @@ export default {
     PresentationList,
     PartnerStateIndicator,
     CredExList,
-    PresentationRequestList,
+    // PresentationRequestList,
   },
   created() {
     EventBus.$emit("title", "Partner");

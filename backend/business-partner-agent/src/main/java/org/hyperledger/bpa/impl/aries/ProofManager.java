@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 package org.hyperledger.bpa.impl.aries;
+
 import com.google.gson.JsonObject;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -168,90 +169,34 @@ public class ProofManager {
 
     // respond to proof request with valid proof
     public void presentProof(PresentationExchangeRecord presentationExchangeRecord) {
-        //verify correct state = `request_received`
+        // verify correct state = `request_received`
         assert presentationExchangeRecord.getState() == PresentationExchangeState.REQUEST_RECEIVED;
-        //find vc's in wallet that satisfy proof
+        // find vc's in wallet that satisfy proof
         Optional<List<PresentationRequestCredentials>> validCredentials = Optional.empty();
 
         try {
-            validCredentials =  ac.presentProofRecordsCredentials(presentationExchangeRecord.getPresentationExchangeId());
+            validCredentials = ac
+                    .presentProofRecordsCredentials(presentationExchangeRecord.getPresentationExchangeId());
         } catch (IOException e) {
             log.error("Could not create aries connection invitation", e);
             return;
         }
-        //match restrictions to available vcs. 
-        // TODO handle case with no restrictions
-        validCredentials.ifPresentOrElse((vcs) -> {
-            //construct proof object
 
-            // TODO mapping to name is unsafe, but simple for now.
-            // names may be globally unique with a presentationExchange Record based on response construction  
-            Map<String,PresentationRequestCredentials> credsForReqAttrs = new HashMap<>();
-            
-            
-            for (Map.Entry<String, PresentProofRequest.ProofRequest.ProofAttributes> ra : presentationExchangeRecord.getPresentationRequest().getRequestedAttributes().entrySet())
-            {
-                    List<JsonObject> restrictions = ra.getValue().getRestrictions();
+        Optional<PresentationRequest> presentation = PresentationRequestHelper.buildAny(
+                presentationExchangeRecord,
+                validCredentials.get());
 
-                    boolean strEquals = vcs.get(0).getCredentialInfo().getSchemaId().equals(restrictions.get(0).get("schema_id").getAsString());
-
-                    //pick first VC that can satisfy the request attribute resrictions
-                    if (restrictions.size() > 0)
-                    {
-                        Optional<PresentationRequestCredentials> cred = vcs.stream()
-                                                                        .filter(vc -> vc.getCredentialInfo().getSchemaId().equals(
-                                                                            restrictions.get(0).get("schema_id").getAsString()
-                                                                            ))
-                                                                        .findFirst();
-                        cred.ifPresentOrElse(c -> 
-                        { 
-                            credsForReqAttrs.put(ra.getKey(), c);
-                        }, () -> 
-                        {
-                            log.error ("no cred to statisfy {}", ra.toString());
-                        });
-                    }
-                    else // if there are not restrictions... grab first one. 
-                    {
-                        credsForReqAttrs.put(ra.getKey(), vcs.get(0));
-                    }
-
-            }
-            
-            //select which attributes to provide
-            Map<String, PresentationRequest.IndyRequestedCredsRequestedAttr> requestedAttributes = new HashMap<>();
-
-            credsForReqAttrs.forEach((name, creds) -> requestedAttributes.put(name, 
-                                            IndyRequestedCredsRequestedAttr.builder()
-                                            .credId(creds.getCredentialInfo().getReferent())
-                                            .revealed(true)
-                                            .build()));
-
-            
-            Map<String, PresentationRequest.IndyRequestedCredsRequestedPred>requestedPredicates = new HashMap<>();
-            
-            Map<String, String> selfAttestedAttributes = new HashMap<>();
-
-
-            PresentationRequest presentation = PresentationRequest.builder()
-                    .requestedPredicates(requestedPredicates)
-                    .requestedAttributes(requestedAttributes)
-                    .selfAttestedAttributes(selfAttestedAttributes)
-                    .build();
-
-            //submit back to /present-proof/records/pres_ex_id/send-presentation
+        presentation.ifPresentOrElse((pres) -> {
             try {
-                ac.presentProofRecordsSendPresentation(presentationExchangeRecord.getPresentationExchangeId(), presentation);
+                ac.presentProofRecordsSendPresentation(presentationExchangeRecord.getPresentationExchangeId(), pres);
             } catch (IOException e) {
                 log.error("Could not create aries connection invitation", e);
                 return;
             }
-        },
-            () -> {
-                log.error("No credentials to satisfy any part of this request");
-            });
+        }, () -> {
+            log.error("unable to construct valid response");
+        });
     }
-
 
     // handles all proof events to track state changes
     public void handleProofEvent(PresentationExchangeRecord proof) {

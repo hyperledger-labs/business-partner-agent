@@ -87,7 +87,7 @@ public class AriesEventHandler extends EventHandler {
                             && PresentationExchangeRole.PROVER.equals(proof.getRole())) {
                 proofMgmt.handleAckedOrVerifiedProofEvent(proof);
             } else if (PresentationExchangeState.REQUEST_RECEIVED.equals(proof.getState())
-                        && PresentationExchangeRole.PROVER.equals(proof.getRole())){
+                    && PresentationExchangeRole.PROVER.equals(proof.getRole())) {
                 proofMgmt.presentProof(proof);
             } else {
                 proofMgmt.handleProofEvent(proof);
