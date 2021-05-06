@@ -18,7 +18,7 @@
 package org.hyperledger.bpa.impl.mode.indy;
 
 import io.micronaut.context.annotation.Value;
-import org.hyperledger.aries.api.wallet.WalletDidResponse;
+import org.hyperledger.acy_py.generated.model.DID;
 import org.hyperledger.bpa.api.DidDocAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.client.CachingAriesClient;
@@ -53,7 +53,7 @@ public class IndyDidDocManager implements DidDocManager {
     @Override
     public Optional<DidDocAPI> getDidDocument() {
         try {
-            final Optional<WalletDidResponse> pubDid = ac.walletDidPublic();
+            final Optional<DID> pubDid = ac.walletDidPublic();
             if (pubDid.isPresent()) {
                 return ur.getDidDocument(didPrefix + pubDid.get().getDid());
             }

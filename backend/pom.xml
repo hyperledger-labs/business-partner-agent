@@ -83,10 +83,6 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>jcenter.bintray.com</id>
-            <url>https://jcenter.bintray.com</url>
-        </repository>
     </repositories>
 
     <pluginRepositories>

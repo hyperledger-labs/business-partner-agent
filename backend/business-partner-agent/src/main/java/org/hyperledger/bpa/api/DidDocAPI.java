@@ -91,6 +91,9 @@ public class DidDocAPI {
         private String id;
         private String type;
         private String serviceEndpoint;
+        private List<String> recipientKeys;
+        private List<String> routingKeys;
+        private Integer priority;
     }
 
     @Deprecated

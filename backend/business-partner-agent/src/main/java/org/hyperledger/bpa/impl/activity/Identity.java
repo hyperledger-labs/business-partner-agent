@@ -19,18 +19,19 @@ package org.hyperledger.bpa.impl.activity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.core.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.acy_py.generated.model.DID;
+import org.hyperledger.acy_py.generated.model.DIDCreate;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.wallet.WalletDidResponse;
 import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.api.DidDocAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.client.CachingAriesClient;
 import org.hyperledger.bpa.client.URClient;
 
-import io.micronaut.core.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -71,7 +72,7 @@ public class Identity {
             myDid = ApiConstants.DID_METHOD_WEB + host;
         } else {
             try {
-                Optional<WalletDidResponse> walletDid = acaCache.walletDidPublic();
+                Optional<DID> walletDid = acaCache.walletDidPublic();
                 if (walletDid.isPresent()) {
                     myDid = didPrefix + walletDid.get().getDid();
                 }
@@ -104,14 +105,14 @@ public class Identity {
     public Optional<String> getVerkey() {
         Optional<String> verkey = Optional.empty();
         try {
-            Optional<WalletDidResponse> walletDid = acaCache.walletDidPublic();
+            Optional<DID> walletDid = acaCache.walletDidPublic();
             if (walletDid.isEmpty()) {
                 log.warn("No public did available, falling back to local did. VP can only be validated locally.");
-                final Optional<List<WalletDidResponse>> walletDids = acaPy.walletDid();
+                final Optional<List<DID>> walletDids = acaPy.walletDid();
                 if (walletDids.isPresent() && !walletDids.get().isEmpty()) {
                     walletDid = Optional.of(walletDids.get().get(0));
                 } else {
-                    walletDid = acaPy.walletDidCreate();
+                    walletDid = acaPy.walletDidCreate(DIDCreate.builder().method(DIDCreate.MethodEnum.SOV).build());
                 }
             }
             if (walletDid.isPresent()) {
