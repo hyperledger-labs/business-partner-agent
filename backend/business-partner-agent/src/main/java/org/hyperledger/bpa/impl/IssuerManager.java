@@ -154,6 +154,15 @@ public class IssuerManager {
         return result;
     }
 
+    public void deleteCredDef(@NonNull UUID id) {
+        int recs = credExRepo.countIdByCredDefId(id);
+        if (recs == 0) {
+            credDefRepo.deleteById(id);
+        } else {
+            throw new IssuerException("Credential Definition cannot be deleted, it has been used to issue credentials");
+        }
+    }
+
     public Optional<V1CredentialExchange> issueCredentialSend(@NonNull UUID credDefId, @NonNull UUID partnerId,
             @NonNull Map<String, Object> document) {
         final Optional<Partner> dbPartner = partnerRepo.findById(partnerId);
@@ -262,11 +271,10 @@ public class IssuerManager {
 
             return credExRepo.save(cex);
         } else {
-            log.error(String.format(
-                    "Could not create credential exchange record. Cred. Def ID (%s) or Partner/Connection id ($s) not found"),
-                    exchange.getCredentialDefinitionId(), exchange.getConnectionId());
+            throw new IssuerException(String.format(
+                    "Could not create credential exchange record. Cred. Def ID (%s) or Partner/Connection id (%s) not found",
+                    exchange.getCredentialDefinitionId(), exchange.getConnectionId()));
         }
-        return null;
     }
 
     private void updateCredentialExchange(@NonNull String credentialExchangeId,

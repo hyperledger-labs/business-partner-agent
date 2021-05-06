@@ -10,10 +10,7 @@
     <v-card class="my-4">
       <v-card-title class="bg-light">Schemas for Issuing Credentials</v-card-title>
       <v-card-text>
-        <SchemaList
-            :items="schemas"
-            :is-loading="isLoadingSchemas">
-        </SchemaList>
+        <SchemaList @changed="onSchemasChanged"/>
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
@@ -29,7 +26,7 @@
                   color="primary"
               >Import Schema</v-btn>
             </template>
-            <AddSchema @success="schemaAdded" @cancelled="addSchemaDialog = false" />
+            <AddSchema @success="onSchemaAdded" @cancelled="addSchemaDialog = false" />
           </v-dialog>
           <v-dialog
               v-model="createSchemaDialog"
@@ -43,7 +40,7 @@
                   color="primary"
               >Create Schema</v-btn>
             </template>
-            <CreateSchema @success="schemaCreated" @cancelled="createSchemaDialog = false" />
+            <CreateSchema @success="onSchemaCreated" @cancelled="createSchemaDialog = false" />
           </v-dialog>
         </v-layout>
       </v-card-actions>
@@ -116,13 +113,14 @@
 
 <script>
   import { EventBus } from "@/main";
-  import {adminService, issuerService, partnerService} from "@/services";
+  import {issuerService, partnerService} from "@/services";
   import AddSchema from "@/components/AddSchema";
   import CreateSchema from "@/components/CreateSchema";
   import CredExList from "@/components/CredExList";
   import IssueCredential from "@/components/IssueCredential";
   import SchemaList from "@/components/SchemaList";
   import * as textUtils from "@/utils/textUtils";
+  import store from "@/store";
 
   export default {
     name: "CredentialManagement",
@@ -135,7 +133,6 @@
     },
     created() {
       EventBus.$emit("title", "Credential Management");
-      this.loadSchemas();
       this.loadCredentials();
     },
     data: () => {
@@ -150,26 +147,11 @@
         credDefId: "",
         issueCredentialDisabled: true,
         issueCredentialDialog: false,
-        isLoadingSchemas: false,
-        schemas: [],
         addSchemaDialog: false,
         createSchemaDialog: false
       };
     },
-    computed: {
-      schemaHeaders() {
-        return [
-          {
-            text: "Name",
-            value: "label",
-          },
-          {
-            text: "Schema ID",
-            value: "schemaId",
-          },
-        ];
-      }
-    },
+    computed: {},
     watch: {
       partner (val) {
         this.issueCredentialDisabled = (!val || !val.id) || (!this.credDef || !this.credDef.id);
@@ -181,14 +163,23 @@
       },
     },
     methods: {
-      async loadSchemas() {
-        this.isLoadingSchemas = true;
-        this.schemas = [];
-        const sresp = await adminService.listSchemas();
-        if (sresp.status === 200) {
-          this.schemas = sresp.data;
+      async loadCredDefs() {
+        const cresp = await issuerService.listCredDefs();
+        if (cresp.status === 200) {
+          this.credDefs = cresp.data.map((c) => {
+            return {
+              value: c.id,
+              text: c.displayText,
+              fields: c.schema.schemaAttributeNames.map((key) => {
+                return {
+                  type: key,
+                  label: textUtils.schemaAttributeLabel(key),
+                };
+              }),
+              ...c,
+            };
+          });
         }
-        this.isLoadingSchemas = false;
       },
       async loadCredentials() {
         this.isLoadingCredentials = true;
@@ -207,22 +198,8 @@
         }
 
         // get list of schema/creddefs
-        const cresp = await issuerService.listCredDefs();
-        if (cresp.status === 200) {
-          this.credDefs = cresp.data.map((c) => {
-            return {
-              value: c.id,
-              text: c.displayText,
-              fields: c.schema.schemaAttributeNames.map((key) => {
-                return {
-                  type: key,
-                  label: textUtils.schemaAttributeLabel(key),
-                };
-              }),
-              ...c,
-            };
-          });
-        }
+        await this.loadCredDefs();
+
         const iresp = await issuerService.listCredentialExchangesAsIssuer();
         if (iresp.status === 200) {
           this.issuedCredentials = iresp.data;
@@ -233,14 +210,18 @@
         this.issueCredentialDialog = false;
         this.loadCredentials();
       },
-      schemaAdded() {
+      onSchemaAdded() {
+        store.dispatch("loadSchemas");
         this.addSchemaDialog = false;
-        this.loadSchemas();
       },
-      schemaCreated() {
+      onSchemaCreated() {
+        store.dispatch("loadSchemas");
         this.createSchemaDialog = false;
-        this.loadSchemas();
       },
+      onSchemasChanged() {
+        // rebuild the cred defs
+        this.loadCredDefs();
+      }
     },
   };
 </script>

@@ -14,28 +14,40 @@
         </v-btn>
         <span>Schemas</span>
       </v-card-title>
-      <v-data-table
-        class="mb-4"
-        :hide-default-footer="data.length < 10"
-        :headers="headers"
-        :items="data"
-        :loading="isBusy"
-        @click:row="open"
-      >
-      </v-data-table>
+      <v-card-text>
+        <SchemaList />
+      </v-card-text>
       <v-card-actions>
-        <v-btn
-          color="primary"
-          small
-          dark
-          absolute
-          bottom
-          left
-          fab
-          :to="{ name: 'AddSchema' }"
-        >
-          <v-icon>$vuetify.icons.add</v-icon>
-        </v-btn>
+        <v-layout align-end justify-end>
+          <v-dialog
+              v-model="addSchemaDialog"
+              persistent
+              max-width="600px"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                  v-bind="attrs"
+                  v-on="on"
+                  color="primary"
+              >Import Schema</v-btn>
+            </template>
+            <AddSchema @success="onSchemaAdded" @cancelled="addSchemaDialog = false" />
+          </v-dialog>
+          <v-dialog
+              v-model="createSchemaDialog"
+              persistent
+              max-width="600px"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                  v-bind="attrs"
+                  v-on="on"
+                  color="primary"
+              >Create Schema</v-btn>
+            </template>
+            <CreateSchema @success="onSchemaCreated" @cancelled="createSchemaDialog = false" />
+          </v-dialog>
+        </v-layout>
       </v-card-actions>
     </v-card>
   </v-container>
@@ -43,81 +55,37 @@
 
 <script>
 import { EventBus } from "../main";
+import SchemaList from "@/components/SchemaList";
+import AddSchema from "@/components/AddSchema";
+import CreateSchema from "@/components/CreateSchema";
+
+import store from "@/store";
+
 export default {
   name: "SchemaSettings",
+  components: {
+    AddSchema,
+    CreateSchema,
+    SchemaList,
+  },
   created() {
     EventBus.$emit("title", "Schema Settings");
-    this.fetch();
   },
   data: () => {
     return {
-      data: [],
-      newSchema: {
-        label: "",
-        schemaId: "",
-      },
-      isBusy: true,
-      isBusyAddSchema: false,
-      headers: [
-        {
-          text: "Name",
-          value: "label",
-        },
-        {
-          text: "Schema ID",
-          value: "schemaId",
-        },
-      ],
+      addSchemaDialog: false,
+      createSchemaDialog: false,
     };
   },
   computed: {},
   methods: {
-    fetch() {
-      this.$axios
-        .get(`${this.$apiBaseUrl}/admin/schema`)
-        .then((result) => {
-          console.log(result);
-          if ({}.hasOwnProperty.call(result, "data")) {
-            this.isBusy = false;
-
-            this.data = result.data;
-
-            console.log(this.data);
-          }
-        })
-        .catch((e) => {
-          this.isBusy = false;
-          if (e.response.status === 404) {
-            this.data = [];
-          } else {
-            console.error(e);
-            EventBus.$emit("error", e);
-          }
-        });
+    onSchemaAdded() {
+      store.dispatch("loadSchemas");
+      this.addSchemaDialog = false;
     },
-    open(schema) {
-      this.$router.push({
-        name: "Schema",
-        params: {
-          id: schema.id,
-          schema: schema,
-        },
-      });
-    },
-    deleteSchema(schemaId) {
-      this.$axios
-        .delete(`${this.$apiBaseUrl}/admin/schema/${schemaId}`)
-        .then((result) => {
-          console.log(result);
-          if (result.status === 200) {
-            EventBus.$emit("success", "Schema deleted");
-            this.fetch();
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
-        });
+    onSchemaCreated() {
+      store.dispatch("loadSchemas");
+      this.createSchemaDialog = false;
     },
   },
 };

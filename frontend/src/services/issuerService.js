@@ -30,6 +30,10 @@ export default {
     return appAxios().post(`${ApiRoutes.ISSUER}/creddef`, data);
   },
 
+  deleteCredDef(id) {
+    return appAxios().delete(`${ApiRoutes.ISSUER}/creddef/${id}`);
+  },
+
   listCredDefs() {
     return appAxios().get(`${ApiRoutes.ISSUER}/creddef`);
   },

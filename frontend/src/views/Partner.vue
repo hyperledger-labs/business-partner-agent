@@ -209,7 +209,23 @@
             </v-row>
             <v-row>The credentials you issued to your partner</v-row>
             <v-row class="mt-4">
-              <v-btn small @click="issueCredential">Issue Credential</v-btn>
+              <v-dialog
+                  v-model="issueCredentialDialog"
+                  persistent
+                  max-width="600px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn small
+                      v-bind="attrs"
+                      v-on="on"
+                  >Issue Credential</v-btn>
+                </template>
+                <IssueCredential
+                    :partnerId="id"
+                    @success="onCredentialIssued"
+                    @cancelled="issueCredentialDialog = false">
+                </IssueCredential>
+              </v-dialog>
             </v-row>
           </v-col>
           <v-col cols="8">
@@ -283,6 +299,7 @@ import {
 } from "@/components/tableHeaders/PartnerHeaders";
 import { issuerService } from "@/services";
 import CredExList from "@/components/CredExList";
+import IssueCredential from "@/components/IssueCredential";
 
 export default {
   name: "Partner",
@@ -292,6 +309,7 @@ export default {
     PresentationList,
     PartnerStateIndicator,
     CredExList,
+    IssueCredential,
   },
   created() {
     EventBus.$emit("title", "Partner");
@@ -337,6 +355,7 @@ export default {
           value: "state",
         },
       ],
+      issueCredentialDialog: false,
     };
   },
   computed: {
@@ -590,27 +609,10 @@ export default {
         this.isBusy = false;
       }
     },
-    async issueCredential() {
-      if (
-        this.partner.state === "response" ||
-        this.partner.state === "active"
-      ) {
-        this.$router.push({
-          name: "IssueCredential",
-          params: {
-            partnerId: this.id,
-          },
-        });
-      } else {
-        this.attentionPartnerStateDialog = true;
-        this.goTo = {
-          name: "IssueCredential",
-          params: {
-            partnerId: this.id,
-          },
-        };
-      }
-    },
+    onCredentialIssued() {
+      this.issueCredentialDialog = false;
+      this.getIssuedCredentials();
+    }
   },
 };
 </script>

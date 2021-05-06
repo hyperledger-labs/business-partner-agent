@@ -9,13 +9,13 @@
   <v-container>
     <v-card class="mx-auto">
       <v-card-title class="bg-light">
-        <span>{{ data.label }}</span>
+        <span>{{ schema.label }}</span>
         <v-layout align-end justify-end>
           <v-btn
               depressed
               color="red"
               icon
-              :disabled="data.isReadOnly"
+              :disabled="schema.isReadOnly"
               @click="deleteSchema"
           >
             <v-icon dark>$vuetify.icons.delete</v-icon>
@@ -24,99 +24,55 @@
       </v-card-title>
       <v-container>
         <v-list-item class="mt-4">
-          <v-list-item-title
-              class="grey--text text--darken-2 font-weight-medium"
-          >
-            Schema ID:
-          </v-list-item-title>
-          <v-list-item-subtitle>
-            {{ data.schemaId }}
-          </v-list-item-subtitle>
+          <v-text-field
+              id="schemaId"
+              v-model="schema.schemaId"
+              readonly
+              outlined
+              dense
+              label="Schema ID"
+              :append-icon="'$vuetify.icons.copy'"
+              @click:append="copySchemaId"
+          ></v-text-field>
         </v-list-item>
 
-        <h4 class="my-4 grey--text text--darken-3">Schema Attributes</h4>
+      </v-container>
+      <v-container>
+        <v-tabs>
+          <v-tab href="#schema-attributes">Schema Attributes</v-tab>
+          <v-tab-item transition=false value="schema-attributes">
+            <v-card flat class="mt-2">
+              <v-list-item
+                  v-for="attribute in schema.schemaAttributeNames"
+                  :key="attribute.id"
+              >
+                <p class="grey--text text--darken-2 font-weight-medium">
+                  {{ attribute }}
+                </p>
+              </v-list-item>
+            </v-card>
+          </v-tab-item>
+          <v-tab href="#credential-definitions">Credential Definitions</v-tab>
+          <v-tab-item transition=false value="credential-definitions">
+            <v-card flat class="mt-2">
+              <credential-definitions
+                  :schema="schema"
+                  :credentialDefinitions="schema.credentialDefinitions"
+                  @changed="onChanged"/>
+            </v-card>
+          </v-tab-item>
+          <v-tab href="#trusted-issuers">Trusted Issuers</v-tab>
+          <v-tab-item transition=false value="trusted-issuers">
+            <v-card flat class="mt-2">
+              <trusted-issuers :schema="schema" :trustedIssuers="schema.trustedIssuer" @changed="onChanged"/>
+            </v-card>
+          </v-tab-item>
+        </v-tabs>
+      </v-container>
 
-        <v-list-item
-            v-for="attribute in data.schemaAttributeNames"
-            :key="attribute.id"
-        >
-          <p class="grey--text text--darken-2 font-weight-medium">
-            {{ attribute }}
-          </p>
-        </v-list-item>
-        <v-card>
-          <v-card-title class="bg-light">Credential Definitions</v-card-title>
-          <v-data-table
-              :hide-default-footer="credentialDefinitions.length < 10"
-              :headers="headers"
-              :items="credentialDefinitions"
-              :loading="isLoading"
-          >
-            <template #[`item.createdAt`]="{ item }">
-              {{ item.createdAt | formatDateLong }}
-            </template>
-          </v-data-table>
-          <v-card-actions>
-            <v-btn
-                v-if="!addingNewCredDef"
-                color="primary"
-                small
-                dark
-                absolute
-                bottom
-                left
-                fab
-                @click="addNewCredDef"
-            >
-              <v-icon>$vuetify.icons.add</v-icon>
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-container>
-      <v-container v-if="addingNewCredDef">
-        <v-card>
-          <v-card-title>Add New Credential Definition</v-card-title>
-          <v-container>
-            <v-form v-model="isCredDefFormValid">
-              <v-row>
-                <v-col class="pb-0">
-                  <v-text-field
-                      label="Tag"
-                      class="mt-6"
-                      placeholder="Tag"
-                      v-model="tag"
-                      outlined
-                      dense
-                      required
-                      :rules="tagRules"
-                  >
-                  </v-text-field>
-                </v-col>
-                <v-col cols="4" class="pb-0">
-                  <v-checkbox
-                      class="mt-6"
-                      label="Revocable"
-                      v-model="supportRevocation"
-                      outlined
-                      dense
-                  >
-                  </v-checkbox>
-                </v-col>
-              </v-row>
-              <v-card-actions>
-                <v-layout align-end justify-end>
-                  <v-btn color="primary" text @click="submitCredDef" :loading="isSubmittingCredDef" :disabled="!isCredDefFormValid">Save</v-btn>
-                  <v-btn color="secondary" text @click="cancelCredDef">Cancel</v-btn>
-                </v-layout>
-              </v-card-actions>
-            </v-form>
-          </v-container>
-        </v-card>
-      </v-container>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-btn color="primary" text :disabled="addingNewCredDef" @click="closed"
-          >Close</v-btn>
+          <v-btn color="primary" text @click="closed">Close</v-btn>
         </v-layout>
       </v-card-actions>
     </v-card>
@@ -126,89 +82,50 @@
 <script>
 
   import {EventBus} from "@/main";
-  import {issuerService} from "@/services";
-
+  import {adminService} from "@/services";
+  import TrustedIssuers from "@/components/TrustedIssuers";
+  import CredentialDefinitions from "@/components/CredentialDefinitions";
   export default {
     name: "ManageSchema",
     props: {
       schema: Object,
     },
     components: {
+      CredentialDefinitions,
+      TrustedIssuers
     },
     watch: {
-      schema(val) {
-        // schema has been updated...
-        if (val) {
-          this.load();
-        }
-      }
     },
     created() {
-      console.log("Schema: ", this.schema);
-      this.load();
     },
     data: () => {
-      return {
-        data: [],
-        credentialDefinitions: [],
-        headers: [
-          {
-            text: "Credential Definition Id",
-            value: "credentialDefinitionId",
-          },
-          {
-            text: "Tag",
-            value: "tag",
-          },
-          {
-            text: "Revocable",
-            value: "isSupportRevocation",
-          },
-          {
-            text: "Created Date",
-            value: "createdAt",
-          },
-        ],
-        isCredDefFormValid: false,
-        isSubmittingCredDef: false,
-        addingNewCredDef: false,
-        tag: "",
-        supportRevocation: false,
-      };
+      return { };
     },
-    computed: {
-      tagRules() {
-        return [
-          (value) => {
-            if (this.addingNewCredDef) {
-              // value is required
-              return !!value || "Can't be empty";
-            }
-            return true;
-          },
-          (value) => {
-            if (this.addingNewCredDef && value) {
-              const o = this.credentialDefinitions.find(c => c.tag.toUpperCase() === value.toUpperCase());
-              return (o === undefined) || "Tag must be unique";
-            }
-            return true;
-          }
-        ]
-      },
-    },
+    computed: {},
     methods: {
-      load() {
-        this.data = this.schema;
-        this.credentialDefinitions = this.schema.credentialDefinitions;
+      copySchemaId() {
+        let idEl = document.querySelector("#schemaId");
+        idEl.select();
+        let successfull;
+        try {
+          successfull = document.execCommand("copy");
+        } catch (err) {
+          successfull = false;
+        }
+        successfull
+          ? EventBus.$emit("success", "Schema ID copied")
+          : EventBus.$emit("error", "Can't copy Schema ID");
+        idEl.blur();
+        window.getSelection().removeAllRanges();
       },
       deleteSchema() {
-        this.$axios
-          .delete(`${this.$apiBaseUrl}/admin/schema/${this.id}`)
+        adminService.deleteSchema(this.schema.id)
           .then((result) => {
             console.log(result);
             if (result.status === 200) {
               EventBus.$emit("success", "Schema deleted");
-              this.$emit("schemaDeleted");
+              this.$emit("changed");
+              this.$emit("deleted");
             }
           })
           .catch((e) => {
@@ -216,42 +133,8 @@
             EventBus.$emit("error", e);
           });
       },
-      addNewCredDef() {
-        if (!this.addingNewCredDef) this.addingNewCredDef = true;
-      },
-      cancelCredDef() {
-        if (this.addingNewCredDef) {
-          this.addingNewCredDef = false;
-          this.tag ="";
-          this.supportRevocation = false;
-        }
-      },
-      async submitCredDef() {
-        this.isSubmittingCredDef = true;
-        try {
-          const credDefForm =  {
-            schemaId: this.data.schemaId,
-            tag: this.tag,
-            supportRevocation: this.supportRevocation,
-          }
-          const resp = await issuerService.createCredDef(credDefForm);
-          if (resp.status === 200) {
-            this.isSubmittingCredDef = false;
-            EventBus.$emit("success", "Credential Definition added");
-            this.$emit("credDefAdded");
-            // reload the data
-            const r = await issuerService.readSchema(this.id);
-            if (r.status === 200) {
-              this.data = r.data;
-              this.credentialDefinitions = r.data.credentialDefinitions;
-            }
-          }
-          this.cancelCredDef();
-          this.isSubmittingCredDef = false;
-        } catch(error) {
-          this.isSubmittingCredDef = false;
-          EventBus.$emit("error", error);
-        }
+      onChanged() {
+        this.$emit("changed");
       },
       closed() {
         this.$emit("closed");

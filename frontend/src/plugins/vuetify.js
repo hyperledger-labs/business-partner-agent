@@ -27,7 +27,7 @@ import {
   mdiQrcode,
   mdiGlobeModel,
   mdiLogout,
-  mdiHandshake, mdiAlertCircleOutline, mdiClockTimeThreeOutline
+  mdiHandshake, mdiAlertCircleOutline, mdiClockTimeThreeOutline, mdiContentSave
 } from '@mdi/js';
 
 Vue.use(Vuetify);
@@ -80,7 +80,10 @@ export default new Vuetify({
       credentialManagement:'fas fa-file-signature',
       proofRequests: 'fas fa-exchange-alt',
       connectionAlert: mdiAlertCircleOutline,
-      connectionWaiting: mdiClockTimeThreeOutline
+      connectionWaiting: mdiClockTimeThreeOutline,
+      cancel: 'fas fa-times-circle',
+      save: mdiContentSave
+
     }
   },
   theme: {

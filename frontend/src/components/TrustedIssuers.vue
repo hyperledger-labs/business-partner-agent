@@ -7,10 +7,8 @@
 -->
 
 <template>
-  <div>
-    <h4 class="my-4 grey--text text--darken-3">Trusted Issuers</h4>
-
-    <v-row v-for="(entry, index) in trustedIssuers" v-bind:key="index">
+  <v-container>
+    <v-row v-for="(entry, index) in items" v-bind:key="index">
       <v-col cols="4" class="py-0">
         <v-text-field
           label="DID"
@@ -36,8 +34,7 @@
           color="primary"
           text
           @click="editTrustedIssuer(index)"
-          >Edit</v-btn
-        >
+          ><v-icon>$vuetify.icons.pencil</v-icon></v-btn>
 
         <v-btn
           v-if="!entry.isReadOnly && entry.isEdit"
@@ -45,16 +42,14 @@
           color="primary"
           text
           @click="saveTrustedIssuer(entry)"
-          >Save</v-btn
-        >
+          ><v-icon>$vuetify.icons.save</v-icon></v-btn>
 
         <v-btn
           v-if="!entry.isReadOnly && entry.isEdit"
           color="secondary"
           text
           @click="cancelEditTrustedIssuer(index)"
-          >Cancel</v-btn
-        >
+          ><v-icon>$vuetify.icons.cancel</v-icon></v-btn>
 
         <v-btn
           icon
@@ -65,17 +60,20 @@
         </v-btn>
       </v-col>
     </v-row>
-    <v-btn :disabled="isEdit" color="primary" text @click="addTrustedIssuer"
-      >Add trusted issuer</v-btn
-    >
-  </div>
+    <v-row>
+      <v-btn :disabled="isEdit" color="primary" text @click="addTrustedIssuer">Add trusted issuer</v-btn>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
 import { EventBus } from "../main";
 export default {
   props: {
-    id: String, //schema ID
+    schema: {
+      type: Object,
+      default: () => {}
+    },
     trustedIssuers: {
       type: Array,
       default: function () {
@@ -83,11 +81,24 @@ export default {
       },
     },
   },
+  watch: {
+    schema() {
+      this.isEdit = false;
+      this.editingItem = false;
+    },
+    trustedIssuers(val) {
+      this.items = Array.from(val);
+      this.isEdit = false;
+      this.editingTrustedIssuer = null;
+    }
+  },
   created() {},
-  mounted() {},
-
+  mounted() {
+    this.items = Array.from(this.trustedIssuers);
+  },
   data: () => {
     return {
+      items: [],
       isEdit: false,
       editingTrustedIssuer: null,
       isBusy: false,
@@ -97,44 +108,45 @@ export default {
   methods: {
     addTrustedIssuer() {
       this.isEdit = true;
-      this.trustedIssuers.push({
+      this.items.push({
         issuerDid: "",
         label: "",
         isEdit: true,
       });
     },
     editTrustedIssuer(index) {
-      this.editingTrustedIssuer = Object.assign({}, this.trustedIssuers[index]);
+      this.editingTrustedIssuer = Object.assign({}, this.items[index]);
       this.isEdit = true;
-      this.trustedIssuers[index].isEdit = true;
+      this.items[index].isEdit = true;
     },
     cancelEditTrustedIssuer(index) {
       this.isEdit = false;
       if (!this.editingTrustedIssuer) {
-        this.trustedIssuers.splice(index, 1);
+        this.items.splice(index, 1);
       } else {
-        this.trustedIssuers[index] = this.editingTrustedIssuer;
-        this.trustedIssuers[index].isEdit = false;
+        this.items[index] = this.editingTrustedIssuer;
+        this.items[index].isEdit = false;
       }
       this.editingTrustedIssuer = null;
     },
     deleteTrustedIssuer(index) {
-      let trustedIssuer = this.trustedIssuers[index];
+      let trustedIssuer = this.items[index];
       if (trustedIssuer.id) {
         this.$axios
           .delete(
-            `${this.$apiBaseUrl}/admin/schema/${this.id}/trustedIssuer/${trustedIssuer.id}`
+            `${this.$apiBaseUrl}/admin/schema/${this.schema.id}/trustedIssuer/${trustedIssuer.id}`
           )
           .then((result) => {
             console.log(result);
-            this.trustedIssuers.splice(index, 1);
+            this.items.splice(index, 1);
+            this.$emit('changed');
           })
           .catch((e) => {
             console.error(e);
             EventBus.$emit("error", e);
           });
       } else {
-        this.trustedIssuers.splice(index, 1);
+        this.items.splice(index, 1);
       }
     },
 
@@ -155,7 +167,7 @@ export default {
 
       this.$axios
         .post(
-          `${this.$apiBaseUrl}/admin/schema/${this.id}/trustedIssuer`,
+          `${this.$apiBaseUrl}/admin/schema/${this.schema.id}/trustedIssuer`,
           trustedIssuer
         )
         .then((result) => {
@@ -166,6 +178,7 @@ export default {
             this.isEdit = false;
             trustedIssuer.isEdit = false;
             EventBus.$emit("success", "New trusted issuer added");
+            this.$emit('changed');
           }
         })
         .catch((e) => {
@@ -180,7 +193,7 @@ export default {
 
       this.$axios
         .put(
-          `${this.$apiBaseUrl}/admin/schema/${this.id}/trustedIssuer/${trustedIssuer.id}`,
+          `${this.$apiBaseUrl}/admin/schema/${this.schema.id}/trustedIssuer/${trustedIssuer.id}`,
           trustedIssuer
         )
         .then((result) => {
@@ -190,6 +203,7 @@ export default {
 
           if (result.status === 201) {
             EventBus.$emit("success", "Trusted issuer updated");
+            this.$emit('changed');
           }
         })
         .catch((e) => {

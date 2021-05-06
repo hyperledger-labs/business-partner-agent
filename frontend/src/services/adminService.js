@@ -19,5 +19,8 @@ export default {
   addSchema(data) {
     return appAxios().post(`${ApiRoutes.ADMIN}/schema`, data);
   },
+  deleteSchema(id) {
+    return appAxios().delete(`${ApiRoutes.ADMIN}/schema/${id}`);
+  },
 };
 

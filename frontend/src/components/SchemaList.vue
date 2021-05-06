@@ -10,10 +10,9 @@
   <v-container>
     <v-data-table
         :loading="isLoading"
-        :hide-default-footer="itemsWithIndex.length < 10"
+        :hide-default-footer="schemas.length < 10"
         :headers="headers"
-        :items="itemsWithIndex"
-        item-key="index"
+        :items="schemas"
         single-select
         :sort-by="['canIssue', 'isCreator', 'label']"
         :sort-desc="[true, true, false]"
@@ -21,7 +20,7 @@
         @click:row="openItem"
     >
       <template v-slot:[`item.trustedIssuer`]="{ item }">
-        <v-icon v-if="item.trustedIssuer && item.trustedIssuer.length">$vuetify.icons.check</v-icon>
+        <v-icon v-if="Array.isArray(item.trustedIssuer) && item.trustedIssuer.length">$vuetify.icons.check</v-icon>
       </template>
       <template v-slot:[`item.canIssue`]="{ item }">
         <v-icon v-if="item.canIssue">$vuetify.icons.check</v-icon>
@@ -31,21 +30,21 @@
       </template>
 
     </v-data-table>
-    <v-dialog v-model="dialog" persistent max-width="600px">
+    <v-dialog v-model="dialog" persistent max-width="800px">
         <ManageSchema
           :schema="schema"
           @closed="onClosed"
-          @credDefAdded="onCredDefAdded"
-          @schemaDeleted="onSchemaDeleted" />
+          @changed="onChanged"
+          @deleted="onDeleted"/>
     </v-dialog>
   </v-container>
 </template>
 <script>
 
   import ManageSchema from "@/components/ManageSchema";
+  import store from "@/store";
   export default {
     props: {
-      items: Array,
       headers: {
         type: Array,
         default: () => [
@@ -73,33 +72,36 @@
       return {
         dialog: false,
         schema: {},
+        dirty: false
       };
     },
     computed: {
-      // Add an unique index, because elements do not have unique id
-      itemsWithIndex: function () {
-        return this.items.map((item, index) => ({
-          ...item,
-          canIssue: item.credentialDefinitions && item.credentialDefinitions.length,
-          index: index + 1,
-        }));
+      schemas : {
+        get() {
+          return this.$store.getters.getSchemaBasedSchemas;
+        },
       },
     },
     methods: {
       openItem(item) {
         this.dialog = true;
+        this.dirty = false;
         this.schema = item;
-        this.$emit("openItem", item);
       },
       onClosed() {
-        console.log('onClosed');
+        this.dialog = false;
+        if (this.dirty) {
+          store.dispatch("loadSchemas");
+          this.$emit("changed");
+        }
+        this.dirty = false;
+      },
+      onDeleted() {
         this.dialog = false;
       },
-      onCredDefAdded() {
-        console.log('onCredDefAdded');
-      },
-      onSchemaDeleted() {
-        console.log('onSchemaDeleted');
+      onChanged() {
+        // something changed related to this schema, will need to reload the schema list
+        this.dirty = true;
       }
     },
     components: {ManageSchema},

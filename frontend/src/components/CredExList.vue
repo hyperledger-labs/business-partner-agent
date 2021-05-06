@@ -10,10 +10,9 @@
   <v-container>
   <v-data-table
       :loading="isLoading"
-      :hide-default-footer="itemsWithIndex.length < 10"
+      :hide-default-footer="items.length < 10"
       :headers="headers"
-      :items="itemsWithIndex"
-      item-key="index"
+      :items="items"
       :sort-by="['updatedAt']"
       :sort-desc="[true]"
       single-select
@@ -88,15 +87,13 @@ export default {
       document: {}
     };
   },
-  computed: {
-    // Add an unique index, because elements do not have unique id
-    itemsWithIndex: function () {
-      return this.items.map((item, index) => ({
-        ...item,
-        index: index + 1,
-      }));
-    },
+  watch: {
+    items(val) {
+      console.log("Credential Exchange Item refresh");
+      console.log(val);
+    }
   },
+  computed: { },
   methods: {
     openItem(item) {
       this.dialog = true;

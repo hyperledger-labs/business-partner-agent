@@ -114,6 +114,7 @@
           this.credDef = this.credDefs.find(
             (p) => p.value === val
           );
+          this.credDefSelected();
         }
       },
       partnerList(val) {
@@ -197,10 +198,10 @@
           const _credexId = await this.issueCredential();
           this.isBusy = false;
           if (_credexId) {
-            this.$emit("success");
             EventBus.$emit("success", "Credential issued.");
             this.credDef = {};
             this.submitDisabled = true;
+            this.$emit("success");
           }
         } catch (error) {
           this.isBusy = false;
