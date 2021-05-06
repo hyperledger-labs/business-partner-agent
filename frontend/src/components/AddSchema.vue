@@ -99,7 +99,7 @@
         adminService.addSchema(this.schema)
           .then((result) => {
             this.isBusy = false;
-            if (result.status === 200 || result.status === 200) {
+            if (result.status === 200) {
               EventBus.$emit("success", "Schema added successfully");
               this.$emit("success");
             }
