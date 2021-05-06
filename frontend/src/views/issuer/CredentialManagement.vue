@@ -7,40 +7,61 @@
 -->
 <template>
   <v-container>
-    <v-card class="my-4" style="display: none">
-      <v-card-title class="bg-light">Schemas for Issuing Credentials </v-card-title>
+    <v-card class="my-4">
+      <v-card-title class="bg-light">Schemas for Issuing Credentials</v-card-title>
       <v-card-text>
-        <v-data-table></v-data-table>
+        <SchemaList
+            :items="schemas"
+            :is-loading="isLoadingSchemas">
+        </SchemaList>
       </v-card-text>
       <v-card-actions>
+        <v-layout align-end justify-end>
+          <v-dialog
+              v-model="addSchemaDialog"
+              persistent
+              max-width="600px"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                  v-bind="attrs"
+                  v-on="on"
+                  color="primary"
+              >Import Schema</v-btn>
+            </template>
+            <AddSchema @success="schemaAdded" @cancelled="addSchemaDialog = false" />
+          </v-dialog>
+          <v-dialog
+              v-model="createSchemaDialog"
+              persistent
+              max-width="600px"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                  v-bind="attrs"
+                  v-on="on"
+                  color="primary"
+              >Create Schema</v-btn>
+            </template>
+            <CreateSchema @success="schemaCreated" @cancelled="createSchemaDialog = false" />
+          </v-dialog>
+        </v-layout>
       </v-card-actions>
     </v-card>
     <v-card class="my-4">
       <v-card-title class="bg-light">Issued Credentials</v-card-title>
       <v-card-text>
         <CredExList
-            v-bind:items="issuedCredentials"
+            :items="issuedCredentials"
+            :is-loading="isLoadingCredentials"
         ></CredExList>
       </v-card-text>
       <v-card-actions>
-        <v-autocomplete
-          label="Select partner"
-          v-model="partner"
-          :items="partners"
-          return-object
-          class="mx-4"
-          flat
-          hide-no-data
-          hide-details
-          dense
-          outlined
-          clearable
-          clear-icon="$vuetify.icons.delete"
-        ></v-autocomplete>
-        <v-autocomplete
-            label="Select credential"
-            v-model="credDef"
-            :items="credDefs"
+        <v-layout align-end justify-end>
+          <v-autocomplete
+            label="Select partner"
+            v-model="partner"
+            :items="partners"
             return-object
             class="mx-4"
             flat
@@ -50,29 +71,44 @@
             outlined
             clearable
             clear-icon="$vuetify.icons.delete"
-        ></v-autocomplete>
-        <v-dialog
-            v-model="issueCredentialDialog"
-            persistent
-            max-width="600px"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn
-                v-bind="attrs"
-                v-on="on"
-                color="primary"
-                :disabled="issueCredentialDisabled"
-            >Issue Credential</v-btn>
-          </template>
-          <IssueCredential
-              :credDefId="credDefId"
-              :partnerId="partnerId"
-              :credDefList="credDefs"
-              :partnerList="partners"
-              @success="credentialIssued"
-              @cancelled="issueCredentialDialog = false">
-          </IssueCredential>
-        </v-dialog>
+          ></v-autocomplete>
+          <v-autocomplete
+              label="Select credential"
+              v-model="credDef"
+              :items="credDefs"
+              return-object
+              class="mx-4"
+              flat
+              hide-no-data
+              hide-details
+              dense
+              outlined
+              clearable
+              clear-icon="$vuetify.icons.delete"
+          ></v-autocomplete>
+          <v-dialog
+              v-model="issueCredentialDialog"
+              persistent
+              max-width="600px"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                  v-bind="attrs"
+                  v-on="on"
+                  color="primary"
+                  :disabled="issueCredentialDisabled"
+              >Issue Credential</v-btn>
+            </template>
+            <IssueCredential
+                :credDefId="credDefId"
+                :partnerId="partnerId"
+                :credDefList="credDefs"
+                :partnerList="partners"
+                @success="credentialIssued"
+                @cancelled="issueCredentialDialog = false">
+            </IssueCredential>
+          </v-dialog>
+        </v-layout>
       </v-card-actions>
     </v-card>
   </v-container>
@@ -80,23 +116,31 @@
 
 <script>
   import { EventBus } from "@/main";
-  import {issuerService, partnerService} from "@/services";
+  import {adminService, issuerService, partnerService} from "@/services";
+  import AddSchema from "@/components/AddSchema";
+  import CreateSchema from "@/components/CreateSchema";
   import CredExList from "@/components/CredExList";
   import IssueCredential from "@/components/IssueCredential";
+  import SchemaList from "@/components/SchemaList";
   import * as textUtils from "@/utils/textUtils";
 
   export default {
     name: "CredentialManagement",
     components: {
+      SchemaList,
+      AddSchema,
+      CreateSchema,
       IssueCredential,
       CredExList
     },
     created() {
       EventBus.$emit("title", "Credential Management");
-      this.load();
+      this.loadSchemas();
+      this.loadCredentials();
     },
     data: () => {
       return {
+        isLoadingCredentials: false,
         issuedCredentials: [],
         partners: [],
         partner: {},
@@ -105,10 +149,27 @@
         credDef: {},
         credDefId: "",
         issueCredentialDisabled: true,
-        issueCredentialDialog: false
+        issueCredentialDialog: false,
+        isLoadingSchemas: false,
+        schemas: [],
+        addSchemaDialog: false,
+        createSchemaDialog: false
       };
     },
-    computed: { },
+    computed: {
+      schemaHeaders() {
+        return [
+          {
+            text: "Name",
+            value: "label",
+          },
+          {
+            text: "Schema ID",
+            value: "schemaId",
+          },
+        ];
+      }
+    },
     watch: {
       partner (val) {
         this.issueCredentialDisabled = (!val || !val.id) || (!this.credDef || !this.credDef.id);
@@ -120,8 +181,17 @@
       },
     },
     methods: {
-      async load() {
-        this.isLoading = true;
+      async loadSchemas() {
+        this.isLoadingSchemas = true;
+        this.schemas = [];
+        const sresp = await adminService.listSchemas();
+        if (sresp.status === 200) {
+          this.schemas = sresp.data;
+        }
+        this.isLoadingSchemas = false;
+      },
+      async loadCredentials() {
+        this.isLoadingCredentials = true;
         this.issuedCredentials = [];
         this.partners = [];
         this.partner = {};
@@ -153,17 +223,24 @@
             };
           });
         }
-
         const iresp = await issuerService.listCredentialExchangesAsIssuer();
         if (iresp.status === 200) {
           this.issuedCredentials = iresp.data;
         }
-        this.isLoading = false;
+        this.isLoadingCredentials = false;
       },
       credentialIssued() {
         this.issueCredentialDialog = false;
-        this.load();
-      }
+        this.loadCredentials();
+      },
+      schemaAdded() {
+        this.addSchemaDialog = false;
+        this.loadSchemas();
+      },
+      schemaCreated() {
+        this.createSchemaDialog = false;
+        this.loadSchemas();
+      },
     },
   };
 </script>

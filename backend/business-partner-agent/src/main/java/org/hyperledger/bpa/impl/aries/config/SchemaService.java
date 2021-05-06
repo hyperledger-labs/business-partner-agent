@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl.aries.config;
 
 import io.micronaut.cache.annotation.Cacheable;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -26,23 +27,21 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.schema.SchemaSendRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
-import org.hyperledger.bpa.api.exception.SchemaException;
 import org.hyperledger.bpa.api.exception.NetworkException;
+import org.hyperledger.bpa.api.exception.SchemaException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.config.SchemaConfig;
 import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
+import org.hyperledger.bpa.impl.activity.Identity;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
 
-import io.micronaut.core.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
@@ -62,6 +61,9 @@ public class SchemaService {
 
     @Inject
     RuntimeConfig rc;
+
+    @Inject
+    Identity id;
 
     // CRUD Methods
     public SchemaAPI createSchema(@NonNull String schemaName, @NonNull String schemaVersion,
@@ -150,21 +152,22 @@ public class SchemaService {
         return Optional.empty();
     }
 
-    public List<SchemaAPI> listSchemas() {
-        List<SchemaAPI> result = new ArrayList<>();
-        schemaRepo.findAll().forEach(dbS -> result.add(SchemaAPI.from(dbS)));
-        return result;
+    String getDid() {
+        return id.getMyDid() == null ? "" : id.getMyDid();
     }
 
-    public List<SchemaAPI> listSchemas(@NonNull String did) {
-        String creatorDid = did;
-        if (did.startsWith(rc.getLedgerPrefix())) {
-            creatorDid = AriesStringUtil.getLastSegment(did);
+    String getCreatorDid() {
+        if (getDid().startsWith(rc.getLedgerPrefix())) {
+            return AriesStringUtil.getLastSegment(getDid());
         }
-        String finalCreatorDid = creatorDid;
-        Predicate<SchemaAPI> byDid = s -> s.getSchemaId().startsWith(finalCreatorDid);
-        List<SchemaAPI> schemas = this.listSchemas();
-        return schemas.stream().filter(byDid).collect(Collectors.toList());
+        return "";
+    }
+
+    public List<SchemaAPI> listSchemas() {
+        String creatorDid = getCreatorDid();
+        List<SchemaAPI> result = new ArrayList<>();
+        schemaRepo.findAll().forEach(dbS -> result.add(SchemaAPI.from(dbS, creatorDid)));
+        return result;
     }
 
     public Optional<SchemaAPI> getSchema(@NonNull UUID id) {

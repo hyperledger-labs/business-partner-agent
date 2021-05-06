@@ -1,5 +1,5 @@
 <!--
- Copyright (c) 2020 - for information on the respective copyright owner
+ Copyright (c) 2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
 
@@ -9,14 +9,15 @@
 <template>
   <v-container>
   <v-data-table
-    :hide-default-footer="itemsWithIndex.length < 10"
-    :headers="headers"
-    :items="itemsWithIndex"
-    item-key="index"
-    :sort-by="['updatedAt']"
-    :sort-desc="[true]"
-    single-select
-    @click:row="openItem"
+      :loading="isLoading"
+      :hide-default-footer="itemsWithIndex.length < 10"
+      :headers="headers"
+      :items="itemsWithIndex"
+      item-key="index"
+      :sort-by="['updatedAt']"
+      :sort-desc="[true]"
+      single-select
+      @click:row="openItem"
   >
     <template v-slot:[`item.state`]="{ item }">
       <v-icon v-if="isItemActive(item)" color="green">$vuetify.icons.check</v-icon>
@@ -79,6 +80,7 @@ export default {
       default: (item) =>
         item.state === "credential_issued" || item.state == "credential_acked",
     },
+    isLoading: Boolean
   },
   data: () => {
     return {

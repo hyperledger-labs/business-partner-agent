@@ -40,7 +40,6 @@ import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.issuer.CredDef;
 import org.hyperledger.bpa.controller.api.issuer.CredEx;
-import org.hyperledger.bpa.impl.activity.Identity;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.Converter;
@@ -62,9 +61,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Singleton
 public class IssuerManager {
-
-    @Inject
-    Identity id;
 
     @Inject
     AriesClient ac;
@@ -95,12 +91,8 @@ public class IssuerManager {
         return schemaService.createSchema(schemaName, schemaVersion, attributes, schemaLabel, defaultAttributeName);
     }
 
-    String getDid() {
-        return id.getMyDid() == null ? "" : id.getMyDid();
-    }
-
     public List<SchemaAPI> listSchemas() {
-        return schemaService.listSchemas(getDid());
+        return schemaService.listSchemas();
     }
 
     public Optional<SchemaAPI> readSchema(@NonNull UUID id) {

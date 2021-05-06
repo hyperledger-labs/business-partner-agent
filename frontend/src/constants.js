@@ -22,6 +22,7 @@ export const CredentialTypes = Object.freeze({
 
 /** API Route paths */
 export const ApiRoutes = Object.freeze({
+  ADMIN: "/admin",
   ISSUER: "/issuer",
   PARTNERS: "/partners"
 });

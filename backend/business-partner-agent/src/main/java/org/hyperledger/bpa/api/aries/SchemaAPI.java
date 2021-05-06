@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
 import org.hyperledger.bpa.controller.api.issuer.CredDef;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
@@ -54,11 +55,21 @@ public class SchemaAPI {
 
     private List<CredDef> credentialDefinitions;
 
+    private Boolean isCreator;
+
     public static SchemaAPI from(BPASchema s) {
-        return from(s, true, true);
+        return from(s, true, true, null);
+    }
+
+    public static SchemaAPI from(BPASchema s, String creatorDid) {
+        return from(s, true, true, creatorDid);
     }
 
     public static SchemaAPI from(BPASchema s, boolean includeRestrictions, boolean includeCredDefs) {
+        return from(s, includeRestrictions, includeCredDefs, null);
+    }
+
+    public static SchemaAPI from(BPASchema s, boolean includeRestrictions, boolean includeCredDefs, String creatorDid) {
         SchemaAPIBuilder builder = SchemaAPI.builder();
         if (includeRestrictions && CollectionUtils.isNotEmpty(s.getRestrictions())) {
             List<TrustedIssuer> ti = new ArrayList<>();
@@ -70,6 +81,9 @@ public class SchemaAPI {
             s.getCredentialDefinitions().forEach(r -> cd.add(CredDef.from(r)));
             builder.credentialDefinitions(cd);
         }
+        if (StringUtils.isNotEmpty(creatorDid)) {
+            builder.isCreator(StringUtils.startsWith(s.getSchemaId(), creatorDid));
+        }
         String version = s.getSchemaId() == null ? "" : AriesStringUtil.getLastSegment(s.getSchemaId());
         return builder
                 .id(s.getId())
@@ -80,4 +94,5 @@ public class SchemaAPI {
                 .isReadOnly(s.getIsReadOnly())
                 .build();
     }
+
 }

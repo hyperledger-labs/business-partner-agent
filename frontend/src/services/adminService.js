@@ -11,10 +11,13 @@ import { ApiRoutes } from "@/constants";
 
 export default {
   //
-  // Partner API
+  // Admin API
   //
-
-  listPartners() {
-    return appAxios().get(`${ApiRoutes.PARTNERS}`);
-  }
+  listSchemas() {
+    return appAxios().get(`${ApiRoutes.ADMIN}/schema`);
+  },
+  addSchema(data) {
+    return appAxios().post(`${ApiRoutes.ADMIN}/schema`, data);
+  },
 };
+

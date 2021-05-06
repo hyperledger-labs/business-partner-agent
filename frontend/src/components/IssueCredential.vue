@@ -103,7 +103,6 @@
     computed: {},
     watch: {
       partnerId(val) {
-        console.log("partnerId");
         if (val) {
          this.partner = this.partners.find(
             (p) => p.value === val
@@ -111,7 +110,6 @@
         }
       },
       credDefId(val) {
-        console.log("credDefId");
         if (val) {
           this.credDef = this.credDefs.find(
             (p) => p.value === val
