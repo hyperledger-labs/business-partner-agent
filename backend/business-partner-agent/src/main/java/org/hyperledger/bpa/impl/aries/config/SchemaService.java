@@ -152,21 +152,9 @@ public class SchemaService {
         return Optional.empty();
     }
 
-    String getDid() {
-        return id.getMyDid() == null ? "" : id.getMyDid();
-    }
-
-    String getCreatorDid() {
-        if (getDid().startsWith(rc.getLedgerPrefix())) {
-            return AriesStringUtil.getLastSegment(getDid());
-        }
-        return "";
-    }
-
     public List<SchemaAPI> listSchemas() {
-        String creatorDid = getCreatorDid();
         List<SchemaAPI> result = new ArrayList<>();
-        schemaRepo.findAll().forEach(dbS -> result.add(SchemaAPI.from(dbS, creatorDid)));
+        schemaRepo.findAll().forEach(dbS -> result.add(SchemaAPI.from(dbS, id)));
         return result;
     }
 

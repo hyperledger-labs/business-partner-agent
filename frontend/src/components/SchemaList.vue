@@ -14,7 +14,7 @@
         :headers="headers"
         :items="schemas"
         single-select
-        :sort-by="['canIssue', 'isCreator', 'label']"
+        :sort-by="['canIssue', 'isMine', 'label']"
         :sort-desc="[true, true, false]"
         multi-sort
         @click:row="openItem"
@@ -25,14 +25,17 @@
       <template v-slot:[`item.canIssue`]="{ item }">
         <v-icon v-if="item.canIssue">$vuetify.icons.check</v-icon>
       </template>
-      <template v-slot:[`item.isCreator`]="{ item }">
-        <v-icon v-if="item.isCreator">$vuetify.icons.check</v-icon>
+      <template v-slot:[`item.isMine`]="{ item }">
+        <v-icon v-if="item.isMine">$vuetify.icons.check</v-icon>
       </template>
 
     </v-data-table>
     <v-dialog v-model="dialog" persistent max-width="800px">
         <ManageSchema
+          :dialog="dialog"
           :schema="schema"
+          :credential-definitions="manageCredentialDefinitions"
+          :trusted-issuers="manageTrustedIssuers"
           @closed="onClosed"
           @changed="onChanged"
           @deleted="onDeleted"/>
@@ -58,7 +61,7 @@
           },
           {
             text: "Mine",
-            value: "isCreator",
+            value: "isMine",
           },
           {
             text: "Trusted Issuers",
@@ -66,7 +69,16 @@
           },
         ],
       },
-      isLoading: Boolean
+      isLoading: Boolean,
+      manageTrustedIssuers: {
+        type: Boolean,
+        default: () => true
+      },
+      manageCredentialDefinitions: {
+        type: Boolean,
+        default: () => true
+      },
+
     },
     data: () => {
       return {

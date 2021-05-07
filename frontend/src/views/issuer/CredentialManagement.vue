@@ -10,7 +10,11 @@
     <v-card class="my-4">
       <v-card-title class="bg-light">Schemas for Issuing Credentials</v-card-title>
       <v-card-text>
-        <SchemaList @changed="onSchemasChanged"/>
+        <SchemaList
+            :manage-credential-definitions="true"
+            :manage-trusted-issuers="false"
+            @changed="onSchemasChanged"
+        />
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>

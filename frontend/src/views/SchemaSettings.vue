@@ -15,7 +15,10 @@
         <span>Schemas</span>
       </v-card-title>
       <v-card-text>
-        <SchemaList />
+        <SchemaList
+            :manage-credential-definitions="true"
+            :manage-trusted-issuers="true"
+        />
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
