@@ -19,6 +19,7 @@ package org.hyperledger.bpa.impl.aries;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.scheduling.annotation.Async;
 import lombok.NonNull;
@@ -27,11 +28,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.*;
 import org.hyperledger.aries.api.exception.AriesException;
-import org.hyperledger.aries.api.ledger.EndpointType;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.ApiConstants;
-import org.hyperledger.bpa.api.DidDocAPI;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
@@ -46,7 +46,6 @@ import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
-import io.micronaut.core.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -136,27 +135,24 @@ public class ConnectionManager {
      * document. Requires at least the endpoint and a verification method to be
      * present in the did document.
      * 
-     * @param didDoc {@link DidDocAPI}
+     * @param didDoc {@link DIDDocument}
      * @param label  the connection label
      * @param alias  optional connection alias
      */
     @Async
-    public void createConnection(@NonNull DidDocAPI didDoc, @NonNull String label, @Nullable String alias) {
+    public void createConnection(@NonNull DIDDocument didDoc, @NonNull String label, @Nullable String alias) {
         // resolve endpoint
         String endpoint = null;
-        Optional<DidDocAPI.Service> acaPyEndpoint = didDoc.getService()
-                .stream()
-                .filter(s -> EndpointType.ENDPOINT.getLedgerName().equals(s.getType()))
-                .findFirst();
-        if (acaPyEndpoint.isPresent() && StringUtils.isNotEmpty(acaPyEndpoint.get().getServiceEndpoint())) {
-            endpoint = acaPyEndpoint.get().getServiceEndpoint();
+        Optional<String> acaPyEndpoint = didDoc.findAriesEndpointUrl();
+        if (acaPyEndpoint.isPresent() && StringUtils.isNotEmpty(acaPyEndpoint.get())) {
+            endpoint = acaPyEndpoint.get();
         } else {
             log.warn("No aca-py endpoint found in the partners did document.");
         }
 
         // resolve public key
         String pk = null;
-        Optional<DidDocAPI.VerificationMethod> verificationMethod = didDoc.getVerificationMethod(mapper)
+        Optional<DIDDocument.VerificationMethod> verificationMethod = didDoc.getVerificationMethod()
                 .stream()
                 .filter(m -> ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE.equals(m.getType()))
                 .findFirst();

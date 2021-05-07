@@ -1,25 +1,23 @@
 {
-    "didDocument": {
-        "id": "did:web:localhost:8020",
-        "verificationMethod": [
-            {
-                "id": "did:web:localhost:8020#key-1",
-                "type": "Ed25519VerificationKey2018",
-                "publicKeyBase58": "D2k3NWUDbWWZABrdNSfZvXeJDZX5FWBkMCBpVuN8NzTm"
-            },
-            {
-                "id": "did:web:localhost:8020#key-2",
-                "type": "Ed25519VerificationKey2018",
-                "publicKeyBase58": "C2VBLJffEj3Qa5So2UEu9Sabv9zfAZG4Wab19kkHPF2o"
-            }
-        ],
-        "service": [
-            {
-                "id": "did:web:localhost:8020#profile",
-                "type": "masterdata",
-                "serviceEndpoint": "https://localhost:8020/profile.jsonld"
-            }
-        ],
-        "@context": "https://www.w3.org/ns/did/v1"
-    }
+    "@context": "https://www.w3.org/ns/did/v1",
+    "id": "did:web:localhost:8020",
+    "verificationMethod": [
+        {
+            "id": "did:web:localhost:8020#key-1",
+            "type": "Ed25519VerificationKey2018",
+            "publicKeyBase58": "D2k3NWUDbWWZABrdNSfZvXeJDZX5FWBkMCBpVuN8NzTm"
+        },
+        {
+            "id": "did:web:localhost:8020#key-2",
+            "type": "Ed25519VerificationKey2018",
+            "publicKeyBase58": "C2VBLJffEj3Qa5So2UEu9Sabv9zfAZG4Wab19kkHPF2o"
+        }
+    ],
+    "service": [
+        {
+            "id": "did:web:localhost:8020#profile",
+            "type": "Profile",
+            "serviceEndpoint": "https://localhost:8020/profile.jsonld"
+        }
+    ]
 }

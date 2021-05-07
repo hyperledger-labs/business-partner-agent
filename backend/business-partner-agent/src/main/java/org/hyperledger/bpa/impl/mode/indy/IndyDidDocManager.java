@@ -19,7 +19,7 @@ package org.hyperledger.bpa.impl.mode.indy;
 
 import io.micronaut.context.annotation.Value;
 import org.hyperledger.acy_py.generated.model.DID;
-import org.hyperledger.bpa.api.DidDocAPI;
+import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.client.CachingAriesClient;
 import org.hyperledger.bpa.client.URClient;
@@ -46,12 +46,12 @@ public class IndyDidDocManager implements DidDocManager {
 
     /**
      * In this case the did document is always on the ledger, so this method will
-     * resolve the did document via the uniresolver.
+     * resolve the did document via aca-py.
      *
-     * @return {@link DidDocAPI}.
+     * @return {@link DIDDocument}.
      */
     @Override
-    public Optional<DidDocAPI> getDidDocument() {
+    public Optional<DIDDocument> getDidDocument() {
         try {
             final Optional<DID> pubDid = ac.walletDidPublic();
             if (pubDid.isPresent()) {

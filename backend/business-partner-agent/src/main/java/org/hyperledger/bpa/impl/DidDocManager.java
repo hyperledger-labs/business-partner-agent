@@ -17,7 +17,7 @@
  */
 package org.hyperledger.bpa.impl;
 
-import org.hyperledger.bpa.api.DidDocAPI;
+import org.hyperledger.aries.api.resolver.DIDDocument;
 
 import java.util.Optional;
 
@@ -28,5 +28,5 @@ import java.util.Optional;
  */
 public interface DidDocManager {
 
-    Optional<DidDocAPI> getDidDocument();
+    Optional<DIDDocument> getDidDocument();
 }

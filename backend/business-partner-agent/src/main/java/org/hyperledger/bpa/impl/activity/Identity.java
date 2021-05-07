@@ -26,8 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.acy_py.generated.model.DID;
 import org.hyperledger.acy_py.generated.model.DIDCreate;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.ApiConstants;
-import org.hyperledger.bpa.api.DidDocAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.client.CachingAriesClient;
 import org.hyperledger.bpa.client.URClient;
@@ -66,6 +66,7 @@ public class Identity {
     @Inject
     ObjectMapper mapper;
 
+    // TODO either return the did or fail. Needs fixing the test setup to work.
     public @Nullable String getMyDid() {
         String myDid = null;
         if (webOnly) {
@@ -89,9 +90,9 @@ public class Identity {
             if (webOnly) {
                 myKeyId = myDid + ApiConstants.DEFAULT_KEY_ID;
             } else {
-                final Optional<DidDocAPI> didDoc = ur.getDidDocument(myDid);
+                final Optional<DIDDocument> didDoc = ur.getDidDocument(myDid);
                 if (didDoc.isPresent()) {
-                    Optional<DidDocAPI.VerificationMethod> vm = didDoc.get().getVerificationMethod(mapper).stream()
+                    Optional<DIDDocument.VerificationMethod> vm = didDoc.get().getVerificationMethod().stream()
                             .filter(k -> ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE.equals(k.getType())).findFirst();
                     if (vm.isPresent()) {
                         myKeyId = vm.get().getId();

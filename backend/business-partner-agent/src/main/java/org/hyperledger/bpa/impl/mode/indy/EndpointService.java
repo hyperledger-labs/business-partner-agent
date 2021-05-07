@@ -24,7 +24,6 @@ import org.hyperledger.acy_py.generated.model.DID;
 import org.hyperledger.acy_py.generated.model.DIDEndpointWithType;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.EndpointResponse;
-import org.hyperledger.aries.api.ledger.EndpointType;
 import org.hyperledger.aries.api.ledger.TAAAccept;
 import org.hyperledger.aries.api.ledger.TAAInfo;
 import org.hyperledger.aries.api.ledger.TAAInfo.TAARecord;
