@@ -314,7 +314,7 @@ export default {
     this.getPartner();
     this.getPresentationRecords();
     this.getIssuedCredentials();
-    //this.getPresentationRequests();
+    this.getPresentationRequests();
     this.$store.commit("partnerSeen", { id: this.id });
   },
   data: () => {
@@ -448,6 +448,24 @@ export default {
         return item.id !== id;
       });
     },
+    // Presentation Requests
+    getPresentationRequests() {
+      console.log("Getting pending proof-request records...");
+      this.$axios
+        .get(`${this.$apiBaseUrl}/partners/${this.id}/proof-requests`)
+        .then((result) => {
+          if ({}.hasOwnProperty.call(result, "data")) {
+            let data = result.data;
+            console.log(data);
+            this.presentationRequests = data;
+          }
+        })
+        .catch((e) => {
+          console.error(e);
+          // EventBus.$emit("error", e);
+        });
+    },
+
     // Issue Credentials
     getIssuedCredentials() {
       console.log("Getting issued credential records...");
