@@ -33,7 +33,7 @@ services:
       - ${BPA_PORT}:${BPA_PORT}
     restart: always
   aca-py:
-    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.6.0
+    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.7-pre.0
     ports:
       - ${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}
       - ${ACAPY_HTTP_PORT}:${ACAPY_HTTP_PORT}
