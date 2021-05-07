@@ -20,6 +20,8 @@
 </template>
 
 <script>
+import * as partnerUtils from "@/utils/partnerUtils";
+
 export default {
   name: "PartnerStateIndicator",
   props: {
@@ -31,15 +33,7 @@ export default {
   },
   computed: {
     color: function () {
-      if (this.state === "request") {
-        return "yellow";
-      } else if (this.state === "inactive") {
-        return "red";
-      } else if (this.state === "active" || this.state === "response") {
-        return "green";
-      } else {
-        return "grey";
-      }
+      return partnerUtils.getPartnerStateColor(this.state);
     },
   },
   methods: {},

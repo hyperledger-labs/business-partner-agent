@@ -66,13 +66,23 @@
             return-object
             class="mx-4"
             flat
+            single-line
             hide-no-data
             hide-details
             dense
             outlined
             clearable
             clear-icon="$vuetify.icons.delete"
-          ></v-autocomplete>
+          >
+            <template v-slot:item="data">
+              <v-icon x-small class="ml-2 mr-2" :color="partnerStateColor(data.item)" >$vuetify.icons.partnerState</v-icon>
+              {{data.item.text}}
+            </template>
+            <template v-slot:selection="data">
+              <v-icon x-small class="ml-2 mr-2" :color="partnerStateColor(data.item)" >$vuetify.icons.partnerState</v-icon>
+              {{data.item.text}}
+            </template>
+          </v-autocomplete>
           <v-autocomplete
               label="Select credential"
               v-model="credDef"
@@ -80,6 +90,7 @@
               return-object
               class="mx-4"
               flat
+              single-line
               hide-no-data
               hide-details
               dense
@@ -124,6 +135,7 @@
   import IssueCredential from "@/components/IssueCredential";
   import SchemaList from "@/components/SchemaList";
   import * as textUtils from "@/utils/textUtils";
+  import * as partnerUtils from "@/utils/partnerUtils";
   import store from "@/store";
 
   export default {
@@ -167,6 +179,9 @@
       },
     },
     methods: {
+      partnerStateColor(p) {
+        return partnerUtils.getPartnerStateColor(p.state);
+      },
       async loadCredDefs() {
         const cresp = await issuerService.listCredDefs();
         if (cresp.status === 200) {

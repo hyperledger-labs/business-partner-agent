@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 */
 
@@ -68,5 +68,17 @@ export const getPartnerState = (partner) => {
       value: "",
       label: "",
     };
+  }
+};
+
+export const getPartnerStateColor = (state) => {
+  if (state === PartnerStates.REQUEST.value) {
+    return "yellow";
+  } else if (state  === PartnerStates.INACTIVE.value) {
+    return "red";
+  } else if (state === PartnerStates.ACTIVE.value || this.state === PartnerStates.RESPONSE.value) {
+    return "green";
+  } else {
+    return "grey";
   }
 };
