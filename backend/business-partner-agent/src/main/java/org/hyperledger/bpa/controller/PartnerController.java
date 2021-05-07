@@ -44,6 +44,12 @@ import org.hyperledger.aries.api.connection.CreateInvitationResponse;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 
 import javax.inject.Inject;
+
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -224,11 +230,20 @@ public class PartnerController {
      * @return list of pending proof requests from partners
      */
     @Get("/{id}/proof-requests")
-    public HttpResponse<List<PresentationExchangeRecord>> fetchProofRequests(
+    public HttpResponse<String> fetchProofRequests(
             @PathVariable String id) {
         List<PresentationExchangeRecord> results = proofM.getProofRequests(Optional.of(UUID.fromString(id)), null)
                 .get();
-        return HttpResponse.ok(results);
+
+        String jsonString = "";
+        try {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            jsonString = gson.toJson(results);
+
+        } catch (Exception e) {
+        }
+
+        return HttpResponse.ok(jsonString);
     }
 
     /**
