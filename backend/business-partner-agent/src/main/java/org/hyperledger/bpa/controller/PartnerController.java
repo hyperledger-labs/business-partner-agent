@@ -237,6 +237,7 @@ public class PartnerController {
 
         String jsonString = "";
         try {
+            //TODO none of this.... change/use class that is serializable by jackson
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             jsonString = gson.toJson(results);
 
