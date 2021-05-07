@@ -1,17 +1,12 @@
 package org.hyperledger.bpa.impl.aries;
 
-import lombok.NonNull;
 
 import org.hyperledger.aries.api.present_proof.*;
-import org.hyperledger.aries.pojo.PojoProcessor;
 import org.hyperledger.bpa.api.exception.PresentationConstructionException;
 
-import io.micronaut.core.cli.Option;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import com.google.gson.JsonObject;
-import java.util.stream.Collectors;
 
 public class PresentationRequestHelper {
 
