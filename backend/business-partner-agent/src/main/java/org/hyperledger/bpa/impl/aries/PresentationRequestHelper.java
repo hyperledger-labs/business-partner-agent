@@ -1,9 +1,7 @@
 package org.hyperledger.bpa.impl.aries;
 
-
 import org.hyperledger.aries.api.present_proof.*;
 import org.hyperledger.bpa.api.exception.PresentationConstructionException;
-
 
 import java.util.*;
 import com.google.gson.JsonObject;
@@ -14,32 +12,32 @@ public class PresentationRequestHelper {
      * Returns a valid PresentationRequest if possible (no preference)
      * 
      * @param presentationExchange {@link PresentationExchangeRecord}
-     * @param validCredentials {@link List<PresentationRequestCredentials>}
+     * @param validCredentials     {@link List<PresentationRequestCredentials>}
      * @return {@link PresentationRequest}
      */
     public static Optional<PresentationRequest> buildAny(
             PresentationExchangeRecord presentationExchange,
             List<PresentationRequestCredentials> validCredentials) {
         Optional<PresentationRequest> result = Optional.empty();
-        try{
+        try {
             result = Optional.of(PresentationRequest.builder()
-                .requestedAttributes(buildRequestedAttributes(
-                        presentationExchange.getPresentationRequest().getRequestedAttributes(),
-                        validCredentials))
-                .requestedPredicates(buildRequestedPredicates(
-                        presentationExchange.getPresentationRequest().getRequestedPredicates(), 
-                        validCredentials))
-                .build());
-        } catch (PresentationConstructionException e){
+                    .requestedAttributes(buildRequestedAttributes(
+                            presentationExchange.getPresentationRequest().getRequestedAttributes(),
+                            validCredentials))
+                    .requestedPredicates(buildRequestedPredicates(
+                            presentationExchange.getPresentationRequest().getRequestedPredicates(),
+                            validCredentials))
+                    .build());
+        } catch (PresentationConstructionException e) {
             // unable to construct valid proof
-        } 
+        }
         return result;
-        
+
     }
 
     private static Map<String, PresentationRequest.IndyRequestedCredsRequestedAttr> buildRequestedAttributes(
             Map<String, PresentProofRequest.ProofRequest.ProofAttributes> requestedAttributes,
-            List<PresentationRequestCredentials> validCredentials) 
+            List<PresentationRequestCredentials> validCredentials)
             throws PresentationConstructionException {
 
         Map<String, PresentationRequest.IndyRequestedCredsRequestedAttr> result = new HashMap<>();
@@ -68,10 +66,9 @@ public class PresentationRequestHelper {
 
     private static Map<String, PresentationRequest.IndyRequestedCredsRequestedPred> buildRequestedPredicates(
             Map<String, PresentProofRequest.ProofRequest.ProofAttributes> requestedPredicates,
-            List<PresentationRequestCredentials> validCredentials) 
-            throws PresentationConstructionException{
+            List<PresentationRequestCredentials> validCredentials)
+            throws PresentationConstructionException {
         Map<String, PresentationRequest.IndyRequestedCredsRequestedPred> result = new HashMap<>();
-
 
         for (Map.Entry<String, PresentProofRequest.ProofRequest.ProofAttributes> reqPred : requestedPredicates
                 .entrySet()) {
@@ -93,6 +90,4 @@ public class PresentationRequestHelper {
         return result;
     };
 
-
 }
-

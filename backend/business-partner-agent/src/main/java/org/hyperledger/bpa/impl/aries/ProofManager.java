@@ -198,7 +198,6 @@ public class ProofManager {
             log.error("Could not construct valid proof");
         });
 
-        
     }
 
     // handles all proof events to track state changes

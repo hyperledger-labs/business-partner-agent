@@ -16,41 +16,41 @@ import org.mockito.Mockito;
 
 import io.micronaut.core.type.Argument;
 
-
-
 public class ProofManagerTest {
-    
+
     @Mock
     private AriesClient aries;
 
     @InjectMocks
     private ProofManager proofManager;
 
-    
     private PresentationExchangeRecord presentationExchangeRecord = new PresentationExchangeRecord();
-    
-    // private List<PresentationRequestCredentials> presentationRequestCreds = new ArrayList<>();
 
-
-    @Test
-    void testProofConstructionOneReqAttr() 
-    {}
-
+    // private List<PresentationRequestCredentials> presentationRequestCreds = new
+    // ArrayList<>();
 
     @Test
-    void testProofConstructionTwoReqAttrfromDiffCreds() {}
+    void testProofConstructionOneReqAttr() {
+    }
 
     @Test
-    void testProofConstructionOneReqAttrWithSchemaRestriction() {}
+    void testProofConstructionTwoReqAttrfromDiffCreds() {
+    }
 
     @Test
-    void testProofConstructionOnePredicate() {}
+    void testProofConstructionOneReqAttrWithSchemaRestriction() {
+    }
 
     @Test
-    void testProofConstructionOnePredicatewithSchemaRestriction() {}
+    void testProofConstructionOnePredicate() {
+    }
 
     @Test
-    void testProofConstructionOneReqAttrOnePredicateWithSchemaRestrictions() {}
+    void testProofConstructionOnePredicatewithSchemaRestriction() {
+    }
 
+    @Test
+    void testProofConstructionOneReqAttrOnePredicateWithSchemaRestrictions() {
+    }
 
 }
