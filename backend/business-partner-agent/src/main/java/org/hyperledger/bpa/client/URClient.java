@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -67,16 +68,21 @@ public class URClient {
                 if (didDocument.isPresent() && !didDocument.get().hasProfileEndpoint()) {
                     ac.ledgerDidEndpoint(did, DIDEndpointWithType.EndpointTypeEnum.PROFILE)
                             .map(EndpointResponse::getEndpoint)
-                            .ifPresent(ep -> didDocument.get().getService().add(DIDDocument.Service
-                                    .builder()
-                                    .type(DIDEndpointWithType.EndpointTypeEnum.PROFILE.getValue())
-                                    .serviceEndpoint(ep)
-                                    .build()));
+                            .ifPresent(ep -> {
+                                String profile = DIDEndpointWithType.EndpointTypeEnum.PROFILE
+                                        .getValue().toLowerCase(Locale.US);
+                                didDocument.get().getService().add(DIDDocument.Service
+                                        .builder()
+                                        .id(didDocument.get().getId() + "#" + profile)
+                                        .type(profile)
+                                        .serviceEndpoint(ep)
+                                        .build());
+                            });
                 }
                 return didDocument;
-            } else if (did.startsWith("did:web")) {
+            } else if (did.startsWith("did:web:")) {
                 String host = AriesStringUtil.getLastSegment(did);
-                return call("https://" + host, DIDDocument.class);
+                return call("https://" + host + "/.well-known/did.json", DIDDocument.class);
             }
         } catch (IOException e) {
             log.error("aca-py not reachable");

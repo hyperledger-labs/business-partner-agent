@@ -20,7 +20,7 @@ package org.hyperledger.bpa.impl.mode.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.aries.api.ledger.EndpointType;
+import org.hyperledger.acy_py.generated.model.DIDEndpointWithType;
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.config.runtime.RequiresWeb;
@@ -33,6 +33,7 @@ import org.hyperledger.bpa.repository.DidDocWebRepository;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -70,18 +71,21 @@ public class WebDidDocManager implements DidDocManager {
                 .publicKeyBase58(verkey)
                 .build());
 
+        String profile = DIDEndpointWithType.EndpointTypeEnum.PROFILE.getValue().toLowerCase(Locale.US);
+        String endpoint = DIDEndpointWithType.EndpointTypeEnum.ENDPOINT.getValue().toLowerCase(Locale.US);
+
         DIDDocument didDoc = DIDDocument.builder()
                 .id(myDid)
                 .service(List.of(
                         DIDDocument.Service.builder()
                                 .serviceEndpoint(scheme + "://" + host + "/profile.jsonld")
-                                .id(myDid + "#" + EndpointType.PROFILE.getLedgerName())
-                                .type(EndpointType.PROFILE.getLedgerName())
+                                .id(myDid + "#" + profile)
+                                .type(profile)
                                 .build(),
                         DIDDocument.Service.builder()
                                 .serviceEndpoint(acapyEndpoint)
-                                .id(myDid + "#" + EndpointType.ENDPOINT.getLedgerName())
-                                .type(EndpointType.ENDPOINT.getLedgerName())
+                                .id(myDid + "#" + endpoint)
+                                .type(endpoint)
                                 .build()))
                 .verificationMethod(verificationMethods)
                 .build();

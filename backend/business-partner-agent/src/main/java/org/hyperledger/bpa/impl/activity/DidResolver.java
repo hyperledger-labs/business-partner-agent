@@ -22,13 +22,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.bpa.api.DidDocAPI;
+import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.client.URClient;
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.core.RegisteredWebhook;
 import org.hyperledger.bpa.impl.WebhookService;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
@@ -62,7 +62,7 @@ public class DidResolver {
     WebhookService webhook;
 
     /**
-     * Tries to resolve the partners public profile based on the did contained withn
+     * Tries to resolve the partners public profile based on the did contained within
      * a commercial register credential.
      * 
      * @param pp {@link PartnerProof}
@@ -76,8 +76,9 @@ public class DidResolver {
                     if (p.getVerifiablePresentation() == null
                             && p.getIncoming() != null
                             && p.getIncoming()) {
-                        Optional<DidDocAPI> didDocument = Optional.empty();
+                        Optional<DIDDocument> didDocument = Optional.empty();
                         try {
+                            // check if not a public did
                             didDocument = ur.getDidDocument(p.getDid());
                         } catch (PartnerException e) {
                             log.error("{}", e.getMessage());

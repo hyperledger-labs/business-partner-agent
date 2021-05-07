@@ -99,8 +99,6 @@ bpa:
   docker:
     #host where containers are running: typically localhost but might be an IP as well
     host: localhost
-  resolver:
-    url: ${BPA_RESOLVER_URL:`https://resolver.stage.economyofthings.io`}
   ledger:
     browser: ${BPA_LEDGER_BROWSER:}
   host: localhost:${micronaut.server.port}
@@ -113,7 +111,7 @@ bpa:
     apiKey: empty
     endpoint: ${ACAPY_ENDPOINT:`http://localhost:8030`}
   did:
-    prefix: ${BPA_DID_PREFIX:`did:sov:iil:`}
+    prefix: ${BPA_DID_PREFIX:`did:sov:`}
   pg:
     url: jdbc:postgresql://${bpa.docker.host}/${bpa.pg.username}
     username: walletuser
