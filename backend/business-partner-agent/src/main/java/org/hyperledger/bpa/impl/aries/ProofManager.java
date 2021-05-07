@@ -171,32 +171,33 @@ public class ProofManager {
     // respond to proof request with valid proof
     public void presentProof(PresentationExchangeRecord presentationExchangeRecord) {
         // verify correct state = `request_received`
-        assert presentationExchangeRecord.getState() == PresentationExchangeState.REQUEST_RECEIVED;
-        // find vc's in wallet that satisfy proof
-        Optional<List<PresentationRequestCredentials>> validCredentials = Optional.empty();
+        if (presentationExchangeRecord.getState() == PresentationExchangeState.REQUEST_RECEIVED){
+            // find vc's in wallet that satisfy proof
+            Optional<List<PresentationRequestCredentials>> validCredentials = Optional.empty();
 
-        try {
-            validCredentials = ac
-                    .presentProofRecordsCredentials(presentationExchangeRecord.getPresentationExchangeId());
-        } catch (IOException e) {
-            log.error("Could not create aries connection invitation", e);
-            return;
-        }
-
-        Optional<PresentationRequest> presentation = PresentationRequestHelper.buildAny(
-                presentationExchangeRecord,
-                validCredentials.get());
-
-        presentation.ifPresentOrElse((pres) -> {
             try {
-                ac.presentProofRecordsSendPresentation(presentationExchangeRecord.getPresentationExchangeId(), pres);
+                validCredentials = ac
+                        .presentProofRecordsCredentials(presentationExchangeRecord.getPresentationExchangeId());
             } catch (IOException e) {
                 log.error("Could not create aries connection invitation", e);
                 return;
             }
-        }, () -> {
-            log.error("Could not construct valid proof");
-        });
+
+            Optional<PresentationRequest> presentation = PresentationRequestHelper.buildAny(
+                    presentationExchangeRecord,
+                    validCredentials.get());
+
+            presentation.ifPresentOrElse((pres) -> {
+                try {
+                    ac.presentProofRecordsSendPresentation(presentationExchangeRecord.getPresentationExchangeId(), pres);
+                } catch (IOException e) {
+                    log.error("Could not create aries connection invitation", e);
+                    return;
+                }
+            }, () -> {
+                log.error("Could not construct valid proof");
+            });
+        }
 
     }
 
