@@ -69,7 +69,7 @@ public class AdminControllerTest {
     @Test
     void testAddSchemaWithRestriction() throws Exception {
         mockGetSchemaAndVerkey();
-        String schemaId = "schema1";
+        String schemaId = "NZhb9EqpN9a6gkHge9fTmv:2:a-schema-name:0.0.1";
 
         // add schema
         HttpResponse<SchemaAPI> addedSchema = addSchemaWithRestriction(schemaId);
