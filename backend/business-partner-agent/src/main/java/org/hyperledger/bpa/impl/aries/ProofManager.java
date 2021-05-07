@@ -101,7 +101,8 @@ public class ProofManager {
                 final PresentProofRecordsFilter params = PresentProofRecordsFilter
                         .builder()
                         .connectionId(connectionId)
-                        // todo add req as params here if provided
+                        .role(PresentationExchangeRole.PROVER)
+                        .state(PresentationExchangeState.REQUEST_RECEIVED)
                         .build();
                 result = ac.presentProofRecords(params);
             } else {
