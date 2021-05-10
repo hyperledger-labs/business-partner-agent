@@ -237,6 +237,38 @@ public class PartnerController {
         return HttpResponse.ok(results);
     }
 
+
+    /**
+     * Aries: Make the presentation that was requested
+     *
+     * @param id {@link UUID} the partner id
+     * @param presentationExchangeId {@link UUID} the presentationExchangeId
+     * @return HTTP status
+     */
+    @Post("/{id}/proof-requests/{presentationExchangeId}")
+    public  HttpResponse<Void> responseToProofRequest(
+            @PathVariable String id,
+            @PathVariable String presentationExchangeId) {
+        proofM.presentProof(presentationExchangeId);
+        return HttpResponse.ok();
+    }
+
+    /**
+     * Aries: Get Proofs requested from a partner
+     *
+     * @param id {@link UUID} the partner id
+     * @param presentationExchangeId {@link UUID} the presentationExchangeId
+     * @return HTTP status
+     */
+    @Delete("/{id}/proof-requests/{presentationExchangeId}")
+    public  HttpResponse<Void> rejectPresentProofRequest(
+            @PathVariable String id,
+            @PathVariable String presentationExchangeId) {
+        proofM.rejectPresentProofRequest(presentationExchangeId, "User rejected presetation request: No reason given");
+
+        return HttpResponse.ok();
+    }
+
     /**
      * Aries: Request proof from partner
      *

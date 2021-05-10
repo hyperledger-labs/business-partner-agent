@@ -233,6 +233,15 @@
             </v-row>
             <v-row>The proofs requested from this partner</v-row>
           </v-col>
+          <v-col cols="8">
+            <PresentationRequestList
+              v-if="isReady"
+              v-bind:presentationRequests="presentationRequests"
+              v-bind:headers="headersPresentationRequest"
+              v-on:removedItem="removePresentationRequest"
+              v-on:responseSuccess="removePresentationRequest"
+            ></PresentationRequestList>
+          </v-col>
         </v-row>
       </v-card-text>
 
@@ -297,7 +306,7 @@ import {
 } from "@/components/tableHeaders/PartnerHeaders";
 import { issuerService } from "@/services";
 import CredExList from "@/components/CredExList";
-// import PresentationRequestList from "@/components/PresentationRequestList";
+import PresentationRequestList from "@/components/PresentationRequestList";
 
 export default {
   name: "Partner",
@@ -307,7 +316,7 @@ export default {
     PresentationList,
     PartnerStateIndicator,
     CredExList,
-    // PresentationRequestList,
+    PresentationRequestList,
   },
   created() {
     EventBus.$emit("title", "Partner");
@@ -361,6 +370,25 @@ export default {
         {
           text: "State",
           value: "state",
+        },
+      ],
+      headersPresentationRequest: [
+        {
+          text: "Schema",
+          value:
+            "presentationRequest.requestedAttributes.referent.restrictions[0].schema_id",
+        },
+        {
+          text: "Updated at",
+          value: "updatedAt",
+        },
+        {
+          text: "State",
+          value: "state",
+        },
+        {
+          text: "",
+          value: "actions",
         },
       ],
     };
@@ -456,14 +484,19 @@ export default {
         .then((result) => {
           if ({}.hasOwnProperty.call(result, "data")) {
             let data = result.data;
-            console.log(data);
             this.presentationRequests = data;
           }
         })
         .catch((e) => {
           console.error(e);
-          // EventBus.$emit("error", e);
+          EventBus.$emit("error", e);
         });
+    },
+
+    removePresentationRequest(presentationExchangeId) {
+      this.presentationRequests = this.presentationRequests.filter((item) => {
+        return item.presentationExchangeId !== presentationExchangeId;
+      });
     },
 
     // Issue Credentials

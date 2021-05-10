@@ -54,6 +54,7 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.validation.constraints.NotNull;
 
 import java.io.IOException;
 import java.util.*;
@@ -165,6 +166,32 @@ public class ProofManager {
             }
         } catch (IOException e) {
             throw new NetworkException("aca-py not available", e);
+        }
+    }
+
+
+    public void rejectPresentProofRequest(String presentationExchangeId, String explainString){
+        try {
+            sendPresentProofProblemReport(presentationExchangeId, explainString);
+            //after sending rejection notice, delete local copy.
+            ac.presentProofRecordsRemove(presentationExchangeId);
+        } catch (IOException e) {
+            log.error("aca-py not reachable.", e);
+            return;
+        }
+    }
+
+    public void presentProof(String presentationExchangeId){
+        try {
+            ac.presentProofRecordsGetById(presentationExchangeId).ifPresentOrElse(
+                (record) -> presentProof(record),
+                () -> {
+                    log.error("PresentationExchange not found with Id: {}", presentationExchangeId);
+                }
+            );
+        } catch (IOException e) {
+            log.error("aca-py not reachable.", e);
+            return;
         }
     }
 
@@ -308,5 +335,14 @@ public class ProofManager {
             proof.setTypeLabel(schemaService.getSchemaLabel(p.getSchemaId()));
         }
         return proof;
+    }
+
+    private void sendPresentProofProblemReport(@NotNull String PresentationExchangeId, @NotNull String problemString)
+    throws IOException
+    {
+        PresentationProblemReportRequest request = PresentationProblemReportRequest.builder()
+                    .explainLtxt(problemString)
+                    .build(); 
+        ac.presentProofRecordsProblemReport(PresentationExchangeId, request);
     }
 }
