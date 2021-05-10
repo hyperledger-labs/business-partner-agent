@@ -230,21 +230,11 @@ public class PartnerController {
      * @return list of pending proof requests from partners
      */
     @Get("/{id}/proof-requests")
-    public HttpResponse<String> fetchProofRequests(
+    public  HttpResponse<List<PresentationExchangeRecord>> fetchProofRequests(
             @PathVariable String id) {
         List<PresentationExchangeRecord> results = proofM.getProofRequests(Optional.of(UUID.fromString(id)), null)
                 .get();
-
-        String jsonString = "";
-        try {
-            //TODO none of this.... change/use class that is serializable by jackson
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            jsonString = gson.toJson(results);
-
-        } catch (Exception e) {
-        }
-
-        return HttpResponse.ok(jsonString);
+        return HttpResponse.ok(results);
     }
 
     /**
