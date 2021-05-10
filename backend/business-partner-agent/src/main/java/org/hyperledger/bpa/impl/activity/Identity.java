@@ -17,21 +17,23 @@
  */
 package org.hyperledger.bpa.impl.activity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.acy_py.generated.model.DID;
 import org.hyperledger.acy_py.generated.model.DIDCreate;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.client.CachingAriesClient;
 import org.hyperledger.bpa.client.URClient;
-
+import org.hyperledger.bpa.config.RuntimeConfig;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -64,7 +66,7 @@ public class Identity {
     URClient ur;
 
     @Inject
-    ObjectMapper mapper;
+    RuntimeConfig rc;
 
     // TODO either return the did or fail. Needs fixing the test setup to work.
     public @Nullable String getMyDid() {
@@ -125,4 +127,23 @@ public class Identity {
         }
         return verkey;
     }
+
+    public boolean isSchemaCreator(@NonNull String schemaId, @NonNull String did) {
+        // we can place logic in here that will deal with different did formats later
+        final String schemaCreator = AriesStringUtil.schemaGetCreator(schemaId);
+        String creatorDid = did;
+        if (StringUtils.startsWith(did, rc.getLedgerPrefix())) {
+            creatorDid = AriesStringUtil.getLastSegment(did);
+        }
+        return StringUtils.equals(schemaCreator, creatorDid);
+    }
+
+    public boolean isMySchema(@NonNull String schemaId) {
+        String myDid = this.getMyDid();
+        if (StringUtils.isNotEmpty(myDid)) {
+            return this.isSchemaCreator(schemaId, myDid);
+        }
+        return false;
+    }
+
 }

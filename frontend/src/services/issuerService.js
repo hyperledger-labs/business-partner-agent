@@ -1,3 +1,11 @@
+/*
+ Copyright (c) 2021 - for information on the respective copyright owner
+ see the NOTICE file and/or the repository at
+ https://github.com/hyperledger-labs/organizational-agent
+
+ SPDX-License-Identifier: Apache-2.0
+*/
+
 import { appAxios } from "@/services/interceptors";
 import { ApiRoutes, CredentialExchangeRoles } from "@/constants";
 
@@ -20,6 +28,10 @@ export default {
 
   createCredDef(data) {
     return appAxios().post(`${ApiRoutes.ISSUER}/creddef`, data);
+  },
+
+  deleteCredDef(id) {
+    return appAxios().delete(`${ApiRoutes.ISSUER}/creddef/${id}`);
   },
 
   listCredDefs() {

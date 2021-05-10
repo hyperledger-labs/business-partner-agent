@@ -69,4 +69,39 @@ class AriesStringUtilTest {
         assertFalse(AriesStringUtil.isUUID("Test String"));
         assertTrue(AriesStringUtil.isUUID(UUID.randomUUID().toString()));
     }
+
+    @Test
+    void testSchemaGetCreator() {
+        // given 3kigpmNVRJyj1NpCkqJqpa:2:a-schema:1.0
+        // creator is the first part
+        final String validSchemaId = "3kigpmNVRJyj1NpCkqJqpa:2:a-schema:1.0";
+        assertEquals("3kigpmNVRJyj1NpCkqJqpa", AriesStringUtil.schemaGetCreator(validSchemaId));
+
+        final String invalidSchemaId = "3kigpmNVRJyj1NpCkqJqpa:2:a-schema"; // no version
+        assertThrows(IllegalArgumentException.class, () -> {
+            AriesStringUtil.schemaGetCreator(invalidSchemaId);
+        });
+
+        assertThrows(NullPointerException.class, () -> {
+            AriesStringUtil.schemaGetCreator(null);
+        });
+    }
+
+    @Test
+    void testSchemaGetVersion() {
+        // given 3kigpmNVRJyj1NpCkqJqpa:2:a-schema:1.0.01
+        // creator is the first part
+        final String validSchemaId = "3kigpmNVRJyj1NpCkqJqpa:2:a-schema:1.0.01";
+        assertEquals("1.0.01", AriesStringUtil.schemaGetVersion(validSchemaId));
+
+        final String invalidSchemaId = "3kigpmNVRJyj1NpCkqJqpa:2:a-schema:1.0.01:abc"; // extra segment
+        assertThrows(IllegalArgumentException.class, () -> {
+            AriesStringUtil.schemaGetVersion(invalidSchemaId);
+        });
+
+        assertThrows(NullPointerException.class, () -> {
+            AriesStringUtil.schemaGetVersion(null);
+        });
+    }
+
 }

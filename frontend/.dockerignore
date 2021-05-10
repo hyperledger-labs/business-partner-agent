@@ -1,0 +1,14 @@
+node_modules
+dist
+
+
+.settings
+.project
+.classpath
+.factorypath
+.externalToolBuilders
+**/application-dev-**.yml
+.vscode
+
+.idea/
+*.iml

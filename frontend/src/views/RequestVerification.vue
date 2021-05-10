@@ -10,7 +10,7 @@
     <v-card class="mx-auto">
       <v-card-title class="bg-light">
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
-          <v-icon dark>mdi-chevron-left</v-icon>
+          <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
         Select Business Partner
       </v-card-title>

@@ -110,6 +110,18 @@ public class IssuerController {
     }
 
     /**
+     * Create a new credential definition
+     *
+     * @param id {@link UUID} the cred def id
+     * @return {@link HttpResponse}
+     */
+    @Delete("/creddef/{id}")
+    public HttpResponse<Void> deleteCredDef(@PathVariable UUID id) {
+        im.deleteCredDef(id);
+        return HttpResponse.ok();
+    }
+
+    /**
      * Issue a credential
      *
      * @param req {@link IssueCredentialSendRequest}
