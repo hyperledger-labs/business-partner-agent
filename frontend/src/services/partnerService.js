@@ -5,6 +5,16 @@
 
  SPDX-License-Identifier: Apache-2.0
 */
-export { default as adminService } from './adminService';
-export { default as issuerService } from './issuerService';
-export { default as partnerService } from './partnerService';
+
+import { appAxios } from "@/services/interceptors";
+import { ApiRoutes } from "@/constants";
+
+export default {
+  //
+  // Partner API
+  //
+
+  listPartners() {
+    return appAxios().get(`${ApiRoutes.PARTNERS}`);
+  }
+};

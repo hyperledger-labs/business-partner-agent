@@ -54,8 +54,14 @@ public class CredEx {
     private String label;
     private String threadId;
     private String credentialExchangeId;
+    private String displayText;
 
     public static CredEx from(BPACredentialExchange db) {
+        SchemaAPI schemaAPI = SchemaAPI.from(db.getSchema());
+        PartnerAPI partnerAPI = PartnerAPI.from(db.getPartner());
+        CredDef credDef = CredDef.from(db.getCredDef());
+        String displayText = String.format("%s (%s) - %s", schemaAPI.getLabel(), schemaAPI.getVersion(),
+                credDef.getTag());
         return CredEx
                 .builder()
                 .id(db.getId())
@@ -63,14 +69,15 @@ public class CredEx {
                 .updatedAt(db.getUpdatedAt().toEpochMilli())
                 .role(db.getRole())
                 .state(db.getState())
-                .schema(SchemaAPI.from(db.getSchema()))
-                .partner(PartnerAPI.from(db.getPartner()))
-                .credDef(CredDef.from(db.getCredDef()))
+                .schema(schemaAPI)
+                .partner(partnerAPI)
+                .credDef(credDef)
                 .credential(db.getCredential())
                 .type(db.getType())
                 .label(db.getLabel())
                 .threadId(db.getThreadId())
                 .credentialExchangeId(db.getCredentialExchangeId())
+                .displayText(displayText)
                 .build();
     }
 }

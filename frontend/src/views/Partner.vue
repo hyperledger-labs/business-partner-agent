@@ -11,14 +11,13 @@
     <v-card class="mx-auto">
       <v-card-title class="bg-light">
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
-          <v-icon dark>mdi-chevron-left</v-icon>
+          <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
         <span v-if="!isUpdatingName">{{ partner.name }}</span>
         <v-text-field
           class="mt-8"
           v-else
           label="Name"
-          append-icon="mdi-done"
           v-model="alias"
           outlined
           :rules="[rules.required]"
@@ -44,7 +43,7 @@
         ></PartnerStateIndicator>
         <v-layout align-center justify-end>
           <v-btn icon @click="isUpdatingDid = !isUpdatingDid">
-            <v-icon small dark>mdi-fingerprint</v-icon>
+            <v-icon small dark>$vuetify.icons.identity</v-icon>
           </v-btn>
           <span
             v-if="!isUpdatingDid"
@@ -55,7 +54,6 @@
             class="mt-4 col-lg-6 col-md-6 col-sm-8"
             v-else
             label="DID"
-            append-icon="mdi-done"
             v-model="did"
             outlined
             :rules="[rules.required]"
@@ -76,7 +74,7 @@
             </template>
           </v-text-field>
           <v-btn icon @click="isUpdatingName = !isUpdatingName">
-            <v-icon dark>mdi-pencil</v-icon>
+            <v-icon dark>$vuetify.icons.pencil</v-icon>
           </v-btn>
           <v-tooltip top>
             <template v-slot:activator="{ on, attrs }">
@@ -87,14 +85,14 @@
                 icon
                 @click="refreshPartner()"
               >
-                <v-icon dark>mdi-refresh</v-icon>
+                <v-icon dark>$vuetify.icons.refresh</v-icon>
               </v-btn>
             </template>
             <span>Refresh profile from source</span>
           </v-tooltip>
 
           <v-btn depressed color="red" icon @click="deletePartner()">
-            <v-icon dark>mdi-delete</v-icon>
+            <v-icon dark>$vuetify.icons.delete</v-icon>
           </v-btn>
         </v-layout>
       </v-card-title>
@@ -106,8 +104,8 @@
         >
           <v-banner two-line>
             <v-avatar slot="icon" color="white" size="40">
-              <v-icon icon="mdi-alert-circle-outline" color="primary">
-                mdi-alert-circle-outline
+              <v-icon icon="$vuetify.icons.connectionAlert" color="primary">
+                $vuetify.icons.connectionAlert
               </v-icon>
             </v-avatar>
 
@@ -134,8 +132,8 @@
         >
           <v-banner two-line>
             <v-avatar slot="icon" color="white" size="40">
-              <v-icon icon="mdi-clock-time-three-outline" color="primary">
-                mdi-clock-time-three-outline
+              <v-icon icon="$vuetify.icons.connectionWaiting" color="primary">
+                $vuetify.icons.connectionWaiting
               </v-icon>
             </v-avatar>
 
@@ -211,7 +209,23 @@
             </v-row>
             <v-row>The credentials you issued to your partner</v-row>
             <v-row class="mt-4">
-              <v-btn small @click="issueCredential">Issue Credential</v-btn>
+              <v-dialog
+                  v-model="issueCredentialDialog"
+                  persistent
+                  max-width="600px"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn small
+                      v-bind="attrs"
+                      v-on="on"
+                  >Issue Credential</v-btn>
+                </template>
+                <IssueCredential
+                    :partnerId="id"
+                    @success="onCredentialIssued"
+                    @cancelled="issueCredentialDialog = false">
+                </IssueCredential>
+              </v-dialog>
             </v-row>
           </v-col>
           <v-col cols="8">
@@ -219,8 +233,6 @@
               v-if="isReady"
               v-bind:items="issuedCredentials"
               v-bind:headers="headersIssued"
-              v-on:openItem="openIssuedCredential"
-              v-bind:isActiveFn="isIssuedCredentialActive"
             ></CredExList>
           </v-col>
         </v-row>
@@ -287,6 +299,7 @@ import {
 } from "@/components/tableHeaders/PartnerHeaders";
 import { issuerService } from "@/services";
 import CredExList from "@/components/CredExList";
+import IssueCredential from "@/components/IssueCredential";
 
 export default {
   name: "Partner",
@@ -296,6 +309,7 @@ export default {
     PresentationList,
     PartnerStateIndicator,
     CredExList,
+    IssueCredential,
   },
   created() {
     EventBus.$emit("title", "Partner");
@@ -329,16 +343,8 @@ export default {
       PartnerStates: PartnerStates,
       headersIssued: [
         {
-          text: "Schema",
-          value: "schema.label",
-        },
-        {
-          text: "Version",
-          value: "schema.version",
-        },
-        {
-          text: "Tag",
-          value: "credDef.tag",
+          text: "Type",
+          value: "displayText",
         },
         {
           text: "Updated at",
@@ -349,6 +355,7 @@ export default {
           value: "state",
         },
       ],
+      issueCredentialDialog: false,
     };
   },
   computed: {
@@ -447,27 +454,6 @@ export default {
           console.error(e);
           // EventBus.$emit("error", e);
         });
-    },
-    openIssuedCredential(item) {
-      if (this.isIssuedCredentialActive(item)) {
-        // ok, lets show this credential
-        this.$router.push({
-          name: "ViewCredentialContent",
-          params: {
-            credential: item.credential,
-            title: `${item.schema.label} (${item.schema.version}) - ${item.credDef.tag}`,
-          },
-        });
-      }
-    },
-    isIssuedCredentialActive(item) {
-      if (item) {
-        return (
-          item.state === "credential_issued" ||
-          item.state === "credential_acked"
-        );
-      }
-      return false;
     },
     getPartner() {
       console.log("Getting partner...");
@@ -623,27 +609,10 @@ export default {
         this.isBusy = false;
       }
     },
-    async issueCredential() {
-      if (
-        this.partner.state === "response" ||
-        this.partner.state === "active"
-      ) {
-        this.$router.push({
-          name: "IssueCredential",
-          params: {
-            partnerId: this.id,
-          },
-        });
-      } else {
-        this.attentionPartnerStateDialog = true;
-        this.goTo = {
-          name: "IssueCredential",
-          params: {
-            partnerId: this.id,
-          },
-        };
-      }
-    },
+    onCredentialIssued() {
+      this.issueCredentialDialog = false;
+      this.getIssuedCredentials();
+    }
   },
 };
 </script>

@@ -40,7 +40,6 @@ import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.issuer.CredDef;
 import org.hyperledger.bpa.controller.api.issuer.CredEx;
-import org.hyperledger.bpa.impl.activity.Identity;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.Converter;
@@ -62,9 +61,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Singleton
 public class IssuerManager {
-
-    @Inject
-    Identity id;
 
     @Inject
     AriesClient ac;
@@ -95,12 +91,8 @@ public class IssuerManager {
         return schemaService.createSchema(schemaName, schemaVersion, attributes, schemaLabel, defaultAttributeName);
     }
 
-    String getDid() {
-        return id.getMyDid() == null ? "" : id.getMyDid();
-    }
-
     public List<SchemaAPI> listSchemas() {
-        return schemaService.listSchemas(getDid());
+        return schemaService.listSchemas();
     }
 
     public Optional<SchemaAPI> readSchema(@NonNull UUID id) {
@@ -162,6 +154,15 @@ public class IssuerManager {
         return result;
     }
 
+    public void deleteCredDef(@NonNull UUID id) {
+        int recs = credExRepo.countIdByCredDefId(id);
+        if (recs == 0) {
+            credDefRepo.deleteById(id);
+        } else {
+            throw new IssuerException("Credential Definition cannot be deleted, it has been used to issue credentials");
+        }
+    }
+
     public Optional<V1CredentialExchange> issueCredentialSend(@NonNull UUID credDefId, @NonNull UUID partnerId,
             @NonNull Map<String, Object> document) {
         final Optional<Partner> dbPartner = partnerRepo.findById(partnerId);
@@ -201,7 +202,7 @@ public class IssuerManager {
 
     public List<CredEx> listCredentialExchanges(String role) {
         List<BPACredentialExchange> exchanges = new ArrayList<>();
-        credExRepo.findAll().forEach(exchanges::add);
+        credExRepo.listOrderByUpdatedAtDesc().forEach(exchanges::add);
         // now, lets get credentials...
         return exchanges.stream()
                 .filter(x -> {
@@ -270,11 +271,10 @@ public class IssuerManager {
 
             return credExRepo.save(cex);
         } else {
-            log.error(String.format(
-                    "Could not create credential exchange record. Cred. Def ID (%s) or Partner/Connection id ($s) not found"),
-                    exchange.getCredentialDefinitionId(), exchange.getConnectionId());
+            throw new IssuerException(String.format(
+                    "Could not create credential exchange record. Cred. Def ID (%s) or Partner/Connection id (%s) not found",
+                    exchange.getCredentialDefinitionId(), exchange.getConnectionId()));
         }
-        return null;
     }
 
     private void updateCredentialExchange(@NonNull String credentialExchangeId,

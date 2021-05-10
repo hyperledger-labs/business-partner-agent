@@ -2,23 +2,26 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
   <v-container text-center>
     <v-card flat v v-if="!isLoading" class="mx-auto">
-      <v-text-field
-        id="did"
-        v-model="status.did"
-        readonly
-        outlined
-        dense
-        label="DID"
-        :append-icon="'mdi-content-copy'"
-        @click:append="copyDid"
-        class="col-md-8 offset-md-2 col-sm-10 offset-sm-1"
-      ></v-text-field>
+      <v-row>
+        <v-col class="col-sm-10 offset-sm-1 col-md-8 offset-md-2">
+          <v-text-field
+            id="did"
+            v-model="status.did"
+            readonly
+            outlined
+            dense
+            label="DID"
+            :append-icon="'$vuetify.icons.copy'"
+            @click:append="copyDid"
+          ></v-text-field>
+        </v-col>
+      </v-row>
     </v-card>
     <div v-if="isWelcome && !isLoading">
       <!-- Image from undraw.co -->

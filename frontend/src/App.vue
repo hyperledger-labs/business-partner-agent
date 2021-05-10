@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
@@ -34,7 +34,7 @@
         </router-link>
         <v-list-item v-if="expertMode" link :to="{ name: 'Identity' }">
           <v-list-item-action>
-            <v-icon>mdi-fingerprint</v-icon>
+            <v-icon>$vuetify.icons.identity</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>Identity</v-list-item-title>
@@ -42,7 +42,7 @@
         </v-list-item>
         <v-list-item link :to="{ name: 'Dashboard' }" exact>
           <v-list-item-action>
-            <v-icon>mdi-view-dashboard</v-icon>
+            <v-icon>$vuetify.icons.dashboard</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>Dashboard</v-list-item-title>
@@ -50,7 +50,7 @@
         </v-list-item>
         <v-list-item link :to="{ name: 'PublicProfile' }">
           <v-list-item-action>
-            <v-icon>mdi-globe-model</v-icon>
+            <v-icon>$vuetify.icons.profile</v-icon>
           </v-list-item-action>
           <v-list-item-title>Public Profile</v-list-item-title>
         </v-list-item>
@@ -65,11 +65,19 @@
               offset-x="10"
               offset-y="10"
             >
-              <v-icon>mdi-cards-outline</v-icon>
+              <v-icon>$vuetify.icons.wallet</v-icon>
             </v-badge>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>Wallet</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item link :to="{ name: 'CredentialManagement' }">
+          <v-list-item-action>
+            <v-icon>$vuetify.icons.credentialManagement</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Credential Management</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item link :to="{ name: 'Partners' }">
@@ -83,7 +91,7 @@
               offset-x="10"
               offset-y="10"
             >
-              <v-icon>mdi-handshake</v-icon>
+              <v-icon>$vuetify.icons.partners</v-icon>
             </v-badge>
           </v-list-item-action>
           <v-list-item-content>
@@ -92,7 +100,7 @@
         </v-list-item>
         <v-list-item link :to="{ name: 'Settings' }">
           <v-list-item-action>
-            <v-icon>mdi-cog-outline</v-icon>
+            <v-icon>$vuetify.icons.settings</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>Settings</v-list-item-title>
@@ -103,7 +111,7 @@
         <v-list dense>
           <v-list-item bottom link :to="{ name: 'About' }">
             <v-list-item-action>
-              <v-icon>mdi-information-outline</v-icon>
+              <v-icon>$vuetify.icons.about</v-icon>
             </v-list-item-action>
             <v-list-item-content>
               <v-list-item-title>About</v-list-item-title>
@@ -120,7 +128,7 @@
       <v-spacer></v-spacer>
 
       <v-btn icon @click="logout()">
-        <v-icon>mdi-logout</v-icon>
+        <v-icon>$vuetify.icons.signout</v-icon>
       </v-btn>
     </v-app-bar>
 

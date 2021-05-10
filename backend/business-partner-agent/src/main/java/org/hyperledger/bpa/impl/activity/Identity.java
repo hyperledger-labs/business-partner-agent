@@ -20,8 +20,10 @@ package org.hyperledger.bpa.impl.activity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.wallet.WalletDidResponse;
 import org.hyperledger.bpa.api.ApiConstants;
@@ -31,6 +33,9 @@ import org.hyperledger.bpa.client.CachingAriesClient;
 import org.hyperledger.bpa.client.URClient;
 
 import io.micronaut.core.annotation.Nullable;
+import org.hyperledger.bpa.config.RuntimeConfig;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -64,6 +69,9 @@ public class Identity {
 
     @Inject
     ObjectMapper mapper;
+
+    @Inject
+    RuntimeConfig rc;
 
     public @Nullable String getMyDid() {
         String myDid = null;
@@ -123,4 +131,23 @@ public class Identity {
         }
         return verkey;
     }
+
+    public boolean isSchemaCreator(@NonNull String schemaId, @NonNull String did) {
+        // we can place logic in here that will deal with different did formats later
+        final String schemaCreator = AriesStringUtil.schemaGetCreator(schemaId);
+        String creatorDid = did;
+        if (StringUtils.startsWith(did, rc.getLedgerPrefix())) {
+            creatorDid = AriesStringUtil.getLastSegment(did);
+        }
+        return StringUtils.equals(schemaCreator, creatorDid);
+    }
+
+    public boolean isMySchema(@NonNull String schemaId) {
+        String myDid = this.getMyDid();
+        if (StringUtils.isNotEmpty(myDid)) {
+            return this.isSchemaCreator(schemaId, myDid);
+        }
+        return false;
+    }
+
 }

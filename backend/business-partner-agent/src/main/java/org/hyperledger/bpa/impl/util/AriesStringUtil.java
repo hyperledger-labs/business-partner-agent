@@ -46,6 +46,24 @@ public class AriesStringUtil {
         return parts[2];
     }
 
+    public static String schemaGetCreator(@NonNull String schemaId) {
+        String sId = StringUtils.strip(schemaId);
+        final String[] parts = sId.split(":");
+        if (parts.length != 4) {
+            throw new IllegalArgumentException("Not a valid schema id");
+        }
+        return parts[0];
+    }
+
+    public static String schemaGetVersion(@NonNull String schemaId) {
+        String sId = StringUtils.strip(schemaId);
+        final String[] parts = sId.split(":");
+        if (parts.length != 4) {
+            throw new IllegalArgumentException("Not a valid schema id");
+        }
+        return parts[3];
+    }
+
     public static String credDefIdGetSquenceNo(@NonNull String credDefId) {
         final String[] parts = credDefIdSplit(credDefId);
         return parts[3];
