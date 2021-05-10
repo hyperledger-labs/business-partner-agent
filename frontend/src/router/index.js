@@ -28,9 +28,7 @@ import SchemaSettings from "../views/SchemaSettings.vue";
 import Schema from "../views/Schema.vue";
 import AddSchema from "../views/AddSchema.vue";
 import About from "../views/About.vue";
-import IssuerCreateSchema from "@/views/issuer/CreateSchema.vue";
-import IssuerSchema from "@/views/issuer/Schema.vue";
-import IssuerSchemaList from "@/views/issuer/SchemaList.vue";
+import CredentialManagement from "@/views/issuer/CredentialManagement.vue";
 
 Vue.use(VueRouter);
 
@@ -152,20 +150,9 @@ const routes = [
     component: About,
   },
   {
-    path: "/app/issuer/schema",
-    name: "IssuerSchemaList",
-    component: IssuerSchemaList,
-  },
-  {
-    path: "/app/issuer/schema/create",
-    name: "IssuerCreateSchema",
-    component: IssuerCreateSchema,
-  },
-  {
-    path: "/app/issuer/schema/:id",
-    name: "IssuerSchema",
-    component: IssuerSchema,
-    props: true,
+    path: "/credentialManagement",
+    name: "CredentialManagement",
+    component: CredentialManagement
   },
 ];
 

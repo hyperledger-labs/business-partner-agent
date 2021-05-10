@@ -1,19 +1,19 @@
 /*
-  Copyright (c) 2020 - for information on the respective copyright owner
-  see the NOTICE file and/or the repository at
-  https://github.com/hyperledger-labs/business-partner-agent
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+ * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * see the NOTICE file and/or the repository at
+ * https://github.com/hyperledger-labs/business-partner-agent
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.hyperledger.bpa.impl.util;
 
@@ -44,6 +44,24 @@ public class AriesStringUtil {
             throw new IllegalArgumentException("Not a valid schema id");
         }
         return parts[2];
+    }
+
+    public static String schemaGetCreator(@NonNull String schemaId) {
+        String sId = StringUtils.strip(schemaId);
+        final String[] parts = sId.split(":");
+        if (parts.length != 4) {
+            throw new IllegalArgumentException("Not a valid schema id");
+        }
+        return parts[0];
+    }
+
+    public static String schemaGetVersion(@NonNull String schemaId) {
+        String sId = StringUtils.strip(schemaId);
+        final String[] parts = sId.split(":");
+        if (parts.length != 4) {
+            throw new IllegalArgumentException("Not a valid schema id");
+        }
+        return parts[3];
     }
 
     public static String credDefIdGetSquenceNo(@NonNull String credDefId) {
