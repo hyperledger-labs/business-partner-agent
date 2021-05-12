@@ -77,8 +77,8 @@
             <v-badge
               overlap
               bordered
-              :content="newPartnersCount"
-              :value="newPartnersCount"
+              :content="newPartnerEventsCount"
+              :value="newPartnerEventsCount"
               color="red"
               offset-x="10"
               offset-y="10"
@@ -226,8 +226,8 @@ export default {
     privacyPolicyUrl() {
       return this.$store.state.settings.dataPrivacyPolicy;
     },
-    newPartnersCount() {
-      return this.$store.getters.newPartnersCount;
+    newPartnerEventsCount() {
+      return this.$store.getters.newPartnerEventsCount;
     },
     newCredentialsCount() {
       return this.$store.getters.newCredentialsCount;

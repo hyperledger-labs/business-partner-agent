@@ -3,6 +3,9 @@ import Vue from "vue";
 const state = {
   newPartners: {},
   newCredentials: {},
+  newPresentationRequests: {},
+  newPresentations: {},
+
   socket: {
     isConnected: false,
     message: "",
@@ -11,8 +14,12 @@ const state = {
 };
 
 const getters = {
-  newPartnersCount: () => {
-    return Object.keys(state.newPartners).length;
+  newPartnerEventsCount: () => {
+    return (
+      Object.keys(state.newPartners).length +
+      Object.keys(state.newPresentationRequests).length +
+      Object.keys(state.newPresentations).length
+    );
   },
   newPartners: (state) => {
     return state.newPartners;
@@ -22,6 +29,13 @@ const getters = {
   },
   newCredentials: (state) => {
     return state.newCredentials;
+  },
+
+  newPresentationRequests: (state) => {
+    return state.newPresentationRequests;
+  },
+  newPresentations: (state) => {
+    return state.newPresentations;
   },
 };
 
@@ -58,6 +72,20 @@ const mutations = {
     let id = payload.message.linkId;
     state.newCredentials = { ...state.newCredentials, [id]: payload };
   },
+  newPresentationRequest(state, payload) {
+    let id = payload.message.linkId;
+    state.newProofRequests = {
+      ...state.newPresentationRequests,
+      [id]: payload,
+    };
+    console.log("NEW PRESENTAITON REQUEST");
+    console.log(state.newProofRequests);
+    console.log(Object.keys(state.newProofRequests).length);
+  },
+  newPresentation(state, payload) {
+    let id = payload.message.linkId;
+    state.newPresentations = { ...state.newPresentations, [id]: payload };
+  },
   partnerSeen(state, payload) {
     let id = payload.id;
     if ({}.hasOwnProperty.call(state.newPartners, id)) {
@@ -72,6 +100,22 @@ const mutations = {
       const tmpCredentials = { ...state.newCredentials };
       delete tmpCredentials[id];
       state.newCredentials = tmpCredentials;
+    }
+  },
+  presentationRequestSeen(state, payload) {
+    let id = payload.id;
+    if ({}.hasOwnProperty.call(state.newPresentationRequests, id)) {
+      const tmpPresentationRequests = { ...state.newPresentationRequests };
+      delete tmpPresentationRequests[id];
+      state.newPartners = tmpPresentationRequests;
+    }
+  },
+  presentationSeen(state, payload) {
+    let id = payload.id;
+    if ({}.hasOwnProperty.call(state.newPresentations, id)) {
+      const tmpProofs = { ...state.newPresentations };
+      delete tmpProofs[id];
+      state.newPartners = tmpProofs;
     }
   },
 };

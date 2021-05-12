@@ -246,6 +246,12 @@ public class ProofManager {
                         }));
     }
 
+    // handles all proof request
+    public void handleProofRequestEvent(PresentationExchangeRecord proof) {
+        messageService.sendMessage(WebSocketMessageBody.proofRequestReceived(proof));
+    }
+    
+
     // handle all acked or verified proof events
     // connectionless proofs are currently not handled
     public void handleAckedOrVerifiedProofEvent(PresentationExchangeRecord proof) {

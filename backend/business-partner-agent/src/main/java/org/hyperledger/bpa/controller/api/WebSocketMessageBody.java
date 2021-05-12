@@ -18,6 +18,8 @@
 package org.hyperledger.bpa.controller.api;
 
 import lombok.*;
+
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
@@ -53,7 +55,8 @@ public class WebSocketMessageBody {
         CONNECTION_REQUEST,
         CREDENTIAL,
         PARTNER,
-        PROOF
+        PROOF,
+        PROOFREQUEST,
     }
 
     public enum WebSocketMessageState {
@@ -107,4 +110,23 @@ public class WebSocketMessageBody {
                 .info(proof)
                 .build());
     }
+
+    public static WebSocketMessageBody proofRequestReceived(PresentationExchangeRecord presentationExchangeRecord) {
+        WebSocketMessageState state;
+        if (PresentationExchangeRole.VERIFIER.equals(presentationExchangeRecord.getRole())) {
+            state = WebSocketMessageState.RECEIVED;
+        } else {
+            state = WebSocketMessageState.SENT;
+        }
+        return WebSocketMessageBody.of(WebSocketMessage
+                .builder()
+                .type(WebSocketMessageType.PROOFREQUEST)
+                .state(state)
+                .linkId(presentationExchangeRecord.getPresentationExchangeId().toString())
+                .info(presentationExchangeRecord)
+                .build());
+    }
+
+
+
 }
