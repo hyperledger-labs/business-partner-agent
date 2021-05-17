@@ -85,11 +85,24 @@
             <v-badge
               overlap
               bordered
-              :content="newPartnerEventsCount"
-              :value="newPartnerEventsCount"
+              :content="newPartnersCount"
+              :value="newPartnersCount"
               color="red"
               offset-x="10"
               offset-y="10"
+            >
+              <v-icon>$vuetify.icons.partners</v-icon>
+            </v-badge>
+          </v-list-item-action>
+          <v-list-item-action>
+            <v-badge
+              overlap
+              bordered
+              :content="newPartnerEventsCount"
+              :value="newPartnerEventsCount"
+              color="green"
+              offset-x="20"
+              offset-y="20"
             >
               <v-icon>$vuetify.icons.partners</v-icon>
             </v-badge>
@@ -233,6 +246,9 @@ export default {
     },
     privacyPolicyUrl() {
       return this.$store.state.settings.dataPrivacyPolicy;
+    },
+    newPartnersCount() {
+      return this.$store.getters.newPartnersCount;
     },
     newPartnerEventsCount() {
       console.log("read newPartnerEventsCount");
