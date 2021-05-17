@@ -107,7 +107,7 @@ const mutations = {
     if ({}.hasOwnProperty.call(state.newPresentationRequests, id)) {
       const tmpPresentationRequests = { ...state.newPresentationRequests };
       delete tmpPresentationRequests[id];
-      state.newPartners = tmpPresentationRequests;
+      state.newPresentationRequests = tmpPresentationRequests;
     }
   },
   presentationSeen(state, payload) {
@@ -115,7 +115,7 @@ const mutations = {
     if ({}.hasOwnProperty.call(state.newPresentations, id)) {
       const tmpProofs = { ...state.newPresentations };
       delete tmpProofs[id];
-      state.newPartners = tmpProofs;
+      state.newPresentations = tmpProofs;
     }
   },
 };
