@@ -235,6 +235,8 @@ export default {
       return this.$store.state.settings.dataPrivacyPolicy;
     },
     newPartnerEventsCount() {
+      console.log("read newPartnerEventsCount");
+      console.log(this.$store.getters.newPartnerEventsCount);
       return this.$store.getters.newPartnerEventsCount;
     },
     newCredentialsCount() {
