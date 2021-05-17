@@ -33,7 +33,6 @@ const getters = {
   newCredentials: (state) => {
     return state.newCredentials;
   },
-
   newPresentationRequests: (state) => {
     return state.newPresentationRequests;
   },
@@ -81,7 +80,6 @@ const mutations = {
       ...state.newPresentationRequests,
       [id]: payload,
     };
-    console.log(Object.keys(state.newProofRequests).length);
   },
   newPresentation(state, payload) {
     let id = payload.message.linkId;
