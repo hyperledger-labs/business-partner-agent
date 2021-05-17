@@ -21,6 +21,9 @@ const getters = {
       Object.keys(state.newPresentations).length
     );
   },
+  newPartnersCount: (state) => {
+    return Object.keys(state.newPartners).length;
+  },
   newPartners: (state) => {
     return state.newPartners;
   },
@@ -74,12 +77,11 @@ const mutations = {
   },
   newPresentationRequest(state, payload) {
     let id = payload.message.linkId;
+    console.log("NEW PRESENTAITON REQUEST");
     state.newProofRequests = {
       ...state.newPresentationRequests,
       [id]: payload,
     };
-    console.log("NEW PRESENTAITON REQUEST");
-    console.log(state.newProofRequests);
     console.log(Object.keys(state.newProofRequests).length);
   },
   newPresentation(state, payload) {
