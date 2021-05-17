@@ -77,8 +77,7 @@ const mutations = {
   },
   newPresentationRequest(state, payload) {
     let id = payload.message.linkId;
-    console.log("NEW PRESENTAITON REQUEST");
-    state.newProofRequests = {
+    state.newPresentationRequests = {
       ...state.newPresentationRequests,
       [id]: payload,
     };
