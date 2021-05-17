@@ -1,5 +1,13 @@
-import axios from 'axios';
-import Vue from 'vue';
+/*
+ Copyright (c) 2021 - for information on the respective copyright owner
+ see the NOTICE file and/or the repository at
+ https://github.com/hyperledger-labs/organizational-agent
+
+ SPDX-License-Identifier: Apache-2.0
+*/
+
+import axios from "axios";
+import Vue from "vue";
 
 /**
  * @function appAxios
@@ -16,12 +24,15 @@ export function appAxios(timeout = 30000) {
 
   const instance = axios.create(axiosOptions);
 
-  instance.interceptors.request.use(cfg => {
-    // we could inject auth headers in here if needed.
-    return Promise.resolve(cfg);
-  }, error => {
-    return Promise.reject(error);
-  });
+  instance.interceptors.request.use(
+    (cfg) => {
+      // we could inject auth headers in here if needed.
+      return Promise.resolve(cfg);
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
 
   return instance;
 }

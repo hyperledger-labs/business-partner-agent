@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 
@@ -74,6 +74,8 @@
 </template>
 
 <script>
+import * as textUtils from "@/utils/textUtils";
+
 export default {
   props: {
     isReadOnly: {
@@ -83,6 +85,14 @@ export default {
     document: Object,
     showOnlyContent: Boolean,
     isNew: Boolean,
+  },
+  watch: {
+    document(val) {
+      // document has been updated...
+      if (val) {
+        this.prepareDocument();
+      }
+    },
   },
   created() {
     console.log("Credential: ", this.document);
@@ -155,10 +165,7 @@ export default {
           fields: schema.schemaAttributeNames.map((key) => {
             return {
               type: key,
-              label: key
-                ? key.substring(0, 1).toUpperCase() +
-                  key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2")
-                : "",
+              label: textUtils.schemaAttributeLabel(key),
             };
           }),
         });
@@ -181,10 +188,7 @@ export default {
           (key) => {
             return {
               type: key,
-              label: key
-                ? key.substring(0, 1).toUpperCase() +
-                  key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2")
-                : "",
+              label: textUtils.schemaAttributeLabel(key),
             };
           }
         ),

@@ -8,12 +8,7 @@
 <template>
   <v-container>
     <v-card class="mx-auto">
-      <v-card-title class="bg-light">
-        <v-btn depressed color="secondary" icon @click="$router.go(-1)">
-          <v-icon dark>mdi-chevron-left</v-icon>
-        </v-btn>
-        Issue Credential
-      </v-card-title>
+      <v-card-title class="bg-light"> Issue Credential </v-card-title>
       <v-card-text>
         <v-select
           label="Partner"
@@ -24,7 +19,6 @@
           dense
         ></v-select>
       </v-card-text>
-
       <v-card-text>
         <v-select
           label="Credential"
@@ -76,18 +70,19 @@
 
 <script>
 import { EventBus } from "@/main";
-import { issuerService } from "@/services";
+import { issuerService, partnerService } from "@/services";
+import * as textUtils from "@/utils/textUtils";
 
 export default {
   name: "IssueCredential",
   components: {},
   props: {
-    id: String,
     partnerId: String,
     credDefId: String,
+    partnerList: Array,
+    credDefList: Array,
   },
-  created() {
-    EventBus.$emit("title", "Issue Credential");
+  mounted() {
     this.load();
   },
   data: () => {
@@ -104,6 +99,25 @@ export default {
     };
   },
   computed: {},
+  watch: {
+    partnerId(val) {
+      if (val) {
+        this.partner = this.partners.find((p) => p.value === val);
+      }
+    },
+    credDefId(val) {
+      if (val) {
+        this.credDef = this.credDefs.find((p) => p.value === val);
+        this.credDefSelected();
+      }
+    },
+    partnerList(val) {
+      this.partners = Array.from(val);
+    },
+    credDefList(val) {
+      this.credDefs = Array.from(val);
+    },
+  },
   methods: {
     async load() {
       this.isLoading = true;
@@ -113,43 +127,48 @@ export default {
       this.credDef = {};
 
       // get partner list
-      const presp = await this.$axios(`${this.$apiBaseUrl}/partners`);
-      if (presp.status === 200) {
-        this.partners = presp.data.map((p) => {
-          return { value: p.id, text: p.alias, ...p };
-        });
-        if (this.$props.partnerId) {
-          this.partner = this.partners.find(
-            (p) => p.value === this.$props.partnerId
-          );
+      if (!this.$props.partnerList || this.$props.partnerList.length === 0) {
+        const presp = await partnerService.listPartners();
+        if (presp.status === 200) {
+          this.partners = presp.data.map((p) => {
+            return { value: p.id, text: p.alias, ...p };
+          });
         }
+      } else {
+        this.partners = Array.from(this.$props.partnerList);
+      }
+      if (this.$props.partnerId) {
+        this.partner = this.partners.find(
+          (p) => p.value === this.$props.partnerId
+        );
       }
 
-      // get list of schema/creddefs
-      const cresp = await issuerService.listCredDefs();
-      if (cresp.status === 200) {
-        this.credDefs = cresp.data.map((c) => {
-          return {
-            value: c.id,
-            text: `${c.schema.label} (${c.schema.version}) - ${c.tag}`,
-            fields: c.schema.schemaAttributeNames.map((key) => {
-              return {
-                type: key,
-                label: key
-                  ? key.substring(0, 1).toUpperCase() +
-                    key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2")
-                  : "",
-              };
-            }),
-            ...c,
-          };
-        });
-        if (this.$props.credDefId) {
-          this.credDef = this.credDefs.find(
-            (c) => c.value === this.$props.credDefId
-          );
+      if (!this.$props.credDefList || this.$props.credDefList.length === 0) {
+        const cresp = await issuerService.listCredDefs();
+        if (cresp.status === 200) {
+          this.credDefs = cresp.data.map((c) => {
+            return {
+              value: c.id,
+              text: c.displayText,
+              fields: c.schema.schemaAttributeNames.map((key) => {
+                return {
+                  type: key,
+                  label: textUtils.schemaAttributeLabel(key),
+                };
+              }),
+              ...c,
+            };
+          });
         }
+      } else {
+        this.credDefs = Array.from(this.$props.credDefList);
       }
+      if (this.$props.credDefId) {
+        this.credDef = this.credDefs.find(
+          (c) => c.value === this.$props.credDefId
+        );
+      }
+
       this.isLoading = false;
     },
     async issueCredential() {
@@ -176,6 +195,7 @@ export default {
           EventBus.$emit("success", "Credential issued.");
           this.credDef = {};
           this.submitDisabled = true;
+          this.$emit("success");
         }
       } catch (error) {
         this.isBusy = false;
@@ -183,9 +203,8 @@ export default {
       }
     },
     cancel() {
-      this.$router.go(-1);
+      this.$emit("cancelled");
     },
-
     credDefSelected() {
       this.credentialFields = {};
       this.credDef.fields.forEach((x) => (this.credentialFields[x.type] = ""));

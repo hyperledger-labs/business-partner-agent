@@ -149,6 +149,6 @@ public class DidDocAPI {
 
     public boolean hasAriesEndpoint() {
         return getService().stream()
-                .anyMatch(s -> EndpointType.PROFILE.getLedgerName().equals(s.getType()));
+                .anyMatch(s -> EndpointType.ENDPOINT.getLedgerName().equals(s.getType()));
     }
 }

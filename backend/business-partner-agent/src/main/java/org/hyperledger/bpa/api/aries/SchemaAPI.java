@@ -24,6 +24,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
 import org.hyperledger.bpa.controller.api.issuer.CredDef;
+import org.hyperledger.bpa.impl.activity.Identity;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.model.BPASchema;
 
@@ -54,11 +55,21 @@ public class SchemaAPI {
 
     private List<CredDef> credentialDefinitions;
 
+    private Boolean isMine;
+
     public static SchemaAPI from(BPASchema s) {
-        return from(s, true, true);
+        return from(s, true, true, null);
+    }
+
+    public static SchemaAPI from(BPASchema s, Identity identity) {
+        return from(s, true, true, identity);
     }
 
     public static SchemaAPI from(BPASchema s, boolean includeRestrictions, boolean includeCredDefs) {
+        return from(s, includeRestrictions, includeCredDefs, null);
+    }
+
+    public static SchemaAPI from(BPASchema s, boolean includeRestrictions, boolean includeCredDefs, Identity identity) {
         SchemaAPIBuilder builder = SchemaAPI.builder();
         if (includeRestrictions && CollectionUtils.isNotEmpty(s.getRestrictions())) {
             List<TrustedIssuer> ti = new ArrayList<>();
@@ -70,7 +81,10 @@ public class SchemaAPI {
             s.getCredentialDefinitions().forEach(r -> cd.add(CredDef.from(r)));
             builder.credentialDefinitions(cd);
         }
-        String version = s.getSchemaId() == null ? "" : AriesStringUtil.getLastSegment(s.getSchemaId());
+        if (identity != null) {
+            builder.isMine(identity.isMySchema(s.getSchemaId()));
+        }
+        String version = s.getSchemaId() == null ? "" : AriesStringUtil.schemaGetVersion(s.getSchemaId());
         return builder
                 .id(s.getId())
                 .label(s.getLabel())
@@ -80,4 +94,5 @@ public class SchemaAPI {
                 .isReadOnly(s.getIsReadOnly())
                 .build();
     }
+
 }
