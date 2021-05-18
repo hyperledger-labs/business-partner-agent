@@ -28,10 +28,10 @@
     </template>
     <template v-slot:[`item.actions`]="{ item }">
       <v-icon small @click.stop="rejectPresentationRequest(item)">
-        mdi-close
+        $vuetify.icons.close
       </v-icon>
       <v-icon small @click.stop="respondToPresentationRequest(item)">
-        mdi-check
+        $vuetify.icons.check
       </v-icon>
     </template>
   </v-data-table>
