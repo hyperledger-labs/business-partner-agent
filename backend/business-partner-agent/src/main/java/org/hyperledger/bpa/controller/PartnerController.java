@@ -39,7 +39,7 @@ import org.hyperledger.bpa.impl.aries.CredentialManager;
 import org.hyperledger.bpa.impl.aries.ConnectionManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.ProofManager;
-
+import org.hyperledger.bpa.model.BPAPresentationExchange;
 import org.hyperledger.aries.api.connection.CreateInvitationResponse;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 
@@ -230,10 +230,9 @@ public class PartnerController {
      * @return list of pending proof requests from partners
      */
     @Get("/{id}/proof-requests")
-    public  HttpResponse<List<PresentationExchangeRecord>> fetchProofRequests(
+    public  HttpResponse<List<BPAPresentationExchange>> fetchProofRequests(
             @PathVariable String id) {
-        List<PresentationExchangeRecord> results = proofM.getProofRequests(Optional.of(UUID.fromString(id)), null)
-                .get();
+        List<BPAPresentationExchange> results = proofM.getProofRequests(Optional.of(UUID.fromString(id)), null);
         return HttpResponse.ok(results);
     }
 

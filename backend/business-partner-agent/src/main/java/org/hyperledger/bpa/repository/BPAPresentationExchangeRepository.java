@@ -34,11 +34,12 @@ public interface BPAPresentationExchangeRepository extends CrudRepository<BPAPre
     Iterable<BPAPresentationExchange> findAll();
 
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    Iterable<BPAPresentationExchange> findByPartnerId(@NonNull UUID partnerId);
+    
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     Optional<BPAPresentationExchange> findById(@NonNull UUID id);
 
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     Optional<BPAPresentationExchange> findByPresentationExchangeId(@NonNull String presentationExchangeId);
 
-    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
-    Optional<BPAPresentationExchange> findByPartnerId(@NonNull UUID partnerId);
 }

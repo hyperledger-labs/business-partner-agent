@@ -95,27 +95,15 @@ public class ProofManager {
     @Inject
     MessageService messageService;
 
-    public Optional<List<PresentationExchangeRecord>> getProofRequests(Optional<UUID> partnerId,
+    public List<BPAPresentationExchange> getProofRequests(Optional<UUID> partnerId,
             @Nullable ProofRequestsRequest req) {
-        Optional<List<PresentationExchangeRecord>> result = Optional.empty();
+        List<BPAPresentationExchange> result = new ArrayList<>();
         try {
-            if (partnerId.isPresent()) {
-                String connectionId = partnerRepo.findById(partnerId.get())
-                        .map(Partner::getConnectionId)
-                        .orElseThrow(EntityNotFoundException::new);
-
-                final PresentProofRecordsFilter params = PresentProofRecordsFilter
-                        .builder()
-                        .connectionId(connectionId)
-                        .role(PresentationExchangeRole.PROVER)
-                        .state(PresentationExchangeState.REQUEST_RECEIVED)
-                        .build();
-                result = ac.presentProofRecords(params);
-            } else {
-                result = ac.presentProofRecords(null);
-            }
-        } catch (IOException e) {
-            throw new NetworkException("aca-py not available", e);
+            partnerId.ifPresentOrElse((pId) -> {
+                peRepo.findByPartnerId(pId).forEach(result::add);
+            }, () -> {
+                peRepo.findAll().forEach(result::add);
+            });
         } catch (EntityNotFoundException e) {
             throw new PartnerException("Partner not found");
         }
