@@ -46,8 +46,10 @@ import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.TimeUtil;
+import org.hyperledger.bpa.model.BPAPresentationExchange;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
+import org.hyperledger.bpa.repository.BPAPresentationExchangeRepository;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
@@ -77,6 +79,9 @@ public class ProofManager {
 
     @Inject
     MyCredentialRepository credRepo;
+
+    @Inject
+    BPAPresentationExchangeRepository peRepo;
 
     @Inject
     Converter conv;
@@ -248,6 +253,41 @@ public class ProofManager {
 
     // handles all proof request
     public void handleProofRequestEvent(PresentationExchangeRecord proof) {
+        partnerRepo.findByConnectionId(proof.getConnectionId()).ifPresentOrElse(
+            p -> {
+                peRepo.findByPresentationExchangeId(proof.getPresentationExchangeId())
+                .ifPresentOrElse(pe -> {
+                    //already a BPA record for this presentation exchange
+                }
+                ,() -> {
+                    //new presentationExchangeID
+                    if (PresentationExchangeRole.PROVER.equals(proof.getRole())
+                        && PresentationExchangeState.REQUEST_RECEIVED.equals((proof.getState()))){
+                        //brand new receive
+                        final BPAPresentationExchange pe = BPAPresentationExchange.builder()
+                            .partner(p)
+                            .state(PresentationExchangeState.REQUEST_RECEIVED)
+                            .presentationExchangeId(proof.getPresentationExchangeId())
+                            .role(proof.getRole())
+                            .presentationRequest(proof.getPresentationRequest())
+                            .threadId(proof.getThreadId())
+                            .build();
+                        peRepo.save(pe);
+                } else {
+                //some other initial
+                }
+            });
+        }
+            
+            
+            ,() -> {
+                //error, connection ID doesn't have BPA level partner record (really bad)
+            });
+
+
+
+
+
         messageService.sendMessage(WebSocketMessageBody.proofRequestReceived(proof));
     }
     
