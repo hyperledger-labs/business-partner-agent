@@ -17,7 +17,7 @@ export const presentationListHeaders = [
   },
   {
     text: "Received at",
-    value: "receivedAt",
+    value: "createdAt",
   },
   {
     text: "State",

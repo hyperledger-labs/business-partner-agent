@@ -381,7 +381,7 @@ export default {
         {
           text: "Schema",
           value:
-            "presentationRequest.requestedAttributes.referent.restrictions[0].schema_id",
+            "presentationRequest.requestedAttributes.attribute_group_0.restrictions[0].schema_id",
         },
         {
           text: "Received at",
