@@ -384,8 +384,8 @@ export default {
             "presentationRequest.requestedAttributes.referent.restrictions[0].schema_id",
         },
         {
-          text: "Updated at",
-          value: "updatedAt",
+          text: "Received at",
+          value: "createdAt",
         },
         {
           text: "State",
