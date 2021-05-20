@@ -230,22 +230,21 @@ public class PartnerController {
      * @return list of pending proof requests from partners
      */
     @Get("/{id}/proof-requests")
-    public  HttpResponse<List<BPAPresentationExchange>> fetchProofRequests(
+    public HttpResponse<List<BPAPresentationExchange>> fetchProofRequests(
             @PathVariable String id) {
         List<BPAPresentationExchange> results = proofM.getProofRequests(Optional.of(UUID.fromString(id)), null);
         return HttpResponse.ok(results);
     }
 
-
     /**
      * Aries: Make the presentation that was requested
      *
-     * @param id {@link UUID} the partner id
+     * @param id                        {@link UUID} the partner id
      * @param BPAPresentationExchangeId {@link UUID} the presentationExchangeId
      * @return HTTP status
      */
     @Post("/{id}/proof-requests/{BPAPresentationExchangeId}")
-    public  HttpResponse<Void> responseToProofRequest(
+    public HttpResponse<Void> responseToProofRequest(
             @PathVariable String id,
             @PathVariable String BPAPresentationExchangeId) {
         proofM.presentProof(UUID.fromString(BPAPresentationExchangeId));
@@ -255,15 +254,16 @@ public class PartnerController {
     /**
      * Aries: Get Proofs requested from a partner
      *
-     * @param id {@link UUID} the partner id
+     * @param id                        {@link UUID} the partner id
      * @param BPAPresentationExchangeId {@link UUID} the presentationExchangeId
      * @return HTTP status
      */
     @Delete("/{id}/proof-requests/{BPAPresentationExchangeId}")
-    public  HttpResponse<Void> rejectPresentProofRequest(
+    public HttpResponse<Void> rejectPresentProofRequest(
             @PathVariable String id,
             @PathVariable String BPAPresentationExchangeId) {
-        proofM.rejectPresentProofRequest(UUID.fromString(BPAPresentationExchangeId), "User rejected presetation request: No reason given");
+        proofM.rejectPresentProofRequest(UUID.fromString(BPAPresentationExchangeId),
+                "User rejected presetation request: No reason given");
 
         return HttpResponse.ok();
     }

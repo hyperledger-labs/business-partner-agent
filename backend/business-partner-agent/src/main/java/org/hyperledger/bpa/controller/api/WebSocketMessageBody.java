@@ -122,11 +122,9 @@ public class WebSocketMessageBody {
                 .builder()
                 .type(WebSocketMessageType.PROOFREQUEST)
                 .state(state)
-                .linkId(presentationExchangeRecord.getPresentationExchangeId().toString())
+                .linkId(presentationExchangeRecord.getPresentationExchangeId())
                 .info(presentationExchangeRecord)
                 .build());
     }
-
-
 
 }

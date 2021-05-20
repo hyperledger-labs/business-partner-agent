@@ -47,40 +47,40 @@ import java.util.UUID;
 @Entity
 @Table(name = "bpa_presentation_exchange")
 public class BPAPresentationExchange {
-    
+
     @Id
     @AutoPopulated
     private UUID id;
-    
+
     @DateCreated
     private Instant createdAt;
-        
+
     @OneToOne
     private Partner partner;
-    
+
     @Nullable
     private String label;
-    
+
     private String threadId;
-    
+
     private String presentationExchangeId;
-    
+
     @Enumerated(EnumType.STRING)
     private PresentationExchangeRole role;
-    
+
     @Enumerated(EnumType.STRING)
     private PresentationExchangeState state;
-    
+
     private Map<String, Object> presentation;
 
     private Map<String, Object> presentationProposalDict;
 
     @TypeDef(type = DataType.JSON)
     private PresentProofRequest.ProofRequest presentationRequest;
-    
+
     private Map<String, Object> presentationRequestDict;
 
     @DateUpdated
     private Instant updatedAt;
-    
+
 }
