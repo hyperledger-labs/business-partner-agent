@@ -31,6 +31,7 @@ import org.hyperledger.bpa.impl.aries.ConnectionManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
+import org.hyperledger.bpa.repository.BPAPresentationExchangeRepository;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
@@ -67,6 +68,9 @@ public class PartnerManager {
     MyCredentialRepository myCredRepo;
 
     @Inject
+    BPAPresentationExchangeRepository peRepo;
+
+    @Inject
     WebhookService webhook;
 
     public List<PartnerAPI> getPartners() {
@@ -87,6 +91,7 @@ public class PartnerManager {
     public void removePartnerById(@NonNull UUID id) {
         repo.findById(id).ifPresent(p -> {
             if (p.getConnectionId() != null) {
+                peRepo.deleteAll(peRepo.findByPartnerId(id));
                 cm.removeConnection(p.getConnectionId());
             }
         });
