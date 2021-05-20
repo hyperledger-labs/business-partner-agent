@@ -19,6 +19,7 @@ package org.hyperledger.bpa.model;
 
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
+import io.micronaut.data.annotation.DateUpdated;
 import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
 import lombok.AllArgsConstructor;
@@ -78,7 +79,8 @@ public class BPAPresentationExchange {
     private PresentProofRequest.ProofRequest presentationRequest;
     
     private Map<String, Object> presentationRequestDict;
-    
+
+    @DateUpdated
     private Instant updatedAt;
     
 }

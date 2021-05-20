@@ -27,6 +27,8 @@ import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.logging.log4j.core.time.Instant;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.exception.AriesException;
@@ -179,7 +181,8 @@ public class ProofManager {
             } catch (AriesException e){
                 log.error ("aca-py wallet item not found, attempting BPA delete");
             } 
-            //delete at bpa
+            // TODO preserve rejected presentations. 
+            // rejected is currently not a valid state in the aries present_proof_v1.0 protocol
             peRepo.delete(pe);
         },() -> { 
             log.error("BPA has no record of presentationexchange with id: {]", BPAPresentationExchangeId);
