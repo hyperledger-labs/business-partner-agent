@@ -17,21 +17,17 @@ public class PresentationRequestHelper {
      */
     public static Optional<PresentationRequest> buildAny(
             PresentationExchangeRecord presentationExchange,
-            List<PresentationRequestCredentials> validCredentials) {
+            List<PresentationRequestCredentials> validCredentials)
+            throws PresentationConstructionException {
         Optional<PresentationRequest> result = Optional.empty();
-        try {
-            result = Optional.of(PresentationRequest.builder()
-                    .requestedAttributes(buildRequestedAttributes(
-                            presentationExchange.getPresentationRequest().getRequestedAttributes(),
-                            validCredentials))
-                    .requestedPredicates(buildRequestedPredicates(
-                            presentationExchange.getPresentationRequest().getRequestedPredicates(),
-                            validCredentials))
-                    .build());
-        } catch (PresentationConstructionException e) {
-            // unable to construct valid proof
-            log.error("Unable to construct valid prood");
-        }
+        result = Optional.of(PresentationRequest.builder()
+                .requestedAttributes(buildRequestedAttributes(
+                        presentationExchange.getPresentationRequest().getRequestedAttributes(),
+                        validCredentials))
+                .requestedPredicates(buildRequestedPredicates(
+                        presentationExchange.getPresentationRequest().getRequestedPredicates(),
+                        validCredentials))
+                .build());
         return result;
 
     }

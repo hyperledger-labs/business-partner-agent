@@ -33,6 +33,7 @@ import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.bpa.api.aries.AriesProof;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
+import org.hyperledger.bpa.api.exception.PresentationConstructionException;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.controller.api.partner.ProofRequestsRequest;
@@ -223,21 +224,27 @@ public class ProofManager {
                 return;
             }
 
-            Optional<PresentationRequest> presentation = PresentationRequestHelper.buildAny(
-                    presentationExchangeRecord,
-                    validCredentials.get());
+            try {
+                Optional<PresentationRequest> presentation = PresentationRequestHelper.buildAny(
+                        presentationExchangeRecord,
+                        validCredentials.get());
+                presentation.ifPresentOrElse((pres) -> {
+                    try {
+                        ac.presentProofRecordsSendPresentation(presentationExchangeRecord.getPresentationExchangeId(),
+                                pres);
+                    } catch (IOException e) {
+                        log.error("Could not create aries connection invitation", e);
+                        return;
+                    }
+                }, () -> {
+                    log.error("Could not construct valid proof");
+                });
+            } catch (PresentationConstructionException e) {
+                // unable to construct valid proof
+                log.error("Unable to construct valid proof");
+                return;
+            }
 
-            presentation.ifPresentOrElse((pres) -> {
-                try {
-                    ac.presentProofRecordsSendPresentation(presentationExchangeRecord.getPresentationExchangeId(),
-                            pres);
-                } catch (IOException e) {
-                    log.error("Could not create aries connection invitation", e);
-                    return;
-                }
-            }, () -> {
-                log.error("Could not construct valid proof");
-            });
         }
 
     }
@@ -283,12 +290,10 @@ public class ProofManager {
                                     peRepo.save(pe);
                                 } else {
                                     // some other initial
-                                    log.warn('Found some unexpected initial state for PresentationExchangeRecord');
+                                    log.warn("Found some unexpected initial state for PresentationExchangeRecord");
                                 }
                             });
-                }
-
-                , () -> {
+                }, () -> {
                     // error, connection ID doesn't have BPA level partner record (really bad)
                 });
 
