@@ -17,24 +17,18 @@
  */
 package org.hyperledger.bpa.impl.aries;
 
-import com.google.gson.JsonObject;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.core.cli.Option;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.logging.log4j.core.time.Instant;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.present_proof.*;
-import org.hyperledger.aries.api.present_proof.PresentationRequest.IndyRequestedCredsRequestedAttr;
-import org.hyperledger.aries.api.present_proof.PresentationRequest.PresentationRequestBuilder;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.bpa.api.aries.AriesProof;
 import org.hyperledger.bpa.api.exception.NetworkException;
@@ -56,7 +50,6 @@ import org.hyperledger.bpa.repository.BPAPresentationExchangeRepository;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
-import org.postgresql.jdbc.UUIDArrayAssistant;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -277,7 +270,7 @@ public class ProofManager {
                             }, () -> {
                                 // new presentationExchangeID
                                 if (PresentationExchangeRole.PROVER.equals(proof.getRole())
-                                        && PresentationExchangeState.REQUEST_RECEIVED.equals((proof.getState()))) {
+                                        && PresentationExchangeState.REQUEST_RECEIVED.equals(proof.getState())) {
                                     // brand new receive
                                     final BPAPresentationExchange pe = BPAPresentationExchange.builder()
                                             .partner(p)
@@ -290,6 +283,7 @@ public class ProofManager {
                                     peRepo.save(pe);
                                 } else {
                                     // some other initial
+                                    log.warn('Found some unexpected initial state for PresentationExchangeRecord');
                                 }
                             });
                 }

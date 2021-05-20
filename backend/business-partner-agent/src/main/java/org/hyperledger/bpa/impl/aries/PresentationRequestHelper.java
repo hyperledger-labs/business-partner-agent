@@ -30,6 +30,7 @@ public class PresentationRequestHelper {
                     .build());
         } catch (PresentationConstructionException e) {
             // unable to construct valid proof
+            log.error("Unable to construct valid prood");
         }
         return result;
 

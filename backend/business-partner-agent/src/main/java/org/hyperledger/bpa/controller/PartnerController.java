@@ -41,14 +41,8 @@ import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.ProofManager;
 import org.hyperledger.bpa.model.BPAPresentationExchange;
 import org.hyperledger.aries.api.connection.CreateInvitationResponse;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 
 import javax.inject.Inject;
-
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.util.List;
 import java.util.Optional;
