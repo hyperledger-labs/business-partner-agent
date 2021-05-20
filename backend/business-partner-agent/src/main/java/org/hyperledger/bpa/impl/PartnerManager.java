@@ -21,6 +21,7 @@ import io.micronaut.cache.annotation.CacheInvalidate;
 import io.micronaut.context.annotation.Value;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.units.qual.Length;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
@@ -30,6 +31,7 @@ import org.hyperledger.bpa.impl.activity.PartnerLookup;
 import org.hyperledger.bpa.impl.aries.ConnectionManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.util.Converter;
+import org.hyperledger.bpa.model.BPAPresentationExchange;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.BPAPresentationExchangeRepository;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
@@ -91,7 +93,10 @@ public class PartnerManager {
     public void removePartnerById(@NonNull UUID id) {
         repo.findById(id).ifPresent(p -> {
             if (p.getConnectionId() != null) {
-                peRepo.deleteAll(peRepo.findByPartnerId(id));
+                Iterable<BPAPresentationExchange> peList = peRepo.findByPartnerId(id);
+                if (peList.iterator().hasNext()) {
+                    peRepo.deleteAll(peList);
+                }
                 cm.removeConnection(p.getConnectionId());
             }
         });

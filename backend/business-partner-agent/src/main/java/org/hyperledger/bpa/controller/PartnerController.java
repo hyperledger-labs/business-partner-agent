@@ -257,7 +257,7 @@ public class PartnerController {
             @PathVariable String id,
             @PathVariable String BPAPresentationExchangeId) {
         proofM.rejectPresentProofRequest(UUID.fromString(BPAPresentationExchangeId),
-                "User rejected presetation request: No reason given");
+                "User rejected presentation request: No reason given");
 
         return HttpResponse.ok();
     }
