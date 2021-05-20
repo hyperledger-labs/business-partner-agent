@@ -1,0 +1,31 @@
+micronaut:
+  security:
+    authentication: idtoken
+    redirect:
+      unauthorized:
+        url: /oauth/login
+      login-failure: /oauth/login
+    token:
+      jwt:
+        enabled: true
+        signatures.jwks.keycloak:
+          url: ${BPA_KEYCLOAK_JWKS_URI:}
+      name-key: ${BPA_KEYCLOAK_NAME_KEY:preferred_username}
+      roles-name: ${BPA_KEYCLOAK_ROLES_NAME:roles}
+    oauth2:
+      default-provider: keycloak
+      clients:
+        keycloak:
+          client-id: ${BPA_KEYCLOAK_CLIENT_ID:}
+          client-secret: ${BPA_KEYCLOAK_CLIENT_SECRET:}
+          openid:
+            issuer: ${BPA_KEYCLOAK_ISSUER:}
+          scopes: ${BPA_KEYCLOAK_SCOPES:[openid, email, roles]}
+      openid:
+        additional-claims:
+          access-token: true
+          refresh-token: true
+
+bpa:
+  openid:
+    postLogoutUrl: ${BPA_OPENID_POST_LOGOUT_URL:}

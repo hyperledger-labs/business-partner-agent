@@ -59,6 +59,12 @@ public class RuntimeConfig {
     @Value("${bpa.creddef.revocationRegistrySize}")
     Integer revocationRegistrySize;
 
+    @Value("${bpa.postLogout.enabled}")
+    Boolean postLogoutEnabled;
+
+    @Value("${bpa.postLogout.url}")
+    String postLogoutUrl;
+
     public String getAgentName() {
         return DidResolver.splitDidFrom(agentName).getLabel();
     }
