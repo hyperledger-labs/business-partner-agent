@@ -30,12 +30,14 @@
       </span>
     </template>
     <template v-slot:[`item.actions`]="{ item }">
-      <v-icon small @click.stop="rejectPresentationRequest(item)">
-        $vuetify.icons.close
-      </v-icon>
-      <v-icon small @click.stop="respondToPresentationRequest(item)">
-        $vuetify.icons.check
-      </v-icon>
+      <div v-if="item.state === 'request_received'">
+        <v-icon small @click.stop="rejectPresentationRequest(item)">
+          $vuetify.icons.close
+        </v-icon>
+        <v-icon small @click.stop="respondToPresentationRequest(item)">
+          $vuetify.icons.check
+        </v-icon>
+      </div>
     </template>
   </v-data-table>
 </template>
@@ -74,14 +76,11 @@ export default {
       let partnerId = this.$route.params.id;
       this.$axios
         .delete(
-          `${this.$apiBaseUrl}/partners/${partnerId}/proof-requests/${presentationRequest.presentationExchangeId}`
+          `${this.$apiBaseUrl}/partners/${partnerId}/proof-requests/${presentationRequest.id}`
         )
         .then((result) => {
           if (result.status === 200) {
-            this.$emit(
-              "removedItem",
-              presentationRequest.presentationExchangeId
-            );
+            this.$emit("removedItem", presentationRequest.id);
           }
         })
         .catch((e) => {
@@ -93,14 +92,11 @@ export default {
       let partnerId = this.$route.params.id;
       this.$axios
         .post(
-          `${this.$apiBaseUrl}/partners/${partnerId}/proof-requests/${presentationRequest.presentationExchangeId}`
+          `${this.$apiBaseUrl}/partners/${partnerId}/proof-requests/${presentationRequest.id}`
         )
         .then((result) => {
           if (result.status === 200) {
-            this.$emit(
-              "responseSuccess",
-              presentationRequest.presentationExchangeId
-            );
+            this.$emit("responseSuccess", presentationRequest.id);
           }
         })
         .catch((e) => {

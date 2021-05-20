@@ -29,6 +29,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.present_proof.*;
 import org.hyperledger.aries.api.present_proof.PresentationRequest.IndyRequestedCredsRequestedAttr;
 import org.hyperledger.aries.api.present_proof.PresentationRequest.PresentationRequestBuilder;
@@ -53,6 +54,7 @@ import org.hyperledger.bpa.repository.BPAPresentationExchangeRepository;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
+import org.postgresql.jdbc.UUIDArrayAssistant;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -163,33 +165,54 @@ public class ProofManager {
     }
 
 
-    public void rejectPresentProofRequest(String presentationExchangeId, String explainString){
-        try {
-            sendPresentProofProblemReport(presentationExchangeId, explainString);
-            //after sending rejection notice, delete local copy.
-            ac.presentProofRecordsRemove(presentationExchangeId);
-        } catch (IOException e) {
-            log.error("aca-py not reachable.", e);
-            return;
-        }
+    public void rejectPresentProofRequest(UUID BPAPresentationExchangeId, String explainString){
+        peRepo.findById(BPAPresentationExchangeId).ifPresentOrElse(pe -> {
+            try {
+                sendPresentProofProblemReport(pe.getPresentationExchangeId(), explainString);
+                //after sending rejection notice, delete aries copy.
+                ac.presentProofRecordsRemove(pe.getPresentationExchangeId());
+                //after sending removing aries copy, remove BPA copy
+
+            } catch (IOException e) {
+                log.error("aca-py not reachable.", e);
+                return;
+            } catch (AriesException e){
+                log.error ("aca-py wallet item not found, attempting BPA delete");
+            } 
+            //delete at bpa
+            peRepo.delete(pe);
+        },() -> { 
+            log.error("BPA has no record of presentationexchange with id: {]", BPAPresentationExchangeId);
+        });
+           
     }
 
-    public void presentProof(String presentationExchangeId){
-        try {
-            ac.presentProofRecordsGetById(presentationExchangeId).ifPresentOrElse(
-                (record) -> presentProof(record),
-                () -> {
-                    log.error("PresentationExchange not found with Id: {}", presentationExchangeId);
+    public void presentProof(UUID BPAPresentationExchangeId){
+        peRepo.findById(BPAPresentationExchangeId).ifPresentOrElse(pe -> {
+            try {
+                ac.presentProofRecordsGetById(pe.getPresentationExchangeId()).ifPresentOrElse(
+                    (record) -> {
+                        presentProof(record);
+                    },
+                    () -> {
+                        log.error("PresentationExchangeRecord not found with Id: {}", pe.getPresentationExchangeId());
+                    }
+                    );
+                } catch (IOException e) {
+                    log.error("aca-py not reachable.", e);
+                    return;
                 }
-            );
-        } catch (IOException e) {
-            log.error("aca-py not reachable.", e);
-            return;
-        }
+            peRepo.updateState(pe.getId(), PresentationExchangeState.PRESENTATIONS_SENT);
+            //copy this into a partnerproof? but the aries ACK should do that i think?
+            },() -> {
+            log.error("No BPAPresentationExchange with id: {}", BPAPresentationExchangeId);
+        });      
+        // TODO, update controller to take BPA id (primary key) instead of acapy presentationExchangeId
+       
     }
 
     // respond to proof request with valid proof
-    public void presentProof(PresentationExchangeRecord presentationExchangeRecord) {
+    private void presentProof(PresentationExchangeRecord presentationExchangeRecord) {
         // verify correct state = `request_received`
         if (presentationExchangeRecord.getState() == PresentationExchangeState.REQUEST_RECEIVED){
             // find vc's in wallet that satisfy proof

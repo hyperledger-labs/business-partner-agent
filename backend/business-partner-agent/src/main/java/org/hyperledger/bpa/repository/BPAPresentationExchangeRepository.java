@@ -18,10 +18,13 @@
 package org.hyperledger.bpa.repository;
 
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
+
+import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.model.BPAPresentationExchange;
 
 import java.util.Optional;
@@ -35,11 +38,12 @@ public interface BPAPresentationExchangeRepository extends CrudRepository<BPAPre
 
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     Iterable<BPAPresentationExchange> findByPartnerId(@NonNull UUID partnerId);
-    
+
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     Optional<BPAPresentationExchange> findById(@NonNull UUID id);
 
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     Optional<BPAPresentationExchange> findByPresentationExchangeId(@NonNull String presentationExchangeId);
 
+    void updateState(@Id UUID id, PresentationExchangeState state);
 }

@@ -241,14 +241,14 @@ public class PartnerController {
      * Aries: Make the presentation that was requested
      *
      * @param id {@link UUID} the partner id
-     * @param presentationExchangeId {@link UUID} the presentationExchangeId
+     * @param BPAPresentationExchangeId {@link UUID} the presentationExchangeId
      * @return HTTP status
      */
-    @Post("/{id}/proof-requests/{presentationExchangeId}")
+    @Post("/{id}/proof-requests/{BPAPresentationExchangeId}")
     public  HttpResponse<Void> responseToProofRequest(
             @PathVariable String id,
-            @PathVariable String presentationExchangeId) {
-        proofM.presentProof(presentationExchangeId);
+            @PathVariable String BPAPresentationExchangeId) {
+        proofM.presentProof(UUID.fromString(BPAPresentationExchangeId));
         return HttpResponse.ok();
     }
 
@@ -256,14 +256,14 @@ public class PartnerController {
      * Aries: Get Proofs requested from a partner
      *
      * @param id {@link UUID} the partner id
-     * @param presentationExchangeId {@link UUID} the presentationExchangeId
+     * @param BPAPresentationExchangeId {@link UUID} the presentationExchangeId
      * @return HTTP status
      */
-    @Delete("/{id}/proof-requests/{presentationExchangeId}")
+    @Delete("/{id}/proof-requests/{BPAPresentationExchangeId}")
     public  HttpResponse<Void> rejectPresentProofRequest(
             @PathVariable String id,
-            @PathVariable String presentationExchangeId) {
-        proofM.rejectPresentProofRequest(presentationExchangeId, "User rejected presetation request: No reason given");
+            @PathVariable String BPAPresentationExchangeId) {
+        proofM.rejectPresentProofRequest(UUID.fromString(BPAPresentationExchangeId), "User rejected presetation request: No reason given");
 
         return HttpResponse.ok();
     }

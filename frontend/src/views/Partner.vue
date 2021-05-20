@@ -249,7 +249,7 @@
               v-bind:presentationRequests="presentationRequests"
               v-bind:headers="headersPresentationRequest"
               v-on:removedItem="removePresentationRequest"
-              v-on:responseSuccess="removePresentationRequest"
+              v-on:responseSuccess="presentationRequestSuccess"
             ></PresentationRequestList>
           </v-col>
         </v-row>
@@ -477,7 +477,7 @@ export default {
       });
     },
     removePresentationSent(id) {
-      this.presentationsSent = this.presentationsSent.filter((item) => {
+      this.presentationsReceived = this.presentationsReceived.filter((item) => {
         return item.id !== id;
       });
     },
@@ -498,10 +498,18 @@ export default {
         });
     },
 
-    removePresentationRequest(presentationExchangeId) {
-      this.presentationRequests = this.presentationRequests.filter((item) => {
-        return item.presentationExchangeId !== presentationExchangeId;
+    removePresentationRequest(id) {
+      let objIndex = this.presentationRequests.findIndex((item) => {
+        return item.id === id;
       });
+      this.presentationRequests[objIndex].state = "presentation_rejected"; //not an aries state
+    },
+
+    presentationRequestSuccess(id) {
+      let objIndex = this.presentationRequests.findIndex((item) => {
+        return item.id === id;
+      });
+      this.presentationRequests[objIndex].state = "presentation_sent";
     },
 
     // Issue Credentials
