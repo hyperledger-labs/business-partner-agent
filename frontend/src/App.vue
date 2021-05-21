@@ -288,33 +288,24 @@ export default {
     });
   },
   methods: {
-    async logout() {
-      console.log("> logout()");
-      await this.$axios.post(`${this.$apiBaseUrl}/logout`)
-        .then(() => {
-          console.log("logout() success");
-          location.reload();
-        })
-        .catch((e) => {
-          console.log("logout() error");
-          console.error(e);
-          location.reload();
-        });
-      console.log("< logout()");
-      //
-      // The keycloak end session endpoint is not being triggered.
-      // DefaultOpenIdClient always intercepts and does an authorizationRedirect.
-      // We need the browser to invalidate the session with Keycloak.
+     async logout() {
+        let redirectLocation;
+        await this.$axios.get(this.$config.clientLogoutPath)
+          .then((r) => {
+            // check the location header
+            // if found, we will load that up,
+            redirectLocation = r.headers["location"];
+          })
+          .catch((e) => {
+            console.error(e);
+            location.reload();
+          });
 
-      console.log("> postlogout()");
-      if (this.$config.postLogoutEnabled) {
-        console.log(`location.replace(${this.$config.postLogoutUrl})`);
-        location.replace(this.$config.postLogoutUrl);
-      } else {
-        console.log("location.reload()");
-        location.reload();
-      }
-      console.log("< postlogout()");
+        if (redirectLocation) {
+          location.replace(redirectLocation);
+        } else {
+          location.reload();
+        }
     },
   },
 };

@@ -22,10 +22,15 @@ micronaut:
             issuer: ${BPA_KEYCLOAK_ISSUER:}
           scopes: ${BPA_KEYCLOAK_SCOPES:[openid, email, roles]}
       openid:
+        end-session:
+          keycloak:
+            enabled: true
+          redirect-uri: ${BPA_KEYCLOAK_REDIRECT_URI:}
         additional-claims:
           access-token: true
           refresh-token: true
 
 bpa:
-  openid:
-    postLogoutUrl: ${BPA_OPENID_POST_LOGOUT_URL:}
+  client:
+    logout:
+      path: ${BPA_CLIENT_LOGOUT_PATH:/oauth/logout}

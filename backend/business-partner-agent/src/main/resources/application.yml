@@ -13,6 +13,8 @@ micronaut:
     endpoints:
       logout:
         path: /api/logout
+        enabled: true
+        get-allowed: true
     redirect:
       unauthorized:
         url: /user/signin
@@ -146,6 +148,6 @@ bpa:
       url: ${BPA_PRIVACY_POLICY_URL:}
   creddef:
     revocationRegistrySize: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE:3000}
-  postLogout:
-    enabled: ${BPA_POST_LOGOUT_ENABLED:false}
-    url: ${BPA_POST_LOGOUT_URL:}
+  client:
+    logout:
+      path: ${BPA_CLIENT_LOGOUT_PATH:/api/logout}
