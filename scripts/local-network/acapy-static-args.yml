@@ -5,6 +5,7 @@ auto-respond-credential-proposal: true
 auto-respond-credential-offer: true
 auto-respond-credential-request: true
 auto-respond-presentation-proposal: true
+auto-respond-presentation-request: true
 auto-store-credential: true
 auto-verify-presentation: true
 auto-ping-connection: true

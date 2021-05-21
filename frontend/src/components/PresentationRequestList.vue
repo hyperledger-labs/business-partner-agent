@@ -23,6 +23,12 @@
     <template v-slot:[`item.createdAt`]="{ item }">
       {{ item.createdAt | formatDateLong }}
     </template>
+    <template v-slot:[`item.sentAt`]="{ item }">
+      {{ item.sentAt | formatDateLong }}
+    </template>
+    <template v-slot:[`item.receivedAt`]="{ item }">
+      {{ item.receivedAt | formatDateLong }}
+    </template>
     <template v-slot:[`item.state`]="{ item }">
       <v-icon v-if="isItemActive(item)" color="green">mdi-check</v-icon>
       <span v-else>

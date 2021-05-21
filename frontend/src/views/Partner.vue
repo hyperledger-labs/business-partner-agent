@@ -456,6 +456,7 @@ export default {
             let data = result.data;
             console.log(data);
             this.presentationsSent = data.filter((item) => {
+              console.log("PresentationSent");
               return (
                 item.role === "prover" &&
                 [
@@ -466,11 +467,13 @@ export default {
               );
             });
             this.presentationRequests = data.filter((item) => {
+              console.log("PresentationRequest");
               return (
                 item.role === "prover" && item.state === "request_received"
               );
             });
             this.presentationsReceived = data.filter((item) => {
+              console.log("PresentationReceived");
               return item.role === "verifier";
             });
             console.log(this.presentationRequests);
@@ -480,6 +483,7 @@ export default {
           console.error(e);
           // EventBus.$emit("error", e);
         });
+      console.log(this.presentationsRequests);
     },
     removePresentationReceived(id) {
       this.presentationsReceived = this.presentationsReceived.filter((item) => {
@@ -502,10 +506,10 @@ export default {
       let objIndex = this.presentationRequests.findIndex((item) => {
         return item.id === id;
       });
+      this.presentationRequests[objIndex].state = "presentation_sent";
       this.presentationsSent.push(this.presentationRequests[objIndex]);
-      // TODO: object is missing some attributes that will be populated on eventHandler
 
-      this.presentationRequests.filter((item) => {
+      this.presentationRequests = this.presentationRequests.filter((item) => {
         return item.id !== id;
       });
     },
