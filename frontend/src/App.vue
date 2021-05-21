@@ -290,13 +290,15 @@ export default {
   methods: {
      async logout() {
         let redirectLocation;
-        await this.$axios.get(this.$config.clientLogoutPath)
+        await this.$axios.get(`${this.$apiBaseUrl}/logout`)
           .then((r) => {
+            console.log("logout success");
             // check the location header
             // if found, we will load that up,
             redirectLocation = r.headers["location"];
           })
           .catch((e) => {
+            console.log("logout failure");
             console.error(e);
             location.reload();
           });

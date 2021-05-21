@@ -17,48 +17,28 @@
  */
 package org.hyperledger.bpa.security.oauth2.endpoint.endsession.request;
 
-import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.util.StringUtils;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.security.authentication.Authentication;
-import io.micronaut.security.oauth2.client.OpenIdProviderMetadata;
-import io.micronaut.security.oauth2.configuration.OauthConfigurationProperties;
-import io.micronaut.security.oauth2.configuration.endpoints.EndSessionConfiguration;
 import io.micronaut.security.oauth2.endpoint.endsession.request.EndSessionEndpoint;
-import lombok.extern.slf4j.Slf4j;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
-@Requires(property = OauthConfigurationProperties.PREFIX + ".end-session.keycloak.enabled",
-        notEquals = StringUtils.FALSE)
-@Requires(beans = {
-        EndSessionConfiguration.class,
-        OpenIdProviderMetadata.class
-})
-@Slf4j
 @Singleton
 @Named("keycloak")
 public class KeycloakEndSessionEndpoint implements EndSessionEndpoint {
-    @Inject
-    EndSessionConfiguration endSessionConfiguration;
-    @Inject
-    OpenIdProviderMetadata providerMetadata;
 
-    public KeycloakEndSessionEndpoint() {
-    }
+    @Value("${micronaut.security.oauth2.clients.keycloak.openid.end-session.url}")
+    String endSessionUrl;
+
+    @Value("${micronaut.security.oauth2.openid.end-session.redirect-uri}")
+    String redirectUri;
 
     @Override
     public String getUrl(HttpRequest<?> originating, Authentication authentication) {
-        StringBuilder sb = new StringBuilder();
-        if (StringUtils.isNotEmpty(providerMetadata.getEndSessionEndpoint())) {
-            sb.append(providerMetadata.getEndSessionEndpoint());
-        }
-        if (StringUtils.isNotEmpty(endSessionConfiguration.getRedirectUri())) {
-            sb.append("?redirect_uri=");
-            sb.append(endSessionConfiguration.getRedirectUri());
-        }
-        return sb.toString();
+        return endSessionUrl + "?redirect_uri=" + URLEncoder.encode(redirectUri, StandardCharsets.UTF_8);
     }
 }

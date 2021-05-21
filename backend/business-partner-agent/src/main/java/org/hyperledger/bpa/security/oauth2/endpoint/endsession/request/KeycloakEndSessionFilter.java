@@ -27,14 +27,14 @@ import io.micronaut.http.filter.FilterChain;
 import io.micronaut.http.filter.HttpFilter;
 import io.micronaut.http.netty.NettyMutableHttpResponse;
 import io.micronaut.security.filters.SecurityFilter;
-import io.micronaut.security.oauth2.configuration.OauthConfigurationProperties;
+import io.micronaut.security.oauth2.configuration.OauthConfigurationProperties.OpenIdConfigurationProperties;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.reactivex.Flowable;
 import org.reactivestreams.Publisher;
 
-@Requires(property = OauthConfigurationProperties.PREFIX + ".end-session.keycloak.enabled",
+@Requires(property = OpenIdConfigurationProperties.PREFIX + ".end-session.keycloak.enabled",
         notEquals = StringUtils.FALSE)
-@Filter("/oauth/logout")
+@Filter("/**/logout")
 public class KeycloakEndSessionFilter implements HttpFilter {
 
     @Override
@@ -46,7 +46,7 @@ public class KeycloakEndSessionFilter implements HttpFilter {
             // ok, our client cannot handle redirecting back to keycloak.
             // so change from a 302 found, to a success (ok) with location header.
             if (response.getStatus() == HttpStatus.FOUND) {
-                ((NettyMutableHttpResponse) response).getNativeResponse().setStatus(HttpResponseStatus.OK);
+                ((NettyMutableHttpResponse) response).getNativeResponse().setStatus(HttpResponseStatus.ACCEPTED);
             }
             return Flowable.just(response);
         });

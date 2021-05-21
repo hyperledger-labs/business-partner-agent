@@ -148,6 +148,3 @@ bpa:
       url: ${BPA_PRIVACY_POLICY_URL:}
   creddef:
     revocationRegistrySize: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE:3000}
-  client:
-    logout:
-      path: ${BPA_CLIENT_LOGOUT_PATH:/api/logout}

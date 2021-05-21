@@ -59,9 +59,6 @@ public class RuntimeConfig {
     @Value("${bpa.creddef.revocationRegistrySize}")
     Integer revocationRegistrySize;
 
-    @Value("${bpa.client.logout.path}")
-    String clientLogoutPath;
-
     public String getAgentName() {
         return DidResolver.splitDidFrom(agentName).getLabel();
     }
