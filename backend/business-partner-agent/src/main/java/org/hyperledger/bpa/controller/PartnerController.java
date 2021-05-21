@@ -30,7 +30,8 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.PartnerAPI;
-import org.hyperledger.bpa.api.aries.AriesProof;
+import org.hyperledger.bpa.api.aries.AriesProofExchange;
+import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.partner.*;
 import org.hyperledger.bpa.impl.PartnerManager;
@@ -39,8 +40,11 @@ import org.hyperledger.bpa.impl.aries.CredentialManager;
 import org.hyperledger.bpa.impl.aries.ConnectionManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.ProofManager;
-import org.hyperledger.bpa.model.BPAPresentationExchange;
+import org.hyperledger.bpa.model.PartnerProof;
+import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.aries.api.connection.CreateInvitationResponse;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 
 import javax.inject.Inject;
 
@@ -66,6 +70,9 @@ public class PartnerController {
 
     @Inject
     ProofManager proofM;
+
+    @Inject
+    PartnerProofRepository ppRepo;
 
     @Inject
     ConnectionManager cm;
@@ -218,49 +225,50 @@ public class PartnerController {
     }
 
     /**
-     * Aries: Get Proofs requested from a partner
-     *
-     * @param id {@link UUID} the partner id
-     * @return list of pending proof requests from partners
-     */
-    @Get("/{id}/proof-requests")
-    public HttpResponse<List<BPAPresentationExchange>> fetchProofRequests(
-            @PathVariable String id) {
-        List<BPAPresentationExchange> results = proofM.getProofRequests(Optional.of(UUID.fromString(id)), null);
-        return HttpResponse.ok(results);
-    }
-
-    /**
      * Aries: Make the presentation that was requested
      *
-     * @param id                        {@link UUID} the partner id
-     * @param BPAPresentationExchangeId {@link UUID} the presentationExchangeId
+     * @param id                         {@link UUID} the partner id
+     * @param proofId                    {@link UUID} the presentationExchangeId
      * @return HTTP status
      */
-    @Post("/{id}/proof-requests/{BPAPresentationExchangeId}")
+    @Post("/{id}/proof-exchanges/{proofId}/prove")
     public HttpResponse<Void> responseToProofRequest(
             @PathVariable String id,
-            @PathVariable String BPAPresentationExchangeId) {
-        proofM.presentProof(UUID.fromString(BPAPresentationExchangeId));
-        return HttpResponse.ok();
+            @PathVariable String proofId) {
+        final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(proofId));
+        if (proof.isPresent()){
+            if (PresentationExchangeRole.PROVER.equals(proof.get().getRole()) 
+                    && PresentationExchangeState.REQUEST_RECEIVED.equals(proof.get().getState())){
+                proofM.presentProof(proof.get());
+                return HttpResponse.ok();
+            } else {
+                return HttpResponse.unprocessableEntity();
+            }
+        } else {
+            return HttpResponse.notFound();
+        }
     }
 
     /**
-     * Aries: Get Proofs requested from a partner
+     * Aries: Reject ProofRequest recieved from from a partner
      *
      * @param id                        {@link UUID} the partner id
-     * @param BPAPresentationExchangeId {@link UUID} the presentationExchangeId
+     * @param proofId                   {@link UUID} the presentationExchangeId
      * @return HTTP status
      */
-    @Delete("/{id}/proof-requests/{BPAPresentationExchangeId}")
+    @Post("/{id}/proof-exchanges/{proofId}/reject")
     public HttpResponse<Void> rejectPresentProofRequest(
             @PathVariable String id,
-            @PathVariable String BPAPresentationExchangeId) {
-        proofM.rejectPresentProofRequest(UUID.fromString(BPAPresentationExchangeId),
-                "User rejected presentation request: No reason given");
-
-        return HttpResponse.ok();
+            @PathVariable String proofId) {
+        final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(proofId));
+        if (proof.isPresent() && PresentationExchangeState.REQUEST_RECEIVED.equals(proof.get().getState())) {
+            proofM.rejectPresentProofRequest(proof.get(), "User Rejected Proof Request: No reason provided");
+            return HttpResponse.ok();
+        }
+        return HttpResponse.notFound();
     }
+
+
 
     /**
      * Aries: Request proof from partner
@@ -304,8 +312,8 @@ public class PartnerController {
      * @param id {@link UUID} the partner id
      * @return HTTP status
      */
-    @Get("/{id}/proof")
-    public HttpResponse<List<AriesProof>> getPartnerProofs(
+    @Get("/{id}/proof-exchanges")
+    public HttpResponse<List<AriesProofExchange>> getPartnerProofs(
             @PathVariable String id) {
         return HttpResponse.ok(proofM.listPartnerProofs(UUID.fromString(id)));
     }
@@ -318,10 +326,10 @@ public class PartnerController {
      * @return HTTP status
      */
     @Get("/{id}/proof/{proofId}")
-    public HttpResponse<AriesProof> getPartnerProofById(
+    public HttpResponse<AriesProofExchange> getPartnerProofById(
             @SuppressWarnings("unused ") @PathVariable String id,
             @PathVariable String proofId) {
-        final Optional<AriesProof> proof = proofM.getPartnerProofById(UUID.fromString(proofId));
+        final Optional<AriesProofExchange> proof = proofM.getPartnerProofById(UUID.fromString(proofId));
         if (proof.isPresent()) {
             return HttpResponse.ok(proof.get());
         }

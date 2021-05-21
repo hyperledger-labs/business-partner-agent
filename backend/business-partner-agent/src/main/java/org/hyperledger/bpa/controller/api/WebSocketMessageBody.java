@@ -23,7 +23,7 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
-import org.hyperledger.bpa.api.aries.AriesProof;
+import org.hyperledger.bpa.api.aries.AriesProofExchange;
 
 /**
  * Websocket events
@@ -95,7 +95,7 @@ public class WebSocketMessageBody {
                 .build());
     }
 
-    public static WebSocketMessageBody proofReceived(AriesProof proof) {
+    public static WebSocketMessageBody proofReceived(AriesProofExchange proof) {
         WebSocketMessageState state;
         if (PresentationExchangeRole.VERIFIER.equals(proof.getRole())) {
             state = WebSocketMessageState.RECEIVED;
@@ -110,21 +110,4 @@ public class WebSocketMessageBody {
                 .info(proof)
                 .build());
     }
-
-    public static WebSocketMessageBody proofRequestReceived(PresentationExchangeRecord presentationExchangeRecord) {
-        WebSocketMessageState state;
-        if (PresentationExchangeRole.VERIFIER.equals(presentationExchangeRecord.getRole())) {
-            state = WebSocketMessageState.RECEIVED;
-        } else {
-            state = WebSocketMessageState.SENT;
-        }
-        return WebSocketMessageBody.of(WebSocketMessage
-                .builder()
-                .type(WebSocketMessageType.PROOFREQUEST)
-                .state(state)
-                .linkId(presentationExchangeRecord.getPresentationExchangeId())
-                .info(presentationExchangeRecord)
-                .build());
-    }
-
 }

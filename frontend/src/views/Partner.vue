@@ -335,7 +335,6 @@ export default {
     this.getPartner();
     this.getPresentationRecords();
     this.getIssuedCredentials();
-    this.getPresentationRequests();
     this.$store.commit("partnerSeen", { id: this.id });
   },
   data: () => {
@@ -381,11 +380,11 @@ export default {
         {
           text: "Schema",
           value:
-            "presentationRequest.requestedAttributes.attribute_group_0.restrictions[0].schema_id",
+            "proofRequest.requestedAttributes.attribute_group_0.restrictions[0].schema_id",
         },
         {
           text: "Received at",
-          value: "createdAt",
+          value: "sentAt", //miss labelled.
         },
         {
           text: "State",
@@ -451,19 +450,30 @@ export default {
     getPresentationRecords() {
       console.log("Getting presentation records...");
       this.$axios
-        .get(`${this.$apiBaseUrl}/partners/${this.id}/proof`)
+        .get(`${this.$apiBaseUrl}/partners/${this.id}/proof-exchanges`)
         .then((result) => {
           if ({}.hasOwnProperty.call(result, "data")) {
             let data = result.data;
             console.log(data);
             this.presentationsSent = data.filter((item) => {
-              console.log(item);
-              return item.role === "prover";
+              return (
+                item.role === "prover" &&
+                [
+                  "presentation_sent",
+                  "presentation_acked",
+                  "proposal_sent",
+                ].includes(item.state)
+              );
+            });
+            this.presentationRequests = data.filter((item) => {
+              return (
+                item.role === "prover" && item.state === "request_received"
+              );
             });
             this.presentationsReceived = data.filter((item) => {
               return item.role === "verifier";
             });
-            console.log(this.presentationsSent);
+            console.log(this.presentationRequests);
           }
         })
         .catch((e) => {
@@ -477,27 +487,10 @@ export default {
       });
     },
     removePresentationSent(id) {
-      this.presentationsReceived = this.presentationsReceived.filter((item) => {
+      this.presentationsSent = this.presentationsSent.filter((item) => {
         return item.id !== id;
       });
     },
-    // Presentation Requests
-    getPresentationRequests() {
-      console.log("Getting pending proof-request records...");
-      this.$axios
-        .get(`${this.$apiBaseUrl}/partners/${this.id}/proof-requests`)
-        .then((result) => {
-          if ({}.hasOwnProperty.call(result, "data")) {
-            let data = result.data;
-            this.presentationRequests = data;
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
-        });
-    },
-
     removePresentationRequest(id) {
       let objIndex = this.presentationRequests.findIndex((item) => {
         return item.id === id;
@@ -509,7 +502,12 @@ export default {
       let objIndex = this.presentationRequests.findIndex((item) => {
         return item.id === id;
       });
-      this.presentationRequests[objIndex].state = "presentation_sent";
+      this.presentationsSent.push(this.presentationRequests[objIndex]);
+      // TODO: object is missing some attributes that will be populated on eventHandler
+
+      this.presentationRequests.filter((item) => {
+        return item.id !== id;
+      });
     },
 
     // Issue Credentials

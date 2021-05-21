@@ -75,8 +75,8 @@ export default {
     rejectPresentationRequest(presentationRequest) {
       let partnerId = this.$route.params.id;
       this.$axios
-        .delete(
-          `${this.$apiBaseUrl}/partners/${partnerId}/proof-requests/${presentationRequest.id}`
+        .post(
+          `${this.$apiBaseUrl}/partners/${partnerId}/proof-exchanges/${presentationRequest.id}/reject`
         )
         .then((result) => {
           if (result.status === 200) {
@@ -92,7 +92,7 @@ export default {
       let partnerId = this.$route.params.id;
       this.$axios
         .post(
-          `${this.$apiBaseUrl}/partners/${partnerId}/proof-requests/${presentationRequest.id}`
+          `${this.$apiBaseUrl}/partners/${partnerId}/proof-exchanges/${presentationRequest.id}/prove`
         )
         .then((result) => {
           if (result.status === 200) {

@@ -30,6 +30,8 @@ import lombok.experimental.Accessors;
 import io.micronaut.core.annotation.Nullable;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest;
+
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -65,11 +67,15 @@ public class PartnerProof {
     @Nullable
     private Boolean valid;
 
+    private String presentationExchangeId;
+
     @Nullable
     @Enumerated(EnumType.STRING)
     private PresentationExchangeState state;
 
-    private String presentationExchangeId;
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    private PresentationExchangeRole role;
 
     @Nullable
     private String issuer;
@@ -81,10 +87,11 @@ public class PartnerProof {
     private String credentialDefinitionId;
 
     @Nullable
-    @Enumerated(EnumType.STRING)
-    private PresentationExchangeRole role;
-
-    @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> proof;
+
+    @TypeDef(type = DataType.JSON)
+    private PresentProofRequest.ProofRequest proofRequest;
+
 }
+
