@@ -18,12 +18,10 @@
 package org.hyperledger.bpa.repository;
 
 import io.micronaut.data.annotation.Id;
-import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.model.PartnerProof;
 
@@ -32,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUID> {

@@ -35,7 +35,6 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.api.exception.PresentationConstructionException;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
-import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.controller.api.partner.ProofRequestsRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
@@ -89,7 +88,6 @@ public class ProofManager {
     @Inject
     MessageService messageService;
 
-
     // request proof from partner
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {
         try {
@@ -142,10 +140,11 @@ public class ProofManager {
         }
     }
 
-    public void rejectPresentProofRequest(@NotNull PartnerProof proofEx,  String explainString) {
+    public void rejectPresentProofRequest(@NotNull PartnerProof proofEx, String explainString) {
         try {
             sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString);
-            // after sending rejection notice, delete aries copy. no proper 'reject' protocol
+            // after sending rejection notice, delete aries copy. no proper 'reject'
+            // protocol
             ac.presentProofRecordsRemove(proofEx.getPresentationExchangeId());
             // after sending removing aries copy, remove BPA copy
             // TODO: 'rejected_state' to save, so delete for now
@@ -160,7 +159,7 @@ public class ProofManager {
     public void presentProof(@NotNull PartnerProof proofEx) {
         try {
             ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId())
-                .ifPresent(record -> presentProof(record));
+                    .ifPresent(record -> presentProof(record));
         } catch (IOException e) {
             log.error("aca-py not reachable.", e);
             return;
@@ -233,7 +232,7 @@ public class ProofManager {
                                 if (PresentationExchangeRole.PROVER.equals(proof.getRole())
                                         && PresentationExchangeState.REQUEST_RECEIVED.equals(proof.getState())) {
                                     // brand new receive
-                                            final PartnerProof pp = PartnerProof
+                                    final PartnerProof pp = PartnerProof
                                             .builder()
                                             .partnerId(p.getId())
                                             .state(PresentationExchangeState.REQUEST_RECEIVED)
@@ -333,8 +332,8 @@ public class ProofManager {
                 ac.presentProofRecordsRemove(pp.getPresentationExchangeId());
             } catch (IOException e) {
                 log.error("aca-py not reachable", e);
-            } catch (AriesException e){
-                if (e.getCode() == 404){
+            } catch (AriesException e) {
+                if (e.getCode() == 404) {
                     log.warn("ACA-py PresentationExchange not found, still deleting BPA Partner Proof");
                 } else {
                     throw e;
@@ -353,20 +352,19 @@ public class ProofManager {
     }
 
     private AriesProofExchange toApiProof(@NonNull PartnerProof p) {
-        AriesProofExchange proof = AriesProofExchange.from(p, p.getProof() != null ? conv.fromMap(p.getProof(), JsonNode.class) : null);
+        AriesProofExchange proof = AriesProofExchange.from(p,
+                p.getProof() != null ? conv.fromMap(p.getProof(), JsonNode.class) : null);
         if (StringUtils.isNotEmpty(p.getSchemaId())) {
             proof.setTypeLabel(schemaService.getSchemaLabel(p.getSchemaId()));
         }
         return proof;
     }
 
-
-    
     private void sendPresentProofProblemReport(@NotNull String PresentationExchangeId, @NotNull String problemString)
-    throws IOException {
+            throws IOException {
         PresentationProblemReportRequest request = PresentationProblemReportRequest.builder()
-        .explainLtxt(problemString)
-        .build();
-    ac.presentProofRecordsProblemReport(PresentationExchangeId, request);
+                .explainLtxt(problemString)
+                .build();
+        ac.presentProofRecordsProblemReport(PresentationExchangeId, request);
     }
 }

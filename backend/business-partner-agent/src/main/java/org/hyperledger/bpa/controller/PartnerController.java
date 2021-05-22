@@ -226,8 +226,8 @@ public class PartnerController {
     /**
      * Aries: Make the presentation that was requested
      *
-     * @param id                         {@link UUID} the partner id
-     * @param proofId                    {@link UUID} the presentationExchangeId
+     * @param id      {@link UUID} the partner id
+     * @param proofId {@link UUID} the presentationExchangeId
      * @return HTTP status
      */
     @Post("/{id}/proof-exchanges/{proofId}/prove")
@@ -235,9 +235,9 @@ public class PartnerController {
             @PathVariable String id,
             @PathVariable String proofId) {
         final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(proofId));
-        if (proof.isPresent()){
-            if (PresentationExchangeRole.PROVER.equals(proof.get().getRole()) 
-                    && PresentationExchangeState.REQUEST_RECEIVED.equals(proof.get().getState())){
+        if (proof.isPresent()) {
+            if (PresentationExchangeRole.PROVER.equals(proof.get().getRole())
+                    && PresentationExchangeState.REQUEST_RECEIVED.equals(proof.get().getState())) {
                 proofM.presentProof(proof.get());
                 return HttpResponse.ok();
             } else {
@@ -251,8 +251,8 @@ public class PartnerController {
     /**
      * Aries: Reject ProofRequest recieved from from a partner
      *
-     * @param id                        {@link UUID} the partner id
-     * @param proofId                   {@link UUID} the presentationExchangeId
+     * @param id      {@link UUID} the partner id
+     * @param proofId {@link UUID} the presentationExchangeId
      * @return HTTP status
      */
     @Post("/{id}/proof-exchanges/{proofId}/reject")
@@ -266,8 +266,6 @@ public class PartnerController {
         }
         return HttpResponse.notFound();
     }
-
-
 
     /**
      * Aries: Request proof from partner

@@ -32,7 +32,6 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 
-
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -94,4 +93,3 @@ public class PartnerProof {
     private PresentProofRequest.ProofRequest proofRequest;
 
 }
-

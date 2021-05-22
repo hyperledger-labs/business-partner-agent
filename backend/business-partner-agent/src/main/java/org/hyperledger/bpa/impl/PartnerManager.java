@@ -90,7 +90,7 @@ public class PartnerManager {
             if (p.getConnectionId() != null) {
                 // Iterable<BPAPresentationExchange> peList = peRepo.findByPartnerId(id);
                 // if (peList.iterator().hasNext()) {
-                //     peRepo.deleteAll(peList);
+                // peRepo.deleteAll(peList);
                 // }
                 cm.removeConnection(p.getConnectionId());
             }

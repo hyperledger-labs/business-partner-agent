@@ -50,6 +50,7 @@ public class PresentationRequestHelper {
 
     }
 
+    // TODO update to handle any shape of RequestedAttributes
     private static Map<String, PresentationRequest.IndyRequestedCredsRequestedAttr> buildRequestedAttributes(
             Map<String, PresentProofRequest.ProofRequest.ProofAttributes> requestedAttributes,
             List<PresentationRequestCredentials> validCredentials)
@@ -79,6 +80,7 @@ public class PresentationRequestHelper {
 
     };
 
+    // TODO update to handle any shape of RequestedPredicates
     private static Map<String, PresentationRequest.IndyRequestedCredsRequestedPred> buildRequestedPredicates(
             Map<String, PresentProofRequest.ProofRequest.ProofAttributes> requestedPredicates,
             List<PresentationRequestCredentials> validCredentials)
