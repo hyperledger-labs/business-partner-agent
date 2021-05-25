@@ -225,8 +225,14 @@ public class ProofManager {
         partnerRepo.findByConnectionId(proof.getConnectionId()).ifPresentOrElse(
                 p -> {
                     pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId())
-                            .ifPresentOrElse(pe -> {
-                                // already a BPA record for this presentation exchange
+                            .ifPresentOrElse(pProof -> {
+                                if (PresentationExchangeState.PROPOSAL_SENT.equals(pProof.getState()) &&
+                                PresentationExchangeState.REQUEST_RECEIVED.equals(proof.getState()) && 
+                                PresentationExchangeInitiator.SELF.equals((proof.getInitiator()))){
+                                    log.info("Present_Proof: state=request_received on PresentationExchange where initator=self, responding immediatly");
+                                    presentProof(proof);
+                                }
+
                             }, () -> {
                                 // new presentationExchangeID
                                 if (PresentationExchangeRole.PROVER.equals(proof.getRole())

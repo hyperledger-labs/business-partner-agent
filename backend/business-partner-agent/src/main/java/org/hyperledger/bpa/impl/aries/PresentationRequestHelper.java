@@ -22,6 +22,8 @@ import org.hyperledger.aries.api.present_proof.*;
 import org.hyperledger.bpa.api.exception.PresentationConstructionException;
 
 import java.util.*;
+
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class PresentationRequestHelper {
@@ -61,10 +63,24 @@ public class PresentationRequestHelper {
         for (Map.Entry<String, PresentProofRequest.ProofRequest.ProofAttributes> reqAttr : requestedAttributes
                 .entrySet()) {
             List<JsonObject> restrictions = reqAttr.getValue().getRestrictions();
-            Optional<PresentationRequestCredentials> cred = validCredentials.stream()
-                    .filter(vc -> vc.getCredentialInfo().getSchemaId().equals(
-                            restrictions.get(0).get("schema_id").getAsString()))
-                    .findFirst();
+            JsonElement restriction_schema_id = restrictions.get(0).get("schema_id");
+            JsonElement restriction_cred_def_id = restrictions.get(0).get("cred_def_id");
+
+            Optional<PresentationRequestCredentials> cred = Optional.empty();
+
+            if (restriction_schema_id != null) {
+                cred = validCredentials.stream()
+                        .filter(vc -> vc.getCredentialInfo().getSchemaId().equals(
+                                restriction_schema_id.getAsString()))
+                        .findFirst();
+            } else if (restriction_cred_def_id != null){
+                cred = validCredentials.stream()
+                        .filter(vc -> vc.getCredentialInfo().getCredentialDefinitionId().equals(
+                                restriction_cred_def_id.getAsString()))
+                        .findFirst(); 
+            } else {
+                cred = validCredentials.stream().findFirst();
+            }
 
             cred.ifPresentOrElse(c -> {
                 result.put(reqAttr.getKey(), PresentationRequest.IndyRequestedCredsRequestedAttr.builder()
