@@ -21,14 +21,14 @@ import io.micronaut.context.annotation.Value;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.oauth2.endpoint.endsession.request.EndSessionEndpoint;
+import org.hyperledger.bpa.security.oauth2.client.RequiresKeycloak;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 @Singleton
-@Named("keycloak")
+@RequiresKeycloak
 public class KeycloakEndSessionEndpoint implements EndSessionEndpoint {
 
     @Value("${micronaut.security.oauth2.clients.keycloak.openid.end-session.url}")

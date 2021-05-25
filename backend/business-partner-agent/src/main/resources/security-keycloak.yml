@@ -17,8 +17,6 @@ micronaut:
         logout-uri: /api/logout
         end-session:
           redirect-uri: ${BPA_KEYCLOAK_REDIRECT_URI:}
-          keycloak:
-            enabled: true
         additional-claims:
           access-token: true
           refresh-token: true

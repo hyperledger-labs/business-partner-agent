@@ -13,8 +13,7 @@ micronaut:
     endpoints:
       logout:
         path: /api/logout
-        enabled: true
-        get-allowed: true
+        get-allowed: false
     redirect:
       unauthorized:
         url: /user/signin
