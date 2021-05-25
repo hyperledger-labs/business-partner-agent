@@ -45,7 +45,9 @@ bpa:
       browser: https://indy-test.bosch-digital.de
     name: Business Partner Agent
     web:
-      only: false
+      only: false 
+    creddef:
+      revocationRegistrySize: 3000 
     #schemas:
     #  bank-account:
     #    id: "UmZ25DANwS6ngGWB4ye4tN:2:BankAccount:0.1"
