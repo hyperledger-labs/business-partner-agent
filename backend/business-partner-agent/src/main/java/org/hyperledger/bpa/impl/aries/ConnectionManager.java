@@ -205,18 +205,8 @@ public class ConnectionManager {
     }
 
     public synchronized void handleIncomingConnectionEvent(ConnectionRecord record) {
-        // as state can be invite or request here we might not have all the information
-        // yet
-        // so we have to set some fields again in the update case
         partnerRepo.findByConnectionId(record.getConnectionId()).ifPresentOrElse(
-                dbP -> {
-                    dbP.setLabel(record.getTheirLabel());
-                    dbP.setAlias(record.getTheirLabel()); // if invite we want the label, regular request has none
-                    dbP.setDid(didPrefix + record.getTheirDid());
-                    dbP.setState(record.getState());
-                    partnerRepo.update(dbP);
-                    resolveAndSend(record, dbP);
-                },
+                dbP -> partnerRepo.updateState(dbP.getId(), record.getState()),
                 () -> {
                     Partner p = Partner
                             .builder()

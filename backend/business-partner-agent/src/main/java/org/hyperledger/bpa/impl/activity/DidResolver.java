@@ -113,7 +113,6 @@ public class DidResolver {
         ConnectionLabel cl = splitDidFrom(p.getLabel());
         cl.getDid().ifPresent(did -> {
             final PartnerAPI pAPI = partnerLookup.lookupPartner(did);
-            // TODO will ne overwritten later as state is only request
             partnerRepo.updateVerifiablePresentation(
                     p.getId(),
                     converter.toMap(pAPI.getVerifiablePresentation()),
