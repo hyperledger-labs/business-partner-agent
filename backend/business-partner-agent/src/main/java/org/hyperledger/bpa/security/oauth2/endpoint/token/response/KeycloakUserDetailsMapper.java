@@ -48,16 +48,16 @@ public class KeycloakUserDetailsMapper implements OpenIdUserDetailsMapper {
     @NonNull
     @Override
     public UserDetails createUserDetails(String providerName, OpenIdTokenResponse tokenResponse,
-                                         OpenIdClaims openIdClaims) {
+            OpenIdClaims openIdClaims) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     @NonNull
     public AuthenticationResponse createAuthenticationResponse(String providerName,
-                                                               OpenIdTokenResponse tokenResponse,
-                                                               OpenIdClaims openIdClaims,
-                                                               @Nullable State state) {
+            OpenIdTokenResponse tokenResponse,
+            OpenIdClaims openIdClaims,
+            @Nullable State state) {
         return new UserDetails((String) openIdClaims.get(nameKey), (Collection<String>) openIdClaims.get(rolesName),
                 openIdClaims.getClaims());
     }
