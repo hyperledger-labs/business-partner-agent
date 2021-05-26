@@ -219,6 +219,24 @@ class PartnerRepositoryTest {
         repo.updateByDid(did, map);
     }
 
+    @Test
+    void testUpdateVerifiablePresentation() {
+        Partner partner = repo.save(Partner
+                .builder()
+                .ariesSupport(Boolean.TRUE)
+                .did("did:indy:private")
+                .connectionId("con1")
+                .build());
+
+        repo.updateVerifiablePresentation(partner.getId(), Map.of(), Boolean.TRUE, "alias", "did:indy:public");
+
+        Optional<Partner> reload = repo.findById(partner.getId());
+        assertTrue(reload.isPresent());
+        assertEquals("alias", reload.get().getAlias());
+        assertEquals("did:indy:public", reload.get().getDid());
+        assertEquals(Boolean.TRUE, reload.get().getValid());
+    }
+
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
