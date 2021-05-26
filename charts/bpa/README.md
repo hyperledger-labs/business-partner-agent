@@ -2,7 +2,7 @@
 
 The Business Partner Agent allows to manage and exchange master data between organizations.
 
-![Version: 0.1.0-alpha10.1](https://img.shields.io/badge/Version-0.1.0--alpha10.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0-alpha10](https://img.shields.io/badge/AppVersion-0.1.0--alpha10-informational?style=flat-square)
+![Version: 0.1.0-alpha10.2](https://img.shields.io/badge/Version-0.1.0--alpha10.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0-alpha10](https://img.shields.io/badge/AppVersion-0.1.0--alpha10-informational?style=flat-square)
 
 This chart will install a business partner agent (bpa-core & bpa-acapy) and Postgres.
 
