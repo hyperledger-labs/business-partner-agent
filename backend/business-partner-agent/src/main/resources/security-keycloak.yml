@@ -3,11 +3,11 @@ micronaut:
     endpoints:
       logout:
         path: /logout
-        get-allowed: true
     redirect:
       unauthorized:
         url: /oauth/login
       login-failure: /oauth/login
+      logout: /oauth/login
     token:
       roles-name: ${BPA_KEYCLOAK_ROLES_NAME:roles}
       name-key: ${BPA_KEYCLOAK_NAME_KEY:preferred_username}

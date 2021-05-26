@@ -59,9 +59,6 @@ public class RuntimeConfig {
     @Value("${bpa.creddef.revocationRegistrySize}")
     Integer revocationRegistrySize;
 
-    @Value("${micronaut.security.endpoints.logout.get-allowed}")
-    Boolean logoutGetAllowed;
-
     public String getAgentName() {
         return DidResolver.splitDidFrom(agentName).getLabel();
     }

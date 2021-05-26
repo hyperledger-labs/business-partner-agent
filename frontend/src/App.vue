@@ -289,22 +289,8 @@ export default {
   },
   methods: {
      logout() {
-       if (this.$config.logoutGetAllowed) {
-         //console.log(`logoutGetAllowed is true, reloading browser at: ${this.$apiBaseUrl}/logout`);
-         location.href = `${this.$apiBaseUrl}/logout`;
-       } else {
-         //console.log(`logoutGetAllowed is false, calling logout via post: ${this.$apiBaseUrl}/logout`);
-         this.$axios.post(`${this.$apiBaseUrl}/logout`)
-           .then(() => {
-             //console.log("logout success, reload window");
-             location.reload();
-           })
-           .catch((e) => {
-             //console.log("logout failure, reload window");
-             console.error(e);
-             location.reload();
-           });
-       }
+       // logout must have get-allowed, get the browser to do all the logout redirects...
+       location.href = `${this.$apiBaseUrl}/logout`;
     },
   },
 };

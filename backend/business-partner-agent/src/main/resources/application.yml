@@ -13,11 +13,12 @@ micronaut:
     endpoints:
       logout:
         path: /api/logout
-        get-allowed: false
+        get-allowed: true
     redirect:
       unauthorized:
         url: /user/signin
       login-failure: /user/authFailed
+      logout: /user/signin
     intercept-url-map:
       -
         pattern: /**
