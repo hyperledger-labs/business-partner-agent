@@ -120,7 +120,7 @@
         <dependency>
             <groupId>org.hyperledger</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.20.0</version>
+            <version>0.21.0</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>
