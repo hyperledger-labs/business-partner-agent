@@ -2,7 +2,7 @@
 
 The Business Partner Agent allows to manage and exchange master data between organizations.
 
-![Version: 0.1.0-alpha10](https://img.shields.io/badge/Version-0.1.0--alpha10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0-alpha10](https://img.shields.io/badge/AppVersion-0.1.0--alpha10-informational?style=flat-square)
+![Version: 0.1.0-alpha10.1](https://img.shields.io/badge/Version-0.1.0--alpha10.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0-alpha10](https://img.shields.io/badge/AppVersion-0.1.0--alpha10-informational?style=flat-square)
 
 This chart will install a business partner agent (bpa-core & bpa-acapy) and Postgres.
 
@@ -166,7 +166,6 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | acapy.affinity | object | `{}` |  |
 | acapy.agentName | string | `"ca-aca-py"` |  |
 | acapy.agentSeed | String | `nil` | The agent seed, 32 characters. Will be generated if not defined here |
-| acapy.existingSecret | bool | `false` | If true an existing secret with the acapy service full name is queried for the seed |
 | acapy.fullnameOverride | string | `""` |  |
 | acapy.image.pullPolicy | string | `"IfNotPresent"` |  |
 | acapy.image.repository | string | `"bcgovimages/aries-cloudagent"` |  |
@@ -188,7 +187,7 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | acapy.service.type | string | `"ClusterIP"` |  |
 | acapy.tolerations | list | `[]` |  |
 | bpa.affinity | object | `{}` |  |
-| bpa.config | object | `{"bootstrap":{"password":"changeme","username":"admin"},"ledger":{"browser":"https://indy-test.bosch-digital.de"},"name":"Business Partner Agent","resolver":{"url":"https://resolver.stage.economyofthings.io"},"security":{"enabled":true},"web":{"only":false}}` | application config (remark: all new configuration values will sit here, the other ones can be migrated step by step) |
+| bpa.config | object | `{"bootstrap":{"password":"changeme","username":"admin"},"creddef":{"revocationRegistrySize":3000},"ledger":{"browser":"https://indy-test.bosch-digital.de"},"name":"Business Partner Agent","resolver":{"url":"https://resolver.stage.economyofthings.io"},"security":{"enabled":true},"web":{"only":false}}` | application config (remark: all new configuration values will sit here, the other ones can be migrated step by step) |
 | bpa.image.pullPolicy | string | `"IfNotPresent"` |  |
 | bpa.image.repository | string | `"ghcr.io/hyperledger-labs/business-partner-agent"` |  |
 | bpa.image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |

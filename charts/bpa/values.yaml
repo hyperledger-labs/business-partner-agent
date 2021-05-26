@@ -136,9 +136,6 @@ acapy:
   # -- (String) The agent seed, 32 characters. Will be generated if not defined here
   agentSeed:
 
-  # -- If true an existing secret with the acapy service full name is queried for the seed
-  existingSecret: false
-
   readOnlyMode: false
 
   imagePullSecrets: [] 
