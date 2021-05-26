@@ -89,6 +89,29 @@ class ConnectionManagerTest extends BaseTest {
         assertEquals(ConnectionState.ACTIVE, p.get().getState());
     }
 
+    @Test
+    void testCreateInvitation() {
+        final ConnectionRecord invite = gson.fromJson(inviteReceive, ConnectionRecord.class);
+        eventHandler.handleConnection(invite);
+
+        Optional<Partner> p = repo.findByConnectionId(invite.getConnectionId());
+        assertTrue(p.isPresent());
+        assertEquals(ConnectionState.INVITATION, p.get().getState());
+        assertEquals("Invitation 1", p.get().getAlias());
+        assertTrue(p.get().getDid().endsWith("unknown"));
+        assertNull(p.get().getLabel());
+
+        final ConnectionRecord response = gson.fromJson(inviteResponse, ConnectionRecord.class);
+        eventHandler.handleConnection(response);
+
+        p = repo.findByConnectionId(response.getConnectionId());
+        assertTrue(p.isPresent());
+        assertEquals(ConnectionState.RESPONSE, p.get().getState());
+        assertEquals("Wallet", p.get().getAlias());
+        assertTrue(p.get().getDid().endsWith("QjqxU2wnrBGwLJnW585QWp"));
+        assertEquals("Wallet", p.get().getLabel());
+    }
+
     private final String createInvite = "{\n" +
             "    \"accept\": \"auto\",\n" +
             "    \"connection_id\": \"9275a52f-5733-4951-a54f-7ebd7332922c\",\n" +
@@ -150,5 +173,36 @@ class ConnectionManagerTest extends BaseTest {
             "    \"my_did\": \"8Ry1L98XdZazJwiDPoqcVA\",\n" +
             "    \"invitation_mode\": \"once\",\n" +
             "    \"rfc23_state\": \"completed\"\n" +
+            "}";
+
+    private final String inviteReceive = "{\n" +
+            "    \"accept\": \"auto\",\n" +
+            "    \"connection_id\": \"5d41c1cb-2856-4026-984e-24d2976a05ba\",\n" +
+            "    \"updated_at\": \"2021-04-28 08:20:17.034908Z\",\n" +
+            "    \"alias\": \"Invitation 1\",\n" +
+            "    \"routing_state\": \"none\",\n" +
+            "    \"invitation_key\": \"J9CHkDjr3oG7nq3enrojCRvsY9Cxq1Z7W1Y56GHNZe29\",\n" +
+            "    \"created_at\": \"2021-04-28 08:20:17.034908Z\",\n" +
+            "    \"their_role\": \"invitee\",\n" +
+            "    \"state\": \"invitation\",\n" +
+            "    \"invitation_mode\": \"once\",\n" +
+            "    \"rfc23_state\": \"invitation-sent\"\n" +
+            "}";
+
+    private final String inviteResponse = "{\n" +
+            "    \"accept\": \"auto\",\n" +
+            "    \"connection_id\": \"5d41c1cb-2856-4026-984e-24d2976a05ba\",\n" +
+            "    \"updated_at\": \"2021-04-28 08:20:43.237710Z\",\n" +
+            "    \"their_label\": \"Wallet\",\n" +
+            "    \"alias\": \"Invitation 1\",\n" +
+            "    \"their_did\": \"QjqxU2wnrBGwLJnW585QWp\",\n" +
+            "    \"routing_state\": \"none\",\n" +
+            "    \"invitation_key\": \"J9CHkDjr3oG7nq3enrojCRvsY9Cxq1Z7W1Y56GHNZe29\",\n" +
+            "    \"created_at\": \"2021-04-28 08:20:17.034908Z\",\n" +
+            "    \"their_role\": \"invitee\",\n" +
+            "    \"state\": \"response\",\n" +
+            "    \"my_did\": \"37FY6gGZWATtKv8ywwJjdi\",\n" +
+            "    \"invitation_mode\": \"once\",\n" +
+            "    \"rfc23_state\": \"response-sent\"\n" +
             "}";
 }
