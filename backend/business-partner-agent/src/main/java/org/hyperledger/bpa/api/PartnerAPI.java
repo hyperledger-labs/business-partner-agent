@@ -78,9 +78,9 @@ public class PartnerAPI {
     public static void copyFrom(@NonNull PartnerAPI to, @NonNull Partner from) {
         to
                 .setCreatedAt(from.getCreatedAt() != null ? from.getCreatedAt().toEpochMilli() : null)
-                .setUpdatedAt(from.getUpdatedAt().toEpochMilli())
+                .setUpdatedAt(from.getUpdatedAt() != null ? from.getUpdatedAt().toEpochMilli() : null)
                 .setLastSeen(from.getLastSeen() != null ? from.getLastSeen().toEpochMilli() : null)
-                .setId(from.getId().toString())
+                .setId(from.getId() != null ? from.getId().toString() : null)
                 .setValid(from.getValid())
                 .setAriesSupport(from.getAriesSupport())
                 .setState(from.getState())

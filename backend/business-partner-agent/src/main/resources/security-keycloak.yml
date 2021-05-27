@@ -1,0 +1,33 @@
+micronaut:
+  security:
+    endpoints:
+      logout:
+        path: /logout
+    redirect:
+      unauthorized:
+        url: /oauth/login
+      login-failure: /oauth/login
+      logout: /oauth/login
+    token:
+      roles-name: ${BPA_KEYCLOAK_ROLES_NAME:roles}
+      name-key: ${BPA_KEYCLOAK_NAME_KEY:preferred_username}
+    oauth2:
+      default-provider: keycloak
+      openid:
+        logout-uri: /api/logout
+        end-session:
+          redirect-uri: ${BPA_KEYCLOAK_REDIRECT_URI:}
+        additional-claims:
+          access-token: true
+          refresh-token: true
+      clients:
+        keycloak:
+          client-id: ${BPA_KEYCLOAK_CLIENT_ID:}
+          client-secret: ${BPA_KEYCLOAK_CLIENT_SECRET:}
+          scopes: ${BPA_KEYCLOAK_SCOPES:openid}
+          openid:
+            issuer: ${BPA_KEYCLOAK_ISSUER:}
+            end-session:
+              url: ${BPA_KEYCLOAK_ENDSESSION_URL:}
+            authorization:
+              response-mode: query
