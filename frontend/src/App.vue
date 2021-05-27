@@ -291,15 +291,8 @@ export default {
   },
   methods: {
     logout() {
-      this.$axios
-        .post(`${this.$apiBaseUrl}/logout`)
-        .then(() => {
-          location.reload();
-        })
-        .catch((e) => {
-          console.error(e);
-          location.reload();
-        });
+      // logout must have get-allowed, get the browser to do all the logout redirects...
+      location.href = `${this.$apiBaseUrl}/logout`;
     },
   },
 };

@@ -57,7 +57,7 @@ export const getSchemaLabel = (state) => (typeName, schemaId = undefined) => {
   let schemaType = { label: "" };
   if (schemaId) {
     schemaType = state.schemas.find((schema) => {
-      schema.schemaId === schemaId;
+      return schema.schemaId === schemaId;
     });
   } else if (typeName) {
     schemaType = state.schemas.find((schema) => {

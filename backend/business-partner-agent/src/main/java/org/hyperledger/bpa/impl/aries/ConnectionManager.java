@@ -60,6 +60,8 @@ import java.util.stream.Collectors;
 public class ConnectionManager {
 
     private static final String ACA_PY_ERROR_MSG = "aca-py not available";
+    private static final String UNKNOWN_DID = "unknown";
+    private static final String CONNECTION_INVITATION = "Invitation";
 
     @Value("${bpa.did.prefix}")
     String didPrefix;
@@ -101,7 +103,7 @@ public class ConnectionManager {
                             .build(),
                     CreateInvitationParams.builder()
                             .alias(StringUtils.isNotEmpty(alias) ? alias
-                                    : "Invitation " + TimeUtil.currentTimeFormatted(Instant.now()))
+                                    : CONNECTION_INVITATION + TimeUtil.currentTimeFormatted(Instant.now()))
                             .autoAccept(Boolean.TRUE)
                             .build());
         } catch (IOException e) {
@@ -204,15 +206,19 @@ public class ConnectionManager {
                 });
     }
 
+    // handles invitations and incoming connection events
     public synchronized void handleIncomingConnectionEvent(ConnectionRecord record) {
-        // as state can be invite or request here we might not have all the information
-        // yet
-        // so we have to set some fields again in the update case
         partnerRepo.findByConnectionId(record.getConnectionId()).ifPresentOrElse(
                 dbP -> {
-                    dbP.setLabel(record.getTheirLabel());
-                    dbP.setAlias(record.getTheirLabel()); // if invite we want the label, regular request has none
-                    dbP.setDid(didPrefix + record.getTheirDid());
+                    if (StringUtils.isEmpty(dbP.getLabel())) {
+                        dbP.setLabel(record.getTheirLabel());
+                    }
+                    if (StringUtils.isEmpty(dbP.getDid()) || dbP.getDid().endsWith(UNKNOWN_DID)) {
+                        dbP.setDid(didPrefix + record.getTheirDid());
+                    }
+                    if (StringUtils.isEmpty(dbP.getAlias()) || dbP.getAlias().startsWith(CONNECTION_INVITATION)) {
+                        dbP.setAlias(record.getTheirLabel());
+                    }
                     dbP.setState(record.getState());
                     partnerRepo.update(dbP);
                     resolveAndSend(record, dbP);
@@ -227,7 +233,7 @@ public class ConnectionManager {
                             .connectionId(record.getConnectionId())
                             .did(StringUtils.isNotEmpty(record.getTheirDid())
                                     ? didPrefix + record.getTheirDid()
-                                    : didPrefix + "unknown")
+                                    : didPrefix + UNKNOWN_DID)
                             .label(record.getTheirLabel())
                             .state(record.getState())
                             .incoming(Boolean.TRUE)
