@@ -236,13 +236,8 @@ public class PartnerController {
             @PathVariable String proofId) {
         final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(proofId));
         if (proof.isPresent()) {
-            if (PresentationExchangeRole.PROVER.equals(proof.get().getRole())
-                    && PresentationExchangeState.REQUEST_RECEIVED.equals(proof.get().getState())) {
                 proofM.presentProof(proof.get());
                 return HttpResponse.ok();
-            } else {
-                return HttpResponse.unprocessableEntity();
-            }
         } else {
             return HttpResponse.notFound();
         }
@@ -260,7 +255,7 @@ public class PartnerController {
             @PathVariable String id,
             @PathVariable String proofId) {
         final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(proofId));
-        if (proof.isPresent() && PresentationExchangeState.REQUEST_RECEIVED.equals(proof.get().getState())) {
+        if (proof.isPresent()) {
             proofM.rejectPresentProofRequest(proof.get(), "User Rejected Proof Request: No reason provided");
             return HttpResponse.ok();
         }

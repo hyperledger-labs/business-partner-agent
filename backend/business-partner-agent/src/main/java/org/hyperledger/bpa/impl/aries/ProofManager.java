@@ -22,6 +22,7 @@ import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
+import io.micronaut.http.exceptions.HttpException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,6 +35,7 @@ import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.api.exception.PresentationConstructionException;
+import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.controller.api.partner.ProofRequestsRequest;
@@ -141,6 +143,7 @@ public class ProofManager {
     }
 
     public void rejectPresentProofRequest(@NotNull PartnerProof proofEx, String explainString) {
+        if (PresentationExchangeState.REQUEST_RECEIVED.equals(proof.get().getState())){
         try {
             sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString);
             // after sending rejection notice, delete aries copy. no proper 'reject'
@@ -154,19 +157,28 @@ public class ProofManager {
         } catch (AriesException e) {
             log.error("aca-py wallet item not found, attempting BPA delete");
         }
+    } else {
+        throw new WrongApiUsageException("PresentationExchangeState != 'request-received'");
+    }
     }
 
     public void presentProof(@NotNull PartnerProof proofEx) {
-        try {
-            ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId())
-                    .ifPresent(record -> presentProof(record));
-        } catch (IOException e) {
-            log.error("aca-py not reachable.", e);
-            return;
-        } catch (AriesException e) {
-            log.error("aca-py wallet item not found");
+        if (PresentationExchangeRole.PROVER.equals(proofEx.get().getRole())
+                    && PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.get().getState()))
+        {
+            try {
+                ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId())
+                        .ifPresent(record -> presentProof(record));
+            } catch (IOException e) {
+                log.error("aca-py not reachable.", e);
+                return;
+            } catch (AriesException e) {
+                log.error("aca-py wallet item not found");
+            }
+            pProofRepo.updateState(proofEx.getId(), PresentationExchangeState.PRESENTATIONS_SENT);
+        } else {
+            throw new WrongApiUsageException("PresentationExchangeRole!= 'prover' or PresentationExchangeState != 'request-received'");
         }
-        pProofRepo.updateState(proofEx.getId(), PresentationExchangeState.PRESENTATIONS_SENT);
     }
 
     private void presentProof(PresentationExchangeRecord presentationExchangeRecord) {
