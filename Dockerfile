@@ -1,13 +1,13 @@
 # Dockerfile that builds frontend and backend, mainly used by the docker-compose files
 
 # Vue Build Container
-FROM node:lts-alpine as VUE
+FROM docker.io/node:lts-alpine as VUE
 WORKDIR /frontend
 COPY frontend .
 RUN npm install && npm run license && npm run build
 
 # Micronaut build
-FROM maven:3-amazoncorretto-15 as MAVEN
+FROM docker.io/maven:3-amazoncorretto-15 as MAVEN
 
 WORKDIR /home/maven
 
@@ -25,7 +25,7 @@ RUN mvn dependency:go-offline || true
 RUN mvn clean package -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
 
 # Runtime Container
-FROM amazoncorretto:15-alpine
+FROM docker.io/amazoncorretto:15-alpine
 COPY --from=MAVEN /home/maven/business-partner-agent/target/business-partner-agent*SNAPSHOT.jar business-partner-agent.jar
 
 EXPOSE 8080
