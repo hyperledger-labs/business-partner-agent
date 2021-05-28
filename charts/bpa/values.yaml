@@ -137,18 +137,18 @@ schemas:
   enabled: true
   config:
     bank-account:
-      id: "UmZ25DANwS6ngGWB4ye4tN:2:BankAccount:0.1"
+      id: "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
       label: "Bank Account"
       defaultAttributeName: "iban"
       restrictions:
-        - issuerDid: "did:sov:iil:UmZ25DANwS6ngGWB4ye4tN"
+        - issuerDid: "${bpa.did.prefix}M6Mbe3qx7vB4wpZF4sBRjt"
           label: "Demo Bank"
     commercial-register:
-      id: "R6WR6n7CQVDjvvmwofHK6S:2:commercialregister:0.1"
+      id: "5mwQSWnRePrZ3oF67C4KqD:2:commercialregister:1.0"
       label: "Commercial Register"
       defaultAttributeName: "companyName"
       restrictions:
-        - issuerDid: "did:sov:iil:R6WR6n7CQVDjvvmwofHK6S"
+        - issuerDid: "${bpa.did.prefix}5mwQSWnRePrZ3oF67C4KqD"
           label: "Commercial Register"
 
 acapy:
