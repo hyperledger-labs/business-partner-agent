@@ -177,6 +177,8 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | acapy.name | string | `"acapy"` |  |
 | acapy.nameOverride | string | `""` |  |
 | acapy.nodeSelector | object | `{}` |  |
+| acapy.openshift.route.enabled | bool | `false` | Set to true and acapy.ingress.enabled to false to use Openshift route templates |
+| acapy.openshift.route | object | `{"enabled": false, "path": "/", "targetPort": "http", "tls": { "enabled": true, "insecureEdgeTerminationPolicy": "None", "termination": "edge" }, "wildcardPolicy": "None" }` | Configuration for the route, https/tls is optional |
 | acapy.podAnnotations | object | `{}` |  |
 | acapy.podSecurityContext | object | `{}` |  |
 | acapy.readOnlyMode | bool | `false` |  |
@@ -185,6 +187,7 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | acapy.service.adminPort | int | `8031` |  |
 | acapy.service.httpPort | int | `8030` |  |
 | acapy.service.type | string | `"ClusterIP"` |  |
+| acapy.staticArgs | object | `{"autoAcceptInvites": true, "autoAcceptRequests": true, "autoRespondMessages": true, "autoRespondCredentialProposal": true, "autoRespondCredentialOffer": true, "autoRespondCredentialRequest": true, "autoRespondPresentationProposal": true, "autoRespondPresentationRequest": true, "autoStoreCredential": true, "autoVerifyPresentation": true, "autoPingConnection": true, "autoProvision": true, "monitorPing": true, "publicInvites": true, "logLevel": "info" }` | Set all the arguments for the acapy agent   |
 | acapy.tolerations | list | `[]` |  |
 | bpa.affinity | object | `{}` |  |
 | bpa.config | object | `{"bootstrap":{"password":"changeme","username":"admin"},"creddef":{"revocationRegistrySize":3000},"ledger":{"browser":"https://indy-test.bosch-digital.de"},"name":"Business Partner Agent","resolver":{"url":"https://resolver.stage.economyofthings.io"},"security":{"enabled":true},"web":{"only":false}}` | application config (remark: all new configuration values will sit here, the other ones can be migrated step by step) |
@@ -197,6 +200,8 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | bpa.ingress.tls | list | `[]` |  |
 | bpa.name | string | `"bpacore"` |  |
 | bpa.nodeSelector | object | `{}` |  |
+| bpa.openshift.route.enabled | bool | `false` | Set to true and bpa.ingress.enabled to false to use Openshift route templates |
+| bpa.openshift.route | object | `{"enabled": false, "path": "/", "targetPort": "http", "tls": { "enabled": true, "insecureEdgeTerminationPolicy": "None", "termination": "edge" }, "wildcardPolicy": "None" }` | Configuration for the route, https/tls is optional |
 | bpa.podAnnotations | object | `{}` |  |
 | bpa.podSecurityContext | object | `{}` |  |
 | bpa.resources | object | `{}` |  |
@@ -211,6 +216,10 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | global.ingressSuffix | string | `".example.com"` |  |
 | global.nameOverride | string | `""` |  |
 | global.persistence.deployPostgres | bool | `true` | If true, the Postgres chart is deployed |
+| keycloak.enabled | bool | `false` | If true, adds security-keycloak.yml to micronaut config files |
+| keycloak.clientId | string |  | name of client in keycloak realm |
+| keycloak.clientSecret | string |  | value of client secret in keycloak realm |
+| keycloak.config | object | `{"rolesName": "roles", "nameKey": "preferred_username", "redirectUri": "${bpa.scheme}://${bpa.host}/logout", "scopes": "openid", "issuer": "<your keycloak realm issuer url>", "endsessionUrl": "<your keycloak realm end session url>" }` | configuration data, stored in ConfigMap, read by security-keycloak.yml |
 | postgresql.image.tag | int | `12` |  |
 | postgresql.persistence | object | `{"enabled":false}` | Persistent Volume Storage configuration. ref: https://kubernetes.io/docs/user-guide/persistent-volumes |
 | postgresql.persistence.enabled | bool | `false` | Enable PostgreSQL persistence using Persistent Volume Claims. |
@@ -218,6 +227,8 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | postgresql.postgresqlPassword | string | `"change-me"` | PostgreSQL Password for the new user. If not set, a random 10 characters password will be used. |
 | postgresql.postgresqlUsername | string | `"postgres"` | PostgreSQL User to create. Do not change - otherwise non-admin user is created! |
 | postgresql.service | object | `{"port":5432}` | PostgreSQL service configuration |
+| schemas.enabled | bool | `false` | If true, adds schemas.yml to micronaut config files |
+| schemas.config | object | `{"bank-account": { "id": "UmZ25DANwS6ngGWB4ye4tN:2:BankAccount:0.1", "label": "Bank Account", "defaultAttributeName": "iban", "restrictions": [{"issuerDid": "did:sov:iil:UmZ25DANwS6ngGWB4ye4tN","label": "Demo Bank"}]},"commercial-register": {"id": "R6WR6n7CQVDjvvmwofHK6S:2:commercialregister:0.1", "label": "Commercial Register", "defaultAttributeName": "companyName", "restrictions": [{ "issuerDid": "did:sov:iil:R6WR6n7CQVDjvvmwofHK6S", "label": "Commercial Register" }]}}` | configuration data for schemas to load, stored in ConfigMap as schemas.yml, mounted into bpa deployment |
 
 ## Chart dependencies
 | Repository | Name | Version |
