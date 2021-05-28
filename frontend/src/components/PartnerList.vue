@@ -124,6 +124,17 @@ export default {
         return this.data;
       }
     },
+    newPartners() {
+      return this.$store.getters.newPartners;
+    },
+  },
+  watch: {
+    newPartners: function (newValue) {
+      if (newValue) {
+        // TODO: Don't fetch all partners but only add new partner
+        this.fetch();
+      }
+    },
   },
   methods: {
     open(partner) {
@@ -174,7 +185,7 @@ export default {
     },
     markNew(data) {
       if (this.indicateNew) {
-        let newPartners = this.$store.getters.newPartners;
+        const newPartners = this.$store.getters.newPartners;
         if (Object.keys(newPartners).length > 0) {
           data = data.map((partner) => {
             if ({}.hasOwnProperty.call(newPartners, partner.id)) {

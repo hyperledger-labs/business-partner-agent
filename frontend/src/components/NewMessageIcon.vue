@@ -10,10 +10,8 @@
   <div class="newIconContainer">
     <v-icon
       color="green"
-      class="newIcon"
       small
       v-bind:class="{
-        newIconPartner: isPartner,
         newIconCredential: !isPartner,
         setTop: isEmpty,
       }"
@@ -48,16 +46,6 @@ export default {
 .newIconContainer {
   position: relative;
   float: left;
-}
-
-.newIcon {
-  position: absolute;
-  bottom: 0;
-  top: 10px;
-}
-
-.newIconPartner {
-  right: 0px;
 }
 
 .newIconCredential {
