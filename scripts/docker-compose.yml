@@ -19,7 +19,6 @@ services:
         -Dbpa.host=${BPA_HOST}
         -Dbpa.scheme=${BPA_SCHEME}
       BPA_WEB_MODE: ${BPA_WEB_MODE}
-      BPA_RESOLVER_URL: ${BPA_RESOLVER_URL}
       BPA_LEDGER_BROWSER: ${BPA_LEDGER_BROWSER}
       BPA_DID_PREFIX: ${BPA_DID_PREFIX}
       BPA_BOOTSTRAP_UN: ${BPA_BOOTSTRAP_UN}

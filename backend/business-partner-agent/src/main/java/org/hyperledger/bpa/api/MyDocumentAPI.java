@@ -44,16 +44,6 @@ public class MyDocumentAPI {
     private JsonNode documentData; // TODO rename to document
 
     public static MyDocumentAPI fromRequest(WalletDocumentRequest req) {
-        System.out.println(req);
-        System.out.println(DocumentMapper.INSTANCE.requestToDocumentApi(req));
         return DocumentMapper.INSTANCE.requestToDocumentApi(req);
-//        return MyDocumentAPI.builder()
-//                // never set id or createdDate here!
-//                .type(req.getType())
-//                .schemaId(req.getSchemaId())
-//                .isPublic(req.getIsPublic())
-//                .label(req.getLabel())
-//                .documentData(req.getDocument())
-//                .build();
     }
 }
