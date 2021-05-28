@@ -90,6 +90,17 @@ bpa:
     #    hosts:
     #      - my-bpa.local
 
+  openshift:
+    route:
+      enabled: false
+      path: "/"
+      targetPort: http
+      tls:
+        enabled: true
+        insecureEdgeTerminationPolicy: None
+        termination: edge
+      wildcardPolicy: None
+
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -111,19 +122,19 @@ bpa:
 keycloak:
   enabled: false
 
-  clientId: mykeycloak-client
-  clientSecret: boahlalhalhjalsdfhasdfh
+  clientId: <your keycloak client id>
+  clientSecret: <your keycloak client secret>
 
   config:
     rolesName: roles
     nameKey: preferred_username
-    redirectUri: http://localhost:48080/logout
+    redirectUri: "${bpa.scheme}://${bpa.host}/logout"
     scopes: openid
-    issuer: https://dev.oidc.gov.bc.ca/auth/realms/digitaltrust
-    endsessionUrl: https://dev.oidc.gov.bc.ca/auth/realms/digitaltrust/protocol/openid-connect/logout
+    issuer: <your keycloak realm issuer url>
+    endsessionUrl: <your keycloak realm end session url>
 
 schemas:
-  enabled: false
+  enabled: true
   config:
     bank-account:
       id: "UmZ25DANwS6ngGWB4ye4tN:2:BankAccount:0.1"
@@ -194,6 +205,17 @@ acapy:
     #  - secretName: my-acapy-tls
     #    hosts:
     #      - my-acapy.local
+
+  openshift:
+    route:
+      enabled: false
+      path: "/"
+      targetPort: http
+      tls:
+        enabled: true
+        insecureEdgeTerminationPolicy: None
+        termination: edge
+      wildcardPolicy: None
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious

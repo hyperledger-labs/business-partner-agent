@@ -314,3 +314,19 @@ volumeMounts:
   readOnly: true
 {{- end -}}
 {{- end -}}
+
+{{- define "bpa.openshift.route.tls" -}}
+{{- if (.Values.bpa.openshift.route.tls.enabled) -}}
+tls:
+  insecureEdgeTerminationPolicy: {{ .Values.bpa.openshift.route.tls.insecureEdgeTerminationPolicy }}
+  termination: {{ .Values.bpa.openshift.route.tls.termination }}
+{{- end -}}
+{{- end -}}
+
+{{- define "acapy.openshift.route.tls" -}}
+{{- if (.Values.acapy.openshift.route.tls.enabled) -}}
+tls:
+  insecureEdgeTerminationPolicy: {{ .Values.acapy.openshift.route.tls.insecureEdgeTerminationPolicy }}
+  termination: {{ .Values.acapy.openshift.route.tls.termination }}
+{{- end -}}
+{{- end -}}

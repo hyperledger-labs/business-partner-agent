@@ -1,0 +1,20 @@
+{{- if (and .Values.bpa.openshift.route.enabled (not .Values.bpa.ingress.enabled)) -}}
+{{- $fullName := include "bpa.fullname" . -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "bpa.fullname" . }}
+  labels:
+    {{- include "bpa.labels" . | nindent 4 }}
+spec:
+  host: {{ include "bpa.host" . | quote }}
+  path: {{ .Values.bpa.openshift.route.path }}
+  to:
+    kind: Service
+    name: {{ $fullName }}
+    weight: 100
+  port:
+    targetPort: {{ .Values.bpa.openshift.route.targetPort }}
+  wildcardPolicy: {{ .Values.bpa.openshift.route.wildcardPolicy }}
+{{ include "bpa.openshift.route.tls" . | indent 2}}
+{{- end }}
