@@ -106,7 +106,7 @@ bpa:
     url: ${BPA_RESOLVER_URL:`https://resolver.stage.economyofthings.io`}
   ledger:
     browser: ${BPA_LEDGER_BROWSER:}
-  host: ${BPA_HOST:localhost:${micronaut.server.port}}
+  host: ${BPA_HOST:`localhost:${micronaut.server.port}`}
   name: ${AGENT_NAME:`Business Partner Agent`}
   scheme: ${BPA_SCHEME:`https`}
   web:
