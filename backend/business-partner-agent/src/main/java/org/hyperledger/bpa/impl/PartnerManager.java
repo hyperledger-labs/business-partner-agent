@@ -21,7 +21,6 @@ import io.micronaut.cache.annotation.CacheInvalidate;
 import io.micronaut.context.annotation.Value;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.units.qual.Length;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;

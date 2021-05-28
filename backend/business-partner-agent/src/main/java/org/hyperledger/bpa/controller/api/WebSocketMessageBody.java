@@ -19,7 +19,6 @@ package org.hyperledger.bpa.controller.api;
 
 import lombok.*;
 
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;

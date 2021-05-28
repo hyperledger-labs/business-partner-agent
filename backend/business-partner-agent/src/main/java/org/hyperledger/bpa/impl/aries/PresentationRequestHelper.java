@@ -73,11 +73,11 @@ public class PresentationRequestHelper {
                         .filter(vc -> vc.getCredentialInfo().getSchemaId().equals(
                                 restriction_schema_id.getAsString()))
                         .findFirst();
-            } else if (restriction_cred_def_id != null){
+            } else if (restriction_cred_def_id != null) {
                 cred = validCredentials.stream()
                         .filter(vc -> vc.getCredentialInfo().getCredentialDefinitionId().equals(
                                 restriction_cred_def_id.getAsString()))
-                        .findFirst(); 
+                        .findFirst();
             } else {
                 cred = validCredentials.stream().findFirst();
             }

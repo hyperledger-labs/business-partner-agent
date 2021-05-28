@@ -17,28 +17,39 @@
  */
 package org.hyperledger.bpa.impl.aries;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.databind.JsonNode;
-import io.micronaut.context.annotation.Value;
-import io.micronaut.core.annotation.Nullable;
-import io.micronaut.core.util.CollectionUtils;
-import io.micronaut.core.util.StringUtils;
-import io.micronaut.http.exceptions.HttpException;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.exception.AriesException;
-import org.hyperledger.aries.api.present_proof.*;
+import org.hyperledger.aries.api.present_proof.PresentProofProposal;
+import org.hyperledger.aries.api.present_proof.PresentProofProposalBuilder;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest;
+import org.hyperledger.aries.api.present_proof.PresentProofRequestHelper;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeInitiator;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
+import org.hyperledger.aries.api.present_proof.PresentationProblemReportRequest;
+import org.hyperledger.aries.api.present_proof.PresentationRequest;
+import org.hyperledger.aries.api.present_proof.PresentationRequestCredentials;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.api.exception.PresentationConstructionException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
-import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
-import org.hyperledger.bpa.controller.api.partner.ProofRequestsRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
@@ -52,12 +63,12 @@ import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.validation.constraints.NotNull;
-
-import java.io.IOException;
-import java.util.*;
+import io.micronaut.context.annotation.Value;
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.core.util.StringUtils;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Singleton
@@ -143,29 +154,28 @@ public class ProofManager {
     }
 
     public void rejectPresentProofRequest(@NotNull PartnerProof proofEx, String explainString) {
-        if (PresentationExchangeState.REQUEST_RECEIVED.equals(proof.get().getState())){
-        try {
-            sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString);
-            // after sending rejection notice, delete aries copy. no proper 'reject'
-            // protocol
-            ac.presentProofRecordsRemove(proofEx.getPresentationExchangeId());
-            // after sending removing aries copy, remove BPA copy
-            // TODO: 'rejected_state' to save, so delete for now
-            deletePartnerProof(proofEx.getId());
-        } catch (IOException e) {
-            throw new NetworkException("aca-py not available", e);
-        } catch (AriesException e) {
-            log.error("aca-py wallet item not found, attempting BPA delete");
+        if (PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
+            try {
+                sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString);
+                // after sending rejection notice, delete aries copy. no proper 'reject'
+                // protocol
+                ac.presentProofRecordsRemove(proofEx.getPresentationExchangeId());
+                // after sending removing aries copy, remove BPA copy
+                // TODO: 'rejected_state' to save, so delete for now
+                deletePartnerProof(proofEx.getId());
+            } catch (IOException e) {
+                throw new NetworkException("aca-py not available", e);
+            } catch (AriesException e) {
+                log.error("aca-py wallet item not found, attempting BPA delete");
+            }
+        } else {
+            throw new WrongApiUsageException("PresentationExchangeState != 'request-received'");
         }
-    } else {
-        throw new WrongApiUsageException("PresentationExchangeState != 'request-received'");
-    }
     }
 
     public void presentProof(@NotNull PartnerProof proofEx) {
-        if (PresentationExchangeRole.PROVER.equals(proofEx.get().getRole())
-                    && PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.get().getState()))
-        {
+        if (PresentationExchangeRole.PROVER.equals(proofEx.getRole())
+                && PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
             try {
                 ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId())
                         .ifPresent(record -> presentProof(record));
@@ -177,7 +187,8 @@ public class ProofManager {
             }
             pProofRepo.updateState(proofEx.getId(), PresentationExchangeState.PRESENTATIONS_SENT);
         } else {
-            throw new WrongApiUsageException("PresentationExchangeRole!= 'prover' or PresentationExchangeState != 'request-received'");
+            throw new WrongApiUsageException(
+                    "PresentationExchangeRole!= 'prover' or PresentationExchangeState != 'request-received'");
         }
     }
 
@@ -190,7 +201,6 @@ public class ProofManager {
             } catch (IOException e) {
                 throw new NetworkException("aca-py not available", e);
             }
-
             try {
                 Optional<PresentationRequest> presentation = PresentationRequestHelper.buildAny(
                         presentationExchangeRecord,
@@ -239,9 +249,10 @@ public class ProofManager {
                     pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId())
                             .ifPresentOrElse(pProof -> {
                                 if (PresentationExchangeState.PROPOSAL_SENT.equals(pProof.getState()) &&
-                                PresentationExchangeState.REQUEST_RECEIVED.equals(proof.getState()) && 
-                                PresentationExchangeInitiator.SELF.equals((proof.getInitiator()))){
-                                    log.info("Present_Proof: state=request_received on PresentationExchange where initator=self, responding immediatly");
+                                        PresentationExchangeState.REQUEST_RECEIVED.equals(proof.getState()) &&
+                                        PresentationExchangeInitiator.SELF.equals(proof.getInitiator())) {
+                                    log.info(
+                                            "Present_Proof: state=request_received on PresentationExchange where initator=self, responding immediatly");
                                     presentProof(proof);
                                 }
 

@@ -42,8 +42,6 @@ import org.hyperledger.bpa.impl.aries.ProofManager;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.aries.api.connection.CreateInvitationResponse;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 
 import javax.inject.Inject;
 
@@ -236,8 +234,8 @@ public class PartnerController {
             @PathVariable String proofId) {
         final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(proofId));
         if (proof.isPresent()) {
-                proofM.presentProof(proof.get());
-                return HttpResponse.ok();
+            proofM.presentProof(proof.get());
+            return HttpResponse.ok();
         } else {
             return HttpResponse.notFound();
         }
