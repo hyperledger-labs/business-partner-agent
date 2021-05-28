@@ -1,0 +1,16 @@
+{{- if (.Values.keycloak.enabled) -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "bpa.fullname" . }}-keycloak
+  labels:
+    {{- include "bpa.labels" . | nindent 4 }}
+data:
+  BPA_KEYCLOAK_ROLES_NAME: {{ .Values.keycloak.config.rolesName | quote }}
+  BPA_KEYCLOAK_NAME_KEY: {{ .Values.keycloak.config.nameKey | quote }}
+  BPA_KEYCLOAK_REDIRECT_URI: {{ .Values.keycloak.config.redirectUri | quote }}
+  BPA_KEYCLOAK_SCOPES: {{ .Values.keycloak.config.scopes | quote }}
+  BPA_KEYCLOAK_ISSUER: {{ .Values.keycloak.config.issuer | quote }}
+  BPA_KEYCLOAK_ENDSESSION_URL: {{ .Values.keycloak.config.endsessionUrl | quote }}
+  BPA_KEYCLOAK_CLIENT_ID: {{ .Values.keycloak.clientId | quote }}
+{{- end -}}

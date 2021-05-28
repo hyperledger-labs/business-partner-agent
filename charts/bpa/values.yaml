@@ -16,7 +16,7 @@ global:
 
 bpa:
   name: bpacore
- 
+
   image:
     repository: ghcr.io/hyperledger-labs/business-partner-agent
     pullPolicy: IfNotPresent
@@ -30,47 +30,35 @@ bpa:
     annotations: {}
     # The name of the service account to use.
     # If not set and create is true, a name is generated using the fullname template
-    name: ""  
+    name: ""
 
   # -- application config (remark: all new configuration values will sit here, the other ones can be migrated step by step)
-  config: 
+  config:
     security:
-      enabled: true  
+      enabled: true
     bootstrap:
       username: admin
-      password: changeme      
+      password: changeme
     resolver:
       url: https://resolver.stage.economyofthings.io
     ledger:
       browser: https://indy-test.bosch-digital.de
     name: Business Partner Agent
+    scheme: https
     web:
-      only: false 
+      only: false
+    did:
+      prefix: "did:sov:iil:"
     creddef:
-      revocationRegistrySize: 3000 
-    #schemas:
-    #  bank-account:
-    #    id: "UmZ25DANwS6ngGWB4ye4tN:2:BankAccount:0.1"
-    #    label: "Bank Account"
-    #    defaultAttributeName: "iban"
-    #    restrictions:
-    #      - issuerDid: "did:sov:iil:UmZ25DANwS6ngGWB4ye4tN"
-    #        label: "Demo Bank"
-    #  commercial-register:
-    #    id: "R6WR6n7CQVDjvvmwofHK6S:2:commercialregister:0.1"
-    #    label: "Commercial Register"
-    #    defaultAttributeName: "companyName"
-    #    restrictions:
-    #      - issuerDid: "did:sov:iil:R6WR6n7CQVDjvvmwofHK6S"
-    #        label: "Commercial Register"
-    #imprint:
-    #  url: 
-    #privacy:
-    #  policy:
-    #    url:   
+      revocationRegistrySize: 3000
+    imprint:
+      url:
+    privacy:
+      policy:
+        url:
 
   imagePullSecrets: []
- 
+
   podAnnotations: {}
 
   podSecurityContext: {}
@@ -94,7 +82,7 @@ bpa:
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
     # Uncomment this to define your own hosts and override global.ingressSuffix
-    # hosts: 
+    # hosts:
     #     host:
     #     paths: ['/']
     tls: []
@@ -120,6 +108,38 @@ bpa:
 
   affinity: {}
 
+keycloak:
+  enabled: false
+
+  clientId: mykeycloak-client
+  clientSecret: boahlalhalhjalsdfhasdfh
+
+  config:
+    rolesName: roles
+    nameKey: preferred_username
+    redirectUri: http://localhost:48080/logout
+    scopes: openid
+    issuer: https://dev.oidc.gov.bc.ca/auth/realms/digitaltrust
+    endsessionUrl: https://dev.oidc.gov.bc.ca/auth/realms/digitaltrust/protocol/openid-connect/logout
+
+schemas:
+  enabled: false
+  config:
+    bank-account:
+      id: "UmZ25DANwS6ngGWB4ye4tN:2:BankAccount:0.1"
+      label: "Bank Account"
+      defaultAttributeName: "iban"
+      restrictions:
+        - issuerDid: "did:sov:iil:UmZ25DANwS6ngGWB4ye4tN"
+          label: "Demo Bank"
+    commercial-register:
+      id: "R6WR6n7CQVDjvvmwofHK6S:2:commercialregister:0.1"
+      label: "Commercial Register"
+      defaultAttributeName: "companyName"
+      restrictions:
+        - issuerDid: "did:sov:iil:R6WR6n7CQVDjvvmwofHK6S"
+          label: "Commercial Register"
+
 acapy:
   name: acapy
 
@@ -138,7 +158,7 @@ acapy:
 
   readOnlyMode: false
 
-  imagePullSecrets: [] 
+  imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
 
@@ -167,7 +187,7 @@ acapy:
       # kubernetes.io/tls-acme: "true"
 
     # Uncomment this to define your own hosts and override global.ingressSuffix
-    # hosts: 
+    # hosts:
     #     host:
     #     paths: ['/']
     tls: []
@@ -193,6 +213,23 @@ acapy:
 
   affinity: {}
 
+  staticArgs:
+    autoAcceptInvites: true
+    autoAcceptRequests: true
+    autoRespondMessages: true
+    autoRespondCredentialProposal: true
+    autoRespondCredentialOffer: true
+    autoRespondCredentialRequest: true
+    autoRespondPresentationProposal: true
+    autoRespondPresentationRequest: true
+    autoStoreCredential: true
+    autoVerifyPresentation: true
+    autoPingConnection: true
+    autoProvision: true
+    monitorPing: true
+    publicInvites: true
+    logLevel: info
+
 postgresql:
   # --  PostgreSQL service configuration
   service:
@@ -209,8 +246,13 @@ postgresql:
 
   # --  Persistent Volume Storage configuration. ref: https://kubernetes.io/docs/user-guide/persistent-volumes
   persistence:
-    
+
     # -- Enable PostgreSQL persistence using Persistent Volume Claims.
     enabled: false
   image:
     tag: 12
+  # -- add securityContext (fsGroup, runAsUser). These need to be false for Openshift 4
+  securityContext:
+    enabled: true
+  containerSecurityContext:
+    enabled: true
