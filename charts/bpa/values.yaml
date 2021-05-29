@@ -95,6 +95,7 @@ bpa:
       enabled: false
       path: "/"
       targetPort: http
+      timeout: 30s
       tls:
         enabled: true
         insecureEdgeTerminationPolicy: None
@@ -211,6 +212,7 @@ acapy:
       enabled: false
       path: "/"
       targetPort: http
+      timeout: 30s
       tls:
         enabled: true
         insecureEdgeTerminationPolicy: None

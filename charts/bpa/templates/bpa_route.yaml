@@ -4,6 +4,8 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: {{ include "bpa.fullname" . }}
+  annotations:
+    haproxy.router.openshift.io/timeout: {{ .Values.bpa.openshift.route.timeout }}
   labels:
     {{- include "bpa.labels" . | nindent 4 }}
 spec:

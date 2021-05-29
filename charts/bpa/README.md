@@ -178,7 +178,7 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | acapy.nameOverride | string | `""` |  |
 | acapy.nodeSelector | object | `{}` |  |
 | acapy.openshift.route.enabled | bool | `false` | Set to true and acapy.ingress.enabled to false to use Openshift route templates |
-| acapy.openshift.route | object | `{"enabled": false, "path": "/", "targetPort": "http", "tls": { "enabled": true, "insecureEdgeTerminationPolicy": "None", "termination": "edge" }, "wildcardPolicy": "None" }` | Configuration for the route, https/tls is optional |
+| acapy.openshift.route | object | `{"enabled": false, "path": "/", "targetPort": "http", "timeout": "30s", "tls": { "enabled": true, "insecureEdgeTerminationPolicy": "None", "termination": "edge" }, "wildcardPolicy": "None" }` | Configuration for the route, https/tls is optional |
 | acapy.podAnnotations | object | `{}` |  |
 | acapy.podSecurityContext | object | `{}` |  |
 | acapy.readOnlyMode | bool | `false` |  |
@@ -201,7 +201,7 @@ Note: Deleting the PVC's will delete postgresql data as well. Please be cautious
 | bpa.name | string | `"bpacore"` |  |
 | bpa.nodeSelector | object | `{}` |  |
 | bpa.openshift.route.enabled | bool | `false` | Set to true and bpa.ingress.enabled to false to use Openshift route templates |
-| bpa.openshift.route | object | `{"enabled": false, "path": "/", "targetPort": "http", "tls": { "enabled": true, "insecureEdgeTerminationPolicy": "None", "termination": "edge" }, "wildcardPolicy": "None" }` | Configuration for the route, https/tls is optional |
+| bpa.openshift.route | object | `{"enabled": false, "path": "/", "targetPort": "http", "timeout": "30s", "tls": { "enabled": true, "insecureEdgeTerminationPolicy": "None", "termination": "edge" }, "wildcardPolicy": "None" }` | Configuration for the route, https/tls is optional |
 | bpa.podAnnotations | object | `{}` |  |
 | bpa.podSecurityContext | object | `{}` |  |
 | bpa.resources | object | `{}` |  |

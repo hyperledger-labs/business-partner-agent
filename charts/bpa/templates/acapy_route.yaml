@@ -4,6 +4,8 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: {{ include "acapy.fullname" . }}
+  annotations:
+    haproxy.router.openshift.io/timeout: {{ .Values.acapy.openshift.route.timeout }}
   labels:
     {{- include "acapy.labels" . | nindent 4 }}
 spec:
