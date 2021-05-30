@@ -133,8 +133,8 @@ acapy:
 
   agentName: ca-aca-py
 
-  # -- (String) The agent seed, 32 characters. Will be generated if not defined here
-  agentSeed:
+  # The agent seed, 32 characters. Will be generated if not defined here
+  #agentSeed: ""
 
   readOnlyMode: false
 
