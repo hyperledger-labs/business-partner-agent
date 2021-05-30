@@ -1,0 +1,47 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "type": "object",
+    "properties": {
+        "acapy": {
+            "type": "object",
+            "properties": {
+                "agentName": {
+                    "type": "string",
+                    "description": "Agent name. It's helpful to set it in the as <DID>:<Human readable label>, e.g. did:sov:idu:XnEKP3WieQhNP7ugjV5r36:mybpa"
+                },
+                "agentSeed": {
+                    "type": "string",
+                    "description": "The agent seed. Will be generated if not defined here.",
+                    "minLength": 32,
+                    "maxLength": 32
+                }
+            }
+        },
+        "bpa": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "type": "object",
+                    "properties": {
+                        "bootstrap": {
+                            "type": "object",
+                            "description": "The administrator credentials.",
+                            "properties": {
+                                "password": {
+                                    "type": "string"
+                                },
+                                "username": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "name": {
+                            "description": "Name shown in the frontend.",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
