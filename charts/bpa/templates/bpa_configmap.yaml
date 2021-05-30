@@ -1,0 +1,23 @@
+{{- $acapyIngressHost := include "acapy.host" . -}}
+{{- $bpaIngressHost := include "bpa.host" . -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "bpa.fullname" . }}
+  labels:
+    {{- include "bpa.labels" . | nindent 4 }}
+data:
+  application.yaml: |-  
+    bpa:           
+{{ toYaml .Values.bpa.config | indent 6 }}   
+      acapy:
+        url: http://{{ include "acapy.fullname" . }}:{{ .Values.acapy.service.adminPort }} 
+        apiKey: {{ .Values.acapy.adminURLApiKey }}
+        endpoint: https://{{ $acapyIngressHost }}
+      pg:
+        url: jdbc:postgresql://{{ include "global.postgresql.fullname" . }}/{{ .Values.postgresql.postgresqlUsername }}
+        username: {{ .Values.postgresql.postgresqlUsername }}
+      host: {{ $bpaIngressHost }}
+      micronaut:
+        security:
+          enabled: {{ .Values.bpa.config.security.enabled }}

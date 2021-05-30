@@ -6,11 +6,11 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
-  <div>
+  <v-container>
     <v-card class="mx-auto">
       <v-card-title class="bg-light">
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
-          <v-icon dark>mdi-chevron-left</v-icon>
+          <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
         Select Business Partner
       </v-card-title>
@@ -22,7 +22,7 @@
         <PartnerList
           v-bind:selectable="true"
           ref="partnerList"
-          v-bind:onlyIssuersForSchema="this.type"
+          v-bind:onlyIssuersForSchema="schemaId"
         ></PartnerList>
       </v-card-text>
 
@@ -65,7 +65,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -80,10 +80,14 @@ export default {
   },
   props: {
     documentId: String,
-    type: String,
+    schemaId: String,
   },
   created() {
     EventBus.$emit("title", "Request Verification");
+    if (!this.schemaId) {
+      EventBus.$emit("success", "Can't start verification");
+      this.$router.push({ name: "Wallet" });
+    }
   },
   data: () => {
     return {

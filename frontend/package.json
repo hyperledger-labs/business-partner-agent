@@ -4,39 +4,57 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "test:unit": "vue-cli-service test:unit",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "license-check": "license-checker --production --json --onlyAllow 'MIT;Python-2.0;Apache-2.0;BSD-2-Clause;BSD-3-Clause' --excludePackages 'company-agent-frontend@0.1.0'",
+    "license": "generate-attribution -o ./licenses"
   },
   "dependencies": {
     "@babel/polyfill": "^7.11.5",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "core-js": "^3.6.4",
+    "font-awesome": "^4.7.0",
+    "material-design-icons-iconfont": "^6.1.0",
     "moment": "^2.29.1",
+    "qrcode.vue": "^1.7.0",
     "vue": "^2.6.12",
     "vue-json-pretty": "^1.7.0",
     "vue-markdown-render": "^1.0.2",
     "vue-moment": "^4.1.0",
-    "vue-router": "^3.4.6",
+    "vue-native-websocket": "^2.0.14",
+    "vue-router": "^3.4.9",
     "vuetify": "^2.3.14",
-    "vuex": "^3.5.1"
+    "vuex": "^3.6.0"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.3",
     "@mdi/font": "^5.7.55",
+    "@mdi/js": "^5.8.55",
     "@vue/cli-plugin-babel": "~4.3.0",
     "@vue/cli-plugin-eslint": "^4.5.7",
     "@vue/cli-plugin-router": "^4.5.7",
+    "@vue/cli-plugin-unit-jest": "^4.5.9",
     "@vue/cli-service": "~4.3.0",
     "@vue/eslint-config-prettier": "^6.0.0",
+    "@vue/test-utils": "^1.1.1",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-vue": "^6.2.2",
     "husky": "^4.3.0",
+    "license-checker": "25.0.1",
     "lint-staged": "^10.4.2",
-    "material-design-icons-iconfont": "^5.0.1",
+    "node-sass": "^5.0.0",
+    "oss-attribution-generator": "^1.7.1",
     "prettier": "2.1.2",
+    "sass": "^1.32.12",
+    "sass-loader": "^10",
     "vue-cli-plugin-vuetify": "^2.0.7",
-    "vue-template-compiler": "^2.6.12"
+    "vue-jest": "^3.0.7",
+    "vue-template-compiler": "^2.6.12",
+    "vuetify-loader": "^1.7.2",
+    "xml-js": "^1.6.11"
   },
   "husky": {
     "hooks": {
@@ -44,6 +62,6 @@
     }
   },
   "lint-staged": {
-    "**/*.{js,vue}": "prettier --write --allow-empty"
+    "**/*.{js,vue}": "prettier --write"
   }
 }

@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 */
 
@@ -22,10 +22,13 @@ import Presentation from "../views/Presentation.vue";
 import Partners from "../views/Partners.vue";
 import Partner from "../views/Partner.vue";
 import AddPartner from "../views/AddPartner.vue";
+import AddPartnerbyURL from "../views/AddPartnerbyURL.vue";
 import Settings from "../views/Settings.vue";
 import SchemaSettings from "../views/SchemaSettings.vue";
 import Schema from "../views/Schema.vue";
 import AddSchema from "../views/AddSchema.vue";
+import About from "../views/About.vue";
+import CredentialManagement from "@/views/issuer/CredentialManagement.vue";
 
 Vue.use(VueRouter);
 
@@ -116,6 +119,11 @@ const routes = [
     component: AddPartner,
   },
   {
+    path: "/app/partners/create-qr",
+    name: "AddPartnerbyURL",
+    component: AddPartnerbyURL,
+  },
+  {
     path: "/app/settings",
     name: "Settings",
     component: Settings,
@@ -135,6 +143,16 @@ const routes = [
     name: "Schema",
     component: Schema,
     props: true,
+  },
+  {
+    path: "/app/about",
+    name: "About",
+    component: About,
+  },
+  {
+    path: "/credentialManagement",
+    name: "CredentialManagement",
+    component: CredentialManagement
   },
 ];
 

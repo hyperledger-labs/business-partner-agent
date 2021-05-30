@@ -1,0 +1,127 @@
+name: CI/CD
+
+on: 
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+    tags:        
+      - 'v**'   # Push events to every tag prefixed with v, including hierarchical tags like v1.0/beta
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # needed for the license header check
+          fetch-depth: 0
+
+      # Setup Phase
+
+      - name: Setup node and install deps
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          check-latest: true
+      - run: npm --prefix frontend install
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '15'
+          check-latest: true
+
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: maven-settings-xml-action
+        uses: whelk-io/maven-settings-xml-action@v14  
+        with:
+          plugin_groups: '[ "com.spotify" ]' 
+
+      # Test Phase
+
+      - name: Test with npm
+        ## TODO are there any frontend tests?
+        run: npm --prefix frontend run license-check
+
+      - name: Test with Maven 
+        run: mvn -f backend/pom.xml test spotbugs:check pmd:check license:check
+
+      # Attribution Phase
+
+      - name: Frontend attribution
+        run: npm --prefix frontend run license
+      
+      - name: Backend attribution
+        run: mvn -f backend/pom.xml generate-resources -Pbackend-license
+
+      # Build Phase
+ 
+      - name: Build frontend
+        run: npm --prefix frontend run build
+
+      - name: Copy dist folder to backend
+        run: cp -r ./frontend/dist ./backend/business-partner-agent/src/main/resources/public
+
+      - name: Build backend
+        run: mvn -f backend/pom.xml clean package -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true -Dlicense.skip=true
+
+      # Docker Phase (triggered only on master or tag)
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }} 
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }} 
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner}}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Prepare docker tags license image
+        uses: Surgo/docker-smart-tag-action@v1      
+        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }} 
+        id: preparetagslicense
+        with:
+          docker_image: ghcr.io/hyperledger-labs/business-partner-agent-license
+          default_branch: ${{ github.event.repository.default_branch }}
+          tag_with_sha: true 
+
+      - name: Build and push license container
+        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }}
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          file: Dockerfile.license
+          tags: ${{ steps.preparetagslicense.outputs.tag }}
+          
+      - name: Prepare docker images bpa
+        uses: Surgo/docker-smart-tag-action@v1      
+        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }} 
+        id: preparetags
+        with:
+          docker_image: ghcr.io/hyperledger-labs/business-partner-agent
+          default_branch: ${{ github.event.repository.default_branch }}
+          tag_with_sha: true           
+
+      - name: Build and push container
+        if: ${{ github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v') }}
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          file: Dockerfile.run
+          tags: ${{ steps.preparetags.outputs.tag }}

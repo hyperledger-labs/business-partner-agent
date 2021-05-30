@@ -63,8 +63,30 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector bpa labels
 */}}
 {{- define "bpa.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "global.name" . }}-{{ .Values.bpa.name }}
+app.kubernetes.io/name: {{ include "global.fullname" . }}-{{ .Values.bpa.name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "bpa.serviceAccountName" -}}
+{{- if .Values.bpa.serviceAccount.create }}
+{{- default (include "bpa.fullname" .) .Values.bpa.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.bpa.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+{{/*
+generate hosts if not overriden
+*/}}
+{{- define "bpa.host" -}}
+{{- if .Values.bpa.ingress.hosts -}}
+{{- (index .Values.bpa.ingress.hosts 0).host -}}
+{{- else }}
+{{- include "global.fullname" . }}{{ .Values.global.ingressSuffix -}}
+{{- end -}}
 {{- end }}
 
 {{/*
@@ -83,16 +105,68 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector acapy labels
 */}}
 {{- define "acapy.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "global.name" . }}-{{ .Values.acapy.name }}
+app.kubernetes.io/name: {{ include "global.fullname" . }}-{{ .Values.acapy.name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+
+{{/*
+generate hosts if not overriden
+*/}}
+{{- define "acapy.host" -}}
+{{- if .Values.acapy.ingress.hosts -}}
+{{- (index .Values.acapy.ingress.hosts 0).host -}}
+{{- else }}
+{{- include "acapy.fullname" . }}{{ .Values.global.ingressSuffix -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Get the password secret.
+*/}}
+{{- define "acapy.secretName" -}}
+{{- if .Values.acapy.existingSecret -}}
+    {{- printf "%s" (tpl .Values.acapy.existingSecret $) -}}
+{{- else -}}
+    {{- printf "%s" (include "acapy.fullname" .) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return true if we should use an existingSecret.
+*/}}
+{{- define "acapy.useExistingSecret" -}}
+{{- if .Values.existingSecret -}}
+    {{- true -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return true if a secret object should be created
+*/}}
+{{- define "acapy.createSecret" -}}
+{{- if not (include "acapy.useExistingSecret" .) -}}
+    {{- true -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return seed
+*/}}
+{{- define "acapy.seed" -}}
+{{- if .Values.acapy.agentSeed -}}
+    {{- .Values.acapy.agentSeed -}}
+{{- else -}}
+    {{- randAlphaNum 32 -}}
+{{- end -}}
+{{- end -}}
 
 {{/*
 Create a default fully qualified app name for the postgres requirement.
 */}}
 {{- define "global.postgresql.fullname" -}}
 {{- $postgresContext := dict "Values" .Values.postgresql "Release" .Release "Chart" (dict "Name" "postgresql") -}}
-{{ template "postgresql.fullname" $postgresContext }}
+{{ template "postgresql.primary.fullname" $postgresContext }}
 {{- end -}}
 
 {{/*

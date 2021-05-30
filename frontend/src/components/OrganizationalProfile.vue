@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 
@@ -26,12 +26,13 @@
         <v-text-field
           label="Company Legal Name"
           placeholder
-          v-model="documentData.legalName"
           :disabled="isReadOnly"
           :rules="[(v) => !!v || 'Item is required']"
           required
           outlined
           dense
+          @change="onLegalNameChange($event)"
+          :value="documentData.legalName"
         ></v-text-field>
         <v-text-field
           label="Company Alternative Name"
@@ -83,7 +84,7 @@
                 "
                 @click="deleteIdentifier(index)"
               >
-                <v-icon color="error">mdi-delete</v-icon>
+                <v-icon color="error">$vuetify.icons.delete</v-icon>
               </v-btn>
             </v-layout>
           </v-col>
@@ -156,40 +157,24 @@
 </template>
 
 <script>
+import { profileModel } from "../models/model";
 export default {
   props: {
     isReadOnly: Boolean,
     documentData: {
       type: Object,
-      default: () => {
-        return {
-          type: "Legal Entity",
-          legalName: "",
-          altName: "",
-          identifier: [
-            {
-              id: "",
-              type: "",
-            },
-          ],
-          registeredSite: {
-            address: {
-              streetAddress: "",
-              zipCode: "",
-              city: "",
-              country: "",
-              region: "",
-            },
-          },
-        };
-      },
+      default: () => profileModel,
     },
   },
-  created() {},
+  created() {
+    this.intDoc.documentData = this.documentData;
+    this.intDoc.label = this.documentData.legalName;
+  },
   data: () => {
     return {
       identifierTypes: ["LEI", "D-U-N-S", "VAT", "USCC"],
       orgTypes: ["Legal Entity", "Business Unit", "Site"],
+      intDoc: Object,
     };
   },
   computed: {},
@@ -203,6 +188,10 @@ export default {
     },
     deleteIdentifier(i) {
       this.documentData.identifier.splice(i, 1);
+    },
+    onLegalNameChange(event) {
+      this.documentData.legalName = event;
+      this.intDoc.label = event;
     },
   },
   components: {},

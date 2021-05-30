@@ -13,19 +13,32 @@
       v-model="selected"
       :loading="isBusy"
       :headers="headers"
-      :items="data"
+      :items="filteredData"
       :show-select="selectable"
-      :sort-by="['createdAt']"
-      :sort-desc="[false]"
+      :sort-by="['updatedAt']"
+      :sort-desc="[true]"
       single-select
       @click:row="open"
     >
       <template v-slot:[`item.name`]="{ item }">
+        <new-message-icon
+          v-show="item.new"
+          isPartner
+          :text="item.name"
+        ></new-message-icon>
         <PartnerStateIndicator
           v-if="item.state"
           v-bind:state="item.state"
         ></PartnerStateIndicator>
-        <span class="font-weight-medium"> {{ item.name }}</span>
+        <span v-bind:class="{ 'font-weight-medium': item.new }">
+          {{ item.name }}
+        </span>
+      </template>
+
+      <template v-slot:[`item.address`]="{ item }">
+        <span text-truncate>
+          {{ item.address }}
+        </span>
       </template>
 
       <template v-slot:[`item.createdAt`]="{ item }">
@@ -35,18 +48,26 @@
       <template v-slot:[`item.updatedAt`]="{ item }">
         {{ item.updatedAt | moment("YYYY-MM-DD HH:mm") }}
       </template>
+
+      <template v-slot:[`item.state`]="{ item }">
+        {{ getPartnerState(item).label }}
+      </template>
     </v-data-table>
   </v-container>
 </template>
 
 <script>
 import { EventBus } from "../main";
-import { getPartnerProfile, getPartnerName } from "../utils/partnerUtils";
+import { getPartnerName, getPartnerState } from "../utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
+import NewMessageIcon from "@/components/NewMessageIcon";
+import { CredentialTypes, PartnerStates } from "../constants";
+
 export default {
   name: "PartnerList",
   components: {
     PartnerStateIndicator,
+    NewMessageIcon,
   },
   props: {
     selectable: {
@@ -66,6 +87,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    showInvitations: {
+      type: Boolean,
+      default: false,
+    },
+    indicateNew: {
+      type: Boolean,
+      default: false,
+    },
     onlyIssuersForSchema: {
       type: String,
       default: "",
@@ -79,11 +108,21 @@ export default {
       selected: [],
       data: [],
       isBusy: true,
+      getPartnerState: getPartnerState,
     };
   },
   computed: {
     expertMode() {
       return this.$store.state.expertMode;
+    },
+    filteredData() {
+      if (!this.showInvitations) {
+        return this.data.filter((partner) => {
+          return partner.state !== PartnerStates.INVITATION.value;
+        });
+      } else {
+        return this.data;
+      }
     },
   },
   methods: {
@@ -95,18 +134,21 @@ export default {
         },
       });
     },
+
     fetch() {
       // Query only for partners that can issue credentials of specified schema
       let queryParam = "";
       if (this.onlyIssuersForSchema.length > 0) {
-        queryParam = `?issuerFor=${this.onlyIssuersForSchema}`;
+        queryParam = `?schemaId=${this.onlyIssuersForSchema}`;
       }
       this.$axios
         .get(`${this.$apiBaseUrl}/partners${queryParam}`)
         .then((result) => {
-          console.log(result);
+          console.log("Partner List", result);
           if ({}.hasOwnProperty.call(result, "data")) {
             this.isBusy = false;
+
+            result.data = this.markNew(result.data);
 
             if (this.onlyAries) {
               result.data = result.data.filter((item) => {
@@ -114,17 +156,9 @@ export default {
               });
             }
 
-            // Get profile of each partner and merge with partner data
             this.data = result.data.map((partner) => {
-              let profile = getPartnerProfile(partner);
-              if (profile) {
-                delete Object.assign(profile, {
-                  ["did"]: profile["id"],
-                })["id"];
-              }
-              delete partner.credential;
-              partner.profile = profile;
               partner.name = getPartnerName(partner);
+              partner.address = this.getProfileAddress(partner);
               return partner;
             });
 
@@ -137,6 +171,43 @@ export default {
           console.error(e);
           EventBus.$emit("error", e);
         });
+    },
+    markNew(data) {
+      if (this.indicateNew) {
+        let newPartners = this.$store.getters.newPartners;
+        if (Object.keys(newPartners).length > 0) {
+          data = data.map((partner) => {
+            if ({}.hasOwnProperty.call(newPartners, partner.id)) {
+              partner.new = true;
+            }
+            return partner;
+          });
+        }
+      }
+      return data;
+    },
+    getProfileAddress(credential) {
+      if (credential.credential && credential.credential.length > 0) {
+        const profile = credential.credential.find((item) => {
+          return item.type === CredentialTypes.PROFILE.type;
+        });
+        let address = "";
+        if (profile) {
+          const registeredSiteAddress =
+            profile.credentialData.registeredSite.address;
+          if (registeredSiteAddress.city !== "") {
+            address = registeredSiteAddress.city;
+          }
+          if (registeredSiteAddress.zipCode !== "") {
+            address = registeredSiteAddress.zipCode + " " + address;
+          }
+          if (registeredSiteAddress.streetAddress !== "") {
+            address = registeredSiteAddress.streetAddress + ", " + address;
+          }
+        }
+        return address;
+      }
+      return "";
     },
   },
 };

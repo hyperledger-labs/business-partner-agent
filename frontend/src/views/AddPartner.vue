@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
@@ -15,7 +15,7 @@
         <v-row>
           <v-col cols="12">
             <v-text-field
-              prepend-icon="mdi-fingerprint"
+              prepend-icon="$vuetify.icons.identity"
               label="Decentralized Identifier (DID)"
               placeholder=""
               v-model="did"
@@ -58,15 +58,7 @@
             </v-text-field>
           </v-col>
         </v-row>
-        <OganizationalProfile
-          v-if="msg === '' && partnerProfile !== null"
-          v-bind:documentData="partnerProfile"
-          isReadOnly
-        ></OganizationalProfile>
-        <DocumentCredentialList
-          v-if="publicCredentials.length > 0"
-          v-bind:credentials="publicCredentials"
-        ></DocumentCredentialList>
+        <Profile v-if="partnerLoaded" v-bind:partner="partner" />
       </v-container>
       <v-card-actions>
         <v-layout justify-space-between>
@@ -85,15 +77,13 @@
 </template>
 
 <script>
-import OganizationalProfile from "@/components/OrganizationalProfile";
-import DocumentCredentialList from "@/components/credentials/DocumentCredentialList";
+import Profile from "@/components/Profile";
+import { getPartnerName } from "../utils/partnerUtils";
 import { EventBus } from "../main";
-import { CredentialTypes } from "../constants";
 export default {
   name: "AddPartner",
   components: {
-    OganizationalProfile,
-    DocumentCredentialList,
+    Profile,
   },
   created: () => {},
   data: () => {
@@ -103,8 +93,7 @@ export default {
       msg: "",
       did: "",
       alias: "",
-      partnerProfile: null,
-      publicCredentials: [],
+      partner: {},
     };
   },
   methods: {
@@ -122,19 +111,10 @@ export default {
           ) {
             let partner = result.data;
             if ({}.hasOwnProperty.call(partner, "credential")) {
-              this.publicCredentials = partner.credential;
-              // Get OrgProfile credential
-              this.partnerProfile = this.publicCredentials.find((cred) => {
-                return cred.type === CredentialTypes.PROFILE.name;
-              });
-              if (this.partnerProfile) {
-                this.partnerProfile = this.partnerProfile.credentialData;
-              }
-              // Show only creds other than OrgProfile in credential list
-              this.publicCredentials = this.publicCredentials.filter((cred) => {
-                return cred.type !== CredentialTypes.PROFILE.name;
-              });
-              this.partnerLoaded = true;
+              this.partner = partner;
+              this.alias = getPartnerName(partner);
+              if ({}.hasOwnProperty.call(partner, "credential"))
+                this.partnerLoaded = true;
             } else if (partner.ariesSupport) {
               // Todo I need to know if I'm in aries mode to allow connection using aries
               this.msg =

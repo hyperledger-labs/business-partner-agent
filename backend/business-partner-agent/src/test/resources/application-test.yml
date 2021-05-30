@@ -1,0 +1,13 @@
+micronaut:
+  server:
+    port: ${random.port}
+  security:
+    enabled: false
+
+datasources:
+  '*':
+    url: jdbc:tc:postgresql:12://${bpa.docker.host}/${bpa.pg.username}?TC_TMPFS=/testtmpfs:rw
+    driverClassName: org.testcontainers.jdbc.ContainerDatabaseDriver
+    username: test
+    password: test
+    dialect: POSTGRES

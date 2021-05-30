@@ -24,45 +24,34 @@ spec:
       securityContext:
         {{- toYaml .Values.acapy.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ .Values.acapy.name }}
           securityContext:
             {{- toYaml .Values.acapy.securityContext | nindent 12 }}
           image: "{{ .Values.acapy.image.repository }}:{{ .Values.acapy.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.acapy.image.pullPolicy }}
           args: [
            "-c",
-           "sleep 15; \
+           "curl -d '{\"seed\":\"$(WALLET_SEED)\", \"role\":\"TRUST_ANCHOR\", \"alias\":\"{{ include "bpa.fullname" . }}\"}' -X POST {{ .Values.bpa.config.ledger.browser }}/register; \
+           sleep 15; \
            aca-py start \     
-           --auto-accept-invites \
-           --auto-accept-requests \
-           --auto-respond-messages \
-           --auto-respond-credential-proposal \
-           --auto-respond-credential-offer \
-           --auto-respond-credential-request \
-           --auto-respond-presentation-proposal \
-           --auto-respond-presentation-request \
-           --auto-store-credential \
-           --auto-verify-presentation \
-           --auto-ping-connection \
-           --monitor-ping \
-           --public-invites \
-           --plugin aries_cloudagent.messaging.jsonld \
+           --auto-provision \
+           --arg-file acapy-static-args.yml \   
            --inbound-transport http '0.0.0.0' {{ .Values.acapy.service.httpPort }} \ 
-           --outbound-transport http \ 
            --webhook-url http://{{ include "bpa.fullname" . }}:{{ .Values.bpa.service.port }}/log \
-           --genesis-url '{{ .Values.bpa.ledgerURL }}/genesis' \
-           --endpoint https://{{ (index .Values.acapy.ingress.hosts 0).host }} \
+           --genesis-url '{{ .Values.bpa.config.ledger.browser }}/genesis' \
+           --endpoint https://{{ include "acapy.host" . }} \
            --wallet-storage-type 'postgres_storage' \
-           --wallet-type 'indy' \
            --wallet-name 'mywallet' \
            --wallet-key '123' \
            --wallet-storage-config '{\"url\":\"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.service.port }}\",\"max_connections\":5}' \
            --wallet-storage-creds '{\"account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"password\":\"$(POSTGRES_PASSWORD)\",\"admin_account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"admin_password\":\"$(POSTGRES_PASSWORD)\"}' \ 
-           --seed '{{ .Values.acapy.agentSeed }}' \
+           --seed \"$(WALLET_SEED)\" \
            --admin '0.0.0.0' {{ .Values.acapy.service.adminPort }} \
            --admin-insecure-mode \
            --label {{ .Values.acapy.agentName }} \
-           --log-level debug \
+           {{- if .Values.acapy.readOnlyMode }}
+           --read-only-ledger \
+           {{- end }}
            "
           ]
           command:
@@ -79,9 +68,32 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ template "global.postgresql.fullname" . }}
-                  key: postgresql-password        
+                  key: postgresql-password         
+            - name: WALLET_SEED
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "acapy.fullname" . }}
+                  key: seed 
+          livenessProbe:
+            httpGet:
+              path: /status/live 
+              port: 8031
+            initialDelaySeconds: 15
+            periodSeconds: 3        
+          volumeMounts:
+          - name: config
+            mountPath: "/home/indy/acapy-static-args.yml"
+            subPath: "acapy-static-args.yml"
+            readOnly: true        
           resources:
             {{- toYaml .Values.acapy.resources | nindent 12 }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "acapy.fullname" . }}
+            items:
+            - key: "acapy-static-args.yaml"
+              path: "acapy-static-args.yml"              
       {{- with .Values.acapy.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

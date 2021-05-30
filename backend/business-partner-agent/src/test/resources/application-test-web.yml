@@ -1,0 +1,4 @@
+# additional profile to be loaded for tests running in web mode
+bpa:
+  web:
+    only: true

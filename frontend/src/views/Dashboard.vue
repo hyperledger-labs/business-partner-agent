@@ -2,23 +2,26 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
   <v-container text-center>
     <v-card flat v v-if="!isLoading" class="mx-auto">
-      <v-text-field
-        id="did"
-        v-model="status.did"
-        readonly
-        outlined
-        dense
-        label="DID"
-        :append-icon="'mdi-content-copy'"
-        @click:append="copyDid"
-        class="col-md-8 offset-md-2 col-sm-10 offset-sm-1"
-      ></v-text-field>
+      <v-row>
+        <v-col class="col-sm-10 offset-sm-1 col-md-8 offset-md-2">
+          <v-text-field
+            id="did"
+            v-model="status.did"
+            readonly
+            outlined
+            dense
+            label="DID"
+            :append-icon="'$vuetify.icons.copy'"
+            @click:append="copyDid"
+          ></v-text-field>
+        </v-col>
+      </v-row>
     </v-card>
     <div v-if="isWelcome && !isLoading">
       <!-- Image from undraw.co -->
@@ -40,7 +43,7 @@
         color="primary"
         :to="{
           name: 'DocumentAdd',
-          params: { type: 'ORGANIZATIONAL_PROFILE_CREDENTIAL' },
+          params: { type: CredentialTypes.PROFILE.type },
         }"
         >Setup your Profile</v-btn
       >
@@ -53,9 +56,14 @@
               class="align-end"
               src="@/assets/undraw_certification_aif8.png"
             ></v-img>
-            <v-card-title style="font-size: 400%" class="justify-center">{{
-              status.credentials
-            }}</v-card-title>
+            <v-card-title class="justify-center">
+              <span class="cardTitle">
+                {{ status.credentials }}
+              </span>
+              <span class="newHighlight" v-show="newCredentialsCount > 0">
+                (+{{ newCredentialsCount }})
+              </span>
+            </v-card-title>
             <v-card-title class="justify-center"
               >Verified Credentials</v-card-title
             >
@@ -69,9 +77,14 @@
               aspect-ratio="1.29"
               src="@/assets/undraw_agreement_aajr.png"
             ></v-img>
-            <v-card-title style="font-size: 400%" class="justify-center">{{
-              status.partners
-            }}</v-card-title>
+            <v-card-title class="justify-center">
+              <span class="cardTitle">
+                {{ status.partners }}
+              </span>
+              <span class="newHighlight" v-show="newPartnersCount > 0">
+                (+{{ newPartnersCount }})
+              </span>
+            </v-card-title>
             <v-card-title class="justify-center"
               >Business Partners</v-card-title
             >
@@ -84,6 +97,7 @@
 
 <script>
 import { EventBus } from "../main";
+import { CredentialTypes } from "../constants";
 export default {
   name: "Dashboard",
   created() {
@@ -94,7 +108,16 @@ export default {
     return {
       isWelcome: true,
       isLoading: true,
+      CredentialTypes,
     };
+  },
+  computed: {
+    newPartnersCount() {
+      return this.$store.getters.newPartnersCount;
+    },
+    newCredentialsCount() {
+      return this.$store.getters.newCredentialsCount;
+    },
   },
   methods: {
     getStatus() {
@@ -131,3 +154,14 @@ export default {
   },
 };
 </script>
+<style scoped>
+.newHighlight {
+  color: #2ecc71;
+  padding-left: 4px;
+  font-size: 200%;
+}
+.cardTitle {
+  font-size: 400%;
+  margin-bottom: 2;
+}
+</style>

@@ -4,19 +4,19 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.hyperledger.organizational-agent</groupId>
-    <artifactId>organizational-agent-parent</artifactId>
+    <groupId>org.hyperledger.business-partner-agent</groupId>
+    <artifactId>business-partner-agent-parent</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>organizational-agent: parent pom</description>
-    <url>https://github.com/hyperledger-labs/organizational-agent</url>
+    <description>business-partner-agent: parent pom</description>
+    <url>https://github.com/hyperledger-labs/business-partner-agent</url>
 
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -32,8 +32,18 @@
         <developerConnection>scm:git:git@github.com:hyperledger-labs/business-partner-agent.git</developerConnection>
     </scm>
 
+    <developers>
+        <developer>
+            <id>github</id>
+            <name>github contributors</name>
+            <organization>github</organization>
+            <organizationUrl>https://github.com/hyperledger-labs/business-partner-agent/graphs/contributors</organizationUrl>
+        </developer>
+    </developers>
+
     <properties>
         <!-- Settings -->
+        <exec.mainClass />
         <jdk.version>11</jdk.version>
         <m2e.apt.activation>maven_execution</m2e.apt.activation>
         <maven.compiler.target>${jdk.version}</maven.compiler.target>
@@ -42,27 +52,41 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <skip.docker.build>true</skip.docker.build>
         <!-- Dependency Versions -->
-        <log4j2.version>2.13.3</log4j2.version>
-        <lombok.version>1.18.16</lombok.version>
-        <micronaut.version>2.1.3</micronaut.version>
-        <micronaut.data.version>2.1.1</micronaut.data.version>
-        <micronaut.openapi.version>2.1.1</micronaut.openapi.version>
-        <micronaut.security.version>2.1.2</micronaut.security.version>
-        <mockito.version>3.6.0</mockito.version>
-        <pmd.version>6.29.0</pmd.version>
-        <spotbugs.version>4.1.4</spotbugs.version>
-        <testcontainers.version>1.14.3</testcontainers.version>
+        <log4j2.version>2.14.1</log4j2.version>
+        <lombok.version>1.18.20</lombok.version>
+        <micronaut.version>2.5.4</micronaut.version>
+        <micronaut.data.version>2.4.3</micronaut.data.version>
+        <micronaut.openapi.version>2.5.0</micronaut.openapi.version>
+        <micronaut.security.version>2.4.2</micronaut.security.version>
+        <mockito.version>3.10.0</mockito.version>
+        <pmd.version>6.34.0</pmd.version>
+        <spotbugs.version>4.2.3</spotbugs.version>
+        <testcontainers.version>1.15.3</testcontainers.version>
         <!-- Plugin Versions -->
+        <license-maven-plugin.version>4.1</license-maven-plugin.version>
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
         <maven.failsafe.plugin.version>2.22.2</maven.failsafe.plugin.version>
-        <maven.pmd.plugin.version>3.13.0</maven.pmd.plugin.version>
-        <maven.spotbugs.plugin.version>4.1.4</maven.spotbugs.plugin.version>
+        <maven.pmd.plugin.version>3.14.0</maven.pmd.plugin.version>
+        <maven.spotbugs.plugin.version>4.2.0</maven.spotbugs.plugin.version>
         <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
     </properties>
 
     <repositories>
         <repository>
             <id>bds-snapshots</id>
+            <url>https://nexus.bosch-digital.com/repository/bds-all</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>plugin-snapshots</id>
             <url>https://nexus.bosch-digital.com/repository/bds-snapshots</url>
             <releases>
                 <enabled>false</enabled>
@@ -70,16 +94,12 @@
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
-        </repository>
-        <repository>
-            <id>jcenter.bintray.com</id>
-            <url>https://jcenter.bintray.com</url>
-        </repository>
-    </repositories>
+        </pluginRepository>
+    </pluginRepositories>
 
     <modules>
-        <module>company-agent-core</module>
-        <module>company-agent</module>
+        <module>business-partner-agent-core</module>
+        <module>business-partner-agent</module>
     </modules>
 
     <dependencyManagement>
@@ -101,7 +121,7 @@
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
-                <version>6.5.7</version>
+                <version>7.9.1</version>
             </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
@@ -148,69 +168,6 @@
 
     <build>
         <plugins>
-            <!-- mvn clean mn:run -->
-            <plugin>
-                <groupId>io.micronaut.build</groupId>
-                <artifactId>micronaut-maven-plugin</artifactId>
-                <version>1.0.0</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.1.2</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <transformers>
-                                <transformer
-                                    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>${exec.mainClass}</mainClass>
-                                    <manifestEntries>
-                                        <Multi-Release>true</Multi-Release>
-                                    </manifestEntries>
-                                </transformer>
-                                <transformer
-                                    implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                            </transformers>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <executable>java</executable>
-                    <arguments>
-                        <argument>-classpath</argument>
-                        <classpath />
-                        <argument>-noverify</argument>
-                        <argument>-XX:TieredStopAtLevel=1</argument>
-                        <argument>-Dcom.sun.management.jmxremote</argument>
-                        <argument>${exec.mainClass}</argument>
-                    </arguments>
-                </configuration>
-            </plugin>
             <!-- Quality -->
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
@@ -221,6 +178,13 @@
                     <threshold>Low</threshold>
                     <xmlOutput>true</xmlOutput>
                     <excludeFilterFile>src/test/resources/spotbugs-exclude.xml</excludeFilterFile>
+                    <plugins>
+                        <plugin>
+                            <groupId>com.h3xstream.findsecbugs</groupId>
+                            <artifactId>findsecbugs-plugin</artifactId>
+                            <version>LATEST</version>
+                        </plugin>
+                    </plugins>
                 </configuration>
                 <executions>
                     <execution>
@@ -267,11 +231,11 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- mvn formatter:format -->
             <plugin>
                 <groupId>net.revelc.code.formatter</groupId>
                 <artifactId>formatter-maven-plugin</artifactId>
-                <version>2.12.2</version>
-                <!-- mvn formatter:format -->
+                <version>2.15.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -283,9 +247,63 @@
                     <configFile>../formatter.xml</configFile>
                 </configuration>
             </plugin>
+            <!-- mvn license:format to add missing headers -->
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${license-maven-plugin.version}</version>
+                <configuration>
+                    <licenseSets>
+                        <licenseSet>
+                            <header>${maven.multiModuleProjectDirectory}/header.txt</header>
+                            <includes>
+                                <include>src/*/java/**/*.java</include>
+                            </includes>
+                        </licenseSet>
+                    </licenseSets>
+                    <properties>
+                        <project.inceptionYear>2020</project.inceptionYear>
+                    </properties>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.mycila</groupId>
+                        <artifactId>license-maven-plugin-git</artifactId>
+                        <version>${license-maven-plugin.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
+                <!-- mvn clean mn:run -->
+                <plugin>
+                    <groupId>io.micronaut.build</groupId>
+                    <artifactId>micronaut-maven-plugin</artifactId>
+                    <version>2.0.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.1.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.9.1</version>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
@@ -312,27 +330,65 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven.compiler.plugin.version}</version>
-                    <configuration>
-                        <source>${jdk.version}</source>
-                        <target>${jdk.version}</target>
-                        <encoding>${project.build.sourceEncoding}</encoding>
-                        <fork>true</fork>
-                    </configuration>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.2.4</version>
                     <executions>
                         <execution>
-                            <id>test-compile</id>
+                            <phase>package</phase>
                             <goals>
-                                <goal>testCompile</goal>
+                                <goal>shade</goal>
                             </goals>
                             <configuration>
-                                <compilerArgs>
-                                    <arg>-parameters</arg>
-                                </compilerArgs>
+                                <createDependencyReducedPom>false</createDependencyReducedPom>
+                                <transformers>
+                                    <transformer
+                                            implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                        <mainClass>${exec.mainClass}</mainClass>
+                                        <manifestEntries>
+                                            <Multi-Release>true</Multi-Release>
+                                        </manifestEntries>
+                                    </transformer>
+                                    <transformer
+                                            implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                                </transformers>
+                                <filters>
+                                    <filter>
+                                        <artifact>*:*</artifact>
+                                        <excludes>
+                                            <exclude>META-INF/*.SF</exclude>
+                                            <exclude>META-INF/*.DSA</exclude>
+                                            <exclude>META-INF/*.RSA</exclude>
+                                        </excludes>
+                                    </filter>
+                                </filters>
                             </configuration>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                    <configuration>
+                        <executable>java</executable>
+                        <arguments>
+                            <argument>-classpath</argument>
+                            <classpath />
+                            <argument>-XX:TieredStopAtLevel=1</argument>
+                            <argument>-Dcom.sun.management.jmxremote</argument>
+                            <argument>${exec.mainClass}</argument>
+                        </arguments>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.plugin.version}</version>
+                    <configuration>
+                        <release>${jdk.version}</release>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <fork>true</fork>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -366,7 +422,7 @@
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.34.1</version>
+                    <version>0.36.0</version>
                     <configuration>
                         <images>
                             <image>
@@ -374,14 +430,16 @@
                                     <type>properties</type>
                                     <mode>override</mode>
                                 </external>
-                                <name>bds/%a</name>
+                                <name>hyperledger/%a</name>
                                 <build>
                                     <skip>${skip.docker.build}</skip>
                                     <from>amazoncorretto:${jdk.version}</from>
-                                    <assembly>
-                                        <descriptorRef>artifact</descriptorRef>
-                                    </assembly>
-                                    <cmd>java -jar -XX:+UnlockExperimentalVMOptions -noverify $JAVA_OPTS maven/${project.artifactId}-${project.version}.jar</cmd>
+                                    <assemblies>
+                                        <assembly>
+                                            <descriptorRef>artifact</descriptorRef>
+                                        </assembly>
+                                    </assemblies>
+                                    <cmd>java -jar -XX:+UnlockExperimentalVMOptions $JAVA_OPTS maven/${project.artifactId}-${project.version}.jar</cmd>
                                     <ports>
                                         <port>8080/tcp</port>
                                     </ports>
@@ -402,4 +460,25 @@
             </plugins>
         </pluginManagement>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.1.1</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>dependencies</report>
+                            <report>dependency-convergence</report>
+                            <report>dependency-info</report>
+                            <report>modules</report>
+                            <report>licenses</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>

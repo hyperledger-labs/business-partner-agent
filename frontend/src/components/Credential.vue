@@ -2,144 +2,242 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 
 <template>
-  <v-card-text>
-    <v-form ref="mdForm">
-      <h3 v-if="!showOnlyContent && (document.issuer || document.issuedAt)">
-        Issuer
-      </h3>
-      <v-row v-if="!showOnlyContent">
-        <v-col>
-          <v-text-field
-            v-if="document.issuer"
-            label="Issuer"
-            v-model="document.issuer"
-            disabled
-            outlined
-            dense
-          ></v-text-field>
-          <v-text-field
-            v-if="document.issuedAt"
-            label="Issued at"
-            :placeholder="
-              $options.filters.moment(document.issuedAt, 'YYYY-MM-DD HH:mm')
-            "
-            disabled
-            outlined
-            dense
-          ></v-text-field>
-        </v-col>
-      </v-row>
+  <div>
+    <v-row>
+      <v-col cols="12" class="pb-0">
+        <v-text-field
+          v-if="
+            (intDoc.label instanceof String ||
+              typeof intDoc.label === 'string') &&
+            !showOnlyContent
+          "
+          label="Label (Optional)"
+          placeholder
+          outlined
+          dense
+          :value="intDoc.label"
+          :disabled="showOnlyContent"
+          @change="docFieldChanged('label', $event)"
+        ></v-text-field>
+      </v-col>
+    </v-row>
+    <h3 v-if="!showOnlyContent && (intDoc.issuer || intDoc.issuedAt)">
+      Issuer
+    </h3>
+    <v-row v-if="!showOnlyContent">
+      <v-col>
+        <v-text-field
+          v-if="intDoc.issuer"
+          label="Issuer"
+          v-model="intDoc.issuer"
+          disabled
+          outlined
+          dense
+        ></v-text-field>
+        <v-text-field
+          v-if="intDoc.issuedAt"
+          label="Issued at"
+          :placeholder="
+            $options.filters.moment(intDoc.issuedAt, 'YYYY-MM-DD HH:mm')
+          "
+          disabled
+          outlined
+          dense
+        ></v-text-field>
+      </v-col>
+    </v-row>
 
-      <h3 v-if="document.credentialData && !showOnlyContent">
-        Credential Content
-      </h3>
-      <v-row>
-        <v-col>
-          <v-text-field
-            v-for="field in schema.fields"
-            :key="field.type"
-            :label="field.label"
-            placeholder
-            :disabled="isReadOnly"
-            :rules="[(v) => !!v || 'Item is required']"
-            :required="field.required"
-            outlined
-            dense
-            :value="documentData[field.type]"
-            @change="fieldChanged(field.type, $event)"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-    </v-form>
-  </v-card-text>
+    <h3 v-if="intDoc.credentialData && !showOnlyContent">Credential Content</h3>
+    <v-row>
+      <v-col>
+        <v-text-field
+          v-for="field in filteredSchemaField"
+          :key="field.type"
+          :label="field.label"
+          placeholder
+          :disabled="isReadOnly"
+          :rules="[(v) => !!v || 'Item is required']"
+          :required="field.required"
+          outlined
+          dense
+          :value="intDoc[documentDataType][field.type]"
+          @change="docDataFieldChanged(field.type, $event)"
+        ></v-text-field>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script>
-import { getSchema } from "../constants";
+import * as textUtils from "@/utils/textUtils";
+
 export default {
   props: {
-    isReadOnly: Boolean,
+    isReadOnly: {
+      type: Boolean,
+      default: false,
+    },
     document: Object,
     showOnlyContent: Boolean,
+    isNew: Boolean,
+  },
+  watch: {
+    document(val) {
+      // document has been updated...
+      if (val) {
+        this.prepareDocument();
+      }
+    }
   },
   created() {
-    console.log(this.document);
-    // New created document
-    if (
-      !{}.hasOwnProperty.call(this.document, "documentData") &&
-      !{}.hasOwnProperty.call(this.document, "credentialData") &&
-      !{}.hasOwnProperty.call(this.document, "proofData")
-    ) {
-      this.documentData = Object.fromEntries(
-        this.schema.fields.map((field) => {
-          return [field.type, ""];
-        })
-      );
-      // Existing document or credential
-    } else {
-      // Check if document or credential data is here. This needs to be improved
-      let documentData;
-      if (this.document.documentData) {
-        documentData = this.document.documentData;
-      } else if (this.document.credentialData) {
-        documentData = this.document.credentialData;
-      } else if (this.document.proofData) {
-        documentData = this.document.proofData;
-      }
-      // Only support one nested node for now
-      let nestedData = Object.values(documentData).find((value) => {
-        return typeof value === "object" && value !== null;
-      });
-      this.documentData = nestedData ? nestedData : documentData;
-      this.intDoc = { ...this.documentData };
-    }
+    console.log("Credential: ", this.document);
+    this.prepareDocument();
   },
   data: () => {
     return {
-      intDoc: Object,
+      intDoc: {
+        type: Object,
+        default: {},
+      },
+      origIntDoc: Object,
+      documentDataTypes: ["documentData", "credentialData", "proofData"],
+      documentDataType: "",
     };
   },
   computed: {
     schema: function () {
-      let s = getSchema(this.document.type);
-      if (s && {}.hasOwnProperty.call(s, "fields")) {
-        return s;
-        // No known schema. Generate one from data
-        // Todo: Support arrays and objects as fields
+      let schemaTemplate = this.createTemplateFromSchemaId(
+        this.document.schemaId
+      );
+      if (!schemaTemplate) {
+        schemaTemplate = this.createTemplateFromSchema(this.document);
+      }
+      return schemaTemplate;
+    },
+
+    filteredSchemaField() {
+      let fields = this.schema.fields;
+      if (!this.isReadOnly) {
+        return fields;
       } else {
-        s = {
-          type: this.document.type,
-          fields: Object.keys(this.documentData).map((key) => {
-            return {
-              type: key,
-              label: key,
-            };
-          }),
-        };
-        console.log(s);
-        return s;
+        return fields.filter((field) => {
+          if (this.intDoc[this.documentDataType][field.type] !== "") {
+            return field;
+          }
+        });
       }
     },
   },
   methods: {
-    fieldChanged(fieldType, event) {
-      if (this.intDoc[fieldType] != event) {
-        this.documentData[fieldType] = event;
+    docDataFieldChanged(propertyName, event) {
+      if (this.origIntDoc[this.documentDataType][propertyName] != event) {
+        this.intDoc[this.documentDataType][propertyName] = event;
       } else {
-        this.documentData[fieldType] = event;
+        this.intDoc[this.documentDataType][propertyName] = event;
       }
 
-      const isDirty = Object.keys(this.intDoc).find((key) => {
-        return this.documentData[key] != this.intDoc[key] ? true : false;
-      })
+      const isDirty = Object.keys(this.origIntDoc[this.documentDataType]).find(
+        (key) => {
+          return this.intDoc[this.documentDataType][key] !=
+            this.origIntDoc[this.documentDataType][key]
+            ? true
+            : false;
+        }
+      )
         ? true
         : false;
-      this.$emit("doc-changed", isDirty);
+      this.$emit("doc-data-field-changed", isDirty);
+    },
+
+    createTemplateFromSchemaId(schemaId) {
+      const schemas = this.$store.getters.getSchemas;
+      let schema = schemas.find((schema) => {
+        return schema.schemaId === schemaId;
+      });
+      if (schema) {
+        //TODO check if fields already available
+        let objectTemplate = Object.assign(schema, {
+          fields: schema.schemaAttributeNames.map((key) => {
+            return {
+              type: key,
+              label: textUtils.schemaAttributeLabel(key),
+            };
+          }),
+        });
+        return objectTemplate;
+      }
+      return null;
+    },
+
+    createTemplateFromSchema(objData) {
+      const documentDataTypes = ["documentData", "credentialData", "proofData"];
+      const dataType = documentDataTypes.find((val) => {
+        if (objData && {}.hasOwnProperty.call(objData, val)) {
+          return val;
+        }
+      });
+      const s = {
+        type: objData.type,
+        label: "",
+        fields: Object.keys(dataType ? objData[dataType] : objData).map(
+          (key) => {
+            return {
+              type: key,
+              label: textUtils.schemaAttributeLabel(key),
+            };
+          }
+        ),
+      };
+      return s;
+    },
+
+    docFieldChanged(propertyName, event) {
+      if (this.origIntDoc[propertyName] != event) {
+        this.intDoc[propertyName] = event;
+      } else {
+        this.intDoc[propertyName] = event;
+      }
+      this.$emit("doc-field-changed", { key: propertyName, value: event });
+    },
+
+    prepareDocument() {
+      //New Document
+      if (!this.document.id && !this.document.credentialData) {
+        this.documentDataType = this.documentDataTypes[0];
+        this.intDoc.label = "";
+        this.intDoc[this.documentDataType] = Object.fromEntries(
+          this.schema.fields.map((field) => {
+            return [field.type, ""];
+          })
+        );
+        this.intCopy();
+      }
+      //Existing Document, extract Data
+      else {
+        this.documentDataTypes.forEach((field) => {
+          if ({}.hasOwnProperty.call(this.document, field)) {
+            this.documentDataType = field;
+            this.intDoc = this.document;
+            this.intCopy();
+            return;
+          }
+        });
+      }
+    },
+
+    intCopy() {
+      this.origIntDoc = { ...this.intDoc };
+      //create deep copy of objects
+      Object.entries(this.intDoc).find(([key, value]) => {
+        if (typeof value === "object" && value !== null) {
+          this.origIntDoc[key] = { ...this.intDoc[key] };
+        }
+      });
     },
   },
 };

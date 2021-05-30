@@ -7,22 +7,19 @@
 -->
 <template>
   <v-container>
-    <div
-      v-if="(document && document.isPublic) || publicDocumentsAndCredentials"
-    >
-      <OrganizationalProfile
-        v-if="document && document.isPublic"
-        v-bind:documentData="document.documentData"
-        isReadOnly
-      >
-      </OrganizationalProfile>
-      <DocumentCredentialList
-        v-if="!isBusy"
-        v-bind:credentials="publicDocumentsAndCredentials"
-        isReadOnly
-        showOnlyContent
-      >
-      </DocumentCredentialList>
+    <div v-if="publicDocumentsAndCredentials.length > 0">
+      <v-alert colored-border color="primary" border="left" elevation="2" dense>
+        <span class="text-caption"
+          >You can change the visibility settings of documents and verified
+          credentials in the <strong>wallet</strong> to update your public
+          profile.
+        </span>
+      </v-alert>
+      <v-card class="mx-auto" flat>
+        <Profile
+          v-bind:partner="{ credential: publicDocumentsAndCredentials }"
+        />
+      </v-card>
     </div>
 
     <v-container v-else fill-height fluid text-center>
@@ -41,31 +38,25 @@
 </template>
 
 <script>
-import OrganizationalProfile from "@/components/OrganizationalProfile";
-import DocumentCredentialList from "@/components/credentials/DocumentCredentialList";
-
+import Profile from "@/components/Profile";
 import { EventBus } from "../main";
 export default {
   name: "PublicProfile",
   props: {},
   components: {
-    OrganizationalProfile,
-    DocumentCredentialList,
+    Profile,
   },
   computed: {
-    document() {
-      return this.$store.getters.organizationalProfile;
-    },
     isBusy() {
       return this.$store.getters.isBusy;
     },
     publicDocumentsAndCredentials() {
-      console.log(this.$store.getters.publicDocumentsAndCredentials);
       return this.$store.getters.publicDocumentsAndCredentials;
     },
   },
   created() {
     EventBus.$emit("title", "Public Profile");
+    console.log("first load credentials");
     this.$store.dispatch("loadDocuments");
     this.$store.dispatch("loadCredentials");
   },

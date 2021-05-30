@@ -2,20 +2,20 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
   <v-container justify-center>
-    <v-card v-if="!isLoading" max-width="600" class="mx-auto">
+    <v-card v-if="!isLoading" class="mx-auto">
       <v-card-title class="bg-light">
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
-          <v-icon dark>mdi-chevron-left</v-icon>
+          <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
         <span>{{ data.label }}</span>
         <v-layout align-end justify-end>
           <!-- <v-btn depressed icon @click="isUpdatingName = !isUpdatingName">
-                    <v-icon dark>mdi-pencil</v-icon>
+                    <v-icon dark>$vuetify.icons.pencil</v-icon>
                 </v-btn> -->
           <v-btn
             depressed
@@ -24,7 +24,7 @@
             :disabled="data.isReadOnly"
             @click="deleteSchema"
           >
-            <v-icon dark>mdi-delete</v-icon>
+            <v-icon dark>$vuetify.icons.delete</v-icon>
           </v-btn>
         </v-layout>
       </v-card-title>
@@ -50,33 +50,42 @@
             {{ attribute }}
           </p>
         </v-list-item>
+
+        <trusted-issuers :id="id" :trustedIssuers="trustedIssuers" />
       </v-container>
+      <v-card-actions>
+        <v-layout align-end justify-end>
+          <v-btn color="primary" text :to="{ name: 'SchemaSettings' }"
+            >Close</v-btn
+          >
+        </v-layout>
+      </v-card-actions>
     </v-card>
   </v-container>
 </template>
 
 <script>
 import { EventBus } from "../main";
+import TrustedIssuers from "../components/TrustedIssuers";
 export default {
   name: "Schema",
   props: {
     id: String, //schema ID
     schema: Object,
   },
-  created() {
+  components: {
+    TrustedIssuers,
+  },
+  mounted() {
     EventBus.$emit("title", "Schema");
-
-    if (this.schema) {
-      this.isLoading = false;
-      this.data = this.schema;
-    } else {
-      this.fetch();
-    }
+    console.log("SCHEMA", this.schema);
+    this.fetch();
   },
   data: () => {
     return {
       data: [],
       isLoading: true,
+      trustedIssuers: [],
     };
   },
   computed: {},
@@ -89,6 +98,10 @@ export default {
           console.log(result);
           if ({}.hasOwnProperty.call(result, "data")) {
             this.data = result.data;
+            // Init trusted issuers
+            if ({}.hasOwnProperty.call(this.data, "trustedIssuer")) {
+              this.trustedIssuers = this.data.trustedIssuer;
+            }
             this.isLoading = false;
           }
         })
@@ -102,7 +115,6 @@ export default {
           }
         });
     },
-
     deleteSchema() {
       this.$axios
         .delete(`${this.$apiBaseUrl}/admin/schema/${this.id}`)

@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
@@ -10,7 +10,7 @@
     <v-card max-width="600" class="mx-auto">
       <v-card-title class="bg-light">
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
-          <v-icon dark>mdi-chevron-left</v-icon>
+          <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
         <span>Add Schema</span>
       </v-card-title>
@@ -50,6 +50,10 @@
         </v-list-item-subtitle>
       </v-list-item>
 
+      <v-card-text>
+        <trusted-issuer ref="trustedIssuers" />
+      </v-card-text>
+
       <v-card-actions>
         <v-layout justify-end>
           <v-btn
@@ -68,10 +72,14 @@
 
 <script>
 import { EventBus } from "../main";
+import TrustedIssuer from "../components/TrustedIssuers.vue";
 export default {
   name: "AddSchema",
-  components: {},
+  components: {
+    TrustedIssuer,
+  },
   created: () => {},
+
   data: () => {
     return {
       schema: {
@@ -94,6 +102,15 @@ export default {
   methods: {
     addSchema() {
       this.isBusyAddSchema = true;
+      let trustedIssuers = this.$refs.trustedIssuers.$props.trustedIssuers;
+      console.log(trustedIssuers);
+      if (trustedIssuers.length > 0) {
+        trustedIssuers.forEach((entry) => {
+          delete entry.isEdit;
+        });
+        this.schema.trustedIssuer = trustedIssuers;
+      }
+      console.log(this.schema);
 
       this.$axios
         .post(`${this.$apiBaseUrl}/admin/schema`, this.schema)
@@ -101,7 +118,7 @@ export default {
           console.log(result);
           this.isBusyAddSchema = false;
 
-          if (result.status === 200 || result.status === 200) {
+          if (result.status === 200) {
             EventBus.$emit("success", "Schema added successfully");
             this.$router.push({ name: "SchemaSettings" });
           }

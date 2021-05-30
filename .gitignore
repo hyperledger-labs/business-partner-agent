@@ -51,28 +51,39 @@ formatter-maven-cache.properties
 
 # Build
 **/target/**
-/docker-compose-backend.yml
 
-# Ignore dynamically added frontend files
-backend/company-agent/src/main/resources/public/**
+# Generated frontend files
+backend/*/src/main/resources/public/**
+# Generated license report
+backend/*/src/main/resources/3rdPartyLicenses/**
+!backend/*/src/main/resources/3rdPartyLicenses/spotbugs**.txt
 
 # --------------------------------------
 # Frontend
-# 
+# --------------------------------------
 
 .env
+!frontend/.env
 
 # Ignore Node
 frontend/node/**
 frontend/node_modules/**
 frontend/dist/**
 
-# K8s / helm
-my-values*.yaml
-helm-chart/charts/
-manifests/
+frontend/licenses/**
 
-/docker-compose-backend.yml
 **/application-dev-*.yml
 node_modules
 package-lock.json
+
+# --------------------------------------
+# K8s / helm
+# --------------------------------------
+
+charts/**/charts/
+my-values*.yaml
+values-dev.yaml
+manifests*/
+scripts/local-network/von-network/
+
+scripts/local-network/resolver/*.txn
