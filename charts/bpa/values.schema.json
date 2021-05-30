@@ -5,21 +5,112 @@
         "acapy": {
             "type": "object",
             "properties": {
+                "adminURLApiKey": {
+                    "type": "string"
+                },
+                "affinity": {
+                    "type": "object"
+                },
                 "agentName": {
                     "type": "string",
-                    "description": "Agent name. It's helpful to set it in the as <DID>:<Human readable label>, e.g. did:sov:idu:XnEKP3WieQhNP7ugjV5r36:mybpa"
+                    "description": "Agent name. It's helpful to set it in the as <DID>:<Human readable label>, e.g. did:sov:idu:XnEKP3WieQhNP7ugjV5r36:mybpa",
+                    "form": true
                 },
                 "agentSeed": {
                     "type": "string",
                     "description": "The agent seed. Will be generated if not defined here.",
                     "minLength": 32,
-                    "maxLength": 32
+                    "maxLength": 32,
+                    "form": true
+                },
+                "fullnameOverride": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "pullPolicy": {
+                            "type": "string"
+                        },
+                        "repository": {
+                            "type": "string"
+                        },
+                        "tag": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "imagePullSecrets": {
+                    "type": "array"
+                },
+                "ingress": {
+                    "type": "object",
+                    "properties": {
+                        "annotations": {
+                            "type": "object"
+                        },
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "tls": {
+                            "type": "array"
+                        }
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nameOverride": {
+                    "type": "string"
+                },
+                "nodeSelector": {
+                    "type": "object"
+                },
+                "podAnnotations": {
+                    "type": "object"
+                },
+                "podSecurityContext": {
+                    "type": "object"
+                },
+                "readOnlyMode": {
+                    "type": "boolean"
+                },
+                "resources": {
+                    "type": "object"
+                },
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "runAsUser": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "adminPort": {
+                            "type": "integer"
+                        },
+                        "httpPort": {
+                            "type": "integer"
+                        },
+                        "type": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "tolerations": {
+                    "type": "array"
                 }
             }
         },
         "bpa": {
             "type": "object",
             "properties": {
+                "affinity": {
+                    "type": "object"
+                },
                 "config": {
                     "type": "object",
                     "properties": {
@@ -28,16 +119,197 @@
                             "description": "The administrator credentials.",
                             "properties": {
                                 "password": {
-                                    "type": "string"
+                                    "type": "string",
+                                    "form": true
                                 },
                                 "username": {
+                                    "type": "string",
+                                    "form": true
+                                }
+                            },
+                            "form": true
+                        },
+                        "name": {
+                            "description": "Name shown in the frontend.",
+                            "type": "string",
+                            "form": true
+                        },
+                        "creddef": {
+                            "type": "object",
+                            "properties": {
+                                "revocationRegistrySize": {
+                                    "type": "integer"
+                                }
+                            }
+                        },
+                        "ledger": {
+                            "type": "object",
+                            "properties": {
+                                "browser": {
                                     "type": "string"
                                 }
                             }
                         },
-                        "name": {
-                            "description": "Name shown in the frontend.",
+                        "resolver": {
+                            "type": "object",
+                            "properties": {
+                                "url": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "security": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean"
+                                }
+                            }
+                        },
+                        "web": {
+                            "type": "object",
+                            "properties": {
+                                "only": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    }
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "pullPolicy": {
                             "type": "string"
+                        },
+                        "repository": {
+                            "type": "string"
+                        },
+                        "tag": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "imagePullSecrets": {
+                    "type": "array"
+                },
+                "ingress": {
+                    "type": "object",
+                    "properties": {
+                        "annotations": {
+                            "type": "object"
+                        },
+                        "enabled": {
+                            "type": "boolean"
+                        },
+                        "tls": {
+                            "type": "array"
+                        }
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nodeSelector": {
+                    "type": "object"
+                },
+                "podAnnotations": {
+                    "type": "object"
+                },
+                "podSecurityContext": {
+                    "type": "object"
+                },
+                "resources": {
+                    "type": "object"
+                },
+                "securityContext": {
+                    "type": "object"
+                },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "port": {
+                            "type": "integer"
+                        },
+                        "type": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "serviceAccount": {
+                    "type": "object",
+                    "properties": {
+                        "annotations": {
+                            "type": "object"
+                        },
+                        "create": {
+                            "type": "boolean"
+                        },
+                        "name": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "tolerations": {
+                    "type": "array"
+                }
+            }
+        },
+        "global": {
+            "type": "object",
+            "properties": {
+                "fullnameOverride": {
+                    "type": "string"
+                },
+                "ingressSuffix": {
+                    "type": "string"
+                },
+                "nameOverride": {
+                    "type": "string"
+                },
+                "persistence": {
+                    "type": "object",
+                    "properties": {
+                        "deployPostgres": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        "postgresql": {
+            "type": "object",
+            "properties": {
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "tag": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "persistence": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "postgresqlDatabase": {
+                    "type": "string"
+                },
+                "postgresqlPassword": {
+                    "type": "string"
+                },
+                "postgresqlUsername": {
+                    "type": "string"
+                },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "port": {
+                            "type": "integer"
                         }
                     }
                 }
