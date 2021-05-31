@@ -12,16 +12,7 @@
                     "type": "object"
                 },
                 "agentName": {
-                    "type": "string",
-                    "description": "Agent name. It's helpful to set it in the as <DID>:<Human readable label>, e.g. did:sov:idu:XnEKP3WieQhNP7ugjV5r36:mybpa",
-                    "form": true
-                },
-                "agentSeed": {
-                    "type": "string",
-                    "description": "The agent seed. Will be generated if not defined here.",
-                    "minLength": 32,
-                    "maxLength": 32,
-                    "form": true
+                    "type": "string"
                 },
                 "fullnameOverride": {
                     "type": "string"
@@ -66,6 +57,45 @@
                 "nodeSelector": {
                     "type": "object"
                 },
+                "openshift": {
+                    "type": "object",
+                    "properties": {
+                        "route": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean"
+                                },
+                                "path": {
+                                    "type": "string"
+                                },
+                                "targetPort": {
+                                    "type": "string"
+                                },
+                                "timeout": {
+                                    "type": "string"
+                                },
+                                "tls": {
+                                    "type": "object",
+                                    "properties": {
+                                        "enabled": {
+                                            "type": "boolean"
+                                        },
+                                        "insecureEdgeTerminationPolicy": {
+                                            "type": "string"
+                                        },
+                                        "termination": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "wildcardPolicy": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
                 "podAnnotations": {
                     "type": "object"
                 },
@@ -100,6 +130,56 @@
                         }
                     }
                 },
+                "staticArgs": {
+                    "type": "object",
+                    "properties": {
+                        "autoAcceptInvites": {
+                            "type": "boolean"
+                        },
+                        "autoAcceptRequests": {
+                            "type": "boolean"
+                        },
+                        "autoPingConnection": {
+                            "type": "boolean"
+                        },
+                        "autoProvision": {
+                            "type": "boolean"
+                        },
+                        "autoRespondCredentialOffer": {
+                            "type": "boolean"
+                        },
+                        "autoRespondCredentialProposal": {
+                            "type": "boolean"
+                        },
+                        "autoRespondCredentialRequest": {
+                            "type": "boolean"
+                        },
+                        "autoRespondMessages": {
+                            "type": "boolean"
+                        },
+                        "autoRespondPresentationProposal": {
+                            "type": "boolean"
+                        },
+                        "autoRespondPresentationRequest": {
+                            "type": "boolean"
+                        },
+                        "autoStoreCredential": {
+                            "type": "boolean"
+                        },
+                        "autoVerifyPresentation": {
+                            "type": "boolean"
+                        },
+                        "logLevel": {
+                            "type": "string"
+                        },
+                        "monitorPing": {
+                            "type": "boolean"
+                        },
+                        "publicInvites": {
+                            "type": "boolean"
+                        }
+                    }
+                },
                 "tolerations": {
                     "type": "array"
                 }
@@ -116,29 +196,36 @@
                     "properties": {
                         "bootstrap": {
                             "type": "object",
-                            "description": "The administrator credentials.",
                             "properties": {
                                 "password": {
-                                    "type": "string",
-                                    "form": true
+                                    "type": "string"
                                 },
                                 "username": {
-                                    "type": "string",
-                                    "form": true
+                                    "type": "string"
                                 }
-                            },
-                            "form": true
-                        },
-                        "name": {
-                            "description": "Name shown in the frontend.",
-                            "type": "string",
-                            "form": true
+                            }
                         },
                         "creddef": {
                             "type": "object",
                             "properties": {
                                 "revocationRegistrySize": {
                                     "type": "integer"
+                                }
+                            }
+                        },
+                        "did": {
+                            "type": "object",
+                            "properties": {
+                                "prefix": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "imprint": {
+                            "type": "object",
+                            "properties": {
+                                "url": {
+                                    "type": "null"
                                 }
                             }
                         },
@@ -150,6 +237,22 @@
                                 }
                             }
                         },
+                        "name": {
+                            "type": "string"
+                        },
+                        "privacy": {
+                            "type": "object",
+                            "properties": {
+                                "policy": {
+                                    "type": "object",
+                                    "properties": {
+                                        "url": {
+                                            "type": "null"
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "resolver": {
                             "type": "object",
                             "properties": {
@@ -157,6 +260,9 @@
                                     "type": "string"
                                 }
                             }
+                        },
+                        "scheme": {
+                            "type": "string"
                         },
                         "security": {
                             "type": "object",
@@ -212,6 +318,45 @@
                 },
                 "nodeSelector": {
                     "type": "object"
+                },
+                "openshift": {
+                    "type": "object",
+                    "properties": {
+                        "route": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean"
+                                },
+                                "path": {
+                                    "type": "string"
+                                },
+                                "targetPort": {
+                                    "type": "string"
+                                },
+                                "timeout": {
+                                    "type": "string"
+                                },
+                                "tls": {
+                                    "type": "object",
+                                    "properties": {
+                                        "enabled": {
+                                            "type": "boolean"
+                                        },
+                                        "insecureEdgeTerminationPolicy": {
+                                            "type": "string"
+                                        },
+                                        "termination": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "wildcardPolicy": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
                 },
                 "podAnnotations": {
                     "type": "object"
@@ -277,9 +422,54 @@
                 }
             }
         },
+        "keycloak": {
+            "type": "object",
+            "properties": {
+                "clientId": {
+                    "type": "string"
+                },
+                "clientSecret": {
+                    "type": "string"
+                },
+                "config": {
+                    "type": "object",
+                    "properties": {
+                        "endsessionUrl": {
+                            "type": "string"
+                        },
+                        "issuer": {
+                            "type": "string"
+                        },
+                        "nameKey": {
+                            "type": "string"
+                        },
+                        "redirectUri": {
+                            "type": "string"
+                        },
+                        "rolesName": {
+                            "type": "string"
+                        },
+                        "scopes": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "enabled": {
+                    "type": "boolean"
+                }
+            }
+        },
         "postgresql": {
             "type": "object",
             "properties": {
+                "containerSecurityContext": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        }
+                    }
+                },
                 "image": {
                     "type": "object",
                     "properties": {
@@ -305,6 +495,14 @@
                 "postgresqlUsername": {
                     "type": "string"
                 },
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        }
+                    }
+                },
                 "service": {
                     "type": "object",
                     "properties": {
@@ -312,6 +510,75 @@
                             "type": "integer"
                         }
                     }
+                }
+            }
+        },
+        "schemas": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "type": "object",
+                    "properties": {
+                        "bank-account": {
+                            "type": "object",
+                            "properties": {
+                                "defaultAttributeName": {
+                                    "type": "string"
+                                },
+                                "id": {
+                                    "type": "string"
+                                },
+                                "label": {
+                                    "type": "string"
+                                },
+                                "restrictions": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "issuerDid": {
+                                                "type": "string"
+                                            },
+                                            "label": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "commercial-register": {
+                            "type": "object",
+                            "properties": {
+                                "defaultAttributeName": {
+                                    "type": "string"
+                                },
+                                "id": {
+                                    "type": "string"
+                                },
+                                "label": {
+                                    "type": "string"
+                                },
+                                "restrictions": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "issuerDid": {
+                                                "type": "string"
+                                            },
+                                            "label": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "enabled": {
+                    "type": "boolean"
                 }
             }
         }
