@@ -87,10 +87,6 @@ public class PartnerManager {
     public void removePartnerById(@NonNull UUID id) {
         repo.findById(id).ifPresent(p -> {
             if (p.getConnectionId() != null) {
-                // Iterable<BPAPresentationExchange> peList = peRepo.findByPartnerId(id);
-                // if (peList.iterator().hasNext()) {
-                // peRepo.deleteAll(peList);
-                // }
                 cm.removeConnection(p.getConnectionId());
             }
         });
