@@ -12,10 +12,10 @@ import Vue from 'vue';
 /**
  * @function appAxios
  * Returns an Axios instance with pre-configuration
- * @param {integer} [timeout=10000] Number of milliseconds before timing out the request
+ * @param {number} [timeout=10000] Number of milliseconds before timing out the request
  * @returns {object} An axios instance
  */
-export function appAxios(timeout = 30000) {
+export function appAxios(timeout = 0) {
   const axiosOptions = { timeout: timeout };
   if (Vue.prototype.$config) {
     // any other options we can set here?
