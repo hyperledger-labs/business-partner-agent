@@ -1,5 +1,7 @@
 {{- $acapyIngressHost := include "acapy.host" . -}}
 {{- $bpaIngressHost := include "bpa.host" . -}}
+{{- $acapyUrl := (printf "http://%s:%g" (include "acapy.fullname" .) (.Values.acapy.service.adminPort)) -}}
+{{- $acapyEndpoint := (printf "https://%s" ($acapyIngressHost)) -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,17 +9,20 @@ metadata:
   labels:
     {{- include "bpa.labels" . | nindent 4 }}
 data:
-  application.yaml: |-  
-    bpa:           
-{{ toYaml .Values.bpa.config | indent 6 }}   
-      acapy:
-        url: http://{{ include "acapy.fullname" . }}:{{ .Values.acapy.service.adminPort }} 
-        apiKey: {{ .Values.acapy.adminURLApiKey }}
-        endpoint: https://{{ $acapyIngressHost }}
-      pg:
-        url: jdbc:postgresql://{{ include "global.postgresql.fullname" . }}/{{ .Values.postgresql.postgresqlUsername }}
-        username: {{ .Values.postgresql.postgresqlUsername }}
-      host: {{ $bpaIngressHost }}
-      micronaut:
-        security:
-          enabled: {{ .Values.bpa.config.security.enabled }}
+  AGENT_NAME: {{ .Values.bpa.config.name | quote }}
+  ACAPY_URL: {{ $acapyUrl | quote }}
+  ACAPY_ENDPOINT: {{ $acapyEndpoint | quote }}
+  ACAPY_API_KEY: {{ .Values.acapy.adminURLApiKey | quote }}
+  POSTGRESQL_HOST: {{ include "global.postgresql.fullname" . | quote }}
+  POSTGRESQL_USER: {{ .Values.postgresql.postgresqlUsername | quote }}
+  BPA_SECURITY_ENABLED: {{ .Values.bpa.config.security.enabled | quote }}
+  BPA_RESOLVER_URL: {{ .Values.bpa.config.resolver.url | quote }}
+  BPA_LEDGER_BROWSER: {{ .Values.bpa.config.ledger.browser | quote }}
+  BPA_HOST: {{ $bpaIngressHost | quote }}
+  BPA_SCHEME: {{ .Values.bpa.config.scheme | quote }}
+  BPA_WEB_MODE: {{ .Values.bpa.config.web.only | quote }}
+  BPA_DID_PREFIX: {{ .Values.bpa.config.did.prefix | quote }}
+  BPA_BOOTSTRAP_UN: {{ .Values.bpa.config.bootstrap.username | quote }}
+  BPA_BOOTSTRAP_PW: {{ .Values.bpa.config.bootstrap.password | quote }}
+  BPA_CREDDEF_REVOCATION_REGISTRY_SIZE: {{ .Values.bpa.config.creddef.revocationRegistrySize | quote }}
+{{ include "bpa.imprint.and.privacy.url" . }}

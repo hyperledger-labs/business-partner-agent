@@ -227,3 +227,106 @@ Create environment variables for database configuration.
   value: {{ .Values.global.persistence.dbName | quote }}
 {{- end }}
 {{- end -}}
+
+
+{{/*
+Return JAVA_OPTS -Dmicronaut.config.files
+*/}}
+{{- define "bpa.config.files" -}}
+{{- if .Values.keycloak.enabled -}}
+    classpath:application.yml,classpath:security-keycloak.yml
+{{- else -}}
+    classpath:application.yml
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return a configuration map value for imprint  and privacy policy urls
+*/}}
+{{- define "bpa.imprint.and.privacy.url" -}}
+{{- if (and .Values.bpa.config.imprint.url .Values.bpa.config.privacy.policy.url) -}}
+   {{- printf "BPA_IMPRINT_URL: %s" (.Values.bpa.config.imprint.url) | indent 2 -}}
+   {{- printf "BPA_PRIVACY_POLICY_URL: %s" (.Values.bpa.config.privacy.policy.url) | nindent 2 -}}
+{{ else if .Values.bpa.config.imprint.url }}
+   {{- printf "BPA_IMPRINT_URL: %s" (.Values.bpa.config.imprint.url) | indent 2 -}}
+{{ else if .Values.bpa.config.privacy.policy.url }}
+   {{- printf "BPA_PRIVACY_POLICY_URL: %s" (.Values.bpa.config.privacy.policy.url) | indent 2 -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+If Keycloak is enabled, add the client id and secret from the keycloak secret to bpa env
+*/}}
+{{- define "bpa.keycloak.secret.env.vars" -}}
+{{- if (.Values.keycloak.enabled) -}}
+- name: BPA_KEYCLOAK_CLIENT_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: {{ template "global.fullname" . }}-keycloak
+      key: clientSecret
+{{- end -}}
+{{- end -}}
+
+{{/*
+If Keycloak is enabled, mount the keycloak config map as env vars
+*/}}
+{{- define "bpa.keycloak.configmap.env.vars" -}}
+{{- if (.Values.keycloak.enabled) -}}
+envFrom:
+  - configMapRef:
+      name: {{ template "bpa.fullname" . }}-keycloak
+{{- end -}}
+{{- end -}}
+
+{{/*
+Mount the application config map as env vars
+*/}}
+{{- define "bpa.application.configmap.env.vars" -}}
+envFrom:
+  - configMapRef:
+      name: {{ template "bpa.fullname" . }}
+{{- end -}}
+
+{{/*
+If schemas is enabled, create a volume for the config map
+*/}}
+{{- define "bpa.schemas.volume" -}}
+{{- if (.Values.schemas.enabled) -}}
+volumes:
+  - name: config
+    configMap:
+      name: {{ template "bpa.fullname" . }}-schemas
+      items:
+      - key: "schemas.yaml"
+        path: "schemas.yml"
+{{- end -}}
+{{- end -}}
+
+{{/*
+If schemas is enabled, create a volume mount for the config map
+*/}}
+{{- define "bpa.schemas.volume.mount" -}}
+{{- if (.Values.schemas.enabled) -}}
+volumeMounts:
+- name: config
+  mountPath: "/home/indy/schemas.yml"
+  subPath: "schemas.yml"
+  readOnly: true
+{{- end -}}
+{{- end -}}
+
+{{- define "bpa.openshift.route.tls" -}}
+{{- if (.Values.bpa.openshift.route.tls.enabled) -}}
+tls:
+  insecureEdgeTerminationPolicy: {{ .Values.bpa.openshift.route.tls.insecureEdgeTerminationPolicy }}
+  termination: {{ .Values.bpa.openshift.route.tls.termination }}
+{{- end -}}
+{{- end -}}
+
+{{- define "acapy.openshift.route.tls" -}}
+{{- if (.Values.acapy.openshift.route.tls.enabled) -}}
+tls:
+  insecureEdgeTerminationPolicy: {{ .Values.acapy.openshift.route.tls.insecureEdgeTerminationPolicy }}
+  termination: {{ .Values.acapy.openshift.route.tls.termination }}
+{{- end -}}
+{{- end -}}

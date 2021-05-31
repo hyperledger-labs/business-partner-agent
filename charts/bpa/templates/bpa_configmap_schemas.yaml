@@ -1,0 +1,13 @@
+{{- if (.Values.schemas.enabled) -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "bpa.fullname" . }}-schemas
+  labels:
+    {{- include "bpa.labels" . | nindent 4 }}
+data:
+  schemas.yaml: |-
+    bpa:
+      schemas:
+{{ toYaml .Values.schemas.config | indent 8 }}
+{{- end -}}

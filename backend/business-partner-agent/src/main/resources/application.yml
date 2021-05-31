@@ -9,6 +9,7 @@ micronaut:
       enabled: true # potential security risk
     idle-timeout: 30m
   security:
+    enabled: ${BPA_SECURITY_ENABLED:true}
     authentication: session
     endpoints:
       logout:
@@ -105,42 +106,25 @@ bpa:
     url: ${BPA_RESOLVER_URL:`https://resolver.stage.economyofthings.io`}
   ledger:
     browser: ${BPA_LEDGER_BROWSER:}
-  host: localhost:${micronaut.server.port}
+  host: ${BPA_HOST:`localhost:8080`}
   name: ${AGENT_NAME:`Business Partner Agent`}
-  scheme: https
+  scheme: ${BPA_SCHEME:`https`}
   web:
     only: ${BPA_WEB_MODE:false}
   acapy:
-    url: http://${bpa.docker.host}:8031
-    apiKey: empty
+    url: ${ACAPY_URL:`http://localhost:8031`}
+    apiKey: ${ACAPY_API_KEY:empty}
     endpoint: ${ACAPY_ENDPOINT:`http://localhost:8030`}
   did:
     prefix: ${BPA_DID_PREFIX:`did:sov:iil:`}
   pg:
-    url: jdbc:postgresql://${bpa.docker.host}/${bpa.pg.username}
-    username: walletuser
-    password: walletpassword
+    url: jdbc:postgresql://${POSTGRESQL_HOST:`localhost`}/${bpa.pg.username}
+    username: ${POSTGRESQL_USER:`walletuser`}
+    password: ${POSTGRESQL_PASSWORD:`walletpassword`}
     schema: public
   bootstrap:
     username: ${BPA_BOOTSTRAP_UN:admin}
     password: ${BPA_BOOTSTRAP_PW:changeme}
-  schemas:
-    #test ledger schemas, can be overwritten / extended when e.g. working with other ledger
-    bank-account:
-      id: "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
-      label: "Bank Account"
-      defaultAttributeName: "iban"
-      # Note: this also works json style restrictions: [{id: 123, label: myLabel}]
-      restrictions:
-        - issuerDid: "${bpa.did.prefix}M6Mbe3qx7vB4wpZF4sBRjt"
-          label: "Demo Bank"
-    commercial-register:
-      id: "5mwQSWnRePrZ3oF67C4KqD:2:commercialregister:1.0"
-      label: "Commercial Register"
-      defaultAttributeName: "companyName"
-      restrictions:
-        - issuerDid: "${bpa.did.prefix}5mwQSWnRePrZ3oF67C4KqD"
-          label: "Commercial Register"
   imprint:
     url: ${BPA_IMPRINT_URL:}
   privacy:

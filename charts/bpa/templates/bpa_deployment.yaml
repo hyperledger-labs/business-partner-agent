@@ -33,18 +33,24 @@ spec:
           ports:
             - name: http
               containerPort: 8080
-              protocol: TCP              
-          env:                        
+              protocol: TCP
+          env:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ template "global.postgresql.fullname" . }}
-                  key: postgresql-password          
-            - name: JAVA_OPTS 
+                  key: postgresql-password
+            {{- include "bpa.keycloak.secret.env.vars" . | nindent 12}}
+            - name: JAVA_OPTS
               value: |
-                -Dbpa.pg.password=$(POSTGRES_PASSWORD)                                                            
+                -Dbpa.pg.password=$(POSTGRES_PASSWORD)
+                -Dmicronaut.config.files={{ include "bpa.config.files" . }}
+            {{- include "bpa.application.configmap.env.vars" . | nindent 10}}
+            {{- include "bpa.keycloak.configmap.env.vars" . | nindent 10}}
+          {{- include "bpa.schemas.volume.mount" . | nindent 10}}
           resources:
             {{- toYaml .Values.bpa.resources | nindent 12 }}
+          {{- include "bpa.schemas.volume" . | nindent 6}}
       {{- with .Values.bpa.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

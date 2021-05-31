@@ -25,7 +25,9 @@
           v-show="item.new"
           :text="item.label"
         ></new-message-icon>
-        {{ item.label }}
+        <span v-bind:class="{ 'font-weight-medium': item.new }">
+          {{ item.label }}
+        </span>
       </template>
       <template v-slot:[`item.type`]="{ item }">
         <div
@@ -107,6 +109,7 @@ export default {
   watch: {
     newCredentials: function (newValue) {
       if (newValue && this.type === "credential") {
+        // TODO: Don't fetch all partners but only add new credential data
         this.fetch(this.type);
       }
     },

@@ -33,10 +33,10 @@ spec:
            "-c",
            "curl -d '{\"seed\":\"$(WALLET_SEED)\", \"role\":\"TRUST_ANCHOR\", \"alias\":\"{{ include "bpa.fullname" . }}\"}' -X POST {{ .Values.bpa.config.ledger.browser }}/register; \
            sleep 15; \
-           aca-py start \     
+           aca-py start \
            --auto-provision \
-           --arg-file acapy-static-args.yml \   
-           --inbound-transport http '0.0.0.0' {{ .Values.acapy.service.httpPort }} \ 
+           --arg-file acapy-static-args.yml \
+           --inbound-transport http '0.0.0.0' {{ .Values.acapy.service.httpPort }} \
            --webhook-url http://{{ include "bpa.fullname" . }}:{{ .Values.bpa.service.port }}/log \
            --genesis-url '{{ .Values.bpa.config.ledger.browser }}/genesis' \
            --endpoint https://{{ include "acapy.host" . }} \
@@ -44,7 +44,7 @@ spec:
            --wallet-name 'mywallet' \
            --wallet-key '123' \
            --wallet-storage-config '{\"url\":\"{{ include "global.postgresql.fullname" . }}:{{ .Values.postgresql.service.port }}\",\"max_connections\":5}' \
-           --wallet-storage-creds '{\"account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"password\":\"$(POSTGRES_PASSWORD)\",\"admin_account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"admin_password\":\"$(POSTGRES_PASSWORD)\"}' \ 
+           --wallet-storage-creds '{\"account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"password\":\"$(POSTGRES_PASSWORD)\",\"admin_account\":\"{{ .Values.postgresql.postgresqlUsername }}\",\"admin_password\":\"$(POSTGRES_PASSWORD)\"}' \
            --seed \"$(WALLET_SEED)\" \
            --admin '0.0.0.0' {{ .Values.acapy.service.adminPort }} \
            --admin-insecure-mode \
@@ -62,29 +62,29 @@ spec:
               protocol: TCP
             - name: admin
               containerPort: 8031
-              protocol: TCP              
-          env:   
+              protocol: TCP
+          env:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ template "global.postgresql.fullname" . }}
-                  key: postgresql-password         
+                  key: postgresql-password
             - name: WALLET_SEED
               valueFrom:
                 secretKeyRef:
                   name: {{ template "acapy.fullname" . }}
-                  key: seed 
+                  key: seed
           livenessProbe:
             httpGet:
-              path: /status/live 
+              path: /status/live
               port: 8031
-            initialDelaySeconds: 15
-            periodSeconds: 3        
+            initialDelaySeconds: 45
+            periodSeconds: 3
           volumeMounts:
           - name: config
             mountPath: "/home/indy/acapy-static-args.yml"
             subPath: "acapy-static-args.yml"
-            readOnly: true        
+            readOnly: true
           resources:
             {{- toYaml .Values.acapy.resources | nindent 12 }}
       volumes:
@@ -93,7 +93,7 @@ spec:
             name: {{ include "acapy.fullname" . }}
             items:
             - key: "acapy-static-args.yaml"
-              path: "acapy-static-args.yml"              
+              path: "acapy-static-args.yml"
       {{- with .Values.acapy.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
