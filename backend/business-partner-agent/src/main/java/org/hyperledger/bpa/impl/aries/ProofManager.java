@@ -174,13 +174,13 @@ public class ProofManager {
             try {
                 ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId())
                         .ifPresent(record -> presentProof(record));
+                pProofRepo.updateState(proofEx.getId(), PresentationExchangeState.PRESENTATIONS_SENT);
             } catch (IOException e) {
                 log.error("aca-py not reachable.", e);
                 return;
             } catch (AriesException e) {
                 log.error("aca-py wallet item not found");
             }
-            pProofRepo.updateState(proofEx.getId(), PresentationExchangeState.PRESENTATIONS_SENT);
         } else {
             throw new WrongApiUsageException(
                     "PresentationExchangeRole!= 'prover' or PresentationExchangeState != 'request-received'");
@@ -245,11 +245,11 @@ public class ProofManager {
                 p -> {
                     pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId())
                             .ifPresentOrElse(pProof -> {
-                                if (PresentationExchangeState.PROPOSAL_SENT.equals(pProof.getState()) &&
+                                 if (PresentationExchangeState.PROPOSAL_SENT.equals(pProof.getState()) &&
                                         PresentationExchangeState.REQUEST_RECEIVED.equals(proof.getState()) &&
                                         PresentationExchangeInitiator.SELF.equals(proof.getInitiator())) {
                                     log.info(
-                                            "Present_Proof: state=request_received on PresentationExchange where initator=self, responding immediatly");
+                                           "Present_Proof: state=request_received on PresentationExchange where initator=self, responding immediatly");
                                     presentProof(proof);
                                 }
 
