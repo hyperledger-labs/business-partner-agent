@@ -157,11 +157,6 @@ public class ProofManager {
         if (PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
             try {
                 sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString);
-                // after sending rejection notice, delete aries copy. no proper 'reject'
-                // protocol
-                ac.presentProofRecordsRemove(proofEx.getPresentationExchangeId());
-                // after sending removing aries copy, remove BPA copy
-                // TODO: 'rejected_state' to save, so delete for now
                 deletePartnerProof(proofEx.getId());
             } catch (IOException e) {
                 throw new NetworkException("aca-py not available", e);
@@ -201,27 +196,29 @@ public class ProofManager {
             } catch (IOException e) {
                 throw new NetworkException("aca-py not available", e);
             }
-            try {
-                Optional<PresentationRequest> presentation = PresentationRequestHelper.buildAny(
-                        presentationExchangeRecord,
-                        validCredentials.get());
-                presentation.ifPresentOrElse((pres) -> {
-                    try {
-                        ac.presentProofRecordsSendPresentation(presentationExchangeRecord.getPresentationExchangeId(),
-                                pres);
-                    } catch (IOException e) {
-                        throw new AriesException(500, "Could not create aries connection invitation");
-                    }
-                }, () -> {
-                    log.error("Could not construct valid proof");
-                });
-            } catch (PresentationConstructionException e) {
-                // unable to construct valid proof
-                log.error("Unable to construct valid proof");
-                return;
-            }
+            validCredentials.ifPresentOrElse(validCreds -> {
+                try {
+                    Optional<PresentationRequest> presentation = PresentationRequestHelper.buildAny(
+                            presentationExchangeRecord,
+                            validCreds.get());
+                    presentation.ifPresentOrElse((pres) -> {
+                        try {
+                            ac.presentProofRecordsSendPresentation(presentationExchangeRecord.getPresentationExchangeId(),
+                                    pres);
+                        } catch (IOException e) {
+                            throw new AriesException(500, "Could not create aries connection invitation");
+                        }
+                    }, () -> {
+                        log.error("Could not construct valid proof");
+                    });
+                } catch (PresentationConstructionException e) {
+                    // unable to construct valid proof
+                    log.error("Unable to construct valid proof");
+                }
+            }, () -> {
+                log.error("No valid credentials found to build proof");
+            });
         }
-
     }
 
     // handles all proof events to track state changes
@@ -244,7 +241,7 @@ public class ProofManager {
 
     // handles all proof request
     public void handleProofRequestEvent(PresentationExchangeRecord proof) {
-        partnerRepo.findByConnectionId(proof.getConnectionId()).ifPresentOrElse(
+        partnerRepo.findByConnectionId(proof.getConnectionId()).ifPresent(
                 p -> {
                     pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId())
                             .ifPresentOrElse(pProof -> {
@@ -257,10 +254,8 @@ public class ProofManager {
                                 }
 
                             }, () -> {
-                                // new presentationExchangeID
                                 if (PresentationExchangeRole.PROVER.equals(proof.getRole())
                                         && PresentationExchangeState.REQUEST_RECEIVED.equals(proof.getState())) {
-                                    // brand new receive
                                     final PartnerProof pp = PartnerProof
                                             .builder()
                                             .partnerId(p.getId())
@@ -276,8 +271,6 @@ public class ProofManager {
                                     log.warn("Found some unexpected initial state for PresentationExchangeRecord");
                                 }
                             });
-                }, () -> {
-                    // error, connection ID doesn't have BPA level partner record (really bad)
                 });
 
     }
@@ -342,15 +335,6 @@ public class ProofManager {
         final Optional<PartnerProof> proof = pProofRepo.findById(id);
         if (proof.isPresent()) {
             result = Optional.of(toApiProof(proof.get()));
-        }
-        return result;
-    }
-
-    public Optional<AriesProofExchange> getProofRequestById(@NonNull UUID id) {
-        Optional<AriesProofExchange> result = Optional.empty();
-        final Optional<PartnerProof> proof = pProofRepo.findById(id);
-        if (proof.isPresent()) {
-            result = Optional.of(AriesProofExchange.from(proof.get(), null));
         }
         return result;
     }
