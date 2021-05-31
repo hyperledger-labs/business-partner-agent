@@ -63,20 +63,26 @@ public class PresentationRequestHelper {
         for (Map.Entry<String, PresentProofRequest.ProofRequest.ProofAttributes> reqAttr : requestedAttributes
                 .entrySet()) {
             List<JsonObject> restrictions = reqAttr.getValue().getRestrictions();
-            JsonElement restriction_schema_id = restrictions.get(0).get("schema_id");
-            JsonElement restriction_cred_def_id = restrictions.get(0).get("cred_def_id");
+            Optional<String> restriction_schema_id = restrictions.stream()
+                                                        .filter(e -> e.get("schema_id") != null)
+                                                        .findFirst()
+                                                        .map(JsonElement::getAsString);
+            Optional<String> restriction_cred_def_id = restrictions.stream()
+                                                        .filter(e -> e.get("cred_def_id") != null)
+                                                        .findFirst()
+                                                        .map(JsonElement::getAsString);
 
             Optional<PresentationRequestCredentials> cred = Optional.empty();
 
-            if (restriction_schema_id != null) {
+            if (restriction_schema_id.isPresent()) {
                 cred = validCredentials.stream()
                         .filter(vc -> vc.getCredentialInfo().getSchemaId().equals(
-                                restriction_schema_id.getAsString()))
+                                restriction_schema_id.get()))
                         .findFirst();
-            } else if (restriction_cred_def_id != null) {
+            } else if (restriction_cred_def_id.isPresent()) {
                 cred = validCredentials.stream()
                         .filter(vc -> vc.getCredentialInfo().getCredentialDefinitionId().equals(
-                                restriction_cred_def_id.getAsString()))
+                                restriction_cred_def_id.get()))
                         .findFirst();
             } else {
                 cred = validCredentials.stream().findFirst();
