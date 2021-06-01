@@ -62,31 +62,14 @@ public class PresentationRequestHelper {
 
         for (Map.Entry<String, PresentProofRequest.ProofRequest.ProofAttributes> reqAttr : requestedAttributes
                 .entrySet()) {
-            List<JsonObject> restrictions = reqAttr.getValue().getRestrictions();
-            Optional<String> restriction_schema_id = restrictions.stream()
-                    .filter(e -> e.get("schema_id") != null)
-                    .findFirst()
-                    .map(JsonElement::getAsString);
-            Optional<String> restriction_cred_def_id = restrictions.stream()
-                    .filter(e -> e.get("cred_def_id") != null)
-                    .findFirst()
-                    .map(JsonElement::getAsString);
+            String presentation_referent = reqAttr.getKey();
 
             Optional<PresentationRequestCredentials> cred = Optional.empty();
 
-            if (restriction_schema_id.isPresent()) {
-                cred = validCredentials.stream()
-                        .filter(vc -> vc.getCredentialInfo().getSchemaId().equals(
-                                restriction_schema_id.get()))
-                        .findFirst();
-            } else if (restriction_cred_def_id.isPresent()) {
-                cred = validCredentials.stream()
-                        .filter(vc -> vc.getCredentialInfo().getCredentialDefinitionId().equals(
-                                restriction_cred_def_id.get()))
-                        .findFirst();
-            } else {
-                cred = validCredentials.stream().findFirst();
-            }
+            cred = validCredentials.stream()
+                    .filter(vc -> vc.getPresentationReferents().get(0).equals(
+                            presentation_referent))
+                    .findFirst();
 
             cred.ifPresentOrElse(c -> {
                 result.put(reqAttr.getKey(), PresentationRequest.IndyRequestedCredsRequestedAttr.builder()
@@ -111,10 +94,10 @@ public class PresentationRequestHelper {
 
         for (Map.Entry<String, PresentProofRequest.ProofRequest.ProofAttributes> reqPred : requestedPredicates
                 .entrySet()) {
-            List<JsonObject> restrictions = reqPred.getValue().getRestrictions();
+            String presentation_referent = reqPred.getKey();
             Optional<PresentationRequestCredentials> cred = validCredentials.stream()
-                    .filter(vc -> vc.getCredentialInfo().getSchemaId().equals(
-                            restrictions.get(0).get("schema_id").getAsString()))
+                    .filter(vc -> vc.getPresentationReferents().get(0).equals(
+                        presentation_referent))
                     .findFirst();
 
             cred.ifPresentOrElse(c -> {
