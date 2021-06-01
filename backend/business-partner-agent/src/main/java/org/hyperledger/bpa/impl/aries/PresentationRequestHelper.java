@@ -23,9 +23,6 @@ import org.hyperledger.bpa.api.exception.PresentationConstructionException;
 
 import java.util.*;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 public class PresentationRequestHelper {
 
     /**
