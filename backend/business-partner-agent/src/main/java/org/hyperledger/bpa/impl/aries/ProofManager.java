@@ -200,10 +200,11 @@ public class ProofManager {
                 try {
                     Optional<PresentationRequest> presentation = PresentationRequestHelper.buildAny(
                             presentationExchangeRecord,
-                            validCreds.get());
+                            validCreds);
                     presentation.ifPresentOrElse((pres) -> {
                         try {
-                            ac.presentProofRecordsSendPresentation(presentationExchangeRecord.getPresentationExchangeId(),
+                            ac.presentProofRecordsSendPresentation(
+                                    presentationExchangeRecord.getPresentationExchangeId(),
                                     pres);
                         } catch (IOException e) {
                             throw new AriesException(500, "Could not create aries connection invitation");
@@ -245,11 +246,11 @@ public class ProofManager {
                 p -> {
                     pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId())
                             .ifPresentOrElse(pProof -> {
-                                 if (PresentationExchangeState.PROPOSAL_SENT.equals(pProof.getState()) &&
+                                if (PresentationExchangeState.PROPOSAL_SENT.equals(pProof.getState()) &&
                                         PresentationExchangeState.REQUEST_RECEIVED.equals(proof.getState()) &&
                                         PresentationExchangeInitiator.SELF.equals(proof.getInitiator())) {
                                     log.info(
-                                           "Present_Proof: state=request_received on PresentationExchange where initator=self, responding immediatly");
+                                            "Present_Proof: state=request_received on PresentationExchange where initator=self, responding immediatly");
                                     presentProof(proof);
                                 }
 

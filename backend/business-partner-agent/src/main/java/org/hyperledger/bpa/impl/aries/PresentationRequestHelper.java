@@ -64,13 +64,13 @@ public class PresentationRequestHelper {
                 .entrySet()) {
             List<JsonObject> restrictions = reqAttr.getValue().getRestrictions();
             Optional<String> restriction_schema_id = restrictions.stream()
-                                                        .filter(e -> e.get("schema_id") != null)
-                                                        .findFirst()
-                                                        .map(JsonElement::getAsString);
+                    .filter(e -> e.get("schema_id") != null)
+                    .findFirst()
+                    .map(JsonElement::getAsString);
             Optional<String> restriction_cred_def_id = restrictions.stream()
-                                                        .filter(e -> e.get("cred_def_id") != null)
-                                                        .findFirst()
-                                                        .map(JsonElement::getAsString);
+                    .filter(e -> e.get("cred_def_id") != null)
+                    .findFirst()
+                    .map(JsonElement::getAsString);
 
             Optional<PresentationRequestCredentials> cred = Optional.empty();
 
