@@ -8,9 +8,9 @@ The release process is therefore split into two steps: Publish docker image and 
 
 The code to be published should be in the `master` branch.
 
-Create a git tag in the format `bpa-<new version>`
+Create a git tag in the format `v<new version>` (e.g `vbpa-0.4.0-alpha02`)
 The incremented version number should adhere to the [Semantic Versioning Specification](https://semver.org/#semantic-versioning-specification-semver) based on the changes since the last published release.
-A docker image will be created (e.g `bpa-0.4.0-alpha02`) by a [github workflow](.github/workflows/build.yml).
+A docker image will be created with the tag `<new version>` (e.g `bpa-0.4.0-alpha02`) by a [github workflow](.github/workflows/build.yml).
 
 ## Step 2: Release helm chart
 
