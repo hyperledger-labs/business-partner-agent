@@ -14,13 +14,4 @@ A docker image will be created with the tag `<new version>` (e.g `1.2.3`) by a [
 
 ## Step 2: Release helm chart
 
-Update the `version` and `appVersion` number listed in [charts/bpa/Chart.yaml](charts/bpa/Chart.yaml).
-
-`appVersion` must be equal to the docker image tag created in the previous step.
-
-`version` is typically the same.
-
-Both incremented version numbers should adhere to the [Semantic Versioning Specification](https://semver.org/#semantic-versioning-specification-semver) based on the changes since the last published release.
-
-A new tag and GitHub release will be created automatically by a [github workflow](.github/workflows/release.yml).
-Charts in the charts folder will be automatically deployed to a repository hosted on github pages.
+See (https://github.com/hyperledger-labs/business-partner-agent-chart).
