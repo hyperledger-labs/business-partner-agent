@@ -1,19 +1,19 @@
 /*
-  Copyright (c) 2020 - for information on the respective copyright owner
-  see the NOTICE file and/or the repository at
-  https://github.com/hyperledger-labs/organizational-agent
-
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+ * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * see the NOTICE file and/or the repository at
+ * https://github.com/hyperledger-labs/business-partner-agent
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.hyperledger.bpa.impl.aries;
 
@@ -59,6 +59,8 @@ class ConnectionManagerTest extends BaseTest {
         Optional<Partner> p = repo.findByConnectionId(invite.getConnectionId());
         assertTrue(p.isPresent());
         assertEquals(ConnectionState.INVITATION, p.get().getState());
+        assertEquals("Alice", p.get().getAlias());
+        assertNotNull(p.get().getConnectionId());
 
         final ConnectionRecord active = gson.fromJson(createActive, ConnectionRecord.class);
         eventHandler.handleConnection(active);
@@ -76,6 +78,8 @@ class ConnectionManagerTest extends BaseTest {
         Optional<Partner> p = repo.findByConnectionId(invite.getConnectionId());
         assertTrue(p.isPresent());
         assertEquals(ConnectionState.REQUEST, p.get().getState());
+        assertEquals("bob", p.get().getLabel());
+        assertEquals("bob", p.get().getAlias());
 
         final ConnectionRecord active = gson.fromJson(receiveActive, ConnectionRecord.class);
         eventHandler.handleConnection(active);
@@ -93,7 +97,7 @@ class ConnectionManagerTest extends BaseTest {
         Optional<Partner> p = repo.findByConnectionId(invite.getConnectionId());
         assertTrue(p.isPresent());
         assertEquals(ConnectionState.INVITATION, p.get().getState());
-        assertEquals("Partner Invitation", p.get().getAlias());
+        assertEquals("Invitation 1", p.get().getAlias());
         assertTrue(p.get().getDid().endsWith("unknown"));
         assertNull(p.get().getLabel());
 
@@ -175,7 +179,7 @@ class ConnectionManagerTest extends BaseTest {
             "    \"accept\": \"auto\",\n" +
             "    \"connection_id\": \"5d41c1cb-2856-4026-984e-24d2976a05ba\",\n" +
             "    \"updated_at\": \"2021-04-28 08:20:17.034908Z\",\n" +
-            "    \"alias\": \"Partner Invitation\",\n" +
+            "    \"alias\": \"Invitation 1\",\n" +
             "    \"routing_state\": \"none\",\n" +
             "    \"invitation_key\": \"J9CHkDjr3oG7nq3enrojCRvsY9Cxq1Z7W1Y56GHNZe29\",\n" +
             "    \"created_at\": \"2021-04-28 08:20:17.034908Z\",\n" +
@@ -190,7 +194,7 @@ class ConnectionManagerTest extends BaseTest {
             "    \"connection_id\": \"5d41c1cb-2856-4026-984e-24d2976a05ba\",\n" +
             "    \"updated_at\": \"2021-04-28 08:20:43.237710Z\",\n" +
             "    \"their_label\": \"Wallet\",\n" +
-            "    \"alias\": \"Partner Invitation\",\n" +
+            "    \"alias\": \"Invitation 1\",\n" +
             "    \"their_did\": \"QjqxU2wnrBGwLJnW585QWp\",\n" +
             "    \"routing_state\": \"none\",\n" +
             "    \"invitation_key\": \"J9CHkDjr3oG7nq3enrojCRvsY9Cxq1Z7W1Y56GHNZe29\",\n" +

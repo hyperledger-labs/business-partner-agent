@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 
@@ -10,15 +10,13 @@
   <div class="newIconContainer">
     <v-icon
       color="green"
-      class="newIcon"
       small
       v-bind:class="{
-        newIconPartner: isPartner,
         newIconCredential: !isPartner,
         setTop: isEmpty,
       }"
     >
-      mdi-shape-polygon-plus
+      $vuetify.icons.newMessage
     </v-icon>
   </div>
 </template>
@@ -48,16 +46,6 @@ export default {
 .newIconContainer {
   position: relative;
   float: left;
-}
-
-.newIcon {
-  position: absolute;
-  bottom: 0;
-  top: 10px;
-}
-
-.newIconPartner {
-  right: 0px;
 }
 
 .newIconCredential {

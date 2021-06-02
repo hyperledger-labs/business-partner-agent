@@ -2,11 +2,11 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 */
 
-import { CredentialTypes } from "../constants";
+import { CredentialTypes, PartnerStates } from "../constants";
 
 export const getPartnerProfile = (partner) => {
   if (partner && {}.hasOwnProperty.call(partner, "credential")) {
@@ -42,5 +42,46 @@ export const getPartnerName = (partner) => {
     } else {
       return partner.did;
     }
+  }
+};
+
+export const getPartnerState = (partner) => {
+  if ({}.hasOwnProperty.call(partner, "state")) {
+    if (partner.state === PartnerStates.REQUEST.value) {
+      if (partner.incoming) {
+        return PartnerStates.CONNECTION_REQUEST_RECEIVED;
+      } else {
+        return PartnerStates.CONNECTION_REQUEST_SENT;
+      }
+    } else if (
+      partner.state ===
+      (PartnerStates.ACTIVE.value || PartnerStates.RESPONSE.value)
+    ) {
+      return PartnerStates.ACTIVE_OR_RESPONSE;
+    } else {
+      return Object.values(PartnerStates).find((state) => {
+        return partner.state === state.value;
+      });
+    }
+  } else {
+    return {
+      value: "",
+      label: "",
+    };
+  }
+};
+
+export const getPartnerStateColor = (state) => {
+  if (state === PartnerStates.REQUEST.value) {
+    return "yellow";
+  } else if (state === PartnerStates.INACTIVE.value) {
+    return "red";
+  } else if (
+    state === PartnerStates.ACTIVE.value ||
+    state === PartnerStates.RESPONSE.value
+  ) {
+    return "green";
+  } else {
+    return "grey";
   }
 };

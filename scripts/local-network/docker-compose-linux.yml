@@ -17,6 +17,7 @@ services:
         -Dmicronaut.security.enabled=${BPA_SECURITY_ENABLED}
         -Dmicronaut.server.port=${BPA1_PORT}
         -Dmicronaut.environments=dev
+        -Dmicronaut.config.files=${BPA_CONFIG_FILES}
         -Dbpa.pg.url=jdbc:postgresql://${POSTGRESQL1_HOST}/${POSTGRESQL_USER}
         -Dbpa.pg.username=${POSTGRESQL_USER}
         -Dbpa.pg.password=${POSTGRESQL_PASSWORD}
@@ -101,6 +102,7 @@ services:
         -Dmicronaut.security.enabled=${BPA_SECURITY_ENABLED}
         -Dmicronaut.server.port=${BPA2_PORT}
         -Dmicronaut.environments=dev
+        -Dmicronaut.config.files=${BPA_CONFIG_FILES}
         -Dbpa.pg.url=jdbc:postgresql://${POSTGRESQL2_HOST}/${POSTGRESQL_USER}
         -Dbpa.pg.username=${POSTGRESQL_USER}
         -Dbpa.pg.password=${POSTGRESQL_PASSWORD}

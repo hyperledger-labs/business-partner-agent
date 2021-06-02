@@ -5,6 +5,7 @@
 
  SPDX-License-Identifier: Apache-2.0
 */
+import '@/assets/scss/style.scss';
 
 import Vue from "vue";
 import axios from "axios";
@@ -15,7 +16,7 @@ import "@babel/polyfill";
 import router from "./router";
 import store from "./store";
 import SortUtil from "./utils/sortUtils";
-import '@/filters';
+import "@/filters";
 
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
@@ -25,8 +26,12 @@ Vue.use(require("vue-moment"));
 Vue.use(SortUtil);
 
 var apiBaseUrl = process.env.VUE_APP_API_BASE_URL;
-var eventsHost = process.env.VUE_APP_EVENTS_HOST ? process.env.VUE_APP_EVENTS_HOST : window.location.host;
-var socketApi = `${window.location.protocol === "https:" ? "wss" : "ws"}://${eventsHost}/${process.env.VUE_APP_EVENTS_PATH}`;
+var eventsHost = process.env.VUE_APP_EVENTS_HOST
+  ? process.env.VUE_APP_EVENTS_HOST
+  : window.location.host;
+var socketApi = `${
+  window.location.protocol === "https:" ? "wss" : "ws"
+}://${eventsHost}/${process.env.VUE_APP_EVENTS_PATH}`;
 
 if (process.env.NODE_ENV === "development") {
   store.commit({
@@ -52,6 +57,9 @@ Vue.use(VueNativeSock, socketApi, {
         msg = JSON.parse(event.data);
         // method = 'dispatch';
         switch (msg.message.type) {
+          case "CONNECTION_REQUEST":
+            target = "newPartner";
+            break;
           case "PARTNER":
             target = "newPartner";
             break;
@@ -71,18 +79,6 @@ Vue.use(VueNativeSock, socketApi, {
 Vue.prototype.$axios = axios;
 Vue.prototype.$apiBaseUrl = apiBaseUrl;
 Vue.config.productionTip = false;
-
-Vue.filter("credentialTag", function (credDefId) {
-  if (!credDefId) return "";
-  let pos = credDefId.lastIndexOf(":");
-  return credDefId.substring(pos + 1);
-});
-
-Vue.filter("capitalize", function (string) {
-  return string && string !== ""
-    ? string.replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()))
-    : "";
-});
 
 // Get Configuration
 Vue.prototype.$config = {

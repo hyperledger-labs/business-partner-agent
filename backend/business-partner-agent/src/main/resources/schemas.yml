@@ -1,0 +1,18 @@
+bpa:
+  schemas:
+    #test ledger schemas, can be overwritten / extended when e.g. working with other ledger
+    bank-account:
+      id: "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
+      label: "Bank Account"
+      defaultAttributeName: "iban"
+      # Note: this also works json style restrictions: [{id: 123, label: myLabel}]
+      restrictions:
+        - issuerDid: "${bpa.did.prefix}M6Mbe3qx7vB4wpZF4sBRjt"
+          label: "Demo Bank"
+    commercial-register:
+      id: "5mwQSWnRePrZ3oF67C4KqD:2:commercialregister:1.0"
+      label: "Commercial Register"
+      defaultAttributeName: "companyName"
+      restrictions:
+        - issuerDid: "${bpa.did.prefix}5mwQSWnRePrZ3oF67C4KqD"
+          label: "Commercial Register"

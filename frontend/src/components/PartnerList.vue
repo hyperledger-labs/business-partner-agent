@@ -13,7 +13,7 @@
       v-model="selected"
       :loading="isBusy"
       :headers="headers"
-      :items="data"
+      :items="filteredData"
       :show-select="selectable"
       :sort-by="['updatedAt']"
       :sort-desc="[true]"
@@ -48,16 +48,20 @@
       <template v-slot:[`item.updatedAt`]="{ item }">
         {{ item.updatedAt | moment("YYYY-MM-DD HH:mm") }}
       </template>
+
+      <template v-slot:[`item.state`]="{ item }">
+        {{ getPartnerState(item).label }}
+      </template>
     </v-data-table>
   </v-container>
 </template>
 
 <script>
 import { EventBus } from "../main";
-import { getPartnerName } from "../utils/partnerUtils";
+import { getPartnerName, getPartnerState } from "../utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import NewMessageIcon from "@/components/NewMessageIcon";
-import { CredentialTypes } from "../constants";
+import { CredentialTypes, PartnerStates } from "../constants";
 
 export default {
   name: "PartnerList",
@@ -83,6 +87,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    showInvitations: {
+      type: Boolean,
+      default: false,
+    },
     indicateNew: {
       type: Boolean,
       default: false,
@@ -100,11 +108,32 @@ export default {
       selected: [],
       data: [],
       isBusy: true,
+      getPartnerState: getPartnerState,
     };
   },
   computed: {
     expertMode() {
       return this.$store.state.expertMode;
+    },
+    filteredData() {
+      if (!this.showInvitations) {
+        return this.data.filter((partner) => {
+          return partner.state !== PartnerStates.INVITATION.value;
+        });
+      } else {
+        return this.data;
+      }
+    },
+    newPartners() {
+      return this.$store.getters.newPartners;
+    },
+  },
+  watch: {
+    newPartners: function (newValue) {
+      if (newValue) {
+        // TODO: Don't fetch all partners but only add new partner
+        this.fetch();
+      }
     },
   },
   methods: {
@@ -116,6 +145,7 @@ export default {
         },
       });
     },
+
     fetch() {
       // Query only for partners that can issue credentials of specified schema
       let queryParam = "";
@@ -155,7 +185,7 @@ export default {
     },
     markNew(data) {
       if (this.indicateNew) {
-        let newPartners = this.$store.getters.newPartners;
+        const newPartners = this.$store.getters.newPartners;
         if (Object.keys(newPartners).length > 0) {
           data = data.map((partner) => {
             if ({}.hasOwnProperty.call(newPartners, partner.id)) {

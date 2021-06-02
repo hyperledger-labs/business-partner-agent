@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 
@@ -30,20 +30,22 @@
       </div>
     </template>
     <template v-slot:[`item.state`]="{ item }">
-      <v-icon
-        v-if="item.state === 'verified' || item.state == 'presentation_acked'"
-        color="green"
-        >mdi-check</v-icon
-      >
+      <v-icon v-if="isItemActive(item)" color="green">$vuetify.icons.check</v-icon>
       <span v-else>
         {{ item.state.replace("_", " ") }}
       </span>
     </template>
     <template v-slot:[`item.sentAt`]="{ item }">
-      {{ item.sentAt | moment("YYYY-MM-DD HH:mm") }}
+      {{ item.sentAt | formatDateLong }}
     </template>
     <template v-slot:[`item.receivedAt`]="{ item }">
-      {{ item.receivedAt | moment("YYYY-MM-DD HH:mm") }}
+      {{ item.receivedAt | formatDateLong }}
+    </template>
+    <template v-slot:[`item.updatedAt`]="{ item }">
+      {{ item.updatedAt | formatDateLong }}
+    </template>
+    <template v-slot:[`item.createdAt`]="{ item }">
+      {{ item.createdAt | formatDateLong }}
     </template>
     <template v-slot:expanded-item="{ headers, item }">
       <td :colspan="headers.length">
@@ -55,7 +57,7 @@
       </td>
     </template>
     <template v-slot:[`item.actions`]="{ item }">
-      <v-icon small @click.stop="deletePresentation(item)"> mdi-delete </v-icon>
+      <v-icon small @click.stop="deletePresentation(item)"> $vuetify.icons.delete </v-icon>
     </template>
   </v-data-table>
 </template>
@@ -80,6 +82,11 @@ export default {
     headers: {
       type: Array,
       default: () => presentationListHeaders,
+    },
+    isActiveFn: {
+      type: Function,
+      default: (item) =>
+        item.state === "verified" || item.state == "presentation_acked",
     },
   },
   data: () => {
@@ -120,10 +127,7 @@ export default {
         });
     },
     openPresentation(presentation) {
-      if (
-        presentation.state === "verified" ||
-        presentation.state == "presentation_acked"
-      ) {
+      if (this.isActiveFn(presentation)) {
         if (presentation.id) {
           this.$router.push({
             path: `presentation/${presentation.id}`,
@@ -139,6 +143,9 @@ export default {
         // Do nothing for now. Presentation is not ready
         // Need to fix Presentation.vue for unfinished presentations
       }
+    },
+    isItemActive(item) {
+      return this.isActiveFn(item);
     },
   },
   components: {

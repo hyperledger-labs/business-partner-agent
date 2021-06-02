@@ -1,13 +1,21 @@
+/*
+ Copyright (c) 2021 - for information on the respective copyright owner
+ see the NOTICE file and/or the repository at
+ https://github.com/hyperledger-labs/organizational-agent
+
+ SPDX-License-Identifier: Apache-2.0
+*/
+
 import axios from 'axios';
 import Vue from 'vue';
 
 /**
  * @function appAxios
  * Returns an Axios instance with pre-configuration
- * @param {integer} [timeout=10000] Number of milliseconds before timing out the request
+ * @param {number} [timeout=10000] Number of milliseconds before timing out the request
  * @returns {object} An axios instance
  */
-export function appAxios(timeout = 30000) {
+export function appAxios(timeout = 0) {
   const axiosOptions = { timeout: timeout };
   if (Vue.prototype.$config) {
     // any other options we can set here?

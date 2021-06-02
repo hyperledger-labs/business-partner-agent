@@ -2,10 +2,10 @@ import moment from "moment";
 import { CredentialTypes } from "../constants";
 import { EventBus, axios, apiBaseUrl } from "../main";
 import { getPartnerProfile } from "../utils/partnerUtils";
+import adminService from "@/services/adminService";
 
 export const loadSchemas = async ({ commit }) => {
-  axios
-    .get(`${apiBaseUrl}/admin/schema`)
+  adminService.listSchemas()
     .then((result) => {
       let schemas = result.data;
       schemas.map((schema) => {
@@ -17,6 +17,7 @@ export const loadSchemas = async ({ commit }) => {
         ) {
           schema.type = CredentialTypes.UNKNOWN.type;
         }
+        schema.canIssue = Array.isArray(schema.credentialDefinitions) && schema.credentialDefinitions.length;
       });
       schemas.unshift(CredentialTypes.PROFILE);
       commit({

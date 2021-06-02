@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 
@@ -25,7 +25,9 @@
           v-show="item.new"
           :text="item.label"
         ></new-message-icon>
-        {{ item.label }}
+        <span v-bind:class="{ 'font-weight-medium': item.new }">
+          {{ item.label }}
+        </span>
       </template>
       <template v-slot:[`item.type`]="{ item }">
         <div
@@ -56,9 +58,11 @@
       </template>
 
       <template v-slot:[`item.isPublic`]="{ item }">
-        <v-icon v-if="item.isPublic" color="green"> mdi-eye </v-icon>
+        <v-icon v-if="item.isPublic" color="green">
+          $vuetify.icons.public
+        </v-icon>
         <template v-else>
-          <v-icon>mdi-eye-off</v-icon>
+          <v-icon>$vuetify.icons.private</v-icon>
         </template>
       </template>
     </v-data-table>
@@ -105,6 +109,7 @@ export default {
   watch: {
     newCredentials: function (newValue) {
       if (newValue && this.type === "credential") {
+        // TODO: Don't fetch all partners but only add new credential data
         this.fetch(this.type);
       }
     },

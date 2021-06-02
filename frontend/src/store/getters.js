@@ -29,6 +29,12 @@ export const getSchemas = (state) => {
   return state.schemas;
 };
 
+export const getSchemaBasedSchemas = (state) => {
+  return state.schemas.filter((schema) => {
+    return schema.type === CredentialTypes.SCHEMA_BASED.type;
+  });
+};
+
 export const getSchemaById = (state) => (schemaId) => {
   if (!schemaId) {
     return null;
@@ -51,7 +57,7 @@ export const getSchemaLabel = (state) => (typeName, schemaId = undefined) => {
   let schemaType = { label: "" };
   if (schemaId) {
     schemaType = state.schemas.find((schema) => {
-      schema.schemaId === schemaId;
+      return schema.schemaId === schemaId;
     });
   } else if (typeName) {
     schemaType = state.schemas.find((schema) => {
