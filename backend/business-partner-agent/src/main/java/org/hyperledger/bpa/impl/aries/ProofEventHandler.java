@@ -117,21 +117,23 @@ public class ProofEventHandler {
                                     && PresentationExchangeInitiator.SELF.equals(proof.getInitiator())) {
                                 log.info(
                                         "Present_Proof: state=request_received on PresentationExchange where " +
-                                                "initator=self, responding immediatly");
+                                                "initator=self, responding immediately");
                                 pProofRepo.updateState(pProof.getId(), proof.getState());
-                                // TODO only if auto flag is set to false, otherwise its send twice
-                                proofManager.presentProof(proof);
+                                if (proof.getAutoPresent() == null || !proof.getAutoPresent()) {
+                                    proofManager.presentProof(proof);
+                                }
                             }
                         }, () -> {
                             // case: proof request from other BPA
                             final PartnerProof pp = defaultProof(p.getId(), proof)
                                     .setProofRequest(proof.getPresentationRequest());
                             pProofRepo.save(pp);
-                            // TODO only if auto flag is set to false
-                            proofManager.sendMessage(
-                                    WebSocketMessageBody.WebSocketMessageState.RECEIVED,
-                                    WebSocketMessageBody.WebSocketMessageType.PROOFREQUEST,
-                                    pp);
+                            if (proof.getAutoPresent() == null || !proof.getAutoPresent()) {
+                                proofManager.sendMessage(
+                                        WebSocketMessageBody.WebSocketMessageState.RECEIVED,
+                                        WebSocketMessageBody.WebSocketMessageType.PROOFREQUEST,
+                                        pp);
+                            }
                         }));
 
     }
