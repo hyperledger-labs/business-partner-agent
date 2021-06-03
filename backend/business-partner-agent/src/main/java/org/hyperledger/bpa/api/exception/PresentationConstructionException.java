@@ -25,7 +25,4 @@ public class PresentationConstructionException extends RuntimeException {
         super(message);
     }
 
-    public PresentationConstructionException(String message, Throwable t) {
-        super(message, t);
-    }
 }

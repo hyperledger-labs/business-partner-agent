@@ -230,7 +230,7 @@ public class PartnerController {
      */
     @Post("/{id}/proof-exchanges/{proofId}/prove")
     public HttpResponse<Void> responseToProofRequest(
-            @PathVariable String id,
+            @SuppressWarnings("unused ") @PathVariable String id,
             @PathVariable String proofId) {
         final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(proofId));
         if (proof.isPresent()) {
@@ -242,7 +242,7 @@ public class PartnerController {
     }
 
     /**
-     * Aries: Reject ProofRequest recieved from from a partner
+     * Aries: Reject ProofRequest received from from a partner
      *
      * @param id      {@link UUID} the partner id
      * @param proofId {@link UUID} the presentationExchangeId
@@ -250,7 +250,7 @@ public class PartnerController {
      */
     @Post("/{id}/proof-exchanges/{proofId}/reject")
     public HttpResponse<Void> rejectPresentProofRequest(
-            @PathVariable String id,
+            @SuppressWarnings("unused ") @PathVariable String id,
             @PathVariable String proofId) {
         final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(proofId));
         if (proof.isPresent()) {
@@ -351,6 +351,9 @@ public class PartnerController {
     public HttpResponse<CreateInvitationResponse> requestConnectionInvitation(
             @Body CreatePartnerInvitationRequest req) {
         final Optional<CreateInvitationResponse> invitation = cm.createConnectionInvitation(req.alias);
-        return HttpResponse.ok(invitation.get());
+        if (invitation.isPresent()) {
+            return HttpResponse.ok(invitation.get());
+        }
+        return HttpResponse.serverError();
     }
 }

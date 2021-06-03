@@ -106,16 +106,16 @@ public class IssuerManager {
     }
 
     public CredDef createCredDef(@NonNull String schemaId, @NonNull String tag, boolean supportRevocation) {
-        CredDef result = null;
+        CredDef result;
         try {
             String sId = StringUtils.strip(schemaId);
             Optional<SchemaSendResponse.Schema> ariesSchema = ac.schemasGetById(sId);
-            if (!ariesSchema.isPresent()) {
+            if (ariesSchema.isEmpty()) {
                 throw new WrongApiUsageException(String.format("No schema with id '%s' found on ledger.", sId));
             }
 
             Optional<BPASchema> bpaSchema = schemaService.getSchemaFor(sId);
-            if (!bpaSchema.isPresent()) {
+            if (bpaSchema.isEmpty()) {
                 // schema exists on ledger, but no in db, let's add it.
                 SchemaAPI schema = schemaService.addSchema(ariesSchema.get().getId(), null, null, null);
                 if (schema == null) {
@@ -166,11 +166,11 @@ public class IssuerManager {
     public Optional<V1CredentialExchange> issueCredentialSend(@NonNull UUID credDefId, @NonNull UUID partnerId,
             @NonNull Map<String, Object> document) {
         final Optional<Partner> dbPartner = partnerRepo.findById(partnerId);
-        if (!dbPartner.isPresent()) {
+        if (dbPartner.isEmpty()) {
             throw new IssuerException(String.format("Could not find partner with id '%s'", partnerId));
         }
         final Optional<BPACredentialDefinition> dbCredDef = credDefRepo.findById(credDefId);
-        if (!dbCredDef.isPresent()) {
+        if (dbCredDef.isEmpty()) {
             throw new IssuerException(String.format("Could not find credential definition with id '%s'", credDefId));
         }
         // ok, we have partner/connection, we have a cred def/schema
@@ -184,7 +184,7 @@ public class IssuerManager {
         }
 
         try {
-            Optional<V1CredentialExchange> exchange = ac.issueCredentialSend(
+            return ac.issueCredentialSend(
                     V1CredentialProposalRequest
                             .builder()
                             .connectionId(dbPartner.get().getConnectionId())
@@ -194,7 +194,6 @@ public class IssuerManager {
                                             CredentialAttributes.from(document)))
                             .credentialDefinitionId(dbCredDef.get().getCredentialDefinitionId())
                             .build());
-            return exchange;
         } catch (IOException e) {
             throw new NetworkException("No aries connection", e);
         }
