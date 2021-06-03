@@ -36,11 +36,15 @@ public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUI
 
     Optional<PartnerProof> findByPresentationExchangeId(String presentationExchangeId);
 
+    Optional<PartnerProof> findByThreadId(String threadId);
+
     List<PartnerProof> findByPartnerId(UUID partnerId);
 
     List<PartnerProof> findByPartnerIdOrderByRole(UUID partnerId);
 
     void updateState(@Id UUID id, PresentationExchangeState state);
+
+    void updateProblemReport(@Id UUID id, String problemReport);
 
     long updateReceivedProof(@Id UUID id, Instant issuedAt, Boolean valid, PresentationExchangeState state,
             Map<String, Object> proof);

@@ -23,6 +23,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.message.PingEvent;
+import org.hyperledger.aries.api.message.ProblemReport;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.impl.IssuerManager;
@@ -72,7 +73,6 @@ public class AriesEventHandler extends EventHandler {
 
     @Override
     public void handlePing(PingEvent ping) {
-        // log.debug("Ping: {}", ping);
         pingMgmt.ifPresent(mgmt -> mgmt.handlePingEvent(ping));
     }
 
@@ -101,6 +101,13 @@ public class AriesEventHandler extends EventHandler {
                 issuerMgr.handleCredentialExchange(credential);
             }
         }
+    }
+
+    @Override
+    public void handleProblemReport(ProblemReport report) {
+        // problem reports can happen on several levels, currently we assume that all
+        // reports are proof related
+        proofMgmt.handleProblemReport(report.getThread().getThid(), report.getExplainLtxt());
     }
 
     @Override

@@ -69,6 +69,9 @@ public class PartnerProof {
     private String presentationExchangeId;
 
     @Nullable
+    private String threadId;
+
+    @Nullable
     @Enumerated(EnumType.STRING)
     private PresentationExchangeState state;
 
@@ -84,6 +87,9 @@ public class PartnerProof {
 
     @Nullable
     private String credentialDefinitionId;
+
+    @Nullable
+    private String problemReport;
 
     @Nullable
     @TypeDef(type = DataType.JSON)

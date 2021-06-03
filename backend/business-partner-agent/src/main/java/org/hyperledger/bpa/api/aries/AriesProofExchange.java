@@ -49,6 +49,7 @@ public class AriesProofExchange {
     private String issuer;
     private String schemaId;
     private String credentialDefinitionId;
+    private String problemReport;
     private PresentationExchangeRole role;
     private JsonNode proofData;
     private PresentProofRequest.ProofRequest proofRequest;
@@ -72,6 +73,7 @@ public class AriesProofExchange {
                 .proofData(proofData)
                 .proofRequest(p.getProofRequest())
                 .role(p.getRole())
+                .problemReport(p.getProblemReport())
                 .build();
     }
 }

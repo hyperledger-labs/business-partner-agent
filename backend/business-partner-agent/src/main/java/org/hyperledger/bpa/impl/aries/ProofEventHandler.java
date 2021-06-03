@@ -50,7 +50,7 @@ public class ProofEventHandler {
     @Inject
     MessageService messageService;
 
-    public void dispatch(PresentationExchangeRecord proof) {
+    void dispatch(PresentationExchangeRecord proof) {
         if (proof.isVerified() && PresentationExchangeRole.VERIFIER.equals(proof.getRole())
                 || PresentationExchangeState.PRESENTATION_ACKED.equals(proof.getState())
                         && PresentationExchangeRole.PROVER.equals(proof.getRole())) {
@@ -110,6 +110,7 @@ public class ProofEventHandler {
         partnerRepo.findByConnectionId(proof.getConnectionId()).ifPresent(
                 p -> pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId())
                         .ifPresentOrElse(pProof -> {
+                            // case: this BPA sends proof to other BPA
                             // if --auto-respond-presentation-request is set to false and there is a
                             // preceding proof proposal event we can do a auto present
                             if (PresentationExchangeState.PROPOSAL_SENT.equals(pProof.getState())
@@ -122,9 +123,11 @@ public class ProofEventHandler {
                                 proofManager.presentProof(proof);
                             }
                         }, () -> {
+                            // case: proof request from other BPA
                             final PartnerProof pp = defaultProof(p.getId(), proof)
                                     .setProofRequest(proof.getPresentationRequest());
                             pProofRepo.save(pp);
+                            // TODO only if auto flag is set to false
                             proofManager.sendMessage(
                                     WebSocketMessageBody.WebSocketMessageState.RECEIVED,
                                     WebSocketMessageBody.WebSocketMessageType.PROOFREQUEST,
@@ -133,12 +136,30 @@ public class ProofEventHandler {
 
     }
 
+    /**
+     * Handle present proof problem report message
+     * 
+     * @param threadId    the thread id of the exchange
+     * @param description the problem description
+     */
+    void handleProblemReport(@NonNull String threadId, @NonNull String description) {
+        pProofRepo.findByThreadId(threadId).ifPresent(pp -> pProofRepo.updateProblemReport(pp.getId(), description));
+    }
+
+    /**
+     * Build db proof representation with all mandatory fields that are required
+     * 
+     * @param partnerId the partner id
+     * @param proof     {link PresentationExchangeRecord}
+     * @return {@link PartnerProof}
+     */
     private PartnerProof defaultProof(@NonNull UUID partnerId, @NonNull PresentationExchangeRecord proof) {
         return PartnerProof
                 .builder()
                 .partnerId(partnerId)
                 .state(proof.getState())
                 .presentationExchangeId(proof.getPresentationExchangeId())
+                .threadId(proof.getThreadId())
                 .role(proof.getRole())
                 .build();
     }

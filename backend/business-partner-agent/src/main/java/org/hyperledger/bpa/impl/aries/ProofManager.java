@@ -187,8 +187,12 @@ public class ProofManager {
                                             }
                                         });
                             } else {
-                                log.warn("No matching credentials found in the wallet");
-                                // TODO store this somewhere for the user and send problem report to requester
+                                String msg = "No matching credentials found for proof request: "
+                                        + presentationExchangeRecord.getPresentationExchangeId();
+                                log.warn(msg);
+                                pProofRepo.findByPresentationExchangeId(
+                                        presentationExchangeRecord.getPresentationExchangeId())
+                                        .ifPresent(pp -> pProofRepo.updateProblemReport(pp.getId(), msg));
                             }
                         }, () -> log.error("Could not load matching credentials from aca-py"));
             } catch (IOException e) {

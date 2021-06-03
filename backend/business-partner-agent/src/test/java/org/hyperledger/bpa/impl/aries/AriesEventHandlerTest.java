@@ -19,8 +19,10 @@ package org.hyperledger.bpa.impl.aries;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import lombok.NonNull;
+import org.hyperledger.aries.api.message.ProblemReport;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
+import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.aries.webhook.EventParser;
 import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.model.Partner;
@@ -162,6 +164,25 @@ class AriesEventHandlerTest extends BaseTest {
         assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0", dbProof.get().getSchemaId());
         assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:Bank Account V2",
                 dbProof.get().getCredentialDefinitionId());
+    }
+
+    @Test
+    void testHandleProblemReport() {
+        String reqSent = loader.load("files/self-request-proof/01-verifier-request-sent.json");
+        String probReport = loader.load("files/self-request-proof/04-problem-report.json");
+        PresentationExchangeRecord exReqSent = ep.parsePresentProof(reqSent).get();
+        ProblemReport exProblem = GsonConfig.defaultConfig().fromJson(probReport, ProblemReport.class);
+
+        createDefaultPartner(exReqSent);
+
+        aeh.handleProof(exReqSent);
+        aeh.handleProblemReport(exProblem);
+
+        Optional<PartnerProof> dbProof = proofRepo.findByThreadId(exProblem.getThread().getThid());
+        assertTrue(dbProof.isPresent());
+        assertEquals(PresentationExchangeState.REQUEST_SENT, dbProof.get().getState());
+        assertTrue(dbProof.get().getProblemReport().startsWith("no matching"));
+
     }
 
     private Partner createDefaultPartner(@NonNull PresentationExchangeRecord exReqSent) {
