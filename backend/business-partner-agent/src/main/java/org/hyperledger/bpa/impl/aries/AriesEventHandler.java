@@ -24,11 +24,9 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.webhook.EventHandler;
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.IssuerManager;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -44,7 +42,7 @@ public class AriesEventHandler extends EventHandler {
 
     private final CredentialManager credMgmt;
 
-    private final ProofManager proofMgmt;
+    private final ProofEventHandler proofMgmt;
 
     private final IssuerManager issuerMgr;
 
@@ -53,7 +51,7 @@ public class AriesEventHandler extends EventHandler {
             ConnectionManager conMgmt,
             Optional<PingManager> pingMgmt,
             CredentialManager credMgmt,
-            ProofManager proofMgmt,
+            ProofEventHandler proofMgmt,
             IssuerManager issuerMgr) {
         this.conMgmt = conMgmt;
         this.pingMgmt = pingMgmt;
@@ -74,7 +72,7 @@ public class AriesEventHandler extends EventHandler {
 
     @Override
     public void handlePing(PingEvent ping) {
-        log.debug("Ping: {}", ping);
+        // log.debug("Ping: {}", ping);
         pingMgmt.ifPresent(mgmt -> mgmt.handlePingEvent(ping));
     }
 
@@ -82,16 +80,7 @@ public class AriesEventHandler extends EventHandler {
     public void handleProof(PresentationExchangeRecord proof) {
         log.debug("Present Proof Event: {}", proof);
         synchronized (proofMgmt) {
-            if (proof.isVerified() && PresentationExchangeRole.VERIFIER.equals(proof.getRole())
-                    || PresentationExchangeState.PRESENTATION_ACKED.equals(proof.getState())
-                            && PresentationExchangeRole.PROVER.equals(proof.getRole())) {
-                proofMgmt.handleAckedOrVerifiedProofEvent(proof);
-            } else if (PresentationExchangeState.REQUEST_RECEIVED.equals(proof.getState())
-                    && PresentationExchangeRole.PROVER.equals(proof.getRole())) {
-                proofMgmt.handleProofRequestEvent(proof);
-            } else {
-                proofMgmt.handleProofEvent(proof);
-            }
+            proofMgmt.dispatch(proof);
         }
     }
 

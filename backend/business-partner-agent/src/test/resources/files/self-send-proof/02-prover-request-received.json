@@ -1,7 +1,7 @@
 {
     "updated_at": "2020-09-07 09:19:53.108674Z",
     "thread_id": "00107a82-d4fd-4d8d-a985-4cbbc6ea624d",
-    "initiator": "external",
+    "initiator": "self",
     "role": "prover",
     "presentation_exchange_id": "cf47ce71-f40f-41b2-9b22-73e673385077",
     "connection_id": "535ad44a-ba4a-45de-9f4e-a922310cab7d",
