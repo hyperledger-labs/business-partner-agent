@@ -43,6 +43,14 @@
         <v-icon small @click.stop="respondToPresentationRequest(item)">
           $vuetify.icons.check
         </v-icon>
+        <v-tooltip v-if="item.problemReport" top>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon color="error" small v-bind="attrs" v-on="on">
+              $vuetify.icons.connectionAlert
+            </v-icon>
+          </template>
+          <span>{{ item.problemReport }}</span>
+        </v-tooltip>
       </div>
     </template>
   </v-data-table>
