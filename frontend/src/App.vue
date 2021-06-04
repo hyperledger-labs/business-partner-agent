@@ -85,8 +85,8 @@
             <v-badge
               overlap
               bordered
-              :content="newPartnersCount"
-              :value="newPartnersCount"
+              :content="newPartnerEventsCount"
+              :value="newPartnerEventsCount"
               color="red"
               offset-x="10"
               offset-y="10"
@@ -234,8 +234,10 @@ export default {
     privacyPolicyUrl() {
       return this.$store.state.settings.dataPrivacyPolicy;
     },
-    newPartnersCount() {
-      return this.$store.getters.newPartnersCount;
+    newPartnerEventsCount() {
+      console.log("read newPartnerEventsCount");
+      console.log(this.$store.getters.newPartnerEventsCount);
+      return this.$store.getters.newPartnerEventsCount;
     },
     newCredentialsCount() {
       return this.$store.getters.newCredentialsCount;
@@ -288,9 +290,9 @@ export default {
     });
   },
   methods: {
-     logout() {
-       // logout must have get-allowed, get the browser to do all the logout redirects...
-       location.href = `${this.$apiBaseUrl}/logout`;
+    logout() {
+      // logout must have get-allowed, get the browser to do all the logout redirects...
+      location.href = `${this.$apiBaseUrl}/logout`;
     },
   },
 };

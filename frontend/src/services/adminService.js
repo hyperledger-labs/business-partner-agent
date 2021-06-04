@@ -23,4 +23,3 @@ export default {
     return appAxios().delete(`${ApiRoutes.ADMIN}/schema/${id}`);
   },
 };
-

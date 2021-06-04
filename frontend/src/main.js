@@ -5,7 +5,7 @@
 
  SPDX-License-Identifier: Apache-2.0
 */
-import '@/assets/scss/style.scss';
+import "@/assets/scss/style.scss";
 
 import Vue from "vue";
 import axios from "axios";
@@ -68,6 +68,9 @@ Vue.use(VueNativeSock, socketApi, {
             break;
           case "PROOF":
             target = "newPresentation";
+            break;
+          case "PROOFREQUEST":
+            target = "newPresentationRequest";
             break;
         }
       }

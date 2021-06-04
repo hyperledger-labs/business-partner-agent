@@ -6,8 +6,8 @@
  SPDX-License-Identifier: Apache-2.0
 */
 
-import axios from 'axios';
-import Vue from 'vue';
+import axios from "axios";
+import Vue from "vue";
 
 /**
  * @function appAxios
@@ -24,12 +24,15 @@ export function appAxios(timeout = 0) {
 
   const instance = axios.create(axiosOptions);
 
-  instance.interceptors.request.use(cfg => {
-    // we could inject auth headers in here if needed.
-    return Promise.resolve(cfg);
-  }, error => {
-    return Promise.reject(error);
-  });
+  instance.interceptors.request.use(
+    (cfg) => {
+      // we could inject auth headers in here if needed.
+      return Promise.resolve(cfg);
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
 
   return instance;
 }

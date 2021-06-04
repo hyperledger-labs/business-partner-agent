@@ -25,7 +25,4 @@ public class SchemaException extends RuntimeException {
         super(message);
     }
 
-    public SchemaException(String message, Throwable t) {
-        super(message, t);
-    }
 }

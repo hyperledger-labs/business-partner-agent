@@ -17,11 +17,11 @@
  */
 package org.hyperledger.bpa.api.exception;
 
-public class IssuerException extends RuntimeException {
+public class PresentationConstructionException extends RuntimeException {
 
-    private static final long serialVersionUID = -5913572693089903914L;
+    private static final long serialVersionUID = -1237890709823L;
 
-    public IssuerException(String message) {
+    public PresentationConstructionException(String message) {
         super(message);
     }
 
