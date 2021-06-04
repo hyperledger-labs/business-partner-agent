@@ -210,20 +210,18 @@
             <v-row>The credentials you issued to your partner</v-row>
             <v-row class="mt-4">
               <v-dialog
-                  v-model="issueCredentialDialog"
-                  persistent
-                  max-width="600px"
+                v-model="issueCredentialDialog"
+                persistent
+                max-width="600px"
               >
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn small
-                      v-bind="attrs"
-                      v-on="on"
-                  >Issue Credential</v-btn>
+                  <v-btn small v-bind="attrs" v-on="on">Issue Credential</v-btn>
                 </template>
                 <IssueCredential
-                    :partnerId="id"
-                    @success="onCredentialIssued"
-                    @cancelled="issueCredentialDialog = false">
+                  :partnerId="id"
+                  @success="onCredentialIssued"
+                  @cancelled="issueCredentialDialog = false"
+                >
                 </IssueCredential>
               </v-dialog>
             </v-row>
@@ -234,6 +232,25 @@
               v-bind:items="issuedCredentials"
               v-bind:headers="headersIssued"
             ></CredExList>
+          </v-col>
+        </v-row>
+        <v-row v-if="partner.ariesSupport" class="mx-4">
+          <v-col cols="4">
+            <v-row>
+              <p class="grey--text text--darken-2 font-weight-medium">
+                Presentation Requests
+              </p>
+            </v-row>
+            <v-row>The proofs requested from this partner</v-row>
+          </v-col>
+          <v-col cols="8">
+            <PresentationRequestList
+              v-if="isReady"
+              v-bind:presentationRequests="presentationRequests"
+              v-bind:headers="headersPresentationRequest"
+              v-on:removedItem="removePresentationRequest"
+              v-on:responseSuccess="presentationRequestSuccess"
+            ></PresentationRequestList>
           </v-col>
         </v-row>
       </v-card-text>
@@ -300,6 +317,7 @@ import {
 import { issuerService } from "@/services";
 import CredExList from "@/components/CredExList";
 import IssueCredential from "@/components/IssueCredential";
+import PresentationRequestList from "@/components/PresentationRequestList";
 
 export default {
   name: "Partner",
@@ -310,6 +328,7 @@ export default {
     PartnerStateIndicator,
     CredExList,
     IssueCredential,
+    PresentationRequestList,
   },
   created() {
     EventBus.$emit("title", "Partner");
@@ -335,6 +354,7 @@ export default {
       presentationsSent: [],
       presentationsReceived: [],
       issuedCredentials: [],
+      presentationRequests: [],
       rules: {
         required: (value) => !!value || "Can't be empty",
       },
@@ -356,6 +376,25 @@ export default {
         },
       ],
       issueCredentialDialog: false,
+      headersPresentationRequest: [
+        {
+          text: "Schema",
+          value:
+            "proofRequest.requestedAttributes.attribute_group_0.restrictions[0].schema_id",
+        },
+        {
+          text: "Received at",
+          value: "sentAt", //miss labelled.
+        },
+        {
+          text: "State",
+          value: "state",
+        },
+        {
+          text: "",
+          value: "actions",
+        },
+      ],
     };
   },
   computed: {
@@ -371,6 +410,7 @@ export default {
       this.attentionPartnerStateDialog = false;
       this.$router.push(this.goTo);
     },
+    // Presentations
     requestPresentation() {
       if (this.isActive) {
         this.$router.push({
@@ -410,25 +450,40 @@ export default {
     getPresentationRecords() {
       console.log("Getting presentation records...");
       this.$axios
-        .get(`${this.$apiBaseUrl}/partners/${this.id}/proof`)
+        .get(`${this.$apiBaseUrl}/partners/${this.id}/proof-exchanges`)
         .then((result) => {
           if ({}.hasOwnProperty.call(result, "data")) {
             let data = result.data;
             console.log(data);
             this.presentationsSent = data.filter((item) => {
-              console.log(item);
-              return item.role === "prover";
+              console.log("PresentationSent");
+              return (
+                item.role === "prover" &&
+                [
+                  "presentation_sent",
+                  "presentation_acked",
+                  "proposal_sent",
+                ].includes(item.state)
+              );
+            });
+            this.presentationRequests = data.filter((item) => {
+              console.log("PresentationRequest");
+              return (
+                item.role === "prover" && item.state === "request_received"
+              );
             });
             this.presentationsReceived = data.filter((item) => {
+              console.log("PresentationReceived");
               return item.role === "verifier";
             });
-            console.log(this.presentationsSent);
+            console.log(this.presentationRequests);
           }
         })
         .catch((e) => {
           console.error(e);
           // EventBus.$emit("error", e);
         });
+      console.log(this.presentationsRequests);
     },
     removePresentationReceived(id) {
       this.presentationsReceived = this.presentationsReceived.filter((item) => {
@@ -440,6 +495,26 @@ export default {
         return item.id !== id;
       });
     },
+    removePresentationRequest(id) {
+      let objIndex = this.presentationRequests.findIndex((item) => {
+        return item.id === id;
+      });
+      this.presentationRequests[objIndex].state = "presentation_rejected"; //not an aries state
+    },
+
+    presentationRequestSuccess(id) {
+      let objIndex = this.presentationRequests.findIndex((item) => {
+        return item.id === id;
+      });
+      this.presentationRequests[objIndex].state = "presentation_sent";
+      this.presentationsSent.push(this.presentationRequests[objIndex]);
+
+      this.presentationRequests = this.presentationRequests.filter((item) => {
+        return item.id !== id;
+      });
+    },
+
+    // Issue Credentials
     getIssuedCredentials() {
       console.log("Getting issued credential records...");
       issuerService
@@ -612,7 +687,7 @@ export default {
     onCredentialIssued() {
       this.issueCredentialDialog = false;
       this.getIssuedCredentials();
-    }
+    },
   },
 };
 </script>

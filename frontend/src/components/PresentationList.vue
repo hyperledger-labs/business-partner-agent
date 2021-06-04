@@ -30,7 +30,9 @@
       </div>
     </template>
     <template v-slot:[`item.state`]="{ item }">
-      <v-icon v-if="isItemActive(item)" color="green">$vuetify.icons.check</v-icon>
+      <v-icon v-if="isItemActive(item)" color="green"
+        >$vuetify.icons.check</v-icon
+      >
       <span v-else>
         {{ item.state.replace("_", " ") }}
       </span>
@@ -57,7 +59,9 @@
       </td>
     </template>
     <template v-slot:[`item.actions`]="{ item }">
-      <v-icon small @click.stop="deletePresentation(item)"> $vuetify.icons.delete </v-icon>
+      <v-icon small @click.stop="deletePresentation(item)">
+        $vuetify.icons.delete
+      </v-icon>
     </template>
   </v-data-table>
 </template>

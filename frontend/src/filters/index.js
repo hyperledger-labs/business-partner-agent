@@ -1,5 +1,5 @@
-import Vue from 'vue';
-import moment from 'moment';
+import Vue from "vue";
+import moment from "moment";
 
 /**
  * @function formatDate
@@ -9,7 +9,7 @@ import moment from 'moment';
  */
 export function formatDate(value) {
   if (value) {
-    return moment(value).format('YYYY-MM-DD');
+    return moment(value).format("YYYY-MM-DD");
   }
 }
 
@@ -21,7 +21,7 @@ export function formatDate(value) {
  */
 export function formatDateLong(value) {
   if (value) {
-    return moment(value).format('YYYY-MM-DD HH:mm');
+    return moment(value).format("YYYY-MM-DD HH:mm");
   }
 }
 
@@ -41,7 +41,7 @@ export function capitalize(string) {
 //
 // {{ expression | filter }}
 //
-Vue.filter('formatDate', formatDate);
-Vue.filter('formatDateLong', formatDateLong);
+Vue.filter("formatDate", formatDate);
+Vue.filter("formatDateLong", formatDateLong);
 Vue.filter("credentialTag", credentialTag);
 Vue.filter("capitalize", capitalize);

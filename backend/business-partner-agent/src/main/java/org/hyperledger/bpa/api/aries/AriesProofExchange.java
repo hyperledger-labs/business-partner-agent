@@ -19,6 +19,8 @@ package org.hyperledger.bpa.api.aries;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.*;
+
+import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.model.PartnerProof;
@@ -30,7 +32,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AriesProof {
+public class AriesProofExchange {
 
     private UUID id;
     private UUID partnerId;
@@ -47,12 +49,15 @@ public class AriesProof {
     private String issuer;
     private String schemaId;
     private String credentialDefinitionId;
+    private String problemReport;
     private PresentationExchangeRole role;
     private JsonNode proofData;
+    private PresentProofRequest.ProofRequest proofRequest;
 
-    public static AriesProof from(@NonNull PartnerProof p, @Nullable JsonNode poofData) {
-        final AriesProofBuilder b = AriesProof.builder();
+    public static AriesProofExchange from(@NonNull PartnerProof p, @Nullable JsonNode proofData) {
+        final AriesProofExchangeBuilder b = AriesProofExchange.builder();
         final Long created = p.getCreatedAt().toEpochMilli();
+        // TODO: Handle sent AND received date for in Transit ProofExchanges
         if (PresentationExchangeRole.PROVER.equals(p.getRole())) {
             b.sentAt(created);
         } else {
@@ -65,8 +70,10 @@ public class AriesProof {
                 .issuer(p.getIssuer())
                 .schemaId(p.getSchemaId())
                 .credentialDefinitionId(p.getCredentialDefinitionId())
-                .proofData(poofData)
+                .proofData(proofData)
+                .proofRequest(p.getProofRequest())
                 .role(p.getRole())
+                .problemReport(p.getProblemReport())
                 .build();
     }
 }
