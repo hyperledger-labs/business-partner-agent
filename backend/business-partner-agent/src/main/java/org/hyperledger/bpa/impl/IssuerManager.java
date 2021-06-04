@@ -211,7 +211,7 @@ public class IssuerManager {
                     return true;
                 })
                 .filter(x -> {
-                    if (partnerId != null) {
+                    if (partnerId != null && x.getPartner() != null) {
                         return x.getPartner().getId().equals(partnerId);
                     }
                     return true;
