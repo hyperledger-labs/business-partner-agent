@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl;
 
 import com.google.gson.Gson;
+import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -199,14 +200,19 @@ public class IssuerManager {
         }
     }
 
-    public List<CredEx> listCredentialExchanges(String role) {
-        List<BPACredentialExchange> exchanges = new ArrayList<>();
-        credExRepo.listOrderByUpdatedAtDesc().forEach(exchanges::add);
+    public List<CredEx> listCredentialExchanges(@Nullable CredentialExchangeRole role, @Nullable UUID partnerId) {
+        List<BPACredentialExchange> exchanges = credExRepo.listOrderByUpdatedAtDesc();
         // now, lets get credentials...
         return exchanges.stream()
                 .filter(x -> {
-                    if (StringUtils.isNotEmpty(role)) {
-                        return StringUtils.equalsIgnoreCase(x.getRole().name(), role);
+                    if (role != null) {
+                        return role.equals(x.getRole());
+                    }
+                    return true;
+                })
+                .filter(x -> {
+                    if (partnerId != null) {
+                        return x.getPartner().getId().equals(partnerId);
                     }
                     return true;
                 })
@@ -225,6 +231,7 @@ public class IssuerManager {
 
     private Credential buildFromProposal(@NonNull BPACredentialExchange exchange) {
         Credential result = null;
+        // TODO this is creative but not how it is supposed to work ;)
         LinkedHashMap credentialProposal = (LinkedHashMap) exchange.getCredentialProposal().get("credential_proposal");
         if (credentialProposal != null) {
             ArrayList<LinkedHashMap> attributes = (ArrayList) credentialProposal.get("attributes");

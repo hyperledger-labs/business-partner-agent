@@ -334,7 +334,7 @@ export default {
     EventBus.$emit("title", "Partner");
     this.getPartner();
     this.getPresentationRecords();
-    this.getIssuedCredentials();
+    this.getIssuedCredentials(this.id);
     this.$store.commit("partnerSeen", { id: this.id });
   },
   data: () => {
@@ -515,10 +515,10 @@ export default {
     },
 
     // Issue Credentials
-    getIssuedCredentials() {
+    getIssuedCredentials(id) {
       console.log("Getting issued credential records...");
       issuerService
-        .listCredentialExchangesAsIssuer()
+        .listCredentialExchangesAsIssuer(id)
         .then((result) => {
           if ({}.hasOwnProperty.call(result, "data")) {
             let data = result.data;
@@ -686,7 +686,7 @@ export default {
     },
     onCredentialIssued() {
       this.issueCredentialDialog = false;
-      this.getIssuedCredentials();
+      this.getIssuedCredentials(`${this.id}`);
     },
   },
 };
