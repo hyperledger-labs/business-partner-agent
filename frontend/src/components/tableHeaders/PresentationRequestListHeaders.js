@@ -12,8 +12,12 @@ export const presentationListHeaders = [
     value: "type",
   },
   {
+    text: "Role",
+    value: "role",
+  },
+  {
     text: "Received at",
-    value: "receivedAt",
+    value: "createdAt",
   },
   {
     text: "State",

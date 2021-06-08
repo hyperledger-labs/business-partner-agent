@@ -24,7 +24,7 @@ export const CredentialTypes = Object.freeze({
 export const ApiRoutes = Object.freeze({
   ADMIN: "/admin",
   ISSUER: "/issuer",
-  PARTNERS: "/partners"
+  PARTNERS: "/partners",
 });
 
 export const CredentialExchangeRoles = Object.freeze({

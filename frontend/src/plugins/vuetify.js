@@ -27,8 +27,11 @@ import {
   mdiQrcode,
   mdiGlobeModel,
   mdiLogout,
-  mdiHandshake, mdiAlertCircleOutline, mdiClockTimeThreeOutline, mdiContentSave
-} from '@mdi/js';
+  mdiHandshake,
+  mdiAlertCircleOutline,
+  mdiClockTimeThreeOutline,
+  mdiContentSave,
+} from "@mdi/js";
 
 Vue.use(Vuetify);
 
@@ -46,10 +49,10 @@ if (uiColor) {
 export default new Vuetify({
   defaultAssets: {
     font: true,
-    icons: 'md'
+    icons: "md",
   },
   icons: {
-    iconfont: 'fa',
+    iconfont: "fa",
     values: {
       user: mdiAccountCircle,
       identity: mdiFingerprint,
@@ -77,23 +80,22 @@ export default new Vuetify({
       partnerState: mdiBrightness1,
       newMessage: mdiShapePolygonPlus,
       qrCode: mdiQrcode,
-      credentialManagement:'fas fa-file-signature',
-      proofRequests: 'fas fa-exchange-alt',
+      credentialManagement: "fas fa-file-signature",
+      proofRequests: "fas fa-exchange-alt",
       connectionAlert: mdiAlertCircleOutline,
       connectionWaiting: mdiClockTimeThreeOutline,
-      cancel: 'fas fa-times-circle',
-      save: mdiContentSave
-
-    }
+      cancel: "fas fa-times-circle",
+      save: mdiContentSave,
+    },
   },
   theme: {
     options: {
-      customProperties: true
+      customProperties: true,
     },
     themes: {
       light: {
-        primary: primaryColor
-      }
-    }
-  }
+        primary: primaryColor,
+      },
+    },
+  },
 });

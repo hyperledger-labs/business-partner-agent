@@ -152,7 +152,7 @@ const routes = [
   {
     path: "/credentialManagement",
     name: "CredentialManagement",
-    component: CredentialManagement
+    component: CredentialManagement,
   },
 ];
 
