@@ -25,6 +25,11 @@ micronaut:
         pattern: /**
         access:
           - isAuthenticated()
+      -
+        pattern: /health
+        http-method: GET
+        access:
+          - isAnonymous()
   session:
     max-inactive-interval: 12h
   router:
@@ -67,7 +72,9 @@ endpoints:
   health:
     enabled: true
     sensitive: false
-    details-visible: never
+    details-visible: AUTHENTICATED
+    acapy:
+      enabled: true
 
 datasources:
   '*':

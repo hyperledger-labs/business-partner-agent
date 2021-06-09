@@ -21,8 +21,8 @@ The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Ide
 ## Project Status
 
 A first alpha version of Business Partner Agent is available, see
-[releases page](https://github.com/hyperledger-labs/business-partner-agent/releases) and related tags.
-It is not ready for production use. 
+[Helm Chart](https://github.com/hyperledger-labs/business-partner-agent-chart) and [Docker images](https://github.com/orgs/hyperledger-labs/packages/container/package/business-partner-agent)
+It is not ready for production use.  Releases are in general considered "alpha", which means API may change at any time and we do not have explicit / planned system tests (See also [Publishing](PUBLISHING.md)).
 
 # Getting Started
 
@@ -39,11 +39,11 @@ You can either run the agent [via docker-compose](scripts/) (recommended for e.g
 
 # Documentation and Tutorials
 
-See [docs](./docs/README.md)
+User documentation see [docs](./docs/README.md).
 
-# Contributing
+Lear how to contribute in [Contributing](CONTRIBUTING.md). You can also start by filing an issue.
 
-See [Contributing](CONTRIBUTING.md). You can also start by filing an issue.
+Regarding release process, we do not follow a strict process yet, nevertheless we follow the guidelines described in [Publishing](PUBLISHING.md).
 
 # Hyperledger Labs Sponsor
 - https://github.com/swcurran Co-Chair of the Aries Working Group
