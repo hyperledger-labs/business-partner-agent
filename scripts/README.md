@@ -17,9 +17,20 @@ Furthermore the firewall might block traffic to other agents depending on its en
 git clone https://github.com/hyperledger-labs/business-partner-agent
 cd ./business-partner-agent/scripts
 ./register-did.sh
+```
+
+- If you have a setup using ngrok for making the agent publically avaiable, running
+```
 ./start-with-tunnels.sh
 ```
-The frontend will be served at `http://localhost:8080`.
+will setup the tunnel and start everything for you. Before making your agent publically avaiable, you most likely want to change the security options, at least set passwords, in the `.env` file. See the security section below for details.
+
+- Alternatively, for a local test, just run
+```
+docker-compose up
+```
+
+The frontend will be served at `http://localhost:8080`. If you did not change the password in `.env` the default login is "admin"/"changeme".
 
 
 ## Register a new DID before starting an Business Partner Agent
