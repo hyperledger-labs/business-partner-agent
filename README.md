@@ -39,16 +39,12 @@ You can either run the agent [via docker-compose](scripts/) (recommended for e.g
 
 # Documentation and Tutorials
 
-See [docs](./docs/README.md)
+User documentation see [docs](./docs/README.md).
 
-# Developer Documentation
+Lear how to contribute in [Contributing](CONTRIBUTING.md). You can also start by filing an issue.
 
-## Contributing
-See [Contributing](CONTRIBUTING.md). You can also start by filing an issue.
-
-## Release Process
-We do not follow a strict release process yet, releases are in general conidered "alpha", which means API may change at any time.
-Nevertheless the following guideline shall be followed, see [Publishing](PUBLISHING.md).
+Regarding release process, we do not follow a strict process yet. Releases are in general conidered "alpha", which means API may change at any time.
+Find more on that in [Publishing](PUBLISHING.md).
 
 # Hyperledger Labs Sponsor
 - https://github.com/swcurran Co-Chair of the Aries Working Group
