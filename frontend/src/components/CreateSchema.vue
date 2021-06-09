@@ -10,7 +10,7 @@
     <v-card class="mx-auto">
       <v-card-title class="bg-light"> Create Schema </v-card-title>
       <v-card-text>
-        <v-container>
+        <v-form ref="form" v-model="valid">
           <v-row>
             <v-col cols="4" class="pb-0">
               <p class="grey--text text--darken-2 font-weight-medium">
@@ -108,7 +108,7 @@
               </v-row>
             </v-col>
           </v-row>
-        </v-container>
+        </v-form>
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
@@ -137,6 +137,7 @@ export default {
   props: {},
   data: () => {
     return {
+      valid: true,
       schemaLabel: "",
       schemaName: "",
       schemaVersion: "",
@@ -198,6 +199,13 @@ export default {
         defaultAttributeName: defaultAttr ? defaultAttr.text : undefined,
       };
     },
+    resetForm() {
+      // reset validation
+      this.$refs.form.reset();
+      // reset form data
+      const initialData = this.$options.data.call(this);
+      Object.assign(this.$data, initialData);
+    },
     async saveSchema() {
       try {
         const schemaForm = this.getSchemaFormData();
@@ -219,6 +227,7 @@ export default {
         const _schema = await this.saveSchema();
         if (_schema) {
           EventBus.$emit("success", "Schema created successfully");
+          this.resetForm();
           this.$emit("success");
         }
       } catch (error) {
@@ -227,6 +236,7 @@ export default {
       }
     },
     cancel() {
+      this.resetForm();
       this.$emit("cancelled");
     },
   },

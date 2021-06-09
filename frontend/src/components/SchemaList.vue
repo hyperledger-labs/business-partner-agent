@@ -100,6 +100,12 @@ export default {
       this.dialog = true;
       this.dirty = false;
       this.schema = item;
+      if (!this.schema.credentialDefinitions) {
+        this.schema.credentialDefinitions = [];
+      }
+      if (!this.schema.trustedIssuer) {
+        this.schema.trustedIssuer = [];
+      }
     },
     onClosed() {
       this.dialog = false;
