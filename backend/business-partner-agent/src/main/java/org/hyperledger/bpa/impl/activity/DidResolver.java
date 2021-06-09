@@ -62,8 +62,8 @@ public class DidResolver {
     WebhookService webhook;
 
     /**
-     * Tries to resolve the partners public profile based on the did contained within
-     * a commercial register credential.
+     * Tries to resolve the partners public profile based on the did contained
+     * within a commercial register credential.
      * 
      * @param pp {@link PartnerProof}
      */

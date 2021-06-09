@@ -24,6 +24,7 @@ import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.acy_py.generated.model.V10PresentationProblemReportRequest;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.exception.AriesException;
@@ -302,8 +303,8 @@ public class ProofManager {
 
     private void sendPresentProofProblemReport(@NotNull String PresentationExchangeId, @NotNull String problemString)
             throws IOException {
-        PresentationProblemReportRequest request = PresentationProblemReportRequest.builder()
-                .explainLtxt(problemString)
+        V10PresentationProblemReportRequest request = V10PresentationProblemReportRequest.builder()
+                .description(problemString)
                 .build();
         ac.presentProofRecordsProblemReport(PresentationExchangeId, request);
     }

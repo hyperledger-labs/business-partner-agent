@@ -53,6 +53,9 @@ import java.util.Optional;
 @Singleton
 public class URClient {
 
+    private static final Type VP_TYPE = new TypeToken<VerifiablePresentation<VerifiableIndyCredential>>() {
+    }.getType();
+
     @Inject
     AriesClient ac;
 
@@ -91,7 +94,7 @@ public class URClient {
     }
 
     public Optional<VerifiablePresentation<VerifiableIndyCredential>> getPublicProfile(String url) {
-        return call(url, new TypeToken<VerifiablePresentation<VerifiableIndyCredential>>(){}.getType());
+        return call(url, VP_TYPE);
     }
 
     public <T> Optional<T> call(String url, Type type) {

@@ -130,9 +130,9 @@
 
         <!-- Hyperledger -->
         <dependency>
-            <groupId>org.hyperledger</groupId>
+            <groupId>network.idu.acapy</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.24.0-SNAPSHOT</version>
+            <version>0.7.0-pre.2</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>

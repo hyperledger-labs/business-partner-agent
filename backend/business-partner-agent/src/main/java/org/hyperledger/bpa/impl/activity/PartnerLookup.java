@@ -100,8 +100,8 @@ public class PartnerLookup {
      * verification method
      *
      * @param verificationMethod  the proof verification method
-     * @param verificationMethods list of {@link DIDDocument.VerificationMethod} from
-     *                            the did document
+     * @param verificationMethods list of {@link DIDDocument.VerificationMethod}
+     *                            from the did document
      * @return matching public key in Base58
      */
     static Optional<String> matchKey(String verificationMethod,
