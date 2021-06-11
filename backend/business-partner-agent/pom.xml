@@ -161,6 +161,11 @@
             <artifactId>spring-security-crypto</artifactId>
             <version>5.5.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.deliveredtechnologies</groupId>
+            <artifactId>rulebook-core</artifactId>
+            <version>0.12</version>
+        </dependency>
 
         <!-- Database -->
         <dependency>
