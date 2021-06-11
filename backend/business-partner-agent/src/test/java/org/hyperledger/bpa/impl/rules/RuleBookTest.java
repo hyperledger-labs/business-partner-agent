@@ -65,4 +65,4 @@ public class RuleBookTest {
 
         Assertions.assertFalse(ts.getActive(p.getId()).isPresent());
     }
- }
+}

@@ -81,4 +81,3 @@ public class AssertVerifiedConnection extends CoRRuleBook<Boolean> {
     }
 
 }
-
