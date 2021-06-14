@@ -10,9 +10,16 @@ import java.util.UUID;
 public abstract class BaseRule extends CoRRuleBook<Boolean> {
 
     private UUID taskId;
+    private Run run;
 
-    public BaseRule(UUID taskId) {
+    public BaseRule(UUID taskId, Run run) {
         this.taskId = taskId;
+        this.run = run;
         super.setDefaultResult(Boolean.FALSE);
+    }
+
+    public enum Run {
+        ONCE,
+        MULTI
     }
 }

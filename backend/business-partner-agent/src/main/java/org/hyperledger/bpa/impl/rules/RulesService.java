@@ -17,49 +17,36 @@
  */
 package org.hyperledger.bpa.impl.rules;
 
-import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.impl.rules.definitions.BaseRule;
 
 import javax.inject.Singleton;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
 public class RulesService {
 
-    private final Map<UUID, List<BaseRule>> tasks = new ConcurrentHashMap<>();
+    private List<BaseRule> tasks = new ArrayList<>();
 
-    void register(@NonNull UUID id, @NonNull BaseRule task) {
-        log.debug("Adding task for partner: {}", id);
-        List<BaseRule> scheduled = tasks.get(id);
-        if (scheduled == null) {
-            tasks.put(id, new ArrayList<>(List.of(task)));
-        } else {
-            scheduled.add(task);
-        }
+    void register(@NonNull BaseRule task) {
+        log.debug("Adding task: {}", task);
+        tasks.add(task);
     }
 
-    Optional<List<BaseRule>> getActive(@NonNull UUID id) {
-        return Optional.ofNullable(tasks.get(id));
+    List<BaseRule> getActive() {
+        return tasks;
     }
 
-    synchronized void removeIfDone(@NonNull UUID id, @NonNull UUID taskId) {
-        List<BaseRule> scheduled = tasks.get(id);
-        if (scheduled != null) {
-            log.debug("Removing task for partner: {}", id);
-            List<BaseRule> filtered = scheduled
-                    .stream()
-                    .filter(t -> !t.getTaskId().equals(taskId))
-                    .collect(Collectors.toList());
-            if (CollectionUtils.isNotEmpty(filtered)) {
-                tasks.put(id, filtered);
-            } else {
-                tasks.remove(id);
-            }
-        }
+    synchronized void removeIfDone(@NonNull UUID taskId) {
+        log.debug("Removing task with id: {}", taskId);
+        tasks = tasks
+                .stream()
+                .filter(t -> !t.getTaskId().equals(taskId))
+                .collect(Collectors.toList());
     }
 }

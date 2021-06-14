@@ -35,7 +35,7 @@ public class AssertVerifiedConnection extends BaseRule {
     private final UUID proofTemplateId;
 
     public AssertVerifiedConnection(@NonNull UUID partnerId, @NonNull UUID proofTemplateId) {
-        super(UUID.randomUUID());
+        super(UUID.randomUUID(), Run.ONCE);
         this.partnerId = partnerId;
         this.proofTemplateId = proofTemplateId;
     }

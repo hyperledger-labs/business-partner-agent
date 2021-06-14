@@ -26,7 +26,6 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.impl.rules.definitions.BaseRule;
 import org.hyperledger.bpa.impl.rules.definitions.EventContext;
-import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
@@ -48,7 +47,7 @@ public class RulesEventHandler extends EventHandler {
 
     @Override
     public void handleConnection(ConnectionRecord connection) {
-        pr.findByConnectionId(connection.getConnectionId()).ifPresent(p -> ts.getActive(p.getId()).ifPresent(t -> {
+        pr.findByConnectionId(connection.getConnectionId()).ifPresent(p -> {
             NameValueReferableMap<EventContext> facts = new FactMap<>();
             facts.setValue("connection", EventContext
                     .builder()
@@ -56,13 +55,13 @@ public class RulesEventHandler extends EventHandler {
                     .connRec(connection)
                     .ctx(appCtx)
                     .build());
-            runAndHandleResult(p, t, facts);
-        }));
+            runAndHandleResult(facts);
+        });
     }
 
     @Override
     public void handleProof(PresentationExchangeRecord presEx) {
-        pr.findByConnectionId(presEx.getConnectionId()).ifPresent(p -> ts.getActive(p.getId()).ifPresent(t -> {
+        pr.findByConnectionId(presEx.getConnectionId()).ifPresent(p -> {
             NameValueReferableMap<EventContext> facts = new FactMap<>();
             facts.setValue("presentation", EventContext
                     .builder()
@@ -70,19 +69,20 @@ public class RulesEventHandler extends EventHandler {
                     .presEx(presEx)
                     .ctx(appCtx)
                     .build());
-            runAndHandleResult(p, t, facts);
-        }));
+            runAndHandleResult(facts);
+        });
     }
 
-    private void runAndHandleResult(
-            Partner p, List<BaseRule> tasks, NameValueReferableMap<EventContext> facts) {
-        log.debug("Checking rules for partner: {}", p);
+    private void runAndHandleResult(NameValueReferableMap<EventContext> facts) {
+        List<BaseRule> tasks = ts.getActive();
+        log.debug("Checking {} rules", tasks.size());
         tasks.parallelStream().forEach(t -> {
             t.run(facts);
             t.getResult().ifPresentOrElse(result -> {
                 log.debug("Task: {}, Result: {}", t.getTaskId(), result.getValue());
-                if (result.getValue()) {
-                    ts.removeIfDone(p.getId(), t.getTaskId());
+                if (result.getValue() && BaseRule.Run.ONCE.equals(t.getRun())) {
+                    log.debug("Tasks runs: {}, scheduling for removal", t.getRun());
+                    ts.removeIfDone(t.getTaskId());
                 }
             }, () -> log.warn("Task did return a result"));
         });

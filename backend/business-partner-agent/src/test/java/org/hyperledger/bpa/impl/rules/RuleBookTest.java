@@ -51,8 +51,8 @@ public class RuleBookTest {
         p = pr.save(p);
 
         AssertVerifiedConnection rule = new AssertVerifiedConnection(p.getId(), UUID.randomUUID());
-        ts.register(p.getId(), rule);
-        Assertions.assertTrue(ts.getActive(p.getId()).isPresent());
+        ts.register(rule);
+        Assertions.assertTrue(ts.getActive().size() > 0);
 
         ConnectionRecord rec = new ConnectionRecord();
         rec.setConnectionId(connectionId);
@@ -63,6 +63,6 @@ public class RuleBookTest {
         ex.setConnectionId(connectionId);
         eo.handleProof(ex);
 
-        Assertions.assertFalse(ts.getActive(p.getId()).isPresent());
+        Assertions.assertFalse(ts.getActive().size() > 0);
     }
 }
