@@ -35,10 +35,10 @@ import java.util.UUID;
 public class RuleBookTest {
 
     @Inject
-    TaskService ts;
+    RulesService ts;
 
     @Inject
-    EventObserver eo;
+    RulesEventHandler eo;
 
     @Inject
     PartnerRepository pr;

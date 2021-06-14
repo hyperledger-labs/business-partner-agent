@@ -20,7 +20,7 @@ package org.hyperledger.bpa.impl.rules;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.bpa.impl.rules.definitions.BaseAriesTask;
+import org.hyperledger.bpa.impl.rules.definitions.BaseRule;
 
 import javax.inject.Singleton;
 import java.util.*;
@@ -29,13 +29,13 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
-public class TaskService {
+public class RulesService {
 
-    private final Map<UUID, List<BaseAriesTask>> tasks = new ConcurrentHashMap<>();
+    private final Map<UUID, List<BaseRule>> tasks = new ConcurrentHashMap<>();
 
-    void register(@NonNull UUID id, @NonNull BaseAriesTask task) {
+    void register(@NonNull UUID id, @NonNull BaseRule task) {
         log.debug("Adding task for partner: {}", id);
-        List<BaseAriesTask> scheduled = tasks.get(id);
+        List<BaseRule> scheduled = tasks.get(id);
         if (scheduled == null) {
             tasks.put(id, new ArrayList<>(List.of(task)));
         } else {
@@ -43,15 +43,15 @@ public class TaskService {
         }
     }
 
-    Optional<List<BaseAriesTask>> getActive(@NonNull UUID id) {
+    Optional<List<BaseRule>> getActive(@NonNull UUID id) {
         return Optional.ofNullable(tasks.get(id));
     }
 
     synchronized void removeIfDone(@NonNull UUID id, @NonNull UUID taskId) {
-        List<BaseAriesTask> scheduled = tasks.get(id);
+        List<BaseRule> scheduled = tasks.get(id);
         if (scheduled != null) {
             log.debug("Removing task for partner: {}", id);
-            List<BaseAriesTask> filtered = scheduled
+            List<BaseRule> filtered = scheduled
                     .stream()
                     .filter(t -> !t.getTaskId().equals(taskId))
                     .collect(Collectors.toList());

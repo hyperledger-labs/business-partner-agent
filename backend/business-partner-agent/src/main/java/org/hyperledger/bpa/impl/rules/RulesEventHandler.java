@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
-import org.hyperledger.bpa.impl.rules.definitions.BaseAriesTask;
+import org.hyperledger.bpa.impl.rules.definitions.BaseRule;
 import org.hyperledger.bpa.impl.rules.definitions.EventContext;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.PartnerRepository;
@@ -35,10 +35,10 @@ import java.util.List;
 
 @Slf4j
 @Singleton
-public class EventObserver extends EventHandler {
+public class RulesEventHandler extends EventHandler {
 
     @Inject
-    TaskService ts;
+    RulesService ts;
 
     @Inject
     PartnerRepository pr;
@@ -75,7 +75,7 @@ public class EventObserver extends EventHandler {
     }
 
     private void runAndHandleResult(
-            Partner p, List<BaseAriesTask> tasks, NameValueReferableMap<EventContext> facts) {
+            Partner p, List<BaseRule> tasks, NameValueReferableMap<EventContext> facts) {
         log.debug("Checking rules for partner: {}", p);
         tasks.parallelStream().forEach(t -> {
             t.run(facts);

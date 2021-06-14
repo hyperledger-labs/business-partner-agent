@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Data @NoArgsConstructor
-public abstract class BaseAriesTask extends CoRRuleBook<Boolean> {
+public abstract class BaseRule extends CoRRuleBook<Boolean> {
 
     private UUID taskId;
 
-    public BaseAriesTask(UUID taskId) {
+    public BaseRule(UUID taskId) {
         this.taskId = taskId;
         super.setDefaultResult(Boolean.FALSE);
     }

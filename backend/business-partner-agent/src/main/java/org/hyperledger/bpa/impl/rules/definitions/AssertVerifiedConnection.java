@@ -29,7 +29,7 @@ import java.util.UUID;
 
 @Slf4j
 @Data @EqualsAndHashCode(callSuper = true)
-public class AssertVerifiedConnection extends BaseAriesTask {
+public class AssertVerifiedConnection extends BaseRule {
 
     private final UUID partnerId;
     private final UUID proofTemplateId;
