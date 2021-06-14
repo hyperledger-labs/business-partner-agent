@@ -38,6 +38,7 @@ tasks:
       export BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
       export ACAPY_ENDPOINT=`gp url 8030`
       cd scripts
+      cp .env-example .env
       docker-compose -f docker-compose.dev.yml build 
     command: |
       export BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
