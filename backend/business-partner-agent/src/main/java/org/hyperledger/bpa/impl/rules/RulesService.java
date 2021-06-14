@@ -41,7 +41,7 @@ public class RulesService {
         tasks.add(task);
     }
 
-    synchronized void remove(@NonNull UUID taskId) {
+    void remove(@NonNull UUID taskId) {
         log.debug("Removing task with id: {}", taskId);
         tasks = tasks
                 .stream()
