@@ -10,35 +10,11 @@ ports:
 
 tasks:
   - init: |
-      # Register DID
-      # Set URL
-      URL=${LEDGER_URL:-https://indy-test.bosch-digital.de}
-
-      # Set random alias
-      ALIAS=BPA-$(cat /dev/urandom | env LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 4 | head -n 1)
-      # Generate random seed
-      SEED=$(cat /dev/urandom | env LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-
-      PAYLOAD='{"alias":"'"$ALIAS"'","seed":"'"$SEED"'","role":"ENDORSER"}'
-
-      # Register DID
-      if curl --fail -s -d $PAYLOAD  -H "Content-Type: application/json" -X POST ${URL}/register; then
-          # Registration (probably) successfull
-          echo ""
-          echo ""Registration on $URL successful""
-          echo ""Setting ACAPY_SEED""
-          gp env ACAPY_SEED=$SEED
-          eval $(gp env -e)
-      else
-          # Something went wrong
-          echo ""
-          echo Something went wrong
-      fi;
-
       export BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
       export ACAPY_ENDPOINT=`gp url 8030`
       cd scripts
       cp .env-example .env
+      ./register-did.sh
       docker-compose -f docker-compose.dev.yml build 
     command: |
       export BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
