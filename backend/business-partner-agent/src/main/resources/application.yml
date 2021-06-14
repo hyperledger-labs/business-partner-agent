@@ -139,3 +139,55 @@ bpa:
       url: ${BPA_PRIVACY_POLICY_URL:}
   creddef:
     revocationRegistrySize: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE:3000}
+  ux:
+    theme:
+      override: false
+      dark: false
+      themes:
+        light:
+          # these are the default light theme colors except primary...
+          primary: '#4A148C'
+          secondary: '#424242'
+          accent: '#82B1FF'
+          error: '#FF5252'
+          info: '#2196F3'
+          success: '#4CAF50'
+          warning: '#FFC107'
+          # these are required for styles.scss variables
+          bgLight: "#FAFAFA"
+          bgLight2: "#ECECEC"
+          font: "#313132"
+          anchor: "#1A5A96"
+          anchorHover: "#3B99FC"
+    favicon:
+      override: false
+      href: ""
+    navigation:
+      avatar:
+        agent:
+          enabled: true
+          default: true
+          src: ""
+          subtitle: ""
+        user:
+          enabled: false
+      settings:
+        location: "top"
+        title: Settings
+      about:
+        enabled: true
+        title: About
+      logout:
+        enabled: false
+        title: Log out
+    header:
+      title:
+        prefix: false
+      logout:
+        enabled: true
+        title: Log out
+      logo:
+        enabled: false
+        href: ""
+        alt: ""
+        images: []
