@@ -17,6 +17,8 @@
  */
 package org.hyperledger.bpa.impl.rules;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.impl.rules.definitions.BaseRule;
@@ -31,6 +33,7 @@ import java.util.stream.Collectors;
 @Singleton
 public class RulesService {
 
+    @Getter(AccessLevel.PACKAGE)
     private List<BaseRule> tasks = new ArrayList<>();
 
     void register(@NonNull BaseRule task) {
@@ -38,11 +41,7 @@ public class RulesService {
         tasks.add(task);
     }
 
-    List<BaseRule> getActive() {
-        return tasks;
-    }
-
-    synchronized void removeIfDone(@NonNull UUID taskId) {
+    synchronized void remove(@NonNull UUID taskId) {
         log.debug("Removing task with id: {}", taskId);
         tasks = tasks
                 .stream()

@@ -74,7 +74,7 @@ public class RulesEventHandler extends EventHandler {
     }
 
     private void runAndHandleResult(NameValueReferableMap<EventContext> facts) {
-        List<BaseRule> tasks = ts.getActive();
+        List<BaseRule> tasks = ts.getTasks();
         log.debug("Checking {} rules", tasks.size());
         tasks.parallelStream().forEach(t -> {
             t.run(facts);
@@ -82,7 +82,7 @@ public class RulesEventHandler extends EventHandler {
                 log.debug("Task: {}, Result: {}", t.getTaskId(), result.getValue());
                 if (result.getValue() && BaseRule.Run.ONCE.equals(t.getRun())) {
                     log.debug("Tasks runs: {}, scheduling for removal", t.getRun());
-                    ts.removeIfDone(t.getTaskId());
+                    ts.remove(t.getTaskId());
                 }
             }, () -> log.warn("Task did return a result"));
         });

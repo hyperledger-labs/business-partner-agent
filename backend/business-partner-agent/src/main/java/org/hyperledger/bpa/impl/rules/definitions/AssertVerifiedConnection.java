@@ -31,12 +31,10 @@ import java.util.UUID;
 @Data @EqualsAndHashCode(callSuper = true)
 public class AssertVerifiedConnection extends BaseRule {
 
-    private final UUID partnerId;
     private final UUID proofTemplateId;
 
-    public AssertVerifiedConnection(@NonNull UUID partnerId, @NonNull UUID proofTemplateId) {
+    public AssertVerifiedConnection(@NonNull UUID proofTemplateId) {
         super(UUID.randomUUID(), Run.ONCE);
-        this.partnerId = partnerId;
         this.proofTemplateId = proofTemplateId;
     }
 
@@ -69,8 +67,7 @@ public class AssertVerifiedConnection extends BaseRule {
         EventContext f = facts.getOne();
         return f.getConnRec() != null
                 && ConnectionState.REQUEST.equals(f.getConnRec().getState())
-                && f.getPartner() != null
-                && partnerId.equals(f.getPartner().getId());
+                && f.getPartner() != null;
     }
 
     private static boolean isPresentationExchange(NameValueReferableTypeConvertibleMap<EventContext> facts) {

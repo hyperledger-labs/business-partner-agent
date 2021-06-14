@@ -50,9 +50,9 @@ public class RuleBookTest {
         Partner p = ModelBuilder.buildDefaultPartner().setConnectionId(connectionId);
         p = pr.save(p);
 
-        AssertVerifiedConnection rule = new AssertVerifiedConnection(p.getId(), UUID.randomUUID());
+        AssertVerifiedConnection rule = new AssertVerifiedConnection(UUID.randomUUID());
         ts.register(rule);
-        Assertions.assertTrue(ts.getActive().size() > 0);
+        Assertions.assertTrue(ts.getTasks().size() > 0);
 
         ConnectionRecord rec = new ConnectionRecord();
         rec.setConnectionId(connectionId);
@@ -63,6 +63,6 @@ public class RuleBookTest {
         ex.setConnectionId(connectionId);
         eo.handleProof(ex);
 
-        Assertions.assertFalse(ts.getActive().size() > 0);
+        Assertions.assertFalse(ts.getTasks().size() > 0);
     }
 }
