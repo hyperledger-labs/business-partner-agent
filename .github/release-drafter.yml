@@ -1,5 +1,6 @@
 name-template: '$RESOLVED_VERSION 🌈'
 tag-template: '$RESOLVED_VERSION'
+version-template: "0.$MINOR.$PATCH"
 categories:
   - title: '🚀 Features'
     labels:
@@ -15,17 +16,19 @@ categories:
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 version-resolver:
-  major:
+#  major:
+#    labels:
+#      - 'major'
+  minor: # for the time being we always increment MINOR
     labels:
       - 'major'
-  minor:
-    labels:
       - 'minor'
   patch:
     labels:
       - 'patch'
-  default: patch
+  default: minor
 template: |
   ## Changes
 
   $CHANGES
+prerelease: true # for the time being we considere all releases to be pre-releases
