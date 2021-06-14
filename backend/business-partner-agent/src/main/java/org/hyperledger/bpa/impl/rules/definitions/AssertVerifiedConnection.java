@@ -28,7 +28,8 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import java.util.UUID;
 
 @Slf4j
-@Data @EqualsAndHashCode(callSuper = true)
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class AssertVerifiedConnection extends BaseRule {
 
     private final UUID proofTemplateId;
