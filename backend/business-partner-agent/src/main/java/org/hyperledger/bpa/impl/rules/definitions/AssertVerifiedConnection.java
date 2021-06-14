@@ -19,7 +19,6 @@ package org.hyperledger.bpa.impl.rules.definitions;
 
 import com.deliveredtechnologies.rulebook.NameValueReferableTypeConvertibleMap;
 import com.deliveredtechnologies.rulebook.lang.RuleBuilder;
-import com.deliveredtechnologies.rulebook.model.rulechain.cor.CoRRuleBook;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -29,23 +28,22 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import java.util.UUID;
 
 @Slf4j
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class AssertVerifiedConnection extends CoRRuleBook<Boolean> {
+@Data @EqualsAndHashCode(callSuper = true)
+public class AssertVerifiedConnection extends BaseAriesTask {
 
     private final UUID partnerId;
     private final UUID proofTemplateId;
 
     public AssertVerifiedConnection(@NonNull UUID partnerId, @NonNull UUID proofTemplateId) {
+        super(UUID.randomUUID());
         this.partnerId = partnerId;
         this.proofTemplateId = proofTemplateId;
-        this.setDefaultResult(Boolean.FALSE);
     }
 
     @Override
     public void defineRules() {
-        addRule(RuleBuilder.create().withFactType(EventContext.class).withResultType(Boolean.class)
-                .when(facts -> isConnection(facts))
+        addRule(RuleBuilder.create().withFactType(EventContext.class)
+                .when(this::isConnection)
                 .then((facts, result) -> {
                     // load template
                     // send proof request
@@ -54,8 +52,8 @@ public class AssertVerifiedConnection extends CoRRuleBook<Boolean> {
                 })
                 .stop()
                 .build());
-        addRule(RuleBuilder.create().withFactType(EventContext.class).withResultType(Boolean.class)
-                .when(facts -> isPresentationExchange(facts))
+        addRule(RuleBuilder.create().withFactType(EventContext.class)
+                .when(AssertVerifiedConnection::isPresentationExchange)
                 .then((facts, result) -> {
                     // check valid
                     // set label

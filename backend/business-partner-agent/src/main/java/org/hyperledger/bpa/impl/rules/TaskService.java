@@ -17,33 +17,49 @@
  */
 package org.hyperledger.bpa.impl.rules;
 
-import com.deliveredtechnologies.rulebook.model.rulechain.cor.CoRRuleBook;
+import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.bpa.impl.rules.definitions.BaseAriesTask;
 
 import javax.inject.Singleton;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
 public class TaskService {
 
-    private final Map<UUID, CoRRuleBook<Boolean>> tasks = new ConcurrentHashMap<>();
+    private final Map<UUID, List<BaseAriesTask>> tasks = new ConcurrentHashMap<>();
 
-    void register(@NonNull UUID id, @NonNull CoRRuleBook<Boolean> task) {
+    void register(@NonNull UUID id, @NonNull BaseAriesTask task) {
         log.debug("Adding task for partner: {}", id);
-        tasks.put(id, task);
+        List<BaseAriesTask> scheduled = tasks.get(id);
+        if (scheduled == null) {
+            tasks.put(id, new ArrayList<>(List.of(task)));
+        } else {
+            scheduled.add(task);
+        }
     }
 
-    Optional<CoRRuleBook<Boolean>> getActive(@NonNull UUID id) {
+    Optional<List<BaseAriesTask>> getActive(@NonNull UUID id) {
         return Optional.ofNullable(tasks.get(id));
     }
 
-    void removeIfDone(@NonNull UUID id) {
-        log.debug("Removing task for partner: {}", id);
-        tasks.remove(id);
+    synchronized void removeIfDone(@NonNull UUID id, @NonNull UUID taskId) {
+        List<BaseAriesTask> scheduled = tasks.get(id);
+        if (scheduled != null) {
+            log.debug("Removing task for partner: {}", id);
+            List<BaseAriesTask> filtered = scheduled
+                    .stream()
+                    .filter(t -> !t.getTaskId().equals(taskId))
+                    .collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(filtered)) {
+                tasks.put(id, filtered);
+            } else {
+                tasks.remove(id);
+            }
+        }
     }
 }

@@ -19,18 +19,19 @@ package org.hyperledger.bpa.impl.rules;
 
 import com.deliveredtechnologies.rulebook.FactMap;
 import com.deliveredtechnologies.rulebook.NameValueReferableMap;
-import com.deliveredtechnologies.rulebook.model.rulechain.cor.CoRRuleBook;
 import io.micronaut.context.ApplicationContext;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
+import org.hyperledger.bpa.impl.rules.definitions.BaseAriesTask;
 import org.hyperledger.bpa.impl.rules.definitions.EventContext;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.List;
 
 @Slf4j
 @Singleton
@@ -73,14 +74,17 @@ public class EventObserver extends EventHandler {
         }));
     }
 
-    private void runAndHandleResult(Partner p, CoRRuleBook<Boolean> t, NameValueReferableMap<EventContext> facts) {
+    private void runAndHandleResult(
+            Partner p, List<BaseAriesTask> tasks, NameValueReferableMap<EventContext> facts) {
         log.debug("Checking rules for partner: {}", p);
-        t.run(facts);
-        t.getResult().ifPresentOrElse(result -> {
-            log.debug("Result: " + result);
-            if (result.getValue()) {
-                ts.removeIfDone(p.getId());
-            }
-        }, () -> log.warn("Task did return a result"));
+        tasks.parallelStream().forEach(t -> {
+            t.run(facts);
+            t.getResult().ifPresentOrElse(result -> {
+                log.debug("Task: {}, Result: {}", t.getTaskId(), result.getValue());
+                if (result.getValue()) {
+                    ts.removeIfDone(p.getId(), t.getTaskId());
+                }
+            }, () -> log.warn("Task did return a result"));
+        });
     }
 }
