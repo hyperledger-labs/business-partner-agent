@@ -43,7 +43,7 @@ services:
     entrypoint: /bin/bash
     command: [
         "-c",
-        "sleep 1;
+        "sleep 15;
         aca-py start \
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY_HTTP_PORT} \
