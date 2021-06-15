@@ -22,5 +22,5 @@ tasks:
       cd scripts
       docker-compose -f docker-compose.dev.yml up
     openMode: split-right  
-  - command: echo If browser tab did not open, the BPA should finally run at https://$BPA_HOST - have fun!
+  - command: echo Observe the other terminal "docker-compose" for the launch progress. At the end, the frontend will open in the browser (at https://$BPA_HOST) - have fun!
     openIn: left
