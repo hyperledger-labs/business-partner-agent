@@ -108,6 +108,7 @@ services:
         -Dbpa.pg.password=${POSTGRESQL_PASSWORD}
         -Dbpa.host=${BPA_HOST}:${BPA2_PORT}
         -Dbpa.scheme=${BPA_SCHEME}
+        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${BPA2_DEBUG_PORT}
       BPA_WEB_MODE: ${BPA_WEB_MODE}
       BPA_RESOLVER_URL: ${BPA_RESOLVER_URL}
       BPA_LEDGER_BROWSER: ${BPA_LEDGER_BROWSER}
@@ -122,6 +123,8 @@ services:
       NODE_ENV: development
     ports:
       - ${BPA2_PORT}:${BPA2_PORT}
+      - ${BPA2_DEBUG_PORT}:${BPA2_DEBUG_PORT}
+
     restart: always
     extra_hosts:
      - host.docker.internal:host-gateway
