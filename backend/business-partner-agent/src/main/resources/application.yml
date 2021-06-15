@@ -168,24 +168,19 @@ bpa:
           enabled: true
           default: true
           src: ""
-          subtitle: ""
         user:
           enabled: false
       settings:
         location: "top"
-        title: Settings
       about:
         enabled: true
-        title: About
       logout:
         enabled: false
-        title: Log out
     header:
       title:
         prefix: false
       logout:
         enabled: true
-        title: Log out
       logo:
         enabled: false
         href: ""

@@ -25,7 +25,7 @@
               ><v-img :src="ux.navigation.avatar.agent.src"></v-img
               ></v-list-item-title>
               <v-list-item-subtitle
-              >{{ux.navigation.avatar.agent.subtitle}}</v-list-item-subtitle
+              >Business Partner Agent</v-list-item-subtitle
               >
             </v-list-item-content>
           </v-list-item>
@@ -109,7 +109,7 @@
             <v-icon>$vuetify.icons.settings</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>{{ux.navigation.settings.title}}</v-list-item-title>
+            <v-list-item-title>Settings</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -120,7 +120,7 @@
               <v-icon>$vuetify.icons.about</v-icon>
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>{{ux.navigation.about.title}}</v-list-item-title>
+              <v-list-item-title>About</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-if="ux.navigation.settings.location==='bottom'" bottom link :to="{ name: 'Settings' }">
@@ -128,7 +128,7 @@
               <v-icon>$vuetify.icons.settings</v-icon>
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>{{ux.navigation.settings.title}}</v-list-item-title>
+              <v-list-item-title>Settings</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-if="ux.navigation.logout.enabled" bottom @click="logout()">
@@ -136,7 +136,7 @@
               <v-icon>$vuetify.icons.signout</v-icon>
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>{{ux.navigation.logout.title}}</v-list-item-title>
+              <v-list-item-title>Sign out</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -272,11 +272,9 @@ export default {
         },
         about: {
           enabled: true,
-          title: "About"
         },
         logout: {
           enabled: false,
-          title: "Logout"
         },
         settings: {
           enabled: true,
@@ -284,7 +282,6 @@ export default {
             top: true,
             bottom: false,
           },
-          title: "Settings"
         }
       }
     }

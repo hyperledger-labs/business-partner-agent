@@ -26,24 +26,19 @@ bpa:
           enabled: false
           default: true
           src: ""
-          subtitle: ""
         user:
           enabled: true
       settings:
         location: "bottom"
-        title: Settings
       about:
         enabled: false
-        title: About
       logout:
         enabled: true
-        title: Sign out
     header:
       title:
         prefix: true
       logout:
         enabled: false
-        title: Sign out
       logo:
         enabled: true
         href: "https://www2.gov.bc.ca"
