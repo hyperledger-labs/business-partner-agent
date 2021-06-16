@@ -243,12 +243,6 @@ export default {
     sessionDialog: false,
     // These are defaults, if no ux configuration passed in via $config.ux...
     ux: {
-      theme: {
-        override: false
-      },
-      favicon: {
-        override: false
-      },
       header: {
         title: {
           prefix: false
@@ -342,8 +336,8 @@ export default {
       Object.assign(this.ux, this.$config.ux);
 
       // Copy the the configuration UX themes, this allows us to change primary color later...
-      if (this.ux.theme.override) {
-        this.$vuetify.theme.dark = this.ux.theme.dark;
+      if (this.ux.theme) {
+        this.$vuetify.theme.dark = this.ux.theme.dark ? this.ux.theme.dark : false;
         Object.assign(this.$vuetify.theme.themes, this.ux.theme.themes);
       }
       const uiColor = localStorage.getItem("uiColor");
@@ -352,7 +346,7 @@ export default {
         this.$vuetify.theme.themes.light.primary = uiColor;
       }
       // Load up an alternate favicon
-      if (this.ux.favicon.override) {
+      if (this.ux.favicon) {
         const favicon = document.getElementById("favicon");
         favicon.href = this.ux.favicon.href;
       }
