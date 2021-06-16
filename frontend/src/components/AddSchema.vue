@@ -8,7 +8,7 @@
 <template>
   <v-container>
     <v-card class="mx-auto">
-      <v-card-title class="bg-light"> Add Schema </v-card-title>
+      <v-card-title class="bg-light"> Import Schema </v-card-title>
       <v-card-text>
         <v-list-item>
           <v-list-item-title
@@ -51,11 +51,10 @@
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
+          <v-btn color="secondary" text outlined @click="cancel()">Cancel</v-btn>
           <v-btn
             :loading="this.isBusy"
             color="primary"
-            text
             @click="submit()"
             :disabled="fieldsEmpty"
             >Submit</v-btn

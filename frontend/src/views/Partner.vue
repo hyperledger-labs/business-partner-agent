@@ -24,12 +24,11 @@
           dense
         >
           <template v-slot:append>
-            <v-btn class="pb-1" text @click="isUpdatingName = false"
+            <v-btn class="pb-1" text outlined @click="isUpdatingName = false"
               >Cancel</v-btn
             >
             <v-btn
               class="pb-1"
-              text
               color="primary"
               :loading="isBusy"
               @click="submitNameUpdate()"
@@ -60,12 +59,11 @@
             dense
           >
             <template v-slot:append>
-              <v-btn class="pb-1" text @click="isUpdatingDid = false"
+              <v-btn class="pb-1" text outlined @click="isUpdatingDid = false"
                 >Cancel</v-btn
               >
               <v-btn
                 class="pb-1"
-                text
                 color="primary"
                 :loading="isBusy"
                 @click="submitDidUpdate()"
@@ -118,10 +116,10 @@
               >{{ this.alias }} wants to create a connection with you.</v-row
             >
             <template v-slot:actions>
-              <v-btn text color="seconday" @click="deletePartner">
+              <v-btn text outlined color="secondary" @click="deletePartner">
                 Remove Partner
               </v-btn>
-              <v-btn text color="primary" @click="acceptPartnerRequest">
+              <v-btn color="primary" @click="acceptPartnerRequest">
                 Accept
               </v-btn>
             </template>
@@ -288,11 +286,12 @@
           <v-btn
             color="secondary"
             text
+            outlined
             @click="attentionPartnerStateDialog = false"
             >No</v-btn
           >
 
-          <v-btn color="primary" text @click="proceed">Yes</v-btn>
+          <v-btn color="primary" @click="proceed">Yes</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

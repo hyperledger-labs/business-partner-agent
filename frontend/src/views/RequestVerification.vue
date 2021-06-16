@@ -28,11 +28,10 @@
 
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
+          <v-btn color="secondary" text outlined @click="cancel()">Cancel</v-btn>
           <v-btn
             :loading="this.isBusy"
             color="primary"
-            text
             @click="checkRequest"
             >Submit</v-btn
           >
@@ -57,11 +56,12 @@
           <v-btn
             color="secondary"
             text
+            outlined
             @click="attentionPartnerStateDialog = false"
             >No</v-btn
           >
 
-          <v-btn color="primary" text @click="submitRequest">Yes</v-btn>
+          <v-btn color="primary" @click="submitRequest">Yes</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

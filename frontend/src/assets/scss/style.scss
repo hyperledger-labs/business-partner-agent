@@ -149,3 +149,11 @@ div {
     }
   }
 }
+
+.v-input__append-inner {
+  > .v-btn {
+    margin-top: -4px;
+    margin-bottom: 4px;
+    margin-right: 4px;
+  }
+}

@@ -72,8 +72,9 @@
                 v-if="
                   !isReadOnly && index === documentData.identifier.length - 1
                 "
-                color="primary"
+                color="secondary"
                 text
+                outlined
                 @click="addIdentifier"
                 >Add</v-btn
               >

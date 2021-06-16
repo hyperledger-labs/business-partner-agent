@@ -43,7 +43,7 @@
 
                 <v-card-actions>
                   <v-layout align-end justify-end>
-                    <v-btn color="secondary" text @click="cancel()"
+                    <v-btn color="secondary" text outlined @click="cancel()"
                       >Cancel</v-btn
                     >
                     <v-btn
@@ -74,7 +74,7 @@
 
                 <v-card-actions>
                   <v-layout align-end justify-end>
-                    <v-btn color="secondary" text @click="step = 1">Back</v-btn>
+                    <v-btn color="secondary" text outlined @click="step = 1">Back</v-btn>
 
                     <v-btn
                       :loading="this.isBusy"

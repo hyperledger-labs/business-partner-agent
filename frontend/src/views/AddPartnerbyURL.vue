@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
@@ -14,7 +14,7 @@
       <v-container>
         <v-row v-if="!invitationURL">
           <v-col cols="12">
-              <v-btn color="Primary" text @click="createInvitation()">GenerateURL</v-btn>
+              <v-btn color="secondary" text @click="createInvitation()">Generate QR Code</v-btn>
           </v-col>
         </v-row>
         <v-row v-else>
@@ -26,11 +26,11 @@
               <span class="font-weight-light">{{ invitationURL }}</span>
             </div>
           </v-col>
-        </v-row>      
+        </v-row>
       </v-container>
       <v-card-actions>
         <v-layout justify-space-between>
-          <v-btn color="secondary" text to="/app/partners">Return</v-btn>
+          <v-btn color="secondary" text outlined to="/app/partners">Return</v-btn>
         </v-layout>
       </v-card-actions>
     </v-card>
@@ -88,7 +88,7 @@ export default {
             EventBus.$emit("error", e);
           }
         });
-    },    
+    },
   },
 };
 </script>

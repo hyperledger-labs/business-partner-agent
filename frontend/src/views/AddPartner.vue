@@ -62,7 +62,7 @@
       </v-container>
       <v-card-actions>
         <v-layout justify-space-between>
-          <v-btn color="secondary" text to="/app/partners">Cancel</v-btn>
+          <v-btn color="secondary" text outlined to="/app/partners">Cancel</v-btn>
 
           <v-btn v-if="!partnerLoaded" color="primary" @click="lookup()"
             >Lookup Partner</v-btn

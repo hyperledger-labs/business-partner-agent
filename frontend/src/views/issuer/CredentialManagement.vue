@@ -20,6 +20,17 @@
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
+          <v-dialog v-model="createSchemaDialog" persistent max-width="600px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn v-bind="attrs" v-on="on" color="secondary" text outlined
+              >Create Schema</v-btn
+              >
+            </template>
+            <CreateSchema
+                @success="onSchemaCreated"
+                @cancelled="createSchemaDialog = false"
+            />
+          </v-dialog>
           <v-dialog v-model="addSchemaDialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
               <v-btn v-bind="attrs" v-on="on" color="primary"
@@ -29,17 +40,6 @@
             <AddSchema
               @success="onSchemaAdded"
               @cancelled="addSchemaDialog = false"
-            />
-          </v-dialog>
-          <v-dialog v-model="createSchemaDialog" persistent max-width="600px">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn v-bind="attrs" v-on="on" color="primary"
-                >Create Schema</v-btn
-              >
-            </template>
-            <CreateSchema
-              @success="onSchemaCreated"
-              @cancelled="createSchemaDialog = false"
             />
           </v-dialog>
         </v-layout>

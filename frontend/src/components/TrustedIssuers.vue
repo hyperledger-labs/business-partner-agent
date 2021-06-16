@@ -32,7 +32,7 @@
           v-if="!entry.isReadOnly && !entry.isEdit"
           :disabled="isEdit"
           color="primary"
-          text
+          icon
           @click="editTrustedIssuer(index)"
           ><v-icon>$vuetify.icons.pencil</v-icon></v-btn
         >
@@ -41,15 +41,15 @@
           v-if="!entry.isReadOnly && entry.isEdit"
           :loading="isBusy"
           color="primary"
-          text
+          icon
           @click="saveTrustedIssuer(entry)"
           ><v-icon>$vuetify.icons.save</v-icon></v-btn
         >
 
         <v-btn
           v-if="!entry.isReadOnly && entry.isEdit"
-          color="secondary"
-          text
+          color="error"
+          icon
           @click="cancelEditTrustedIssuer(index)"
           ><v-icon>$vuetify.icons.cancel</v-icon></v-btn
         >
@@ -64,7 +64,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-btn :disabled="isEdit" color="primary" text @click="addTrustedIssuer"
+      <v-btn :disabled="isEdit" color="secondary" text outlined @click="addTrustedIssuer"
         >Add trusted issuer</v-btn
       >
     </v-row>

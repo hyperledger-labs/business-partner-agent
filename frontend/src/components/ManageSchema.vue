@@ -89,7 +89,7 @@
 
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-btn color="primary" text @click="closed">Close</v-btn>
+          <v-btn color="primary" @click="closed">Close</v-btn>
         </v-layout>
       </v-card-actions>
     </v-card>
