@@ -36,6 +36,14 @@
       <span v-else>
         {{ item.state.replace("_", " ") }}
       </span>
+      <v-tooltip v-if="item.problemReport" top>
+        <template v-slot:activator="{ on, attrs }">
+          <v-icon color="error" small v-bind="attrs" v-on="on">
+            $vuetify.icons.connectionAlert
+          </v-icon>
+        </template>
+        <span>{{ item.problemReport }}</span>
+      </v-tooltip>
     </template>
     <template v-slot:[`item.sentAt`]="{ item }">
       {{ item.sentAt | formatDateLong }}

@@ -5,6 +5,13 @@
 # 
 # SPDX-License-Identifier: Apache-2.0
 
+if [ "$(which gp)" ]; then
+    eval $(gp env -e)
+    if [ $ACAPY_SEED ] ; then
+        echo "There is already an ACAPY_SEED set and hopefully also a DID registered."
+        exit 1
+    fi
+fi
 
 # Check the system the script is running on
 ARCHITECTURE="$(uname -s)"
@@ -39,23 +46,29 @@ if curl --fail -s -d $PAYLOAD  -H "Content-Type: application/json" -X POST ${URL
     # Registration (probably) successfull
     echo ""
     echo ""Registration on $URL successful""
-    echo ""Setting ACAPY_SEED in .env file""
-    if [ ! -f .env ]; then
-        echo "".env does not exist""
-        echo ""Creating .env from .env-example""
-        cp .env-example .env
-    fi
-    # sed on Mac and Linux work differently
-    if [ "$ARCHITECTURE" = "Mac" ]; then
-        sed -i '' '/ACAPY_SEED=/c\
-        ACAPY_SEED='"${SEED}"'
-        ' .env
+
+    if [ "$(which gp)" ]; then
+        echo ""Setting ACAPY_SEED permanently in gitpod environment""
+        gp env ACAPY_SEED=$SEED
     else
-         sed -i '/ACAPY_SEED=/c\
-        ACAPY_SEED='"${SEED}"'
-        ' .env
+        echo ""Setting ACAPY_SEED in .env file""
+        if [ ! -f .env ]; then
+            echo "".env does not exist""
+            echo ""Creating .env from .env-example""
+            cp .env-example .env
+        fi
+        # sed on Mac and Linux work differently
+        if [ "$ARCHITECTURE" = "Mac" ]; then
+            sed -i '' '/ACAPY_SEED=/c\
+            ACAPY_SEED='"${SEED}"'
+            ' .env
+        else
+            sed -i '/ACAPY_SEED=/c\
+            ACAPY_SEED='"${SEED}"'
+            ' .env
+        fi 
     fi 
-    
+
 else
     # Something went wrong
     echo ""

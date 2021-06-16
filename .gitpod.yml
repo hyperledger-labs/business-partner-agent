@@ -1,0 +1,26 @@
+ 
+image:
+  file: .gitpod.Dockerfile
+
+ports:
+  - port: 8080
+    onOpen: open-browser  
+  - port: 8030
+    onOpen: ignore     
+
+tasks:
+  - init: |
+      gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
+      gp env ACAPY_ENDPOINT=`gp url 8030`
+      cd scripts
+      cp .env-example .env
+      ./register-did.sh
+      eval $(gp env -e)
+      docker-compose -f docker-compose.dev.yml build 
+    command: |
+      eval $(gp env -e)
+      cd scripts
+      docker-compose -f docker-compose.dev.yml up
+    openMode: split-right  
+  - command: echo "Observe the other terminal for the launch progress. At the end, the frontend will open in the browser (at https://$BPA_HOST ) - have fun!"
+    openIn: left
