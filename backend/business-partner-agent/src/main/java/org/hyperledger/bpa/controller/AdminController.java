@@ -130,8 +130,8 @@ public class AdminController {
      * @return {@link HttpResponse}
      */
     @Delete("/schema/{id}")
-    @ApiResponse(responseCode = "404", description = "If the tag does not exist")
-    @ApiResponse(responseCode = "405", description = "If the tag is read only")
+    @ApiResponse(responseCode = "404", description = "If the schema does not exist")
+    @ApiResponse(responseCode = "405", description = "If the schema is read only")
     public HttpResponse<Void> removeSchema(@PathVariable UUID id) {
         Optional<SchemaAPI> schema = schemaService.getSchema(id);
         if (schema.isPresent()) {
