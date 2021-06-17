@@ -10,7 +10,7 @@
 - [Schemas and trusted Issuers](concepts/schemas_trusted_issuers.md)
 - [Request verifications](concepts/request_verifications.md)
 - [Request presentations](concepts/request_presentations.md)
-
+- [Keycloak Security](concepts/security_keycloak.md)
 
 ## Tutorials
 

@@ -28,8 +28,4 @@ public class PartnerException extends RuntimeException {
         super(message);
     }
 
-    public PartnerException(String message, Throwable t) {
-        super(message, t);
-    }
-
 }

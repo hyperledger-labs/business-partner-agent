@@ -9,7 +9,10 @@
 export const schemaAttributeLabel = (key) => {
   if (!key) return "";
   if (key.trim().length > 1) {
-    return key.substring(0, 1).toUpperCase() + key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2");
+    return (
+      key.substring(0, 1).toUpperCase() +
+      key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2")
+    );
   }
   return key;
 };

@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl;
 
 import com.google.gson.Gson;
+import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -166,11 +167,11 @@ public class IssuerManager {
     public Optional<V1CredentialExchange> issueCredentialSend(@NonNull UUID credDefId, @NonNull UUID partnerId,
             @NonNull Map<String, Object> document) {
         final Optional<Partner> dbPartner = partnerRepo.findById(partnerId);
-        if (!dbPartner.isPresent()) {
+        if (dbPartner.isEmpty()) {
             throw new IssuerException(String.format("Could not find partner with id '%s'", partnerId));
         }
         final Optional<BPACredentialDefinition> dbCredDef = credDefRepo.findById(credDefId);
-        if (!dbCredDef.isPresent()) {
+        if (dbCredDef.isEmpty()) {
             throw new IssuerException(String.format("Could not find credential definition with id '%s'", credDefId));
         }
         // ok, we have partner/connection, we have a cred def/schema
@@ -184,7 +185,7 @@ public class IssuerManager {
         }
 
         try {
-            Optional<V1CredentialExchange> exchange = ac.issueCredentialSend(
+            return ac.issueCredentialSend(
                     V1CredentialProposalRequest
                             .builder()
                             .connectionId(dbPartner.get().getConnectionId())
@@ -194,20 +195,24 @@ public class IssuerManager {
                                             CredentialAttributes.from(document)))
                             .credentialDefinitionId(dbCredDef.get().getCredentialDefinitionId())
                             .build());
-            return exchange;
         } catch (IOException e) {
             throw new NetworkException("No aries connection", e);
         }
     }
 
-    public List<CredEx> listCredentialExchanges(String role) {
-        List<BPACredentialExchange> exchanges = new ArrayList<>();
-        credExRepo.listOrderByUpdatedAtDesc().forEach(exchanges::add);
+    public List<CredEx> listCredentialExchanges(@Nullable CredentialExchangeRole role, @Nullable UUID partnerId) {
+        List<BPACredentialExchange> exchanges = credExRepo.listOrderByUpdatedAtDesc();
         // now, lets get credentials...
         return exchanges.stream()
                 .filter(x -> {
-                    if (StringUtils.isNotEmpty(role)) {
-                        return StringUtils.equalsIgnoreCase(x.getRole().name(), role);
+                    if (role != null) {
+                        return role.equals(x.getRole());
+                    }
+                    return true;
+                })
+                .filter(x -> {
+                    if (partnerId != null && x.getPartner() != null) {
+                        return x.getPartner().getId().equals(partnerId);
                     }
                     return true;
                 })
@@ -226,6 +231,7 @@ public class IssuerManager {
 
     private Credential buildFromProposal(@NonNull BPACredentialExchange exchange) {
         Credential result = null;
+        // TODO this is creative but not how it is supposed to work ;)
         LinkedHashMap credentialProposal = (LinkedHashMap) exchange.getCredentialProposal().get("credential_proposal");
         if (credentialProposal != null) {
             ArrayList<LinkedHashMap> attributes = (ArrayList) credentialProposal.get("attributes");

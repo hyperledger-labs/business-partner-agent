@@ -9,19 +9,27 @@ micronaut:
       enabled: true # potential security risk
     idle-timeout: 30m
   security:
+    enabled: ${BPA_SECURITY_ENABLED:true}
     authentication: session
     endpoints:
       logout:
         path: /api/logout
+        get-allowed: true
     redirect:
       unauthorized:
         url: /user/signin
       login-failure: /user/authFailed
+      logout: /user/signin
     intercept-url-map:
       -
         pattern: /**
         access:
           - isAuthenticated()
+      -
+        pattern: /health
+        http-method: GET
+        access:
+          - isAnonymous()
   session:
     max-inactive-interval: 12h
   router:
@@ -64,7 +72,9 @@ endpoints:
   health:
     enabled: true
     sensitive: false
-    details-visible: never
+    details-visible: AUTHENTICATED
+    acapy:
+      enabled: true
 
 datasources:
   '*':
@@ -103,42 +113,25 @@ bpa:
     url: ${BPA_RESOLVER_URL:`https://resolver.stage.economyofthings.io`}
   ledger:
     browser: ${BPA_LEDGER_BROWSER:}
-  host: localhost:${micronaut.server.port}
+  host: ${BPA_HOST:`localhost:8080`}
   name: ${AGENT_NAME:`Business Partner Agent`}
-  scheme: https
+  scheme: ${BPA_SCHEME:`https`}
   web:
     only: ${BPA_WEB_MODE:false}
   acapy:
-    url: http://${bpa.docker.host}:8031
-    apiKey: empty
+    url: ${ACAPY_URL:`http://localhost:8031`}
+    apiKey: ${ACAPY_API_KEY:empty}
     endpoint: ${ACAPY_ENDPOINT:`http://localhost:8030`}
   did:
     prefix: ${BPA_DID_PREFIX:`did:sov:iil:`}
   pg:
-    url: jdbc:postgresql://${bpa.docker.host}/${bpa.pg.username}
-    username: walletuser
-    password: walletpassword
+    url: jdbc:postgresql://${POSTGRESQL_HOST:`localhost`}/${bpa.pg.username}
+    username: ${POSTGRESQL_USER:`walletuser`}
+    password: ${POSTGRESQL_PASSWORD:`walletpassword`}
     schema: public
   bootstrap:
     username: ${BPA_BOOTSTRAP_UN:admin}
     password: ${BPA_BOOTSTRAP_PW:changeme}
-  schemas:
-    #test ledger schemas, can be overwritten / extended when e.g. working with other ledger
-    bank-account:
-      id: "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
-      label: "Bank Account"
-      defaultAttributeName: "iban"
-      # Note: this also works json style restrictions: [{id: 123, label: myLabel}]
-      restrictions:
-        - issuerDid: "${bpa.did.prefix}M6Mbe3qx7vB4wpZF4sBRjt"
-          label: "Demo Bank"
-    commercial-register:
-      id: "5mwQSWnRePrZ3oF67C4KqD:2:commercialregister:1.0"
-      label: "Commercial Register"
-      defaultAttributeName: "companyName"
-      restrictions:
-        - issuerDid: "${bpa.did.prefix}5mwQSWnRePrZ3oF67C4KqD"
-          label: "Commercial Register"
   imprint:
     url: ${BPA_IMPRINT_URL:}
   privacy:
@@ -146,3 +139,60 @@ bpa:
       url: ${BPA_PRIVACY_POLICY_URL:}
   creddef:
     revocationRegistrySize: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE:3000}
+# The following is an example on how to override the default ux.
+# This will have all of the alternate layout and themes/colors loaded.
+# To override theme, then set themes.light properties
+# To override favicon, then need favicon.href property
+#  ux:
+#    theme:
+#      dark: false
+#      themes:
+#        light:
+#          primary: '#003366'
+#          secondary: '#003366'
+#          accent: '#82B1FF'
+#          error: '#D8292F'
+#          info: '#2196F3'
+#          success: '#2E8540'
+#          warning: '#FFC107'
+#          bgLight: "#FAFAFA"
+#          bgLight2: "#ECECEC"
+#          font: "#313132"
+#          anchor: "#1A5A96"
+#          anchorHover: "#3B99FC"
+#    favicon:
+#      href: "https://raw.githubusercontent.com/bcgov/common-forms-toolkit/master/app/frontend/public/favicon.ico"
+#    navigation:
+#      avatar:
+#        agent:
+#          enabled: false
+#          default: true
+#          src: ""
+#        user:
+#          enabled: true
+#      settings:
+#        location: "bottom"
+#      about:
+#        enabled: false
+#      logout:
+#        enabled: true
+#    header:
+#      title:
+#        prefix: true
+#      logout:
+#        enabled: false
+#      logo:
+#        enabled: true
+#        href: "https://www2.gov.bc.ca"
+#        alt: "B.C. Government Logo"
+#        images:
+#          - name: "small"
+#            class: "d-none d-sm-flex d-md-none"
+#            height: "3.5rem"
+#            src: "https://raw.githubusercontent.com/bcgov/common-forms-toolkit/master/app/frontend/src/assets/images/bc_logo_square.svg"
+#            width: "3.5rem"
+#          - name: "medium"
+#            class: "d-none d-md-flex"
+#            height: "3.5rem"
+#            src: "https://raw.githubusercontent.com/bcgov/common-forms-toolkit/master/app/frontend/src/assets/images/bc_logo.svg"
+#            width: "10rem"

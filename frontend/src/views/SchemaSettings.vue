@@ -16,39 +16,33 @@
       </v-card-title>
       <v-card-text>
         <SchemaList
-            :manage-credential-definitions="true"
-            :manage-trusted-issuers="true"
+          :manage-credential-definitions="true"
+          :manage-trusted-issuers="true"
         />
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-dialog
-              v-model="addSchemaDialog"
-              persistent
-              max-width="600px"
-          >
+          <v-dialog v-model="addSchemaDialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                  v-bind="attrs"
-                  v-on="on"
-                  color="primary"
-              >Import Schema</v-btn>
+              <v-btn v-bind="attrs" v-on="on" color="primary"
+                >Import Schema</v-btn
+              >
             </template>
-            <AddSchema @success="onSchemaAdded" @cancelled="addSchemaDialog = false" />
+            <AddSchema
+              @success="onSchemaAdded"
+              @cancelled="addSchemaDialog = false"
+            />
           </v-dialog>
-          <v-dialog
-              v-model="createSchemaDialog"
-              persistent
-              max-width="600px"
-          >
+          <v-dialog v-model="createSchemaDialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                  v-bind="attrs"
-                  v-on="on"
-                  color="primary"
-              >Create Schema</v-btn>
+              <v-btn v-bind="attrs" v-on="on" color="primary"
+                >Create Schema</v-btn
+              >
             </template>
-            <CreateSchema @success="onSchemaCreated" @cancelled="createSchemaDialog = false" />
+            <CreateSchema
+              @success="onSchemaCreated"
+              @cancelled="createSchemaDialog = false"
+            />
           </v-dialog>
         </v-layout>
       </v-card-actions>

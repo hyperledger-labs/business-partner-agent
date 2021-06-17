@@ -30,10 +30,20 @@
       </div>
     </template>
     <template v-slot:[`item.state`]="{ item }">
-      <v-icon v-if="isItemActive(item)" color="green">$vuetify.icons.check</v-icon>
+      <v-icon v-if="isItemActive(item)" color="green"
+        >$vuetify.icons.check</v-icon
+      >
       <span v-else>
         {{ item.state.replace("_", " ") }}
       </span>
+      <v-tooltip v-if="item.problemReport" top>
+        <template v-slot:activator="{ on, attrs }">
+          <v-icon color="error" small v-bind="attrs" v-on="on">
+            $vuetify.icons.connectionAlert
+          </v-icon>
+        </template>
+        <span>{{ item.problemReport }}</span>
+      </v-tooltip>
     </template>
     <template v-slot:[`item.sentAt`]="{ item }">
       {{ item.sentAt | formatDateLong }}
@@ -57,7 +67,9 @@
       </td>
     </template>
     <template v-slot:[`item.actions`]="{ item }">
-      <v-icon small @click.stop="deletePresentation(item)"> $vuetify.icons.delete </v-icon>
+      <v-icon small @click.stop="deletePresentation(item)">
+        $vuetify.icons.delete
+      </v-icon>
     </template>
   </v-data-table>
 </template>

@@ -34,7 +34,8 @@
           color="primary"
           text
           @click="editTrustedIssuer(index)"
-          ><v-icon>$vuetify.icons.pencil</v-icon></v-btn>
+          ><v-icon>$vuetify.icons.pencil</v-icon></v-btn
+        >
 
         <v-btn
           v-if="!entry.isReadOnly && entry.isEdit"
@@ -42,14 +43,16 @@
           color="primary"
           text
           @click="saveTrustedIssuer(entry)"
-          ><v-icon>$vuetify.icons.save</v-icon></v-btn>
+          ><v-icon>$vuetify.icons.save</v-icon></v-btn
+        >
 
         <v-btn
           v-if="!entry.isReadOnly && entry.isEdit"
           color="secondary"
           text
           @click="cancelEditTrustedIssuer(index)"
-          ><v-icon>$vuetify.icons.cancel</v-icon></v-btn>
+          ><v-icon>$vuetify.icons.cancel</v-icon></v-btn
+        >
 
         <v-btn
           icon
@@ -61,7 +64,9 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-btn :disabled="isEdit" color="primary" text @click="addTrustedIssuer">Add trusted issuer</v-btn>
+      <v-btn :disabled="isEdit" color="primary" text @click="addTrustedIssuer"
+        >Add trusted issuer</v-btn
+      >
     </v-row>
   </v-container>
 </template>
@@ -72,7 +77,7 @@ export default {
   props: {
     schema: {
       type: Object,
-      default: () => {}
+      default: () => {},
     },
     trustedIssuers: {
       type: Array,
@@ -90,7 +95,7 @@ export default {
       this.items = Array.from(val);
       this.isEdit = false;
       this.editingTrustedIssuer = null;
-    }
+    },
   },
   created() {},
   mounted() {
@@ -139,7 +144,7 @@ export default {
           .then((result) => {
             console.log(result);
             this.items.splice(index, 1);
-            this.$emit('changed');
+            this.$emit("changed");
           })
           .catch((e) => {
             console.error(e);
@@ -178,7 +183,7 @@ export default {
             this.isEdit = false;
             trustedIssuer.isEdit = false;
             EventBus.$emit("success", "New trusted issuer added");
-            this.$emit('changed');
+            this.$emit("changed");
           }
         })
         .catch((e) => {
@@ -203,7 +208,7 @@ export default {
 
           if (result.status === 201) {
             EventBus.$emit("success", "Trusted issuer updated");
-            this.$emit('changed');
+            this.$emit("changed");
           }
         })
         .catch((e) => {

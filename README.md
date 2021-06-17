@@ -5,7 +5,8 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![CI/CD](https://github.com/hyperledger-labs/business-partner-agent/workflows/CI/CD/badge.svg)](https://github.com/hyperledger-labs/business-partner-agent/actions?query=workflow%3ACI%2FCD+branch%3Amaster)
-[![Helm Chart](https://github.com/hyperledger-labs/business-partner-agent/workflows/Release%20Charts/badge.svg)](https://github.com/hyperledger-labs/business-partner-agent/tree/master/charts/bpa)
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/hyperledger-labs/business-partner-agent)
 
 # Short Description
 The Business Partner Agent allows to manage and exchange master data between organizations. Exchange of master data should not happen via telephone, excel, e-mail or various supplier portals. Organizations should be able to publish documents like addresses, locations, contacts, bank accounts and certifications publicly, or exchange them privately with their business partners in a machine-readable and tamper-proof format. Furthemore, verified documents, issued by trusted institutions, are able streamline the process of onboarding new business partners.
@@ -22,8 +23,8 @@ The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Ide
 ## Project Status
 
 A first alpha version of Business Partner Agent is available, see
-[releases page](https://github.com/hyperledger-labs/business-partner-agent/releases) and related tags.
-It is not ready for production use. 
+[Helm Chart](https://github.com/hyperledger-labs/business-partner-agent-chart) and [Docker images](https://github.com/orgs/hyperledger-labs/packages/container/package/business-partner-agent)
+It is not ready for production use.  Releases are in general considered "alpha", which means API may change at any time and we do not have explicit / planned system tests (See also [Publishing](PUBLISHING.md)).
 
 # Getting Started
 
@@ -36,15 +37,15 @@ The agent is started in Indy mode per default and tries to connect with our test
 
 ## Run a business partner agent
 
-You can either run the agent [via docker-compose](scripts/) (recommended for e.g. development / debugging) or deploy it into a [kubernetes cluster (via helm)](charts/bpa).
+You can either run the agent [via docker-compose](scripts/) (recommended for e.g. development / debugging) or deploy it into a [kubernetes cluster (via helm)](https://github.com/hyperledger-labs/business-partner-agent-chart).
 
 # Documentation and Tutorials
 
-See [docs](./docs/README.md)
+User documentation see [docs](./docs/README.md).
 
-# Contributing
+Lear how to contribute in [Contributing](CONTRIBUTING.md). You can also start by filing an issue.
 
-See [Contributing](CONTRIBUTING.md). You can also start by filing an issue.
+Regarding release process, we do not follow a strict process yet, nevertheless we follow the guidelines described in [Publishing](PUBLISHING.md).
 
 # Hyperledger Labs Sponsor
 - https://github.com/swcurran Co-Chair of the Aries Working Group

@@ -1,0 +1,9 @@
+{
+  "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/notification/1.0/problem-report",
+  "@id": "52a28ad0-a803-46c3-a9b0-7bba477ff7c7",
+  "~thread": {
+    "thid": "62f7fa51-2e0f-4fec-9c5e-7b7a48c3ce1b"
+  },
+  "explain-ltxt": "no matching credential found",
+  "description": "no matching credential found"
+}

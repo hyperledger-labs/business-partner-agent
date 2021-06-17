@@ -14,6 +14,7 @@ services:
         -Dbpa.acapy.apiKey=${ACAPY_ADMIN_URL_API_KEY}
         -Dmicronaut.security.enabled=${BPA_SECURITY_ENABLED}
         -Dmicronaut.server.port=${BPA_PORT}
+        -Dmicronaut.config.files=${BPA_CONFIG_FILES}
         -Dbpa.pg.url=jdbc:postgresql://${POSTGRESQL_HOST}/${POSTGRESQL_USER}
         -Dbpa.pg.username=${POSTGRESQL_USER}
         -Dbpa.pg.password=${POSTGRESQL_PASSWORD}
@@ -42,7 +43,7 @@ services:
     entrypoint: /bin/bash
     command: [
         "-c",
-        "sleep 1;
+        "sleep 15;
         aca-py start \
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY_HTTP_PORT} \

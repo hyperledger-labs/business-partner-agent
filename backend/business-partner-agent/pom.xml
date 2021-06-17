@@ -80,8 +80,16 @@
             <artifactId>micronaut-jdbc-hikari</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.micronaut.kubernetes</groupId>
-            <artifactId>micronaut-kubernetes-discovery-client</artifactId>
+            <groupId>io.micronaut.security</groupId>
+            <artifactId>micronaut-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micronaut.security</groupId>
+            <artifactId>micronaut-security-oauth2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micronaut.security</groupId>
+            <artifactId>micronaut-security-jwt</artifactId>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
@@ -120,7 +128,7 @@
         <dependency>
             <groupId>org.hyperledger</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.14.0</version>
+            <version>0.23.0</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>
@@ -147,7 +155,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>5.4.6</version>
+            <version>5.5.0</version>
         </dependency>
 
         <!-- Database -->
@@ -365,7 +373,7 @@
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
                         <artifactId>frontend-maven-plugin</artifactId>
-                        <version>1.11.3</version>
+                        <version>1.12.0</version>
                         <configuration>
                             <workingDirectory>../../frontend</workingDirectory>
                         </configuration>
@@ -378,8 +386,8 @@
                                 </goals>
                                 <configuration>
                                     <!-- See https://nodejs.org/en/download/ -->
-                                    <nodeVersion>v14.16.1</nodeVersion>
-                                    <npmVersion>6.14.12</npmVersion>
+                                    <nodeVersion>v14.17.0</nodeVersion>
+                                    <npmVersion>6.14.13</npmVersion>
                                 </configuration>
                             </execution>
                             <execution>

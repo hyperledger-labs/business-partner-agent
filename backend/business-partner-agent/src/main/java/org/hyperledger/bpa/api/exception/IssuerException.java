@@ -28,7 +28,4 @@ public class IssuerException extends RuntimeException {
         super(message);
     }
 
-    public IssuerException(String message, Throwable t) {
-        super(message, t);
-    }
 }

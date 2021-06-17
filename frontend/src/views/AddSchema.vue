@@ -118,7 +118,7 @@ export default {
           console.log(result);
           this.isBusyAddSchema = false;
 
-          if (result.status === 200 || result.status === 200) {
+          if (result.status === 200) {
             EventBus.$emit("success", "Schema added successfully");
             this.$router.push({ name: "SchemaSettings" });
           }

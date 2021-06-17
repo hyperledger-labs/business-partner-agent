@@ -16,5 +16,5 @@ export default {
 
   listPartners() {
     return appAxios().get(`${ApiRoutes.PARTNERS}`);
-  }
+  },
 };

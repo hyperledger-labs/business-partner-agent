@@ -10,25 +10,31 @@
     <v-navigation-drawer v-model="drawer" app>
       <v-list dense>
         <router-link tag="span" :to="{ name: 'Dashboard' }">
-          <v-list-item v-if="logo" two-line class="pl-3 mt-n2">
-            <v-list-item-content>
-              <v-list-item-title
-                ><v-img v-if="logo" :src="logo"></v-img
-              ></v-list-item-title>
-              <v-list-item-subtitle
-                >Business Partner Agent</v-list-item-subtitle
-              >
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item v-else two-line class="pl-3 mt-n2">
-            <v-list-item-avatar>
+          <v-list-item v-if="ux.navigation.avatar.agent.enabled" two-line class="pl-3 mt-n2">
+            <v-list-item-avatar v-if="ux.navigation.avatar.agent.default">
               <v-img v-if="logo" :src="logo"></v-img>
               <!-- Default logo from https://logodust.com/ -->
               <v-img src="@/assets/logo_default.svg"></v-img>
             </v-list-item-avatar>
-            <v-list-item-content>
+            <v-list-item-content v-if="ux.navigation.avatar.agent.default">
               <v-list-item-title>{{ getAgentName }}</v-list-item-title>
               <!-- <v-list-item-subtitle></v-list-item-subtitle> -->
+            </v-list-item-content>
+            <v-list-item-content v-if="!ux.navigation.avatar.agent.default">
+              <v-list-item-title
+              ><v-img :src="ux.navigation.avatar.agent.src"></v-img
+              ></v-list-item-title>
+              <v-list-item-subtitle
+              >Business Partner Agent</v-list-item-subtitle
+              >
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item v-if="ux.navigation.avatar.user.enabled" two-line class="pl-3 mt-n2" >
+            <v-list-item-avatar style="width: fit-content">
+              <v-icon>$vuetify.icons.user</v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <!-- show current user name? -->
             </v-list-item-content>
           </v-list-item>
         </router-link>
@@ -85,8 +91,8 @@
             <v-badge
               overlap
               bordered
-              :content="newPartnersCount"
-              :value="newPartnersCount"
+              :content="newPartnerEventsCount"
+              :value="newPartnerEventsCount"
               color="red"
               offset-x="10"
               offset-y="10"
@@ -98,7 +104,7 @@
             <v-list-item-title>Business Partners</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item link :to="{ name: 'Settings' }">
+        <v-list-item v-if="ux.navigation.settings.location==='top'" link :to="{ name: 'Settings' }">
           <v-list-item-action>
             <v-icon>$vuetify.icons.settings</v-icon>
           </v-list-item-action>
@@ -109,12 +115,28 @@
       </v-list>
       <template v-slot:append>
         <v-list dense>
-          <v-list-item bottom link :to="{ name: 'About' }">
+          <v-list-item v-if="ux.navigation.about.enabled" bottom link :to="{ name: 'About' }">
             <v-list-item-action>
               <v-icon>$vuetify.icons.about</v-icon>
             </v-list-item-action>
             <v-list-item-content>
               <v-list-item-title>About</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item v-if="ux.navigation.settings.location==='bottom'" bottom link :to="{ name: 'Settings' }">
+            <v-list-item-action>
+              <v-icon>$vuetify.icons.settings</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Settings</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item v-if="ux.navigation.logout.enabled" bottom @click="logout()">
+            <v-list-item-action>
+              <v-icon>$vuetify.icons.signout</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>Sign out</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -123,13 +145,25 @@
 
     <v-app-bar color="primary" app flat dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>{{ title }}</v-toolbar-title>
+      <v-toolbar-title>{{ getTitle }}</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
-      <v-btn icon @click="logout()">
+      <a v-if="ux.header.logo.enabled" :href="ux.header.logo.href">
+        <v-img v-for="item in ux.header.logo.images" :key="item.name"
+            :alt="ux.header.logo.alt"
+            :class="item.class"
+            contain
+            :height="item.height"
+            :src="item.src"
+            :width="item.width"
+        />
+      </a>
+
+      <v-btn v-if="ux.header.logout.enabled" icon @click="logout()">
         <v-icon>$vuetify.icons.signout</v-icon>
       </v-btn>
+
     </v-app-bar>
 
     <v-main>
@@ -207,6 +241,44 @@ export default {
     snackbarMsg: "",
 
     sessionDialog: false,
+    // These are defaults, if no ux configuration passed in via $config.ux...
+    ux: {
+      header: {
+        title: {
+          prefix: false
+        },
+        logout: {
+          enabled: true,
+        },
+        logo: {
+          enabled: false,
+        }
+      },
+      navigation: {
+        avatar: {
+          agent: {
+            enabled: true,
+            default: true,
+          },
+          user: {
+            enabled: false
+          },
+        },
+        about: {
+          enabled: true,
+        },
+        logout: {
+          enabled: false,
+        },
+        settings: {
+          enabled: true,
+          location: {
+            top: true,
+            bottom: false,
+          },
+        }
+      }
+    }
   }),
   computed: {
     expertMode() {
@@ -234,8 +306,10 @@ export default {
     privacyPolicyUrl() {
       return this.$store.state.settings.dataPrivacyPolicy;
     },
-    newPartnersCount() {
-      return this.$store.getters.newPartnersCount;
+    newPartnerEventsCount() {
+      console.log("read newPartnerEventsCount");
+      console.log(this.$store.getters.newPartnerEventsCount);
+      return this.$store.getters.newPartnerEventsCount;
     },
     newCredentialsCount() {
       return this.$store.getters.newCredentialsCount;
@@ -248,9 +322,36 @@ export default {
       }
       return bpaName;
     },
+    getTitle() {
+      if (this.ux.header.title.prefix) {
+        let pageTitle = (this.title && this.title.trim().length > 0) ? ` : ${this.title}` : "";
+        return `${this.getAgentName} ${pageTitle}`;
+      } else {
+        return this.title;
+      }
+    },
   },
   created() {
-    this.$vuetify.theme.dark = false;
+    if (this.$config.ux) {
+      Object.assign(this.ux, this.$config.ux);
+
+      // Copy the the configuration UX themes, this allows us to change primary color later...
+      if (this.ux.theme) {
+        this.$vuetify.theme.dark = this.ux.theme.dark ? this.ux.theme.dark : false;
+        Object.assign(this.$vuetify.theme.themes, this.ux.theme.themes);
+      }
+      const uiColor = localStorage.getItem("uiColor");
+      if (uiColor) {
+        // if the user stored an override of the primary color, load it.
+        this.$vuetify.theme.themes.light.primary = uiColor;
+      }
+      // Load up an alternate favicon
+      if (this.ux.favicon) {
+        const favicon = document.getElementById("favicon");
+        favicon.href = this.ux.favicon.href;
+      }
+    }
+
     this.$store.dispatch("validateTaa");
 
     // Global Error handling
@@ -289,15 +390,8 @@ export default {
   },
   methods: {
     logout() {
-      this.$axios
-        .post(`${this.$apiBaseUrl}/logout`)
-        .then(() => {
-          location.reload();
-        })
-        .catch((e) => {
-          console.error(e);
-          location.reload();
-        });
+      // logout must have get-allowed, get the browser to do all the logout redirects...
+      location.href = `${this.$apiBaseUrl}/logout`;
     },
   },
 };
