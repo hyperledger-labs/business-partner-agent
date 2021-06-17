@@ -15,8 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.prooftemplates;
 
+package org.hyperledger.bpa.controller.api.prooftemplates;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,9 +29,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProofTemplate {
-    String id;
+public class Attribute {
     String name;
-    List<AttributeGroups> attributeGroups;
-
+    List<Condition> conditions;
 }
