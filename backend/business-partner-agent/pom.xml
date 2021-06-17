@@ -157,26 +157,6 @@
             <artifactId>spring-security-crypto</artifactId>
             <version>5.5.0</version>
         </dependency>
-        <dependency>
-            <groupId>com.deliveredtechnologies</groupId>
-            <artifactId>rulebook-core</artifactId>
-            <version>0.12</version>
-            <exclusions>
-                <!-- Incompatible licenses -->
-                <exclusion>
-                    <groupId>org.javassist</groupId>
-                    <artifactId>javassist</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.code.findbugs</groupId>
-                    <artifactId>annotations</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.reflections</groupId>
-                    <artifactId>reflections</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 
         <!-- Database -->
         <dependency>
@@ -406,7 +386,7 @@
                                 </goals>
                                 <configuration>
                                     <!-- See https://nodejs.org/en/download/ -->
-                                    <nodeVersion>v14.17.0</nodeVersion>
+                                    <nodeVersion>v14.17.1</nodeVersion>
                                     <npmVersion>6.14.13</npmVersion>
                                 </configuration>
                             </execution>
