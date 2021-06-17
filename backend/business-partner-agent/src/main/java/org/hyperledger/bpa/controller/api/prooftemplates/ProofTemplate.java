@@ -19,6 +19,7 @@ package org.hyperledger.bpa.controller.api.prooftemplates;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -27,6 +28,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ProofTemplate {
     String id;
     String name;
@@ -35,6 +37,7 @@ public class ProofTemplate {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
     public static class AttributeGroups {
         String schemaId;
         List<Attribute> attributes;
@@ -42,6 +45,7 @@ public class ProofTemplate {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
     public static class Attribute {
         String name;
         List<Condition> conditions;
@@ -49,6 +53,7 @@ public class ProofTemplate {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
+    @Builder
     public static class Condition {
         String operator;
         String value;
