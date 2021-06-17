@@ -48,11 +48,11 @@ public class AriesWebhookController {
 
     @Inject
     @Named("aries")
-    EventHandler coreHandler;
+    EventHandler ariesEventHandler;
 
     @Inject
     @Named("rules")
-    EventHandler rulesHandler;
+    EventHandler rulesEventHandler;
 
     @Post(WEBHOOK_CONTROLLER_PATH + "/{eventType}")
     public void logEvent(
@@ -61,7 +61,7 @@ public class AriesWebhookController {
 
         log.info("Webhook received, type: {}", eventType);
 
-        coreHandler.handleEvent(eventType, eventBody);
-        rulesHandler.handleEvent(eventType, eventBody);
+        ariesEventHandler.handleEvent(eventType, eventBody);
+        rulesEventHandler.handleEvent(eventType, eventBody); // rules always run after
     }
 }

@@ -37,11 +37,6 @@ public class RulesData {
     private Trigger trigger;
     private Action action;
 
-    public RulesData(Trigger trigger, Action action) {
-        this.trigger = trigger;
-        this.action = action;
-    }
-
     @JsonTypeInfo(
             use = JsonTypeInfo.Id.NAME,
             property = "type")
@@ -61,7 +56,11 @@ public class RulesData {
         private String type;
 
         @JsonTypeName(Trigger.CONNECTION_TRIGGER_NAME)
-        @Builder @Data @EqualsAndHashCode(callSuper = true) @NoArgsConstructor @AllArgsConstructor
+        @Builder
+        @Data
+        @EqualsAndHashCode(callSuper = true)
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class ConnectionTrigger extends Trigger {
             private ConnectionTheirRole role;
             private String tag;
@@ -74,7 +73,11 @@ public class RulesData {
         }
 
         @JsonTypeName(Trigger.PROOF_RECEIVED_TRIGGER_NAME)
-        @Builder @Data @EqualsAndHashCode(callSuper = true) @NoArgsConstructor @AllArgsConstructor
+        @Builder
+        @Data
+        @EqualsAndHashCode(callSuper = true)
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class ProofReceivedTrigger extends Trigger {
             private String tag;
             private UUID proofTemplateId;
@@ -105,7 +108,11 @@ public class RulesData {
         private String type;
 
         @JsonTypeName(Action.TAG_CONNECTION_ACTION_NAME)
-        @Builder @Data @EqualsAndHashCode(callSuper = true) @NoArgsConstructor @AllArgsConstructor
+        @Builder
+        @Data
+        @EqualsAndHashCode(callSuper = true)
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class TagConnection extends Action {
             private String connectionId;
             private String tag;
@@ -117,8 +124,12 @@ public class RulesData {
         }
 
         @JsonTypeName(Action.SEND_PROOF_REQUEST_ACTION_NAME)
-        @Builder @Data @EqualsAndHashCode(callSuper = true) @NoArgsConstructor @AllArgsConstructor
-        public static class SendProofRequest extends Action{
+        @Builder
+        @Data
+        @EqualsAndHashCode(callSuper = true)
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class SendProofRequest extends Action {
             private String connectionId;
             private UUID proofTemplateId;
 

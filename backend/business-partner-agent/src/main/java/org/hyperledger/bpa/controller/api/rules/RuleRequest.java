@@ -22,7 +22,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.impl.rules.RulesData;
 
-@Data @NoArgsConstructor @AllArgsConstructor
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RuleRequest {
     private RulesData.Trigger trigger;
     private RulesData.Action action;

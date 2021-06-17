@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 @MicronautTest
 public class RulesRepositoryTest {
@@ -37,9 +38,12 @@ public class RulesRepositoryTest {
                 .trigger(RulesData.Trigger.ConnectionTrigger.builder().tag("tag").build())
                 .action(RulesData.Action.TagConnection.builder().tag("verified tag").build())
                 .build();
-        ActiveRules active = rr.save(ar);
+        ActiveRules saved = rr.save(ar);
         Assertions.assertEquals(1, rr.count());
 
-        System.out.println(rr.findById(active.getId()));
+        Optional<ActiveRules> reloaded = rr.findById(saved.getId());
+        Assertions.assertTrue(reloaded.isPresent());
+        Assertions.assertTrue(reloaded.get().getTrigger() instanceof RulesData.Trigger.ConnectionTrigger);
+        Assertions.assertTrue(reloaded.get().getAction() instanceof RulesData.Action.TagConnection);
     }
 }

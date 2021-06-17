@@ -25,6 +25,7 @@ import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.List;
 
@@ -43,32 +44,26 @@ public class RulesEventHandler extends EventHandler {
 
     @Override
     public void handleConnection(ConnectionRecord connection) {
-        pr.findByConnectionId(connection.getConnectionId()).ifPresent(p -> {
-            runRule(EventContext
-                    .builder()
-                    .partner(p)
-                    .connRec(connection)
-                    .ctx(appCtx)
-                    .build())
-            ;
-        });
+        pr.findByConnectionId(connection.getConnectionId()).ifPresent(p -> runRule(EventContext
+                .builder()
+                .partner(p)
+                .connRec(connection)
+                .ctx(appCtx)
+                .build()));
     }
 
     @Override
     public void handleProof(PresentationExchangeRecord presEx) {
-        pr.findByConnectionId(presEx.getConnectionId()).ifPresent(p -> {
-            runRule(EventContext
-                    .builder()
-                    .partner(p)
-                    .presEx(presEx)
-                    .ctx(appCtx)
-                    .build())
-            ;
-        });
+        pr.findByConnectionId(presEx.getConnectionId()).ifPresent(p -> runRule(EventContext
+                .builder()
+                .partner(p)
+                .presEx(presEx)
+                .ctx(appCtx)
+                .build()));
     }
 
     public void runRule(EventContext ctx) {
-        List<RulesData> rules = ts.getRules();
+        List<RulesData> rules = ts.getAll();
         log.debug("Running event against {} active rules", rules.size());
         rules.parallelStream().forEach(r -> {
             if (r.getTrigger().apply(ctx)) {

@@ -17,21 +17,17 @@
  */
 package org.hyperledger.bpa.impl.rules;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.model.ActiveRules;
 import org.hyperledger.bpa.repository.RulesRepository;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
@@ -40,7 +36,7 @@ public class RulesService {
     @Inject
     RulesRepository rr;
 
-    public RulesData register(@NonNull RulesData.Trigger trigger, RulesData.Action action) {
+    public RulesData add(@NonNull RulesData.Trigger trigger, RulesData.Action action) {
         log.debug("Add rule - trigger: {}, action: {}", trigger, action);
         ActiveRules ar = rr.save(ActiveRules
                 .builder()
@@ -50,35 +46,27 @@ public class RulesService {
         return RulesData.fromActive(ar);
     }
 
-    public Optional<RulesData> update(@NonNull UUID id, @NonNull RulesData.Trigger trigger, RulesData.Action action) {
+    public Optional<RulesData> update(
+            @NonNull UUID id, @NonNull RulesData.Trigger trigger, @NonNull RulesData.Action action) {
         log.debug("Update rule - id: {}, trigger: {}, action: {}", id, trigger, action);
         Optional<ActiveRules> dbRule = rr.findById(id);
-        if (dbRule.isPresent()) {
-            return Optional.of(
-                    RulesData.fromActive(
-                            rr.update(dbRule.get().setAction(action).setTrigger(trigger))
-                    )
-            );
-        }
-        return Optional.empty();
+        return dbRule.map(activeRules -> RulesData.fromActive(
+                rr.update(activeRules.setAction(action).setTrigger(trigger))));
     }
 
-    public List<RulesData> getRules() {
+    public List<RulesData> getAll() {
         List<RulesData> result = new ArrayList<>();
         rr.findAll().forEach(active -> result.add(RulesData.fromActive(active)));
         return result;
     }
 
-    public Optional<RulesData> getById(@NonNull UUID ruleId) {
+    public Optional<RulesData> get(@NonNull UUID ruleId) {
         Optional<ActiveRules> dbRule = rr.findById(ruleId);
-        if (dbRule.isPresent()) {
-            return Optional.of(RulesData.fromActive(dbRule.get()));
-        }
-        return Optional.empty();
+        return dbRule.map(RulesData::fromActive);
     }
 
-    public void remove(@NonNull UUID ruleId) {
-        log.debug("Removing rule with id: {}", ruleId);
+    public void delete(@NonNull UUID ruleId) {
+        log.debug("Delete rule with id: {}", ruleId);
         rr.deleteById(ruleId);
     }
 }

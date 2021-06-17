@@ -44,17 +44,19 @@ public class RulesController {
 
     /**
      * Add new rule with trigger and action
+     * 
      * @param ruleRequest {@link RuleRequest}
      * @return {@link RulesData}
      */
     @Post
     public HttpResponse<RulesData> addRule(@Body RuleRequest ruleRequest) {
-        return HttpResponse.ok(rules.register(ruleRequest.getTrigger(), ruleRequest.getAction()));
+        return HttpResponse.ok(rules.add(ruleRequest.getTrigger(), ruleRequest.getAction()));
     }
 
     /**
      * Update rule
-     * @param id {@link UUID} rule id
+     * 
+     * @param id          {@link UUID} rule id
      * @param ruleRequest {@link RuleRequest}
      * @return {@link RulesData}
      */
@@ -70,32 +72,35 @@ public class RulesController {
 
     /**
      * Dele rule by id
+     * 
      * @param id {@link UUID} rule id
      * @return {@link HttpResponse}
      */
     @Delete("/{id}")
     public HttpResponse<Void> deleteRule(@PathVariable String id) {
-        rules.remove(UUID.fromString(id));
+        rules.delete(UUID.fromString(id));
         return HttpResponse.ok();
     }
 
     /**
      * List configured rules
+     * 
      * @return list of {@link RulesData}
      */
     @Get
     public HttpResponse<List<RulesData>> listRules() {
-        return HttpResponse.ok(rules.getRules());
+        return HttpResponse.ok(rules.getAll());
     }
 
     /**
      * Get configured rule by id
-     * @param id {@UUID} rule id
+     * 
+     * @param id {@link UUID} rule id
      * @return {@link RulesData}
      */
     @Get("/{id}")
     public HttpResponse<RulesData> getById(@PathVariable String id) {
-        Optional<RulesData> rule = rules.getById(UUID.fromString(id));
+        Optional<RulesData> rule = rules.get(UUID.fromString(id));
         if (rule.isPresent()) {
             return HttpResponse.ok(rule.get());
         }

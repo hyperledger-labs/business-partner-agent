@@ -45,7 +45,7 @@ Depending on the docker version the .env file either needs to reside in the root
 3. Start dependent services
 ```s
 # e.g. run from the root directory
-docker-compose -f scripts/docker-compose.yml up aca-py
+docker-compose -f scripts/docker-compose.yml up postgres aca-py
 ```
 
 4. Set VM Options
@@ -56,9 +56,10 @@ IntelliJ: Run/Edit Configurations
 This assumes you kept the default usernames and passwords from the .env example.
 
 ```
--Dmicronaut.environments=dev
+-Dmicronaut.security.enabled=false
 -Dbpa.host=<BPA_HOST>
 -Dbpa.acapy.endpoint=<ACAPY_ENDPOINT>
+-Dmicronaut.config.files=classpath:application.yml,classpath:schemas.yml
 ```
 
 Depending on your set up, the values for `BPA_HOST` and `ACAPY_ENDPOINT` are either set in the .env file, or the output of the start-with-tunnels.sh script.
