@@ -46,8 +46,7 @@ public class RulesTest {
         Partner p = ModelBuilder.buildDefaultPartner().setConnectionId(connectionId);
         pr.save(p);
 
-        RulesData rd = new RulesData(new RulesData.Trigger.ConnectionTrigger(), new RulesData.Action.TagConnection());
-        rs.register(rd);
+        rs.register(new RulesData.Trigger.ConnectionTrigger(), new RulesData.Action.TagConnection());
 
         ConnectionRecord rec = new ConnectionRecord();
         rec.setConnectionId(connectionId);

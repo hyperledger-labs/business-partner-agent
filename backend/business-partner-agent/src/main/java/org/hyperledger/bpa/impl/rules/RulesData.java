@@ -24,6 +24,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.connection.ConnectionTheirRole;
+import org.hyperledger.bpa.model.ActiveRules;
 
 import java.util.UUID;
 
@@ -126,5 +127,13 @@ public class RulesData {
 
             }
         }
+    }
+
+    public static RulesData fromActive(@NonNull ActiveRules ar) {
+        return RulesData.builder()
+                .ruleId(ar.getId())
+                .trigger(ar.getTrigger())
+                .action(ar.getAction())
+                .build();
     }
 }

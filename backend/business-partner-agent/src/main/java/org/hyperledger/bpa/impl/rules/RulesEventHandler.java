@@ -69,9 +69,10 @@ public class RulesEventHandler extends EventHandler {
 
     public void runRule(EventContext ctx) {
         List<RulesData> rules = ts.getRules();
-        log.debug("Checking {} rules", rules.size());
+        log.debug("Running event against {} active rules", rules.size());
         rules.parallelStream().forEach(r -> {
             if (r.getTrigger().apply(ctx)) {
+                log.debug("Run rule with id: {}", r.getRuleId());
                 r.getAction().run(ctx);
             }
         });

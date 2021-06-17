@@ -15,45 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.model;
+package org.hyperledger.bpa.controller.api.rules;
 
-import io.micronaut.data.annotation.AutoPopulated;
-import io.micronaut.data.annotation.DateCreated;
-import io.micronaut.data.annotation.DateUpdated;
-import io.micronaut.data.annotation.TypeDef;
-import io.micronaut.data.model.DataType;
-import lombok.*;
-import lombok.experimental.Accessors;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.impl.rules.RulesData;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.time.Instant;
-import java.util.UUID;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Entity
-@Table(name = "active_rules")
-@Accessors(chain = true)
-public class ActiveRules {
-
-    @Id
-    @AutoPopulated
-    private UUID id;
-
-    @DateCreated
-    private Instant createdAt;
-
-    @DateUpdated
-    private Instant updatedAt;
-
-    @TypeDef(type = DataType.JSON)
+@Data @NoArgsConstructor @AllArgsConstructor
+public class RuleRequest {
     private RulesData.Trigger trigger;
-
-    @TypeDef(type = DataType.JSON)
     private RulesData.Action action;
 }
