@@ -28,6 +28,7 @@ import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 
+import javax.validation.Valid;
 import java.util.*;
 
 @Controller("/api/proof-templates")
@@ -45,8 +46,8 @@ public class ProofTemplateController {
     }
 
     @Post
-    public HttpResponse<ProofTemplate> addProofTemplate(ProofTemplate template) {
-        if (template.getId() != null) {
+    public HttpResponse<ProofTemplate> addProofTemplate(@Valid ProofTemplate template) {
+        if (template.getId() == null) {
             String newId = UUID.randomUUID().toString();
             template.setId(newId);
             inMemory.put(newId, template);
@@ -57,7 +58,8 @@ public class ProofTemplateController {
     }
 
     @Delete("/{id}")
-    public HttpResponse<Void> addProofTemplate(@PathVariable String id) {
+    public HttpResponse<Void> removeProofTemplate(@PathVariable String id) {
+
         inMemory.remove(id);
         return HttpResponse.ok();
     }
