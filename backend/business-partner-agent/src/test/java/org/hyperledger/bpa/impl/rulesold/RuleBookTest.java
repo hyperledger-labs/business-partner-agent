@@ -15,26 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.impl.rules;
+package org.hyperledger.bpa.impl.rulesold;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.ModelBuilder;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
-import org.hyperledger.bpa.impl.rules.definitions.AssertVerifiedConnection;
+import org.hyperledger.bpa.impl.rulesold.definitions.AssertVerifiedConnection;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.UUID;
 
 @MicronautTest
 public class RuleBookTest {
 
     @Inject
+    @Named("rules1")
     RulesService ts;
 
     @Inject

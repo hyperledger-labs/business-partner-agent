@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.impl.rules.definitions;
+package org.hyperledger.bpa.impl.rulesold.definitions;
 
 import com.deliveredtechnologies.rulebook.model.rulechain.cor.CoRRuleBook;
 import lombok.Data;

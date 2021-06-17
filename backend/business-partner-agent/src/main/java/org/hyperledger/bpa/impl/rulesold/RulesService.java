@@ -15,16 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.impl.rules;
+package org.hyperledger.bpa.impl.rulesold;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.bpa.model.ActiveRules;
-import org.hyperledger.bpa.repository.RulesRepository;
+import org.hyperledger.bpa.impl.rulesold.definitions.BaseRule;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -33,35 +31,23 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Singleton
-@Named("rules2")
+//@Singleton
+//@Named("rules1")
 public class RulesService {
 
-    @Inject
-    RulesRepository rr;
+    @Getter(AccessLevel.PACKAGE)
+    private List<BaseRule> tasks = new ArrayList<>();
 
-    void register(@NonNull RulesData rule) {
-        log.debug("Adding rule: {}", rule);
-        rr.save(ActiveRules
-                .builder()
-                .trigger(rule.getTrigger())
-                .action(rule.getAction())
-                .build());
+    void register(@NonNull BaseRule task) {
+        log.debug("Adding task: {}", task);
+        tasks.add(task);
     }
 
-    public List<RulesData> getRules() {
-        List<RulesData> result = new ArrayList<>();
-        rr.findAll().forEach(active -> result.add(RulesData
-                .builder()
-                .ruleId(active.getId())
-                .trigger(active.getTrigger())
-                .action(active.getAction())
-                .build()));
-        return result;
-    }
-
-    void remove(@NonNull UUID ruleId) {
-        log.debug("Removing rule with id: {}", ruleId);
-        rr.deleteById(ruleId);
+    void remove(@NonNull UUID taskId) {
+        log.debug("Removing task with id: {}", taskId);
+        tasks = tasks
+                .stream()
+                .filter(t -> !t.getTaskId().equals(taskId))
+                .collect(Collectors.toList());
     }
 }

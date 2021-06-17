@@ -247,15 +247,12 @@ public class ConnectionManager {
         // only incoming connections in state request
         if (ConnectionState.REQUEST.equals(record.getState())) {
             didResolver.lookupIncoming(p);
-            sendConnectionEvent(record, conv.toAPIObject(p));
-        }
-    }
-
-    private void sendConnectionEvent(@NonNull ConnectionRecord record, @NonNull PartnerAPI p) {
-        // TODO both or either?
-        messageService.sendMessage(WebSocketMessageBody.partnerReceived(p));
-        if (isConnectionRequest(record)) {
-            messageService.sendMessage(WebSocketMessageBody.partnerConnectionRequest(p));
+            // TODO both or either?
+            PartnerAPI pApi = conv.toAPIObject(p);
+            messageService.sendMessage(WebSocketMessageBody.partnerReceived(pApi));
+            if (isConnectionRequest(record)) {
+                messageService.sendMessage(WebSocketMessageBody.partnerConnectionRequest(pApi));
+            }
         }
     }
 

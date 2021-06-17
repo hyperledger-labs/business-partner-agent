@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.impl.rules.definitions;
+package org.hyperledger.bpa.impl.rulesold.definitions;
 
 import com.deliveredtechnologies.rulebook.NameValueReferableTypeConvertibleMap;
 import com.deliveredtechnologies.rulebook.lang.RuleBuilder;
@@ -33,16 +33,35 @@ import java.util.UUID;
 public class AssertVerifiedConnection extends BaseRule {
 
     private final UUID proofTemplateId;
+    private final UUID partnerId;
 
+    // todo keep state of connection request, and proof request
+
+    /**
+     * Rule that is not assigned to a partner/connection and therefore is always active
+     * @param proofTemplateId {@link UUID}
+     */
     public AssertVerifiedConnection(@NonNull UUID proofTemplateId) {
+        super(UUID.randomUUID(), Run.MULTI);
+        this.proofTemplateId = proofTemplateId;
+        this.partnerId = null;
+    }
+
+    /**
+     * Rule that is assigned to a partner and can be removed once it's been fulfilled.
+     * @param proofTemplateId {@link UUID}
+     * @param partnerId {@link UUID}
+     */
+    public AssertVerifiedConnection(@NonNull UUID proofTemplateId, @NonNull UUID partnerId) {
         super(UUID.randomUUID(), Run.ONCE);
         this.proofTemplateId = proofTemplateId;
+        this.partnerId = partnerId;
     }
 
     @Override
     public void defineRules() {
         addRule(RuleBuilder.create().withFactType(EventContext.class)
-                .when(this::isConnection)
+                .when(this::shouldHandleConnection)
                 .then((facts, result) -> {
                     // load template
                     // send proof request
@@ -64,11 +83,18 @@ public class AssertVerifiedConnection extends BaseRule {
                 .build());
     }
 
+    private boolean shouldHandleConnection(NameValueReferableTypeConvertibleMap<EventContext> facts) {
+        EventContext f = facts.getOne();
+        if (this.partnerId != null) {
+            return f.getPartner() != null && f.getPartner().getId().equals(partnerId) && isConnection(facts);
+        }
+        return isConnection(facts);
+    }
+
     private boolean isConnection(NameValueReferableTypeConvertibleMap<EventContext> facts) {
         EventContext f = facts.getOne();
         return f.getConnRec() != null
-                && ConnectionState.REQUEST.equals(f.getConnRec().getState())
-                && f.getPartner() != null;
+                && ConnectionState.REQUEST.equals(f.getConnRec().getState());
     }
 
     private static boolean isPresentationExchange(NameValueReferableTypeConvertibleMap<EventContext> facts) {

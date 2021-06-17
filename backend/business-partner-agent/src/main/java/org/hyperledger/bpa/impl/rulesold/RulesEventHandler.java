@@ -15,21 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.impl.rules;
+package org.hyperledger.bpa.impl.rulesold;
 
+import com.deliveredtechnologies.rulebook.FactMap;
+import com.deliveredtechnologies.rulebook.NameValueReferableMap;
 import io.micronaut.context.ApplicationContext;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
+import org.hyperledger.bpa.impl.rulesold.definitions.BaseRule;
+import org.hyperledger.bpa.impl.rulesold.definitions.EventContext;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.List;
 
 @Slf4j
-@Singleton
+// @Singleton
 public class RulesEventHandler extends EventHandler {
 
     @Inject
@@ -44,36 +47,43 @@ public class RulesEventHandler extends EventHandler {
     @Override
     public void handleConnection(ConnectionRecord connection) {
         pr.findByConnectionId(connection.getConnectionId()).ifPresent(p -> {
-            runRule(EventContext
+            NameValueReferableMap<EventContext> facts = new FactMap<>();
+            facts.setValue("connection", EventContext
                     .builder()
                     .partner(p)
                     .connRec(connection)
                     .ctx(appCtx)
-                    .build())
-            ;
+                    .build());
+            runAndHandleResult(facts);
         });
     }
 
     @Override
     public void handleProof(PresentationExchangeRecord presEx) {
         pr.findByConnectionId(presEx.getConnectionId()).ifPresent(p -> {
-            runRule(EventContext
+            NameValueReferableMap<EventContext> facts = new FactMap<>();
+            facts.setValue("presentation", EventContext
                     .builder()
                     .partner(p)
                     .presEx(presEx)
                     .ctx(appCtx)
-                    .build())
-            ;
+                    .build());
+            runAndHandleResult(facts);
         });
     }
 
-    public void runRule(EventContext ctx) {
-        List<RulesData> rules = ts.getRules();
-        log.debug("Checking {} rules", rules.size());
-        rules.parallelStream().forEach(r -> {
-            if (r.getTrigger().apply(ctx)) {
-                r.getAction().run(ctx);
-            }
+    private void runAndHandleResult(NameValueReferableMap<EventContext> facts) {
+        List<BaseRule> tasks = ts.getTasks();
+        log.debug("Checking {} rules", tasks.size());
+        tasks.parallelStream().forEach(t -> {
+            t.run(facts);
+            t.getResult().ifPresentOrElse(result -> {
+                log.debug("Task: {}, Result: {}", t.getTaskId(), result.getValue());
+                if (result.getValue() && BaseRule.Run.ONCE.equals(t.getRun())) {
+                    log.debug("Tasks runs: {}, scheduling for removal", t.getRun());
+                    ts.remove(t.getTaskId());
+                }
+            }, () -> log.warn("Task did return a result"));
         });
     }
 }

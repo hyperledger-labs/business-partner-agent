@@ -15,20 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.impl.rules.definitions;
+package org.hyperledger.bpa.repository;
 
-import io.micronaut.context.ApplicationContext;
-import lombok.Builder;
-import lombok.Data;
-import org.hyperledger.aries.api.connection.ConnectionRecord;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
-import org.hyperledger.bpa.model.Partner;
+import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.query.builder.sql.Dialect;
+import io.micronaut.data.repository.CrudRepository;
+import org.hyperledger.bpa.model.ActiveRules;
 
-@Data
-@Builder
-public class EventContext {
-    private Partner partner;
-    private PresentationExchangeRecord presEx;
-    private ConnectionRecord connRec;
-    private ApplicationContext ctx;
+import java.util.UUID;
+
+@JdbcRepository(dialect = Dialect.POSTGRES)
+public interface RulesRepository extends CrudRepository<ActiveRules, UUID> {
+    //
 }

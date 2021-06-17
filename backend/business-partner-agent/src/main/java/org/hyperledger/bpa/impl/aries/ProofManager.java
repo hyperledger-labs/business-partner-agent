@@ -300,7 +300,7 @@ public class ProofManager {
         return proof;
     }
 
-    private void sendPresentProofProblemReport(@NotNull String PresentationExchangeId, @NotNull String problemString)
+    private void sendPresentProofProblemReport(@NonNull String PresentationExchangeId, @NonNull String problemString)
             throws IOException {
         PresentationProblemReportRequest request = PresentationProblemReportRequest.builder()
                 .explainLtxt(problemString)
