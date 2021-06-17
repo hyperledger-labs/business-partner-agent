@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.connection.ConnectionTheirRole;
 import org.hyperledger.bpa.model.ActiveRules;
@@ -68,7 +69,12 @@ public class RulesData {
 
             @Override
             public boolean apply(EventContext ctx) {
-                return ctx.getConnRec() != null && ConnectionState.REQUEST.equals(ctx.getConnRec().getState());
+                ConnectionRecord connRec = ctx.getConnRec();
+                boolean apply = connRec != null && ConnectionState.REQUEST.equals(connRec.getState());
+                if (role != null) {
+                    apply = apply && role.equals(connRec.getTheirRole());
+                }
+                return apply;
             }
         }
 

@@ -25,7 +25,6 @@ import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.List;
 
