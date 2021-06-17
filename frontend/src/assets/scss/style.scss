@@ -32,21 +32,32 @@ h2,
 h3,
 h4,
 h5 {
+  color: var(--v-font-base);
   line-height: 1.2;
   font-weight: bold;
 }
 
 p {
+  color: var(--v-font-base);
   line-height: 1.7;
 }
 
+// links
+a {
+  color: var(--v-anchor-base);
+  &:hover {
+    color: var(--v-anchor-hover-base);
+  }
+}
+
 .bg-light {
-  background-color: #fafafa;
+  background-color: var(--v-bg-light-base);
 }
 
 .bg-light-2 {
-  background-color: #ececec;
+  background-color: var(--v-bg-light2-base);
 }
+
 
 // buttons in v-card
 .v-card__actions > .v-btn {
@@ -90,6 +101,49 @@ div {
       &.justify-end {
         > button {
           margin-right: 4px;
+        }
+      }
+    }
+  }
+}
+
+.v-btn {
+  span > span {
+    font-weight: bold;
+  }
+
+  &:hover {
+    opacity: 0.8;
+    span > span {
+      text-decoration: underline;
+    }
+  }
+
+  &.v-btn--disabled {
+    color: #777;
+  }
+
+  &.v-btn--outlined {
+    &.theme--light {
+      border: 2px solid var(--v-primary-base);
+    }
+
+    &.theme--dark {
+      border: 2px solid #fff;
+    }
+    &.v-btn--disabled {
+      border-color: rgba(0, 0, 0, 0.26);
+    }
+  }
+}
+
+.theme--light {
+  &.v-btn {
+    &.v-btn--outlined {
+      &.v-btn--text {
+        border: 2px solid var(--v-primary-base) !important;
+        &.secondary--text {
+          border: 2px solid var(--v-secondary-base) !important;
         }
       }
     }
