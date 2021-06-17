@@ -80,10 +80,6 @@
             <artifactId>micronaut-jdbc-hikari</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.micronaut.kubernetes</groupId>
-            <artifactId>micronaut-kubernetes-discovery-client</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.micronaut.security</groupId>
             <artifactId>micronaut-security</artifactId>
         </dependency>

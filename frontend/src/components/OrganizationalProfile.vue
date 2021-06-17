@@ -172,7 +172,7 @@ export default {
   },
   data: () => {
     return {
-      identifierTypes: ["LEI", "D-U-N-S", "VAT", "USCC"],
+      identifierTypes: ["LEI", "GLN", "D-U-N-S", "VAT", "USCC"],
       orgTypes: ["Legal Entity", "Business Unit", "Site"],
       intDoc: Object,
     };

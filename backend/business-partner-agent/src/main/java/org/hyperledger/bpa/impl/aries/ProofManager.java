@@ -111,6 +111,7 @@ public class ProofManager {
                                         .presentationExchangeId(proof.getPresentationExchangeId())
                                         .role(proof.getRole())
                                         .schemaId(schema.get().getId())
+                                        .threadId(proof.getThreadId())
                                         .issuer(req.getFirstIssuerDid())
                                         .build();
                                 pProofRepo.save(pp);
@@ -232,6 +233,7 @@ public class ProofManager {
                             .state(proof.getState())
                             .presentationExchangeId(proof.getPresentationExchangeId())
                             .role(proof.getRole())
+                            .threadId(proof.getThreadId())
                             .credentialDefinitionId(cred.getCredentialDefinitionId())
                             .schemaId(cred.getSchemaId())
                             .issuer(resolveIssuer(cred.getCredentialDefinitionId()))

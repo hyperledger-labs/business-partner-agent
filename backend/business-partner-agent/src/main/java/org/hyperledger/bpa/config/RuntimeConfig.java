@@ -17,12 +17,14 @@
  */
 package org.hyperledger.bpa.config;
 
+import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Value;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 
 import javax.inject.Singleton;
+import java.util.Map;
 
 @Getter
 @Singleton
@@ -55,6 +57,9 @@ public class RuntimeConfig {
 
     @Value("${bpa.creddef.revocationRegistrySize}")
     Integer revocationRegistrySize;
+
+    @Property(name = "bpa.ux")
+    Map<String, Object> ux;
 
     public String getAgentName() {
         return DidResolver.splitDidFrom(agentName).getLabel();
