@@ -44,8 +44,8 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-btn :disabled="isEdit" color="secondary" text outlined @click="addItem"
-        >Add Credential Definition</v-btn
+      <v-bpa-button :disabled="isEdit" color="secondary" @click="addItem"
+        >Add Credential Definition</v-bpa-button
       >
     </v-row>
   </v-container>
@@ -54,8 +54,10 @@
 <script>
 import { EventBus } from "@/main";
 import issuerService from "@/services/issuerService";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
+  components: {VBpaButton},
   props: {
     schema: {
       type: Object,

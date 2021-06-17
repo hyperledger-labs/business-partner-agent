@@ -62,13 +62,13 @@
       </v-container>
       <v-card-actions>
         <v-layout justify-space-between>
-          <v-btn color="secondary" text outlined to="/app/partners">Cancel</v-btn>
+          <v-bpa-button color="secondary" to="/app/partners">Cancel</v-bpa-button>
 
-          <v-btn v-if="!partnerLoaded" color="primary" @click="lookup()"
-            >Lookup Partner</v-btn
+          <v-bpa-button v-if="!partnerLoaded" color="primary" @click="lookup()"
+            >Lookup Partner</v-bpa-button
           >
-          <v-btn v-else color="primary" @click="addPartner()"
-            >Add Partner</v-btn
+          <v-bpa-button v-else color="primary" @click="addPartner()"
+            >Add Partner</v-bpa-button
           >
         </v-layout>
       </v-card-actions>
@@ -80,9 +80,11 @@
 import Profile from "@/components/Profile";
 import { getPartnerName } from "../utils/partnerUtils";
 import { EventBus } from "../main";
+import VBpaButton from "@/components/BpaButton";
 export default {
   name: "AddPartner",
   components: {
+    VBpaButton,
     Profile,
   },
   created: () => {},

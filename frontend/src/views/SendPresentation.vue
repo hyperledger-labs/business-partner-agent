@@ -27,12 +27,12 @@
 
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-btn color="secondary" text outlined @click="cancel()">Cancel</v-btn>
-          <v-btn
+          <v-bpa-button color="secondary" @click="cancel()">Cancel</v-bpa-button>
+          <v-bpa-button
             :loading="this.isBusy"
             color="primary"
             @click="sendPresentation()"
-            >Submit</v-btn
+            >Submit</v-bpa-button
           >
         </v-layout>
       </v-card-actions>
@@ -45,10 +45,12 @@ import { EventBus } from "../main";
 
 // import { CredentialTypes } from "../constants";
 import MyCredentialList from "@/components/MyCredentialList";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   name: "SendPresentation",
   components: {
+    VBpaButton,
     MyCredentialList,
   },
   props: {

@@ -119,10 +119,6 @@ div {
     }
   }
 
-  &.v-btn--disabled {
-    color: #777;
-  }
-
   &.v-btn--outlined {
     &.theme--light {
       border: 2px solid var(--v-primary-base);

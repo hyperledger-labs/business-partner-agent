@@ -100,19 +100,19 @@
 
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-btn color="secondary" text outlined @click="cancel()">Cancel</v-btn>
-          <v-btn
+          <v-bpa-button color="secondary" @click="cancel()">Cancel</v-bpa-button>
+          <v-bpa-button
             :loading="this.isBusy"
             color="primary"
             @click="saveDocument(false || isProfile(intDoc.type))"
-            >Save</v-btn
+            >Save</v-bpa-button
           >
-          <v-btn
+          <v-bpa-button
             v-show="this.id && !isProfile(intDoc.type)"
             :loading="this.isBusy"
             color="primary"
             @click="saveDocument(true && !isProfile(intDoc.type))"
-            >Save & Close</v-btn
+            >Save & Close</v-bpa-button
           >
         </v-layout>
       </v-card-actions>
@@ -137,6 +137,7 @@ import { EventBus } from "../main";
 import { CredentialTypes } from "../constants";
 import OrganizationalProfile from "@/components/OrganizationalProfile";
 import Credential from "@/components/Credential";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   name: "Document",
@@ -312,6 +313,7 @@ export default {
     },
   },
   components: {
+    VBpaButton,
     OrganizationalProfile,
     Credential,
   },

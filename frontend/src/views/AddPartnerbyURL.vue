@@ -14,7 +14,7 @@
       <v-container>
         <v-row v-if="!invitationURL">
           <v-col cols="12">
-              <v-btn color="secondary" text @click="createInvitation()">Generate QR Code</v-btn>
+              <v-bpa-button color="secondary" @click="createInvitation()">Generate QR Code</v-bpa-button>
           </v-col>
         </v-row>
         <v-row v-else>
@@ -30,7 +30,7 @@
       </v-container>
       <v-card-actions>
         <v-layout justify-space-between>
-          <v-btn color="secondary" text outlined to="/app/partners">Return</v-btn>
+          <v-bpa-button color="secondary" to="/app/partners">Return</v-bpa-button>
         </v-layout>
       </v-card-actions>
     </v-card>
@@ -40,10 +40,12 @@
 <script>
 import { EventBus } from "../main";
 import QrcodeVue from 'qrcode.vue'
+import VBpaButton from "@/components/BpaButton";
 export default {
   name: "AddPartnerbyURL",
   created: () => {},
   components: {
+    VBpaButton,
     QrcodeVue,
   },
   data: () => {

@@ -68,15 +68,13 @@
           </v-col>
           <v-col v-if="!isReadOnly" cols="2" class="py-0">
             <v-layout>
-              <v-btn
+              <v-bpa-button
                 v-if="
                   !isReadOnly && index === documentData.identifier.length - 1
                 "
                 color="secondary"
-                text
-                outlined
                 @click="addIdentifier"
-                >Add</v-btn
+                >Add</v-bpa-button
               >
               <v-btn
                 icon
@@ -159,6 +157,7 @@
 
 <script>
 import { profileModel } from "../models/model";
+import VBpaButton from "@/components/BpaButton";
 export default {
   props: {
     isReadOnly: Boolean,
@@ -195,6 +194,6 @@ export default {
       this.intDoc.label = event;
     },
   },
-  components: {},
+  components: {VBpaButton},
 };
 </script>
