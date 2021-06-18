@@ -117,7 +117,7 @@ public class PartnerManager {
         return apiPartner;
     }
 
-    public Optional<PartnerAPI> updatePartner(@NonNull UUID id, @Nullable String alias) {
+    public Optional<PartnerAPI> updatePartner(@NonNull UUID id, @Nullable String alias, @Nullable List<Tag> tag) {
         Optional<PartnerAPI> result = Optional.empty();
         int count = repo.updateAlias(id, alias);
         if (count > 0) {

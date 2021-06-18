@@ -27,4 +27,5 @@ import java.util.List;
 @NoArgsConstructor
 public class UpdatePartnerRequest {
     private String alias;
+    private List<Tag> tag;
 }
