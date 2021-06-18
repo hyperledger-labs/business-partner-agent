@@ -107,6 +107,7 @@ export { EventBus, axios, apiBaseUrl };
 console.log(Vue.prototype);
 store.dispatch("loadSettings");
 store.dispatch("loadSchemas");
+store.dispatch("loadTags");
 
 new Vue({
   vuetify,
