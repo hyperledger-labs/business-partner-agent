@@ -36,7 +36,6 @@ tasks:
       ./register-did.sh
     command: |
       eval $(gp env -e)
-      cd scripts
       docker-compose -f docker-compose.yml up acapy 
   - name: dev backend
     init: | 
@@ -45,13 +44,12 @@ tasks:
     command: |
       gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
       eval $(gp env -e)
-      java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote-jar -jar ./backend/business-partner-agent/target/*.jar
+      java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote-jar -jar ./business-partner-agent/target/*.jar
   - name: dev fronend
     init: | 
       cd frontend
-      npm build
+      npm install
     command: |
       gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
       eval $(gp env -e VUE_APP_API_BASE_URL=`gp url 8080`/api)
-      cd fronend
       npm run serve -- --port 8081
