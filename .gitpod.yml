@@ -1,43 +1,70 @@
- 
+
 image:
   file: .gitpod.Dockerfile
 
 ports:
   - port: 8080
-    onOpen: open-browser  
+    onOpen: ignore
+  - port: 8081
+    onOpen: open-preview    
   - port: 8030
     onOpen: ignore     
+  - port: 8031
+    onOpen: ignore
+  - port: 6080
+    onOpen: ignore    
+  - port: 5900
+    onOpen: ignore
+  - port: 5432
+    onOpen: ignore            
 
 github:
   prebuilds:
     # enable for the default branch (defaults to true)
     master: true
-    # enable for all branches in this repo (defaults to false)
+# enable for all branches in this repo (defaults to false)
     branches: true
-    # enable for pull requests coming from this repo (defaults to true)
+# enable for pull requests coming from this repo (defaults to true)
     pullRequests: true
-    # enable for pull requests coming from forks (defaults to false)
+# enable for pull requests coming from forks (defaults to false)
     pullRequestsFromForks: true
-    # add a check to pull requests (defaults to true)
+# add a check to pull requests (defaults to true)
     addCheck: true
-    # add a "Review in Gitpod" button as a comment to pull requests (defaults to false)
+# add a "Review in Gitpod" button as a comment to pull requests (defaults to false)
     addComment: true
-    # add a "Review in Gitpod" button to the pull request's description (defaults to false)
+# add a "Review in Gitpod" button to the pull request's description (defaults to false)
     addBadge: false
 
 tasks:
-  - init: |
-      gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
-      gp env ACAPY_ENDPOINT=`gp url 8030`
+  - name: dev acapy
+    init: |
+      eval $(gp env -e ACAPY_ENDPOINT=`gp url 8030`)
       cd scripts
       cp .env-example .env
       ./register-did.sh
-      eval $(gp env -e)
-      docker-compose -f docker-compose.dev.yml build 
     command: |
       eval $(gp env -e)
-      cd scripts
-      docker-compose -f docker-compose.dev.yml up
-    openMode: split-right  
-  - command: echo "Observe the other terminal for the launch progress. At the end, the frontend will open in the browser (at https://$BPA_HOST ) - have fun!"
-    openIn: left
+      docker-compose -f docker-compose.dev.yml up aca-py 
+  - name: dev backend
+    init: | 
+      cd backend
+      mvn package -DskipTests
+    command: |
+      gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
+      eval $(gp env -e)
+      gp await-port 8030 && java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote-jar -Dmicronaut.environments=dev -jar ./business-partner-agent/target/*.jar
+  - name: dev fronend
+    init: | 
+      cd frontend
+      npm install
+    command: |
+      gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
+      eval $(gp env -e VUE_APP_API_BASE_URL=`gp url 8080`/api)
+      gp await-port 8080 && npm run serve -- --port 8081
+vscode:
+  extensions:
+    - redhat.java
+    - vscjava.vscode-maven
+    - vscjava.vscode-java-debug
+    - vscjava.vscode-java-dependency
+    - gabrielbb.vscode-lombok
