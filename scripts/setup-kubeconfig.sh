@@ -12,6 +12,7 @@ if [ ! -f "$KUBE_CONFIG_PATH" ]; then
         echo "KUBE_CONFIG_FILE not set, doing nothing."
         return;
     fi
+    mkdir -p /home/gitpod/.kube/
     echo "$KUBE_CONFIG_FILE" > "$KUBE_CONFIG_PATH"
     echo "Add k8s config based on contents from KUBE_CONFIG_FILE"
 fi
