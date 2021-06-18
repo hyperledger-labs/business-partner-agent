@@ -4,7 +4,9 @@ image:
 
 ports:
   - port: 8080
-    onOpen: open-browser  
+    onOpen: ignore
+  - port: 8081
+    onOpen: open-preview    
   - port: 8030
     onOpen: ignore     
 
@@ -26,18 +28,30 @@ github:
     addBadge: false
 
 tasks:
-  - init: |
-      gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
-      gp env ACAPY_ENDPOINT=`gp url 8030`
+  - name: dev acapy
+    init: |
+      eval $(gp env -e ACAPY_ENDPOINT=`gp url 8030`)
       cd scripts
       cp .env-example .env
       ./register-did.sh
-      eval $(gp env -e)
-      docker-compose -f docker-compose.dev.yml build 
     command: |
       eval $(gp env -e)
       cd scripts
-      docker-compose -f docker-compose.dev.yml up
-    openMode: split-right  
-  - command: echo "Observe the other terminal for the launch progress. At the end, the frontend will open in the browser (at https://$BPA_HOST ) - have fun!"
-    openIn: left
+      docker-compose -f docker-compose.yml up acapy 
+  - name: dev backend
+    init: | 
+      cd backend
+      mvn package -DskipTests
+    command: |
+      gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
+      eval $(gp env -e)
+      java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote-jar -jar ./backend/business-partner-agent/target/*.jar
+  - name: dev fronend
+    init: | 
+      cd frontend
+      npm build
+    command: |
+      gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
+      eval $(gp env -e VUE_APP_API_BASE_URL=`gp url 8080`/api)
+      cd fronend
+      npm run serve -- --port 8081
