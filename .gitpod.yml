@@ -36,7 +36,7 @@ tasks:
       ./register-did.sh
     command: |
       eval $(gp env -e)
-      docker-compose -f docker-compose.dev yml up aca-py 
+      docker-compose -f docker-compose.dev.yml up aca-py 
   - name: dev backend
     init: | 
       cd backend
@@ -44,7 +44,7 @@ tasks:
     command: |
       gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
       eval $(gp env -e)
-      gp await-port 8081 && java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote-jar -Dmicronaut.environments=dev -jar ./business-partner-agent/target/*.jar
+      gp await-port 8030 && java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote-jar -Dmicronaut.environments=dev -jar ./business-partner-agent/target/*.jar
   - name: dev fronend
     init: | 
       cd frontend
