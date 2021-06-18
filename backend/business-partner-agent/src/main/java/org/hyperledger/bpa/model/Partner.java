@@ -36,8 +36,7 @@ import io.micronaut.core.annotation.Nullable;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Flat representation of a partner. In the web context a partner is just a
@@ -107,6 +106,12 @@ public class Partner {
     @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> supportedCredentials;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "partner_tag",
+            joinColumns = @JoinColumn(name = "partner_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private Set<Tag> tags = new HashSet<>();
 
     @Transient
     public boolean hasConnectionId() {

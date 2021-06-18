@@ -31,16 +31,14 @@ import org.hyperledger.bpa.impl.aries.ConnectionManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
+import org.hyperledger.bpa.model.Tag;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import io.micronaut.core.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Singleton
 public class PartnerManager {
@@ -93,7 +91,7 @@ public class PartnerManager {
         repo.deleteById(id);
     }
 
-    public PartnerAPI addPartnerFlow(@NonNull String did, @Nullable String alias) {
+    public PartnerAPI addPartnerFlow(@NonNull String did, @Nullable String alias, Set<Tag> tags) {
         Optional<Partner> dbPartner = repo.findByDid(did);
         if (dbPartner.isPresent()) {
             throw new PartnerException("Partner for did already exists: " + did);
@@ -105,6 +103,7 @@ public class PartnerManager {
                 .setLabel(connectionLabel)
                 .setAriesSupport(lookupP.getAriesSupport())
                 .setAlias(alias)
+                .setTags(tags)
                 .setState(ConnectionState.REQUEST);
         Partner result = repo.save(partner); // save before creating the connection
         if (did.startsWith(ledgerPrefix) && lookupP.getAriesSupport()) {
@@ -142,6 +141,18 @@ public class PartnerManager {
                 result = Optional.of(converter.toAPIObject(dbP.get()));
             }
         }
+        return result;
+    }
+
+    public Optional<PartnerAPI> updatePartnerTag(@NonNull UUID id, @Nullable List<Tag> tag) {
+        Optional<PartnerAPI> result = Optional.empty();
+
+        final Optional<Partner> dbP = repo.findById(id);
+        if (dbP.isPresent()) {
+            Partner updatedP = repo.save(dbP.get().setTags(new HashSet<>(tag)));
+            result = Optional.of(converter.toAPIObject(updatedP));
+        }
+
         return result;
     }
 

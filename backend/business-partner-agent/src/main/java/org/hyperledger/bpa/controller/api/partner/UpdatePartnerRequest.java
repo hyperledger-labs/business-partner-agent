@@ -19,6 +19,9 @@ package org.hyperledger.bpa.controller.api.partner;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.model.Tag;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor

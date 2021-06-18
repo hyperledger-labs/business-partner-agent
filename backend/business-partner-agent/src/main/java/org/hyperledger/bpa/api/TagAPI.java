@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.model.Tag;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data

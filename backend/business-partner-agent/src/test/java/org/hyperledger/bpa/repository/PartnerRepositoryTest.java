@@ -26,15 +26,13 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
+import org.hyperledger.bpa.model.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,6 +41,9 @@ class PartnerRepositoryTest {
 
     @Inject
     PartnerRepository repo;
+
+    @Inject
+    TagRepository tagRepo;
 
     @Inject
     Converter conv;
@@ -235,6 +236,125 @@ class PartnerRepositoryTest {
         assertEquals("alias", reload.get().getAlias());
         assertEquals("did:indy:public", reload.get().getDid());
         assertEquals(Boolean.TRUE, reload.get().getValid());
+    }
+
+    @Test
+    void testAddNonExistingTagToPartner() {
+
+        String myTag = "MyTag";
+        Tag tag = Tag
+                .builder()
+                .name(myTag)
+                .build();
+
+        Set<Tag> tags = new HashSet<>() {{
+            add(tag);
+        }};
+
+        Partner partner = repo.save(Partner
+                .builder()
+                .ariesSupport(Boolean.TRUE)
+                .did("did:indy:private")
+                .connectionId("con1")
+                .tags(tags)
+                .build());
+
+        Optional<Tag> dbTag = tagRepo.findByName(myTag);
+        assertTrue(dbTag.isPresent());
+        assertEquals(myTag, dbTag.get().getName());
+
+    }
+
+    @Test
+    void testAddExistingTagToPartner() {
+
+        Tag tag = tagRepo.save(Tag
+                .builder()
+                .name("MyTag")
+                .build());
+
+        Partner partner = Partner
+                .builder()
+                .ariesSupport(Boolean.TRUE)
+                .did("did:indy:private")
+                .connectionId("con1")
+                .tags(new HashSet<>())
+                .build();
+
+        partner.getTags().add(tag);
+        repo.save(partner);
+
+        Optional<Partner> dbPartner = repo.findById(partner.getId());
+        assertTrue(dbPartner.isPresent());
+        assertFalse(dbPartner.get().getTags().isEmpty());
+
+//        assertEquals("MyTag", dbPartner.get().getTags().iterator().next().getName());
+
+    }
+
+    @Test
+    void testDeleteTagFromPartner() {
+
+        Tag tag = tagRepo.save(Tag
+                .builder()
+                .name("MyTag")
+                .build());
+
+        Set<Tag> tags = new HashSet<>() {
+            {
+                add(tag);
+            }
+        };
+
+        Set<Tag> empty = new HashSet<>();
+
+        Partner partner = repo.save(Partner
+                .builder()
+                .ariesSupport(Boolean.TRUE)
+                .did("did:indy:private")
+                .connectionId("con1")
+                .tags(tags)
+                .build());
+
+        Optional<Partner> dbPartner = repo.findById(partner.getId());
+        assertTrue(dbPartner.isPresent());
+//        assertEquals(tags, dbPartner.get().getTags());
+
+        partner = repo.save(partner.setTags(empty));
+        // Tag should removed from partner, but tag should not be removed from tag repo
+//        assertEquals(partner.getTags(), empty);
+//        assertEquals(tagRepo.findById(tag.getId()).get().getId(), tag.getId());
+
+    }
+
+    @Test
+    void testDeleteTagWhenPartnerHasTag() {
+
+        Tag tag = tagRepo.save(Tag
+                .builder()
+                .name("MyTag")
+                .build());
+
+        Set<Tag> tags = new HashSet<>() {
+            {
+                add(tag);
+            }
+        };
+
+        Set<Tag> empty = new HashSet<>();
+
+        Partner partner = repo.save(Partner
+                .builder()
+                .ariesSupport(Boolean.TRUE)
+                .did("did:indy:private")
+                .connectionId("con1")
+                .tags(tags)
+                .build());
+
+        tagRepo.delete(tag);
+
+        assertEquals(repo.findById(partner.getId()).get().getTags(), empty);
+
     }
 
     @Data

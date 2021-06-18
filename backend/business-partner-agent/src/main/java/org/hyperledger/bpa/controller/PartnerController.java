@@ -45,6 +45,7 @@ import org.hyperledger.aries.api.connection.CreateInvitationResponse;
 
 import javax.inject.Inject;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -126,6 +127,24 @@ public class PartnerController {
     }
 
     /**
+     * Update partner's tags
+     *
+     * @param id     {@link UUID} the partner id
+     * @param update {@link UpdatePartnerRequest}
+     * @return {@link PartnerAPI}
+     */
+    @Put("/{id}/tag")
+    public HttpResponse<PartnerAPI> updatePartnerTag(
+            @PathVariable String id,
+            @Body UpdatePartnerTagRequest update) {
+        Optional<PartnerAPI> partner = pm.updatePartnerTag(UUID.fromString(id), update.getTag());
+        if (partner.isPresent()) {
+            return HttpResponse.ok(partner.get());
+        }
+        return HttpResponse.notFound();
+    }
+
+    /**
      * Update partner's did
      *
      * @param id     {@link UUID} the partner id
@@ -163,7 +182,8 @@ public class PartnerController {
      */
     @Post
     public HttpResponse<PartnerAPI> addPartner(@Body AddPartnerRequest partner) {
-        return HttpResponse.created(pm.addPartnerFlow(partner.getDid(), partner.getAlias()));
+        return HttpResponse.created(pm.addPartnerFlow(partner.getDid(), partner.getAlias(),
+                new HashSet<org.hyperledger.bpa.model.Tag>(partner.getTag())));
     }
 
     /**
