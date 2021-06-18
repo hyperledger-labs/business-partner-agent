@@ -35,29 +35,17 @@ The Business Partner Agent supports two modes
 Both modes are currently coupled with a specific instance of an Indy network in order to read schemas and credential definitions.
 The agent is started in Indy mode per default and tries to connect with our test network. Please refer to the [.env-example file](scripts/.env-example) to start the agent in web mode or connect to a different Indy network.
 
-## Run a business partner agent with gitpod
-
-*EMPERIMENTAL!*
-
-The easiest way to run the agent is work with [gitpod](https://gitpod.io/). 
-Gitpod launches a pre-configured IDE for you in the browser with the agent already being launched in the backround.
-
-Just click on the Gitpod button above which opens [this link](https://gitpod.io/#https://github.com/hyperledger-labs/business-partner-agent).
-
-The IDE based on [Visual Studio Code ](https://code.visualstudio.com/) will be launched with the source code already checked-out.
-Additionally you will find 3 terminals in the bottom right corner:
-- One is launching an Aca-py needed for the agent (including the database)
-- One is launching your java backend.
-- One is launching the frontend (with hot-reload of source code enabled).
-
-As soon as all services are ready, the frontend will appear in a preview window (You might have to press the reload button once or twice...).
-
 ## Run a business partner agent with docker-compose or helm
 
-You can also run the agent [via docker-compose](scripts/) (recommended for e.g. development / debugging) or deploy it into a [kubernetes cluster (via helm)](https://github.com/hyperledger-labs/business-partner-agent-chart).
+You can run the agent [via docker-compose](scripts/) (recommended for e.g. development / debugging) or deploy it into a [kubernetes cluster (via helm)](https://github.com/hyperledger-labs/business-partner-agent-chart).
 
+## Run a business partner agent with gitpod
 
+*EXPERIMENTAL! Please provide feedback in our [related discussion](https://github.com/hyperledger-labs/business-partner-agent/discussions/472)*
 
+The easiest way to run the agent, is to work with [gitpod](https://gitpod.io/). 
+Gitpod launches a pre-configured IDE in the browser with the code pre-built and the agent being launched in the background.
+See [debugging docu](https://github.com/hyperledger-labs/business-partner-agent/blob/master/docs/DEBUGGING.md#fronend-and-backend-with-gitpod).
 
 # Documentation and Tutorials
 
