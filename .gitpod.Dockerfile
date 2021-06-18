@@ -135,7 +135,7 @@ RUN sudo install-packages \
 RUN bash -c "pip uninstall crcmod; pip install --no-cache-dir -U crcmod"
 
 # Set k8s user config for dev cluster
-RUN echo ". /workspace/scripts/setup-kubeconfig.sh" >> ~/.bashrc
+RUN echo ". /workspace/business-partner-agent/scripts/setup-kubeconfig.sh" >> ~/.bashrc
 
 #ENV LEEWAY_WORKSPACE_ROOT=/workspace/gitpod
 #ENV LEEWAY_REMOTE_CACHE_BUCKET=gitpod-core-leeway-cache-branch
