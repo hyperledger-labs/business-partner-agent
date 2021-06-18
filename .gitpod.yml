@@ -9,6 +9,14 @@ ports:
     onOpen: open-preview    
   - port: 8030
     onOpen: ignore     
+  - port: 8031
+    onOpen: ignore
+  - port: 6080
+    onOpen: ignore    
+  - port: 5900
+    onOpen: ignore
+  - port: 5432
+    onOpen: ignore            
 
 github:
   prebuilds:
