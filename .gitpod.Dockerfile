@@ -55,22 +55,22 @@ RUN curl -fsSL https://go.kubebuilder.io/dl/2.3.2/linux/amd64 | tar -xz -C /tmp/
     && rm -rf /tmp/*
 
 ### MySQL client ###
-RUN install-packages mysql-client
+#RUN install-packages mysql-client
 
 # golangci-lint
-RUN cd /usr/local && curl -fsSL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s v1.39.0
+#RUN cd /usr/local && curl -fsSL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s v1.39.0
 
 # leeway
-ENV LEEWAY_NESTED_WORKSPACE=true
-RUN cd /usr/bin && curl -fsSL https://github.com/TypeFox/leeway/releases/download/v0.2.2/leeway_0.2.2_Linux_x86_64.tar.gz | tar xz
+#ENV LEEWAY_NESTED_WORKSPACE=true
+#RUN cd /usr/bin && curl -fsSL https://github.com/TypeFox/leeway/releases/download/v0.2.2/leeway_0.2.2_Linux_x86_64.tar.gz | tar xz
 
 # dazzle
-RUN cd /usr/bin && curl -fsSL https://github.com/32leaves/dazzle/releases/download/v0.0.3/dazzle_0.0.3_Linux_x86_64.tar.gz | tar xz
+#RUN cd /usr/bin && curl -fsSL https://github.com/32leaves/dazzle/releases/download/v0.0.3/dazzle_0.0.3_Linux_x86_64.tar.gz | tar xz
 
 # werft CLI
-ENV WERFT_K8S_NAMESPACE=werft
-ENV WERFT_DIAL_MODE=kubernetes
-RUN cd /usr/bin && curl -fsSL https://github.com/csweichel/werft/releases/download/v0.0.5rc/werft-client-linux-amd64.tar.gz | tar xz && mv werft-client-linux-amd64 werft
+#ENV WERFT_K8S_NAMESPACE=werft
+#ENV WERFT_DIAL_MODE=kubernetes
+#RUN cd /usr/bin && curl -fsSL https://github.com/csweichel/werft/releases/download/v0.0.5rc/werft-client-linux-amd64.tar.gz | tar xz && mv werft-client-linux-amd64 werft
 
 # yq - jq for YAML files
 # Note: we rely on version 3.x.x in various places, 4.x breaks this!
@@ -90,20 +90,20 @@ RUN set -ex \
     && rm -rf $tmpdir
 
 ### Telepresence ###
-RUN curl -fsSL https://packagecloud.io/datawireio/telepresence/gpgkey | apt-key add - \
-    # 'cosmic' not supported
-    && add-apt-repository -yu "deb https://packagecloud.io/datawireio/telepresence/ubuntu/ bionic main" \
-    # 0.95 (current at the time of this commit) is broken
-    && install-packages \
-    iproute2 \
-    iptables \
-    net-tools \
-    socat \
-    telepresence=0.109
+#RUN curl -fsSL https://packagecloud.io/datawireio/telepresence/gpgkey | apt-key add - \
+#    # 'cosmic' not supported
+#    && add-apt-repository -yu "deb https://packagecloud.io/datawireio/telepresence/ubuntu/ bionic main" \
+#    # 0.95 (current at the time of this commit) is broken
+#    && install-packages \
+#    iproute2 \
+#    iptables \
+#    net-tools \
+#    socat \
+#    telepresence=0.109
 
 ### Toxiproxy CLI
-RUN curl -fsSL -o /usr/bin/toxiproxy https://github.com/Shopify/toxiproxy/releases/download/v2.1.4/toxiproxy-cli-linux-amd64 \
-    && chmod +x /usr/bin/toxiproxy
+#RUN curl -fsSL -o /usr/bin/toxiproxy https://github.com/Shopify/toxiproxy/releases/download/v2.1.4/toxiproxy-cli-linux-amd64 \
+#    && chmod +x /usr/bin/toxiproxy
 
 ### libseccomp > 2.5.0
 RUN install-packages gperf \
@@ -124,7 +124,7 @@ ENV PATH=/home/gitpod/.nvm/versions/node/v${GITPOD_NODE_VERSION}/bin:$PATH
 ENV GOFLAGS="-mod=readonly"
 
 ## Register leeway autocompletion in bashrc
-RUN bash -c "echo . \<\(leeway bash-completion\) >> ~/.bashrc"
+#RUN bash -c "echo . \<\(leeway bash-completion\) >> ~/.bashrc"
 
 # Install tools for gsutil
 RUN sudo install-packages \
@@ -134,26 +134,25 @@ RUN sudo install-packages \
 
 RUN bash -c "pip uninstall crcmod; pip install --no-cache-dir -U crcmod"
 
-# Set kubeconfig file for dev cluster
-ARG KUBE_CONFIG_PATH=/home/gitpod/.kube/config
-COPY --chown=gitpod /scripts/kubeconfig.yaml $KUBE_CONFIG_PATH
+# Set k8s user config for dev cluster
+RUN echo ". /workspace/scripts/setup-kubeconfig.sh" >> ~/.bashrc
 
-ENV LEEWAY_WORKSPACE_ROOT=/workspace/gitpod
-ENV LEEWAY_REMOTE_CACHE_BUCKET=gitpod-core-leeway-cache-branch
+#ENV LEEWAY_WORKSPACE_ROOT=/workspace/gitpod
+#ENV LEEWAY_REMOTE_CACHE_BUCKET=gitpod-core-leeway-cache-branch
 
 # Install Terraform
-ARG RELEASE_URL="https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip"
-RUN mkdir -p ~/.terraform \
-    && cd ~/.terraform \
-    && curl -fsSL -o terraform_linux_amd64.zip ${RELEASE_URL} \
-    && unzip *.zip \
-    && rm -f *.zip \
-    && printf "terraform -install-autocomplete\n" >>~/.bashrc
+#ARG RELEASE_URL="https://releases.hashicorp.com/terraform/0.15.4/terraform_0.15.4_linux_amd64.zip"
+#RUN mkdir -p ~/.terraform \
+#    && cd ~/.terraform \
+#    && curl -fsSL -o terraform_linux_amd64.zip ${RELEASE_URL} \
+#    && unzip *.zip \
+#    && rm -f *.zip \
+#    && printf "terraform -install-autocomplete\n" >>~/.bashrc
 
 # Install GraphViz to help debug terraform scripts
-RUN sudo install-packages graphviz
+#RUN sudo install-packages graphviz
 
-ENV PATH=$PATH:$HOME/.aws-iam:$HOME/.terraform
+#ENV PATH=$PATH:$HOME/.aws-iam:$HOME/.terraform
 
 # brew : helm-docs, pre-commit, chart-testing
 RUN brew install norwoodj/tap/helm-docs pre-commit chart-testing
