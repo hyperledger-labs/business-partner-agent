@@ -33,6 +33,9 @@
         <span v-bind:class="{ 'font-weight-medium': item.new }">
           {{ item.name }}
         </span>
+        <v-chip class="ml-2" v-for="tag in item.tag" :key="tag.id">{{
+          tag.name
+        }}</v-chip>
       </template>
 
       <template v-slot:[`item.address`]="{ item }">
