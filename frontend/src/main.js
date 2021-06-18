@@ -82,36 +82,39 @@ Vue.use(VueNativeSock, socketApi, {
 Vue.prototype.$axios = axios;
 Vue.prototype.$apiBaseUrl = apiBaseUrl;
 Vue.config.productionTip = false;
-
-// Get Configuration
 Vue.prototype.$config = {
   ledger: "iil",
 };
-axios
-  .get(`${apiBaseUrl}/admin/config`)
-  .then((result) => {
-    if ({}.hasOwnProperty.call(result, "data")) {
-      Vue.prototype.$config = result.data;
-      let ledgerPrefix = Vue.prototype.$config.ledgerPrefix;
-      let splitted = ledgerPrefix.split(":");
-      Vue.prototype.$config.ledger = splitted[splitted.length - 2];
-    }
-  })
-  .catch((e) => {
+
+// We need to load the configuration before the Vue application, so we can use the UX configuration
+(async () => {
+  console.log("Loading configuration...");
+  const result = await axios.get(`${apiBaseUrl}/admin/config`).catch((e) => {
     console.error(e);
   });
+  if ({}.hasOwnProperty.call(result, "data")) {
+    Vue.prototype.$config = result.data;
+    let ledgerPrefix = Vue.prototype.$config.ledgerPrefix;
+    let splitted = ledgerPrefix.split(":");
+    Vue.prototype.$config.ledger = splitted[splitted.length - 2];
+    if (result.data.ux) {
+      Object.assign(Vue.prototype.$config.ux, result.data.ux);
+    }
+    console.log("...Configuration loaded");
+  }
+
+  store.dispatch("loadSettings");
+  store.dispatch("loadSchemas");
+  store.dispatch("loadTags");
+
+  console.log("Create the Vue application");
+  new Vue({
+    vuetify,
+    router,
+    store,
+    render: (h) => h(App),
+  }).$mount("#app");
+})();
 
 const EventBus = new Vue();
 export { EventBus, axios, apiBaseUrl };
-
-console.log(Vue.prototype);
-store.dispatch("loadSettings");
-store.dispatch("loadSchemas");
-store.dispatch("loadTags");
-
-new Vue({
-  vuetify,
-  router,
-  store,
-  render: (h) => h(App),
-}).$mount("#app");

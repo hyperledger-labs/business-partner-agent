@@ -20,26 +20,26 @@
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-dialog v-model="addSchemaDialog" persistent max-width="600px">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn v-bind="attrs" v-on="on" color="primary"
-                >Import Schema</v-btn
-              >
-            </template>
-            <AddSchema
-              @success="onSchemaAdded"
-              @cancelled="addSchemaDialog = false"
-            />
-          </v-dialog>
           <v-dialog v-model="createSchemaDialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn v-bind="attrs" v-on="on" color="primary"
-                >Create Schema</v-btn
+              <v-bpa-button v-bind="attrs" v-on="on" color="secondary"
+                >Create Schema</v-bpa-button
               >
             </template>
             <CreateSchema
               @success="onSchemaCreated"
               @cancelled="createSchemaDialog = false"
+            />
+          </v-dialog>
+          <v-dialog v-model="addSchemaDialog" persistent max-width="600px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-bpa-button v-bind="attrs" v-on="on" color="primary"
+                >Import Schema</v-bpa-button
+              >
+            </template>
+            <AddSchema
+              @success="onSchemaAdded"
+              @cancelled="addSchemaDialog = false"
             />
           </v-dialog>
         </v-layout>
@@ -110,12 +110,12 @@
             max-width="600px"
           >
             <template v-slot:activator="{ on, attrs }">
-              <v-btn
+              <v-bpa-button
                 v-bind="attrs"
                 v-on="on"
                 color="primary"
                 :disabled="issueCredentialDisabled"
-                >Issue Credential</v-btn
+                >Issue Credential</v-bpa-button
               >
             </template>
             <IssueCredential
@@ -145,10 +145,12 @@ import SchemaList from "@/components/SchemaList";
 import * as textUtils from "@/utils/textUtils";
 import * as partnerUtils from "@/utils/partnerUtils";
 import store from "@/store";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   name: "CredentialManagement",
   components: {
+    VBpaButton,
     SchemaList,
     AddSchema,
     CreateSchema,

@@ -35,17 +35,6 @@ import {
 
 Vue.use(Vuetify);
 
-// Theming
-let primaryColor = "#4A148C";
-if (process.env.VUE_APP_UI_COLOR) {
-  primaryColor = process.env.VUE_APP_UI_COLOR;
-}
-
-const uiColor = localStorage.getItem("uiColor");
-if (uiColor) {
-  primaryColor = uiColor;
-}
-
 export default new Vuetify({
   defaultAssets: {
     font: true,
@@ -89,12 +78,30 @@ export default new Vuetify({
     },
   },
   theme: {
+    // dark will be set via configuration from the backend (bpa.ux.theme.dark), this is set in App.vue
+    dark: false,
     options: {
       customProperties: true,
     },
+    // themes will be set via configuration from the backend (bpa.ux.theme.themes), these are set in App.vue
+    // all the following properties must be set in the configuration
     themes: {
       light: {
-        primary: primaryColor,
+        // this are the default vuetify light values
+        // primary is a customized color...
+        primary: "#4A148C",
+        secondary: "#424242",
+        accent: "#82B1FF",
+        error: "#FF5252",
+        info: "#2196F3",
+        success: "#4CAF50",
+        warning: "#FFC107",
+        // the following are custom and are used as variables in style.scss
+        bgLight: "#FAFAFA",
+        bgLight2: "#ECECEC",
+        font: "#313132",
+        anchor: "#1A5A96",
+        anchorHover: "#3B99FC",
       },
     },
   },

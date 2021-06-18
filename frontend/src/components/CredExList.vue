@@ -43,7 +43,9 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="dialog = false">Close</v-btn>
+          <v-bpa-button color="primary" @click="dialog = false"
+            >Close</v-bpa-button
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -51,6 +53,7 @@
 </template>
 <script>
 import Cred from "@/components/Credential.vue";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   props: {
@@ -111,6 +114,7 @@ export default {
     },
   },
   components: {
+    VBpaButton,
     Cred,
   },
 };

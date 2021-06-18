@@ -28,13 +28,14 @@
 
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
-          <v-btn
+          <v-bpa-button color="secondary" @click="cancel()"
+            >Cancel</v-bpa-button
+          >
+          <v-bpa-button
             :loading="this.isBusy"
             color="primary"
-            text
             @click="checkRequest"
-            >Submit</v-btn
+            >Submit</v-bpa-button
           >
         </v-layout>
       </v-card-actions>
@@ -54,14 +55,15 @@
         <v-card-actions>
           <v-spacer></v-spacer>
 
-          <v-btn
+          <v-bpa-button
             color="secondary"
-            text
             @click="attentionPartnerStateDialog = false"
-            >No</v-btn
+            >No</v-bpa-button
           >
 
-          <v-btn color="primary" text @click="submitRequest">Yes</v-btn>
+          <v-bpa-button color="primary" @click="submitRequest"
+            >Yes</v-bpa-button
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -71,11 +73,13 @@
 <script>
 import { EventBus } from "../main";
 import PartnerList from "@/components/PartnerList";
+import VBpaButton from "@/components/BpaButton";
 // import { CredentialTypes } from "../constants";
 
 export default {
   name: "RequestVerification",
   components: {
+    VBpaButton,
     PartnerList,
   },
   props: {

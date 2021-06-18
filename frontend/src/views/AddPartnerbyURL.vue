@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
@@ -14,23 +14,31 @@
       <v-container>
         <v-row v-if="!invitationURL">
           <v-col cols="12">
-              <v-btn color="Primary" text @click="createInvitation()">GenerateURL</v-btn>
+            <v-bpa-button color="secondary" @click="createInvitation()"
+              >Generate QR Code</v-bpa-button
+            >
           </v-col>
         </v-row>
         <v-row v-else>
           <v-col>
             <div>
-              <qrcode-vue :value="invitationURL" :size="400" level="H" ></qrcode-vue>
+              <qrcode-vue
+                :value="invitationURL"
+                :size="400"
+                level="H"
+              ></qrcode-vue>
               <br />
               <br />
               <span class="font-weight-light">{{ invitationURL }}</span>
             </div>
           </v-col>
-        </v-row>      
+        </v-row>
       </v-container>
       <v-card-actions>
         <v-layout justify-space-between>
-          <v-btn color="secondary" text to="/app/partners">Return</v-btn>
+          <v-bpa-button color="secondary" to="/app/partners"
+            >Return</v-bpa-button
+          >
         </v-layout>
       </v-card-actions>
     </v-card>
@@ -39,18 +47,20 @@
 
 <script>
 import { EventBus } from "../main";
-import QrcodeVue from 'qrcode.vue'
+import QrcodeVue from "qrcode.vue";
+import VBpaButton from "@/components/BpaButton";
 export default {
   name: "AddPartnerbyURL",
   created: () => {},
   components: {
+    VBpaButton,
     QrcodeVue,
   },
   data: () => {
     return {
       partnerLoading: false,
       partnerLoaded: false,
-      invitationURL:"",
+      invitationURL: "",
       msg: "",
       did: "",
       alias: "",
@@ -77,7 +87,10 @@ export default {
             //   });
             // } else {
             //   this.partnerLoading = false;
-            EventBus.$emit("success", "Partner Invitation created successfully");
+            EventBus.$emit(
+              "success",
+              "Partner Invitation created successfully"
+            );
           }
         })
         .catch((e) => {
@@ -88,7 +101,7 @@ export default {
             EventBus.$emit("error", e);
           }
         });
-    },    
+    },
   },
 };
 </script>

@@ -51,7 +51,9 @@
             </v-text-field>
           </v-col>
           <v-col cols="2">
-            <v-btn :disabled="fieldEmpty" @click="addNewTag"> Add tag </v-btn>
+            <v-btn color="primary" :disabled="fieldEmpty" @click="addNewTag">
+              Add tag
+            </v-btn>
           </v-col>
         </v-row>
       </v-card-text>
@@ -91,6 +93,7 @@ export default {
         .then((res) => {
           if (res.status === 201 || res.status === 200) {
             EventBus.$emit("success", "Tag successfully added");
+            this.newTag = "";
             this.$store.dispatch("loadTags");
           } else {
             EventBus.$emit("error", res.status.text);

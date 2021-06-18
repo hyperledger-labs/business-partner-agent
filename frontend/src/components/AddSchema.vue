@@ -8,7 +8,7 @@
 <template>
   <v-container>
     <v-card class="mx-auto">
-      <v-card-title class="bg-light"> Add Schema </v-card-title>
+      <v-card-title class="bg-light"> Import Schema </v-card-title>
       <v-card-text>
         <v-list-item>
           <v-list-item-title
@@ -51,14 +51,15 @@
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
-          <v-btn
+          <v-bpa-button color="secondary" @click="cancel()"
+            >Cancel</v-bpa-button
+          >
+          <v-bpa-button
             :loading="this.isBusy"
             color="primary"
-            text
             @click="submit()"
             :disabled="fieldsEmpty"
-            >Submit</v-btn
+            >Submit</v-bpa-button
           >
         </v-layout>
       </v-card-actions>
@@ -69,10 +70,11 @@
 <script>
 import { EventBus } from "@/main";
 import adminService from "@/services/adminService";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   name: "AddSchema",
-  components: {},
+  components: { VBpaButton },
   props: {},
   data: () => {
     return {
