@@ -1,6 +1,6 @@
 # Debugging
 
-## Fronend and Backend with gitpod
+## Frontend and Backend with gitpod
 Gitpod can be used to just launch an agent (or two, which is not yet configured) or to do backend and/or frontend development.
 
 Just click on the Gitpod button in the main readme which opens [this link](https://gitpod.io/#https://github.com/hyperledger-labs/business-partner-agent).
