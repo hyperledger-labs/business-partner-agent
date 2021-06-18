@@ -143,7 +143,16 @@ bpa:
 # This will have all of the alternate layout and themes/colors loaded.
 # To override theme, then set themes.light properties
 # To override favicon, then need favicon.href property
+# buttons are applied against v-bpa-buttons and determined by the color attribute
+#   example: <v-bpa-button color="primary">Primary</v-bpa-button>
 #  ux:
+#    buttons:
+#      primary:
+#        text: false
+#        outlined: false
+#      secondary:
+#        text: true
+#        outlined: true
 #    theme:
 #      dark: false
 #      themes:
