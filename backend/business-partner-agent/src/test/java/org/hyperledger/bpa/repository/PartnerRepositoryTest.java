@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.repository;
 
+import io.micronaut.data.exceptions.DataAccessException;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -351,9 +352,7 @@ class PartnerRepositoryTest {
                 .tags(tags)
                 .build());
 
-        tagRepo.delete(tag);
-
-        assertEquals(repo.findById(partner.getId()).get().getTags(), empty);
+        assertThrows(DataAccessException.class, () -> { tagRepo.delete(tag); });
 
     }
 
