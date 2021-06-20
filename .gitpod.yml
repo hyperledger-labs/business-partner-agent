@@ -39,27 +39,29 @@ tasks:
   - name: dev acapy
     init: |
       eval $(gp env -e ACAPY_ENDPOINT=`gp url 8030`)
-      cd scripts
+      cd /workspace/business-partner-agent/scripts
       cp .env-example .env
       ./register-did.sh
     command: |
+      cd /workspace/business-partner-agent/scripts
       eval $(gp env -e)
       docker-compose -f docker-compose.dev.yml up aca-py 
   - name: dev backend
     init: | 
-      cd backend
+      cd /workspace/business-partner-agent/backend
       mvn package -DskipTests
     command: |
       gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
       eval $(gp env -e)
-      gp await-port 8030 && java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote-jar -Dmicronaut.environments=dev -jar ./business-partner-agent/target/*.jar
+      gp await-port 8030 && java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote-jar -Dmicronaut.environments=dev -jar /workspace/business-partner-agent/backend/business-partner-agent/target/*.jar
   - name: dev fronend
     init: | 
-      cd frontend
+      cd /workspace/business-partner-agent/frontend
       npm install
     command: |
       gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
       eval $(gp env -e VUE_APP_API_BASE_URL=`gp url 8080`/api)
+      cd /workspace/business-partner-agent/frontend
       gp await-port 8080 && npm run serve -- --port 8081
 vscode:
   extensions:
