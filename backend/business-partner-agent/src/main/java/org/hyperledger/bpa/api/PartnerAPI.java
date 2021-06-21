@@ -88,7 +88,9 @@ public class PartnerAPI {
                 .setAlias(from.getAlias())
                 .setDid(from.getDid())
                 .setIncoming(from.getIncoming() != null ? from.getIncoming() : Boolean.FALSE)
-                .setTag(from.getTags().stream().map(TagAPI::from).collect(Collectors.toList()));
+                .setTag(from.getTags() != null
+                        ? from.getTags().stream().map(TagAPI::from).collect(Collectors.toList())
+                        : null);
     }
 
 }

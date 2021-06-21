@@ -24,10 +24,9 @@ import org.hyperledger.bpa.model.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
-import javax.swing.text.html.Option;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -57,44 +56,34 @@ class TagRepositoryTest {
     @Test
     void testPersistTagWithSameNameTwice() {
         final String tagName = "verifiedOrg";
-        Tag tag1 = repo.save(Tag
-                .builder()
-                .name(tagName)
-                .build());
-        Tag tag2 = Tag
+        Tag tag = Tag
                 .builder()
                 .name(tagName)
                 .build();
-
-        assertThrows(DataAccessException.class, () -> repo.save(tag2));
+        repo.save(tag);
+        assertThrows(DataAccessException.class, () -> repo.save(tag));
     }
 
     @Test
     void testAddTagToPartner() {
-
         String myTag = "MyTag";
         Tag tag = Tag
                 .builder()
                 .name(myTag)
                 .build();
 
-        Set<Tag> tags = new HashSet<>() {{
-            add(tag);
-        }};
-
         Partner partner = partnerRepo.save(Partner
                 .builder()
                 .ariesSupport(Boolean.TRUE)
                 .did("did:indy:private")
                 .connectionId("con1")
-                .tags(tags)
+                .tags(new HashSet<>(List.of(tag)))
                 .build());
 
         Optional<Tag> dbTag = repo.findByName(myTag);
 
         assertTrue(dbTag.isPresent());
         assertEquals(partner.getId(), dbTag.get().getPartners().stream().iterator().next().getId());
-
     }
 
 }

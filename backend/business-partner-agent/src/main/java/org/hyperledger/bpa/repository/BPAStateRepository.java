@@ -18,12 +18,13 @@
 package org.hyperledger.bpa.repository;
 
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.bpa.model.BPAState;
 
 import java.util.UUID;
 
-@JdbcRepository
+@JdbcRepository(dialect = Dialect.POSTGRES)
 public interface BPAStateRepository extends CrudRepository<BPAState, UUID> {
     //
 }

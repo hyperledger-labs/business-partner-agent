@@ -107,7 +107,7 @@ public class Partner {
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> supportedCredentials;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "partner_tag",
             joinColumns = @JoinColumn(name = "partner_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))

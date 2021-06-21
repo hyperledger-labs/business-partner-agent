@@ -19,8 +19,10 @@ package org.hyperledger.bpa.repository;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.Join;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.model.Partner;
@@ -31,8 +33,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-@JdbcRepository
+@JdbcRepository(dialect = Dialect.POSTGRES)
 public interface PartnerRepository extends CrudRepository<Partner, UUID> {
+
+    @Override
+    @Join(value = "tags", type = Join.Type.LEFT_FETCH)
+    Optional<Partner> findById(UUID id);
 
     void updateState(@Id UUID id, ConnectionState state);
 
@@ -40,6 +46,7 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     int updateDid(@Id UUID id, String did);
 
+    //
     Number updateByDid(String did, Map<String, Object> supportedCredentials);
 
     Number updateVerifiablePresentation(@Id UUID id,

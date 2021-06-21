@@ -18,16 +18,20 @@
 package org.hyperledger.bpa.repository;
 
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.data.annotation.Join;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
+import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.Tag;
 
 import java.util.Optional;
 import java.util.UUID;
 
-@JdbcRepository
+@JdbcRepository(dialect = Dialect.POSTGRES)
 public interface TagRepository extends CrudRepository<Tag, UUID> {
 
+    @Join(value = "partners", type = Join.Type.LEFT_FETCH)
     Optional<Tag> findByName(String name);
 
     @NonNull

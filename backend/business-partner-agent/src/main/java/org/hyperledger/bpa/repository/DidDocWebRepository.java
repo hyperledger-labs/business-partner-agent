@@ -19,6 +19,7 @@ package org.hyperledger.bpa.repository;
 
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.bpa.model.DidDocWeb;
 
@@ -27,7 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-@JdbcRepository
+@JdbcRepository(dialect = Dialect.POSTGRES)
 public interface DidDocWebRepository extends CrudRepository<DidDocWeb, UUID> {
 
     void updateDidDoc(@Id UUID id, Map<String, Object> didDoc);

@@ -241,56 +241,39 @@ class PartnerRepositoryTest {
 
     @Test
     void testAddNonExistingTagToPartner() {
-
         String myTag = "MyTag";
         Tag tag = Tag
                 .builder()
                 .name(myTag)
                 .build();
 
-        Set<Tag> tags = new HashSet<>() {{
-            add(tag);
-        }};
-
-        Partner partner = repo.save(Partner
-                .builder()
-                .ariesSupport(Boolean.TRUE)
-                .did("did:indy:private")
-                .connectionId("con1")
-                .tags(tags)
+        repo.save(buildPartnerWithoutTag()
+                .tags(new HashSet<>(List.of(tag)))
                 .build());
 
         Optional<Tag> dbTag = tagRepo.findByName(myTag);
         assertTrue(dbTag.isPresent());
         assertEquals(myTag, dbTag.get().getName());
-
     }
 
     @Test
     void testAddExistingTagToPartner() {
-
+        String myTag = "MyTag";
         Tag tag = tagRepo.save(Tag
                 .builder()
-                .name("MyTag")
+                .name(myTag)
                 .build());
 
-        Partner partner = Partner
-                .builder()
-                .ariesSupport(Boolean.TRUE)
-                .did("did:indy:private")
-                .connectionId("con1")
-                .tags(new HashSet<>())
+        Partner partner = buildPartnerWithoutTag()
+                .tags(new HashSet<>(List.of(tag)))
                 .build();
 
-        partner.getTags().add(tag);
-        repo.save(partner);
+        partner = repo.save(partner);
 
         Optional<Partner> dbPartner = repo.findById(partner.getId());
         assertTrue(dbPartner.isPresent());
         assertFalse(dbPartner.get().getTags().isEmpty());
-
-//        assertEquals("MyTag", dbPartner.get().getTags().iterator().next().getName());
-
+        assertEquals(myTag, dbPartner.get().getTags().iterator().next().getName());
     }
 
     @Test
@@ -299,33 +282,25 @@ class PartnerRepositoryTest {
         Tag tag = tagRepo.save(Tag
                 .builder()
                 .name("MyTag")
+                .partners(Set.of())
                 .build());
 
-        Set<Tag> tags = new HashSet<>() {
-            {
-                add(tag);
-            }
-        };
-
+        Set<Tag> tags = new HashSet<>(List.of(tag));
         Set<Tag> empty = new HashSet<>();
 
-        Partner partner = repo.save(Partner
-                .builder()
-                .ariesSupport(Boolean.TRUE)
-                .did("did:indy:private")
-                .connectionId("con1")
-                .tags(tags)
-                .build());
+        Partner partner = repo.save(
+                buildPartnerWithoutTag()
+                        .tags(tags)
+                        .build());
 
         Optional<Partner> dbPartner = repo.findById(partner.getId());
         assertTrue(dbPartner.isPresent());
-//        assertEquals(tags, dbPartner.get().getTags());
+        assertEquals(tags, dbPartner.get().getTags());
 
         partner = repo.save(partner.setTags(empty));
         // Tag should removed from partner, but tag should not be removed from tag repo
-//        assertEquals(partner.getTags(), empty);
-//        assertEquals(tagRepo.findById(tag.getId()).get().getId(), tag.getId());
-
+        assertEquals(partner.getTags(), empty);
+        assertEquals(tagRepo.findById(tag.getId()).get().getId(), tag.getId());
     }
 
     @Test
@@ -354,6 +329,15 @@ class PartnerRepositoryTest {
 
         assertThrows(DataAccessException.class, () -> tagRepo.delete(tag));
 
+    }
+
+    private Partner.PartnerBuilder buildPartnerWithoutTag() {
+        return Partner
+                .builder()
+                .ariesSupport(Boolean.TRUE)
+                .did("did:indy:private")
+                .connectionId("con1")
+                .tags(new HashSet<>(List.of()));
     }
 
     @Data
