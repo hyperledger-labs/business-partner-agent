@@ -49,7 +49,7 @@ tasks:
   - name: dev backend
     init: | 
       cd /workspace/business-partner-agent/backend
-      mvn package -DskipTests
+      mvn package -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
     command: |
       gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
       eval $(gp env -e)
