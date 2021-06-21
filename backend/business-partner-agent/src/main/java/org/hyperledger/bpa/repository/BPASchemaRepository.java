@@ -21,14 +21,13 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
-import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.bpa.model.BPASchema;
 
 import java.util.Optional;
 import java.util.UUID;
 
-@JdbcRepository(dialect = Dialect.POSTGRES)
+@JdbcRepository
 public interface BPASchemaRepository extends CrudRepository<BPASchema, UUID> {
 
     Optional<BPASchema> findBySchemaId(String schemaId);

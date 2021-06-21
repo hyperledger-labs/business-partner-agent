@@ -19,7 +19,6 @@ package org.hyperledger.bpa.repository;
 
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
-import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.bpa.core.RegisteredWebhook.WebhookEventType;
 import org.hyperledger.bpa.model.BPAWebhook;
@@ -28,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@JdbcRepository(dialect = Dialect.POSTGRES)
+@JdbcRepository
 public interface BPAWebhookRepository extends CrudRepository<BPAWebhook, UUID> {
 
     @Query("SELECT * FROM bpawebhook WHERE webhook->>'url' = :url ")

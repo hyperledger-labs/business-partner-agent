@@ -17,20 +17,19 @@
  */
 package org.hyperledger.bpa.repository;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
-import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.model.MyCredential;
 
-import io.micronaut.core.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@JdbcRepository(dialect = Dialect.POSTGRES)
+@JdbcRepository
 public interface MyCredentialRepository extends CrudRepository<MyCredential, UUID> {
 
     void updateIsPublic(@Id UUID id, Boolean isPublic);

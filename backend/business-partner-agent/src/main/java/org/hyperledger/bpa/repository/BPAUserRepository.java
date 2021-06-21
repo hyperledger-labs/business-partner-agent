@@ -18,14 +18,13 @@
 package org.hyperledger.bpa.repository;
 
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
-import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.bpa.model.BPAUser;
 
 import java.util.Optional;
 import java.util.UUID;
 
-@JdbcRepository(dialect = Dialect.POSTGRES)
+@JdbcRepository
 public interface BPAUserRepository extends CrudRepository<BPAUser, UUID> {
 
     Optional<BPAUser> findByUsername(String username);
