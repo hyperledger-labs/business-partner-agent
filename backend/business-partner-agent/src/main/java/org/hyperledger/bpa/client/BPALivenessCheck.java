@@ -30,7 +30,7 @@ import io.micronaut.management.health.indicator.annotation.Liveness;
 @Singleton
 @Liveness
 @Requires(beans = HealthEndpoint.class)
-public class AcaPyLivenessCheck extends AbstractHealthIndicator<Map<String, String>> {
+public class BPALivenessCheck extends AbstractHealthIndicator<Map<String, String>> {
     @Override
     protected Map<String, String> getHealthInformation() {
         this.healthStatus = HealthStatus.UP;
