@@ -24,16 +24,15 @@
           dense
         >
           <template v-slot:append>
-            <v-btn class="pb-1" text @click="isUpdatingName = false"
-              >Cancel</v-btn
+            <v-bpa-button color="secondary" class="pb-1" @click="isUpdatingName = false"
+              >Cancel</v-bpa-button
             >
-            <v-btn
+            <v-bpa-button
               class="pb-1"
-              text
               color="primary"
               :loading="isBusy"
               @click="submitNameUpdate()"
-              >Save</v-btn
+              >Save</v-bpa-button
             >
           </template>
         </v-text-field>
@@ -60,16 +59,15 @@
             dense
           >
             <template v-slot:append>
-              <v-btn class="pb-1" text @click="isUpdatingDid = false"
-                >Cancel</v-btn
+              <v-bpa-button color="secondary" class="pb-1" @click="isUpdatingDid = false"
+                >Cancel</v-bpa-button
               >
-              <v-btn
+              <v-bpa-button
                 class="pb-1"
-                text
                 color="primary"
                 :loading="isBusy"
                 @click="submitDidUpdate()"
-                >Save</v-btn
+                >Save</v-bpa-button
               >
             </template>
           </v-text-field>
@@ -78,7 +76,7 @@
           </v-btn>
           <v-tooltip top>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn
+              <v-bpa-button
                 color="primary"
                 v-bind="attrs"
                 v-on="on"
@@ -86,7 +84,7 @@
                 @click="refreshPartner()"
               >
                 <v-icon dark>$vuetify.icons.refresh</v-icon>
-              </v-btn>
+              </v-bpa-button>
             </template>
             <span>Refresh profile from source</span>
           </v-tooltip>
@@ -118,12 +116,12 @@
               >{{ this.alias }} wants to create a connection with you.</v-row
             >
             <template v-slot:actions>
-              <v-btn text color="seconday" @click="deletePartner">
+              <v-bpa-button color="secondary" @click="deletePartner">
                 Remove Partner
-              </v-btn>
-              <v-btn text color="primary" @click="acceptPartnerRequest">
+              </v-bpa-button>
+              <v-bpa-button color="primary" @click="acceptPartnerRequest">
                 Accept
-              </v-btn>
+              </v-bpa-button>
             </template>
           </v-banner>
         </template>
@@ -285,14 +283,13 @@
         <v-card-actions>
           <v-spacer></v-spacer>
 
-          <v-btn
+          <v-bpa-button
             color="secondary"
-            text
             @click="attentionPartnerStateDialog = false"
-            >No</v-btn
+            >No</v-bpa-button
           >
 
-          <v-btn color="primary" text @click="proceed">Yes</v-btn>
+          <v-bpa-button color="primary" @click="proceed">Yes</v-bpa-button>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -318,11 +315,13 @@ import { issuerService } from "@/services";
 import CredExList from "@/components/CredExList";
 import IssueCredential from "@/components/IssueCredential";
 import PresentationRequestList from "@/components/PresentationRequestList";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   name: "Partner",
   props: ["id"],
   components: {
+    VBpaButton,
     Profile,
     PresentationList,
     PartnerStateIndicator,

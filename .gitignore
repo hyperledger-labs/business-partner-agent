@@ -43,7 +43,6 @@ formatter-maven-cache.properties
 .factorypath
 .externalToolBuilders
 **/application-dev-**.yml
-.vscode
 
 # IntelliJ
 .idea/
