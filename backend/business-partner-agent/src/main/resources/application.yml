@@ -21,15 +21,18 @@ micronaut:
       login-failure: /user/authFailed
       logout: /user/signin
     intercept-url-map:
-      -
-        pattern: /**
-        access:
-          - isAuthenticated()
-      -
-        pattern: /health
+      - pattern: /health
         http-method: GET
         access:
           - isAnonymous()
+      - pattern: /health/**
+        http-method: GET
+        access:
+          - isAnonymous()          
+      - pattern: /**
+        access:
+          - isAuthenticated()
+
   session:
     max-inactive-interval: 12h
   router:
@@ -73,8 +76,6 @@ endpoints:
     enabled: true
     sensitive: false
     details-visible: AUTHENTICATED
-    acapy:
-      enabled: true
 
 datasources:
   '*':
