@@ -65,6 +65,7 @@ public class TagService {
 
     public Optional<TagAPI> updateTag(@NonNull UUID id) {
         Optional<Tag> tag = tagRepo.findById(id);
+        log.debug("{}", tag);
         // TODO: Implement
         return Optional.empty();
     }
@@ -97,6 +98,7 @@ public class TagService {
         for (TagConfig tag : configuredTags) {
             try {
                 TagAPI tagAPI = addTag(tag.getName(), true);
+                log.debug("{}", tagAPI);
 
             } catch (Exception e) {
                 if (e instanceof WrongApiUsageException) {

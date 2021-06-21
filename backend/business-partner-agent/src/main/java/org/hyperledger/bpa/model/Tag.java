@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.model;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,8 +43,10 @@ public class Tag {
     private String name;
 
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "tags")
+    @JoinTable(name = "partner_tag")
     private Set<Partner> partners = new HashSet<>();
 
+    @Nullable
     private Boolean isReadOnly;
 
 }
