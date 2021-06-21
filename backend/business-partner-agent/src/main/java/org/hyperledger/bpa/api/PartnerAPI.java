@@ -26,9 +26,7 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.model.Tag;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,7 +88,7 @@ public class PartnerAPI {
                 .setAlias(from.getAlias())
                 .setDid(from.getDid())
                 .setIncoming(from.getIncoming() != null ? from.getIncoming() : Boolean.FALSE)
-                .setTag(from.getTags().stream().map(t -> TagAPI.from(t)).collect(Collectors.toList()));
+                .setTag(from.getTags().stream().map(TagAPI::from).collect(Collectors.toList()));
     }
 
 }

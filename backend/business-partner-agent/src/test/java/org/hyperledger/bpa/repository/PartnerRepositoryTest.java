@@ -352,7 +352,7 @@ class PartnerRepositoryTest {
                 .tags(tags)
                 .build());
 
-        assertThrows(DataAccessException.class, () -> { tagRepo.delete(tag); });
+        assertThrows(DataAccessException.class, () -> tagRepo.delete(tag));
 
     }
 

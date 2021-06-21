@@ -183,7 +183,7 @@ public class PartnerController {
     @Post
     public HttpResponse<PartnerAPI> addPartner(@Body AddPartnerRequest partner) {
         return HttpResponse.created(pm.addPartnerFlow(partner.getDid(), partner.getAlias(),
-                new HashSet<org.hyperledger.bpa.model.Tag>(partner.getTag())));
+                new HashSet<>(partner.getTag())));
     }
 
     /**

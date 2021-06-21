@@ -20,7 +20,6 @@ package org.hyperledger.bpa.impl;
 import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.TagAPI;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.TagConfig;
@@ -43,13 +42,12 @@ public class TagService {
 
     // CRUD Methods
     public @Nullable TagAPI addTag(@NonNull String name) {
-        TagAPI tag = addTag(name, false);
-        return tag;
+        return addTag(name, false);
     }
 
     @Nullable
     TagAPI addTag(@NonNull String name, boolean isReadOnly) {
-        TagAPI result = null;
+        TagAPI result;
 
         if (tagRepo.findByName(name).isPresent()) {
             throw new WrongApiUsageException("Tag with name: " + name + " already exists.");

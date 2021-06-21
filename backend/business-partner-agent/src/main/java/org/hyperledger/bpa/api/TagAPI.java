@@ -21,10 +21,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.model.Tag;
 
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -40,8 +38,7 @@ public class TagAPI {
     private Boolean isReadOnly;
 
     public static TagAPI from(Tag t) {
-        TagAPI.TagAPIBuilder builder = TagAPI.builder();
-        return builder
+        return TagAPI.builder()
                 .id(t.getId())
                 .name(t.getName())
                 .isReadOnly(t.getIsReadOnly())
