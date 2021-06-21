@@ -80,7 +80,6 @@ export default {
 
           if (result.status === 201) {
             //   this.$axios.get(`${this.$apiBaseUrl}/partners/${result.data.id}`).then( res => {
-            //       console.log(res);
             //       this.partnerLoaded = true
             //       this.partnerLoading = false
 
