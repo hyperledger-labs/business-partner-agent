@@ -29,6 +29,7 @@ import Schema from "../views/Schema.vue";
 import AddSchema from "../views/AddSchema.vue";
 import About from "../views/About.vue";
 import CredentialManagement from "@/views/issuer/CredentialManagement.vue";
+import PresentationRequestDetails from "@/views/PresentationRequestDetails.vue";
 
 Vue.use(VueRouter);
 
@@ -105,6 +106,12 @@ const routes = [
     path: "/app/partners/:id/request",
     name: "RequestPresentation",
     component: RequestPresentation,
+    props: true,
+  },
+  {
+    path: "/app/presentation-request/:id/details",
+    name: "PresentationRequestDetails",
+    component: PresentationRequestDetails,
     props: true,
   },
   {

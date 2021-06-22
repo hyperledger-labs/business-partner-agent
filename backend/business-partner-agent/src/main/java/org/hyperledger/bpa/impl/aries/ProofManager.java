@@ -252,6 +252,12 @@ public class ProofManager {
         return result;
     }
 
+    public List<AriesProofExchange> getAllPartnerProof() {
+        List<AriesProofExchange> result = new ArrayList<>();
+        pProofRepo.findAll().forEach(pProof -> result.add(toApiProof(pProof)));        
+        return result;
+    }
+
     public Optional<AriesProofExchange> getPartnerProofById(@NonNull UUID id) {
         Optional<AriesProofExchange> result = Optional.empty();
         final Optional<PartnerProof> proof = pProofRepo.findById(id);
