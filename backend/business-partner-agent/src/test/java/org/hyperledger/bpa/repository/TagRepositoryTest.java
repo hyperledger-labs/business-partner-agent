@@ -75,11 +75,12 @@ class TagRepositoryTest {
 
         Partner partner = partnerRepo.save(
                 buildPartnerWithoutTag()
-                        .tags(new HashSet<>(List.of(tag)))
+                        .tags(Set.of(tag))
                         .build());
 
         Optional<Tag> dbTag = tagRepo.findByName(myTag);
 
+        assertEquals(1, tagRepo.count());
         assertTrue(dbTag.isPresent());
         assertEquals(myTag, dbTag.get().getName());
         assertEquals(partner.getId(), dbTag.get().getPartners().stream().iterator().next().getId());
@@ -93,13 +94,14 @@ class TagRepositoryTest {
                 .name(myTag)
                 .build());
 
-        Partner partner = buildPartnerWithoutTag()
-                .tags(new HashSet<>(List.of(tag)))
-                .build();
-
+        Partner partner = buildPartnerWithoutTag().build();
         partner = partnerRepo.save(partner);
 
-        Optional<Partner> dbPartner = partnerRepo.findById(partner.getId());
+        partner.setTags(Set.of(tag));
+        Partner p2 = partnerRepo.save(partner);
+
+        Optional<Partner> dbPartner = partnerRepo.findById(p2.getId());
+        assertEquals(1, tagRepo.count());
         assertTrue(dbPartner.isPresent());
         assertFalse(dbPartner.get().getTags().isEmpty());
         assertEquals(myTag, dbPartner.get().getTags().iterator().next().getName());
@@ -107,18 +109,30 @@ class TagRepositoryTest {
 
     @Test
     void testDeleteTagWhenPartnerHasTag() {
-
         Tag tag = tagRepo.save(Tag
                 .builder()
                 .name("MyTag")
+                .partners(Set.of())
                 .build());
 
         partnerRepo.save(
                 buildPartnerWithoutTag()
-                        .tags(new HashSet<>(List.of(tag)))
+                        .tags(Set.of(tag))
                         .build());
 
-        assertThrows(DataAccessException.class, () -> tagRepo.delete(tag));
+        partnerRepo.save(
+                buildPartnerWithoutTag()
+                        .tags(Set.of(tag))
+                        .build());
+
+        assertEquals(2, partnerRepo.count());
+        partnerRepo.findAll().forEach(p -> assertEquals(Set.of(tag), p.getTags()));
+
+        tagRepo.deleteById(tag.getId());
+
+        assertEquals(0, tagRepo.count());
+        assertEquals(2, partnerRepo.count());
+        partnerRepo.findAll().forEach(p -> assertEquals(Set.of(), p.getTags()));
     }
 
     @Test
@@ -130,8 +144,8 @@ class TagRepositoryTest {
                 .partners(Set.of())
                 .build());
 
-        Set<Tag> tags = new HashSet<>(List.of(tag));
-        Set<Tag> empty = new HashSet<>();
+        Set<Tag> tags = Set.of(tag);
+        Set<Tag> empty = Set.of();
 
         Partner partner = partnerRepo.save(
                 buildPartnerWithoutTag()
@@ -142,12 +156,43 @@ class TagRepositoryTest {
         assertTrue(dbPartner.isPresent());
         assertEquals(tags, dbPartner.get().getTags());
 
-        partner = partnerRepo.save(partner.setTags(empty));
+        partnerRepo.update(dbPartner.get().setTags(empty));
+        tagRepo.deletePartnerToTagMapping(dbPartner.get().getId(), tag.getId());
+        dbPartner = partnerRepo.findById(partner.getId());
+        assertTrue(dbPartner.isPresent());
         // Tag should removed from partner, but tag should not be removed from tag repo
-        assertEquals(partner.getTags(), empty);
+        assertEquals(empty, dbPartner.get().getTags());
         Optional<Tag> reloadedTag = tagRepo.findById(tag.getId());
         assertTrue(reloadedTag.isPresent());
         assertEquals(tag.getId(), reloadedTag.get().getId());
+        assertEquals(Set.of(), reloadedTag.get().getPartners());
+    }
+
+    @Test
+    void testDeletePartner() {
+        String t = "MyTag";
+        Tag tag = tagRepo.save(Tag
+                .builder()
+                .name(t)
+                .build());
+
+        Set<Tag> tags = Set.of(tag);
+        Set<Tag> empty = Set.of();
+
+        Partner partner = partnerRepo.save(
+                buildPartnerWithoutTag()
+                        .tags(tags)
+                        .build());
+
+        Optional<Tag> myTag = tagRepo.findByName(t);
+        assertTrue(myTag.isPresent());
+        assertEquals(1, myTag.get().getPartners().size());
+
+        partnerRepo.deleteById(partner.getId());
+
+        myTag = tagRepo.findByName(t);
+        assertTrue(myTag.isPresent());
+        assertEquals(0, myTag.get().getPartners().size());
     }
 
     private Partner.PartnerBuilder buildPartnerWithoutTag() {

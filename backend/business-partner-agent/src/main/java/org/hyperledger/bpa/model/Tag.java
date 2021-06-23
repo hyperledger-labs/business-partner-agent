@@ -25,7 +25,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -42,9 +41,9 @@ public class Tag {
 
     private String name;
 
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "tags")
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH }, mappedBy = "tags")
     @JoinTable(name = "partner_tag")
-    private Set<Partner> partners = new HashSet<>();
+    private Set<Partner> partners;
 
     @Nullable
     private Boolean isReadOnly;

@@ -58,7 +58,7 @@
         <micronaut.data.version>2.4.4</micronaut.data.version>
         <micronaut.openapi.version>2.5.0</micronaut.openapi.version>
         <micronaut.security.version>2.4.2</micronaut.security.version>
-        <mockito.version>3.10.0</mockito.version>
+        <mockito.version>3.11.2</mockito.version>
         <pmd.version>6.35.0</pmd.version>
         <spotbugs.version>4.2.3</spotbugs.version>
         <testcontainers.version>1.15.3</testcontainers.version>
@@ -121,7 +121,7 @@
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
-                <version>7.9.1</version>
+                <version>7.10.0</version>
             </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
@@ -292,7 +292,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -466,7 +466,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.1.2</version>
                 <reportSets>
                     <reportSet>
                         <reports>

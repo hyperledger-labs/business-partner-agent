@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.repository;
 
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
@@ -27,6 +28,7 @@ import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.model.Partner;
 
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -40,13 +42,21 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
     @Join(value = "tags", type = Join.Type.LEFT_FETCH)
     Optional<Partner> findById(UUID id);
 
+    @Override
+    @NonNull
+    @Join(value = "tags", type = Join.Type.LEFT_FETCH)
+    Iterable<Partner> findAll();
+
+    @Override
+    @Query("delete from partner_tag where partner_id = :id; delete from partner where id = :id")
+    void deleteById(@NonNull UUID id);
+
     void updateState(@Id UUID id, ConnectionState state);
 
     int updateAlias(@Id UUID id, @Nullable String alias);
 
     int updateDid(@Id UUID id, String did);
 
-    //
     Number updateByDid(String did, Map<String, Object> supportedCredentials);
 
     Number updateVerifiablePresentation(@Id UUID id,
