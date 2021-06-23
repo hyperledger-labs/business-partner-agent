@@ -25,10 +25,11 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.*;
 
-@Target({ TYPE_USE,FIELD, })
+@Target({ TYPE_USE, FIELD, })
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = {})
 public @interface ValidBPASchemaAttribute {
     String message() default "Schema id not valid or existent: {validatedValue}";
+
     String schemaIdField() default "schemaId";
 }

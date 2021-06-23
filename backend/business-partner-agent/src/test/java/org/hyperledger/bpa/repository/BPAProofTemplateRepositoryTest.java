@@ -63,12 +63,9 @@ class BPAProofTemplateRepositoryTest {
                                                         BPACondition.builder()
                                                                 .value("myValue")
                                                                 .operator("<=")
-                                                                .build()
-                                                )
-                                                .build()
-                                )
-                                .build()
-                );
+                                                                .build())
+                                                .build())
+                                .build());
         BPAProofTemplate proofTemplateToSave = proofTemplateBuilder
                 .build();
 

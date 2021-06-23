@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import java.util.Set;
+
 @MicronautTest()
 class ConditionTest {
 
@@ -46,7 +47,6 @@ class ConditionTest {
         Assertions.assertEquals(0, constraintViolations.size());
     }
 
-
     @Test
     void testThatGreaterOrEqualsConditionIsValid() {
         Condition sut = Condition.builder().value("thing").operator(">=").build();
@@ -61,13 +61,13 @@ class ConditionTest {
         Assertions.assertEquals(0, constraintViolations.size());
     }
 
-
     @Test
     void testThatEqualsConditionIsInvalid() {
         Condition sut = Condition.builder().value("any").operator("==").build();
         Set<ConstraintViolation<Condition>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(1, constraintViolations.size());
-        Assertions.assertEquals("==",constraintViolations.stream().findFirst().map(ConstraintViolation::getInvalidValue).get());
+        Assertions.assertEquals("==",
+                constraintViolations.stream().findFirst().map(ConstraintViolation::getInvalidValue).get());
     }
 
     @Test
@@ -75,6 +75,7 @@ class ConditionTest {
         Condition sut = Condition.builder().value("any").operator("A text").build();
         Set<ConstraintViolation<Condition>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(1, constraintViolations.size());
-        Assertions.assertEquals("A text",constraintViolations.stream().findFirst().map(ConstraintViolation::getInvalidValue).get());
+        Assertions.assertEquals("A text",
+                constraintViolations.stream().findFirst().map(ConstraintViolation::getInvalidValue).get());
     }
 }
