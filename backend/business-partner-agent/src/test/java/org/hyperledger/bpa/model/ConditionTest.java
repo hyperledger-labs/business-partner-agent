@@ -16,10 +16,11 @@
  * limitations under the License.
  */
 
-package org.hyperledger.bpa.controller.api.prooftemplates;
+package org.hyperledger.bpa.model;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.validation.validator.Validator;
+import org.hyperledger.bpa.controller.api.prooftemplates.Condition;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -34,46 +35,46 @@ class ConditionTest {
 
     @Test
     void testThatLessThenConditionIsValid() {
-        Condition sut = Condition.builder().value("else").operator("<").build();
-        Set<ConstraintViolation<Condition>> constraintViolations = validator.validate(sut);
+        BPACondition sut = BPACondition.builder().value("else").operator("<").build();
+        Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(0, constraintViolations.size());
     }
 
     @Test
     void testThatLessOrEqualsConditionIsValid() {
-        Condition sut = Condition.builder().value("some").operator("<=").build();
-        Set<ConstraintViolation<Condition>> constraintViolations = validator.validate(sut);
+        BPACondition sut = BPACondition.builder().value("some").operator("<=").build();
+        Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(0, constraintViolations.size());
     }
 
 
     @Test
     void testThatGreaterOrEqualsConditionIsValid() {
-        Condition sut = Condition.builder().value("thing").operator(">=").build();
-        Set<ConstraintViolation<Condition>> constraintViolations = validator.validate(sut);
+        BPACondition sut = BPACondition.builder().value("thing").operator(">=").build();
+        Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(0, constraintViolations.size());
     }
 
     @Test
     void testThatGreaterThanConditionIsValid() {
-        Condition sut = Condition.builder().value("any").operator(">").build();
-        Set<ConstraintViolation<Condition>> constraintViolations = validator.validate(sut);
+        BPACondition sut = BPACondition.builder().value("any").operator(">").build();
+        Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(0, constraintViolations.size());
     }
 
 
     @Test
     void testThatEqualsConditionIsInvalid() {
-        Condition sut = Condition.builder().value("any").operator("==").build();
-        Set<ConstraintViolation<Condition>> constraintViolations = validator.validate(sut);
+        BPACondition sut = BPACondition.builder().value("any").operator("==").build();
+        Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(1, constraintViolations.size());
         Assertions.assertEquals("==",constraintViolations.stream().findFirst().map(ConstraintViolation::getInvalidValue).get());
     }
 
     @Test
     void testThatATextConditionIsInvalid() {
-        Condition sut = Condition.builder().value("any").operator("A text").build();
-        Set<ConstraintViolation<Condition>> constraintViolations = validator.validate(sut);
+        BPACondition sut = BPACondition.builder().value("any").operator("A text").build();
+        Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(1, constraintViolations.size());
         Assertions.assertEquals("A text",constraintViolations.stream().findFirst().map(ConstraintViolation::getInvalidValue).get());
     }
