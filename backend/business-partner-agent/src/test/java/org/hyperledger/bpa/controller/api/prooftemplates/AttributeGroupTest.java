@@ -1,0 +1,135 @@
+/*
+ * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * see the NOTICE file and/or the repository at
+ * https://github.com/hyperledger-labs/business-partner-agent
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.hyperledger.bpa.controller.api.prooftemplates;
+
+import io.micronaut.test.annotation.MockBean;
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import io.micronaut.validation.validator.Validator;
+import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.model.BPASchema;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+@MicronautTest
+class AttributeGroupTest {
+    @Inject
+    Validator validator;
+
+    @Inject
+    SchemaService schemaService;
+
+    @MockBean(SchemaService.class)
+    SchemaService schemaService() {
+        return Mockito.mock(SchemaService.class);
+    }
+
+
+    @Test
+    void testThatSchemaIdIsCheckedForExistenceInSchemaService() {
+        Mockito.when(schemaService.getSchemaFor("mySchemaId"))
+                .thenReturn(Optional.empty());
+        AttributeGroup sut = AttributeGroup.builder().schemaId("mySchemaId").build();
+        Set<ConstraintViolation<AttributeGroup>> constraintViolations = validator.validate(sut);
+        Assertions.assertEquals(1, constraintViolations.size());
+        Assertions.assertEquals("mySchemaId", constraintViolations.stream().findFirst().get().getInvalidValue());
+    }
+
+
+    @Test
+    void testThatAttributeNamesAreCheckedAgainstSchemaFromSchemaService() {
+        Mockito.when(schemaService.getSchemaFor("mySchemaId"))
+                .thenReturn(Optional.of(new BPASchema()));
+        Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
+                .thenReturn(Set.of("surname", "lastname"));
+        AttributeGroup sut = AttributeGroup.builder()
+                .schemaId("mySchemaId")
+                .attribute(Attribute.builder()
+                        .name("fullname")
+                        .build())
+                .attribute(Attribute.builder()
+                        .name("surname")
+                        .build())
+                .attribute(Attribute.builder()
+                        .name("lastname")
+                        .build())
+                .build();
+        Set<ConstraintViolation<AttributeGroup>> constraintViolations = validator.validate(sut);
+        Assertions.assertEquals(1, constraintViolations.size());
+        Assertions.assertEquals(sut, constraintViolations.stream().findFirst().get().getInvalidValue());
+    }
+
+    @Test
+    void testThatAttributesNamesAreDistinct() {
+        Mockito.when(schemaService.getSchemaFor("mySchemaId"))
+                .thenReturn(Optional.of(new BPASchema()));
+        Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
+                .thenReturn(Set.of("fullname"));
+        AttributeGroup sut = AttributeGroup.builder()
+                .schemaId("mySchemaId")
+                .attribute(Attribute.builder()
+                        .name("fullname")
+                        .build())
+                .attribute(Attribute.builder()
+                        .name("fullname")
+                        .build())
+                .build();
+        Set<ConstraintViolation<AttributeGroup>> constraintViolations = validator.validate(sut);
+        Assertions.assertEquals(1, constraintViolations.size());
+        List<Attribute> expected = List.of(
+                Attribute.builder()
+                        .name("fullname")
+                        .build(),
+                Attribute.builder()
+                        .name("fullname")
+                        .build()
+        );
+        Assertions.assertEquals(expected, constraintViolations.stream().findFirst().get().getInvalidValue());
+    }
+
+    @Test
+    void testThatAttributeConditionsAreVerified() {
+        Mockito.when(schemaService.getSchemaFor("mySchemaId"))
+                .thenReturn(Optional.of(new BPASchema()));
+        Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
+                .thenReturn(Set.of("myAttributeName"));
+        AttributeGroup sut = AttributeGroup.builder()
+                .schemaId("mySchemaId")
+                .attribute(Attribute.builder()
+                        .name("myAttributeName")
+                        .condition(Condition.builder()
+                                .value("any")
+                                .operator("invalid operator")
+                                .build())
+                        .build()
+                )
+
+                .build();
+
+        Set<ConstraintViolation<AttributeGroup>> constraintViolations = validator.validate(sut);
+        Assertions.assertEquals(1, constraintViolations.size());
+        Assertions.assertEquals("invalid operator", constraintViolations.stream().findFirst().get().getInvalidValue());
+    }
+}
