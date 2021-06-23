@@ -18,20 +18,15 @@
  */
 package org.hyperledger.bpa.config;
 
-import io.micronaut.context.annotation.EachProperty;
-import io.micronaut.context.annotation.Parameter;
+import io.micronaut.context.annotation.ConfigurationProperties;
 import lombok.Data;
 
-@EachProperty("bpa.tags")
+import java.util.List;
+
 @Data
+@ConfigurationProperties("bpa")
 public class TagConfig {
 
-    /**
-     * Bean name
-     */
-    private String name;
+    private List<String> tags;
 
-    public TagConfig(@Parameter String name) {
-        this.name = name;
-    }
 }
