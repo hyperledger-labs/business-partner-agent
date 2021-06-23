@@ -249,7 +249,7 @@ public class AdminController {
      */
     @Put("/tag/{id}")
     public HttpResponse<TagAPI> updateTag(@PathVariable UUID id, @Body UpdateTagRequest req) {
-        Optional<TagAPI> tagAPI = tagService.updateTag(id);
+        Optional<TagAPI> tagAPI = tagService.updateTag(id, req.getName());
         if (tagAPI.isPresent()) {
             return HttpResponse.ok(tagAPI.get());
         }

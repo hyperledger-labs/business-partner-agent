@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl;
 
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.exceptions.DataAccessException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.api.TagAPI;
@@ -40,33 +41,34 @@ public class TagService {
     @Inject
     List<TagConfig> configuredTags;
 
-    // CRUD Methods
     public @Nullable TagAPI addTag(@NonNull String name) {
-        return addTag(name, false);
+        return addTag(name, Boolean.FALSE);
     }
 
-    @Nullable
-    TagAPI addTag(@NonNull String name, boolean isReadOnly) {
-        TagAPI result;
-
-        if (tagRepo.findByName(name).isPresent()) {
-            throw new WrongApiUsageException("Tag with name: " + name + " already exists.");
-        }
+    TagAPI addTag(@NonNull String name, @NonNull Boolean isReadOnly) {
         Tag dbT = Tag.builder()
                 .name(name)
                 .isReadOnly(isReadOnly)
                 .build();
 
-        Tag saved = tagRepo.save(dbT);
-        result = TagAPI.from(saved);
+        Tag saved;
+        try {
+            saved = tagRepo.save(dbT);
+        } catch (DataAccessException e) {
+            throw new WrongApiUsageException("Tag with name: " + name + " already exists.");
+        }
 
-        return result;
+        return TagAPI.from(saved);
     }
 
-    public Optional<TagAPI> updateTag(@NonNull UUID id) {
-        Optional<Tag> tag = tagRepo.findById(id);
-        log.debug("{}", tag);
-        // TODO: Implement
+    public Optional<TagAPI> updateTag(@NonNull UUID id, @NonNull String tag) {
+        Optional<Tag> dbTag = tagRepo.findById(id);
+        if (dbTag.isPresent()) {
+            tagRepo.updateNameById(dbTag.get().getId(), tag);
+            log.debug("Updating tag {} with new name: {}", dbTag.get(), tag);
+            dbTag.get().setName(tag);
+            return Optional.of(TagAPI.from(dbTag.get()));
+        }
         return Optional.empty();
     }
 
@@ -82,32 +84,20 @@ public class TagService {
     }
 
     public void deleteTag(@NonNull UUID id) {
-        tagRepo.findById(id).ifPresent(s -> {
-            tagRepo.deleteById(id);
-            // TODO: Clean up. What happens to referenced tags in partners and rules?
-        });
-    }
-
-    public Optional<Tag> getTagFor(@NonNull String name) {
-        return tagRepo.findByName(name);
+        tagRepo.findById(id).ifPresent(s -> tagRepo.deleteById(id));
     }
 
     public void resetWriteOnlyTags() {
-        tagRepo.deleteByIsReadOnly(Boolean.TRUE);
+        long deleted = tagRepo.deleteByIsReadOnly();
+        log.debug("Removed {} preconfigured tags", deleted);
 
-        for (TagConfig tag : configuredTags) {
+        configuredTags.forEach(t -> {
             try {
-                TagAPI tagAPI = addTag(tag.getName(), true);
-                log.debug("{}", tagAPI);
-
-            } catch (Exception e) {
-                if (e instanceof WrongApiUsageException) {
-                    log.warn("Tag already exists: {}", tag.getName());
-                } else {
-                    log.warn("Could not add tag: {}", tag.getName(), e);
-                }
-
+                TagAPI tagAPI = addTag(t.getName(), Boolean.TRUE);
+                log.debug("Added preconfigured tag with name: {}", tagAPI.getName());
+            } catch (DataAccessException e) {
+                log.warn("Tag with name {} will not be added", t.getName());
             }
-        }
+        });
     }
 }

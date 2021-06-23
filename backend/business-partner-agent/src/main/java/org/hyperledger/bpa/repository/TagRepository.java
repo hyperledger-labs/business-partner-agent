@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.repository;
 
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
@@ -34,7 +35,10 @@ public interface TagRepository extends CrudRepository<Tag, UUID> {
     @Join(value = "partners", type = Join.Type.LEFT_FETCH)
     Optional<Tag> findByName(String name);
 
-    void deleteByIsReadOnly(Boolean isReadOnly);
+    @Query("delete from partner_tag where tag_id = (" +
+            "select t.id from tag as t where is_read_only = true); " +
+            "delete from tag where is_read_only = true")
+    long deleteByIsReadOnly();
 
     /** Deletes partner to tag mapping from the mapping table */
     @Query("delete from partner_tag where tag_id = :tagId and partner_id = :partnerId")
@@ -43,4 +47,6 @@ public interface TagRepository extends CrudRepository<Tag, UUID> {
     @Override
     @Query("delete from partner_tag where tag_id = :id; delete from tag where id = :id")
     void deleteById(@NonNull UUID id);
+
+    void updateNameById(@Id UUID id, String name);
 }

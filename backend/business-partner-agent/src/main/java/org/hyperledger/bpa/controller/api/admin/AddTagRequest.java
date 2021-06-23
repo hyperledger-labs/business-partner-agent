@@ -27,7 +27,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddTagRequest {
-
     private String name;
-
 }

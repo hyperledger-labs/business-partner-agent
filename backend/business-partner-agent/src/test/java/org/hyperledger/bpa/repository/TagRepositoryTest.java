@@ -24,15 +24,14 @@ import org.hyperledger.bpa.model.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @MicronautTest
 class TagRepositoryTest {
+
+    private static final String MY_TAG = "MyTag";
 
     @Inject
     TagRepository tagRepo;
@@ -67,10 +66,9 @@ class TagRepositoryTest {
 
     @Test
     void testAddNoneExistingTagToPartner() {
-        String myTag = "MyTag";
         Tag tag = Tag
                 .builder()
-                .name(myTag)
+                .name(MY_TAG)
                 .build();
 
         Partner partner = partnerRepo.save(
@@ -78,20 +76,19 @@ class TagRepositoryTest {
                         .tags(Set.of(tag))
                         .build());
 
-        Optional<Tag> dbTag = tagRepo.findByName(myTag);
+        Optional<Tag> dbTag = tagRepo.findByName(MY_TAG);
 
         assertEquals(1, tagRepo.count());
         assertTrue(dbTag.isPresent());
-        assertEquals(myTag, dbTag.get().getName());
+        assertEquals(MY_TAG, dbTag.get().getName());
         assertEquals(partner.getId(), dbTag.get().getPartners().stream().iterator().next().getId());
     }
 
     @Test
     void testAddExistingTagToPartner() {
-        String myTag = "MyTag";
         Tag tag = tagRepo.save(Tag
                 .builder()
-                .name(myTag)
+                .name(MY_TAG)
                 .build());
 
         Partner partner = buildPartnerWithoutTag().build();
@@ -104,14 +101,14 @@ class TagRepositoryTest {
         assertEquals(1, tagRepo.count());
         assertTrue(dbPartner.isPresent());
         assertFalse(dbPartner.get().getTags().isEmpty());
-        assertEquals(myTag, dbPartner.get().getTags().iterator().next().getName());
+        assertEquals(MY_TAG, dbPartner.get().getTags().iterator().next().getName());
     }
 
     @Test
     void testDeleteTagWhenPartnerHasTag() {
         Tag tag = tagRepo.save(Tag
                 .builder()
-                .name("MyTag")
+                .name(MY_TAG)
                 .partners(Set.of())
                 .build());
 
@@ -140,7 +137,7 @@ class TagRepositoryTest {
 
         Tag tag = tagRepo.save(Tag
                 .builder()
-                .name("MyTag")
+                .name(MY_TAG)
                 .partners(Set.of())
                 .build());
 
@@ -170,29 +167,69 @@ class TagRepositoryTest {
 
     @Test
     void testDeletePartner() {
-        String t = "MyTag";
         Tag tag = tagRepo.save(Tag
                 .builder()
-                .name(t)
+                .name(MY_TAG)
                 .build());
 
         Set<Tag> tags = Set.of(tag);
-        Set<Tag> empty = Set.of();
 
         Partner partner = partnerRepo.save(
                 buildPartnerWithoutTag()
                         .tags(tags)
                         .build());
 
-        Optional<Tag> myTag = tagRepo.findByName(t);
+        Optional<Tag> myTag = tagRepo.findByName(MY_TAG);
         assertTrue(myTag.isPresent());
         assertEquals(1, myTag.get().getPartners().size());
 
         partnerRepo.deleteById(partner.getId());
 
-        myTag = tagRepo.findByName(t);
+        myTag = tagRepo.findByName(MY_TAG);
         assertTrue(myTag.isPresent());
         assertEquals(0, myTag.get().getPartners().size());
+    }
+
+    @Test
+    void testDeleteReadOnly() {
+        Tag t1 = tagRepo.save(Tag
+                .builder()
+                .name(MY_TAG)
+                .isReadOnly(Boolean.TRUE)
+                .build());
+        Tag t2 = tagRepo.save(Tag
+                .builder()
+                .name("Other Tag")
+                .isReadOnly(Boolean.FALSE)
+                .build());
+        Partner partner = partnerRepo.save(
+                buildPartnerWithoutTag()
+                        .tags(Set.of(t1, t2))
+                        .build());
+
+        assertEquals(2, tagRepo.count());
+
+        long deleted = tagRepo.deleteByIsReadOnly();
+
+        assertEquals(1, deleted);
+        assertEquals(1, tagRepo.count());
+
+        Optional<Partner> dbPartner = partnerRepo.findById(partner.getId());
+        assertTrue(dbPartner.isPresent());
+        assertEquals(1, dbPartner.get().getTags().size());
+    }
+
+    @Test
+    void testUpdateName() {
+        Tag t1 = tagRepo.save(Tag
+                .builder()
+                .name(MY_TAG)
+                .isReadOnly(Boolean.TRUE)
+                .build());
+        tagRepo.updateNameById(t1.getId(), "foo");
+        Optional<Tag> dbTag = tagRepo.findById(t1.getId());
+        assertTrue(dbTag.isPresent());
+        assertEquals("foo", dbTag.get().getName());
     }
 
     private Partner.PartnerBuilder buildPartnerWithoutTag() {

@@ -59,6 +59,9 @@ public class StartupTasks {
     SchemaService schemaService;
 
     @Inject
+    TagService tagService;
+
+    @Inject
     PartnerCredDefLookup credLookup;
 
     @Inject
@@ -77,6 +80,7 @@ public class StartupTasks {
         ac.statusWaitUntilReady(Duration.ofSeconds(60));
 
         createDefaultSchemas();
+        createDefaultTags();
 
         if (envState) {
             log.info("Running in Web Only mode.");
@@ -131,5 +135,9 @@ public class StartupTasks {
     private void createDefaultSchemas() {
         log.debug("Purging and re-setting default schemas.");
         schemaService.resetWriteOnlySchemas();
+    }
+
+    private void createDefaultTags() {
+        tagService.resetWriteOnlyTags();
     }
 }
