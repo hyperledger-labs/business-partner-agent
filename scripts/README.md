@@ -16,7 +16,7 @@ Furthermore the firewall might block traffic to other agents depending on its en
 ```s
 git clone https://github.com/hyperledger-labs/business-partner-agent
 cd ./business-partner-agent/scripts
-./register-did.sh
+./register-dids.sh
 ```
 
 - If you have a setup using ngrok for making the agent publically avaiable, running
@@ -35,7 +35,7 @@ The frontend will be served at `http://localhost:8080`. If you did not change th
 
 ## Register a new DID before starting an Business Partner Agent
 
-You can use the `./register-dids.sh` script to register a new DID on our test network.
+You can use the `./register-dids.sh` script to register a two new DIDs on our test network 
 Just run:
 
 ```s
@@ -57,7 +57,7 @@ Alternatively, you can register a DID manually:
 
 1. Go to https://indy-test.bosch-digital.de/
 2. Provide a 32 characterer wallet seed on the right side under "Authenticate a new DID" and click on "Register DID"
-3. Make a copy of the provided [.env-example file](.env-example) with the name `.env`. Set the `AGENT_SEED` to the wallet seed.
+3. Make a copy of the provided [.env-example file](.env-example) with the name `.env`. Set the `AGENT1_SEED` to the wallet seed.
 
 ## Start a Business Partner Agent instance
 

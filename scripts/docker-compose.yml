@@ -76,7 +76,7 @@ services:
       - bpa-wallet-db1:/var/lib/postgresql/data
 
 #######
-# Business Partner 2 (only started with `--profile second_bpa`)
+# Business Partner 2 (only started with "--profile second_bpa")
 #######
   bpa2:
     profiles:
@@ -108,8 +108,7 @@ services:
       BPA_PRIVACY_POLICY_URL: ${BPA_PRIVACY_POLICY_URL}
       BPA_CREDDEF_REVOCATION_REGISTRY_SIZE: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE}
     ports:
-      - ${BPA2_PORT}:${BPA2_PORT}
-
+      - "${BPA2_PORT}:${BPA2_PORT}"
     restart: always
   bpa-agent2:
     profiles:

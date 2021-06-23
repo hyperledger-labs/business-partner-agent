@@ -3,14 +3,18 @@ image:
   file: .gitpod.Dockerfile
 
 ports:
-  - port: 8080
-    onOpen: ignore
-  - port: 8081
-    onOpen: open-preview    
+  - port: 8000
+    onOpen: open-browser
+  - port: 8010
+    onOpen: open-browser       
   - port: 8030
     onOpen: ignore     
   - port: 8031
     onOpen: ignore
+  - port: 8040
+    onOpen: ignore     
+  - port: 8041
+    onOpen: ignore    
   - port: 6080
     onOpen: ignore    
   - port: 5900
@@ -31,29 +35,36 @@ github:
 # add a check to pull requests (defaults to true)
     addCheck: true
 # add a "Review in Gitpod" button as a comment to pull requests (defaults to false)
-    addComment: true
+    addComment: false
 # add a "Review in Gitpod" button to the pull request's description (defaults to false)
-    addBadge: false
+    addBadge: true
 
 tasks:
-  - name: dev acapy
+  # Infrastructure: acapy for bpa1 plus full bpa2 
+  - name: infrastructure
     init: |
-      eval $(gp env -e ACAPY_ENDPOINT=`gp url 8030`)
+      gp env -e ACAPY1_ENDPOINT=`gp url 8000`
+      gp env -e ACAPY2_ENDPOINT=`gp url 8010`
+      gp env BPA1_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
+      gp env BPA2_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
+      eval $(gp env -e)
       cd /workspace/business-partner-agent/scripts
       cp .env-example .env
-      ./register-did.sh
+      ./register-dids.sh
+      docker-compose -f docker-compose.yml -f docker-compose.dev.yml build bpa-agent1 bpa2
     command: |
       cd /workspace/business-partner-agent/scripts
       eval $(gp env -e)
-      docker-compose -f docker-compose.dev.yml up aca-py 
+      docker-compose -f docker-compose.yml -f docker-compose.dev.yml up bpa-agent1 bpa2
+  # Backend: for bpa1 launch the backend via java. To allow debugging easily. 
   - name: dev backend
     init: | 
       cd /workspace/business-partner-agent/backend
       mvn clean install -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
     command: |
-      gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
       eval $(gp env -e)
       gp await-port 8030 && java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote-jar -Dmicronaut.environments=dev -jar /workspace/business-partner-agent/backend/business-partner-agent/target/*.jar
+  # Frontend: for bpa1 launch the frontend via npm serve. To allow debugging easily.   
   - name: dev fronend
     init: | 
       cd /workspace/business-partner-agent/frontend
