@@ -46,14 +46,14 @@ public class TagService {
     }
 
     TagAPI addTag(@NonNull String name, @NonNull Boolean isReadOnly) {
-        Tag dbT = Tag.builder()
+        Tag tag = Tag.builder()
                 .name(name)
                 .isReadOnly(isReadOnly)
                 .build();
 
         Tag saved;
         try {
-            saved = tagRepo.save(dbT);
+            saved = tagRepo.save(tag);
         } catch (DataAccessException e) {
             throw new WrongApiUsageException("Tag with name: " + name + " already exists.");
         }
@@ -61,12 +61,12 @@ public class TagService {
         return TagAPI.from(saved);
     }
 
-    public Optional<TagAPI> updateTag(@NonNull UUID id, @NonNull String tag) {
+    public Optional<TagAPI> updateTag(@NonNull UUID id, @NonNull String name) {
         Optional<Tag> dbTag = tagRepo.findById(id);
         if (dbTag.isPresent()) {
-            tagRepo.updateNameById(dbTag.get().getId(), tag);
-            log.debug("Updating tag {} with new name: {}", dbTag.get(), tag);
-            dbTag.get().setName(tag);
+            tagRepo.updateNameById(dbTag.get().getId(), name);
+            log.debug("Updating existing tag name {} with new name: {}", dbTag.get(), name);
+            dbTag.get().setName(name);
             return Optional.of(TagAPI.from(dbTag.get()));
         }
         return Optional.empty();
@@ -96,7 +96,7 @@ public class TagService {
                 TagAPI tagAPI = addTag(t.getName(), Boolean.TRUE);
                 log.debug("Added preconfigured tag with name: {}", tagAPI.getName());
             } catch (DataAccessException e) {
-                log.warn("Tag with name {} will not be added", t.getName());
+                log.warn("Tag with name {} will not be added", t.getName(), e);
             }
         });
     }

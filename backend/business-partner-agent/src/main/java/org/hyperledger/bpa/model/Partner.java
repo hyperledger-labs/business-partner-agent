@@ -108,7 +108,7 @@ public class Partner {
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinTable(name = "partner_tag")
-    private Set<Tag> tags;
+    private Set<Tag> tags = new HashSet<>();
 
     @Transient
     public boolean hasConnectionId() {

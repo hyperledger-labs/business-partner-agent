@@ -19,7 +19,9 @@ package org.hyperledger.bpa.impl;
 
 import io.micronaut.cache.annotation.CacheInvalidate;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.api.PartnerAPI;
@@ -34,8 +36,8 @@ import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.Tag;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.repository.TagRepository;
 
-import io.micronaut.core.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
@@ -63,6 +65,9 @@ public class PartnerManager {
 
     @Inject
     MyCredentialRepository myCredRepo;
+
+    @Inject
+    TagRepository tagRepo;
 
     @Inject
     WebhookService webhook;
@@ -117,7 +122,7 @@ public class PartnerManager {
         return apiPartner;
     }
 
-    public Optional<PartnerAPI> updatePartner(@NonNull UUID id, @Nullable String alias, @Nullable List<Tag> tag) {
+    public Optional<PartnerAPI> updatePartnerAlias(@NonNull UUID id, @Nullable String alias) {
         Optional<PartnerAPI> result = Optional.empty();
         int count = repo.updateAlias(id, alias);
         if (count > 0) {
@@ -145,15 +150,17 @@ public class PartnerManager {
     }
 
     public Optional<PartnerAPI> updatePartnerTag(@NonNull UUID id, @Nullable List<Tag> tag) {
-        Optional<PartnerAPI> result = Optional.empty();
-
         final Optional<Partner> dbP = repo.findById(id);
         if (dbP.isPresent()) {
-            Partner updatedP = repo.save(dbP.get().setTags(new HashSet<>(tag)));
-            result = Optional.of(converter.toAPIObject(updatedP));
+            Collection<Tag> incoming = CollectionUtils.emptyIfNull(tag);
+            Collection<Tag> persisted = CollectionUtils.emptyIfNull(dbP.get().getTags());
+            if (persisted.size() > incoming.size()) {
+                tagRepo.deleteDisjunctMappings(dbP.get().getId(), incoming, persisted);
+            }
+            Partner updatedP = repo.save(dbP.get().setTags(new HashSet<>(incoming)));
+            return Optional.of(converter.toAPIObject(updatedP));
         }
-
-        return result;
+        return Optional.empty();
     }
 
     /**

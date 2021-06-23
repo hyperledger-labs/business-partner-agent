@@ -28,7 +28,6 @@ import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.model.Partner;
 
-import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;

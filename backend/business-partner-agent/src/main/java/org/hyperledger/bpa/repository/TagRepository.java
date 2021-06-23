@@ -24,8 +24,10 @@ import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hyperledger.bpa.model.Tag;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,4 +51,8 @@ public interface TagRepository extends CrudRepository<Tag, UUID> {
     void deleteById(@NonNull UUID id);
 
     void updateNameById(@Id UUID id, String name);
+
+    default void deleteDisjunctMappings(UUID partnerId, Collection<Tag> left, Collection<Tag> right) {
+        CollectionUtils.disjunction(left, right).forEach(t -> deletePartnerToTagMapping(partnerId, t.getId()));
+    }
 }
