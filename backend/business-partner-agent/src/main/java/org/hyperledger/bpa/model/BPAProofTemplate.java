@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.model;
 
-
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.TypeDef;
@@ -63,8 +62,7 @@ public class BPAProofTemplate {
                 name,
                 attributeGroups.stream()
                         .map(BPAAttributeGroup::toRepresentation)
-                        .collect(Collectors.toList())
-        );
+                        .collect(Collectors.toList()));
     }
 
     public static BPAProofTemplate fromRepresentation(ProofTemplate proofTemplate) {
@@ -77,7 +75,6 @@ public class BPAProofTemplate {
                 proofTemplate.getName(),
                 proofTemplate.getAttributeGroups().stream()
                         .map(BPAAttributeGroup::fromRepresentation)
-                        .collect(Collectors.toList())
-        );
+                        .collect(Collectors.toList()));
     }
 }

@@ -34,9 +34,9 @@ import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondit
 @Introspected
 public class BPACondition {
     @ValidAttributeConditionOperator
-    String operator;
+    private String operator;
     @Nullable
-    String value;
+    private String value;
 
     public Condition toRepresentation() {
         return new Condition(operator, value);

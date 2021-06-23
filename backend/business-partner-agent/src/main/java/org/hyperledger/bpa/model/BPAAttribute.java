@@ -37,19 +37,18 @@ import java.util.stream.Collectors;
 public class BPAAttribute {
     @NotEmpty
     @ValidBPASchemaAttribute
-    String name;
+    private String name;
     @Valid
     @Singular
     @ValidAttributeConditionOperator
-    List<BPACondition> conditions;
+    private List<BPACondition> conditions;
 
     public Attribute toRepresentation() {
         return new Attribute(
                 name,
                 conditions.stream()
                         .map(BPACondition::toRepresentation)
-                        .collect(Collectors.toList())
-        );
+                        .collect(Collectors.toList()));
     }
 
     public static BPAAttribute fromRepresentation(Attribute attribute) {
@@ -57,7 +56,6 @@ public class BPAAttribute {
                 attribute.getName(),
                 attribute.getConditions().stream()
                         .map(BPACondition::fromRepresentation)
-                        .collect(Collectors.toList())
-        );
+                        .collect(Collectors.toList()));
     }
 }

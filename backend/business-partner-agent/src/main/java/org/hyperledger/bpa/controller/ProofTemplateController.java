@@ -38,10 +38,10 @@ import java.util.*;
 @ExecuteOn(TaskExecutors.IO)
 public class ProofTemplateController {
     @Deprecated
-    private Map<String, ProofTemplate> inMemory = new HashMap<>();
+    private final Map<String, ProofTemplate> inMemory = new HashMap<>();
 
     @Get
-        public HttpResponse<List<ProofTemplate>> listProofTemplates() {
+    public HttpResponse<List<ProofTemplate>> listProofTemplates() {
         return HttpResponse.ok(new ArrayList<>(this.inMemory.values()));
     }
 
@@ -51,7 +51,7 @@ public class ProofTemplateController {
             String newId = UUID.randomUUID().toString();
             template.setId(newId);
             inMemory.put(newId, template);
-        }else{
+        } else {
             return HttpResponse.badRequest(template);
         }
         return HttpResponse.created(template);

@@ -35,10 +35,9 @@ public class ValidatorFactory {
 
     @Singleton
     ConstraintValidator<ValidUUID, CharSequence> uuidValidator() {
-        return (value, annotationMetadata, context) ->
-        {
+        return (value, annotationMetadata, context) -> {
             // treat an empty id as valid.
-            if (value==null){
+            if (value == null) {
                 return true;
             }
             try {
@@ -52,8 +51,7 @@ public class ValidatorFactory {
 
     @Singleton
     ConstraintValidator<ValidBPASchemaId, CharSequence> schemaIdValidator(SchemaService schemaService) {
-        return (value, annotationMetadata, context) ->
-                schemaService.getSchemaFor(String.valueOf(value)).isPresent();
+        return (value, annotationMetadata, context) -> schemaService.getSchemaFor(String.valueOf(value)).isPresent();
     }
 
     @Singleton
@@ -61,7 +59,8 @@ public class ValidatorFactory {
         return (value, annotationMetadata, context) -> {
             boolean valid = false;
             if (value != null) {
-                Predicate<String> attributeInSchema = schemaService.getSchemaAttributeNames(value.getSchemaId())::contains;
+                Predicate<String> attributeInSchema = schemaService
+                        .getSchemaAttributeNames(value.getSchemaId())::contains;
                 List<BPAAttribute> attributes = value.getAttributes();
                 if (attributes != null) {
                     // an empty AttributeGroup is treated as valid
@@ -76,7 +75,6 @@ public class ValidatorFactory {
             return valid;
         };
     }
-
 
     @Singleton
     ConstraintValidator<DistinctAttributeNames, List<BPAAttribute>> distinctAttributeNamesValidator() {
@@ -97,8 +95,9 @@ public class ValidatorFactory {
         return (value, annotationMetadata, context) -> {
             if (value != null) {
                 // FIXME this does not work yet.
-                Optional<String[]> schemaIdField = annotationMetadata.stringValue("schemaIdField").map(s -> s.split("\\."));
-                Object bean = context.getRootBean();
+//                Optional<String[]> schemaIdField = annotationMetadata.stringValue("schemaIdField")
+//                        .map(s -> s.split("\\."));
+//                Object bean = context.getRootBean();
 
                 String schemaId = "";
                 return schemaService.getSchemaAttributeNames(schemaId).contains(value.getName());
@@ -108,9 +107,8 @@ public class ValidatorFactory {
     }
 
     @Singleton
-    ConstraintValidator<ValidAttributeConditionOperator, CharSequence> AttributeConditionOperatorValidator() {
-        return (value, annotationMetadata, context) ->
-        {
+    ConstraintValidator<ValidAttributeConditionOperator, CharSequence> attributeConditionOperatorValidator() {
+        return (value, annotationMetadata, context) -> {
             try {
                 IndyProofReqPredSpec.PTypeEnum.fromValue(String.valueOf(value));
                 return true;

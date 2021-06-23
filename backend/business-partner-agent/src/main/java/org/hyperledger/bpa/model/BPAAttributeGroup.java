@@ -50,16 +50,14 @@ public class BPAAttributeGroup {
                 schemaId,
                 attributes.stream()
                         .map(BPAAttribute::toRepresentation)
-                        .collect(Collectors.toList())
-        );
+                        .collect(Collectors.toList()));
     }
 
-    public static BPAAttributeGroup fromRepresentation(AttributeGroup attributeGroup){
+    public static BPAAttributeGroup fromRepresentation(AttributeGroup attributeGroup) {
         return new BPAAttributeGroup(
                 attributeGroup.getSchemaId(),
                 attributeGroup.getAttributes().stream()
                         .map(BPAAttribute::fromRepresentation)
-                        .collect(Collectors.toList())
-        );
+                        .collect(Collectors.toList()));
     }
 }

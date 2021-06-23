@@ -45,7 +45,6 @@ class BPAAttributeGroupTest {
         return Mockito.mock(SchemaService.class);
     }
 
-
     @Test
     void testThatSchemaIdIsCheckedForExistenceInSchemaService() {
         Mockito.when(schemaService.getSchemaFor("mySchemaId"))
@@ -55,7 +54,6 @@ class BPAAttributeGroupTest {
         Assertions.assertEquals(1, constraintViolations.size());
         Assertions.assertEquals("mySchemaId", constraintViolations.stream().findFirst().get().getInvalidValue());
     }
-
 
     @Test
     void testThatAttributeNamesAreCheckedAgainstSchemaFromSchemaService() {
@@ -103,8 +101,7 @@ class BPAAttributeGroupTest {
                         .build(),
                 BPAAttribute.builder()
                         .name("fullname")
-                        .build()
-        );
+                        .build());
         Assertions.assertEquals(expected, constraintViolations.stream().findFirst().get().getInvalidValue());
     }
 
@@ -122,8 +119,7 @@ class BPAAttributeGroupTest {
                                 .value("any")
                                 .operator("invalid operator")
                                 .build())
-                        .build()
-                )
+                        .build())
 
                 .build();
 

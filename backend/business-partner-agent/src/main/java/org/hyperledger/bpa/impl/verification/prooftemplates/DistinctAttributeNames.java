@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.TYPE_USE;
 
-@Target({TYPE_USE, FIELD})
+@Target({ TYPE_USE, FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = {})
 public @interface DistinctAttributeNames {
