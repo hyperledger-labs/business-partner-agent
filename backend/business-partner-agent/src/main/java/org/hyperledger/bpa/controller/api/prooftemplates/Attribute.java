@@ -18,18 +18,26 @@
 
 package org.hyperledger.bpa.controller.api.prooftemplates;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.micronaut.core.annotation.Introspected;
+import lombok.*;
+import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeConditionOperator;
+import org.hyperledger.bpa.impl.verification.prooftemplates.ValidBPASchemaAttribute;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Introspected
 public class Attribute {
+    @NotEmpty
+    @ValidBPASchemaAttribute
     String name;
+    @Valid
+    @Singular
+    @ValidAttributeConditionOperator
     List<Condition> conditions;
 }

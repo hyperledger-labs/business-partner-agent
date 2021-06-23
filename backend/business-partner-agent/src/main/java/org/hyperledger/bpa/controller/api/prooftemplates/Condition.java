@@ -18,16 +18,22 @@
 
 package org.hyperledger.bpa.controller.api.prooftemplates;
 
+import io.micronaut.core.annotation.Introspected;
+import io.micronaut.core.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeConditionOperator;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Introspected
 public class Condition {
+    @ValidAttributeConditionOperator
     String operator;
+    @Nullable
     String value;
 }

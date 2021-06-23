@@ -18,20 +18,30 @@
 package org.hyperledger.bpa.controller.api.prooftemplates;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.micronaut.core.annotation.Introspected;
+import io.micronaut.core.annotation.Nullable;
+import lombok.*;
+import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
+import org.hyperledger.bpa.impl.verification.prooftemplates.ValidUUID;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Introspected
 public class ProofTemplate {
+    @Nullable
+    @ValidUUID
     String id;
+    @NotEmpty
     String name;
-    List<AttributeGroups> attributeGroups;
-
+    @NotEmpty
+    @Valid
+    @Singular
+    @ValidAttributeGroup
+    List<@ValidAttributeGroup AttributeGroup> attributeGroups;
 }
