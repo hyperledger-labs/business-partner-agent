@@ -35,11 +35,11 @@ The frontend will be served at `http://localhost:8080`. If you did not change th
 
 ## Register a new DID before starting an Business Partner Agent
 
-You can use the `./register-did.sh` script to register a new DID on our test network.
+You can use the `./register-dids.sh` script to register a new DID on our test network.
 Just run:
 
 ```s
-./register-did.sh
+./register-dids.sh
 ```
 
 You should see the following output:
@@ -50,7 +50,7 @@ You should see the following output:
   "verkey": "Gq1ZuUcU4mwkdinNjwovDMgYhNq2Z6gVdbf9WgFFbQEb"
 }
 Registration on https://indy-test.bosch-digital.de successful
-Setting AGENT_SEED in .env file
+Setting AGENT1_SEED in .env file
 ```
 
 Alternatively, you can register a DID manually:

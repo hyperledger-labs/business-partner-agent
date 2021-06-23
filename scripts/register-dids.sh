@@ -5,13 +5,13 @@
 # 
 # SPDX-License-Identifier: Apache-2.0
 
-if [ "$(which gp)" ]; then
-    eval $(gp env -e)
-    if [ $ACAPY_SEED ] ; then
-        echo "There is already an ACAPY_SEED set and hopefully also a DID registered."
-        exit 0
-    fi
-fi
+#if [ "$(which gp)" ]; then
+#   eval $(gp env -e)
+#    if [ $ACAPY_SEED1 ] ; then
+#        echo "There is already an ACAPY_SEED1, no need to run the script again."
+#        exit 0
+#    fi
+#fi
 
 # Check the system the script is running on
 ARCHITECTURE="$(uname -s)"
@@ -30,10 +30,15 @@ if [ ! -x "$(which curl)" ] ; then
     exit 1
 fi
 
+SRC_FILE=${SRC_FILE:-".env-example"}
+DEST_FILE=${DEST_FILE:-".env"}
 
 # Set URL
 URL=${LEDGER_URL:-https://indy-test.bosch-digital.de}
 
+register_did() {
+    # arg 1 is the env file var we are replacing
+    echo "Registering DID for $1"
 # Set random alias
 ALIAS=BPA-$(cat /dev/urandom | env LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 4 | head -n 1)
 # Generate random seed
@@ -43,34 +48,36 @@ PAYLOAD='{"alias":"'"$ALIAS"'","seed":"'"$SEED"'","role":"ENDORSER"}'
 
 # Register DID
 if curl --fail -s -d $PAYLOAD  -H "Content-Type: application/json" -X POST ${URL}/register; then
-    # Registration (probably) successfull
     echo ""
     echo ""Registration on $URL successful""
 
-    if [ "$(which gp)" ]; then
-        echo ""Setting ACAPY_SEED permanently in gitpod environment""
-        gp env ACAPY_SEED=$SEED
-    else
-        echo ""Setting ACAPY_SEED in .env file""
-        if [ ! -f .env ]; then
-            echo "".env does not exist""
-            echo ""Creating .env from .env-example""
-            cp .env-example .env
+#    if [ "$(which gp)" ]; then
+#        echo ""Setting seeds permanently in gitpod environment""
+#        gp env $1=$SEED
+#
+#    else
+        echo ""Setting $1 in $DEST_FILE file""
+        if [ ! -f $DEST_FILE ]; then
+            echo ""$DEST_FILE does not exist""
+            echo ""Creating $DEST_FILE from $SRC_FILE""
+            cp $SRC_FILE $DEST_FILE
         fi
         # sed on Mac and Linux work differently
         if [ "$ARCHITECTURE" = "Mac" ]; then
-            sed -i '' '/ACAPY_SEED=/c\
-            ACAPY_SEED='"${SEED}"'
-            ' .env
+            sed -i'' '/'"$1"'=/c\'"$1"'='"${SEED}"'' $DEST_FILE
         else
-            sed -i '/ACAPY_SEED=/c\
-            ACAPY_SEED='"${SEED}"'
-            ' .env
-        fi 
-    fi 
+            sed -i '/'"$1"'=/c\
+            '"$1"'='"${SEED}"'
+            ' $DEST_FILE
+        fi
+#    fi 
 
 else
     # Something went wrong
     echo ""
     echo Something went wrong
 fi;
+}
+
+register_did "ACAPY_SEED1"
+register_did "ACAPY_SEED2"
