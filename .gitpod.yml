@@ -40,13 +40,14 @@ github:
     addBadge: true
 
 tasks:
-  # Infrastructure: acapy for bpa1 plus full bpa2 
+  # Infrastructure: acapy for a "bpa1" plus full "bpa2" 
   - name: infrastructure
     init: |
-      gp env -e ACAPY1_ENDPOINT=`gp url 8000`
-      gp env -e ACAPY2_ENDPOINT=`gp url 8010`
-      gp env BPA1_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
-      gp env BPA2_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
+      gp env -e ACAPY1_ENDPOINT=`gp url 8030`
+      gp env -e ACAPY2_ENDPOINT=`gp url 8040`
+      gp env BPA1_HOST=`gp url 8000 | sed 's/.*https:\/\///'`
+      gp env BPA2_HOST=`gp url 8010 | sed 's/.*https:\/\///'`
+      gp env -e VUE_APP_API_BASE_URL=`gp url 8000`/api
       eval $(gp env -e)
       cd /workspace/business-partner-agent/scripts
       cp .env-example .env
@@ -56,24 +57,21 @@ tasks:
       cd /workspace/business-partner-agent/scripts
       eval $(gp env -e)
       docker-compose -f docker-compose.yml -f docker-compose.dev.yml up bpa-agent1 bpa2
-  # Backend: for bpa1 launch the backend via java. To allow debugging easily. 
+  # Backend: for "bpa1" launch the backend via java. To allow debugging easily. 
   - name: dev backend
     init: | 
       cd /workspace/business-partner-agent/backend
       mvn clean install -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
     command: |
-      eval $(gp env -e)
-      gp await-port 8030 && java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote-jar -Dmicronaut.environments=dev -jar /workspace/business-partner-agent/backend/business-partner-agent/target/*.jar
+      gp await-port 8030 && eval $(gp env -e) && java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote-jar -Dmicronaut.environments=dev -jar /workspace/business-partner-agent/backend/business-partner-agent/target/*.jar
   # Frontend: for bpa1 launch the frontend via npm serve. To allow debugging easily.   
   - name: dev fronend
     init: | 
       cd /workspace/business-partner-agent/frontend
       npm install
     command: |
-      gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
-      eval $(gp env -e VUE_APP_API_BASE_URL=`gp url 8080`/api)
       cd /workspace/business-partner-agent/frontend
-      gp await-port 8080 && npm run serve -- --port 8081
+      gp await-port 8000 && eval $(gp env -e) && npm run serve -- --port 8081
 vscode:
   extensions:
     - redhat.java

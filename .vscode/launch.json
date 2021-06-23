@@ -7,7 +7,7 @@
             "request": "launch",
             "mainClass": "org.hyperledger.bpa.Application",
             "projectName": "business-partner-agent",
-            "vmArgs": "-Dmicronaut.environments=dev"
+            "vmArgs": "-Dmicronaut.environments=dev -Dbpa.host=localhost:8000"
         }
     ]
 }
