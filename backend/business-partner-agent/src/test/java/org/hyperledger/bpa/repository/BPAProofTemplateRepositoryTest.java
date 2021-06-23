@@ -28,6 +28,7 @@ import org.mockito.Mockito;
 import javax.inject.Inject;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -72,12 +73,12 @@ class BPAProofTemplateRepositoryTest {
         BPAProofTemplate proofTemplateToSave = proofTemplateBuilder
                 .build();
 
-        BPAProofTemplate saved = repo.save(proofTemplateToSave);
+        UUID newEntityId = repo.save(proofTemplateToSave).getId();
         BPAProofTemplate expectedProofTemplate = proofTemplateBuilder
-                .id(saved.getId())
+                .id(newEntityId)
                 .build();
 
-        Optional<BPAProofTemplate> savedProofTemplate = repo.findById(saved.getId());
+        Optional<BPAProofTemplate> savedProofTemplate = repo.findById(newEntityId);
         assertTrue(savedProofTemplate.isPresent());
         assertEquals(expectedProofTemplate, savedProofTemplate.get());
     }
