@@ -1,0 +1,32 @@
+{
+  "app": {
+    "snackBar": {
+      "close": "Close"
+    },
+    "sessionDialog": {
+      "headline": "Session expired",
+      "text": "It seems your session is expired. Do you want log in again?",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "footer": {
+      "imprintUrlText": {
+        "text": "Corporate Information"
+      },
+      "privacyPolicyUrl": {
+        "text": "Privacy Policy"
+      }
+    }
+  },
+  "nav": {
+    "identity": "Identity",
+    "dashboard": "Dashboard",
+    "profile": "Public Profile",
+    "wallet": "Wallet",
+    "credentialManagement": "Credential Management",
+    "partners": "Business Partners",
+    "settings": "Settings",
+    "about": "About",
+    "signout": "Sign out"
+  }
+}
