@@ -24,7 +24,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeConditionOperator;
+
+import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
@@ -32,7 +33,7 @@ import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondit
 @Builder
 @Introspected
 public class Condition {
-    @ValidAttributeConditionOperator
+    @NotNull
     String operator;
     @Nullable
     String value;

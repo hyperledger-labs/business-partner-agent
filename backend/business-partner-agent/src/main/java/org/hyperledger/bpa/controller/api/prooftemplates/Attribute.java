@@ -20,11 +20,10 @@ package org.hyperledger.bpa.controller.api.prooftemplates;
 
 import io.micronaut.core.annotation.Introspected;
 import lombok.*;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeConditionOperator;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidBPASchemaAttribute;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -34,10 +33,9 @@ import java.util.List;
 @Introspected
 public class Attribute {
     @NotEmpty
-    @ValidBPASchemaAttribute
     String name;
     @Valid
     @Singular
-    @ValidAttributeConditionOperator
+    @NotNull
     List<Condition> conditions;
 }
