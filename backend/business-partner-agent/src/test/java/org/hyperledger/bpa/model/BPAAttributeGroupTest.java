@@ -16,13 +16,12 @@
  * limitations under the License.
  */
 
-package org.hyperledger.bpa.controller.api.prooftemplates;
+package org.hyperledger.bpa.model;
 
 import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.validation.validator.Validator;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
-import org.hyperledger.bpa.model.BPASchema;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -34,7 +33,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @MicronautTest
-class AttributeGroupTest {
+class BPAAttributeGroupTest {
     @Inject
     Validator validator;
 
@@ -50,8 +49,8 @@ class AttributeGroupTest {
     void testThatSchemaIdIsCheckedForExistenceInSchemaService() {
         Mockito.when(schemaService.getSchemaFor("mySchemaId"))
                 .thenReturn(Optional.empty());
-        AttributeGroup sut = AttributeGroup.builder().schemaId("mySchemaId").build();
-        Set<ConstraintViolation<AttributeGroup>> constraintViolations = validator.validate(sut);
+        BPAAttributeGroup sut = BPAAttributeGroup.builder().schemaId("mySchemaId").build();
+        Set<ConstraintViolation<BPAAttributeGroup>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(1, constraintViolations.size());
         Assertions.assertEquals("mySchemaId", constraintViolations.stream().findFirst().get().getInvalidValue());
     }
@@ -62,19 +61,19 @@ class AttributeGroupTest {
                 .thenReturn(Optional.of(new BPASchema()));
         Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
                 .thenReturn(Set.of("surname", "lastname"));
-        AttributeGroup sut = AttributeGroup.builder()
+        BPAAttributeGroup sut = BPAAttributeGroup.builder()
                 .schemaId("mySchemaId")
-                .attribute(Attribute.builder()
+                .attribute(BPAAttribute.builder()
                         .name("fullname")
                         .build())
-                .attribute(Attribute.builder()
+                .attribute(BPAAttribute.builder()
                         .name("surname")
                         .build())
-                .attribute(Attribute.builder()
+                .attribute(BPAAttribute.builder()
                         .name("lastname")
                         .build())
                 .build();
-        Set<ConstraintViolation<AttributeGroup>> constraintViolations = validator.validate(sut);
+        Set<ConstraintViolation<BPAAttributeGroup>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(1, constraintViolations.size());
         Assertions.assertEquals(sut, constraintViolations.stream().findFirst().get().getInvalidValue());
     }
@@ -85,22 +84,22 @@ class AttributeGroupTest {
                 .thenReturn(Optional.of(new BPASchema()));
         Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
                 .thenReturn(Set.of("fullname"));
-        AttributeGroup sut = AttributeGroup.builder()
+        BPAAttributeGroup sut = BPAAttributeGroup.builder()
                 .schemaId("mySchemaId")
-                .attribute(Attribute.builder()
+                .attribute(BPAAttribute.builder()
                         .name("fullname")
                         .build())
-                .attribute(Attribute.builder()
+                .attribute(BPAAttribute.builder()
                         .name("fullname")
                         .build())
                 .build();
-        Set<ConstraintViolation<AttributeGroup>> constraintViolations = validator.validate(sut);
+        Set<ConstraintViolation<BPAAttributeGroup>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(1, constraintViolations.size());
-        List<Attribute> expected = List.of(
-                Attribute.builder()
+        List<BPAAttribute> expected = List.of(
+                BPAAttribute.builder()
                         .name("fullname")
                         .build(),
-                Attribute.builder()
+                BPAAttribute.builder()
                         .name("fullname")
                         .build());
         Assertions.assertEquals(expected, constraintViolations.stream().findFirst().get().getInvalidValue());
@@ -112,11 +111,11 @@ class AttributeGroupTest {
                 .thenReturn(Optional.of(new BPASchema()));
         Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
                 .thenReturn(Set.of("myAttributeName"));
-        AttributeGroup sut = AttributeGroup.builder()
+        BPAAttributeGroup sut = BPAAttributeGroup.builder()
                 .schemaId("mySchemaId")
-                .attribute(Attribute.builder()
+                .attribute(BPAAttribute.builder()
                         .name("myAttributeName")
-                        .condition(Condition.builder()
+                        .condition(BPACondition.builder()
                                 .value("any")
                                 .operator("invalid operator")
                                 .build())
@@ -124,7 +123,7 @@ class AttributeGroupTest {
 
                 .build();
 
-        Set<ConstraintViolation<AttributeGroup>> constraintViolations = validator.validate(sut);
+        Set<ConstraintViolation<BPAAttributeGroup>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(1, constraintViolations.size());
         Assertions.assertEquals("invalid operator", constraintViolations.stream().findFirst().get().getInvalidValue());
     }

@@ -20,9 +20,6 @@ package org.hyperledger.bpa.controller.api.prooftemplates;
 
 import io.micronaut.core.annotation.Introspected;
 import lombok.*;
-import org.hyperledger.bpa.impl.verification.prooftemplates.DistinctAttributeNames;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidBPASchemaId;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -33,13 +30,12 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Introspected
-@ValidAttributeGroup
 public class AttributeGroup {
-    @ValidBPASchemaId
-    String schemaId;
     @NotNull
+    @NotNull
+    String schemaId;
     @Singular
     @Valid
-    @DistinctAttributeNames
+    @NotNull
     List<Attribute> attributes;
 }
