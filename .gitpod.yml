@@ -6,17 +6,25 @@ ports:
   - port: 8080
     onOpen: ignore
   - port: 8081
-    onOpen: open-preview    
+    onOpen: open-browser
+  - port: 8090
+    onOpen: open-browser       
   - port: 8030
     onOpen: ignore     
   - port: 8031
     onOpen: ignore
+  - port: 8040
+    onOpen: ignore     
+  - port: 8041
+    onOpen: ignore    
   - port: 6080
     onOpen: ignore    
   - port: 5900
     onOpen: ignore
   - port: 5432
-    onOpen: ignore            
+    onOpen: ignore
+  - port: 5452
+    onOpen: ignore                     
 
 github:
   prebuilds:
@@ -31,38 +39,44 @@ github:
 # add a check to pull requests (defaults to true)
     addCheck: true
 # add a "Review in Gitpod" button as a comment to pull requests (defaults to false)
-    addComment: true
+    addComment: false
 # add a "Review in Gitpod" button to the pull request's description (defaults to false)
-    addBadge: false
+    addBadge: true
 
 tasks:
-  - name: dev acapy
+  # Infrastructure: run the acapy for a "BPA" plus full "bpa2" 
+  - name: infrastructure
     init: |
-      eval $(gp env -e ACAPY_ENDPOINT=`gp url 8030`)
+      gp env ACAPY_ENDPOINT=`gp url 8030`
+      gp env ACAPY2_ENDPOINT=`gp url 8040`
+      gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
+      gp env BPA2_HOST=`gp url 8090 | sed 's/.*https:\/\///'`
+      eval $(gp env -e)
       cd /workspace/business-partner-agent/scripts
       cp .env-example .env
-      ./register-did.sh
+      ./register-dids.sh
+      docker-compose --profile second_bpa -f docker-compose.yml -f docker-compose.dev.yml build bpa2
     command: |
       cd /workspace/business-partner-agent/scripts
       eval $(gp env -e)
-      docker-compose -f docker-compose.dev.yml up aca-py 
+      docker-compose --profile second_bpa -f docker-compose.yml -f docker-compose.dev.yml up bpa-agent1 bpa2
+  # Backend: for "BPA" launch the backend via java (without frontend). To allow debugging easily.   
   - name: dev backend
     init: | 
       cd /workspace/business-partner-agent/backend
       mvn clean install -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
-    command: |
-      gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
-      eval $(gp env -e)
-      gp await-port 8030 && java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote-jar -Dmicronaut.environments=dev -jar /workspace/business-partner-agent/backend/business-partner-agent/target/*.jar
+    command: |   
+      gp await-port 8030 && eval $(gp env -e) && java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote-jar -Dmicronaut.environments=dev -jar /workspace/business-partner-agent/backend/business-partner-agent/target/*.jar
+  # Frontend: for BPA launch the frontend via npm serve. To allow debugging easily.   
   - name: dev fronend
     init: | 
       cd /workspace/business-partner-agent/frontend
       npm install
     command: |
-      gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
-      eval $(gp env -e VUE_APP_API_BASE_URL=`gp url 8080`/api)
       cd /workspace/business-partner-agent/frontend
-      gp await-port 8080 && npm run serve -- --port 8081
+      gp env -e VUE_APP_API_BASE_URL=`gp url 8080`/api
+      gp env -e VUE_APP_EVENTS_PATH=`gp url 8080`/events
+      gp await-port 8080 && eval $(gp env -e) && npm run serve -- --port 8081
 vscode:
   extensions:
     - redhat.java
