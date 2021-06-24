@@ -59,6 +59,9 @@ public interface TagRepository extends CrudRepository<Tag, UUID> {
     @Query("insert into partner_tag (partner_id, tag_id) values (:partnerId, :tagId)")
     void createPartnerToTagMapping(@NonNull UUID partnerId, @NonNull UUID tagId);
 
+    @Query("select count(tag_id) from partner_tag where tag_id = :tagId")
+    int countReferencesToPartner(@NonNull UUID tagId);
+
     default void updateAllPartnerToTagMappings(@lombok.NonNull UUID partnerId, @Nullable Collection<Tag> mappings) {
         deleteAllPartnerToTagMappings(partnerId);
         if (CollectionUtils.isNotEmpty(mappings)) {

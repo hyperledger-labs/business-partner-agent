@@ -113,15 +113,17 @@ class TagRepositoryTest {
                 .partners(Set.of())
                 .build());
 
-        partnerRepo.save(
+        Partner p1 = partnerRepo.save(
                 buildPartnerWithoutTag()
                         .tags(Set.of(tag))
                         .build());
 
-        partnerRepo.save(
+        Partner p2 = partnerRepo.save(
                 buildPartnerWithoutTag()
                         .tags(Set.of(tag))
                         .build());
+
+        assertEquals(2, tagRepo.countReferencesToPartner(tag.getId()));
 
         assertEquals(2, partnerRepo.count());
         partnerRepo.findAll().forEach(p -> assertEquals(Set.of(tag), p.getTags()));
@@ -129,6 +131,7 @@ class TagRepositoryTest {
         tagRepo.deleteById(tag.getId());
 
         assertEquals(0, tagRepo.count());
+        assertEquals(0, tagRepo.countReferencesToPartner(tag.getId()));
         assertEquals(2, partnerRepo.count());
         partnerRepo.findAll().forEach(p -> assertEquals(Set.of(), p.getTags()));
     }

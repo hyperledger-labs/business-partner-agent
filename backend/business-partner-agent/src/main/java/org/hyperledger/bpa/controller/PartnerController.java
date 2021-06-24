@@ -119,25 +119,7 @@ public class PartnerController {
     public HttpResponse<PartnerAPI> updatePartner(
             @PathVariable String id,
             @Body UpdatePartnerRequest update) {
-        Optional<PartnerAPI> partner = pm.updatePartnerAlias(UUID.fromString(id), update.getAlias());
-        if (partner.isPresent()) {
-            return HttpResponse.ok(partner.get());
-        }
-        return HttpResponse.notFound();
-    }
-
-    /**
-     * Update partner's tags
-     *
-     * @param id     {@link UUID} the partner id
-     * @param update {@link UpdatePartnerRequest}
-     * @return {@link PartnerAPI}
-     */
-    @Put("/{id}/tag")
-    public HttpResponse<PartnerAPI> updatePartnerTag(
-            @PathVariable String id,
-            @Body UpdatePartnerTagRequest update) {
-        Optional<PartnerAPI> partner = pm.updatePartnerTag(UUID.fromString(id), update.getTag());
+        Optional<PartnerAPI> partner = pm.updatePartner(UUID.fromString(id), update.getAlias(), update.getTag());
         if (partner.isPresent()) {
             return HttpResponse.ok(partner.get());
         }

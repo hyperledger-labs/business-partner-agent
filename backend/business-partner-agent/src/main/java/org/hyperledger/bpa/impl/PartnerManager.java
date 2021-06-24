@@ -121,17 +121,19 @@ public class PartnerManager {
         return apiPartner;
     }
 
-    public Optional<PartnerAPI> updatePartnerAlias(@NonNull UUID id, @Nullable String alias) {
+    public Optional<PartnerAPI> updatePartner(@NonNull UUID id, @Nullable String alias, @Nullable List<Tag> tags) {
         Optional<PartnerAPI> result = Optional.empty();
-        int count = repo.updateAlias(id, alias);
-        if (count > 0) {
-            final Optional<Partner> dbP = repo.findById(id);
-            if (dbP.isPresent()) {
-                result = Optional.of(converter.toAPIObject(dbP.get()));
-                if (StringUtils.isNotBlank(alias)) {
-                    myCredRepo.updateByConnectionId(dbP.get().getConnectionId(), dbP.get().getConnectionId(), alias);
-                }
+        final Optional<Partner> dbP = repo.findById(id);
+        if (dbP.isPresent()) {
+            Partner p = dbP.get();
+            p.setTags(tags != null ? new HashSet<>(tags) : null);
+            p.setAlias(alias);
+            tagRepo.updateAllPartnerToTagMappings(id, tags);
+            repo.updateAlias(id, alias);
+            if (StringUtils.isNotBlank(alias)) {
+                myCredRepo.updateByConnectionId(dbP.get().getConnectionId(), dbP.get().getConnectionId(), alias);
             }
+            result = Optional.of(converter.toAPIObject(p));
         }
         return result;
     }
@@ -146,17 +148,6 @@ public class PartnerManager {
             }
         }
         return result;
-    }
-
-    public Optional<PartnerAPI> updatePartnerTag(@NonNull UUID id, @Nullable List<Tag> tag) {
-        final Optional<Partner> dbP = repo.findById(id);
-        if (dbP.isPresent()) {
-            Partner p = dbP.get();
-            tagRepo.updateAllPartnerToTagMappings(p.getId(), tag);
-            p.setTags(tag != null ? new HashSet<>(tag) : null);
-            return Optional.of(converter.toAPIObject(p));
-        }
-        return Optional.empty();
     }
 
     /**

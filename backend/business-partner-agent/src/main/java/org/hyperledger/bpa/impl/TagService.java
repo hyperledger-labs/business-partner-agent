@@ -84,6 +84,10 @@ public class TagService {
     }
 
     public void deleteTag(@NonNull UUID id) {
+        int refs = tagRepo.countReferencesToPartner(id);
+        if(refs > 0) {
+            throw new WrongApiUsageException("Tag is still used by " + refs + " partner(s");
+        }
         tagRepo.findById(id).ifPresent(s -> tagRepo.deleteById(id));
     }
 

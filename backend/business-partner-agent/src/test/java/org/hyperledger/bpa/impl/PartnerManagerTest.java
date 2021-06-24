@@ -57,24 +57,24 @@ public class PartnerManagerTest {
                 .build());
         Partner partner = partnerRepo.save(buildPartnerWithoutTag().build());
 
-        System.out.println(partnerManager.updatePartnerTag(partner.getId(), List.of(t1)));
+        System.out.println(partnerManager.updatePartner(partner.getId(), null, List.of(t1)));
         Assertions.assertEquals(3, tagRepo.count());
         Assertions.assertEquals(1, partnerRepo.count());
         checkTagOnPartner(partner.getId(), "tag1");
 
-        partnerManager.updatePartnerTag(partner.getId(), List.of(t1, t2));
+        partnerManager.updatePartner(partner.getId(), null, List.of(t1, t2));
         Assertions.assertEquals(3, tagRepo.count());
         checkTagOnPartner(partner.getId(), "tag1", "tag2");
 
-        partnerManager.updatePartnerTag(partner.getId(), List.of(t1, t3));
+        partnerManager.updatePartner(partner.getId(), null, List.of(t1, t3));
         Assertions.assertEquals(3, tagRepo.count());
         checkTagOnPartner(partner.getId(), "tag1", "tag3");
 
-        partnerManager.updatePartnerTag(partner.getId(), List.of(t2, t3));
+        partnerManager.updatePartner(partner.getId(), null, List.of(t2, t3));
         Assertions.assertEquals(3, tagRepo.count());
         checkTagOnPartner(partner.getId(), "tag2", "tag3");
 
-        partnerManager.updatePartnerTag(partner.getId(), List.of(t1));
+        partnerManager.updatePartner(partner.getId(), null, List.of(t1));
         Assertions.assertEquals(3, tagRepo.count());
         checkTagOnPartner(partner.getId(), "tag1");
 
@@ -82,7 +82,7 @@ public class PartnerManagerTest {
         Assertions.assertTrue(dbTag2.isPresent());
         Assertions.assertEquals(0, dbTag2.get().getPartners().size());
 
-        partnerManager.updatePartnerTag(partner.getId(), null);
+        partnerManager.updatePartner(partner.getId(), null,null);
         Assertions.assertEquals(3, tagRepo.count());
         Optional<Tag> dbTag1 = tagRepo.findById(t1.getId());
         Assertions.assertTrue(dbTag1.isPresent());
