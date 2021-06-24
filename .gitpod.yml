@@ -65,9 +65,8 @@ tasks:
     init: | 
       cd /workspace/business-partner-agent/backend
       mvn clean install -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
-    command: |
-      eval $(gp env -e)
-      gp await-port 8030 && java -XX:+UnlockExperimentalVMOptions -Dmicronaut.server.port=8000 -Dcom.sun.management.jmxremote-jar -Dmicronaut.environments=dev -jar /workspace/business-partner-agent/backend/business-partner-agent/target/*.jar
+    command: |   
+      gp await-port 8030 && eval $(gp env -e) && java -XX:+UnlockExperimentalVMOptions -Dmicronaut.server.port=8000 -Dcom.sun.management.jmxremote-jar -Dmicronaut.environments=dev -jar /workspace/business-partner-agent/backend/business-partner-agent/target/*.jar
   # Frontend: for bpa1 launch the frontend via npm serve. To allow debugging easily.   
   - name: dev fronend
     init: | 
@@ -76,8 +75,7 @@ tasks:
     command: |
       cd /workspace/business-partner-agent/frontend
       gp env -e VUE_APP_API_BASE_URL=`gp url 8000`/api
-      eval $(gp env -e)
-      gp await-port 8000 && npm run serve -- --port 8001
+      gp await-port 8000 && eval $(gp env -e) && npm run serve -- --port 8001
 vscode:
   extensions:
     - redhat.java
