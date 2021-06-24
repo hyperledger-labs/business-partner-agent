@@ -92,50 +92,43 @@ public class ProofManager {
     // request proof from partner
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {
         try {
-            final Optional<Partner> p = partnerRepo.findById(partnerId);
-            if (p.isPresent()) {
-                // only when aries partner
-                if (p.get().hasConnectionId()) {
-                    if (req.isRequestBySchema()) {
-                        final Optional<Schema> schema = ac.schemasGetById(req.getRequestBySchema().getSchemaId());
-                        if (schema.isPresent()) {
-                            PresentProofRequest proofRequest = PresentProofRequestHelper
-                                    .buildForAllAttributes(p.get().getConnectionId(),
-                                            schema.get().getAttrNames(), req.buildRestrictions());
-                            ac.presentProofSendRequest(proofRequest).ifPresent(proof -> {
-                                final PartnerProof pp = PartnerProof
-                                        .builder()
-                                        .partnerId(partnerId)
-                                        .state(proof.getState())
-                                        .presentationExchangeId(proof.getPresentationExchangeId())
-                                        .role(proof.getRole())
-                                        .schemaId(schema.get().getId())
-                                        .threadId(proof.getThreadId())
-                                        .issuer(req.getFirstIssuerDid())
-                                        .build();
-                                pProofRepo.save(pp);
-                            });
-                        } else {
-                            throw new PartnerException("Could not find any schema on the ledger for id: "
-                                    + req.getRequestBySchema().getSchemaId());
-                        }
-                    } else {
-                        ac.presentProofSendRequest(req.getRequestRaw().toString()).ifPresent(exchange -> {
-                            final PartnerProof pp = PartnerProof
-                                    .builder()
-                                    .partnerId(partnerId)
-                                    .state(exchange.getState())
-                                    .presentationExchangeId(exchange.getPresentationExchangeId())
-                                    .role(exchange.getRole())
-                                    .build();
-                            pProofRepo.save(pp);
-                        });
-                    }
-                } else {
-                    throw new PartnerException("Partner has no aca-py connection");
-                }
+            final Partner partner = partnerRepo.findById(partnerId)
+                    .orElseThrow(() -> new PartnerException("Partner not found"));
+            if (!partner.hasConnectionId()) {
+                throw new PartnerException("Partner has no aca-py connection");
+            }
+            if (req.isRequestBySchema()) {
+                String schemaId = req.getRequestBySchema().getSchemaId();
+                final Schema schema = ac.schemasGetById(schemaId)
+                        .orElseThrow(() ->
+                                new PartnerException("Could not find any schema on the ledger for id: " + schemaId));
+                PresentProofRequest proofRequest = PresentProofRequestHelper
+                        .buildForAllAttributes(partner.getConnectionId(),
+                                schema.getAttrNames(), req.buildRestrictions());
+                ac.presentProofSendRequest(proofRequest).ifPresent(proof -> {
+                    final PartnerProof pp = PartnerProof
+                            .builder()
+                            .partnerId(partnerId)
+                            .state(proof.getState())
+                            .presentationExchangeId(proof.getPresentationExchangeId())
+                            .role(proof.getRole())
+                            .schemaId(schema.getId())
+                            .threadId(proof.getThreadId())
+                            .issuer(req.getFirstIssuerDid())
+                            .build();
+                    pProofRepo.save(pp);
+                });
             } else {
-                throw new PartnerException("Partner not found");
+                ac.presentProofSendRequest(req.getRequestRaw().toString()).ifPresent(exchange -> {
+                    final PartnerProof pp = PartnerProof
+                            .builder()
+                            .partnerId(partnerId)
+                            .state(exchange.getState())
+                            .presentationExchangeId(exchange.getPresentationExchangeId())
+                            .role(exchange.getRole())
+                            .build();
+                    pProofRepo.save(pp);
+                });
             }
         } catch (IOException e) {
             throw new NetworkException(ACA_PY_ERROR_MSG, e);
