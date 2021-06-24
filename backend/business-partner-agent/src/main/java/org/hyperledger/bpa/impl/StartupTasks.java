@@ -138,6 +138,6 @@ public class StartupTasks {
     }
 
     private void createDefaultTags() {
-        tagService.resetWriteOnlyTags();
+        tagService.createDefaultTags();
     }
 }

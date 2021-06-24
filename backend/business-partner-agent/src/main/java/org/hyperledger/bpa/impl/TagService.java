@@ -91,7 +91,7 @@ public class TagService {
         tagRepo.findById(id).ifPresent(s -> tagRepo.deleteById(id));
     }
 
-    public void resetWriteOnlyTags() {
+    public void createDefaultTags() {
         if (configuredTags.getTags() != null) {
             configuredTags.getTags().forEach(t -> {
                 try {
