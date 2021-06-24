@@ -25,14 +25,14 @@
         >
           <template v-slot:append>
             <v-bpa-button color="secondary" class="pb-1" @click="isUpdatingName = false"
-              >Cancel</v-bpa-button
+              >{{ $t("button.cancel") }}</v-bpa-button
             >
             <v-bpa-button
               class="pb-1"
               color="primary"
               :loading="isBusy"
               @click="submitNameUpdate()"
-              >Save</v-bpa-button
+              >{{ $t("button.save") }}</v-bpa-button
             >
           </template>
         </v-text-field>
@@ -60,14 +60,14 @@
           >
             <template v-slot:append>
               <v-bpa-button color="secondary" class="pb-1" @click="isUpdatingDid = false"
-                >Cancel</v-bpa-button
+                >{{ $t("button.cancel") }}</v-bpa-button
               >
               <v-bpa-button
                 class="pb-1"
                 color="primary"
                 :loading="isBusy"
                 @click="submitDidUpdate()"
-                >Save</v-bpa-button
+                >{{ $t("button.save") }}</v-bpa-button
               >
             </template>
           </v-text-field>
@@ -86,7 +86,7 @@
                 <v-icon dark>$vuetify.icons.refresh</v-icon>
               </v-bpa-button>
             </template>
-            <span>Refresh profile from source</span>
+            <span>{{ $t("view.partner.refreshProfile") }}</span>
           </v-tooltip>
 
           <v-btn depressed color="red" icon @click="deletePartner()">
@@ -109,18 +109,18 @@
 
             <v-row>
               <span class="font-weight-medium">
-                Connection request received
+                {{ $t("view.partner.requestReceived") }}
               </span>
             </v-row>
             <v-row
-              >{{ this.alias }} wants to create a connection with you.</v-row
+              >{{ $t("view.partner.requestReceivedSubtitle", { alias: this.alias }) }}</v-row
             >
             <template v-slot:actions>
               <v-bpa-button color="secondary" @click="deletePartner">
-                Remove Partner
+                {{ $t("view.partner.removePartner") }}
               </v-bpa-button>
               <v-bpa-button color="primary" @click="acceptPartnerRequest">
-                Accept
+                {{ $t("view.partner.acceptPartner") }}
               </v-bpa-button>
             </template>
           </v-banner>
@@ -136,9 +136,9 @@
             </v-avatar>
 
             <v-row>
-              <span class="font-weight-medium"> Connection request sent </span>
+              <span class="font-weight-medium">{{ $t("view.partner.requestSent") }}</span>
             </v-row>
-            <v-row>Waiting for response...</v-row>
+            <v-row>{{ $t("view.partner.requestSentSubtitle") }}</v-row>
           </v-banner>
         </template>
         <Profile v-if="isReady" v-bind:partner="partner"></Profile>
@@ -146,13 +146,13 @@
           <v-col cols="4">
             <v-row>
               <p class="grey--text text--darken-2 font-weight-medium">
-                Received Presentations
+                {{ $t("view.partner.receivedPresentations.title") }}
               </p>
             </v-row>
-            <v-row>The presentations you received from your partner</v-row>
+            <v-row>{{ $t("view.partner.receivedPresentations.text") }}</v-row>
             <v-row class="mt-4">
               <v-btn small @click="requestPresentation" :disabled="!isActive"
-                >Request Presentation</v-btn
+                >{{ $t("view.partner.receivedPresentations.button") }}</v-btn
               >
             </v-row>
           </v-col>
@@ -175,13 +175,13 @@
           <v-col cols="4">
             <v-row>
               <p class="grey--text text--darken-2 font-weight-medium">
-                Sent Presentations
+                {{ $t("view.partner.sentPresentations.title") }}
               </p>
             </v-row>
-            <v-row>The presentations you sent to your partner</v-row>
+            <v-row>{{ $t("view.partner.sentPresentations.text") }}</v-row>
             <v-row class="mt-4">
               <v-btn small @click="sendPresentation" :disabled="!isActive">
-                Send Presentation</v-btn
+                {{ $t("view.partner.sentPresentations.button") }}</v-btn
               >
             </v-row>
           </v-col>
@@ -202,10 +202,10 @@
           <v-col cols="4">
             <v-row>
               <p class="grey--text text--darken-2 font-weight-medium">
-                Issued Credentials
+                {{ $t("view.partner.issuedCredentials.title") }}
               </p>
             </v-row>
-            <v-row>The credentials you issued to your partner</v-row>
+            <v-row>{{ $t("view.partner.issuedCredentials.text") }}</v-row>
             <v-row class="mt-4">
               <v-dialog
                 v-model="issueCredentialDialog"
@@ -213,7 +213,7 @@
                 max-width="600px"
               >
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn small v-bind="attrs" v-on="on">Issue Credential</v-btn>
+                  <v-btn small v-bind="attrs" v-on="on">{{ $t("view.partner.issuedCredentials.button") }}</v-btn>
                 </template>
                 <IssueCredential
                   :partnerId="id"
@@ -236,10 +236,10 @@
           <v-col cols="4">
             <v-row>
               <p class="grey--text text--darken-2 font-weight-medium">
-                Presentation Requests
+                {{ $t("view.partner.presentationRequests.title") }}
               </p>
             </v-row>
-            <v-row>The proofs requested from this partner</v-row>
+            <v-row>{{ $t("view.partner.presentationRequests.text") }}</v-row>
           </v-col>
           <v-col cols="8">
             <PresentationRequestList
@@ -258,7 +258,7 @@
           <v-expansion-panel>
             <v-expansion-panel-header
               class="grey--text text--darken-2 font-weight-medium bg-light"
-              >Show raw data</v-expansion-panel-header
+              >{{ $t("showRawData") }}</v-expansion-panel-header
             >
             <v-expansion-panel-content class="bg-light">
               <vue-json-pretty :data="rawData"></vue-json-pretty>
@@ -271,13 +271,11 @@
     <v-dialog v-model="attentionPartnerStateDialog" max-width="500">
       <v-card>
         <v-card-title class="headline"
-          >Connection State {{ partner.state }}
+          >{{ $t("view.partner.stateDialog.title", { state: partner.state }) }}
         </v-card-title>
 
         <v-card-text>
-          The connection with your Business Partner is marked as
-          {{ partner.state }}. This could mean that your request will fail. Do
-          you want to try anyways?
+          {{ $t("view.partner.stateDialog.text", { state: partner.state }) }}
         </v-card-text>
 
         <v-card-actions>
@@ -286,10 +284,10 @@
           <v-bpa-button
             color="secondary"
             @click="attentionPartnerStateDialog = false"
-            >No</v-bpa-button
+            >{{ $t("view.partner.stateDialog.no") }}</v-bpa-button
           >
 
-          <v-bpa-button color="primary" @click="proceed">Yes</v-bpa-button>
+          <v-bpa-button color="primary" @click="proceed">{{ $t("view.partner.stateDialog.yes") }}</v-bpa-button>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -330,7 +328,7 @@ export default {
     PresentationRequestList,
   },
   created() {
-    EventBus.$emit("title", "Partner");
+    EventBus.$emit("title", this.$t("view.partner.title"));
     this.getPartner();
     this.getPresentationRecords();
     this.getIssuedCredentials(this.id);
