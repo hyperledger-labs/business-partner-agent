@@ -1,21 +1,21 @@
 # Debugging
 
-## Frontend and Backend with gitpod
-Gitpod can be used to just launch an agent (or two, which is not yet configured) or to do backend and/or frontend development.
+## Frontend and Backend debugging with gitpod
+Gitpod can be used to launch two agents just for experimenting or even to do development (backend and/or frontend)
 
-Just click on the Gitpod button in the main readme which opens [this link](https://gitpod.io/#https://github.com/hyperledger-labs/business-partner-agent).
+Just click on the Gitpod button in our [main readme](../README.md) which opens gitpod via [this link](https://gitpod.io/#https://github.com/hyperledger-labs/business-partner-agent).
 
-The IDE - based on [Visual Studio Code](https://code.visualstudio.com/) - will be launched with the source code already checked-out and the software built.
+The IDE - based on [Visual Studio Code](https://code.visualstudio.com/) - will be launched with the source code already checked-out and the software pre-built.
 Additionally, you will find 3 terminals in the bottom right corner:
-- One is launching an Acapy needed for the agent (including the database)
-- One is launching your java backend.
-- One is launching the frontend (with hot-reload of source code enabled).
+- One is launching an Acapy needed for the *agent1* (including the database) and a full *agent2*
+- One is launching the java backend for *agent1*.
+- One is launching the frontend for *agent1* (with hot-reload of source code enabled).
 
-As soon as all services are ready, the frontend will appear in a preview window (You might have to press the reload button once or twice). You can start experimenting with the agent now or modify the frontend code.
+As soon as all services are ready, the frontends of *agent1* and *agent2* will appear in a browser windows. You can start experimenting with the agent now or modify the frontend code.
 
-To start backend development simply kill the process in the backend terminal and run (debug) a new backend via the provided launch configuration (`Run and Debug` view).
+To start backend development kill the process in the backend terminal and run (or debug) a new backend via the provided launch configuration (`Run and Debug` view).
 
-## Backend
+## Backend debugging
 Starting the BPA with the follow JAVA_OPT will allow you to connect debugging while it's running. 
 
 ```
@@ -42,7 +42,7 @@ VSCode's launch.json config looks like this to work with the 'Debugger for Java'
 
 This connection can also be used for hot changes allowing for most development and running take place in a containerized environment. See your IDE's extension on how to do this. 
 
-### Frontend
+### Frontend debugging
 If the backend/bpa is started with `BPA_SECURITY_ENABLED=false`, we can stand up another frontend and use that for debugging.
 
 
