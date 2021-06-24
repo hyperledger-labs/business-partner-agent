@@ -5,13 +5,13 @@
 # 
 # SPDX-License-Identifier: Apache-2.0
 
-#if [ "$(which gp)" ]; then
-#   eval $(gp env -e)
-#    if [ $ACAPY_SEED1 ] ; then
-#        echo "There is already an ACAPY_SEED1, no need to run the script again."
-#        exit 0
-#    fi
-#fi
+if [ "$(which gp)" ]; then
+  eval $(gp env -e)
+  if [[ $ACAPY_SEED1 ]] && [[ $ACAPY_SEED2 ]]; then
+       echo "There is already DIDs registered, no need to run the script again."
+       exit 0
+  fi
+fi
 
 # Check the system the script is running on
 ARCHITECTURE="$(uname -s)"
@@ -51,11 +51,11 @@ if curl --fail -s -d $PAYLOAD  -H "Content-Type: application/json" -X POST ${URL
     echo ""
     echo ""Registration on $URL successful""
 
-#    if [ "$(which gp)" ]; then
-#        echo ""Setting seeds permanently in gitpod environment""
-#        gp env $1=$SEED
-#
-#    else
+    if [ "$(which gp)" ]; then
+        echo ""Setting seeds permanently in gitpod environment""
+        gp env $1=$SEED
+
+    else
         echo ""Setting $1 in $DEST_FILE file""
         if [ ! -f $DEST_FILE ]; then
             echo ""$DEST_FILE does not exist""
@@ -70,7 +70,7 @@ if curl --fail -s -d $PAYLOAD  -H "Content-Type: application/json" -X POST ${URL
             '"$1"'='"${SEED}"'
             ' $DEST_FILE
         fi
-#    fi 
+    fi 
 
 else
     # Something went wrong
