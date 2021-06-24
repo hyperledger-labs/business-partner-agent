@@ -270,7 +270,7 @@ public class AdminController {
         Optional<TagAPI> tag = tagService.getTag(id);
         if (tag.isPresent()) {
             if (!tag.get().getIsReadOnly()) {
-                tagService.deleteTag(id, force);
+                tagService.deleteTag(id, force != null && force);
                 return HttpResponse.ok();
             }
             return HttpResponse.notAllowed();

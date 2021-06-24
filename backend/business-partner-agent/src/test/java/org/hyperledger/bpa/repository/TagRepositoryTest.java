@@ -207,6 +207,15 @@ class TagRepositoryTest {
         assertEquals("foo", dbTag.get().getName());
     }
 
+    @Test
+    void testCountByName() {
+        tagRepo.save(Tag
+                .builder()
+                .name(MY_TAG)
+                .build());
+        assertEquals(1, tagRepo.contByName(MY_TAG));
+    }
+
     private Partner.PartnerBuilder buildPartnerWithoutTag() {
         return Partner
                 .builder()

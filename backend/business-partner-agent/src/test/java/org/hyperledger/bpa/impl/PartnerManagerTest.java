@@ -82,7 +82,7 @@ public class PartnerManagerTest {
         Assertions.assertTrue(dbTag2.isPresent());
         Assertions.assertEquals(0, dbTag2.get().getPartners().size());
 
-        partnerManager.updatePartner(partner.getId(), null,null);
+        partnerManager.updatePartner(partner.getId(), null, null);
         Assertions.assertEquals(3, tagRepo.count());
         Optional<Tag> dbTag1 = tagRepo.findById(t1.getId());
         Assertions.assertTrue(dbTag1.isPresent());
