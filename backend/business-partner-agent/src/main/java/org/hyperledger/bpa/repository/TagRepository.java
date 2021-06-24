@@ -38,11 +38,6 @@ public interface TagRepository extends CrudRepository<Tag, UUID> {
     @Join(value = "partners", type = Join.Type.LEFT_FETCH)
     Optional<Tag> findByName(String name);
 
-    @Query("delete from partner_tag where tag_id = (" +
-            "select t.id from tag as t where is_read_only = true); " +
-            "delete from tag where is_read_only = true")
-    long deleteByIsReadOnly();
-
     @Override
     @Query("delete from partner_tag where tag_id = :id; delete from tag where id = :id")
     void deleteById(@NonNull UUID id);

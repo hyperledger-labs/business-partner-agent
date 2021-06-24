@@ -195,35 +195,6 @@ class TagRepositoryTest {
     }
 
     @Test
-    void testDeleteReadOnly() {
-        Tag t1 = tagRepo.save(Tag
-                .builder()
-                .name(MY_TAG)
-                .isReadOnly(Boolean.TRUE)
-                .build());
-        Tag t2 = tagRepo.save(Tag
-                .builder()
-                .name("Other Tag")
-                .isReadOnly(Boolean.FALSE)
-                .build());
-        Partner partner = partnerRepo.save(
-                buildPartnerWithoutTag()
-                        .tags(Set.of(t1, t2))
-                        .build());
-
-        assertEquals(2, tagRepo.count());
-
-        long deleted = tagRepo.deleteByIsReadOnly();
-
-        assertEquals(1, deleted);
-        assertEquals(1, tagRepo.count());
-
-        Optional<Partner> dbPartner = partnerRepo.findById(partner.getId());
-        assertTrue(dbPartner.isPresent());
-        assertEquals(1, dbPartner.get().getTags().size());
-    }
-
-    @Test
     void testUpdateName() {
         Tag t1 = tagRepo.save(Tag
                 .builder()

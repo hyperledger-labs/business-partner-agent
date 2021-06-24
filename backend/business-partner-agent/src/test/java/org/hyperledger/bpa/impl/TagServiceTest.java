@@ -40,7 +40,9 @@ public class TagServiceTest {
                         .tags(Set.of(Tag.builder().id(t1.getId()).name(t1.getName()).build()))
                         .build());
 
-        tagService.deleteTag(t2.getId());
-        Assertions.assertThrows(WrongApiUsageException.class, () -> tagService.deleteTag(t1.getId()));
+        tagService.deleteTag(t2.getId(), null);
+        Assertions.assertThrows(WrongApiUsageException.class, () -> tagService.deleteTag(t1.getId(), Boolean.FALSE));
+        tagService.deleteTag(t1.getId(), Boolean.TRUE);
+        Assertions.assertEquals(0, partnerRepo.count());
     }
 }
