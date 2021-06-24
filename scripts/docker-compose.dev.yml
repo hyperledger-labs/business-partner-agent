@@ -10,15 +10,15 @@ services:
       dockerfile: Dockerfile
     environment:
       JAVA_OPTS: >
-        -Dbpa.acapy.url=http://bpa-agent1:${ACAPY1_ADMIN_PORT}
+        -Dbpa.acapy.url=http://bpa-agent1:${ACAPY_ADMIN_PORT}
         -Dbpa.acapy.apiKey=${ACAPY_ADMIN_URL_API_KEY}
         -Dmicronaut.security.enabled=${BPA_SECURITY_ENABLED}
-        -Dmicronaut.server.port=${BPA1_PORT}
+        -Dmicronaut.server.port=${BPA_PORT}
         -Dmicronaut.config.files=${BPA_CONFIG_FILES}
-        -Dbpa.pg.url=jdbc:postgresql://${POSTGRESQL1_HOST}/${POSTGRESQL_USER}
+        -Dbpa.pg.url=jdbc:postgresql://${POSTGRESQL_HOST}/${POSTGRESQL_USER}
         -Dbpa.pg.username=${POSTGRESQL_USER}
         -Dbpa.pg.password=${POSTGRESQL_PASSWORD}
-        -Dbpa.host=${BPA1_HOST}:${BPA1_PORT}
+        -Dbpa.host=${BPA_HOST}:${BPA_PORT}
         -Dbpa.scheme=${BPA_SCHEME}
         -Dmicronaut.environments=dev
       NODE_ENV: development

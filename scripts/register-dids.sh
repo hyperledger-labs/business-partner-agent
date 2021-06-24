@@ -7,7 +7,7 @@
 
 if [ "$(which gp)" ]; then
   eval $(gp env -e)
-  if [[ $ACAPY_SEED1 ]] && [[ $ACAPY_SEED2 ]]; then
+  if [[ $ACAPY_SEED ]] && [[ $ACAPY_SEED2 ]]; then
        echo "There is already DIDs registered, no need to run the script again."
        exit 0
   fi
@@ -79,5 +79,5 @@ else
 fi;
 }
 
-register_did "ACAPY_SEED1"
+register_did "ACAPY_SEED"
 register_did "ACAPY_SEED2"

@@ -7,7 +7,7 @@ ports:
     onOpen: ignore
   - port: 8001
     onOpen: open-browser
-  - port: 8010
+  - port: 8090
     onOpen: open-browser       
   - port: 8030
     onOpen: ignore     
@@ -44,13 +44,13 @@ github:
     addBadge: true
 
 tasks:
-  # Infrastructure: run the acapy for a "bpa1" plus full "bpa2" 
+  # Infrastructure: run the acapy for a "BPA" plus full "bpa2" 
   - name: infrastructure
     init: |
-      gp env ACAPY1_ENDPOINT=`gp url 8030`
+      gp env ACAPY_ENDPOINT=`gp url 8030`
       gp env ACAPY2_ENDPOINT=`gp url 8040`
-      gp env BPA1_HOST=`gp url 8000 | sed 's/.*https:\/\///'`
-      gp env BPA2_HOST=`gp url 8010 | sed 's/.*https:\/\///'`
+      gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
+      gp env BPA2_HOST=`gp url 8090 | sed 's/.*https:\/\///'`
       eval $(gp env -e)
       cd /workspace/business-partner-agent/scripts
       cp .env-example .env
@@ -60,14 +60,14 @@ tasks:
       cd /workspace/business-partner-agent/scripts
       eval $(gp env -e)
       docker-compose --profile second_bpa -f docker-compose.yml -f docker-compose.dev.yml up bpa-agent1 bpa2
-  # Backend: for "bpa1" launch the backend via java (without frontend). To allow debugging easily.   
+  # Backend: for "BPA" launch the backend via java (without frontend). To allow debugging easily.   
   - name: dev backend
     init: | 
       cd /workspace/business-partner-agent/backend
       mvn clean install -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
     command: |   
-      gp await-port 8030 && eval $(gp env -e) && java -XX:+UnlockExperimentalVMOptions -Dmicronaut.server.port=8000 -Dcom.sun.management.jmxremote-jar -Dmicronaut.environments=dev -jar /workspace/business-partner-agent/backend/business-partner-agent/target/*.jar
-  # Frontend: for bpa1 launch the frontend via npm serve. To allow debugging easily.   
+      gp await-port 8030 && eval $(gp env -e) && java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote-jar -Dmicronaut.environments=dev -jar /workspace/business-partner-agent/backend/business-partner-agent/target/*.jar
+  # Frontend: for BPA launch the frontend via npm serve. To allow debugging easily.   
   - name: dev fronend
     init: | 
       cd /workspace/business-partner-agent/frontend
