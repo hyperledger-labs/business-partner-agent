@@ -48,6 +48,7 @@ tasks:
       gp env ACAPY_ENDPOINT=`gp url 8030`
       gp env ACAPY2_ENDPOINT=`gp url 8040`
       gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
+      gp env BPA_WEBHOOK_URL=`gp url 8080`/log
       gp env BPA2_HOST=`gp url 8090 | sed 's/.*https:\/\///'`
       eval $(gp env -e)
       cd /workspace/business-partner-agent/scripts
