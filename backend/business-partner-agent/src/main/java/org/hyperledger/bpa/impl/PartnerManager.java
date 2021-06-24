@@ -21,7 +21,6 @@ import io.micronaut.cache.annotation.CacheInvalidate;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.api.PartnerAPI;
@@ -152,13 +151,10 @@ public class PartnerManager {
     public Optional<PartnerAPI> updatePartnerTag(@NonNull UUID id, @Nullable List<Tag> tag) {
         final Optional<Partner> dbP = repo.findById(id);
         if (dbP.isPresent()) {
-            Collection<Tag> incoming = CollectionUtils.emptyIfNull(tag);
-            Collection<Tag> persisted = CollectionUtils.emptyIfNull(dbP.get().getTags());
-            if (persisted.size() > incoming.size()) {
-                tagRepo.deleteDisjunctMappings(dbP.get().getId(), incoming, persisted);
-            }
-            Partner updatedP = repo.save(dbP.get().setTags(new HashSet<>(incoming)));
-            return Optional.of(converter.toAPIObject(updatedP));
+            Partner p = dbP.get();
+            tagRepo.updateAllPartnerToTagMappings(p.getId(), tag);
+            p.setTags(tag != null ? new HashSet<>(tag) : null);
+            return Optional.of(converter.toAPIObject(p));
         }
         return Optional.empty();
     }

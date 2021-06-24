@@ -18,13 +18,14 @@
 package org.hyperledger.bpa.repository;
 
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
-import org.apache.commons.collections4.CollectionUtils;
 import org.hyperledger.bpa.model.Tag;
 
 import java.util.Collection;
@@ -42,17 +43,26 @@ public interface TagRepository extends CrudRepository<Tag, UUID> {
             "delete from tag where is_read_only = true")
     long deleteByIsReadOnly();
 
-    /** Deletes partner to tag mapping from the mapping table */
-    @Query("delete from partner_tag where tag_id = :tagId and partner_id = :partnerId")
-    void deletePartnerToTagMapping(@NonNull UUID partnerId, @NonNull UUID tagId);
-
     @Override
     @Query("delete from partner_tag where tag_id = :id; delete from tag where id = :id")
     void deleteById(@NonNull UUID id);
 
     void updateNameById(@Id UUID id, String name);
 
-    default void deleteDisjunctMappings(UUID partnerId, Collection<Tag> left, Collection<Tag> right) {
-        CollectionUtils.disjunction(left, right).forEach(t -> deletePartnerToTagMapping(partnerId, t.getId()));
+    /** Deletes partner to tag mapping from the mapping table */
+    @Query("delete from partner_tag where tag_id = :tagId and partner_id = :partnerId")
+    void deletePartnerToTagMapping(@NonNull UUID partnerId, @NonNull UUID tagId);
+
+    @Query("delete from partner_tag where partner_id = :partnerId")
+    void deleteAllPartnerToTagMappings(@NonNull UUID partnerId);
+
+    @Query("insert into partner_tag (partner_id, tag_id) values (:partnerId, :tagId)")
+    void createPartnerToTagMapping(@NonNull UUID partnerId, @NonNull UUID tagId);
+
+    default void updateAllPartnerToTagMappings(@lombok.NonNull UUID partnerId, @Nullable Collection<Tag> mappings) {
+        deleteAllPartnerToTagMappings(partnerId);
+        if (CollectionUtils.isNotEmpty(mappings)) {
+            mappings.forEach(m -> createPartnerToTagMapping(partnerId, m.getId()));
+        }
     }
 }
