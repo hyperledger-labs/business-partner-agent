@@ -39,7 +39,7 @@ public class TagService {
     TagRepository tagRepo;
 
     @Inject
-    List<TagConfig> configuredTags;
+    TagConfig configuredTags;
 
     public @Nullable TagAPI addTag(@NonNull String name) {
         return addTag(name, Boolean.FALSE);
@@ -90,14 +90,16 @@ public class TagService {
     public void resetWriteOnlyTags() {
         long deleted = tagRepo.deleteByIsReadOnly();
         log.debug("Removed {} preconfigured tags", deleted);
+        if (configuredTags.getTags() != null) {
+            configuredTags.getTags().forEach(t -> {
+                try {
+                    TagAPI tagAPI = addTag(t, Boolean.TRUE);
+                    log.debug("Added preconfigured tag with name: {}", tagAPI.getName());
+                } catch (DataAccessException e) {
+                    log.warn("Tag with name {} will not be added", t, e);
+                }
+            });
+        }
 
-        configuredTags.forEach(t -> {
-            try {
-                TagAPI tagAPI = addTag(t.getName(), Boolean.TRUE);
-                log.debug("Added preconfigured tag with name: {}", tagAPI.getName());
-            } catch (DataAccessException e) {
-                log.warn("Tag with name {} will not be added", t.getName(), e);
-            }
-        });
     }
 }
