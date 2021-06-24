@@ -3,8 +3,11 @@ services:
 #######
 # Business Partner 1
 #######
-  BPA:
-    image: ${BPA_DOCKER_IMAGE}
+  bpa1:
+    image: ghcr.io/hyperledger-labs/business-partner-agent:edge
+    build:
+      context: ""
+      dockerfile: ""
     depends_on:
       - bpa-agent1
     environment:
@@ -17,7 +20,7 @@ services:
         -Dbpa.pg.url=jdbc:postgresql://${POSTGRESQL_HOST}/${POSTGRESQL_USER}
         -Dbpa.pg.username=${POSTGRESQL_USER}
         -Dbpa.pg.password=${POSTGRESQL_PASSWORD}
-        -Dbpa.host=${BPA_HOST}:${BPA_PORT}
+        -Dbpa.host=${BPA_HOST}
         -Dbpa.scheme=${BPA_SCHEME}
       BPA_WEB_MODE: ${BPA_WEB_MODE}
       BPA_RESOLVER_URL: ${BPA_RESOLVER_URL}
@@ -48,7 +51,7 @@ services:
         --auto-provision
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY_HTTP_PORT} \
-        --webhook-url http://BPA:${BPA_PORT}/log \
+        --webhook-url http://bpa1:${BPA_PORT}/log \
         --genesis-url '${ACAPY_GENESIS_URL}' \
         --endpoint ${ACAPY_ENDPOINT} \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \
@@ -81,7 +84,10 @@ services:
   bpa2:
     profiles:
       - second_bpa
-    image: ${BPA_DOCKER_IMAGE}
+    image: ghcr.io/hyperledger-labs/business-partner-agent:edge
+    build:
+      context: ""
+      dockerfile: ""
     depends_on:
       -  bpa-agent2
     environment:
@@ -94,7 +100,7 @@ services:
         -Dbpa.pg.url=jdbc:postgresql://${POSTGRESQL2_HOST}/${POSTGRESQL_USER}
         -Dbpa.pg.username=${POSTGRESQL_USER}
         -Dbpa.pg.password=${POSTGRESQL_PASSWORD}
-        -Dbpa.host=${BPA2_HOST}:${BPA2_PORT}
+        -Dbpa.host=${BPA2_HOST}
         -Dbpa.scheme=${BPA_SCHEME}
       BPA_WEB_MODE: ${BPA_WEB_MODE}
       BPA_RESOLVER_URL: ${BPA_RESOLVER_URL}
@@ -155,9 +161,9 @@ services:
       - ${POSTGRESQL2_PORT}:5432
     volumes:
       - bpa-wallet-db2:/var/lib/postgresql/data
-
-
-
+#######
+# Volumes for the databases
+#######      
 volumes:
   bpa-wallet-db1:
   bpa-wallet-db2:

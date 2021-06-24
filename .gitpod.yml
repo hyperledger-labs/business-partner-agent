@@ -55,11 +55,11 @@ tasks:
       cd /workspace/business-partner-agent/scripts
       cp .env-example .env
       ./register-dids.sh
-      docker-compose --profile second_bpa -f docker-compose.yml -f docker-compose.dev.yml build bpa2
+      docker-compose --profile second_bpa build bpa2
     command: |
       cd /workspace/business-partner-agent/scripts
       eval $(gp env -e)
-      docker-compose --profile second_bpa -f docker-compose.yml -f docker-compose.dev.yml up bpa-agent1 bpa2
+      docker-compose --profile second_bpa up bpa-agent1 bpa2
   # Backend: for "BPA" launch the backend via java (without frontend). To allow debugging easily.   
   - name: dev backend
     init: | 
