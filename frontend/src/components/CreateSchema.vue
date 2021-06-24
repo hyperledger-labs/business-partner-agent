@@ -112,14 +112,13 @@
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
-          <v-btn
+          <v-bpa-button color="secondary" @click="cancel()">Cancel</v-bpa-button>
+          <v-bpa-button
             :loading="this.isBusy"
             color="primary"
-            text
             @click="submit()"
             :disabled="fieldsEmpty"
-            >Submit</v-btn
+            >Submit</v-bpa-button
           >
         </v-layout>
       </v-card-actions>
@@ -130,10 +129,11 @@
 <script>
 import { EventBus } from "@/main";
 import { issuerService } from "@/services";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   name: "CreateSchema",
-  components: {},
+  components: {VBpaButton},
   props: {},
   data: () => {
     return {

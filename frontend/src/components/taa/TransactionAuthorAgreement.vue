@@ -35,9 +35,9 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn :disabled="!valid" color="primary" @click="register">
+            <v-bpa-button :disabled="!valid" color="primary" @click="register">
               Write endpoints to ledger
-            </v-btn>
+            </v-bpa-button>
           </v-card-actions>
         </v-card>
       </v-form>
@@ -47,10 +47,12 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import VueMarkdown from "vue-markdown-render";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   props: {},
   components: {
+    VBpaButton,
     "v-markdown": VueMarkdown,
   },
   data() {

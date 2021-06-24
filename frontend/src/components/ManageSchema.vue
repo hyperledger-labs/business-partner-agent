@@ -89,7 +89,7 @@
 
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-btn color="primary" text @click="closed">Close</v-btn>
+          <v-bpa-button color="primary" @click="closed">Close</v-bpa-button>
         </v-layout>
       </v-card-actions>
     </v-card>
@@ -101,6 +101,7 @@ import { EventBus } from "@/main";
 import { adminService } from "@/services";
 import TrustedIssuers from "@/components/TrustedIssuers";
 import CredentialDefinitions from "@/components/CredentialDefinitions";
+import VBpaButton from "@/components/BpaButton";
 export default {
   name: "ManageSchema",
   props: {
@@ -119,6 +120,7 @@ export default {
     },
   },
   components: {
+    VBpaButton,
     CredentialDefinitions,
     TrustedIssuers,
   },

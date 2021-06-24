@@ -43,14 +43,14 @@
 
                 <v-card-actions>
                   <v-layout align-end justify-end>
-                    <v-btn color="secondary" text @click="cancel()"
-                      >Cancel</v-btn
+                    <v-bpa-button color="secondary" @click="cancel()"
+                      >Cancel</v-bpa-button
                     >
-                    <v-btn
+                    <v-bpa-button
                       :disabled="selectedSchema.length === 0"
                       color="primary"
                       @click="step = 2"
-                      >Continue</v-btn
+                      >Continue</v-bpa-button
                     >
                   </v-layout>
                 </v-card-actions>
@@ -74,13 +74,13 @@
 
                 <v-card-actions>
                   <v-layout align-end justify-end>
-                    <v-btn color="secondary" text @click="step = 1">Back</v-btn>
+                    <v-bpa-button color="secondary" @click="step = 1">Back</v-bpa-button>
 
-                    <v-btn
+                    <v-bpa-button
                       :loading="this.isBusy"
                       color="primary"
                       @click="submitRequest()"
-                      >Send Request</v-btn
+                      >Send Request</v-bpa-button
                     >
                   </v-layout>
                 </v-card-actions>
@@ -95,10 +95,11 @@
 
 <script>
 import { EventBus } from "../main";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   name: "RequestPresentation",
-  components: {},
+  components: {VBpaButton},
   props: {
     id: String, //partner ID
   },

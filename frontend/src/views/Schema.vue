@@ -55,8 +55,8 @@
       </v-container>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-btn color="primary" text :to="{ name: 'SchemaSettings' }"
-            >Close</v-btn
+          <v-bpa-button color="primary" :to="{ name: 'SchemaSettings' }"
+            >Close</v-bpa-button
           >
         </v-layout>
       </v-card-actions>
@@ -67,6 +67,7 @@
 <script>
 import { EventBus } from "../main";
 import TrustedIssuers from "../components/TrustedIssuers";
+import VBpaButton from "@/components/BpaButton";
 export default {
   name: "Schema",
   props: {
@@ -74,6 +75,7 @@ export default {
     schema: Object,
   },
   components: {
+    VBpaButton,
     TrustedIssuers,
   },
   mounted() {

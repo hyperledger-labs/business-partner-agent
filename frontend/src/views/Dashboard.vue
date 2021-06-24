@@ -39,13 +39,13 @@
       </p>
       <!-- <p v-bind:style="{ fontSize: `140%` }" class="grey--text text--darken-2 font-weight-medium">Start by adding a public profile that your business partners will see</p> -->
       <br />
-      <v-btn
+      <v-bpa-button
         color="primary"
         :to="{
           name: 'DocumentAdd',
           params: { type: CredentialTypes.PROFILE.type },
         }"
-        >Setup your Profile</v-btn
+        >Setup your Profile</v-bpa-button
       >
     </div>
     <div v-if="!isWelcome && !isLoading">
@@ -101,8 +101,10 @@
 <script>
 import { EventBus } from "../main";
 import { CredentialTypes } from "../constants";
+import VBpaButton from "@/components/BpaButton";
 export default {
   name: "Dashboard",
+  components: {VBpaButton},
   created() {
     EventBus.$emit("title", "Dashboard");
     this.getStatus();

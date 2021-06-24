@@ -21,15 +21,18 @@ micronaut:
       login-failure: /user/authFailed
       logout: /user/signin
     intercept-url-map:
-      -
-        pattern: /**
-        access:
-          - isAuthenticated()
-      -
-        pattern: /health
+      - pattern: /health
         http-method: GET
         access:
           - isAnonymous()
+      - pattern: /health/**
+        http-method: GET
+        access:
+          - isAnonymous()          
+      - pattern: /**
+        access:
+          - isAuthenticated()
+
   session:
     max-inactive-interval: 12h
   router:
@@ -73,8 +76,6 @@ endpoints:
     enabled: true
     sensitive: false
     details-visible: AUTHENTICATED
-    acapy:
-      enabled: true
 
 datasources:
   '*':
@@ -139,3 +140,69 @@ bpa:
       url: ${BPA_PRIVACY_POLICY_URL:}
   creddef:
     revocationRegistrySize: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE:3000}
+# The following is an example on how to override the default ux.
+# This will have all of the alternate layout and themes/colors loaded.
+# To override theme, then set themes.light properties
+# To override favicon, then need favicon.href property
+# buttons are applied against v-bpa-buttons and determined by the color attribute
+#   example: <v-bpa-button color="primary">Primary</v-bpa-button>
+#  ux:
+#    buttons:
+#      primary:
+#        text: false
+#        outlined: false
+#      secondary:
+#        text: true
+#        outlined: true
+#    theme:
+#      dark: false
+#      themes:
+#        light:
+#          primary: '#003366'
+#          secondary: '#003366'
+#          accent: '#82B1FF'
+#          error: '#D8292F'
+#          info: '#2196F3'
+#          success: '#2E8540'
+#          warning: '#FFC107'
+#          bgLight: "#FAFAFA"
+#          bgLight2: "#ECECEC"
+#          font: "#313132"
+#          anchor: "#1A5A96"
+#          anchorHover: "#3B99FC"
+#    favicon:
+#      href: "https://raw.githubusercontent.com/bcgov/common-forms-toolkit/master/app/frontend/public/favicon.ico"
+#    navigation:
+#      avatar:
+#        agent:
+#          enabled: false
+#          default: true
+#          src: ""
+#        user:
+#          enabled: true
+#      settings:
+#        location: "bottom"
+#      about:
+#        enabled: false
+#      logout:
+#        enabled: true
+#    header:
+#      title:
+#        prefix: true
+#      logout:
+#        enabled: false
+#      logo:
+#        enabled: true
+#        href: "https://www2.gov.bc.ca"
+#        alt: "B.C. Government Logo"
+#        images:
+#          - name: "small"
+#            class: "d-none d-sm-flex d-md-none"
+#            height: "3.5rem"
+#            src: "https://raw.githubusercontent.com/bcgov/common-forms-toolkit/master/app/frontend/src/assets/images/bc_logo_square.svg"
+#            width: "3.5rem"
+#          - name: "medium"
+#            class: "d-none d-md-flex"
+#            height: "3.5rem"
+#            src: "https://raw.githubusercontent.com/bcgov/common-forms-toolkit/master/app/frontend/src/assets/images/bc_logo.svg"
+#            width: "10rem"

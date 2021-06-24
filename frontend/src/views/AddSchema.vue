@@ -56,14 +56,14 @@
 
       <v-card-actions>
         <v-layout justify-end>
-          <v-btn
+          <v-bpa-button
             :loading="this.isBusyAddSchema"
             :disabled="fieldsEmpty"
             color="primary"
             @click="addSchema"
           >
             Submit
-          </v-btn>
+          </v-bpa-button>
         </v-layout>
       </v-card-actions>
     </v-card>
@@ -73,9 +73,11 @@
 <script>
 import { EventBus } from "../main";
 import TrustedIssuer from "../components/TrustedIssuers.vue";
+import VBpaButton from "@/components/BpaButton";
 export default {
   name: "AddSchema",
   components: {
+    VBpaButton,
     TrustedIssuer,
   },
   created: () => {},

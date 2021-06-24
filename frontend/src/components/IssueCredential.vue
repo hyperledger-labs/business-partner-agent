@@ -53,14 +53,13 @@
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
-          <v-btn
+          <v-bpa-button color="secondary" @click="cancel()">Cancel</v-bpa-button>
+          <v-bpa-button
             :loading="this.isBusy"
             color="primary"
-            text
             @click="submit()"
             :disabled="submitDisabled"
-            >Submit</v-btn
+            >Submit</v-bpa-button
           >
         </v-layout>
       </v-card-actions>
@@ -72,10 +71,11 @@
 import { EventBus } from "@/main";
 import { issuerService, partnerService } from "@/services";
 import * as textUtils from "@/utils/textUtils";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   name: "IssueCredential",
-  components: {},
+  components: {VBpaButton},
   props: {
     partnerId: String,
     credDefId: String,

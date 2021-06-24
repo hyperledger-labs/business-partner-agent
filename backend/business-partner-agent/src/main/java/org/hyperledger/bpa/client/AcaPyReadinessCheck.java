@@ -17,22 +17,26 @@
  */
 package org.hyperledger.bpa.client;
 
+import java.io.IOException;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.server.AdminStatusReadiness;
+
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.health.HealthStatus;
 import io.micronaut.management.endpoint.health.HealthEndpoint;
 import io.micronaut.management.health.indicator.AbstractHealthIndicator;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Optional;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.server.AdminStatusReadiness;
+import io.micronaut.management.health.indicator.annotation.Readiness;
 
 @Singleton
+@Readiness
 @Requires(beans = HealthEndpoint.class)
-@Requires(property = HealthEndpoint.PREFIX + ".acapy.enabled", value = "true")
-public class AcaPyHealthCheck extends AbstractHealthIndicator<Map<String, String>> {
+public class AcaPyReadinessCheck extends AbstractHealthIndicator<Map<String, String>> {
     @Inject
     AriesClient ac;
 
@@ -53,6 +57,6 @@ public class AcaPyHealthCheck extends AbstractHealthIndicator<Map<String, String
 
     @Override
     protected String getName() {
-        return "aca-py";
+        return "aca-py-readiness";
     }
 }

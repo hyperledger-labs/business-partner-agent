@@ -9,7 +9,7 @@ if [ "$(which gp)" ]; then
     eval $(gp env -e)
     if [ $ACAPY_SEED ] ; then
         echo "There is already an ACAPY_SEED set and hopefully also a DID registered."
-        exit 1
+        exit 0
     fi
 fi
 

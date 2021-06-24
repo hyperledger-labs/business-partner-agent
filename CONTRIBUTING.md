@@ -12,7 +12,7 @@ avoid frustration later on.
 ## Contribution Guideline
 
 * We use the GitHub [issue
-  tracker](https://github.com/hyperledger-labs/organizational-agent/issues).
+  tracker](https://github.com/hyperledger-labs/business-partner-agent/issues).
 
 * When you want to submit a patch, you must [sign your
   commits](#sign-your-work).
