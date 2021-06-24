@@ -18,6 +18,8 @@
 
 package org.hyperledger.bpa.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.validation.validator.Validator;
@@ -38,7 +40,8 @@ import java.util.stream.Collectors;
 class ProofTemplateTest {
     @Inject
     Validator validator;
-
+    @Inject
+    ObjectMapper om;
     @Inject
     SchemaService schemaService;
 
@@ -106,5 +109,28 @@ class ProofTemplateTest {
         Set<ConstraintViolation<BPAProofTemplate>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(1, constraintViolations.size());
         Assertions.assertEquals("invalid operator", constraintViolations.stream().findFirst().get().getInvalidValue());
+    }
+
+
+    @Test
+    void testThatSerializationWorksBothWays() throws JsonProcessingException {
+        BPAProofTemplate proofTemplate = BPAProofTemplate.builder()
+                .id(UUID.randomUUID())
+                .name("MyTestTemplate")
+                .attributeGroup(BPAAttributeGroup.builder()
+                        .schemaId("mySchemaId")
+                        .attribute(BPAAttribute.builder()
+                                .name("myAttributeName")
+                                .condition(BPACondition.builder()
+                                        .value("any")
+                                        .operator("invalid operator")
+                                        .build())
+                                .build()
+                        )
+                        .build())
+                .build();
+        String string=om.writeValueAsString(proofTemplate);
+        BPAProofTemplate result = om.readValue(string, BPAProofTemplate.class);
+        Assertions.assertEquals(proofTemplate,result);
     }
 }
