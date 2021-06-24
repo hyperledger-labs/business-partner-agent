@@ -47,9 +47,9 @@
       "requestSent": "Connection request sent",
       "requestSentSubtitle": "Waiting for response...",
       "receivedPresentations": {
-        "title": "Received Presentations",
-        "text": "The presentations you received from your partner",
-        "button": "Request Presentation"
+        "title": "Received Proofs",
+        "text": "The proofs you received from your partner",
+        "button": "Request Proof"
       },
       "sentPresentations": {
         "title": "Sent Proofs",
@@ -62,7 +62,7 @@
         "button": "Issue Credential"
       },
       "presentationRequests": {
-        "title": "Presentation Requests",
+        "title": "Proof Requests",
         "text": "The proofs requested from this partner"
       },
       "stateDialog": {
