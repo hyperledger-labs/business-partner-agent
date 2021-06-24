@@ -85,6 +85,9 @@ Vue.prototype.$apiBaseUrl = apiBaseUrl;
 Vue.config.productionTip = false;
 Vue.prototype.$config = {
   ledger: "iil",
+  title: process.env.VUE_APP_TITLE || "Business Partner Agent",
+  locale:  process.env.VUE_APP_I18N_LOCALE || "en",
+  fallbackLocale: process.env.VUE_APP_I18N_FALLBACK_LOCALE || "en"
 };
 
 // We need to load the configuration before the Vue application, so we can use the UX configuration
@@ -99,6 +102,11 @@ Vue.prototype.$config = {
     Object.assign(Vue.prototype.$config.ux, result.data.ux);
     console.log("...Configuration loaded");
   }
+
+  console.log("setting i18n...");
+  i18n.locale = Vue.prototype.$config.locale;
+  i18n.fallbackLocale = Vue.prototype.$config.fallbackLocale;
+  console.log(`i18n.locale = ${i18n.locale}, i18n.fallbackLocale = ${i18n.fallbackLocale}`);
 
   store.dispatch("loadSettings");
   store.dispatch("loadSchemas");

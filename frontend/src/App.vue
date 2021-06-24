@@ -326,6 +326,8 @@ export default {
     },
   },
   created() {
+    // Set the browser/tab title...
+    document.title = this.$config.title;
     if (this.$config.ux) {
       Object.assign(this.ux, this.$config.ux);
 
