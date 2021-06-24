@@ -18,6 +18,7 @@
 
 package org.hyperledger.bpa.model;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.micronaut.core.annotation.Introspected;
 import lombok.*;
 import org.hyperledger.bpa.controller.api.prooftemplates.AttributeGroup;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
 @Builder
 @Introspected
 @ValidAttributeGroup
+@JsonTypeInfo(use= JsonTypeInfo.Id.CLASS)
 public class BPAAttributeGroup {
     @ValidBPASchemaId
     String schemaId;

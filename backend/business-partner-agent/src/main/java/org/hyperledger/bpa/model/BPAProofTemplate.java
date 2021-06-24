@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.model;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.TypeDef;
@@ -54,7 +55,8 @@ public class BPAProofTemplate {
     @Singular
     @ValidAttributeGroup
     @TypeDef(type = DataType.JSON)
-    List<@ValidAttributeGroup BPAAttributeGroup> attributeGroups;
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
+    List<BPAAttributeGroup> attributeGroups;
 
     public ProofTemplate toRepresentation() {
         return new ProofTemplate(

@@ -18,6 +18,7 @@
 
 package org.hyperledger.bpa.model;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.Nullable;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,7 @@ import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondit
 @NoArgsConstructor
 @Builder
 @Introspected
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public class BPACondition {
     @ValidAttributeConditionOperator
     private String operator;
