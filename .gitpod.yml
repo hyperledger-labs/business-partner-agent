@@ -3,7 +3,7 @@ image:
   file: .gitpod.Dockerfile
 
 ports:
-  - port: 8000
+  - port: 8080
     onOpen: ignore
   - port: 8001
     onOpen: open-browser
@@ -74,8 +74,9 @@ tasks:
       npm install
     command: |
       cd /workspace/business-partner-agent/frontend
-      gp env -e VUE_APP_API_BASE_URL=`gp url 8000`/api
-      gp await-port 8000 && eval $(gp env -e) && npm run serve -- --port 8001
+      gp env -e VUE_APP_API_BASE_URL=`gp url 8080`/api
+      gp env -e VUE_APP_EVENTS_PATH=`gp url 8080`/events
+      gp await-port 8080 && eval $(gp env -e) && npm run serve -- --port 8001
 vscode:
   extensions:
     - redhat.java
