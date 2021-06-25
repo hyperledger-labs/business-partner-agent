@@ -7,9 +7,15 @@
 -->
 
 <template>
-  <v-container v-if="!isLoading">
-    <vue-json-pretty :data="rawData"></vue-json-pretty>
-    <v-card-actions>
+  <v-container>
+    <v-card v-if="!isLoading" class="mx-auto">
+      <v-card-title class="bg-light">
+        <v-btn depressed color="secondary" icon @click="$router.go(-1)">
+          <v-icon dark>$vuetify.icons.prev</v-icon>
+        </v-btn>
+        Presentation Request Details
+      </v-card-title>
+      <v-card-text> hkjhaskjd </v-card-text>
       <v-layout align-end justify-end>
         <v-btn
           color="secondary"
@@ -26,18 +32,20 @@
           >Accept</v-btn
         >
       </v-layout>
-      <v-expansion-panels v-if="expertMode" accordion flat>
-        <v-expansion-panel>
-          <v-expansion-panel-header
-            class="grey--text text--darken-2 font-weight-medium bg-light"
-            >Show raw data</v-expansion-panel-header
-          >
-          <v-expansion-panel-content class="bg-light">
-            <vue-json-pretty :data="rawData"></vue-json-pretty>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
-    </v-card-actions>
+      <v-card-actions>
+        <v-expansion-panels accordion flat>
+          <v-expansion-panel>
+            <v-expansion-panel-header
+              class="grey--text text--darken-2 font-weight-medium bg-light"
+              >Show raw data</v-expansion-panel-header
+            >
+            <v-expansion-panel-content class="bg-light">
+              <vue-json-pretty :data="rawData"></vue-json-pretty>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </v-card-actions>
+    </v-card>
   </v-container>
 </template>
 
