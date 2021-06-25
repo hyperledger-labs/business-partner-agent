@@ -6,7 +6,7 @@ ports:
   - port: 8080
     onOpen: ignore
   - port: 8081
-    onOpen: open-preview
+    onOpen: open-browser
   - port: 8090
     onOpen: open-browser       
   - port: 8030
