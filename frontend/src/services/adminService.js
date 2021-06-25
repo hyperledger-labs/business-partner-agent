@@ -28,7 +28,11 @@ export default {
   addTag(data) {
     return appAxios().post(`${ApiRoutes.ADMIN}/tag`, data);
   },
-  deleteTag(id) {
-    return appAxios().delete(`${ApiRoutes.ADMIN}/tag/${id}`);
+  deleteTag(id, hardDelete) {
+    let params = null;
+    if (hardDelete) {
+      params = new URLSearchParams([["force", true]]);
+    }
+    return appAxios().delete(`${ApiRoutes.ADMIN}/tag/${id}`, { params });
   },
 };

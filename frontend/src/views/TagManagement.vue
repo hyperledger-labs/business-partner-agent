@@ -58,22 +58,51 @@
         </v-row>
       </v-card-text>
     </v-card>
+    <v-dialog v-model="hardDeleteDialog" max-width="450">
+      <v-card>
+        <v-card-title class="headline">Delete Tag</v-card-title>
+
+        <v-card-text>
+          <p>{{ deleteErrorMsg }}</p>
+
+          <p>
+            Do you really want to the delete this tag from all business
+            partners?
+          </p>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-bpa-button color="secondary" @click="hardDeleteDialog = false"
+            >No</v-bpa-button
+          >
+          <v-bpa-button color="error" @click="deleteTag(selectedTag, true)"
+            >Yes</v-bpa-button
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
 import { EventBus } from "../main";
 import adminService from "@/services/adminService";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   name: "TagManagement",
-  components: {},
+  components: { VBpaButton },
   created() {
     EventBus.$emit("title", "Tag Management");
   },
   data: () => {
     return {
       newTag: "",
+      hardDeleteDialog: false,
+      deleteErrorMsg: "",
+      selectedTag: "",
     };
   },
   computed: {
@@ -101,25 +130,32 @@ export default {
         })
         .catch((e) => {
           console.error(e);
-          this.isBusy = false;
           EventBus.$emit("error", e);
         });
     },
-    deleteTag(tag) {
+    deleteTag(tag, hardDelete = false) {
       adminService
-        .deleteTag(tag)
+        .deleteTag(tag, hardDelete)
         .then((res) => {
+          this.hardDeleteDialog = false;
           if (res.status === 201 || res.status === 200) {
             EventBus.$emit("success", "Tag successfully removed");
             this.$store.dispatch("loadTags");
+            this.deleteErrorMsg = "";
+            this.selectedTag = null;
           } else {
             EventBus.$emit("error", res.status.text);
           }
         })
         .catch((e) => {
-          console.error(e);
-          this.isBusy = false;
-          EventBus.$emit("error", e);
+          console.error(e.response);
+          if (e.response.status === 400) {
+            this.hardDeleteDialog = true;
+            this.deleteErrorMsg = e.response.data.message;
+            this.selectedTag = tag;
+          } else {
+            EventBus.$emit("error", e);
+          }
         });
     },
   },
