@@ -49,12 +49,12 @@ tasks:
     init: |
       cd /workspace/business-partner-agent/scripts
       cp .env-example .env
-      ./setup-gitpod.sh
+      source ./setup-gitpod.sh
       ./register-dids.sh
       docker-compose --profile second_bpa build bpa2
     command: |
       cd /workspace/business-partner-agent/scripts
-      ./setup-gitpod.sh
+      source ./setup-gitpod.sh
       docker-compose --profile second_bpa up bpa-agent1 bpa2 bpa-agent2
   # Backend: for "BPA" launch the backend via java (without frontend). To allow debugging easily.   
   - name: dev backend
@@ -63,7 +63,7 @@ tasks:
       mvn clean install -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
     command: |   
       gp await-port 8030
-      /workspace/business-partner-agent/scripts/setup-gitpod.sh
+      source /workspace/business-partner-agent/scripts/setup-gitpod.sh
       java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote-jar -Dmicronaut.security.enabled=false -jar /workspace/business-partner-agent/backend/business-partner-agent/target/*.jar
   # Frontend: for BPA launch the frontend via npm serve. To allow debugging easily.   
   - name: dev fronend
@@ -72,7 +72,7 @@ tasks:
       npm install
     command: |
       gp await-port 8080
-      /workspace/business-partner-agent/scripts/setup-gitpod.sh     
+      source /workspace/business-partner-agent/scripts/setup-gitpod.sh     
       cd /workspace/business-partner-agent/frontend
       npm run serve -- --port 8081
 vscode:
