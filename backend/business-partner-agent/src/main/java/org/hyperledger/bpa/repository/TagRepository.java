@@ -63,7 +63,16 @@ public interface TagRepository extends CrudRepository<Tag, UUID> {
     default void updateAllPartnerToTagMappings(@lombok.NonNull UUID partnerId, @Nullable Collection<Tag> mappings) {
         deleteAllPartnerToTagMappings(partnerId);
         if (CollectionUtils.isNotEmpty(mappings)) {
-            mappings.forEach(m -> createPartnerToTagMapping(partnerId, m.getId()));
+            mappings.forEach(m -> {
+                if (m.getId() == null) {
+                    Tag saved = save(Tag.builder()
+                            .name(m.getName())
+                            .isReadOnly(Boolean.FALSE)
+                            .build());
+                    m.setId(saved.getId());
+                }
+                createPartnerToTagMapping(partnerId, m.getId());
+            });
         }
     }
 }

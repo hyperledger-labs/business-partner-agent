@@ -55,6 +55,11 @@ public class PartnerManagerTest {
                 .builder()
                 .name("tag3")
                 .build());
+        Tag t4 = Tag
+                .builder()
+                .name("tag4")
+                .build();
+
         Partner partner = partnerRepo.save(buildPartnerWithoutTag().build());
 
         System.out.println(partnerManager.updatePartner(partner.getId(), null, List.of(t1)));
@@ -78,12 +83,16 @@ public class PartnerManagerTest {
         Assertions.assertEquals(3, tagRepo.count());
         checkTagOnPartner(partner.getId(), "tag1");
 
+        partnerManager.updatePartner(partner.getId(), null, List.of(t4));
+        Assertions.assertEquals(4, tagRepo.count());
+        checkTagOnPartner(partner.getId(), "tag4");
+
         Optional<Tag> dbTag2 = tagRepo.findById(t2.getId());
         Assertions.assertTrue(dbTag2.isPresent());
         Assertions.assertEquals(0, dbTag2.get().getPartners().size());
 
         partnerManager.updatePartner(partner.getId(), null, null);
-        Assertions.assertEquals(3, tagRepo.count());
+        Assertions.assertEquals(4, tagRepo.count());
         Optional<Tag> dbTag1 = tagRepo.findById(t1.getId());
         Assertions.assertTrue(dbTag1.isPresent());
         Assertions.assertEquals(0, dbTag1.get().getPartners().size());
