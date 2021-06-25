@@ -25,15 +25,12 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.hyperledger.acy_py.generated.model.DIDEndpointWithType;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
-import org.hyperledger.aries.api.ledger.EndpointResponse;
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.exception.PartnerException;
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -41,7 +38,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -66,27 +62,7 @@ public class URClient {
     @Cacheable(cacheNames = { "ur-cache" })
     public Optional<DIDDocument> getDidDocument(@NonNull String did) {
         try {
-            if (did.startsWith("did:sov:")) {
-                Optional<DIDDocument> didDocument = ac.resolverResolveDid(did);
-                if (didDocument.isPresent() && !didDocument.get().hasProfileEndpoint()) {
-                    ac.ledgerDidEndpoint(did, DIDEndpointWithType.EndpointTypeEnum.PROFILE)
-                            .map(EndpointResponse::getEndpoint)
-                            .ifPresent(ep -> {
-                                String profile = DIDEndpointWithType.EndpointTypeEnum.PROFILE
-                                        .getValue().toLowerCase(Locale.US);
-                                didDocument.get().getService().add(DIDDocument.Service
-                                        .builder()
-                                        .id(didDocument.get().getId() + "#" + profile)
-                                        .type(profile)
-                                        .serviceEndpoint(ep)
-                                        .build());
-                            });
-                }
-                return didDocument;
-            } else if (did.startsWith("did:web:")) {
-                String host = AriesStringUtil.getLastSegment(did);
-                return call("https://" + host + "/.well-known/did.json", DIDDocument.class);
-            }
+            return ac.resolverResolveDid(did);
         } catch (IOException e) {
             log.error("aca-py not reachable");
         }

@@ -128,7 +128,7 @@
         <dependency>
             <groupId>network.idu.acapy</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.7.0-pre.2</version>
+            <version>0.7.0-pre.3</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>
@@ -155,7 +155,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>5.5.0</version>
+            <version>5.5.1</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
@@ -346,7 +346,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
-                        <version>3.1.2</version>
+                        <version>3.2.0</version>
                         <executions>
                             <execution>
                                 <id>copy</id>

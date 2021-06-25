@@ -115,15 +115,15 @@ class DidResolverTest extends BaseTest {
 
     @Test
     void testSplitDid() {
-        DidResolver.ConnectionLabel cl = DidResolver.splitDidFrom("did:sov:iil:123:label");
+        DidResolver.ConnectionLabel cl = DidResolver.splitDidFrom("did:sov:123:label");
         assertEquals("label", cl.getLabel());
         assertTrue(cl.getDid().isPresent());
-        assertEquals("did:sov:iil:123", cl.getDid().get());
+        assertEquals("did:sov:123", cl.getDid().get());
 
-        cl = DidResolver.splitDidFrom("did:sov:iil:JTWwhv1L3ZBtX8WWBPJMRy:Bob's Agent");
+        cl = DidResolver.splitDidFrom("did:sov:JTWwhv1L3ZBtX8WWBPJMRy:Bob's Agent");
         assertEquals("Bob's Agent", cl.getLabel());
         assertTrue(cl.getDid().isPresent());
-        assertEquals("did:sov:iil:JTWwhv1L3ZBtX8WWBPJMRy", cl.getDid().get());
+        assertEquals("did:sov:JTWwhv1L3ZBtX8WWBPJMRy", cl.getDid().get());
 
         cl = DidResolver.splitDidFrom("did:label");
         assertEquals("did:label", cl.getLabel());

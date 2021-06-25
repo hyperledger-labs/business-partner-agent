@@ -28,7 +28,7 @@
             "issuer": "did:sov:Ni2hE7fEHJ25xUBc7ZESf6",
             "issuanceDate": "2020-12-03T13:11:14Z",
             "credentialSubject": {
-                "id": "did:sov:iil:Ni2hE7fEHJ25xUBc7ZESf6",
+                "id": "did:sov:Ni2hE7fEHJ25xUBc7ZESf6",
                 "bic": "AGRIFRPP",
                 "iban": "FR7630006000011234567890189"
             },

@@ -128,7 +128,7 @@ public class DidResolver {
 
     /**
      * Extracts the did and label components from a label is supposed to adhere to
-     * the following format: did:sov:xxx:123:MyLabel.
+     * the following format: did:sov:123:MyLabel.
      * 
      * @param label the label
      * @return {@link ConnectionLabel}
@@ -137,9 +137,9 @@ public class DidResolver {
         ConnectionLabel.ConnectionLabelBuilder cl = ConnectionLabel.builder();
         if (StringUtils.isNotEmpty(label)) {
             String[] parts = label.split(":");
-            if (parts.length == 5) {
-                cl.label = parts[4];
-                String did = StringUtils.joinWith(":", parts[0], parts[1], parts[2], parts[3]);
+            if (parts.length == 4) {
+                cl.label = parts[3];
+                String did = StringUtils.joinWith(":", parts[0], parts[1], parts[2]);
                 cl.did(Optional.of(did));
             } else {
                 cl.label = label;

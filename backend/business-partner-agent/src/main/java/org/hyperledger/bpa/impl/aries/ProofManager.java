@@ -303,7 +303,7 @@ public class ProofManager {
         return proof;
     }
 
-    private void sendPresentProofProblemReport(@NotNull String PresentationExchangeId, @NotNull String problemString)
+    private void sendPresentProofProblemReport(@NonNull String PresentationExchangeId, @NonNull String problemString)
             throws IOException {
         V10PresentationProblemReportRequest request = V10PresentationProblemReportRequest.builder()
                 .description(problemString)

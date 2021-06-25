@@ -1,27 +1,37 @@
 {
-    "@context": "https://www.w3.org/ns/did/v1",
-    "id": "did:sov:iil:JTWwhv1L3ZBtX8WWBPJMRy",
+    "@context": [
+        "https://www.w3.org/ns/did/v1"
+    ],
+    "id": "did:sov:5qxxVL2qHZoDn4HRyo3nN3",
     "verificationMethod": [
         {
-        "type": "Ed25519VerificationKey2018",
-        "id": "did:sov:iil:JTWwhv1L3ZBtX8WWBPJMRy#key-1",
-        "publicKeyBase58": "AWrdqVFud7XjVxu69fjo4PHtTuUDnBL22GkQEhCEVBEV"
+            "id": "did:sov:5qxxVL2qHZoDn4HRyo3nN3#key-1",
+            "type": "Ed25519VerificationKey2018",
+            "controller": "did:sov:5qxxVL2qHZoDn4HRyo3nN3",
+            "publicKeyBase58": "3e8rKNmq2gZzz31uHDthH4xJEXU3pCemazRQsHVzyYfj"
         }
     ],
     "authentication": [
-        "did:sov:iil:JTWwhv1L3ZBtX8WWBPJMRy#key-1",
-        {
-            "type": "Ed25519SignatureAuthentication2018"
-        }
+        "did:sov:5qxxVL2qHZoDn4HRyo3nN3#key-1"
+    ],
+    "assertionMethod": [
+        "did:sov:5qxxVL2qHZoDn4HRyo3nN3#key-1"
     ],
     "service": [
         {
-            "type": "endpoint",
-            "serviceEndpoint": "https://lavenderlucy.aries.bosch-digital.de:8080"
+            "id": "did:sov:5qxxVL2qHZoDn4HRyo3nN3#did-communication",
+            "type": "did-communication",
+            "serviceEndpoint": "http://myhome.foo.fr",
+            "recipientKeys": [
+                "did:sov:5qxxVL2qHZoDn4HRyo3nN3#key-1"
+            ],
+            "routingKeys": [],
+            "priority": 1
         },
         {
+            "id": "did:sov:5qxxVL2qHZoDn4HRyo3nN3#profile",
             "type": "profile",
-            "serviceEndpoint": "https://bob.iil.network/profile.jsonld"
+            "serviceEndpoint": "https://myhome.foo.fr/profile.jsonld"
         }
     ]
 }

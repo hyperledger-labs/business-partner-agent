@@ -39,13 +39,13 @@ class ApiSerialisationTest extends BaseTest {
 
         List<DIDDocument.VerificationMethod> meth = didDoc.getVerificationMethod();
         assertEquals(1, meth.size());
-        assertTrue(meth.get(0).getPublicKeyBase58().startsWith("AWrdq"));
+        assertTrue(meth.get(0).getPublicKeyBase58().startsWith("3e8rKNmq"));
 
         assertTrue(didDoc.hasAriesEndpoint());
 
         Optional<String> publicProfileUrl = didDoc.findPublicProfileUrl();
         assertTrue(publicProfileUrl.isPresent());
-        assertTrue(publicProfileUrl.get().startsWith("https://bob.iil"));
+        assertTrue(publicProfileUrl.get().startsWith("https://myhome"));
     }
 
     @Test
