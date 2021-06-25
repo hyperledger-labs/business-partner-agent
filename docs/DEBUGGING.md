@@ -11,7 +11,8 @@ Additionally, you will find 3 terminals in the bottom right corner:
 - One is launching the java backend for *agent1*.
 - One is launching the frontend for *agent1* (with hot-reload of source code enabled).
 
-As soon as all services are ready, the frontends of *agent1* and *agent2* will appear in a browser windows. You can start experimenting with the agent now or modify the frontend code.
+As soon as all services are ready, the frontends of *agent1* and *agent2* will appear in browser windows. You can start experimenting with the agents now or modify the frontend code (You might have to hit the reload button in your browser taps).
+
 Remarks:
 - Security is disabled, never use these agents for production.
 - Open one of the agents in an incognito browser window for proper demos.
