@@ -12,6 +12,9 @@ Additionally, you will find 3 terminals in the bottom right corner:
 - One is launching the frontend for *agent1* (with hot-reload of source code enabled).
 
 As soon as all services are ready, the frontends of *agent1* and *agent2* will appear in a browser windows. You can start experimenting with the agent now or modify the frontend code.
+Remarks:
+- Security is disabled, never use these agents for production.
+- Open one of the agents in an incognito browser window for proper demos.
 
 To start backend development kill the process in the backend terminal and run (or debug) a new backend via the provided launch configuration (`Run and Debug` view).
 
