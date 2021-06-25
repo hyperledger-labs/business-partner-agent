@@ -23,7 +23,6 @@ import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.bpa.model.BPACredentialExchange;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,13 +31,13 @@ import java.util.UUID;
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface BPACredentialExchangeRepository extends CrudRepository<BPACredentialExchange, UUID> {
 
-    @NotNull
+    @NonNull
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     @Join(value = "credDef", type = Join.Type.LEFT_FETCH)
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     Iterable<BPACredentialExchange> findAll();
 
-    @NotNull
+    @NonNull
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     @Join(value = "credDef", type = Join.Type.LEFT_FETCH)
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)

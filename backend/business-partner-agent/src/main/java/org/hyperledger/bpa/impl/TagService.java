@@ -83,20 +83,24 @@ public class TagService {
         return tag.map(TagAPI::from);
     }
 
-    public void deleteTag(@NonNull UUID id) {
+    public void deleteTag(@NonNull UUID id, @Nullable boolean force) {
+        int refs = tagRepo.countReferencesToPartner(id);
+        if (!force && refs > 0) {
+            throw new WrongApiUsageException("Tag is still used by " + refs + " partner(s");
+        }
         tagRepo.findById(id).ifPresent(s -> tagRepo.deleteById(id));
     }
 
-    public void resetWriteOnlyTags() {
-        long deleted = tagRepo.deleteByIsReadOnly();
-        log.debug("Removed {} preconfigured tags", deleted);
+    public void createDefaultTags() {
         if (configuredTags.getTags() != null) {
             configuredTags.getTags().forEach(t -> {
                 try {
-                    TagAPI tagAPI = addTag(t, Boolean.TRUE);
-                    log.debug("Added preconfigured tag with name: {}", tagAPI.getName());
+                    if (tagRepo.contByName(t) == 0) {
+                        TagAPI tagAPI = addTag(t, Boolean.TRUE);
+                        log.debug("Added preconfigured tag with name: {}", tagAPI.getName());
+                    }
                 } catch (DataAccessException e) {
-                    log.warn("Tag with name {} will not be added", t, e);
+                    log.warn("Tag with name {} already exists", t, e);
                 }
             });
         }

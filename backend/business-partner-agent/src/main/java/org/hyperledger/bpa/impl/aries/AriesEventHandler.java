@@ -19,6 +19,8 @@ package org.hyperledger.bpa.impl.aries;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
+import org.hyperledger.aries.api.connection.ConnectionState;
+import org.hyperledger.aries.api.connection.ConnectionTheirRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
@@ -64,10 +66,12 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleConnection(ConnectionRecord connection) {
         log.debug("Connection Event: {}", connection);
-        if (!connection.isIncomingConnection() || AriesStringUtil.isUUID(connection.getTheirLabel())) {
-            conMgmt.handleOutgoingConnectionEvent(connection);
-        } else {
-            conMgmt.handleIncomingConnectionEvent(connection);
+        synchronized (conMgmt) {
+            if (!connection.isIncomingConnection() || AriesStringUtil.isUUID(connection.getTheirLabel())) {
+                conMgmt.handleOutgoingConnectionEvent(connection);
+            } else if (isNotAnInvitation(connection)) {
+                conMgmt.handleIncomingConnectionEvent(connection);
+            }
         }
     }
 
@@ -113,5 +117,16 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleRaw(String eventType, String json) {
         log.trace(json);
+    }
+
+    /**
+     * Filter invitations by QR code
+     * 
+     * @param conn {@link ConnectionRecord}
+     * @return true if it is not an invitation event
+     */
+    private boolean isNotAnInvitation(ConnectionRecord conn) {
+        return !(ConnectionState.INVITATION.equals(conn.getState())
+                && ConnectionTheirRole.INVITEE.equals(conn.getTheirRole()));
     }
 }

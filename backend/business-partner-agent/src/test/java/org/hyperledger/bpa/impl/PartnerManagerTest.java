@@ -26,9 +26,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @MicronautTest
 public class PartnerManagerTest {
@@ -46,31 +45,66 @@ public class PartnerManagerTest {
     void testAddAndRemovePartnerTag() {
         Tag t1 = tagRepo.save(Tag
                 .builder()
-                .name("MyTag")
+                .name("tag1")
                 .build());
         Tag t2 = tagRepo.save(Tag
                 .builder()
-                .name("Other Tag")
+                .name("tag2")
                 .build());
+        Tag t3 = tagRepo.save(Tag
+                .builder()
+                .name("tag3")
+                .build());
+        Tag t4 = Tag
+                .builder()
+                .name("tag4")
+                .build();
+
         Partner partner = partnerRepo.save(buildPartnerWithoutTag().build());
 
-        partnerManager.updatePartnerTag(partner.getId(), List.of(t1));
-        Assertions.assertEquals(2, tagRepo.count());
+        System.out.println(partnerManager.updatePartner(partner.getId(), null, List.of(t1)));
+        Assertions.assertEquals(3, tagRepo.count());
+        Assertions.assertEquals(1, partnerRepo.count());
+        checkTagOnPartner(partner.getId(), "tag1");
 
-        partnerManager.updatePartnerTag(partner.getId(), List.of(t1, t2));
-        Assertions.assertEquals(2, tagRepo.count());
+        partnerManager.updatePartner(partner.getId(), null, List.of(t1, t2));
+        Assertions.assertEquals(3, tagRepo.count());
+        checkTagOnPartner(partner.getId(), "tag1", "tag2");
 
-        partnerManager.updatePartnerTag(partner.getId(), List.of(t1));
-        Assertions.assertEquals(2, tagRepo.count());
+        partnerManager.updatePartner(partner.getId(), null, List.of(t1, t3));
+        Assertions.assertEquals(3, tagRepo.count());
+        checkTagOnPartner(partner.getId(), "tag1", "tag3");
+
+        partnerManager.updatePartner(partner.getId(), null, List.of(t2, t3));
+        Assertions.assertEquals(3, tagRepo.count());
+        checkTagOnPartner(partner.getId(), "tag2", "tag3");
+
+        partnerManager.updatePartner(partner.getId(), null, List.of(t1));
+        Assertions.assertEquals(3, tagRepo.count());
+        checkTagOnPartner(partner.getId(), "tag1");
+
+        partnerManager.updatePartner(partner.getId(), null, List.of(t4));
+        Assertions.assertEquals(4, tagRepo.count());
+        checkTagOnPartner(partner.getId(), "tag4");
+
         Optional<Tag> dbTag2 = tagRepo.findById(t2.getId());
         Assertions.assertTrue(dbTag2.isPresent());
         Assertions.assertEquals(0, dbTag2.get().getPartners().size());
 
-        partnerManager.updatePartnerTag(partner.getId(), null);
-        Assertions.assertEquals(2, tagRepo.count());
+        partnerManager.updatePartner(partner.getId(), null, null);
+        Assertions.assertEquals(4, tagRepo.count());
         Optional<Tag> dbTag1 = tagRepo.findById(t1.getId());
         Assertions.assertTrue(dbTag1.isPresent());
         Assertions.assertEquals(0, dbTag1.get().getPartners().size());
+    }
+
+    private void checkTagOnPartner(UUID partnerId, String... tagName) {
+        Optional<Partner> dbP = partnerRepo.findById(partnerId);
+        Assertions.assertTrue(dbP.isPresent());
+        Assertions.assertNotNull(dbP.get().getTags());
+        List<String> pTags = dbP.get().getTags().stream().map(Tag::getName).collect(Collectors.toList());
+        Assertions.assertEquals(tagName.length, pTags.size());
+        Arrays.stream(tagName).forEach(tn -> Assertions.assertTrue(pTags.contains(tn)));
     }
 
     // TODO move to test model builder

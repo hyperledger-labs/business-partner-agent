@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.controller;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
@@ -265,11 +266,11 @@ public class AdminController {
     @Delete("/tag/{id}")
     @ApiResponse(responseCode = "404", description = "If the tag does not exist")
     @ApiResponse(responseCode = "405", description = "If the tag is read only")
-    public HttpResponse<Void> removeTag(@PathVariable UUID id) {
+    public HttpResponse<Void> removeTag(@PathVariable UUID id, @Nullable @QueryValue Boolean force) {
         Optional<TagAPI> tag = tagService.getTag(id);
         if (tag.isPresent()) {
             if (!tag.get().getIsReadOnly()) {
-                tagService.deleteTag(id);
+                tagService.deleteTag(id, force != null && force);
                 return HttpResponse.ok();
             }
             return HttpResponse.notAllowed();

@@ -29,23 +29,21 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.aries.api.connection.CreateInvitationResponse;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.partner.*;
 import org.hyperledger.bpa.impl.PartnerManager;
 import org.hyperledger.bpa.impl.activity.PartnerLookup;
-import org.hyperledger.bpa.impl.aries.CredentialManager;
 import org.hyperledger.bpa.impl.aries.ConnectionManager;
+import org.hyperledger.bpa.impl.aries.CredentialManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.ProofManager;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
-import org.hyperledger.aries.api.connection.CreateInvitationResponse;
 
 import javax.inject.Inject;
-
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -119,25 +117,7 @@ public class PartnerController {
     public HttpResponse<PartnerAPI> updatePartner(
             @PathVariable String id,
             @Body UpdatePartnerRequest update) {
-        Optional<PartnerAPI> partner = pm.updatePartnerAlias(UUID.fromString(id), update.getAlias());
-        if (partner.isPresent()) {
-            return HttpResponse.ok(partner.get());
-        }
-        return HttpResponse.notFound();
-    }
-
-    /**
-     * Update partner's tags
-     *
-     * @param id     {@link UUID} the partner id
-     * @param update {@link UpdatePartnerRequest}
-     * @return {@link PartnerAPI}
-     */
-    @Put("/{id}/tag")
-    public HttpResponse<PartnerAPI> updatePartnerTag(
-            @PathVariable String id,
-            @Body UpdatePartnerTagRequest update) {
-        Optional<PartnerAPI> partner = pm.updatePartnerTag(UUID.fromString(id), update.getTag());
+        Optional<PartnerAPI> partner = pm.updatePartner(UUID.fromString(id), update.getAlias(), update.getTag());
         if (partner.isPresent()) {
             return HttpResponse.ok(partner.get());
         }
@@ -182,8 +162,7 @@ public class PartnerController {
      */
     @Post
     public HttpResponse<PartnerAPI> addPartner(@Body AddPartnerRequest partner) {
-        return HttpResponse.created(pm.addPartnerFlow(partner.getDid(), partner.getAlias(),
-                new HashSet<>(partner.getTag())));
+        return HttpResponse.created(pm.addPartnerFlow(partner.getDid(), partner.getAlias(), partner.getTag()));
     }
 
     /**
@@ -370,7 +349,7 @@ public class PartnerController {
     @Post("/invitation")
     public HttpResponse<CreateInvitationResponse> requestConnectionInvitation(
             @Body CreatePartnerInvitationRequest req) {
-        final Optional<CreateInvitationResponse> invitation = cm.createConnectionInvitation(req.alias);
+        final Optional<CreateInvitationResponse> invitation = cm.createConnectionInvitation(req.alias, req.getTag());
         if (invitation.isPresent()) {
             return HttpResponse.ok(invitation.get());
         }
