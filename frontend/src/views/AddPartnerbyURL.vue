@@ -107,7 +107,9 @@ export default {
     createInvitation() {
       let partnerToAdd = {
         alias: `${this.alias}`,
-        tag: this.selectedTags,
+        tag: this.$store.state.tags.filter((tag) => {
+          return this.selectedTags.includes(tag.name);
+        }),
       };
       this.$axios
         .post(`${this.$apiBaseUrl}/partners/invitation`, partnerToAdd)

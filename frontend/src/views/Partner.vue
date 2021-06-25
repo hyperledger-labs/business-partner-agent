@@ -551,18 +551,6 @@ export default {
             this.isReady = true;
             this.isLoading = false;
 
-            //TODO: REMOVE THIS AGAIN
-            this.partner.tag = [
-              {
-                id: "ecdedacd-3139-4587-9bb0-f9729bab73d5",
-                name: "myTag",
-              },
-              {
-                id: "a22f3b90-abb3-41cd-bc0c-afa50fde160d",
-                name: "MyTag3",
-              },
-            ];
-
             console.log(this.partner);
           }
         })
