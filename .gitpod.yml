@@ -47,20 +47,14 @@ tasks:
   # Infrastructure: run the acapy for a "BPA" plus full "bpa2" 
   - name: infrastructure
     init: |
-      gp env ACAPY_ENDPOINT=`gp url 8030`
-      gp env ACAPY2_ENDPOINT=`gp url 8040`
-      gp env BPA_HOST=`gp url 8080 | sed 's/.*https:\/\///'`
-      gp env BPA_WEBHOOK_URL=`gp url 8080`/log
-      gp env BPA2_HOST=`gp url 8090 | sed 's/.*https:\/\///'`
-      gp env BPA_SECURITY_ENABLED=false
-      eval $(gp env -e)
       cd /workspace/business-partner-agent/scripts
       cp .env-example .env
+      source ./setup-gitpod.sh
       ./register-dids.sh
       docker-compose --profile second_bpa build bpa2
     command: |
       cd /workspace/business-partner-agent/scripts
-      eval $(gp env -e)
+      source ./setup-gitpod.sh
       docker-compose --profile second_bpa up bpa-agent1 bpa2 bpa-agent2
   # Backend: for "BPA" launch the backend via java (without frontend). To allow debugging easily.   
   - name: dev backend
@@ -68,17 +62,19 @@ tasks:
       cd /workspace/business-partner-agent/backend
       mvn clean install -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
     command: |   
-      gp await-port 8030 && eval $(gp env -e) && java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote-jar -Dmicronaut.security.enabled=false -jar /workspace/business-partner-agent/backend/business-partner-agent/target/*.jar
+      gp await-port 8030
+      source /workspace/business-partner-agent/scripts/setup-gitpod.sh
+      java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote-jar -Dmicronaut.security.enabled=false -jar /workspace/business-partner-agent/backend/business-partner-agent/target/*.jar
   # Frontend: for BPA launch the frontend via npm serve. To allow debugging easily.   
   - name: dev fronend
     init: | 
       cd /workspace/business-partner-agent/frontend
       npm install
     command: |
+      gp await-port 8080
+      source /workspace/business-partner-agent/scripts/setup-gitpod.sh     
       cd /workspace/business-partner-agent/frontend
-      gp env -e VUE_APP_API_BASE_URL=`gp url 8080`/api
-      gp env -e VUE_APP_EVENTS_PATH=`gp url 8080`/events
-      gp await-port 8080 && eval $(gp env -e) && npm run serve -- --port 8081
+      npm run serve -- --port 8081
 vscode:
   extensions:
     - redhat.java
