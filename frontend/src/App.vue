@@ -43,7 +43,7 @@
             <v-icon>$vuetify.icons.identity</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Identity</v-list-item-title>
+            <v-list-item-title>{{ $t("nav.identity") }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item link :to="{ name: 'Dashboard' }" exact>
@@ -51,14 +51,14 @@
             <v-icon>$vuetify.icons.dashboard</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Dashboard</v-list-item-title>
+            <v-list-item-title>{{ $t("nav.dashboard") }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item link :to="{ name: 'PublicProfile' }">
           <v-list-item-action>
             <v-icon>$vuetify.icons.profile</v-icon>
           </v-list-item-action>
-          <v-list-item-title>Public Profile</v-list-item-title>
+          <v-list-item-title>{{ $t("nav.profile") }}</v-list-item-title>
         </v-list-item>
         <v-list-item link :to="{ name: 'Wallet' }">
           <v-list-item-action>
@@ -75,7 +75,7 @@
             </v-badge>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Wallet</v-list-item-title>
+            <v-list-item-title>{{ $t("nav.wallet") }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item link :to="{ name: 'CredentialManagement' }">
@@ -83,7 +83,7 @@
             <v-icon>$vuetify.icons.credentialManagement</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Credential Management</v-list-item-title>
+            <v-list-item-title>{{ $t("nav.credentialManagement") }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item link :to="{ name: 'Partners' }">
@@ -101,7 +101,7 @@
             </v-badge>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Business Partners</v-list-item-title>
+            <v-list-item-title>{{ $t("nav.partners") }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item v-if="ux.navigation.settings.location==='top'" link :to="{ name: 'Settings' }">
@@ -109,7 +109,7 @@
             <v-icon>$vuetify.icons.settings</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Settings</v-list-item-title>
+            <v-list-item-title>{{ $t("nav.settings") }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -120,7 +120,7 @@
               <v-icon>$vuetify.icons.about</v-icon>
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>About</v-list-item-title>
+              <v-list-item-title>{{ $t("nav.about") }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-if="ux.navigation.settings.location==='bottom'" bottom link :to="{ name: 'Settings' }">
@@ -128,7 +128,7 @@
               <v-icon>$vuetify.icons.settings</v-icon>
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>Settings</v-list-item-title>
+              <v-list-item-title>{{ $t("nav.settings") }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-if="ux.navigation.logout.enabled" bottom @click="logout()">
@@ -136,7 +136,7 @@
               <v-icon>$vuetify.icons.signout</v-icon>
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title>Sign out</v-list-item-title>
+              <v-list-item-title>{{ $t("nav.signout") }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -184,24 +184,21 @@
       :vertical="true"
     >
       {{ snackbarMsg }}
-      <v-btn dark text @click="snackbar = false">Close</v-btn>
+      <v-btn dark text @click="snackbar = false">{{ $t("app.snackBar.close") }}</v-btn>
     </v-snackbar>
 
     <v-dialog v-model="sessionDialog" max-width="290">
       <v-card>
-        <v-card-title class="headline">Session expired</v-card-title>
+        <v-card-title class="headline">{{ $t("app.sessionDialog.headline") }}</v-card-title>
 
-        <v-card-text
-          >It seems your session is expired. Do you want log in
-          again?</v-card-text
-        >
+        <v-card-text>{{ $t("app.sessionDialog.text") }}</v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
 
-          <v-btn color="warning" text @click="sessionDialog = false">No</v-btn>
+          <v-btn color="warning" text @click="sessionDialog = false">{{ $t("app.sessionDialog.no") }}</v-btn>
 
-          <v-btn color="green darken-1" text @click="logout()">Yes</v-btn>
+          <v-btn color="green darken-1" text @click="logout()">{{ $t("app.sessionDialog.yes") }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -209,10 +206,10 @@
     <v-footer v-if="showFooter" app>
       <v-col cols="12" class="text-center">
         <span v-if="imprintUrl" class="mr-4 subtitle-2"
-          ><a :href="imprintUrl">Corporate Information</a></span
+          ><a :href="imprintUrl">{{ $t("app.footer.imprintUrl.text") }}</a></span
         >
         <span v-if="privacyPolicyUrl" class="subtitle-2"
-          ><a :href="privacyPolicyUrl">Privacy Policy</a></span
+          ><a :href="privacyPolicyUrl">{{ $t("app.footer.privacyPolicyUrl.text") }}</a></span
         >
       </v-col>
     </v-footer>
@@ -329,6 +326,8 @@ export default {
     },
   },
   created() {
+    // Set the browser/tab title...
+    document.title = this.$config.title;
     if (this.$config.ux) {
       Object.assign(this.ux, this.$config.ux);
 
