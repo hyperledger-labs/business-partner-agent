@@ -272,10 +272,7 @@ export default {
         },
         settings: {
           enabled: true,
-          location: {
-            top: true,
-            bottom: false,
-          },
+          location: "top",
         }
       }
     }

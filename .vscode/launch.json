@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Application",
+            "request": "launch",
+            "mainClass": "org.hyperledger.bpa.Application",
+            "projectName": "business-partner-agent",
+            "vmArgs": "-Dmicronaut.environments=dev"
+        }
+    ]
+}
