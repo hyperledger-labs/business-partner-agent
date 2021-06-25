@@ -95,7 +95,7 @@ public class PartnerManager {
         repo.deleteById(id);
     }
 
-    public PartnerAPI addPartnerFlow(@NonNull String did, @Nullable String alias, Set<Tag> tags) {
+    public PartnerAPI addPartnerFlow(@NonNull String did, @Nullable String alias, List<Tag> tags) {
         Optional<Partner> dbPartner = repo.findByDid(did);
         if (dbPartner.isPresent()) {
             throw new PartnerException("Partner for did already exists: " + did);
@@ -107,7 +107,7 @@ public class PartnerManager {
                 .setLabel(connectionLabel)
                 .setAriesSupport(lookupP.getAriesSupport())
                 .setAlias(alias)
-                .setTags(tags)
+                .setTags(tags != null ? new HashSet<>(tags) : null)
                 .setState(ConnectionState.REQUEST);
         Partner result = repo.save(partner); // save before creating the connection
         if (did.startsWith(ledgerPrefix) && lookupP.getAriesSupport()) {

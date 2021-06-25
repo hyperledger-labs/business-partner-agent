@@ -29,23 +29,21 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.aries.api.connection.CreateInvitationResponse;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.partner.*;
 import org.hyperledger.bpa.impl.PartnerManager;
 import org.hyperledger.bpa.impl.activity.PartnerLookup;
-import org.hyperledger.bpa.impl.aries.CredentialManager;
 import org.hyperledger.bpa.impl.aries.ConnectionManager;
+import org.hyperledger.bpa.impl.aries.CredentialManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.ProofManager;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
-import org.hyperledger.aries.api.connection.CreateInvitationResponse;
 
 import javax.inject.Inject;
-
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -164,8 +162,7 @@ public class PartnerController {
      */
     @Post
     public HttpResponse<PartnerAPI> addPartner(@Body AddPartnerRequest partner) {
-        return HttpResponse.created(pm.addPartnerFlow(partner.getDid(), partner.getAlias(),
-                new HashSet<>(partner.getTag())));
+        return HttpResponse.created(pm.addPartnerFlow(partner.getDid(), partner.getAlias(), partner.getTag()));
     }
 
     /**
@@ -352,7 +349,7 @@ public class PartnerController {
     @Post("/invitation")
     public HttpResponse<CreateInvitationResponse> requestConnectionInvitation(
             @Body CreatePartnerInvitationRequest req) {
-        final Optional<CreateInvitationResponse> invitation = cm.createConnectionInvitation(req.alias);
+        final Optional<CreateInvitationResponse> invitation = cm.createConnectionInvitation(req.alias, req.getTag());
         if (invitation.isPresent()) {
             return HttpResponse.ok(invitation.get());
         }

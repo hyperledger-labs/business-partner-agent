@@ -79,7 +79,6 @@ class ConnectionManagerTest extends BaseTest {
         assertTrue(p.isPresent());
         assertEquals(ConnectionState.REQUEST, p.get().getState());
         assertEquals("bob", p.get().getLabel());
-        assertEquals("bob", p.get().getAlias());
 
         final ConnectionRecord active = gson.fromJson(receiveActive, ConnectionRecord.class);
         eventHandler.handleConnection(active);
@@ -94,12 +93,9 @@ class ConnectionManagerTest extends BaseTest {
         final ConnectionRecord invite = gson.fromJson(inviteReceive, ConnectionRecord.class);
         eventHandler.handleConnection(invite);
 
+        // not handled here
         Optional<Partner> p = repo.findByConnectionId(invite.getConnectionId());
-        assertTrue(p.isPresent());
-        assertEquals(ConnectionState.INVITATION, p.get().getState());
-        assertEquals("Invitation 1", p.get().getAlias());
-        assertTrue(p.get().getDid().endsWith("unknown"));
-        assertNull(p.get().getLabel());
+        assertFalse(p.isPresent());
 
         final ConnectionRecord response = gson.fromJson(inviteResponse, ConnectionRecord.class);
         eventHandler.handleConnection(response);
@@ -107,7 +103,6 @@ class ConnectionManagerTest extends BaseTest {
         p = repo.findByConnectionId(response.getConnectionId());
         assertTrue(p.isPresent());
         assertEquals(ConnectionState.RESPONSE, p.get().getState());
-        assertEquals("Wallet", p.get().getAlias());
         assertTrue(p.get().getDid().endsWith("QjqxU2wnrBGwLJnW585QWp"));
         assertEquals("Wallet", p.get().getLabel());
     }
