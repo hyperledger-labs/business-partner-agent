@@ -11,14 +11,19 @@
     <vue-json-pretty :data="rawData"></vue-json-pretty>
     <v-card-actions>
       <v-layout align-end justify-end>
-        <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
+        <v-btn
+          color="secondary"
+          text
+          @click="rejectPresentationRequest(presentationRequest)"
+          >Reject</v-btn
+        >
         <v-btn
           :loading="this.isBusy"
           color="primary"
           text
-          @click="submit()"
+          @click="respondToPresentationRequest(presentationRequest)"
           :disabled="submitDisabled"
-          >Submit</v-btn
+          >Accept</v-btn
         >
       </v-layout>
       <v-expansion-panels v-if="expertMode" accordion flat>
@@ -50,6 +55,7 @@ export default {
   data: () => {
     return {
       rawData: {},
+      presentationRequest: {},
       isLoading: true,
     };
   },
@@ -62,6 +68,7 @@ export default {
           console.log(result);
           if ({}.hasOwnProperty.call(result, "data")) {
             this.rawData = result.data;
+            this.presentationRequest = result.data;
             this.isLoading = false;
           }
         })
@@ -84,6 +91,7 @@ export default {
         .then((result) => {
           if (result.status === 200) {
             console.log("SUCCESSFULLY REJECTED");
+            this.$router.go(-1);
           }
         })
         .catch((e) => {
@@ -100,6 +108,7 @@ export default {
         .then((result) => {
           if (result.status === 200) {
             console.log("SUCCESSFULLY RESPONDED");
+            this.$router.go(-1);
           }
         })
         .catch((e) => {
