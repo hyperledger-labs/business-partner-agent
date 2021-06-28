@@ -37,7 +37,6 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.model.Partner;
@@ -114,7 +113,7 @@ public class ConnectionManager {
     /**
      * Create a connection based on a public did that is registered on a ledger.
      * 
-     * @param did   the did like did:iil:123
+     * @param did   the fully qualified did like did:indy:123
      * @param label the connection label
      * @param alias optional connection alias
      */
@@ -123,7 +122,7 @@ public class ConnectionManager {
         try {
             ac.connectionsReceiveInvitation(
                     ReceiveInvitationRequest.builder()
-                            .did(AriesStringUtil.getLastSegment(did))
+                            .did(did)
                             .label(label)
                             .build(),
                     ConnectionReceiveInvitationFilter.builder().alias(alias).autoAccept(Boolean.TRUE).build());
