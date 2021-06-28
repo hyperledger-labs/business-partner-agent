@@ -60,8 +60,7 @@ public class BPAProofTemplate {
         return new ProofTemplate(
                 id.toString(),
                 name,
-                attributeGroups.toRepresentation()
-        );
+                attributeGroups.toRepresentation());
     }
 
     public static BPAProofTemplate fromRepresentation(ProofTemplate proofTemplate) {
@@ -72,7 +71,6 @@ public class BPAProofTemplate {
         return new BPAProofTemplate(
                 id,
                 proofTemplate.getName(),
-                BPAAttributeGroups.fromRepresentation(proofTemplate.getAttributeGroups())
-        );
+                BPAAttributeGroups.fromRepresentation(proofTemplate.getAttributeGroups()));
     }
 }

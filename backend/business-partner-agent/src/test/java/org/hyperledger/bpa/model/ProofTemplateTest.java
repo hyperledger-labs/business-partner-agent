@@ -51,10 +51,10 @@ class ProofTemplateTest {
         return Mockito.mock(SchemaService.class);
     }
 
-
     @Test
     @Disabled
-        // FIXME this test is broken, because AttributeGroups from ProofTemplates are not custom validated.
+    // FIXME this test is broken, because AttributeGroups from ProofTemplates are
+    // not custom validated.
     void testThatAttributeGroupsAreVerified() {
         Mockito.when(schemaService.getSchemaFor("mySchemaId"))
                 .thenReturn(Optional.of(new BPASchema()));
@@ -69,22 +69,21 @@ class ProofTemplateTest {
                                         .schemaId("notExistingSchema")
                                         .attribute(BPAAttribute.builder()
                                                 .name("myAttributeName")
-                                                .build()
-                                        )
+                                                .build())
                                         .build())
                                 .attributeGroup(BPAAttributeGroup.builder()
                                         .schemaId("mySchemaId")
                                         .attribute(BPAAttribute.builder()
                                                 .name("notASchemaAttribute")
-                                                .build()
-                                        )
+                                                .build())
                                         .build())
                                 .build())
                 .build();
 
         Set<ConstraintViolation<BPAProofTemplate>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(2, constraintViolations.size());
-        List<Object> violatingValues = constraintViolations.stream().map(ConstraintViolation::getInvalidValue).collect(Collectors.toList());
+        List<Object> violatingValues = constraintViolations.stream().map(ConstraintViolation::getInvalidValue)
+                .collect(Collectors.toList());
         Assertions.assertTrue(violatingValues.contains("notExistingSchema"));
         Assertions.assertTrue(violatingValues.contains("notASchemaAttribute"));
     }
@@ -108,8 +107,7 @@ class ProofTemplateTest {
                                                         .value("any")
                                                         .operator("invalid operator")
                                                         .build())
-                                                .build()
-                                        )
+                                                .build())
                                         .build())
                                 .build())
                 .build();
@@ -118,7 +116,6 @@ class ProofTemplateTest {
         Assertions.assertEquals(1, constraintViolations.size());
         Assertions.assertEquals("invalid operator", constraintViolations.stream().findFirst().get().getInvalidValue());
     }
-
 
     @Test
     void testThatSerializationWorksBothWays() throws JsonProcessingException {
@@ -135,8 +132,7 @@ class ProofTemplateTest {
                                                         .value("any")
                                                         .operator("invalid operator")
                                                         .build())
-                                                .build()
-                                        )
+                                                .build())
                                         .build())
                                 .build())
                 .build();

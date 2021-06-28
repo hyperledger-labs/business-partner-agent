@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @Builder
 @Introspected
 @ValidAttributeGroup
-@JsonTypeInfo(use= JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public class BPAAttributeGroup {
     @ValidBPASchemaId
     String schemaId;

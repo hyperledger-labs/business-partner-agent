@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Builder
 @Introspected
-@JsonTypeInfo(use= JsonTypeInfo.Id.CLASS)
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public class BPAAttribute {
     @NotEmpty
     @ValidBPASchemaAttribute

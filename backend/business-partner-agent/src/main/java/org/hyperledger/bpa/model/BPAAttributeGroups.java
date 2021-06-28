@@ -51,7 +51,6 @@ public class BPAAttributeGroups {
     public static BPAAttributeGroups fromRepresentation(List<AttributeGroup> proofTemplate) {
         return new BPAAttributeGroups(proofTemplate.stream()
                 .map(BPAAttributeGroup::fromRepresentation)
-                .collect(Collectors.toList())
-        );
+                .collect(Collectors.toList()));
     }
 }
