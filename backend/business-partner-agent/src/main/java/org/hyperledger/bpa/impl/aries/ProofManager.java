@@ -41,6 +41,7 @@ import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.TimeUtil;
+import org.hyperledger.bpa.model.BPAProofTemplate;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
@@ -49,6 +50,7 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -89,6 +91,12 @@ public class ProofManager {
     @Inject
     MessageService messageService;
 
+    public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
+        // TODO convert proofTemplate to ProofRequest
+        // TODO call aries client for proof
+        // TODO persist proofRequest
+    }
+
     // request proof from partner
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {
         try {
@@ -100,8 +108,8 @@ public class ProofManager {
             if (req.isRequestBySchema()) {
                 String schemaId = req.getRequestBySchema().getSchemaId();
                 final Schema schema = ac.schemasGetById(schemaId)
-                        .orElseThrow(() ->
-                                new PartnerException("Could not find any schema on the ledger for id: " + schemaId));
+                        .orElseThrow(() -> new PartnerException(
+                                "Could not find any schema on the ledger for id: " + schemaId));
                 PresentProofRequest proofRequest = PresentProofRequestHelper
                         .buildForAllAttributes(partner.getConnectionId(),
                                 schema.getAttrNames(), req.buildRestrictions());

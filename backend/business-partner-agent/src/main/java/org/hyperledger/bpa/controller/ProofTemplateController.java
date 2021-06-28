@@ -27,9 +27,15 @@ import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
+import org.hyperledger.bpa.impl.ProofTemplateManager;
+import org.hyperledger.bpa.impl.verification.prooftemplates.ValidUUID;
+import org.hyperledger.bpa.model.BPAProofTemplate;
 
+import javax.inject.Inject;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller("/api/proof-templates")
 @Tag(name = "Proof Template Management")
@@ -37,30 +43,40 @@ import java.util.*;
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @ExecuteOn(TaskExecutors.IO)
 public class ProofTemplateController {
-    @Deprecated
-    private final Map<String, ProofTemplate> inMemory = new HashMap<>();
+
+    @Inject
+    private ProofTemplateManager proofTemplateManager;
 
     @Get
     public HttpResponse<List<ProofTemplate>> listProofTemplates() {
-        return HttpResponse.ok(new ArrayList<>(this.inMemory.values()));
+        return HttpResponse.ok(
+                proofTemplateManager.listProofTemplates()
+                        .map(BPAProofTemplate::toRepresentation)
+                        .collect(Collectors.toList()));
     }
 
     @Post
     public HttpResponse<ProofTemplate> addProofTemplate(@Valid ProofTemplate template) {
         if (template.getId() == null) {
-            String newId = UUID.randomUUID().toString();
-            template.setId(newId);
-            inMemory.put(newId, template);
+            BPAProofTemplate persistedTemplate = proofTemplateManager
+                    .addProofTemplate(BPAProofTemplate.fromRepresentation(template));
+            return HttpResponse.created(persistedTemplate.toRepresentation());
         } else {
             return HttpResponse.badRequest(template);
         }
-        return HttpResponse.created(template);
+    }
+
+    @Put("/{id}/ProofRequest/{partnerId}")
+    public HttpResponse<Void> invokeProofRequestByTemplate(
+            @PathVariable @ValidUUID @NotNull String id,
+            @PathVariable @ValidUUID @NotNull String partnerId) {
+        proofTemplateManager.invokeProofRequestByTemplate(UUID.fromString(id), UUID.fromString(partnerId));
+        return HttpResponse.ok();
     }
 
     @Delete("/{id}")
-    public HttpResponse<Void> removeProofTemplate(@PathVariable String id) {
-
-        inMemory.remove(id);
+    public HttpResponse<Void> removeProofTemplate(@PathVariable @ValidUUID @NotNull String id) {
+        proofTemplateManager.removeProofTemplate(UUID.fromString(id));
         return HttpResponse.ok();
     }
 }
