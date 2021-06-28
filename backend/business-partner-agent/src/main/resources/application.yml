@@ -21,15 +21,18 @@ micronaut:
       login-failure: /user/authFailed
       logout: /user/signin
     intercept-url-map:
-      -
-        pattern: /**
-        access:
-          - isAuthenticated()
-      -
-        pattern: /health
+      - pattern: /health
         http-method: GET
         access:
           - isAnonymous()
+      - pattern: /health/**
+        http-method: GET
+        access:
+          - isAnonymous()
+      - pattern: /**
+        access:
+          - isAuthenticated()
+
   session:
     max-inactive-interval: 12h
   router:
@@ -73,8 +76,6 @@ endpoints:
     enabled: true
     sensitive: false
     details-visible: AUTHENTICATED
-    acapy:
-      enabled: true
 
 datasources:
   '*':
@@ -139,6 +140,10 @@ bpa:
       url: ${BPA_PRIVACY_POLICY_URL:}
   creddef:
     revocationRegistrySize: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE:3000}
+  title: ${BPA_TITLE:`Business Partner Agent`}
+  i18n:
+    locale: ${BPA_I18N_LOCALE:en}
+    fallbackLocale: ${BPA_I18N_FALLBACK_LOCALE:en}
 # The following is an example on how to override the default ux.
 # This will have all of the alternate layout and themes/colors loaded.
 # To override theme, then set themes.light properties
