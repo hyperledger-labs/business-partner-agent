@@ -23,17 +23,17 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.acy_py.generated.model.DID;
 import org.hyperledger.acy_py.generated.model.DIDCreate;
-import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.client.CachingAriesClient;
 import org.hyperledger.bpa.client.URClient;
-import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -65,9 +65,6 @@ public class Identity {
     @Inject
     URClient ur;
 
-    @Inject
-    RuntimeConfig rc;
-
     // TODO either return the did or fail. Needs fixing the test setup to work.
     public @Nullable String getMyDid() {
         String myDid = null;
@@ -77,7 +74,7 @@ public class Identity {
             try {
                 Optional<DID> walletDid = acaCache.walletDidPublic();
                 if (walletDid.isPresent()) {
-                    myDid = didPrefix + walletDid.get().getDid();
+                    myDid = "did:" + walletDid.get().getMethod().getValue() + ":" + walletDid.get().getDid();
                 }
             } catch (IOException e) {
                 log.error("aca-py not reachable", e);
@@ -132,7 +129,7 @@ public class Identity {
         // we can place logic in here that will deal with different did formats later
         final String schemaCreator = AriesStringUtil.schemaGetCreator(schemaId);
         String creatorDid = did;
-        if (StringUtils.startsWith(did, rc.getLedgerPrefix())) {
+        if (StringUtils.startsWith(did, didPrefix)) {
             creatorDid = AriesStringUtil.getLastSegment(did);
         }
         return StringUtils.equals(schemaCreator, creatorDid);

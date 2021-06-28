@@ -27,7 +27,6 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.model.BPARestrictions;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPARestrictionsRepository;
@@ -81,7 +80,8 @@ public class RestrictionsManager {
                 String issuerDid = c.get("issuerDid");
                 if (StringUtils.isNotEmpty(issuerDid)) {
                     try {
-                        ac.ledgerDidVerkey(AriesStringUtil.getLastSegment(issuerDid)).ifPresent(verkey -> {
+                        // simple check to test if issuer exists on the ledger
+                        ac.ledgerDidVerkey(issuerDid).ifPresent(verkey -> {
                             BPARestrictions def = BPARestrictions
                                     .builder()
                                     .issuerDid(issuerDid.startsWith("did:") ? issuerDid : didPrefix + issuerDid)

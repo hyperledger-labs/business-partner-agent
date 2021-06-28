@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.mode.indy;
 
-import io.micronaut.context.annotation.Value;
 import org.hyperledger.acy_py.generated.model.DID;
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.exception.NetworkException;
@@ -34,9 +33,6 @@ import java.util.Optional;
 @Singleton
 @RequiresIndy
 public class IndyDidDocManager implements DidDocManager {
-
-    @Value("${bpa.did.prefix}")
-    String didPrefix;
 
     @Inject
     CachingAriesClient ac;
@@ -55,7 +51,7 @@ public class IndyDidDocManager implements DidDocManager {
         try {
             final Optional<DID> pubDid = ac.walletDidPublic();
             if (pubDid.isPresent()) {
-                return ur.getDidDocument(didPrefix + pubDid.get().getDid());
+                return ur.getDidDocument("did:" + pubDid.get().getMethod().getValue() + ":" + pubDid.get().getDid());
             }
 
         } catch (IOException e) {

@@ -26,7 +26,7 @@ This information is currently self-attested, but we like to have this informatio
 ## Add our bank as a business partner
 
 1. Go to `Business Partners` and click the `+ button`
-2. Paste `did:sov:M6Mbe3qx7vB4wpZF4sBRjt` (in case you're working with the [IDunion](https://idunion.org/) Test Network use `did:sov:idu:SCf4pK5PTvc1LnbUAF2aHD`)in the DID Box. This is the DID of your bank
+2. Paste `did:sov:M6Mbe3qx7vB4wpZF4sBRjt` (in case you're working with the [IDunion](https://idunion.org/) Test Network use `did:sov:SCf4pK5PTvc1LnbUAF2aHD`)in the DID Box. This is the DID of your bank
 3. Click on `Lookup Partner`. You'll see the public profile of your partner.
 4. Click on `Add Partner`. Now you have a connection with your bank.
 
