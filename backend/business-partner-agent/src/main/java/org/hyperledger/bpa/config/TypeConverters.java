@@ -21,11 +21,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Factory;
+import io.micronaut.core.convert.TypeConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.model.BPAAttributeGroup;
+import org.hyperledger.bpa.model.BPAAttributeGroups;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Factory
@@ -37,17 +41,17 @@ public class TypeConverters {
     @Inject
     ObjectMapper mapper;
 
-//    @Singleton
-//    TypeConverter<List<BPAAttributeGroup>, String> attrsToString() {
-//        return (object, targetType, context) -> Optional.ofNullable(attributeToString(object));
-//    }
-//
-//    @Singleton
-//    TypeConverter<String, List<BPAAttributeGroup>> stringToAttrs() {
-//        return (object, targetType, context) -> Optional.ofNullable(stringToAttribute(object));
-//    }
+    @Singleton
+    TypeConverter<BPAAttributeGroups, String> attrsToString() {
+        return (object, targetType, context) -> Optional.ofNullable(attributeToString(object));
+    }
 
-    private String attributeToString(List<BPAAttributeGroup> f) {
+    @Singleton
+    TypeConverter<String, BPAAttributeGroups> stringToAttrs() {
+        return (object, targetType, context) -> Optional.ofNullable(stringToAttribute(object));
+    }
+
+    private String attributeToString(BPAAttributeGroups f) {
         String res = null;
         try {
             res = mapper.writeValueAsString(f);
@@ -57,10 +61,10 @@ public class TypeConverters {
         return res;
     }
 
-    private List<BPAAttributeGroup> stringToAttribute(String f) {
-        List<BPAAttributeGroup> res = null;
+    private BPAAttributeGroups stringToAttribute(String f) {
+        BPAAttributeGroups res = null;
         try {
-            res = mapper.readValue(f, ATTR_REF);
+            res = mapper.readValue(f, BPAAttributeGroups.class);
         } catch (JsonProcessingException e) {
             log.error("could not convert from json: {}", f, e);
         }

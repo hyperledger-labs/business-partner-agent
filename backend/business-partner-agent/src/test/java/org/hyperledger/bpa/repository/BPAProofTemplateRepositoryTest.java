@@ -54,16 +54,19 @@ class BPAProofTemplateRepositoryTest {
                 .thenReturn(Set.of("myAttribute"));
         BPAProofTemplate.BPAProofTemplateBuilder proofTemplateBuilder = BPAProofTemplate.builder()
                 .name("myProofTemplate")
-                .attributeGroup(
-                        BPAAttributeGroup.builder()
-                                .schemaId("mySchemaId")
-                                .attribute(
-                                        BPAAttribute.builder()
-                                                .name("myAttribute")
-                                                .condition(
-                                                        BPACondition.builder()
-                                                                .value("myValue")
-                                                                .operator("<=")
+                .attributeGroups(
+                        BPAAttributeGroups.builder()
+                                .attributeGroup(
+                                        BPAAttributeGroup.builder()
+                                                .schemaId("mySchemaId")
+                                                .attribute(
+                                                        BPAAttribute.builder()
+                                                                .name("myAttribute")
+                                                                .condition(
+                                                                        BPACondition.builder()
+                                                                                .value("myValue")
+                                                                                .operator("<=")
+                                                                                .build())
                                                                 .build())
                                                 .build())
                                 .build());

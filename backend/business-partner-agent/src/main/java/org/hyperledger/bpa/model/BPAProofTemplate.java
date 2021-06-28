@@ -17,12 +17,14 @@
  */
 package org.hyperledger.bpa.model;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
 
@@ -31,9 +33,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -52,19 +52,16 @@ public class BPAProofTemplate {
 
     @NotEmpty
     @Valid
-    @Singular
     @ValidAttributeGroup
     @TypeDef(type = DataType.JSON)
-    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
-    List<BPAAttributeGroup> attributeGroups;
+    BPAAttributeGroups attributeGroups;
 
     public ProofTemplate toRepresentation() {
         return new ProofTemplate(
                 id.toString(),
                 name,
-                attributeGroups.stream()
-                        .map(BPAAttributeGroup::toRepresentation)
-                        .collect(Collectors.toList()));
+                attributeGroups.toRepresentation()
+        );
     }
 
     public static BPAProofTemplate fromRepresentation(ProofTemplate proofTemplate) {
@@ -75,8 +72,7 @@ public class BPAProofTemplate {
         return new BPAProofTemplate(
                 id,
                 proofTemplate.getName(),
-                proofTemplate.getAttributeGroups().stream()
-                        .map(BPAAttributeGroup::fromRepresentation)
-                        .collect(Collectors.toList()));
+                BPAAttributeGroups.fromRepresentation(proofTemplate.getAttributeGroups())
+        );
     }
 }
