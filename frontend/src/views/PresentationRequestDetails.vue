@@ -15,7 +15,13 @@
         </v-btn>
         Presentation Request Details
       </v-card-title>
-      <v-card-text> hkjhaskjd </v-card-text>
+      <v-card-text>
+        <ProofRequest
+          v-bind:proofRequest="presentationRequest.proofRequest"
+          isReadOnly
+        ></ProofRequest>
+        <v-divider></v-divider>
+      </v-card-text>
       <v-layout align-end justify-end>
         <v-btn
           color="secondary"
@@ -51,13 +57,13 @@
 
 <script>
 import { EventBus } from "../main";
+import ProofRequest from "@/components/ProofRequest";
 
 export default {
   props: {
     id: String,
   },
   mounted() {
-    console.log("MOUNTED");
     this.fetch();
   },
   data: () => {
@@ -73,6 +79,7 @@ export default {
       this.$axios
         .get(`${this.$apiBaseUrl}/proof-exchanges/${this.id}`)
         .then((result) => {
+          console.log("result");
           console.log(result);
           if ({}.hasOwnProperty.call(result, "data")) {
             this.rawData = result.data;
@@ -124,6 +131,9 @@ export default {
           EventBus.$emit("error", e);
         });
     },
+  },
+  components: {
+    ProofRequest,
   },
 };
 </script>
