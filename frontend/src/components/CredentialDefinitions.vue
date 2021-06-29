@@ -33,11 +33,10 @@
         <v-btn
           v-if="!entry.id && entry.isEdit"
           :loading="isBusy"
-          color="primary"
-          text
+          icon
           @click="saveItem(entry)"
         >
-          <v-icon>$vuetify.icons.save</v-icon>
+          <v-icon color="primary">$vuetify.icons.save</v-icon>
         </v-btn>
         <v-btn icon v-if="!entry.isEdit" @click="deleteItem(index)">
           <v-icon color="error">$vuetify.icons.delete</v-icon>
@@ -45,8 +44,8 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-btn :disabled="isEdit" color="primary" text @click="addItem"
-        >Add Credential Definition</v-btn
+      <v-bpa-button :disabled="isEdit" color="secondary" @click="addItem"
+        >Add Credential Definition</v-bpa-button
       >
     </v-row>
   </v-container>
@@ -55,8 +54,10 @@
 <script>
 import { EventBus } from "@/main";
 import issuerService from "@/services/issuerService";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
+  components: {VBpaButton},
   props: {
     schema: {
       type: Object,

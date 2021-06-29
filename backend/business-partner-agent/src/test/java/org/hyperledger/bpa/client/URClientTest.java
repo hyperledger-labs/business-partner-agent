@@ -20,7 +20,7 @@ package org.hyperledger.bpa.client;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
-import org.hyperledger.bpa.api.DidDocAPI;
+import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +39,7 @@ class URClientTest {
     @Disabled
     void testGetDidDocument() {
         String did = "did:evan:testcore:0x521a97b8baecde51038e2c83f5a37890690e9118";
-        Optional<DidDocAPI> didDocument = c.getDidDocument(did);
+        Optional<DIDDocument> didDocument = c.getDidDocument(did);
         assertTrue(didDocument.isPresent());
         System.err.println(didDocument);
     }

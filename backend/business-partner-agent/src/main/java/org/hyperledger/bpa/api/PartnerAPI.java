@@ -25,6 +25,7 @@ import lombok.experimental.Accessors;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.model.Partner;
 
 import java.util.List;
@@ -51,7 +52,7 @@ public class PartnerAPI {
     @JsonIgnore
     private transient VerifiablePresentation<VerifiableIndyCredential> verifiablePresentation;
     @JsonIgnore
-    private transient DidDocAPI didDocAPI;
+    private transient DIDDocument didDocAPI;
     // end: internal use only
 
     @Data

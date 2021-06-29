@@ -54,21 +54,22 @@
         <!-- Dependency Versions -->
         <log4j2.version>2.14.1</log4j2.version>
         <lombok.version>1.18.20</lombok.version>
-        <micronaut.version>2.5.6</micronaut.version>
+        <micronaut.version>2.5.7</micronaut.version>
         <micronaut.data.version>2.4.4</micronaut.data.version>
         <micronaut.openapi.version>2.5.0</micronaut.openapi.version>
-        <micronaut.security.version>2.4.2</micronaut.security.version>
-        <mockito.version>3.11.1</mockito.version>
-        <pmd.version>6.35.0</pmd.version>
+        <micronaut.security.version>2.5.0</micronaut.security.version>
+        <mockito.version>3.11.2</mockito.version>
+        <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
+        <pmd.version>6.36.0</pmd.version>
         <spotbugs.version>4.2.3</spotbugs.version>
         <testcontainers.version>1.15.3</testcontainers.version>
         <!-- Plugin Versions -->
         <license-maven-plugin.version>4.1</license-maven-plugin.version>
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
-        <maven.failsafe.plugin.version>2.22.2</maven.failsafe.plugin.version>
+        <maven.failsafe.plugin.version>3.0.0-M5</maven.failsafe.plugin.version>
         <maven.pmd.plugin.version>3.14.0</maven.pmd.plugin.version>
         <maven.spotbugs.plugin.version>4.2.3</maven.spotbugs.plugin.version>
-        <maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
+        <maven.surefire.plugin.version>3.0.0-M5</maven.surefire.plugin.version>
     </properties>
 
     <repositories>
@@ -292,7 +293,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -303,6 +304,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
                     <version>3.9.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -466,7 +472,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.1.2</version>
                 <reportSets>
                     <reportSet>
                         <reports>

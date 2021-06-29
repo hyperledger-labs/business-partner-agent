@@ -35,14 +35,15 @@ import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @MicronautTest
 class CredentialManagerTest extends BaseTest {
 
     private static final String CRED_DEF_ID = "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:ba";
-    private static final String DID = "did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt";
+    private static final String DID = "did:sov:M6Mbe3qx7vB4wpZF4sBRjt";
 
     @Inject
     CredentialManager mgmt;

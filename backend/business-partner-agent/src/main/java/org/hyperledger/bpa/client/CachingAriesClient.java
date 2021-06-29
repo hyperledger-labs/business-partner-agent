@@ -19,8 +19,8 @@ package org.hyperledger.bpa.client;
 
 import io.micronaut.cache.annotation.Cacheable;
 import lombok.Setter;
+import org.hyperledger.acy_py.generated.model.DID;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.wallet.WalletDidResponse;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -35,7 +35,7 @@ public class CachingAriesClient {
     private AriesClient ac;
 
     @Cacheable("did-lookup-cache")
-    public Optional<WalletDidResponse> walletDidPublic() throws IOException {
+    public Optional<DID> walletDidPublic() throws IOException {
         return ac.walletDidPublic();
     }
 }

@@ -45,7 +45,7 @@ It becomes verifiably self-attested by including it in a signed VP (see example 
             "https://www.w3.org/2018/credentials/v1",
             {
                "@context":{
-                  "sc":"did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
+                  "sc":"did:sov:M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
                   "bic":{
                      "@id":"sc:bic"
                   },
@@ -67,7 +67,7 @@ It becomes verifiably self-attested by including it in a signed VP (see example 
             "iban":"1234"
          },
          "label":"1234",
-         "indyIssuer":"did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt",
+         "indyIssuer":"did:sov:M6Mbe3qx7vB4wpZF4sBRjt",
          "schemaId":"M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
          "credDefId":"M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc"
       }
@@ -105,10 +105,10 @@ The following example shows a public profile that consists of a VP including two
             "OrganizationalProfileCredential"
          ],
          "id":"urn:992c5897-e897-484f-99b2-33070593a128",
-         "issuer":"did:sov:iil:VoSfM3eGaPxduty34ySygw",
+         "issuer":"did:sov:VoSfM3eGaPxduty34ySygw",
          "issuanceDate":"2020-12-14T14:48:08Z",
          "credentialSubject":{
-            "id":"did:sov:iil:VoSfM3eGaPxduty34ySygw",
+            "id":"did:sov:VoSfM3eGaPxduty34ySygw",
             "type":"Legal Entity",
             "altName":"",
             "legalName":"Robert Bosch GmbH (ILL)",
@@ -136,7 +136,7 @@ The following example shows a public profile that consists of a VP including two
             "https://www.w3.org/2018/credentials/v1",
             {
                "@context":{
-                  "sc":"did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
+                  "sc":"did:sov:M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
                   "bic":{
                      "@id":"sc:bic"
                   },
@@ -158,7 +158,7 @@ The following example shows a public profile that consists of a VP including two
             "iban":"1234"
          },
          "label":"1234",
-         "indyIssuer":"did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt",
+         "indyIssuer":"did:sov:M6Mbe3qx7vB4wpZF4sBRjt",
          "schemaId":"M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
          "credDefId":"M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc"
       }
@@ -166,7 +166,7 @@ The following example shows a public profile that consists of a VP including two
    "proof":{
       "type":"Ed25519Signature2018",
       "created":"2020-12-14T14:48:08Z",
-      "verificationMethod":"did:sov:iil:VoSfM3eGaPxduty34ySygw#key-1",
+      "verificationMethod":"did:sov:VoSfM3eGaPxduty34ySygw#key-1",
       "proofPurpose":"authentication",
       "jws":"eyJhbGciOiAiRWREU0EiLCAiYjY0IjogZmFsc2UsICJjcml0IjogWyJiNjQiXX0..fYhHd3qJlGZjsiDMgYH-0cFlhgPlvW4NQw5pkKQX5KN0_jBKhbjJwIwzrplo9tPDASB2tRJAXnWBykgKPz8FAQ"
    }

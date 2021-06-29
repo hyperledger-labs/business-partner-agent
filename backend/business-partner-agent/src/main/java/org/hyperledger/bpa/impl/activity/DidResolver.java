@@ -22,13 +22,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.bpa.api.DidDocAPI;
+import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.client.URClient;
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.core.RegisteredWebhook;
 import org.hyperledger.bpa.impl.WebhookService;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
@@ -76,8 +76,9 @@ public class DidResolver {
                     if (p.getVerifiablePresentation() == null
                             && p.getIncoming() != null
                             && p.getIncoming()) {
-                        Optional<DidDocAPI> didDocument = Optional.empty();
+                        Optional<DIDDocument> didDocument = Optional.empty();
                         try {
+                            // check if not a public did
                             didDocument = ur.getDidDocument(p.getDid());
                         } catch (PartnerException e) {
                             log.error("{}", e.getMessage());
@@ -127,7 +128,7 @@ public class DidResolver {
 
     /**
      * Extracts the did and label components from a label is supposed to adhere to
-     * the following format: did:sov:xxx:123:MyLabel.
+     * the following format: did:sov:123:MyLabel.
      * 
      * @param label the label
      * @return {@link ConnectionLabel}
@@ -136,9 +137,9 @@ public class DidResolver {
         ConnectionLabel.ConnectionLabelBuilder cl = ConnectionLabel.builder();
         if (StringUtils.isNotEmpty(label)) {
             String[] parts = label.split(":");
-            if (parts.length == 5) {
-                cl.label = parts[4];
-                String did = StringUtils.joinWith(":", parts[0], parts[1], parts[2], parts[3]);
+            if (parts.length == 4) {
+                cl.label = parts[3];
+                String did = StringUtils.joinWith(":", parts[0], parts[1], parts[2]);
                 cl.did(Optional.of(did));
             } else {
                 cl.label = label;
