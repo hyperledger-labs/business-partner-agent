@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 @Slf4j
 @Singleton
@@ -92,9 +93,34 @@ public class ProofManager {
     MessageService messageService;
 
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
-        // TODO convert proofTemplate to ProofRequest
-        // TODO call aries client for proof
-        // TODO persist proofRequest
+        try {
+            PresentProofRequest proofRequest = proofRequestFrom(partnerId, proofTemplate);
+            String issuerId = null;
+            String schemaId = null;
+            ac.presentProofSendRequest(proofRequest).ifPresent(
+                    persistProof(partnerId, issuerId, schemaId)
+            );
+            // TODO persist proofRequest
+        } catch (IOException e) {
+            throw new NetworkException(ACA_PY_ERROR_MSG, e);
+        }
+    }
+
+    PresentProofRequest proofRequestFrom(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
+        final Partner partner = partnerRepo.findById(partnerId)
+                .orElseThrow(() -> new PartnerException("Partner not found"));
+        if (!partner.hasConnectionId()) {
+            throw new PartnerException("Partner has no aca-py connection");
+        }
+
+        // TODO add non-revoked-proof
+        // zkp -> predicate
+        // schemaId -> restriction
+//
+//        PresentProofRequestHelper
+//                .buildForAllAttributes(partner.getConnectionId(),
+//                        schema.getAttrNames(), req.buildRestrictions());
+        return null;
     }
 
     // request proof from partner
@@ -113,34 +139,33 @@ public class ProofManager {
                 PresentProofRequest proofRequest = PresentProofRequestHelper
                         .buildForAllAttributes(partner.getConnectionId(),
                                 schema.getAttrNames(), req.buildRestrictions());
-                ac.presentProofSendRequest(proofRequest).ifPresent(proof -> {
-                    final PartnerProof pp = PartnerProof
-                            .builder()
-                            .partnerId(partnerId)
-                            .state(proof.getState())
-                            .presentationExchangeId(proof.getPresentationExchangeId())
-                            .role(proof.getRole())
-                            .schemaId(schema.getId())
-                            .threadId(proof.getThreadId())
-                            .issuer(req.getFirstIssuerDid())
-                            .build();
-                    pProofRepo.save(pp);
-                });
+                ac.presentProofSendRequest(proofRequest).ifPresent(
+                        persistProof(partnerId, req.getFirstIssuerDid(), schema.getId())
+                );
             } else {
-                ac.presentProofSendRequest(req.getRequestRaw().toString()).ifPresent(exchange -> {
-                    final PartnerProof pp = PartnerProof
-                            .builder()
-                            .partnerId(partnerId)
-                            .state(exchange.getState())
-                            .presentationExchangeId(exchange.getPresentationExchangeId())
-                            .role(exchange.getRole())
-                            .build();
-                    pProofRepo.save(pp);
-                });
+                ac.presentProofSendRequest(req.getRequestRaw().toString()).ifPresent(
+                        persistProof(partnerId, null, null)
+                );
             }
         } catch (IOException e) {
             throw new NetworkException(ACA_PY_ERROR_MSG, e);
         }
+    }
+
+    private Consumer<PresentationExchangeRecord> persistProof(@NonNull UUID partnerId, @Nullable String issuerId, @Nullable String schemaId) {
+        return exchange -> {
+            final PartnerProof pp = PartnerProof
+                    .builder()
+                    .partnerId(partnerId)
+                    .state(exchange.getState())
+                    .presentationExchangeId(exchange.getPresentationExchangeId())
+                    .role(exchange.getRole())
+                    .threadId(exchange.getThreadId())
+                    .schemaId(schemaId)
+                    .issuer(issuerId)
+                    .build();
+            pProofRepo.save(pp);
+        };
     }
 
     public void rejectPresentProofRequest(@NotNull PartnerProof proofEx, String explainString) {
@@ -286,7 +311,8 @@ public class ProofManager {
         messageService.sendMessage(WebSocketMessageBody.proof(state, type, toApiProof(pp)));
     }
 
-    private @Nullable String resolveIssuer(String credDefId) {
+    private @Nullable
+    String resolveIssuer(String credDefId) {
         String issuer = null;
         if (StringUtils.isNotEmpty(credDefId)) {
             issuer = didPrefix + AriesStringUtil.credDefIdGetDid(credDefId);
