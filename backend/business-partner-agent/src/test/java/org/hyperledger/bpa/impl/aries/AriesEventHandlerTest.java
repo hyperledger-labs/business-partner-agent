@@ -188,7 +188,7 @@ class AriesEventHandlerTest extends BaseTest {
     private Partner createDefaultPartner(@NonNull PresentationExchangeRecord exReqSent) {
         Partner p = Partner.builder()
                 .connectionId(exReqSent.getConnectionId())
-                .did("did:sov:iil:dummy")
+                .did("did:sov:dummy")
                 .ariesSupport(Boolean.TRUE)
                 .build();
         return partnerRepo.save(p);

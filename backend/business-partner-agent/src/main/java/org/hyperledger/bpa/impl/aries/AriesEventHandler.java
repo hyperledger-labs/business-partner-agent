@@ -111,7 +111,7 @@ public class AriesEventHandler extends EventHandler {
     public void handleProblemReport(ProblemReport report) {
         // problem reports can happen on several levels, currently we assume that all
         // reports are proof related
-        proofMgmt.handleProblemReport(report.getThread().getThid(), report.getExplainLtxt());
+        proofMgmt.handleProblemReport(report.getThread().getThid(), report.getDescription());
     }
 
     @Override

@@ -17,23 +17,21 @@
  */
 package org.hyperledger.bpa.impl.activity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.core.annotation.Nullable;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.acy_py.generated.model.DID;
+import org.hyperledger.acy_py.generated.model.DIDCreate;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.wallet.WalletDidResponse;
+import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.ApiConstants;
-import org.hyperledger.bpa.api.DidDocAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.client.CachingAriesClient;
 import org.hyperledger.bpa.client.URClient;
-
-import io.micronaut.core.annotation.Nullable;
-import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 
 import javax.inject.Inject;
@@ -67,21 +65,16 @@ public class Identity {
     @Inject
     URClient ur;
 
-    @Inject
-    ObjectMapper mapper;
-
-    @Inject
-    RuntimeConfig rc;
-
+    // TODO either return the did or fail. Needs fixing the test setup to work.
     public @Nullable String getMyDid() {
         String myDid = null;
         if (webOnly) {
             myDid = ApiConstants.DID_METHOD_WEB + host;
         } else {
             try {
-                Optional<WalletDidResponse> walletDid = acaCache.walletDidPublic();
+                Optional<DID> walletDid = acaCache.walletDidPublic();
                 if (walletDid.isPresent()) {
-                    myDid = didPrefix + walletDid.get().getDid();
+                    myDid = "did:" + walletDid.get().getMethod().getValue() + ":" + walletDid.get().getDid();
                 }
             } catch (IOException e) {
                 log.error("aca-py not reachable", e);
@@ -96,9 +89,9 @@ public class Identity {
             if (webOnly) {
                 myKeyId = myDid + ApiConstants.DEFAULT_KEY_ID;
             } else {
-                final Optional<DidDocAPI> didDoc = ur.getDidDocument(myDid);
+                final Optional<DIDDocument> didDoc = ur.getDidDocument(myDid);
                 if (didDoc.isPresent()) {
-                    Optional<DidDocAPI.VerificationMethod> vm = didDoc.get().getVerificationMethod(mapper).stream()
+                    Optional<DIDDocument.VerificationMethod> vm = didDoc.get().getVerificationMethod().stream()
                             .filter(k -> ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE.equals(k.getType())).findFirst();
                     if (vm.isPresent()) {
                         myKeyId = vm.get().getId();
@@ -112,14 +105,14 @@ public class Identity {
     public Optional<String> getVerkey() {
         Optional<String> verkey = Optional.empty();
         try {
-            Optional<WalletDidResponse> walletDid = acaCache.walletDidPublic();
+            Optional<DID> walletDid = acaCache.walletDidPublic();
             if (walletDid.isEmpty()) {
                 log.warn("No public did available, falling back to local did. VP can only be validated locally.");
-                final Optional<List<WalletDidResponse>> walletDids = acaPy.walletDid();
+                final Optional<List<DID>> walletDids = acaPy.walletDid();
                 if (walletDids.isPresent() && !walletDids.get().isEmpty()) {
                     walletDid = Optional.of(walletDids.get().get(0));
                 } else {
-                    walletDid = acaPy.walletDidCreate();
+                    walletDid = acaPy.walletDidCreate(DIDCreate.builder().method(DIDCreate.MethodEnum.SOV).build());
                 }
             }
             if (walletDid.isPresent()) {
@@ -136,7 +129,7 @@ public class Identity {
         // we can place logic in here that will deal with different did formats later
         final String schemaCreator = AriesStringUtil.schemaGetCreator(schemaId);
         String creatorDid = did;
-        if (StringUtils.startsWith(did, rc.getLedgerPrefix())) {
+        if (StringUtils.startsWith(did, didPrefix)) {
             creatorDid = AriesStringUtil.getLastSegment(did);
         }
         return StringUtils.equals(schemaCreator, creatorDid);
