@@ -26,7 +26,6 @@ import org.hyperledger.acy_py.generated.model.CredentialDefinitionSendResult;
 import org.hyperledger.acy_py.generated.model.TxnOrCredentialDefinitionSendResult;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credential_definition.CredentialDefinition.CredentialDefinitionRequest;
-import org.hyperledger.aries.api.credential_definition.CredentialDefinition.CredentialDefinitionResponse;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.credentials.CredentialPreview;
