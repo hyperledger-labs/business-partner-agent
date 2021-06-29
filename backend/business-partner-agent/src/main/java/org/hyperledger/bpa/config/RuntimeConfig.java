@@ -34,9 +34,6 @@ public class RuntimeConfig {
     @Value("${bpa.host}")
     String host;
 
-    @Value("${bpa.resolver.url}")
-    String uniResolverUrl;
-
     @Value("${bpa.ledger.browser}")
     String ledgerBrowser;
 

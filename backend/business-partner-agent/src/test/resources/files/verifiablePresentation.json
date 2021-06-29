@@ -11,7 +11,7 @@
                 "https://www.w3.org/2018/credentials/v1",
                 {
                     "@context": {
-                        "sc": "did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
+                        "sc": "did:sov:M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
                         "bic": {
                             "@id": "sc:bic"
                         },
@@ -25,10 +25,10 @@
                 "VerifiableCredential"
             ],
             "id": "urn:b82acc4a-aaef-4f09-a880-431d02ae8ed9",
-            "issuer": "did:sov:iil:Ni2hE7fEHJ25xUBc7ZESf6",
+            "issuer": "did:sov:Ni2hE7fEHJ25xUBc7ZESf6",
             "issuanceDate": "2020-12-03T13:11:14Z",
             "credentialSubject": {
-                "id": "did:sov:iil:Ni2hE7fEHJ25xUBc7ZESf6",
+                "id": "did:sov:Ni2hE7fEHJ25xUBc7ZESf6",
                 "bic": "AGRIFRPP",
                 "iban": "FR7630006000011234567890189"
             },
@@ -46,10 +46,10 @@
                 "OrganizationalProfileCredential"
             ],
             "id": "urn:7dbe4c81-1a11-41f3-bb9f-ba549d619bf2",
-            "issuer": "did:sov:iil:Ni2hE7fEHJ25xUBc7ZESf6",
+            "issuer": "did:sov:Ni2hE7fEHJ25xUBc7ZESf6",
             "issuanceDate": "2020-12-03T13:11:14Z",
             "credentialSubject": {
-                "id": "did:sov:iil:Ni2hE7fEHJ25xUBc7ZESf6",
+                "id": "did:sov:Ni2hE7fEHJ25xUBc7ZESf6",
                 "legalName": "Bosch Healthcare"
             },
             "label": "my label"
@@ -59,7 +59,7 @@
                 "https://www.w3.org/2018/credentials/v1",
                 {
                     "@context": {
-                        "sc": "did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
+                        "sc": "did:sov:M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
                         "bic": {
                             "@id": "sc:bic"
                         },
@@ -81,7 +81,7 @@
                 "iban": "FR7630006000011234567890189"
             },
             "label": "FR7630006000011234567890189",
-            "indyIssuer": "did:sov:iil:M6Mbe3qx7vB4wpZF4sBRjt",
+            "indyIssuer": "did:sov:M6Mbe3qx7vB4wpZF4sBRjt",
             "schemaId": "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
             "credDefId": "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc"
         }
@@ -89,7 +89,7 @@
     "proof": {
         "type": "Ed25519Signature2018",
         "created": "2020-12-03T13:11:15Z",
-        "verificationMethod": "did:sov:iil:Ni2hE7fEHJ25xUBc7ZESf6#key-1",
+        "verificationMethod": "did:sov:Ni2hE7fEHJ25xUBc7ZESf6#key-1",
         "proofPurpose": "authentication",
         "jws": "eyJhbGciOiAiRWREU0EiLCAiYjY0IjogZmFsc2UsICJjcml0IjogWyJiNjQiXX0..Zwusw_PHbl38DC_CKsrYta2zLbsclu7UiUC9T9G-IjaECQN4iUJ_rfaLEL5yWsZlRRC_fdx_pPBgXcwtNprUDA"
     }

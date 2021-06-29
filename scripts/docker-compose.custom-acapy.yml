@@ -7,4 +7,4 @@ services:
   bpa-agent2:
     build:
       context: ${ACAPY_BUILD_CONTEXT}
-      dockerfile: ${ACAPY_BUILD_DOCKERFILE_PATH}      
+      dockerfile: ${ACAPY_BUILD_DOCKERFILE_PATH}
