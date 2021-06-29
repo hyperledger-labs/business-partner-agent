@@ -1,0 +1,20 @@
+{
+  "view": {
+    "partner": {
+      "receivedPresentations": {
+        "title": "Received Proofs",
+        "text": "The proofs you received from your partner",
+        "button": "Request Proof"
+      },
+      "sentPresentations": {
+        "title": "Sent Proofs",
+        "text": "The proofs you sent to your partner",
+        "button": "Send Proof"
+      }
+    },
+    "sendPresentation": {
+      "title": "Send Proof",
+      "selectCredential": "Select a credential to send"
+    }
+  }
+}

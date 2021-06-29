@@ -43,8 +43,8 @@ You can run the agent [via docker-compose](scripts/) (recommended for e.g. devel
 
 *EXPERIMENTAL! Please provide feedback in our [related discussion](https://github.com/hyperledger-labs/business-partner-agent/discussions/472)*
 
-The easiest way to run the agent, is to work with [gitpod](https://gitpod.io/). 
-Gitpod launches a pre-configured IDE in the browser with the code pre-built and the agent being launched in the background.
+The easiest way to run two agents, is to work with [gitpod](https://gitpod.io/). 
+Gitpod launches a pre-configured IDE in the browser and the agents being launched in the background.
 See [debugging docu](https://github.com/hyperledger-labs/business-partner-agent/blob/master/docs/DEBUGGING.md#fronend-and-backend-with-gitpod).
 
 # Documentation and Tutorials

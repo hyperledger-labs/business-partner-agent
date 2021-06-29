@@ -48,7 +48,7 @@ if [ "$MODE" = "diode" ]; then
 	fi
 
 	diode publish -public 8030:8030 -public 8080:80 >/dev/null 2>&1 &
-    	ACA_PY_ENDPOINT=https://$(diode config 2>&1 | awk '/Client address/ { print $5 }').diode.link:8030
+    	ACAPY_ENDPOINT=https://$(diode config 2>&1 | awk '/Client address/ { print $5 }').diode.link:8030
 	BPA_HOST=$(diode config 2>&1 | awk '/Client address/ { print $5 }').diode.link
 else
     echo "Use ngrok"
@@ -77,7 +77,7 @@ else
 	        do
 	            TUNNEL_NAME=$( echo $TUNNEL | jq -r .name)
 	            if [[ "$TUNNEL_NAME" == "acapyendpoint" ]]; then
-	                ACA_PY_ENDPOINT=$( echo $TUNNEL | jq -r .public_url )
+	                ACAPY_ENDPOINT=$( echo $TUNNEL | jq -r .public_url )
 	            fi
 	            if [[ "$TUNNEL_NAME" == "businesspartner" ]]; then
 	                BPA_HOST=$( echo $TUNNEL | jq -r .public_url | sed 's/.*https:\/\///')
@@ -90,7 +90,7 @@ fi
 
 # write public ip to env
 export BPA_HOST=$BPA_HOST
-export ACAPY_ENDPOINT=$ACA_PY_ENDPOINT
+export ACAPY_ENDPOINT=$ACAPY_ENDPOINT
 
 echo "Business Partner Agent Public URL: https://$BPA_HOST"
 echo "Public ACA-PY Endpoint: $ACAPY_ENDPOINT"

@@ -64,6 +64,15 @@ public class RuntimeConfig {
     @Property(name = "bpa.ux")
     Map<String, Object> ux;
 
+    @Value("${bpa.title}")
+    String title;
+
+    @Value("${bpa.i18n.locale}")
+    String locale;
+
+    @Value("${bpa.i18n.fallbackLocale}")
+    String fallbackLocale;
+
     public String getAgentName() {
         return DidResolver.splitDidFrom(agentName).getLabel();
     }

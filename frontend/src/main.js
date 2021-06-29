@@ -11,6 +11,7 @@ import Vue from "vue";
 import axios from "axios";
 import VueNativeSock from "vue-native-websocket";
 import App from "./App.vue";
+import i18n from "./plugins/i18n";
 import vuetify from "./plugins/vuetify";
 import "@babel/polyfill";
 import router from "./router";
@@ -84,6 +85,9 @@ Vue.prototype.$apiBaseUrl = apiBaseUrl;
 Vue.config.productionTip = false;
 Vue.prototype.$config = {
   ledger: "iil",
+  title: process.env.VUE_APP_TITLE || "Business Partner Agent",
+  locale:  process.env.VUE_APP_I18N_LOCALE || "en",
+  fallbackLocale: process.env.VUE_APP_I18N_FALLBACK_LOCALE || "en"
 };
 
 // We need to load the configuration before the Vue application, so we can use the UX configuration
@@ -99,6 +103,11 @@ Vue.prototype.$config = {
     console.log("...Configuration loaded");
   }
 
+  console.log("setting i18n...");
+  i18n.locale = Vue.prototype.$config.locale;
+  i18n.fallbackLocale = Vue.prototype.$config.fallbackLocale;
+  console.log(`i18n.locale = ${i18n.locale}, i18n.fallbackLocale = ${i18n.fallbackLocale}`);
+
   store.dispatch("loadSettings");
   store.dispatch("loadSchemas");
 
@@ -107,6 +116,7 @@ Vue.prototype.$config = {
     vuetify,
     router,
     store,
+    i18n,
     render: (h) => h(App),
   }).$mount("#app");
 })();

@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+#######
+# Business Partner 1
+#######
+  bpa1:
+    image: ghcr.io/hyperledger-labs/business-partner-agent:local
+    build:
+      context: ..
+      dockerfile: Dockerfile
+  
+#######
+# Business Partner 2 (only started with "--profile second_bpa")
+#######
+  bpa2:
+    image: ghcr.io/hyperledger-labs/business-partner-agent:local
+    build:
+      context: ..
+      dockerfile: Dockerfile

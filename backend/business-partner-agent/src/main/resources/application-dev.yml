@@ -1,3 +1,0 @@
-micronaut:
-  security:
-    enabled: false

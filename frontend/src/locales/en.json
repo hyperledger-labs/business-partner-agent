@@ -1,0 +1,81 @@
+{
+  "app": {
+    "snackBar": {
+      "close": "Close"
+    },
+    "sessionDialog": {
+      "headline": "Session expired",
+      "text": "It seems your session is expired. Do you want log in again?",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "footer": {
+      "imprintUrlText": {
+        "text": "Corporate Information"
+      },
+      "privacyPolicyUrl": {
+        "text": "Privacy Policy"
+      }
+    }
+  },
+  "nav": {
+    "identity": "Identity",
+    "dashboard": "Dashboard",
+    "profile": "Public Profile",
+    "wallet": "Wallet",
+    "credentialManagement": "Credential Management",
+    "partners": "Business Partners",
+    "settings": "Settings",
+    "about": "About",
+    "signout": "Sign out"
+  },
+  "button" : {
+    "save": "Save",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "view": {
+    "partner": {
+      "title": "Partner",
+      "refreshProfile": "Refresh profile from source",
+      "requestReceived": "Connection request received",
+      "requestReceivedSubtitle": "{alias} wants to create a connection with you.",
+      "removePartner": "Remove Partner",
+      "acceptPartner": "Accept",
+      "requestSent": "Connection request sent",
+      "requestSentSubtitle": "Waiting for response...",
+      "receivedPresentations": {
+        "title": "Received Presentations",
+        "text": "The presentations you received from your partner",
+        "button": "Request Presentation"
+      },
+      "sentPresentations": {
+        "title": "Sent Presentations",
+        "text": "The presentations you sent to your partner",
+        "button": "Send Presentation"
+      },
+      "issuedCredentials": {
+        "title": "Issued Credentials",
+        "text": "The credentials you issued to your partner",
+        "button": "Issue Credential"
+      },
+      "presentationRequests": {
+        "title": "Presentation Requests",
+        "text": "The proofs requested from this partner"
+      },
+      "stateDialog": {
+        "title": "Connection State {state}",
+        "text": "The connection with your Business Partner is marked as {state}. This could mean that your request will fail. Do you want to try anyways?",
+        "yes": "Yes",
+        "no": "No"
+      }
+    },
+    "sendPresentation": {
+      "title": "Send Presentation",
+      "selectCredential": "Select a credential to send"
+    }
+  },
+  "showRawData": "Show raw data"
+}
