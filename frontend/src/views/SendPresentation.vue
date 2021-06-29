@@ -12,11 +12,11 @@
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
-        Send a Credential Presentation
+        {{ $t("view.sendPresentation.title") }}
       </v-card-title>
 
       <v-card-text>
-        <h4 class="pt-4">Select a credential to send</h4>
+        <h4 class="pt-4">{{ $t("view.sendPresentation.selectCredential") }}</h4>
         <MyCredentialList
           v-bind:headers="credHeaders"
           type="credential"
@@ -27,13 +27,12 @@
 
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-btn color="secondary" text @click="cancel()">Cancel</v-btn>
-          <v-btn
+          <v-bpa-button color="secondary" @click="cancel()">{{ $t("button.cancel") }}</v-bpa-button>
+          <v-bpa-button
             :loading="this.isBusy"
             color="primary"
-            text
             @click="sendPresentation()"
-            >Submit</v-btn
+            >{{ $t("button.submit") }}</v-bpa-button
           >
         </v-layout>
       </v-card-actions>
@@ -46,17 +45,19 @@ import { EventBus } from "../main";
 
 // import { CredentialTypes } from "../constants";
 import MyCredentialList from "@/components/MyCredentialList";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   name: "SendPresentation",
   components: {
+    VBpaButton,
     MyCredentialList,
   },
   props: {
     id: String,
   },
   created() {
-    EventBus.$emit("title", "Send Presentation");
+    EventBus.$emit("title", this.$t("view.sendPresentation.title"));
   },
   data: () => {
     return {

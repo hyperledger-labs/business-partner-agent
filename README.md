@@ -35,9 +35,17 @@ The Business Partner Agent supports two modes
 Both modes are currently coupled with a specific instance of an Indy network in order to read schemas and credential definitions.
 The agent is started in Indy mode per default and tries to connect with our test network. Please refer to the [.env-example file](scripts/.env-example) to start the agent in web mode or connect to a different Indy network.
 
-## Run a business partner agent
+## Run a business partner agent with docker-compose or helm
 
-You can either run the agent [via docker-compose](scripts/) (recommended for e.g. development / debugging) or deploy it into a [kubernetes cluster (via helm)](https://github.com/hyperledger-labs/business-partner-agent-chart).
+You can run the agent [via docker-compose](scripts/) (recommended for e.g. development / debugging) or deploy it into a [kubernetes cluster (via helm)](https://github.com/hyperledger-labs/business-partner-agent-chart).
+
+## Run a business partner agent with gitpod
+
+*EXPERIMENTAL! Please provide feedback in our [related discussion](https://github.com/hyperledger-labs/business-partner-agent/discussions/472)*
+
+The easiest way to run two agents, is to work with [gitpod](https://gitpod.io/). 
+Gitpod launches a pre-configured IDE in the browser and the agents being launched in the background.
+See [debugging docu](https://github.com/hyperledger-labs/business-partner-agent/blob/master/docs/DEBUGGING.md#fronend-and-backend-with-gitpod).
 
 # Documentation and Tutorials
 

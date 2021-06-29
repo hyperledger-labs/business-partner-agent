@@ -25,9 +25,7 @@ services:
         -Dbpa.scheme=${BPA_SCHEME}
         -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${BPA1_DEBUG_PORT}
       BPA_WEB_MODE: ${BPA_WEB_MODE}
-      BPA_RESOLVER_URL: ${BPA_RESOLVER_URL}
       BPA_LEDGER_BROWSER: ${BPA_LEDGER_BROWSER}
-      BPA_DID_PREFIX: ${BPA_DID_PREFIX}
       BPA_BOOTSTRAP_UN: ${BPA_BOOTSTRAP_UN}
       BPA_BOOTSTRAP_PW: ${BPA_BOOTSTRAP_PW}
       ACAPY_ENDPOINT: ${ACAPY1_ENDPOINT}
@@ -43,7 +41,7 @@ services:
     extra_hosts:
      - host.docker.internal:host-gateway
   bpa-agent1:
-    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.6.0
+    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.7-pre.3
     ports:
       - ${ACAPY1_ADMIN_PORT}:${ACAPY1_ADMIN_PORT}
       - ${ACAPY1_HTTP_PORT}:${ACAPY1_HTTP_PORT}
@@ -109,9 +107,7 @@ services:
         -Dbpa.host=${BPA_HOST}:${BPA2_PORT}
         -Dbpa.scheme=${BPA_SCHEME}
       BPA_WEB_MODE: ${BPA_WEB_MODE}
-      BPA_RESOLVER_URL: ${BPA_RESOLVER_URL}
       BPA_LEDGER_BROWSER: ${BPA_LEDGER_BROWSER}
-      BPA_DID_PREFIX: ${BPA_DID_PREFIX}
       BPA_BOOTSTRAP_UN: ${BPA_BOOTSTRAP_UN}
       BPA_BOOTSTRAP_PW: ${BPA_BOOTSTRAP_PW}
       ACAPY_ENDPOINT: ${ACAPY2_ENDPOINT}
@@ -126,7 +122,7 @@ services:
     extra_hosts:
      - host.docker.internal:host-gateway
   bpa-agent2:
-    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.6.0
+    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.7-pre.3
     ports:
       - ${ACAPY2_ADMIN_PORT}:${ACAPY2_ADMIN_PORT}
       - ${ACAPY2_HTTP_PORT}:${ACAPY2_HTTP_PORT}
