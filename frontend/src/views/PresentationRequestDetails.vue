@@ -13,7 +13,7 @@
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
-        Presentation Request Details
+        {{ $t("view.presentationRequestDetails.header") }}
       </v-card-title>
       <v-card-text>
         <ProofRequest
