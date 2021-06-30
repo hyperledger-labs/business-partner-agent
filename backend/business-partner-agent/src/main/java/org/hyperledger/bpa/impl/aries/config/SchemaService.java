@@ -23,6 +23,8 @@ import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.acy_py.generated.model.SchemaSendResult;
+import org.hyperledger.acy_py.generated.model.TxnOrSchemaSendResult;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.schema.SchemaSendRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
@@ -79,10 +81,10 @@ public class SchemaService {
                     .schemaVersion(schemaVersion)
                     .attributes(attributes)
                     .build();
-            Optional<SchemaSendResponse> response = ac.schemas(request);
+            Optional<TxnOrSchemaSendResult> response = ac.schemas(request);
             if (response.isPresent()) {
                 // save it to the db...
-                SchemaSendResponse ssr = response.get();
+                SchemaSendResult ssr = response.get().getSent();
                 result = this.addSchema(ssr.getSchemaId(), schemaLabel, defaultAttributeName, null);
             } else {
                 log.error("Schema not created.");
