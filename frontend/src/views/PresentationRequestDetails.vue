@@ -39,7 +39,7 @@
         >
       </v-layout>
       <v-card-actions>
-        <v-expansion-panels accordion flat>
+        <v-expansion-panels v-if="expertMode" accordion flat>
           <v-expansion-panel>
             <v-expansion-panel-header
               class="grey--text text--darken-2 font-weight-medium bg-light"
