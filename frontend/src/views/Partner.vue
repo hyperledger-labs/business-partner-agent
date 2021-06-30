@@ -24,7 +24,10 @@
           dense
         >
           <template v-slot:append>
-            <v-bpa-button color="secondary" class="pb-1" @click="isUpdatingName = false"
+            <v-bpa-button
+              color="secondary"
+              class="pb-1"
+              @click="isUpdatingName = false"
               >{{ $t("button.cancel") }}</v-bpa-button
             >
             <v-bpa-button
@@ -59,7 +62,10 @@
             dense
           >
             <template v-slot:append>
-              <v-bpa-button color="secondary" class="pb-1" @click="isUpdatingDid = false"
+              <v-bpa-button
+                color="secondary"
+                class="pb-1"
+                @click="isUpdatingDid = false"
                 >{{ $t("button.cancel") }}</v-bpa-button
               >
               <v-bpa-button
@@ -112,9 +118,9 @@
                 {{ $t("view.partner.requestReceived") }}
               </span>
             </v-row>
-            <v-row
-              >{{ $t("view.partner.requestReceivedSubtitle", { alias: this.alias }) }}</v-row
-            >
+            <v-row>{{
+              $t("view.partner.requestReceivedSubtitle", { alias: this.alias })
+            }}</v-row>
             <template v-slot:actions>
               <v-bpa-button color="secondary" @click="deletePartner">
                 {{ $t("view.partner.removePartner") }}
@@ -136,7 +142,9 @@
             </v-avatar>
 
             <v-row>
-              <span class="font-weight-medium">{{ $t("view.partner.requestSent") }}</span>
+              <span class="font-weight-medium">{{
+                $t("view.partner.requestSent")
+              }}</span>
             </v-row>
             <v-row>{{ $t("view.partner.requestSentSubtitle") }}</v-row>
           </v-banner>
@@ -151,9 +159,9 @@
             </v-row>
             <v-row>{{ $t("view.partner.receivedPresentations.text") }}</v-row>
             <v-row class="mt-4">
-              <v-btn small @click="requestPresentation" :disabled="!isActive"
-                >{{ $t("view.partner.receivedPresentations.button") }}</v-btn
-              >
+              <v-btn small @click="requestPresentation" :disabled="!isActive">{{
+                $t("view.partner.receivedPresentations.button")
+              }}</v-btn>
             </v-row>
           </v-col>
           <v-col cols="8">
@@ -213,7 +221,9 @@
                 max-width="600px"
               >
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn small v-bind="attrs" v-on="on">{{ $t("view.partner.issuedCredentials.button") }}</v-btn>
+                  <v-btn small v-bind="attrs" v-on="on">{{
+                    $t("view.partner.issuedCredentials.button")
+                  }}</v-btn>
                 </template>
                 <IssueCredential
                   :partnerId="id"
@@ -287,7 +297,9 @@
             >{{ $t("view.partner.stateDialog.no") }}</v-bpa-button
           >
 
-          <v-bpa-button color="primary" @click="proceed">{{ $t("view.partner.stateDialog.yes") }}</v-bpa-button>
+          <v-bpa-button color="primary" @click="proceed">{{
+            $t("view.partner.stateDialog.yes")
+          }}</v-bpa-button>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -374,11 +386,6 @@ export default {
       ],
       issueCredentialDialog: false,
       headersPresentationRequest: [
-        {
-          text: "Schema",
-          value:
-            "proofRequest.requestedAttributes.attribute_group_0.restrictions[0].schema_id",
-        },
         {
           text: "Received at",
           value: "sentAt", //miss labelled.
