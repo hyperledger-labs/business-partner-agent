@@ -31,8 +31,6 @@ import java.util.UUID;
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface BPARestrictionsRepository extends CrudRepository<BPARestrictions, UUID> {
 
-    void deleteByIsReadOnly(Boolean isReadOnly);
-
     void deleteBySchema(BPASchema schema);
 
     void updateLabel(@Id UUID id, @Nullable String label);

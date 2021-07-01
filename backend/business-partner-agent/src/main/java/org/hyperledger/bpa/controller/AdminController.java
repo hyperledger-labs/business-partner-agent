@@ -136,11 +136,8 @@ public class AdminController {
     public HttpResponse<Void> removeSchema(@PathVariable UUID id) {
         Optional<SchemaAPI> schema = schemaService.getSchema(id);
         if (schema.isPresent()) {
-            if (!schema.get().getIsReadOnly()) {
-                schemaService.deleteSchema(id);
-                return HttpResponse.ok();
-            }
-            return HttpResponse.notAllowed();
+            schemaService.deleteSchema(id);
+            return HttpResponse.ok();
         }
         return HttpResponse.notFound();
     }
@@ -196,11 +193,8 @@ public class AdminController {
             @PathVariable UUID trustedIssuerId) {
         Optional<BPARestrictions> config = restrictionsManager.findById(trustedIssuerId);
         if (config.isPresent()) {
-            if (!config.get().getIsReadOnly()) {
-                restrictionsManager.deleteById(trustedIssuerId);
-                return HttpResponse.ok();
-            }
-            return HttpResponse.notAllowed();
+            restrictionsManager.deleteById(trustedIssuerId);
+            return HttpResponse.ok();
         }
         return HttpResponse.notFound();
     }
