@@ -48,7 +48,7 @@ jobs:
       - name: Commit Milestone Documentation
         uses: EndBug/add-and-commit@v4.4.0
         with:
-          message: 'autogen(docs): update milestone document'
+          message: 'autogen(docs): update milestone document. Signed-off-by: ci-build <no-reply@github.com'
           author_name: ci-build
           author_email: 'no-reply@github.com'
         env:
