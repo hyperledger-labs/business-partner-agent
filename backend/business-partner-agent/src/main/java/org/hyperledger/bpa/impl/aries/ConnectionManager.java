@@ -41,6 +41,7 @@ import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
+import org.hyperledger.bpa.model.Tag;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
@@ -49,6 +50,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -93,17 +95,29 @@ public class ConnectionManager {
      *
      * @param alias optional connection alias
      */
-    public Optional<CreateInvitationResponse> createConnectionInvitation(@NonNull String alias) {
+    public Optional<CreateInvitationResponse> createConnectionInvitation(
+            @Nullable String alias, @Nullable List<Tag> tags) {
         Optional<CreateInvitationResponse> result = Optional.empty();
         try {
+            String aliasWithFallback = StringUtils.isNotEmpty(alias) ? alias
+                    : CONNECTION_INVITATION + TimeUtil.currentTimeFormatted(Instant.now());
             result = ac.connectionsCreateInvitation(
                     CreateInvitationRequest.builder()
                             .build(),
                     CreateInvitationParams.builder()
-                            .alias(StringUtils.isNotEmpty(alias) ? alias
-                                    : CONNECTION_INVITATION + TimeUtil.currentTimeFormatted(Instant.now()))
+                            .alias(aliasWithFallback)
                             .autoAccept(Boolean.TRUE)
                             .build());
+            result.ifPresent(r -> partnerRepo.save(Partner
+                    .builder()
+                    .ariesSupport(Boolean.TRUE)
+                    .alias(aliasWithFallback)
+                    .connectionId(r.getConnectionId())
+                    .did(didPrefix + UNKNOWN_DID)
+                    .state(ConnectionState.INVITATION)
+                    .incoming(Boolean.TRUE)
+                    .tags(tags != null ? new HashSet<>(tags) : null)
+                    .build()));
         } catch (IOException e) {
             log.error("Could not create aries connection invitation", e);
         }
@@ -222,9 +236,6 @@ public class ConnectionManager {
                     Partner p = Partner
                             .builder()
                             .ariesSupport(Boolean.TRUE)
-                            .alias(StringUtils.isNotEmpty(record.getAlias()) // invite case
-                                    ? record.getAlias()
-                                    : record.getTheirLabel())
                             .connectionId(record.getConnectionId())
                             .did(StringUtils.isNotEmpty(record.getTheirDid())
                                     ? didPrefix + record.getTheirDid()

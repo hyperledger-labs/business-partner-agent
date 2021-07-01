@@ -86,30 +86,37 @@ Vue.config.productionTip = false;
 Vue.prototype.$config = {
   ledger: "iil",
   title: process.env.VUE_APP_TITLE || "Business Partner Agent",
-  locale:  process.env.VUE_APP_I18N_LOCALE || "en",
-  fallbackLocale: process.env.VUE_APP_I18N_FALLBACK_LOCALE || "en"
+  locale: process.env.VUE_APP_I18N_LOCALE || "en",
+  fallbackLocale: process.env.VUE_APP_I18N_FALLBACK_LOCALE || "en",
 };
 
 // We need to load the configuration before the Vue application, so we can use the UX configuration
 (async () => {
   console.log("Loading configuration...");
-  const result = await axios.get(`${apiBaseUrl}/admin/config`).catch((e) => { console.error(e); });
+  const result = await axios.get(`${apiBaseUrl}/admin/config`).catch((e) => {
+    console.error(e);
+  });
   if ({}.hasOwnProperty.call(result, "data")) {
     Vue.prototype.$config = result.data;
     let ledgerPrefix = Vue.prototype.$config.ledgerPrefix;
     let splitted = ledgerPrefix.split(":");
     Vue.prototype.$config.ledger = splitted[splitted.length - 2];
-    Object.assign(Vue.prototype.$config.ux, result.data.ux);
+    if (result.data.ux) {
+      Object.assign(Vue.prototype.$config.ux, result.data.ux);
+    }
     console.log("...Configuration loaded");
   }
 
   console.log("setting i18n...");
   i18n.locale = Vue.prototype.$config.locale;
   i18n.fallbackLocale = Vue.prototype.$config.fallbackLocale;
-  console.log(`i18n.locale = ${i18n.locale}, i18n.fallbackLocale = ${i18n.fallbackLocale}`);
+  console.log(
+    `i18n.locale = ${i18n.locale}, i18n.fallbackLocale = ${i18n.fallbackLocale}`
+  );
 
   store.dispatch("loadSettings");
   store.dispatch("loadSchemas");
+  store.dispatch("loadTags");
 
   console.log("Create the Vue application");
   new Vue({

@@ -58,11 +58,28 @@
             </v-text-field>
           </v-col>
         </v-row>
+        <v-row class="mx-2" v-if="partnerLoaded">
+          <v-col cols="4">
+            <p class="grey--text text--darken-2 font-weight-medium">Set tags</p>
+          </v-col>
+          <v-col cols="8">
+            <v-combobox
+              multiple
+              v-model="selectedTags"
+              :items="tags"
+              chips
+              deletable-chips
+            >
+            </v-combobox>
+          </v-col>
+        </v-row>
         <Profile v-if="partnerLoaded" v-bind:partner="partner" />
       </v-container>
       <v-card-actions>
         <v-layout justify-space-between>
-          <v-bpa-button color="secondary" to="/app/partners">Cancel</v-bpa-button>
+          <v-bpa-button color="secondary" to="/app/partners"
+            >Cancel</v-bpa-button
+          >
 
           <v-bpa-button v-if="!partnerLoaded" color="primary" @click="lookup()"
             >Lookup Partner</v-bpa-button
@@ -87,7 +104,7 @@ export default {
     VBpaButton,
     Profile,
   },
-  created: () => {},
+  created() {},
   data: () => {
     return {
       partnerLoading: false,
@@ -96,7 +113,16 @@ export default {
       did: "",
       alias: "",
       partner: {},
+      search: "",
+      selectedTags: [],
     };
+  },
+  computed: {
+    tags() {
+      return this.$store.state.tags
+        ? this.$store.state.tags.map((tag) => tag.name)
+        : [];
+    },
   },
   methods: {
     lookup() {
@@ -118,7 +144,6 @@ export default {
               if ({}.hasOwnProperty.call(partner, "credential"))
                 this.partnerLoaded = true;
             } else if (partner.ariesSupport) {
-              // Todo I need to know if I'm in aries mode to allow connection using aries
               this.msg =
                 "Partner has no public profile. You can add him to get more information using Aries protocols.";
               this.partnerLoaded = true;
@@ -131,7 +156,7 @@ export default {
           console.error(e);
           this.msg = `Could not resolve ${this.did}.`;
           this.partnerLoading = false;
-          // EventBus.$emit("error", e);
+          EventBus.$emit("error", e);
         });
     },
     addPartner() {
@@ -142,20 +167,14 @@ export default {
       if (this.alias && this.alias !== "") {
         partnerToAdd.alias = this.alias;
       }
+
+      partnerToAdd.tag = this.$store.state.tags.filter((tag) => {
+        return this.selectedTags.includes(tag.name);
+      });
       this.$axios
         .post(`${this.$apiBaseUrl}/partners`, partnerToAdd)
         .then((result) => {
-          console.log(result);
-
           if (result.status === 201) {
-            //   this.$axios.get(`${this.$apiBaseUrl}/partners/${result.data.id}`).then( res => {
-            //       console.log(res);
-            //       this.partnerLoaded = true
-            //       this.partnerLoading = false
-
-            //   });
-            // } else {
-            //   this.partnerLoading = false;
             EventBus.$emit("success", "Partner added successfully");
             this.$router.push({
               name: "Partners",

@@ -64,7 +64,10 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-bpa-button :disabled="isEdit" color="secondary" @click="addTrustedIssuer"
+      <v-bpa-button
+        :disabled="isEdit"
+        color="secondary"
+        @click="addTrustedIssuer"
         >Add trusted issuer</v-bpa-button
       >
     </v-row>
@@ -75,7 +78,7 @@
 import { EventBus } from "../main";
 import VBpaButton from "@/components/BpaButton";
 export default {
-  components: {VBpaButton},
+  components: { VBpaButton },
   props: {
     schema: {
       type: Object,
