@@ -15,16 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.partner;
+package org.hyperledger.bpa.controller.api.admin;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.hyperledger.bpa.model.Tag;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
-
+@Builder
 @Data
-public class AddPartnerRequest {
-    private String did;
-    private String alias;
-    private List<Tag> tag;
+@NoArgsConstructor
+@AllArgsConstructor
+public class AddTagRequest {
+    private String name;
 }

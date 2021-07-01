@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.controller;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
@@ -29,11 +30,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.TAAInfo.TAARecord;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.api.TagAPI;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.admin.*;
 import org.hyperledger.bpa.impl.aries.config.RestrictionsManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.TagService;
 import org.hyperledger.bpa.impl.mode.indy.EndpointService;
 import org.hyperledger.bpa.model.BPARestrictions;
 
@@ -51,6 +54,9 @@ public class AdminController {
 
     @Inject
     SchemaService schemaService;
+
+    @Inject
+    TagService tagService;
 
     @Inject
     Optional<EndpointService> endpointService;
@@ -189,6 +195,79 @@ public class AdminController {
         if (config.isPresent()) {
             restrictionsManager.deleteById(trustedIssuerId);
             return HttpResponse.ok();
+        }
+        return HttpResponse.notFound();
+    }
+
+    /**
+     * List configured tags
+     *
+     * @return list of {@link TagAPI}
+     */
+    @Get("/tag")
+    public HttpResponse<List<TagAPI>> listTags() {
+        return HttpResponse.ok(tagService.listTags());
+    }
+
+    /**
+     * Get a configured tag
+     *
+     * @param id {@link UUID} the tag id
+     * @return {@link HttpResponse}
+     */
+    @Get("/tag/{id}")
+    public HttpResponse<TagAPI> getTag(@PathVariable UUID id) {
+        final Optional<TagAPI> tag = tagService.getTag(id);
+        if (tag.isPresent()) {
+            return HttpResponse.ok(tag.get());
+        }
+        return HttpResponse.notFound();
+    }
+
+    /**
+     * Add a tag
+     *
+     * @param req {@link AddTagRequest}
+     * @return {@link HttpResponse}
+     */
+    @Post("/tag")
+    public HttpResponse<TagAPI> addTag(@Body AddTagRequest req) {
+        return HttpResponse.ok(tagService.addTag(req.getName()));
+    }
+
+    /**
+     * Update a tag
+     *
+     * @param id  {@link UUID} the tag id
+     * @param req {@link UpdateTagRequest}
+     * @return {@link HttpResponse}
+     */
+    @Put("/tag/{id}")
+    public HttpResponse<TagAPI> updateTag(@PathVariable UUID id, @Body UpdateTagRequest req) {
+        Optional<TagAPI> tagAPI = tagService.updateTag(id, req.getName());
+        if (tagAPI.isPresent()) {
+            return HttpResponse.ok(tagAPI.get());
+        }
+        return HttpResponse.notFound();
+    }
+
+    /**
+     * Removes a tag.
+     *
+     * @param id {@link UUID} the tag id
+     * @return {@link HttpResponse}
+     */
+    @Delete("/tag/{id}")
+    @ApiResponse(responseCode = "404", description = "If the tag does not exist")
+    @ApiResponse(responseCode = "405", description = "If the tag is read only")
+    public HttpResponse<Void> removeTag(@PathVariable UUID id, @Nullable @QueryValue Boolean force) {
+        Optional<TagAPI> tag = tagService.getTag(id);
+        if (tag.isPresent()) {
+            if (!tag.get().getIsReadOnly()) {
+                tagService.deleteTag(id, force != null && force);
+                return HttpResponse.ok();
+            }
+            return HttpResponse.notAllowed();
         }
         return HttpResponse.notFound();
     }
