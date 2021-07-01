@@ -15,16 +15,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.partner;
+package org.hyperledger.bpa.model;
 
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.annotation.AutoPopulated;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.hyperledger.bpa.model.Tag;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Data
-public class AddPartnerRequest {
-    private String did;
-    private String alias;
-    private List<Tag> tag;
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Entity
+public class Tag {
+
+    @Id
+    @AutoPopulated
+    private UUID id;
+
+    private String name;
+
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH }, mappedBy = "tags")
+    @JoinTable(name = "partner_tag")
+    private Set<Partner> partners = new HashSet<>();
+
+    @Nullable
+    private Boolean isReadOnly;
+
 }

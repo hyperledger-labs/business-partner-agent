@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2020-2021 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
@@ -15,16 +16,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.partner;
+package org.hyperledger.bpa.config;
 
+import io.micronaut.context.annotation.ConfigurationProperties;
 import lombok.Data;
-import org.hyperledger.bpa.model.Tag;
 
 import java.util.List;
 
 @Data
-public class AddPartnerRequest {
-    private String did;
-    private String alias;
-    private List<Tag> tag;
+@ConfigurationProperties("bpa")
+public class TagConfig {
+
+    private List<String> tags;
+
 }

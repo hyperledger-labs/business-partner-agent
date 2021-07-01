@@ -31,11 +31,13 @@ import java.util.UUID;
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface BPACredentialExchangeRepository extends CrudRepository<BPACredentialExchange, UUID> {
 
+    @NonNull
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     @Join(value = "credDef", type = Join.Type.LEFT_FETCH)
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     Iterable<BPACredentialExchange> findAll();
 
+    @NonNull
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     @Join(value = "credDef", type = Join.Type.LEFT_FETCH)
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)

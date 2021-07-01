@@ -22,6 +22,7 @@ const store = new Vuex.Store({
     documents: [],
     credentials: [],
     schemas: [],
+    tags: [],
     busyStack: 0,
     expertMode: false,
     settings: {},
@@ -42,6 +43,10 @@ const store = new Vuex.Store({
     },
     setSchemas(state, payload) {
       state.schemas = payload.schemas;
+    },
+    setTags(state, payload) {
+      console.log(payload.tags);
+      state.tags = payload.tags;
     },
     setExpertMode(state, payload) {
       state.expertMode = payload.isExpert;

@@ -16,3 +16,6 @@ bpa:
       restrictions:
         - issuerDid: "${bpa.did.prefix}5mwQSWnRePrZ3oF67C4KqD"
           label: "Commercial Register"
+  tags:
+    - "myInitTag"
+    - "myOtherInitTag"
