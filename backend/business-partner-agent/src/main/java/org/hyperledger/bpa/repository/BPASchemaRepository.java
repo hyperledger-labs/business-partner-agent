@@ -33,17 +33,17 @@ public interface BPASchemaRepository extends CrudRepository<BPASchema, UUID> {
 
     Optional<BPASchema> findBySchemaId(String schemaId);
 
+    @Override
     @NonNull
     @Join(value = "restrictions", type = Join.Type.LEFT_FETCH)
     @Join(value = "credentialDefinitions", type = Join.Type.LEFT_FETCH)
     Iterable<BPASchema> findAll();
 
+    @Override
     @NonNull
     @Join(value = "restrictions", type = Join.Type.LEFT_FETCH)
     @Join(value = "credentialDefinitions", type = Join.Type.LEFT_FETCH)
     Optional<BPASchema> findById(@NonNull UUID id);
 
     void updateDefaultAttributeName(@Id UUID id, String defaultAttributeName);
-
-    void deleteByIsReadOnly(Boolean isReadOnly);
 }

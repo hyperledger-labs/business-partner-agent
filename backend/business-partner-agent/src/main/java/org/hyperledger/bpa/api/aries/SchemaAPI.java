@@ -47,8 +47,6 @@ public class SchemaAPI {
 
     private String version;
 
-    private Boolean isReadOnly;
-
     private Set<String> schemaAttributeNames;
 
     private List<TrustedIssuer> trustedIssuer;
@@ -90,8 +88,7 @@ public class SchemaAPI {
                 .label(s.getLabel())
                 .schemaId(s.getSchemaId())
                 .version(version)
-                .schemaAttributeNames(s.getSchemaAttributeNames())
-                .isReadOnly(s.getIsReadOnly())
+                .schemaAttributeNames(s.getSchemaAttributeNames() != null ? s.getSchemaAttributeNames() : Set.of())
                 .build();
     }
 

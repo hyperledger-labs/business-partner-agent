@@ -50,8 +50,6 @@ public class BPASchema {
     @Nullable
     private String label;
 
-    private Boolean isReadOnly;
-
     private String schemaId;
 
     @TypeDef(type = DataType.JSON)
@@ -62,9 +60,9 @@ public class BPASchema {
 
     private Integer seqNo;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     private List<BPARestrictions> restrictions;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     private List<BPACredentialDefinition> credentialDefinitions;
 }
