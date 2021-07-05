@@ -53,7 +53,5 @@ public class BPARestrictions {
     @Nullable
     private String label;
 
-    private Boolean isReadOnly;
-
     private String issuerDid;
 }

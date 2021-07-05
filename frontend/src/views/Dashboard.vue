@@ -104,7 +104,7 @@ import { CredentialTypes } from "../constants";
 import VBpaButton from "@/components/BpaButton";
 export default {
   name: "Dashboard",
-  components: {VBpaButton},
+  components: { VBpaButton },
   created() {
     EventBus.$emit("title", "Dashboard");
     this.getStatus();

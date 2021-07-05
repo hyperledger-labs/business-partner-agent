@@ -20,6 +20,7 @@ package org.hyperledger.bpa.impl.aries.config;
 import io.micronaut.cache.annotation.Cacheable;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.data.exceptions.DataAccessException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +33,7 @@ import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.SchemaException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.config.SchemaConfig;
 import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
@@ -67,13 +69,15 @@ public class SchemaService {
     @Inject
     Identity id;
 
-    // CRUD Methods
+    @Inject
+    BPAMessageSource.DefaultMessageSource ms;
+
     public SchemaAPI createSchema(@NonNull String schemaName, @NonNull String schemaVersion,
             @NonNull List<String> attributes, @NonNull String schemaLabel, String defaultAttributeName) {
-        SchemaAPI result = null;
+        SchemaAPI result;
         // ensure no leading or trailing spaces on attribute names... bad things happen
         // when crypto signing.
-        attributes.replaceAll(s -> AriesStringUtil.schemaAttributeFormat(s));
+        attributes.replaceAll(AriesStringUtil::schemaAttributeFormat);
         try {
             // send schema to ledger...
             SchemaSendRequest request = SchemaSendRequest.builder()
@@ -100,7 +104,7 @@ public class SchemaService {
 
     public @Nullable SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label,
             @Nullable String defaultAttributeName, @Nullable List<AddTrustedIssuerRequest> restrictions) {
-        SchemaAPI schema = addSchema(schemaId, label, defaultAttributeName, false);
+        SchemaAPI schema = addSchema(schemaId, label, defaultAttributeName);
         if (schema == null) {
             throw new WrongApiUsageException("Schema config could not be added");
         }
@@ -114,7 +118,7 @@ public class SchemaService {
 
     @Nullable
     SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label,
-            @Nullable String defaultAttributeName, boolean isReadOnly) {
+            @Nullable String defaultAttributeName) {
         SchemaAPI result = null;
         String sId = StringUtils.strip(schemaId);
 
@@ -131,7 +135,6 @@ public class SchemaService {
                         .schemaAttributeNames(new LinkedHashSet<>(ariesSchema.get().getAttrNames()))
                         .defaultAttributeName(defaultAttributeName)
                         .seqNo(ariesSchema.get().getSeqNo())
-                        .isReadOnly(isReadOnly)
                         .build();
                 BPASchema saved = schemaRepo.save(dbS);
                 result = SchemaAPI.from(saved);
@@ -167,8 +170,12 @@ public class SchemaService {
 
     public void deleteSchema(@NonNull UUID id) {
         schemaRepo.findById(id).ifPresent(s -> {
-            schemaRepo.deleteById(id);
-            restrictionsManager.deleteBySchema(s);
+            try {
+                schemaRepo.deleteById(id);
+            } catch (DataAccessException e) {
+                log.error("Could not delete schema", e);
+                throw new WrongApiUsageException(ms.getMessage("api.schema.constrain.violation"));
+            }
         });
     }
 
@@ -208,25 +215,21 @@ public class SchemaService {
     }
 
     public void resetWriteOnlySchemas() {
-        schemaRepo.deleteByIsReadOnly(Boolean.TRUE);
-        restrictionsManager.resetReadOnly();
-
         for (SchemaConfig schema : schemas) {
-            try {
-                SchemaAPI schemaAPI = addSchema(schema.getId(), schema.getLabel(),
-                        schema.getDefaultAttributeName(), true);
-                if (schemaAPI != null) {
-                    restrictionsManager.addRestriction(
-                            schemaAPI.getId(), Boolean.TRUE, schema.getRestrictions());
-                }
-            } catch (Exception e) {
-                if (e instanceof WrongApiUsageException) {
-                    log.warn("Schema already exists: {}", schema.getId());
-                } else {
-                    log.warn("Could not add schema id: {}", schema.getId(), e);
-                }
-
-            }
+            schemaRepo.findBySchemaId(schema.getId()).ifPresentOrElse(
+                    dbSchema -> log.debug("Schema with id {} already exists", schema.getId()),
+                    () -> {
+                        try {
+                            SchemaAPI schemaAPI = addSchema(schema.getId(), schema.getLabel(),
+                                    schema.getDefaultAttributeName());
+                            if (schemaAPI != null) {
+                                restrictionsManager.addRestriction(
+                                        schemaAPI.getId(), schema.getRestrictions());
+                            }
+                        } catch (Exception e) {
+                            log.warn("Could not add schema id: {}", schema.getId(), e);
+                        }
+                    });
         }
     }
 }

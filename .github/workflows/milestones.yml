@@ -1,0 +1,55 @@
+name: Generate and Publish Milestone Document
+
+on:
+  workflow_dispatch:
+  issues:
+    types:
+      [
+        opened,
+        closed,
+        edited,
+        demilestoned,
+        milestoned,
+        reopened,
+        assigned,
+        unassigned,
+        labeled,
+        unlabeled,
+      ]
+  pull_request:
+    types:
+      [
+        opened,
+        closed,
+        edited,
+        demilestoned,
+        milestoned,
+        reopened,
+        assigned,
+        unassigned,
+        labeled,
+        unlabeled,
+      ]
+
+jobs:
+  milestone:
+    name: Generate and Publish Milestone Document
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          token: ${{ github.token }}
+      - name: Milestone Documentation Generator
+        uses: ory/milestone-action@v0
+        with:
+          GITHUB_TOKEN: ${{ github.token }}
+          onlyLabels: epic
+      - name: Commit Milestone Documentation
+        uses: EndBug/add-and-commit@v4.4.0
+        with:
+          message: 'autogen(docs): update milestone document. Signed-off-by: ci-build <no-reply@github.com'
+          author_name: ci-build
+          author_email: 'no-reply@github.com'
+        env:
+          GITHUB_TOKEN: ${{ secrets.TCR_TOKEN }}
