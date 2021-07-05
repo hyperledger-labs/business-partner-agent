@@ -15,15 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.client.api;
+package org.hyperledger.bpa.api;
 
-import org.hyperledger.bpa.api.DidDocAPI;
+import org.hyperledger.bpa.controller.api.wallet.WalletDocumentRequest;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+@Mapper
+public interface DocumentMapper {
 
-@Data
-@NoArgsConstructor
-public class DidDocument {
-    private DidDocAPI didDocument;
+    DocumentMapper INSTANCE = Mappers.getMapper(DocumentMapper.class);
+
+    @Mapping(source = "document", target = "documentData")
+    MyDocumentAPI requestToDocumentApi(WalletDocumentRequest request);
+
 }

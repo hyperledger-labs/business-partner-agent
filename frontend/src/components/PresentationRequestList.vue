@@ -18,7 +18,6 @@
     :sort-by="['createdAt']"
     :sort-desc="[false]"
     single-select
-    @click:row="openPresentation"
   >
     <template v-slot:[`item.createdAt`]="{ item }">
       {{ item.createdAt | formatDateLong }}

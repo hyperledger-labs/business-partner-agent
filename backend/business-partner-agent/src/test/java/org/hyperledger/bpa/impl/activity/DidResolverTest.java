@@ -17,8 +17,8 @@
  */
 package org.hyperledger.bpa.impl.activity;
 
+import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.BaseTest;
-import org.hyperledger.bpa.api.DidDocAPI;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.client.URClient;
 import org.hyperledger.bpa.impl.util.Converter;
@@ -79,7 +79,7 @@ class DidResolverTest extends BaseTest {
     void testIgnoreIncomingConnectionWithPublicDid() {
         PartnerProof pp = PartnerProof.builder().schemaId(crSchemaId).build();
         when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.TRUE).build()));
-        when(ur.getDidDocument(any())).thenReturn(Optional.of(new DidDocAPI()));
+        when(ur.getDidDocument(any())).thenReturn(Optional.of(new DIDDocument()));
         didResolver.resolveDid(pp);
         verify(partnerLookup, never()).lookupPartner(any());
     }
@@ -91,7 +91,7 @@ class DidResolverTest extends BaseTest {
                 .proof(Map.of("other", "not-a-did"))
                 .build();
         when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.TRUE).build()));
-        when(ur.getDidDocument(any())).thenReturn(Optional.of(new DidDocAPI()));
+        when(ur.getDidDocument(any())).thenReturn(Optional.of(new DIDDocument()));
         didResolver.resolveDid(pp);
         verify(partnerLookup, never()).lookupPartner(any());
     }
@@ -115,15 +115,15 @@ class DidResolverTest extends BaseTest {
 
     @Test
     void testSplitDid() {
-        DidResolver.ConnectionLabel cl = DidResolver.splitDidFrom("did:sov:iil:123:label");
+        DidResolver.ConnectionLabel cl = DidResolver.splitDidFrom("did:sov:123:label");
         assertEquals("label", cl.getLabel());
         assertTrue(cl.getDid().isPresent());
-        assertEquals("did:sov:iil:123", cl.getDid().get());
+        assertEquals("did:sov:123", cl.getDid().get());
 
-        cl = DidResolver.splitDidFrom("did:sov:iil:JTWwhv1L3ZBtX8WWBPJMRy:Bob's Agent");
+        cl = DidResolver.splitDidFrom("did:sov:JTWwhv1L3ZBtX8WWBPJMRy:Bob's Agent");
         assertEquals("Bob's Agent", cl.getLabel());
         assertTrue(cl.getDid().isPresent());
-        assertEquals("did:sov:iil:JTWwhv1L3ZBtX8WWBPJMRy", cl.getDid().get());
+        assertEquals("did:sov:JTWwhv1L3ZBtX8WWBPJMRy", cl.getDid().get());
 
         cl = DidResolver.splitDidFrom("did:label");
         assertEquals("did:label", cl.getLabel());

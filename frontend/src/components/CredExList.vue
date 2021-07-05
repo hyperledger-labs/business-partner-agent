@@ -43,7 +43,9 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-bpa-button color="primary" @click="dialog = false">Close</v-bpa-button>
+          <v-bpa-button color="primary" @click="dialog = false"
+            >Close</v-bpa-button
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>

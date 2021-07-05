@@ -19,13 +19,13 @@ package org.hyperledger.bpa.controller.api.partner;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.model.Tag;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 public class CreatePartnerInvitationRequest {
-
     public String alias;
-    // public boolean autoAccept;
-    // public boolean multiUse;
-    // public boolean public;
+    private List<Tag> tag;
 }

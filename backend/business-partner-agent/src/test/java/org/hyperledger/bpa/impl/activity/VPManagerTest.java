@@ -74,7 +74,7 @@ class VPManagerTest {
 
     @Test
     void testBuildFromDocumentOrg() throws Exception {
-        String json = "{\"id\":\"did:sov:iil:sadfafs\",\"type\":\"LegalEntity\"}";
+        String json = "{\"id\":\"did:sov:sadfafs\",\"type\":\"LegalEntity\"}";
         final Map<String, Object> d = createMap(json);
 
         MyDocument doc = buildDefault()
@@ -139,7 +139,7 @@ class VPManagerTest {
 
     @Test
     void buildFromCredentialCommReg() {
-        String ariesCredential = "{\"attrs\":{\"did\":\"did:sov:iil:9iDuvPqcGmpLrn67BMHwwB\"," +
+        String ariesCredential = "{\"attrs\":{\"did\":\"did:sov:9iDuvPqcGmpLrn67BMHwwB\"," +
                 "\"companyName\":\"ALDI AHEAD GmbH\"},\"referent\":\"3512fa49-1bce-42d6-b73f-79742645a9cc\"," +
                 "\"schemaId\":\"8faozNpSjFfPJXYtgcPtmJ:2:commercialregister:1.2\",\"credentialDefinitionId\":" +
                 "\"8faozNpSjFfPJXYtgcPtmJ:3:CL:1041:Commercial Registry Entry (Open Corporates)\"}";

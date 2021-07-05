@@ -1,8 +1,8 @@
 version: "3.9"
 services:
-#######
-# Business Partner 1
-#######
+  #######
+  # Business Partner 1
+  #######
   bpa1:
     image: ghcr.io/hyperledger-labs/business-partner-agent:edge
     depends_on:
@@ -20,9 +20,7 @@ services:
         -Dbpa.host=${BPA_HOST}
         -Dbpa.scheme=${BPA_SCHEME}
       BPA_WEB_MODE: ${BPA_WEB_MODE}
-      BPA_RESOLVER_URL: ${BPA_RESOLVER_URL}
       BPA_LEDGER_BROWSER: ${BPA_LEDGER_BROWSER}
-      BPA_DID_PREFIX: ${BPA_DID_PREFIX}
       BPA_BOOTSTRAP_UN: ${BPA_BOOTSTRAP_UN}
       BPA_BOOTSTRAP_PW: ${BPA_BOOTSTRAP_PW}
       ACAPY_ENDPOINT: ${ACAPY_ENDPOINT}
@@ -34,7 +32,7 @@ services:
       - ${BPA_PORT}:${BPA_PORT}
     restart: always
   bpa-agent1:
-    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.6.0
+    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.7-pre.3
     ports:
       - ${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}
       - ${ACAPY_HTTP_PORT}:${ACAPY_HTTP_PORT}
@@ -62,7 +60,7 @@ services:
         ${ACAPY_ADMIN_CONFIG} \
         ${ACAPY_READ_ONLY_MODE} \
         "
-      ]
+    ]
     volumes:
       - "./acapy-static-args.yml:/home/indy/acapy-static-args.yml"
   bpa-wallet-db1:
@@ -75,9 +73,9 @@ services:
     volumes:
       - bpa-wallet-db1:/var/lib/postgresql/data
 
-#######
-# Business Partner 2 (only started with "--profile second_bpa")
-#######
+  #######
+  # Business Partner 2 (only started with "--profile second_bpa")
+  #######
   bpa2:
     profiles:
       - second_bpa
@@ -97,9 +95,7 @@ services:
         -Dbpa.host=${BPA2_HOST}
         -Dbpa.scheme=${BPA_SCHEME}
       BPA_WEB_MODE: ${BPA_WEB_MODE}
-      BPA_RESOLVER_URL: ${BPA_RESOLVER_URL}
       BPA_LEDGER_BROWSER: ${BPA_LEDGER_BROWSER}
-      BPA_DID_PREFIX: ${BPA_DID_PREFIX}
       BPA_BOOTSTRAP_UN: ${BPA_BOOTSTRAP_UN}
       BPA_BOOTSTRAP_PW: ${BPA_BOOTSTRAP_PW}
       ACAPY_ENDPOINT: ${ACAPY2_ENDPOINT}
@@ -112,8 +108,8 @@ services:
     restart: always
   bpa-agent2:
     profiles:
-      - second_bpa    
-    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.6.0
+      - second_bpa
+    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.7-pre.3
     ports:
       - ${ACAPY2_ADMIN_PORT}:${ACAPY2_ADMIN_PORT}
       - ${ACAPY2_HTTP_PORT}:${ACAPY2_HTTP_PORT}
@@ -141,12 +137,12 @@ services:
         ${ACAPY_ADMIN_CONFIG} \
         ${ACAPY_READ_ONLY_MODE} \
         "
-      ]
+    ]
     volumes:
       - "./acapy-static-args.yml:/home/indy/acapy-static-args.yml"
   bpa-wallet-db2:
     profiles:
-      - second_bpa    
+      - second_bpa
     image: "postgres:12-alpine"
     environment:
       - POSTGRES_USER=${POSTGRESQL_USER}
@@ -157,7 +153,7 @@ services:
       - bpa-wallet-db2:/var/lib/postgresql/data
 #######
 # Volumes for the databases
-#######      
+#######
 volumes:
   bpa-wallet-db1:
   bpa-wallet-db2:

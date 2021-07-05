@@ -37,7 +37,7 @@ class AriesStringUtilTest {
 
     @Test
     void testGetDidAcyPyFormat() {
-        assertEquals("44XuhwdnXMqxbQw9tFMQAp", AriesStringUtil.getLastSegment("did:sov:iil:44XuhwdnXMqxbQw9tFMQAp"));
+        assertEquals("44XuhwdnXMqxbQw9tFMQAp", AriesStringUtil.getLastSegment("did:sov:44XuhwdnXMqxbQw9tFMQAp"));
         assertEquals("44XuhwdnXMqxbQw9tFMQAp", AriesStringUtil.getLastSegment("44XuhwdnXMqxbQw9tFMQAp"));
     }
 

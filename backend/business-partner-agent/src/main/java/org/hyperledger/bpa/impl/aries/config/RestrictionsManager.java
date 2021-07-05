@@ -27,7 +27,6 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.model.BPARestrictions;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPARestrictionsRepository;
@@ -67,13 +66,12 @@ public class RestrictionsManager {
         if (dbSchema.isEmpty()) {
             throw new WrongApiUsageException("Schema with id: " + sId + " does not exist in the db");
         }
-        return addRestriction(sId, Boolean.FALSE,
+        return addRestriction(sId,
                 List.of(Map.of("issuerDid", issuerDid, "label", label != null ? label : "")));
     }
 
     Optional<TrustedIssuer> addRestriction(
             @NonNull UUID schemaId,
-            @NonNull Boolean isReadOnly,
             @Nullable List<Map<String, String>> config) {
         ResultWrapper result = new ResultWrapper();
         if (CollectionUtils.isNotEmpty(config)) {
@@ -81,13 +79,13 @@ public class RestrictionsManager {
                 String issuerDid = c.get("issuerDid");
                 if (StringUtils.isNotEmpty(issuerDid)) {
                     try {
-                        ac.ledgerDidVerkey(AriesStringUtil.getLastSegment(issuerDid)).ifPresent(verkey -> {
+                        // simple check to test if issuer exists on the ledger
+                        ac.ledgerDidVerkey(issuerDid).ifPresent(verkey -> {
                             BPARestrictions def = BPARestrictions
                                     .builder()
                                     .issuerDid(issuerDid.startsWith("did:") ? issuerDid : didPrefix + issuerDid)
                                     .label(c.get("label"))
                                     .schema(BPASchema.builder().id(schemaId).build())
-                                    .isReadOnly(isReadOnly)
                                     .build();
                             BPARestrictions db = repo.save(def);
                             result.setConfig(TrustedIssuer
@@ -111,16 +109,8 @@ public class RestrictionsManager {
         return Optional.ofNullable(result.getConfig());
     }
 
-    void resetReadOnly() {
-        repo.deleteByIsReadOnly(Boolean.TRUE);
-    }
-
     public void deleteById(@NonNull UUID id) {
         repo.deleteById(id);
-    }
-
-    void deleteBySchema(@NonNull BPASchema schema) {
-        repo.deleteBySchema(schema);
     }
 
     public void updateLabel(@NonNull UUID id, String label) {

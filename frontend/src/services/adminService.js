@@ -22,4 +22,17 @@ export default {
   deleteSchema(id) {
     return appAxios().delete(`${ApiRoutes.ADMIN}/schema/${id}`);
   },
+  listTags() {
+    return appAxios().get(`${ApiRoutes.ADMIN}/tag`);
+  },
+  addTag(data) {
+    return appAxios().post(`${ApiRoutes.ADMIN}/tag`, data);
+  },
+  deleteTag(id, hardDelete) {
+    let params = null;
+    if (hardDelete) {
+      params = new URLSearchParams([["force", true]]);
+    }
+    return appAxios().delete(`${ApiRoutes.ADMIN}/tag/${id}`, { params });
+  },
 };

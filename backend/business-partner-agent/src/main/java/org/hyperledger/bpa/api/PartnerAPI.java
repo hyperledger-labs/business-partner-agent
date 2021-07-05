@@ -25,9 +25,11 @@ import lombok.experimental.Accessors;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.model.Partner;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -46,12 +48,13 @@ public class PartnerAPI {
     private String alias;
     private String did;
     private List<PartnerCredential> credential;
+    private List<TagAPI> tag;
 
     // begin: internal use only
     @JsonIgnore
     private transient VerifiablePresentation<VerifiableIndyCredential> verifiablePresentation;
     @JsonIgnore
-    private transient DidDocAPI didDocAPI;
+    private transient DIDDocument didDocAPI;
     // end: internal use only
 
     @Data
@@ -85,7 +88,10 @@ public class PartnerAPI {
                 .setState(from.getState())
                 .setAlias(from.getAlias())
                 .setDid(from.getDid())
-                .setIncoming(from.getIncoming() != null ? from.getIncoming() : Boolean.FALSE);
+                .setIncoming(from.getIncoming() != null ? from.getIncoming() : Boolean.FALSE)
+                .setTag(from.getTags() != null
+                        ? from.getTags().stream().map(TagAPI::from).collect(Collectors.toList())
+                        : null);
     }
 
 }

@@ -34,6 +34,23 @@ export const loadSchemas = async ({ commit }) => {
     });
 };
 
+export const loadTags = async ({ commit }) => {
+  adminService
+    .listTags()
+    .then((result) => {
+      let tags = result.data;
+      console.log(tags);
+      commit({
+        type: "setTags",
+        tags: tags,
+      });
+    })
+    .catch((e) => {
+      console.error(e);
+      EventBus.$emit("error", e);
+    });
+};
+
 export const loadPartners = async ({ commit }) => {
   axios
     .get(`${apiBaseUrl}/partners`)

@@ -19,6 +19,7 @@ package org.hyperledger.bpa.impl;
 
 import io.micronaut.cache.annotation.CacheInvalidate;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.connection.ConnectionState;
@@ -31,16 +32,14 @@ import org.hyperledger.bpa.impl.aries.ConnectionManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
+import org.hyperledger.bpa.model.Tag;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.repository.TagRepository;
 
-import io.micronaut.core.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Singleton
 public class PartnerManager {
@@ -65,6 +64,9 @@ public class PartnerManager {
 
     @Inject
     MyCredentialRepository myCredRepo;
+
+    @Inject
+    TagRepository tagRepo;
 
     @Inject
     WebhookService webhook;
@@ -93,7 +95,7 @@ public class PartnerManager {
         repo.deleteById(id);
     }
 
-    public PartnerAPI addPartnerFlow(@NonNull String did, @Nullable String alias) {
+    public PartnerAPI addPartnerFlow(@NonNull String did, @Nullable String alias, List<Tag> tags) {
         Optional<Partner> dbPartner = repo.findByDid(did);
         if (dbPartner.isPresent()) {
             throw new PartnerException("Partner for did already exists: " + did);
@@ -105,6 +107,7 @@ public class PartnerManager {
                 .setLabel(connectionLabel)
                 .setAriesSupport(lookupP.getAriesSupport())
                 .setAlias(alias)
+                .setTags(tags != null ? new HashSet<>(tags) : null)
                 .setState(ConnectionState.REQUEST);
         Partner result = repo.save(partner); // save before creating the connection
         if (did.startsWith(ledgerPrefix) && lookupP.getAriesSupport()) {
@@ -118,17 +121,19 @@ public class PartnerManager {
         return apiPartner;
     }
 
-    public Optional<PartnerAPI> updatePartner(@NonNull UUID id, @Nullable String alias) {
+    public Optional<PartnerAPI> updatePartner(@NonNull UUID id, @Nullable String alias, @Nullable List<Tag> tags) {
         Optional<PartnerAPI> result = Optional.empty();
-        int count = repo.updateAlias(id, alias);
-        if (count > 0) {
-            final Optional<Partner> dbP = repo.findById(id);
-            if (dbP.isPresent()) {
-                result = Optional.of(converter.toAPIObject(dbP.get()));
-                if (StringUtils.isNotBlank(alias)) {
-                    myCredRepo.updateByConnectionId(dbP.get().getConnectionId(), dbP.get().getConnectionId(), alias);
-                }
+        final Optional<Partner> dbP = repo.findById(id);
+        if (dbP.isPresent()) {
+            Partner p = dbP.get();
+            p.setTags(tags != null ? new HashSet<>(tags) : null);
+            p.setAlias(alias);
+            tagRepo.updateAllPartnerToTagMappings(id, tags);
+            repo.updateAlias(id, alias);
+            if (StringUtils.isNotBlank(alias)) {
+                myCredRepo.updateByConnectionId(dbP.get().getConnectionId(), dbP.get().getConnectionId(), alias);
             }
+            result = Optional.of(converter.toAPIObject(p));
         }
         return result;
     }

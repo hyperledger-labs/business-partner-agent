@@ -17,32 +17,29 @@
  */
 package org.hyperledger.bpa.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import io.micronaut.cache.annotation.Cacheable;
-import io.micronaut.http.client.BlockingHttpClient;
-import io.micronaut.http.client.RxHttpClient;
-import io.micronaut.http.client.annotation.Client;
-import io.micronaut.http.client.exceptions.HttpClientResponseException;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
-import org.hyperledger.bpa.api.DidDocAPI;
+import org.hyperledger.aries.api.resolver.DIDDocument;
+import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.exception.PartnerException;
-import org.hyperledger.bpa.client.api.DidDocument;
-import org.hyperledger.bpa.impl.util.Converter;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
-
-import static io.micronaut.http.HttpRequest.GET;
 
 /**
  * Universal Resolver Client
@@ -50,47 +47,34 @@ import static io.micronaut.http.HttpRequest.GET;
  */
 @Slf4j
 @Singleton
-// TODO probably better to use:
-// https://github.com/decentralized-identity/universal-resolver/tree/master/resolver/java/uni-resolver-client
 public class URClient {
 
-    @Client("${bpa.resolver.url}")
-    @Inject
-    private RxHttpClient client;
+    private static final Type VP_TYPE = new TypeToken<VerifiablePresentation<VerifiableIndyCredential>>() {
+    }.getType();
 
     @Inject
-    private ObjectMapper mapper;
+    AriesClient ac;
+
+    private final Gson gson = GsonConfig.defaultConfig();
 
     private final OkHttpClient okClient = new OkHttpClient();
 
-    private final Map<CharSequence, CharSequence> headers;
-
-    public URClient() {
-        super();
-        this.headers = Map.of("Accept", "application/ld+json");
-    }
-
     @Cacheable(cacheNames = { "ur-cache" })
-    public Optional<DidDocAPI> getDidDocument(String did) {
-        DidDocAPI doc = null;
-        try (BlockingHttpClient bc = client.toBlocking()) {
-            doc = bc.retrieve(
-                    GET("/1.0/identifiers/" + did)
-                            .headers(headers),
-                    DidDocument.class)
-                    .getDidDocument();
-        } catch (HttpClientResponseException e) {
-            String msg = "Call to universal resolver failed - msg: " + e.getMessage() + ", status: " + e.getStatus();
-            log.error(msg, e);
-            throw new PartnerException(msg);
+    public Optional<DIDDocument> getDidDocument(@NonNull String did) {
+        try {
+            return ac.resolverResolveDid(did);
         } catch (IOException e) {
-            log.warn("Could not close connection", e);
+            log.error("aca-py not reachable");
         }
-        return Optional.ofNullable(doc);
+        return Optional.empty();
     }
 
     public Optional<VerifiablePresentation<VerifiableIndyCredential>> getPublicProfile(String url) {
-        Optional<VerifiablePresentation<VerifiableIndyCredential>> result = Optional.empty();
+        return call(url, VP_TYPE);
+    }
+
+    public <T> Optional<T> call(String url, Type type) {
+        Optional<T> result = Optional.empty();
         try {
             URL url2 = new URL(url);
             Request request = new Request.Builder()
@@ -98,8 +82,8 @@ public class URClient {
                     .build();
             try (Response response = okClient.newCall(request).execute()) {
                 if (response.isSuccessful() && response.body() != null) {
-                    String body = response.body().string();
-                    VerifiablePresentation<VerifiableIndyCredential> md = mapper.readValue(body, Converter.VP_TYPEREF);
+                    String body = Objects.requireNonNull(response.body()).string();
+                    T md = gson.fromJson(body, type);
                     result = Optional.of(md);
                 } else {
                     log.warn("Could not resolve public profile: {}, {}", response.code(), response.message());
@@ -116,5 +100,4 @@ public class URClient {
         }
         return result;
     }
-
 }

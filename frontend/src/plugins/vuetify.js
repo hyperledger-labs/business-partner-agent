@@ -89,13 +89,13 @@ export default new Vuetify({
       light: {
         // this are the default vuetify light values
         // primary is a customized color...
-        primary: '#4A148C',
-        secondary: '#424242',
-        accent: '#82B1FF',
-        error: '#FF5252',
-        info: '#2196F3',
-        success: '#4CAF50',
-        warning: '#FFC107',
+        primary: "#4A148C",
+        secondary: "#424242",
+        accent: "#82B1FF",
+        error: "#FF5252",
+        info: "#2196F3",
+        success: "#4CAF50",
+        warning: "#FFC107",
         // the following are custom and are used as variables in style.scss
         bgLight: "#FAFAFA",
         bgLight2: "#ECECEC",

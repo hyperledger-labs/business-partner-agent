@@ -22,9 +22,10 @@ import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.acy_py.generated.model.CredentialDefinitionSendResult;
+import org.hyperledger.acy_py.generated.model.TxnOrCredentialDefinitionSendResult;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credential_definition.CredentialDefinition.CredentialDefinitionRequest;
-import org.hyperledger.aries.api.credential_definition.CredentialDefinition.CredentialDefinitionResponse;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.credentials.CredentialPreview;
@@ -131,10 +132,10 @@ public class IssuerManager {
                     .supportRevocation(supportRevocation)
                     .revocationRegistrySize(config.getRevocationRegistrySize())
                     .build();
-            Optional<CredentialDefinitionResponse> response = ac.credentialDefinitionsCreate(request);
+            Optional<TxnOrCredentialDefinitionSendResult> response = ac.credentialDefinitionsCreate(request);
             if (response.isPresent()) {
                 // save it to the db...
-                CredentialDefinitionResponse cdr = response.get();
+                CredentialDefinitionSendResult cdr = response.get().getSent();
                 BPACredentialDefinition cdef = BPACredentialDefinition.builder()
                         .schema(bpaSchema.get())
                         .credentialDefinitionId(cdr.getCredentialDefinitionId())

@@ -57,7 +57,7 @@ import issuerService from "@/services/issuerService";
 import VBpaButton from "@/components/BpaButton";
 
 export default {
-  components: {VBpaButton},
+  components: { VBpaButton },
   props: {
     schema: {
       type: Object,

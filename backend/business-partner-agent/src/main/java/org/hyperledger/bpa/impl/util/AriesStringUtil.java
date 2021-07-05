@@ -26,9 +26,8 @@ import java.util.UUID;
 public class AriesStringUtil {
 
     /**
-     * aca-py can not not work with DID's like did:sov:iil:foo, it only works with
-     * the foo part
-     *
+     * Gets the last segment of a did
+     * 
      * @param did String e.g. did or credential definition id
      * @return the last part of the input when separated by : unchanged otherwise
      */

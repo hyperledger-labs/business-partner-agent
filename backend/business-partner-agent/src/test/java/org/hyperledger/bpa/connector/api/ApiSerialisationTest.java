@@ -17,10 +17,8 @@
  */
 package org.hyperledger.bpa.connector.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.BaseTest;
-import org.hyperledger.bpa.api.DidDocAPI;
-import org.hyperledger.bpa.client.api.DidDocument;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -30,47 +28,38 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ApiSerialisationTest extends BaseTest {
 
-    private final ObjectMapper m = new ObjectMapper();
-
     @Test
     void testVerificationMethodFlat() throws Exception {
         String didDocument = loader.load("files/didDocument.json");
-        DidDocument didDocWrapped = mapper.readValue(didDocument, DidDocument.class);
-
-        assertNotNull(didDocWrapped);
-
-        DidDocAPI didDoc = didDocWrapped.getDidDocument();
+        DIDDocument didDoc = mapper.readValue(didDocument, DIDDocument.class);
 
         assertNotNull(didDoc);
         assertNotNull(didDoc.getService());
         assertEquals(2, didDoc.getService().size());
 
-        List<DidDocAPI.VerificationMethod> meth = didDoc.getVerificationMethod(m);
+        List<DIDDocument.VerificationMethod> meth = didDoc.getVerificationMethod();
         assertEquals(1, meth.size());
-        assertTrue(meth.get(0).getPublicKeyBase58().startsWith("AWrdq"));
+        assertTrue(meth.get(0).getPublicKeyBase58().startsWith("3e8rKNmq"));
 
         assertTrue(didDoc.hasAriesEndpoint());
 
         Optional<String> publicProfileUrl = didDoc.findPublicProfileUrl();
         assertTrue(publicProfileUrl.isPresent());
-        assertTrue(publicProfileUrl.get().startsWith("https://bob.iil"));
+        assertTrue(publicProfileUrl.get().startsWith("https://myhome"));
     }
 
     @Test
     void testVerificationMethodList() throws Exception {
         String didDocument = loader.load("files/didLocal.json");
-        DidDocument didDocWrapped = mapper.readValue(didDocument, DidDocument.class);
+        DIDDocument didDoc = mapper.readValue(didDocument, DIDDocument.class);
 
-        assertNotNull(didDocWrapped);
-
-        DidDocAPI didDoc = didDocWrapped.getDidDocument();
         assertNotNull(didDoc);
         assertNotNull(didDoc.getService());
         assertEquals(1, didDoc.getService().size());
 
         assertFalse(didDoc.hasAriesEndpoint());
 
-        List<DidDocAPI.VerificationMethod> meth = didDoc.getVerificationMethod(m);
+        List<DIDDocument.VerificationMethod> meth = didDoc.getVerificationMethod();
         assertEquals(2, meth.size());
         assertTrue(meth.get(1).getPublicKeyBase58().startsWith("C2VBLJf"));
     }

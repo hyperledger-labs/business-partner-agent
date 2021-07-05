@@ -17,10 +17,7 @@
  */
 package org.hyperledger.bpa.model;
 
-import io.micronaut.data.annotation.AutoPopulated;
-import io.micronaut.data.annotation.DateCreated;
-import io.micronaut.data.annotation.DateUpdated;
-import io.micronaut.data.annotation.TypeDef;
+import io.micronaut.data.annotation.*;
 import io.micronaut.data.model.DataType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,9 +32,10 @@ import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import io.micronaut.core.annotation.Nullable;
 
 import javax.persistence.*;
+import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.time.Instant;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Flat representation of a partner. In the web context a partner is just a
@@ -107,6 +105,10 @@ public class Partner {
     @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> supportedCredentials;
+
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
+    @JoinTable(name = "partner_tag")
+    private Set<Tag> tags = new HashSet<>();
 
     @Transient
     public boolean hasConnectionId() {

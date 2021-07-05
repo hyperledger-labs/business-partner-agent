@@ -20,14 +20,13 @@ package org.hyperledger.bpa.impl.mode.indy;
 import io.micronaut.context.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.acy_py.generated.model.DID;
+import org.hyperledger.acy_py.generated.model.DIDEndpointWithType;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.EndpointResponse;
-import org.hyperledger.aries.api.ledger.EndpointType;
 import org.hyperledger.aries.api.ledger.TAAAccept;
 import org.hyperledger.aries.api.ledger.TAAInfo;
 import org.hyperledger.aries.api.ledger.TAAInfo.TAARecord;
-import org.hyperledger.aries.api.wallet.SetDidEndpointRequest;
-import org.hyperledger.aries.api.wallet.WalletDidResponse;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.runtime.RequiresIndy;
 
@@ -54,7 +53,7 @@ public class EndpointService {
 
     private boolean endpointRegistrationRequired = false;
 
-    private final Map<String, EndpointType> endpoints;
+    private final Map<String, DIDEndpointWithType.EndpointTypeEnum> endpoints;
 
     @Inject
     AriesClient ac;
@@ -65,8 +64,8 @@ public class EndpointService {
             @Value(value = "${bpa.scheme}") String scheme,
             @Value(value = "${bpa.host}") String host) {
         endpoints = new HashMap<>();
-        endpoints.put(scheme + "://" + host + "/profile.jsonld", EndpointType.PROFILE);
-        endpoints.put(acapyEndpoint, EndpointType.ENDPOINT);
+        endpoints.put(scheme + "://" + host + "/profile.jsonld", DIDEndpointWithType.EndpointTypeEnum.PROFILE);
+        endpoints.put(acapyEndpoint, DIDEndpointWithType.EndpointTypeEnum.ENDPOINT);
     }
 
     /**
@@ -89,7 +88,7 @@ public class EndpointService {
      * Register endpoints
      */
     public void registerEndpoints() {
-        for (Entry<String, EndpointType> endpoint : endpoints.entrySet()) {
+        for (Entry<String, DIDEndpointWithType.EndpointTypeEnum> endpoint : endpoints.entrySet()) {
             registerProfileEndpoint(endpoint.getKey(), endpoint.getValue());
         }
 
@@ -125,7 +124,7 @@ public class EndpointService {
     public boolean endpointsNewOrChanged() {
         boolean retval = false;
 
-        for (Entry<String, EndpointType> endpoint : endpoints.entrySet()) {
+        for (Entry<String, DIDEndpointWithType.EndpointTypeEnum> endpoint : endpoints.entrySet()) {
             if (endpointNewOrChanged(endpoint.getKey(), endpoint.getValue()))
                 retval = true;
         }
@@ -133,10 +132,11 @@ public class EndpointService {
         return retval;
     }
 
-    public boolean endpointNewOrChanged(String endpoint, EndpointType type) {
+    public boolean endpointNewOrChanged(String endpoint, DIDEndpointWithType.EndpointTypeEnum type) {
         try {
-            if (ac.walletDidPublic().isPresent()) {
-                WalletDidResponse res = ac.walletDidPublic().get();
+            Optional<DID> did = ac.walletDidPublic();
+            if (did.isPresent()) {
+                DID res = did.get();
 
                 final Optional<EndpointResponse> existingEndpoint = ac.ledgerDidEndpoint(
                         res.getDid(), type);
@@ -159,12 +159,12 @@ public class EndpointService {
         return true;
     }
 
-    private void registerProfileEndpoint(String endpoint, EndpointType type) {
+    private void registerProfileEndpoint(String endpoint, DIDEndpointWithType.EndpointTypeEnum type) {
         try {
-            Optional<WalletDidResponse> pubDid = ac.walletDidPublic();
+            Optional<DID> pubDid = ac.walletDidPublic();
             if (pubDid.isPresent()) {
                 log.info("Publishing public '{}' endpoint: {}", type, endpoint);
-                ac.walletSetDidEndpoint(SetDidEndpointRequest
+                ac.walletSetDidEndpoint(DIDEndpointWithType
                         .builder()
                         .did(pubDid.get().getDid())
                         .endpointType(type)

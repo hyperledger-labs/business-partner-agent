@@ -74,7 +74,9 @@
 
                 <v-card-actions>
                   <v-layout align-end justify-end>
-                    <v-bpa-button color="secondary" @click="step = 1">Back</v-bpa-button>
+                    <v-bpa-button color="secondary" @click="step = 1"
+                      >Back</v-bpa-button
+                    >
 
                     <v-bpa-button
                       :loading="this.isBusy"
@@ -99,7 +101,7 @@ import VBpaButton from "@/components/BpaButton";
 
 export default {
   name: "RequestPresentation",
-  components: {VBpaButton},
+  components: { VBpaButton },
   props: {
     id: String, //partner ID
   },

@@ -20,8 +20,8 @@ package org.hyperledger.bpa.impl.mode.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.env.Environment;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.RunWithAries;
-import org.hyperledger.bpa.api.DidDocAPI;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +40,7 @@ public class WebDidDocManagerTest extends RunWithAries {
     @Test
     void testDidDocCreation() {
         didDoc.createDidDocument("https", "localhost");
-        Optional<DidDocAPI> didDocument = didDoc.getDidDocument();
+        Optional<DIDDocument> didDocument = didDoc.getDidDocument();
         Assertions.assertTrue(didDocument.isPresent());
         Assertions.assertEquals(2, didDocument.get().getService().size());
         // System.out.println(mapper.writeValueAsString(didDocument.get()));

@@ -23,12 +23,12 @@
           <v-dialog v-model="createSchemaDialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
               <v-bpa-button v-bind="attrs" v-on="on" color="secondary"
-              >Create Schema</v-bpa-button
+                >Create Schema</v-bpa-button
               >
             </template>
             <CreateSchema
-                @success="onSchemaCreated"
-                @cancelled="createSchemaDialog = false"
+              @success="onSchemaCreated"
+              @cancelled="createSchemaDialog = false"
             />
           </v-dialog>
           <v-dialog v-model="addSchemaDialog" persistent max-width="600px">

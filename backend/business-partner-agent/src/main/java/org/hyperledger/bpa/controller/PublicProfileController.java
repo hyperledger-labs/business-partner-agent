@@ -28,7 +28,7 @@ import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
-import org.hyperledger.bpa.api.DidDocAPI;
+import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.impl.DidDocManager;
 import org.hyperledger.bpa.impl.activity.VPManager;
 
@@ -58,9 +58,9 @@ public class PublicProfileController {
     }
 
     @Get("/.well-known/did.json")
-    public HttpResponse<DidDocAPI> getDid() {
+    public HttpResponse<DIDDocument> getDid() {
 
-        Optional<DidDocAPI> api = didDocManager.getDidDocument();
+        Optional<DIDDocument> api = didDocManager.getDidDocument();
         if (api.isPresent()) {
             return HttpResponse.ok(api.get());
         }

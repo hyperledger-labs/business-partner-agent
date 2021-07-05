@@ -14,4 +14,5 @@ do
     sleep 3
     curl --retry-connrefused --retry 5 --retry-delay 2 http://localhost:9000/genesis -o resolver/localhost_9000.txn
 done
-docker-compose -f ./resolver/docker-compose.yml up -d driver-did-sov 
+# Currently not needed
+# docker-compose -f ./resolver/docker-compose.yml up -d driver-did-sov

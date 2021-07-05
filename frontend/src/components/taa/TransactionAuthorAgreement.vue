@@ -13,18 +13,22 @@
             accept the Transaction Author Agreement for this session which is
             the following:
             <br /><br />
-            <hr>
+            <hr />
             <br />
             <span v-if="isTaaLoaded()">
               <v-markdown :source="taaText()"></v-markdown>
             </span>
             <span v-else>
               <div class="text-center">
-                  <v-progress-circular v-if="!isTaaLoaded()" indeterminate color="primary"></v-progress-circular>
-                  <div>Loading</div>
-                </div>
+                <v-progress-circular
+                  v-if="!isTaaLoaded()"
+                  indeterminate
+                  color="primary"
+                ></v-progress-circular>
+                <div>Loading</div>
+              </div>
             </span>
-            <hr>
+            <hr />
             <small v-show="isTaaLoaded()">Version: {{ getTaaVersion() }}</small>
             <v-checkbox
               v-model="agree"
@@ -60,7 +64,7 @@ export default {
       valid: true,
       agree: false,
       showDialog: this.isTaaRequired,
-      taaText: this.getTaaText
+      taaText: this.getTaaText,
     };
   },
   methods: {
@@ -69,7 +73,7 @@ export default {
       isTaaRequired: "taaRequired",
       getTaaText: "taaText",
       getTaaVersion: "taaVersion",
-      isTaaLoaded: "taaLoaded"
+      isTaaLoaded: "taaLoaded",
     }),
     register() {
       if (this.$refs.form.validate()) {
