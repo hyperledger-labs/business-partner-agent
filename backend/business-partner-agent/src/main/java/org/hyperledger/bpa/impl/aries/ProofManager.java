@@ -32,6 +32,7 @@ import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
+import org.hyperledger.bpa.api.exception.PresentationConstructionException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
@@ -191,9 +192,7 @@ public class ProofManager {
                                 String msg = "No matching credentials found for proof request: "
                                         + presentationExchangeRecord.getPresentationExchangeId();
                                 log.warn(msg);
-                                pProofRepo.findByPresentationExchangeId(
-                                        presentationExchangeRecord.getPresentationExchangeId())
-                                        .ifPresent(pp -> pProofRepo.updateProblemReport(pp.getId(), msg));
+                                throw new PresentationConstructionException(msg);
                             }
                         }, () -> log.error("Could not load matching credentials from aca-py"));
             } catch (IOException e) {

@@ -18,6 +18,7 @@
       <v-card-text>
         <ProofRequest
           v-bind:proofRequest="presentationRequest.proofRequest"
+          v-bind:credentials="this.$store.getters.getCredentials"
           isReadOnly
         ></ProofRequest>
         <v-divider></v-divider>
@@ -27,7 +28,7 @@
           color="secondary"
           text
           @click="rejectPresentationRequest(presentationRequest)"
-          >Reject</v-btn
+          >Decline</v-btn
         >
         <v-btn
           :loading="this.isBusy"
@@ -65,6 +66,8 @@ export default {
   },
   mounted() {
     this.fetch();
+    this.$store.dispatch("loadCredentials");
+    console.log(this.$store.getters.getCredentials);
   },
   data: () => {
     return {

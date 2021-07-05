@@ -31,7 +31,16 @@
           :key="value"
           style="height: 30px"
         >
+          $nbsp
           {{ restrict }} = {{ value }}
+          <v-btn
+            x-small
+            v-if="restrict === 'schema_id'"
+            slot="badge"
+            @click="navigateToCredentialby(restrict, value)"
+          >
+            Go To
+          </v-btn>
         </v-row>
       </v-col>
     </v-row>
@@ -40,17 +49,46 @@
 </template>
 
 <script>
+import { EventBus } from "../main";
+
 export default {
   name: "ProofRequest",
   props: {
     proofRequest: Object,
+    credentials: [],
   },
-  mounted() {
-    console.log("proof_request");
-    console.log(this.proofRequest);
+  mounted() {},
+  methods: {
+    navigateToCredentialby(field, value) {
+      let creds = this.credentials.filter((cred) => {
+        return cred[this.field_map[field]] === value;
+      });
+      console.log("CRED" + creds[0].id);
+      let cred = creds[0];
+      if (cred) {
+        this.$router.push({
+          name: "Credential",
+          params: {
+            id: cred.id,
+          },
+        });
+      } else {
+        EventBus.$emit("error", "No credential that has this schema_id");
+      }
+    },
   },
   data: () => {
-    return {};
+    return {
+      credentials: [],
+      valid_credential: {},
+      field_map: { schema_id: "schemaId" },
+    };
   },
 };
 </script>
+
+<style scoped>
+.v-btn {
+  margin-left: 10px;
+}
+</style>
