@@ -31,7 +31,6 @@
           :key="value"
           style="height: 30px"
         >
-          $nbsp
           {{ restrict }} = {{ value }}
           <v-btn
             x-small
@@ -73,6 +72,7 @@ export default {
           },
         });
       } else {
+        console.error(e);
         EventBus.$emit("error", "No credential that has this schema_id");
       }
     },
