@@ -68,24 +68,26 @@ public class WebDidDocManager implements DidDocManager {
         List<DIDDocument.VerificationMethod> verificationMethods = List.of(DIDDocument.VerificationMethod.builder()
                 .id(myKeyId)
                 .type(ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE)
+                .controller(myDid)
                 .publicKeyBase58(verkey)
                 .build());
 
-        String profile = DIDEndpointWithType.EndpointTypeEnum.PROFILE.getValue().toLowerCase(Locale.US);
-        String endpoint = DIDEndpointWithType.EndpointTypeEnum.ENDPOINT.getValue().toLowerCase(Locale.US);
+        String typeProfile = DIDEndpointWithType.EndpointTypeEnum.PROFILE.getValue().toLowerCase(Locale.US);
+        String typeDidComm = "did-communication";
 
         DIDDocument didDoc = DIDDocument.builder()
                 .id(myDid)
                 .service(List.of(
                         DIDDocument.Service.builder()
+                                .id(myDid + "#" + typeProfile)
+                                .type(typeProfile)
                                 .serviceEndpoint(scheme + "://" + host + "/profile.jsonld")
-                                .id(myDid + "#" + profile)
-                                .type(profile)
                                 .build(),
                         DIDDocument.Service.builder()
+                                .id(myDid + "#" + typeDidComm)
+                                .type(typeDidComm)
                                 .serviceEndpoint(acapyEndpoint)
-                                .id(myDid + "#" + endpoint)
-                                .type(endpoint)
+                                .recipientKeys(List.of(myKeyId))
                                 .build()))
                 .verificationMethod(verificationMethods)
                 .build();
