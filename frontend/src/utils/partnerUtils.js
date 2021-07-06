@@ -55,7 +55,7 @@ export const getPartnerState = (partner) => {
       }
     } else if (
       partner.state ===
-      (PartnerStates.ACTIVE.value || PartnerStates.RESPONSE.value)
+      (PartnerStates.ACTIVE.value || PartnerStates.RESPONSE.value || PartnerStates.COMPLETED.value)
     ) {
       return PartnerStates.ACTIVE_OR_RESPONSE;
     } else {

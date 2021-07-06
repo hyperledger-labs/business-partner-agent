@@ -67,7 +67,7 @@ public class AriesEventHandler extends EventHandler {
     public void handleConnection(ConnectionRecord connection) {
         log.debug("Connection Event: {}", connection);
         synchronized (conMgmt) {
-            if (!connection.isIncomingConnection() || AriesStringUtil.isUUID(connection.getTheirLabel())) {
+            if (!connection.isIncomingConnection() || AriesStringUtil.isUUID(connection.getAlias())) {
                 conMgmt.handleOutgoingConnectionEvent(connection);
             } else if (isNotAnInvitation(connection)) {
                 conMgmt.handleIncomingConnectionEvent(connection);

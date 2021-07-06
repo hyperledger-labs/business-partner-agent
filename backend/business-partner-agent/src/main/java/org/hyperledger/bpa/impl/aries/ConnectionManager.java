@@ -27,7 +27,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.*;
+import org.hyperledger.aries.api.did_exchange.DidExchangeCreateRequestFilter;
 import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.aries.api.out_of_band.InvitationMessage;
+import org.hyperledger.aries.api.out_of_band.ReceiveInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.resolver.DIDDocument;
@@ -53,6 +56,7 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -91,9 +95,10 @@ public class ConnectionManager {
     ObjectMapper mapper;
 
     /**
-     * Create a connection based on a public did that is registered on a ledger.
+     * Creates a connection invitation to be used within a barcode
      *
      * @param alias optional connection alias
+     * @param tags tags associated with this connection/invitation
      */
     public Optional<CreateInvitationResponse> createConnectionInvitation(
             @Nullable String alias, @Nullable List<Tag> tags) {
@@ -129,24 +134,24 @@ public class ConnectionManager {
      * 
      * @param did   the fully qualified did like did:indy:123
      * @param label the connection label
-     * @param alias optional connection alias
      */
     @Async
-    public void createConnection(@NonNull String did, @NonNull String label, @Nullable String alias) {
+    public void createConnection(@NonNull String did, @NonNull String label) {
         try {
-            ac.connectionsReceiveInvitation(
-                    ReceiveInvitationRequest.builder()
-                            .did(did)
-                            .label(label)
-                            .build(),
-                    ConnectionReceiveInvitationFilter.builder().alias(alias).autoAccept(Boolean.TRUE).build());
+            ac.didExchangeCreateRequest(
+                    DidExchangeCreateRequestFilter
+                            .builder()
+                            .theirPublicDid(did)
+                            .myLabel(label)
+                            .usePublicDid(Boolean.TRUE)
+                            .build());
         } catch (IOException e) {
             log.error(ACA_PY_ERROR_MSG, e);
         }
     }
 
     /**
-     * Create a connection based on information that is found in the partners did
+     * Create a out of band connection based on information that is found in the partners did
      * document. Requires at least the endpoint and a verification method to be
      * present in the did document.
      * 
@@ -156,6 +161,9 @@ public class ConnectionManager {
      */
     @Async
     public void createConnection(@NonNull DIDDocument didDoc, @NonNull String label, @Nullable String alias) {
+
+        // TODO did should be enough
+
         // resolve endpoint
         String endpoint = null;
         Optional<String> acaPyEndpoint = didDoc.findAriesEndpointUrl();
@@ -179,13 +187,24 @@ public class ConnectionManager {
 
         try {
             if (endpoint != null && pk != null) {
-                ac.connectionsReceiveInvitation(
-                        ReceiveInvitationRequest.builder()
-                                .serviceEndpoint(endpoint)
-                                .recipientKeys(List.of(pk))
+                String didExchange = "didexchange/1.0";
+                ac.outOfBandReceiveInvitation(
+                        InvitationMessage
+                                .builder()
                                 .label(label)
+                                .handshakeProtocols(List.of(didDoc.getId() + ";spec/" + didExchange))
+                                .services(List.of(InvitationMessage.InvitationMessageService
+                                        .builder()
+                                        .id(UUID.randomUUID().toString())
+                                        .type(didExchange)
+                                        .did(didDoc.getId())
+                                        .build()))
                                 .build(),
-                        ConnectionReceiveInvitationFilter.builder().alias(alias).autoAccept(Boolean.TRUE).build());
+                        ReceiveInvitationFilter
+                                .builder()
+                                .alias(alias)
+                                .autoAccept(Boolean.TRUE)
+                                .build());
             }
         } catch (IOException e) {
             log.error(ACA_PY_ERROR_MSG, e);
@@ -203,7 +222,7 @@ public class ConnectionManager {
 
     public synchronized void handleOutgoingConnectionEvent(ConnectionRecord record) {
         // connection that originated from this agent
-        partnerRepo.findByLabel(record.getTheirLabel()).ifPresent(
+        partnerRepo.findByLabel(record.getAlias()).ifPresent(
                 dbP -> {
                     if (dbP.getConnectionId() == null) {
                         dbP.setConnectionId(record.getConnectionId());
@@ -223,7 +242,7 @@ public class ConnectionManager {
                         dbP.setLabel(record.getTheirLabel());
                     }
                     if (StringUtils.isEmpty(dbP.getDid()) || dbP.getDid().endsWith(UNKNOWN_DID)) {
-                        dbP.setDid(didPrefix + record.getTheirDid());
+                        dbP.setDid(didPrefix + record.getTheirPublicDid());
                     }
                     if (StringUtils.isEmpty(dbP.getAlias()) || dbP.getAlias().startsWith(CONNECTION_INVITATION)) {
                         dbP.setAlias(record.getTheirLabel());

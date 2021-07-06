@@ -31,7 +31,7 @@ import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.client.CachingAriesClient;
-import org.hyperledger.bpa.client.URClient;
+import org.hyperledger.bpa.client.DidDocClient;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 
 import javax.inject.Inject;
@@ -63,7 +63,7 @@ public class Identity {
     CachingAriesClient acaCache;
 
     @Inject
-    URClient ur;
+    DidDocClient ur;
 
     // TODO either return the did or fail. Needs fixing the test setup to work.
     public @Nullable String getMyDid() {
@@ -83,7 +83,7 @@ public class Identity {
         return myDid;
     }
 
-    public @Nullable String getMyKeyId(String myDid) {
+    public String getMyKeyId(String myDid) {
         String myKeyId = "no-public-did";
         if (myDid != null) {
             if (webOnly) {

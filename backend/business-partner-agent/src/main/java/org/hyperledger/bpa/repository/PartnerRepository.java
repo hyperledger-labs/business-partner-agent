@@ -62,9 +62,12 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
             Map<String, Object> verifiablePresentation, @Nullable Boolean valid,
             String alias, String did);
 
+    Number updateVerifiablePresentation(@Id UUID id,
+            Map<String, Object> verifiablePresentation, @Nullable Boolean valid);
+
     Optional<Partner> findByDid(String did);
 
-    Optional<Partner> findByLabel(String label);
+    Optional<Partner> findByLabel(@Nullable String label);
 
     Optional<Partner> findByConnectionId(String connectionId);
 

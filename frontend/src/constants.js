@@ -61,6 +61,10 @@ export const PartnerStates = Object.freeze({
     value: "active",
     label: "active",
   },
+  COMPLETED: {
+    value: "completed",
+    label: "completed",
+  },
   RESPONSE: {
     value: "response",
     label: "response",

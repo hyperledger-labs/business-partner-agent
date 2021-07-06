@@ -111,7 +111,7 @@ public class PartnerManager {
                 .setState(ConnectionState.REQUEST);
         Partner result = repo.save(partner); // save before creating the connection
         if (did.startsWith(ledgerPrefix) && lookupP.getAriesSupport()) {
-            cm.createConnection(did, connectionLabel, alias);
+            cm.createConnection(did, connectionLabel);
             credLookup.lookupTypesForAllPartnersAsync();
         } else if (lookupP.getAriesSupport()) {
             cm.createConnection(lookupP.getDidDocAPI(), connectionLabel, alias);
