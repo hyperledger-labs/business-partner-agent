@@ -1,20 +1,24 @@
-
 image:
   file: .gitpod.Dockerfile
 
 ports:
   - port: 8080
     onOpen: ignore
+    visibility: public
   - port: 8081
     onOpen: open-browser
+    visibility: public    
   - port: 8090
-    onOpen: open-browser       
+    onOpen: open-browser
+    visibility: public           
   - port: 8030
-    onOpen: ignore     
+    onOpen: ignore
+    visibility: public         
   - port: 8031
     onOpen: ignore
   - port: 8040
-    onOpen: ignore     
+    onOpen: ignore
+    visibility: public         
   - port: 8041
     onOpen: ignore    
   - port: 6080
