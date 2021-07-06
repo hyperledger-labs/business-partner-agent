@@ -28,7 +28,9 @@
 
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-bpa-button color="secondary" @click="cancel()">Cancel</v-bpa-button>
+          <v-bpa-button color="secondary" @click="cancel()"
+            >Cancel</v-bpa-button
+          >
           <v-bpa-button
             :loading="this.isBusy"
             color="primary"
@@ -59,7 +61,9 @@
             >No</v-bpa-button
           >
 
-          <v-bpa-button color="primary" @click="submitRequest">Yes</v-bpa-button>
+          <v-bpa-button color="primary" @click="submitRequest"
+            >Yes</v-bpa-button
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>

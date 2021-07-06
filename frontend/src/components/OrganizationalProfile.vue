@@ -194,6 +194,6 @@ export default {
       this.intDoc.label = event;
     },
   },
-  components: {VBpaButton},
+  components: { VBpaButton },
 };
 </script>

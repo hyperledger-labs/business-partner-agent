@@ -25,8 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.ApiConstants;
-import org.hyperledger.bpa.api.DidDocAPI;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.client.URClient;
@@ -55,13 +55,13 @@ public class PartnerLookup {
 
     @Cacheable(cacheNames = { "partner-lookup-cache" })
     public PartnerAPI lookupPartner(@NonNull String did) {
-        Optional<DidDocAPI> didDocument = ur.getDidDocument(did);
+        Optional<DIDDocument> didDocument = ur.getDidDocument(did);
         if (didDocument.isPresent()) {
             Optional<String> publicProfileUrl = didDocument.get().findPublicProfileUrl();
             if (publicProfileUrl.isPresent()) {
                 PartnerAPI partner = lookupPartner(
                         publicProfileUrl.get(),
-                        didDocument.get().getVerificationMethod(mapper));
+                        didDocument.get().getVerificationMethod());
                 partner.setAriesSupport(didDocument.get().hasAriesEndpoint());
                 partner.setDidDocAPI(didDocument.get());
                 return partner;
@@ -76,7 +76,7 @@ public class PartnerLookup {
         throw new PartnerException("Could not retrieve did document from universal resolver");
     }
 
-    PartnerAPI lookupPartner(@NonNull String endpoint, List<DidDocAPI.VerificationMethod> verificationMethods) {
+    PartnerAPI lookupPartner(@NonNull String endpoint, List<DIDDocument.VerificationMethod> verificationMethods) {
         Optional<VerifiablePresentation<VerifiableIndyCredential>> profile = ur.getPublicProfile(endpoint);
         if (profile.isPresent()) {
 
@@ -100,13 +100,13 @@ public class PartnerLookup {
      * verification method
      *
      * @param verificationMethod  the proof verification method
-     * @param verificationMethods list of {@link DidDocAPI.VerificationMethod} from
-     *                            the did document
+     * @param verificationMethods list of {@link DIDDocument.VerificationMethod}
+     *                            from the did document
      * @return matching public key in Base58
      */
     static Optional<String> matchKey(String verificationMethod,
-            List<DidDocAPI.VerificationMethod> verificationMethods) {
-        Optional<DidDocAPI.VerificationMethod> key = Optional.empty();
+            List<DIDDocument.VerificationMethod> verificationMethods) {
+        Optional<DIDDocument.VerificationMethod> key = Optional.empty();
         String result = null;
         if (StringUtils.isNotEmpty(verificationMethod) && CollectionUtils.isNotEmpty(verificationMethods)) {
             key = verificationMethods.stream().filter(k -> verificationMethod.equals(k.getId())).findFirst();

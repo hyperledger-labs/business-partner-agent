@@ -31,7 +31,6 @@ import java.util.UUID;
 @Builder
 public class TrustedIssuer {
     private UUID id;
-    private Boolean isReadOnly;
     private String label;
     private String issuerDid;
 
@@ -39,7 +38,6 @@ public class TrustedIssuer {
         return TrustedIssuer
                 .builder()
                 .id(db.getId())
-                .isReadOnly(db.getIsReadOnly())
                 .label(db.getLabel())
                 .issuerDid(db.getIssuerDid())
                 .build();

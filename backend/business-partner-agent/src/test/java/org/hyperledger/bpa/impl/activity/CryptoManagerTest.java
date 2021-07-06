@@ -91,7 +91,7 @@ class CryptoManagerTest extends RunWithAries {
         assertTrue(signed.isPresent());
         assertNotNull(signed.get().getProof());
         assertEquals("authentication", signed.get().getProof().getProofPurpose());
-        assertEquals("did:sov:iil:asdfsafs", signed.get().getVerifiableCredential().get(0).getIssuer());
+        assertEquals("did:sov:asdfsafs", signed.get().getVerifiableCredential().get(0).getIssuer());
     }
 
 }

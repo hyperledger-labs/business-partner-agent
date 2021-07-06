@@ -17,4 +17,7 @@ export default {
   listPartners() {
     return appAxios().get(`${ApiRoutes.PARTNERS}`);
   },
+  updatePartner({ id, data }) {
+    return appAxios().put(`${ApiRoutes.PARTNERS}/${id}`, data);
+  },
 };

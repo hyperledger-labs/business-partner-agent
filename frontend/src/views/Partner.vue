@@ -13,36 +13,14 @@
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
-        <span v-if="!isUpdatingName">{{ partner.name }}</span>
-        <v-text-field
-          class="mt-8"
-          v-else
-          label="Name"
-          v-model="alias"
-          outlined
-          :rules="[rules.required]"
-          dense
-        >
-          <template v-slot:append>
-            <v-bpa-button
-              color="secondary"
-              class="pb-1"
-              @click="isUpdatingName = false"
-              >{{ $t("button.cancel") }}</v-bpa-button
-            >
-            <v-bpa-button
-              class="pb-1"
-              color="primary"
-              :loading="isBusy"
-              @click="submitNameUpdate()"
-              >{{ $t("button.save") }}</v-bpa-button
-            >
-          </template>
-        </v-text-field>
+        <span>{{ partner.name }}</span>
         <PartnerStateIndicator
           v-if="partner.state"
           v-bind:state="partner.state"
         ></PartnerStateIndicator>
+        <v-chip class="ml-2" v-for="tag in partner.tag" :key="tag.id">{{
+          tag.name
+        }}</v-chip>
         <v-layout align-center justify-end>
           <v-btn icon @click="isUpdatingDid = !isUpdatingDid">
             <v-icon small dark>$vuetify.icons.identity</v-icon>
@@ -77,9 +55,19 @@
               >
             </template>
           </v-text-field>
-          <v-btn icon @click="isUpdatingName = !isUpdatingName">
-            <v-icon dark>$vuetify.icons.pencil</v-icon>
-          </v-btn>
+          <v-dialog v-model="updatePartnerDialog" max-width="600px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon v-bind="attrs" v-on="on" color="primary">
+                <v-icon dark>$vuetify.icons.pencil</v-icon>
+              </v-btn>
+            </template>
+            <UpdatePartner
+              v-bind:partner="partner"
+              @success="onUpdatePartner"
+              @cancelled="updatePartnerDialog = false"
+            />
+          </v-dialog>
+
           <v-tooltip top>
             <template v-slot:activator="{ on, attrs }">
               <v-bpa-button
@@ -278,7 +266,7 @@
       </v-card-actions>
     </v-card>
 
-    <v-dialog v-model="attentionPartnerStateDialog" max-width="500">
+    <v-dialog v-model="attentionPartnerStateDialog" max-width="600px">
       <v-card>
         <v-card-title class="headline"
           >{{ $t("view.partner.stateDialog.title", { state: partner.state }) }}
@@ -325,6 +313,7 @@ import { issuerService } from "@/services";
 import CredExList from "@/components/CredExList";
 import IssueCredential from "@/components/IssueCredential";
 import PresentationRequestList from "@/components/PresentationRequestList";
+import UpdatePartner from "@/components/UpdatePartner";
 import VBpaButton from "@/components/BpaButton";
 
 export default {
@@ -338,6 +327,7 @@ export default {
     CredExList,
     IssueCredential,
     PresentationRequestList,
+    UpdatePartner,
   },
   created() {
     EventBus.$emit("title", this.$t("view.partner.title"));
@@ -352,8 +342,8 @@ export default {
       isBusy: false,
       isUpdatingDid: false,
       isLoading: true,
-      isUpdatingName: false,
       attentionPartnerStateDialog: false,
+      updatePartnerDialog: false,
       goTo: {},
       alias: "",
       did: "",
@@ -559,6 +549,7 @@ export default {
             this.did = this.partner.did;
             this.isReady = true;
             this.isLoading = false;
+
             console.log(this.partner);
           }
         })
@@ -640,29 +631,9 @@ export default {
           EventBus.$emit("error", e);
         });
     },
-    submitNameUpdate() {
-      this.isBusy = true;
-      if (this.alias && this.alias !== "") {
-        this.$axios
-          .put(`${this.$apiBaseUrl}/partners/${this.id}`, {
-            alias: this.alias,
-          })
-          .then((result) => {
-            if (result.status === 200) {
-              this.isBusy = false;
-              this.partner.name = this.alias;
-              this.isUpdatingName = false;
-            }
-          })
-          .catch((e) => {
-            this.isBusy = false;
-            this.isUpdatingName = false;
-            console.error(e);
-            EventBus.$emit("error", e);
-          });
-      } else {
-        this.isBusy = false;
-      }
+    onUpdatePartner() {
+      this.getPartner();
+      this.updatePartnerDialog = false;
     },
     submitDidUpdate() {
       this.isBusy = true;

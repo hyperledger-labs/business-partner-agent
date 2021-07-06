@@ -124,8 +124,19 @@ public class AdminControllerTest {
         schema = getSchema(addedSchema.getBody().get().getId());
         Assertions.assertEquals("Dummy Bank", schema.getTrustedIssuer().get(0).getLabel());
 
-        // delete schema
+        // delete schema should fail because it still has a restriction
         UUID deleteId = schema.getId();
+        Assertions.assertThrows(HttpClientResponseException.class,
+                () -> client.toBlocking().exchange(HttpRequest.DELETE("/" + deleteId)));
+
+        // delete the second restriction
+        delete = UriBuilder.of("/{id}/trustedIssuer/{trustedIssuerId}")
+                .expand(Map.of(
+                        "id", schema.getId().toString(),
+                        "trustedIssuerId", schema.getTrustedIssuer().get(0).getId().toString()));
+        client.toBlocking().exchange(HttpRequest.DELETE(delete.toString()));
+
+        // delete the schema
         client.toBlocking().exchange(HttpRequest.DELETE("/" + deleteId));
         // check if the schema was deleted
         Assertions.assertThrows(HttpClientResponseException.class, () -> getSchema(deleteId));
