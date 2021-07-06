@@ -83,7 +83,7 @@ public class Identity {
         return myDid;
     }
 
-    public @Nullable String getMyKeyId(String myDid) {
+    public String getMyKeyId(String myDid) {
         String myKeyId = "no-public-did";
         if (myDid != null) {
             if (webOnly) {
