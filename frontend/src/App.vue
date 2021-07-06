@@ -126,6 +126,16 @@
             <v-list-item-title>{{ $t("nav.settings") }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item link :to="{ name: 'Notifications' }">
+          <v-list-item-action>
+            <v-icon>$vuetify.icons.notifications</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>{{
+              $t("nav.notifications")
+              }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
       <template v-slot:append>
         <v-list dense>

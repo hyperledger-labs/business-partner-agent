@@ -26,6 +26,7 @@
     "credentialManagement": "Credential Management",
     "partners": "Business Partners",
     "settings": "Settings",
+    "notifications": "Notifications",
     "about": "About",
     "signout": "Sign out"
   },
@@ -37,6 +38,9 @@
     "no": "No"
   },
   "view": {
+    "notifications": {
+      "title": "Notifications"
+    },
     "partner": {
       "title": "Partner",
       "refreshProfile": "Refresh profile from source",
