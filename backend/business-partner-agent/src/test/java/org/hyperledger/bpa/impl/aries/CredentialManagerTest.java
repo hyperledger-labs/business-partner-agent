@@ -124,7 +124,7 @@ class CredentialManagerTest extends BaseTest {
                 .did(DID)
                 .ariesSupport(Boolean.TRUE)
                 .incoming(Boolean.TRUE)
-                .alias("Their Label")
+                .label("Their Label")
                 .build());
 
         String iss = mgmt.resolveIssuer(c);
