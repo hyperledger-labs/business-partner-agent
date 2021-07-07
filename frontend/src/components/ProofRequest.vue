@@ -72,7 +72,6 @@ export default {
           },
         });
       } else {
-        console.error(e);
         EventBus.$emit("error", "No credential that has this schema_id");
       }
     },

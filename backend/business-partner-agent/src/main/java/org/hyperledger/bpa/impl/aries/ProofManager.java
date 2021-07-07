@@ -144,7 +144,7 @@ public class ProofManager {
         }
     }
 
-    public void rejectPresentProofRequest(@NotNull PartnerProof proofEx, String explainString) {
+    public void declinePresentProofRequest(@NotNull PartnerProof proofEx, String explainString) {
         if (PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
             try {
                 sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString);

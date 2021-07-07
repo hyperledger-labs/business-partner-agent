@@ -27,7 +27,7 @@
         <v-btn
           color="secondary"
           text
-          @click="rejectPresentationRequest(presentationRequest)"
+          @click="declinePresentationRequest(presentationRequest)"
           >Decline</v-btn
         >
         <v-btn
@@ -80,7 +80,7 @@ export default {
     fetch() {
       this.isLoading = true;
       this.$axios
-        .get(`${this.$apiBaseUrl}/proof-exchanges/${this.id}`)
+        .get(`${this.$apiBaseUrl}/partners/proof-exchanges/${this.id}`)
         .then((result) => {
           console.log("result");
           console.log(result);
@@ -100,15 +100,15 @@ export default {
           }
         });
     },
-    rejectPresentationRequest(presentationRequest) {
+    declinePresentationRequest(presentationRequest) {
       let partnerId = this.$route.params.id;
       this.$axios
         .post(
-          `${this.$apiBaseUrl}/partners/${partnerId}/proof-exchanges/${presentationRequest.id}/reject`
+          `${this.$apiBaseUrl}/partners/${partnerId}/proof-exchanges/${presentationRequest.id}/decline`
         )
         .then((result) => {
           if (result.status === 200) {
-            console.log("SUCCESSFULLY REJECTED");
+            console.log("SUCCESSFULLY DECLINED");
             this.$router.go(-1);
           }
         })

@@ -220,6 +220,32 @@ public class PartnerController {
         return HttpResponse.ok();
     }
 
+
+    /**
+     * Get all proof exchanges
+     *
+     * @return list of partners
+     */
+    @Get("/proof-exchanges")
+    public HttpResponse<List<AriesProofExchange>> getProofExchanges() {
+        return HttpResponse.ok(proofM.getAllPartnerProof());        
+    }
+
+    /**
+     * Get partner by id
+     *
+     * @param id {@link UUID} the partner id
+     * @return partner
+     */
+    @Get("/proof-exchanges/{id}")
+    public HttpResponse<AriesProofExchange> getProofExchangebyId(@PathVariable String id) {
+        Optional<AriesProofExchange> pProof = proofM.getPartnerProofById(UUID.fromString(id));
+        if (pProof.isPresent()) {
+            return HttpResponse.ok(pProof.get());
+        }
+        return HttpResponse.notFound();
+    }
+
     /**
      * Aries: Make the presentation that was requested
      *
@@ -247,13 +273,13 @@ public class PartnerController {
      * @param proofId {@link UUID} the presentationExchangeId
      * @return HTTP status
      */
-    @Post("/{id}/proof-exchanges/{proofId}/reject")
-    public HttpResponse<Void> rejectPresentProofRequest(
+    @Post("/{id}/proof-exchanges/{proofId}/decline")
+    public HttpResponse<Void> declinePresentProofRequest(
             @SuppressWarnings("unused ") @PathVariable String id,
             @PathVariable String proofId) {
         final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(proofId));
         if (proof.isPresent()) {
-            proofM.rejectPresentProofRequest(proof.get(), "User Rejected Proof Request: No reason provided");
+            proofM.declinePresentProofRequest(proof.get(), "User Declined Proof Request: No reason provided");
             return HttpResponse.ok();
         }
         return HttpResponse.notFound();
