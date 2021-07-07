@@ -27,14 +27,16 @@ export const getPartnerProfile = (partner) => {
 export const getPartnerName = (partner) => {
   if (typeof partner !== "object") {
     return "";
+  } else if ({}.hasOwnProperty.call(partner, "alias")) {
+    return partner.alias;
   } else if (
     {}.hasOwnProperty.call(partner, "profile") &&
     partner.profile !== null &&
     {}.hasOwnProperty.call(partner.profile, "legalName")
   ) {
     return partner.profile.legalName;
-  } else if ({}.hasOwnProperty.call(partner, "alias")) {
-    return partner.alias;
+  } else if ({}.hasOwnProperty.call(partner, "label")) {
+    return partner.label;
   } else {
     const profile = getPartnerProfile(partner);
     if (profile && {}.hasOwnProperty.call(profile, "legalName")) {

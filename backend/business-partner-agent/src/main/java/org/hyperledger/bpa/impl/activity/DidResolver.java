@@ -120,7 +120,7 @@ public class DidResolver {
                     pAPI.getValid());
             webhook.convertAndSend(RegisteredWebhook.WebhookEventType.PARTNER_ADD, pAPI);
         }, () -> {
-            ConnectionLabel cl = splitDidFrom(p.getAlias());
+            ConnectionLabel cl = splitDidFrom(p.getLabel());
             cl.getDid().ifPresent(did -> {
                 final PartnerAPI pAPI = partnerLookup.lookupPartner(did);
                 partnerRepo.updateVerifiablePresentation(

@@ -146,7 +146,7 @@ public class ConnectionManager {
 
     public void acceptConnection(@NonNull String connectionId) {
         try {
-            ac.didExchangeAcceptRequest(connectionId, DidExchangeAcceptRequestFilter.builder().build());
+            ac.didExchangeAcceptRequest(connectionId, null);
         } catch (IOException e) {
             String msg = messageSource.getMessage("acapy.unavailable");
             log.error(msg, e);
@@ -158,8 +158,8 @@ public class ConnectionManager {
     public synchronized void handleOutgoingConnectionEvent(ConnectionRecord record) {
         partnerRepo.findByConnectionId(record.getConnectionId()).ifPresent(
                 dbP -> {
-                    if (StringUtils.isEmpty(dbP.getAlias())) {
-                        dbP.setAlias(record.getTheirLabel());
+                    if (StringUtils.isEmpty(dbP.getLabel())) {
+                        dbP.setLabel(record.getTheirLabel());
                         dbP.setState(record.getState());
                         partnerRepo.update(dbP);
                     } else {
@@ -172,7 +172,7 @@ public class ConnectionManager {
     public synchronized void handleIncomingConnectionEvent(ConnectionRecord record) {
         partnerRepo.findByConnectionId(record.getConnectionId()).ifPresentOrElse(
                 dbP -> {
-                    if (StringUtils.isEmpty(dbP.getAlias()) || dbP.getAlias().startsWith(CONNECTION_INVITATION)) {
+                    if (dbP.getAlias() != null && dbP.getAlias().startsWith(CONNECTION_INVITATION)) {
                         dbP.setAlias(record.getTheirLabel());
                     }
                     if (StringUtils.isEmpty(dbP.getDid()) || dbP.getDid().endsWith(UNKNOWN_DID)) {
@@ -191,7 +191,7 @@ public class ConnectionManager {
                                     ? didPrefix + record.getTheirDid()
                                     : didPrefix + UNKNOWN_DID)
                             .state(record.getState())
-                            .alias(record.getTheirLabel())
+                            .label(record.getTheirLabel())
                             .incoming(Boolean.TRUE)
                             .build();
                     p = partnerRepo.save(p);

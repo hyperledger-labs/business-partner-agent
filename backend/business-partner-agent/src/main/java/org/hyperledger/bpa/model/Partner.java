@@ -76,9 +76,9 @@ public class Partner {
     @Enumerated(EnumType.STRING)
     private ConnectionState state; // aries connection state
 
-    @Deprecated
     @Nullable
-    private String label;
+    private String label; // aries connection label
+                          // if incoming connection set by the partner
 
     @Nullable
     private String alias; // partner alias

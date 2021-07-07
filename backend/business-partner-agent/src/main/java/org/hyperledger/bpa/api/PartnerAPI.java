@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
@@ -46,6 +47,7 @@ public class PartnerAPI {
     private Boolean incoming;
     private ConnectionState state;
     private String alias;
+    private String label;
     private String did;
     private List<PartnerCredential> credential;
     private List<TagAPI> tag;
@@ -87,6 +89,7 @@ public class PartnerAPI {
                 .setAriesSupport(from.getAriesSupport())
                 .setState(from.getState())
                 .setAlias(from.getAlias())
+                .setLabel(from.getLabel())
                 .setDid(from.getDid())
                 .setIncoming(from.getIncoming() != null ? from.getIncoming() : Boolean.FALSE)
                 .setTag(from.getTags() != null
