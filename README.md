@@ -26,6 +26,12 @@ A first alpha version of Business Partner Agent is available, see
 [Helm Chart](https://github.com/hyperledger-labs/business-partner-agent-chart) and [Docker images](https://github.com/orgs/hyperledger-labs/packages/container/package/business-partner-agent)
 It is not ready for production use.  Releases are in general considered "alpha", which means API may change at any time and we do not have explicit / planned system tests (See also [Publishing](PUBLISHING.md)).
 
+## Milestones
+
+*HEAVILY UNDER CONSTRUCTION* 
+
+See [milestone overview](https://github.com/hyperledger-labs/business-partner-agent/blob/gh-pages/MILESTONES.md) (Generated out of issues which are [labled with `epic`](https://github.com/hyperledger-labs/business-partner-agent/issues?q=is%3Aissue++label%3Aepic+) and attached to a [milestone](https://github.com/hyperledger-labs/business-partner-agent/milestones)).  
+
 # Getting Started
 
 The Business Partner Agent supports two modes
