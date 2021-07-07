@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 #DL, BUILD, RUN, LOCAL HYPERLEDGER
-git clone https://github.com/bcgov/von-network.git von-network
-./von-network/manage build
+# git clone https://github.com/bcgov/von-network.git von-network
+# ./von-network/manage build
 ./von-network/manage start
 
 #GET LOCAL LEDGER GENESIS FILES AND START RESOLVER

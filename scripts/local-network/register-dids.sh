@@ -28,14 +28,15 @@ DEST_FILE=${DEST_FILE:-".env"}
 
 # Set URL
 URL=${LEDGER_URL:-https://indy-test.bosch-digital.de}
+echo $URL
 
 register_did() {
     # arg 1 is the env file var we are replacing
     echo "Registering DID for $1"
     # Set random alias
-    ALIAS=BPA-$(cat /dev/urandom | env LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 4 | head -n 1)
+    ALIAS=BPA-$(base64 /dev/urandom | env LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 4 | head -n 1)
     # Generate random seed
-    SEED=$(cat /dev/urandom | env LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+    SEED=$(base64 /dev/urandom | env LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 
     PAYLOAD='{"alias":"'"$ALIAS"'","seed":"'"$SEED"'","role":"ENDORSER"}'
 
@@ -51,7 +52,10 @@ register_did() {
         fi
         # sed on Mac and Linux work differently
         if [ "$ARCHITECTURE" = "Mac" ]; then
-            sed -i'' '/'"$1"'=/c\'"$1"'='"${SEED}"'' $DEST_FILE
+            echo "sed -i '' '/${1}=/c\ ${1}=${SEED} ' $DEST_FILE"
+            sed -i '' '/$1=/c\
+$1=$SEED
+' $DEST_FILE
         else
             sed -i '/'"$1"'=/c\
             '"$1"'='"${SEED}"'
