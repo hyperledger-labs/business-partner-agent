@@ -15,38 +15,54 @@ Furthermore the firewall might block traffic to other agents depending on its en
 
 ```s
 git clone https://github.com/hyperledger-labs/business-partner-agent
-cd ./business-partner-agent/scripts
-./register-did.sh
+cd scripts
+./register-dids.sh
+```
+
+- If you have a setup using ngrok for making the agent publically avaiable, running
+```
 ./start-with-tunnels.sh
 ```
-The frontend will be served at `http://localhost:8080`.
+will setup the tunnel and start everything for you. Before making your agent publically avaiable, you most likely want to change the security options, at least set passwords, in the `.env` file. See the security section below for details.
+
+- Alternatively, for a local test, just run
+```
+docker-compose up
+```
+
+The frontend will be served at `http://localhost:8080`. If you did not change the password in `.env` the default login is "admin"/"changeme".
 
 
 ## Register a new DID before starting an Business Partner Agent
 
-You can use the `./register-did.sh` script to register a new DID on our test network.
+You can use the `./register-dids.sh` script to register a two new DIDs on our test network 
 Just run:
 
 ```s
-./register-did.sh
+./register-dids.sh
 ```
 
-You should see the following output:
+You should see some output like this:
 ```s
+Registering DID for ACAPY_SEED
 {
-  "did": "W3KMxGKUmajhiJzGmqVcAM",
-  "seed": "rxg9SAfvJsdQZjcsguSQCJofuPMmK4Ke",
-  "verkey": "Gq1ZuUcU4mwkdinNjwovDMgYhNq2Z6gVdbf9WgFFbQEb"
+  "did": "Tc8VTYTryxJGW3sz9RucDd",
+  "seed": "12345678912345678912345678912300",
+  "verkey": "FW4MZZhmcSsFnDZLCT5689EoUvzuEXqNRNYem1X6PZFYt"
 }
 Registration on https://indy-test.bosch-digital.de successful
-Setting AGENT_SEED in .env file
+Setting ACAPY_SEED in .env file
+.env does not exist
+Creating .env from .env-example
+Registering DID for ACAPY_SEED2
+...
 ```
 
 Alternatively, you can register a DID manually:
 
 1. Go to https://indy-test.bosch-digital.de/
 2. Provide a 32 characterer wallet seed on the right side under "Authenticate a new DID" and click on "Register DID"
-3. Make a copy of the provided [.env-example file](.env-example) with the name `.env`. Set the `AGENT_SEED` to the wallet seed.
+3. Make a copy of the provided [.env-example file](.env-example) with the name `.env`. Set the `AGENT1_SEED` to the wallet seed.
 
 ## Start a Business Partner Agent instance
 

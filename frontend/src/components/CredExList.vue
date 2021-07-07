@@ -8,7 +8,7 @@
 
 <template>
   <v-container>
-  <v-data-table
+    <v-data-table
       :loading="isLoading"
       :hide-default-footer="items.length < 10"
       :headers="headers"
@@ -17,38 +17,43 @@
       :sort-desc="[true]"
       single-select
       @click:row="openItem"
-  >
-    <template v-slot:[`item.state`]="{ item }">
-      <v-icon v-if="isItemActive(item)" color="green">$vuetify.icons.check</v-icon>
-      <span v-else>
-        {{ item.state.replace("_", " ") }}
-      </span>
-    </template>
-    <template v-slot:[`item.updatedAt`]="{ item }">
-      {{ item.updatedAt | formatDateLong }}
-    </template>
-    <template v-slot:[`item.createdAt`]="{ item }">
-      {{ item.createdAt | formatDateLong }}
-    </template>
-  </v-data-table>
-  <v-dialog v-model="dialog" max-width="600px">
-    <v-card>
-      <v-card-title class="bg-light">
-        <span class="headline">Credential Data</span>
-      </v-card-title>
-      <v-card-text>
-        <Cred :document="document" isReadOnly showOnlyContent></Cred>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" text @click="dialog = false">Close</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+    >
+      <template v-slot:[`item.state`]="{ item }">
+        <v-icon v-if="isItemActive(item)" color="green"
+          >$vuetify.icons.check</v-icon
+        >
+        <span v-else>
+          {{ item.state.replace("_", " ") }}
+        </span>
+      </template>
+      <template v-slot:[`item.updatedAt`]="{ item }">
+        {{ item.updatedAt | formatDateLong }}
+      </template>
+      <template v-slot:[`item.createdAt`]="{ item }">
+        {{ item.createdAt | formatDateLong }}
+      </template>
+    </v-data-table>
+    <v-dialog v-model="dialog" max-width="600px">
+      <v-card>
+        <v-card-title class="bg-light">
+          <span class="headline">Credential Data</span>
+        </v-card-title>
+        <v-card-text>
+          <Cred :document="document" isReadOnly showOnlyContent></Cred>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-bpa-button color="primary" @click="dialog = false"
+            >Close</v-bpa-button
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 <script>
-  import Cred from "@/components/Credential.vue"
+import Cred from "@/components/Credential.vue";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   props: {
@@ -79,21 +84,21 @@ export default {
       default: (item) =>
         item.state === "credential_issued" || item.state == "credential_acked",
     },
-    isLoading: Boolean
+    isLoading: Boolean,
   },
   data: () => {
     return {
       dialog: false,
-      document: {}
+      document: {},
     };
   },
   watch: {
     items(val) {
       console.log("Credential Exchange Item refresh");
       console.log(val);
-    }
+    },
   },
-  computed: { },
+  computed: {},
   methods: {
     openItem(item) {
       this.dialog = true;
@@ -109,7 +114,8 @@ export default {
     },
   },
   components: {
-    Cred
+    VBpaButton,
+    Cred,
   },
 };
 </script>

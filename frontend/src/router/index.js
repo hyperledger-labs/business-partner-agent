@@ -24,6 +24,7 @@ import Partner from "../views/Partner.vue";
 import AddPartner from "../views/AddPartner.vue";
 import AddPartnerbyURL from "../views/AddPartnerbyURL.vue";
 import Settings from "../views/Settings.vue";
+import TagManagement from "../views/TagManagement";
 import SchemaSettings from "../views/SchemaSettings.vue";
 import Schema from "../views/Schema.vue";
 import AddSchema from "../views/AddSchema.vue";
@@ -85,15 +86,19 @@ const routes = [
     props: true,
   },
   {
-    path: "/app/partners/:id/presentation/:presentationId",
-    name: "Presentation",
-    component: Presentation,
-    props: true,
-  },
-  {
     path: "/app/partners",
     name: "Partners",
     component: Partners,
+  },
+  {
+    path: "/app/partners/add",
+    name: "AddPartner",
+    component: AddPartner,
+  },
+  {
+    path: "/app/partners/create-qr",
+    name: "AddPartnerbyURL",
+    component: AddPartnerbyURL,
   },
   {
     path: "/app/partners/:id",
@@ -114,19 +119,20 @@ const routes = [
     props: true,
   },
   {
-    path: "/app/partners/add",
-    name: "AddPartner",
-    component: AddPartner,
-  },
-  {
-    path: "/app/partners/create-qr",
-    name: "AddPartnerbyURL",
-    component: AddPartnerbyURL,
+    path: "/app/partners/:id/presentation/:presentationId",
+    name: "Presentation",
+    component: Presentation,
+    props: true,
   },
   {
     path: "/app/settings",
     name: "Settings",
     component: Settings,
+  },
+  {
+    path: "/app/settings/tag",
+    name: "TagManagement",
+    component: TagManagement,
   },
   {
     path: "/app/settings/schema",
@@ -150,9 +156,9 @@ const routes = [
     component: About,
   },
   {
-    path: "/credentialManagement",
+    path: "/app/credentialManagement",
     name: "CredentialManagement",
-    component: CredentialManagement
+    component: CredentialManagement,
   },
 ];
 

@@ -92,7 +92,7 @@ export default {
       if (val) {
         this.prepareDocument();
       }
-    }
+    },
   },
   created() {
     console.log("Credential: ", this.document);

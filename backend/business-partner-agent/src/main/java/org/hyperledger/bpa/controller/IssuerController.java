@@ -27,6 +27,7 @@ import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.controller.api.issuer.*;
@@ -147,8 +148,9 @@ public class IssuerController {
      */
     @Get("/exchanges")
     public HttpResponse<List<CredEx>> listCredentialExchanges(
-            @Parameter(description = "issuer or holder") @Nullable @QueryValue String role) {
-        return HttpResponse.ok(im.listCredentialExchanges(role));
+            @Parameter(description = "issuer or holder") @Nullable @QueryValue CredentialExchangeRole role,
+            @Parameter(description = "partner id") @Nullable @QueryValue String partnerId) {
+        return HttpResponse.ok(im.listCredentialExchanges(role, partnerId != null ? UUID.fromString(partnerId) : null));
     }
 
 }

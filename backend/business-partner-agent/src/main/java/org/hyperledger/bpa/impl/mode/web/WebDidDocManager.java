@@ -17,14 +17,12 @@
  */
 package org.hyperledger.bpa.impl.mode.web;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.aries.api.ledger.EndpointType;
+import org.hyperledger.acy_py.generated.model.DIDEndpointWithType;
+import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.ApiConstants;
-import org.hyperledger.bpa.api.DidDocAPI;
-import org.hyperledger.bpa.api.DidDocAPI.Service;
 import org.hyperledger.bpa.config.runtime.RequiresWeb;
 import org.hyperledger.bpa.impl.DidDocManager;
 import org.hyperledger.bpa.impl.activity.Identity;
@@ -35,6 +33,7 @@ import org.hyperledger.bpa.repository.DidDocWebRepository;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -66,33 +65,31 @@ public class WebDidDocManager implements DidDocManager {
         String myDid = id.getMyDid();
         String myKeyId = id.getMyKeyId(myDid);
 
-        List<DidDocAPI.VerificationMethod> verificationMethods = List.of(DidDocAPI.VerificationMethod.builder()
+        List<DIDDocument.VerificationMethod> verificationMethods = List.of(DIDDocument.VerificationMethod.builder()
                 .id(myKeyId)
                 .type(ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE)
+                .controller(myDid)
                 .publicKeyBase58(verkey)
                 .build());
 
-        List<DidDocAPI.PublicKey> publicKey = List.of(DidDocAPI.PublicKey.builder()
-                .id(myKeyId)
-                .type(ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE)
-                .publicKeyBase58(verkey)
-                .build());
+        String typeProfile = DIDEndpointWithType.EndpointTypeEnum.PROFILE.getValue().toLowerCase(Locale.US);
+        String typeDidComm = "did-communication";
 
-        DidDocAPI didDoc = DidDocAPI.builder()
+        DIDDocument didDoc = DIDDocument.builder()
                 .id(myDid)
                 .service(List.of(
-                        Service.builder()
+                        DIDDocument.Service.builder()
+                                .id(myDid + "#" + typeProfile)
+                                .type(typeProfile)
                                 .serviceEndpoint(scheme + "://" + host + "/profile.jsonld")
-                                .id(myDid + "#" + EndpointType.PROFILE.getLedgerName())
-                                .type(EndpointType.PROFILE.getLedgerName())
                                 .build(),
-                        Service.builder()
+                        DIDDocument.Service.builder()
+                                .id(myDid + "#" + typeDidComm)
+                                .type(typeDidComm)
                                 .serviceEndpoint(acapyEndpoint)
-                                .id(myDid + "#" + EndpointType.ENDPOINT.getLedgerName())
-                                .type(EndpointType.ENDPOINT.getLedgerName())
+                                .recipientKeys(List.of(myKeyId))
                                 .build()))
-                .verificationMethod(mapper.convertValue(verificationMethods, JsonNode.class))
-                .publicKey(publicKey)
+                .verificationMethod(verificationMethods)
                 .build();
 
         try {
@@ -106,12 +103,12 @@ public class WebDidDocManager implements DidDocManager {
     }
 
     @Override
-    public Optional<DidDocAPI> getDidDocument() {
-        Optional<DidDocAPI> result = Optional.empty();
+    public Optional<DIDDocument> getDidDocument() {
+        Optional<DIDDocument> result = Optional.empty();
         Optional<DidDocWeb> didDocDB = didRepo.findDidDocSingle();
         if (didDocDB.isPresent()) {
             try {
-                DidDocAPI api = mapper.convertValue(didDocDB.get().getDidDoc(), DidDocAPI.class);
+                DIDDocument api = mapper.convertValue(didDocDB.get().getDidDoc(), DIDDocument.class);
                 result = Optional.of(api);
             } catch (IllegalArgumentException e) {
                 log.error("Could not convert persisted did document", e);

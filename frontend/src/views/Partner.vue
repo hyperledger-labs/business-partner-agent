@@ -13,34 +13,14 @@
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
-        <span v-if="!isUpdatingName">{{ partner.name }}</span>
-        <v-text-field
-          class="mt-8"
-          v-else
-          label="Name"
-          v-model="alias"
-          outlined
-          :rules="[rules.required]"
-          dense
-        >
-          <template v-slot:append>
-            <v-btn class="pb-1" text @click="isUpdatingName = false"
-              >Cancel</v-btn
-            >
-            <v-btn
-              class="pb-1"
-              text
-              color="primary"
-              :loading="isBusy"
-              @click="submitNameUpdate()"
-              >Save</v-btn
-            >
-          </template>
-        </v-text-field>
+        <span>{{ partner.name }}</span>
         <PartnerStateIndicator
           v-if="partner.state"
           v-bind:state="partner.state"
         ></PartnerStateIndicator>
+        <v-chip class="ml-2" v-for="tag in partner.tag" :key="tag.id">{{
+          tag.name
+        }}</v-chip>
         <v-layout align-center justify-end>
           <v-btn icon @click="isUpdatingDid = !isUpdatingDid">
             <v-icon small dark>$vuetify.icons.identity</v-icon>
@@ -60,25 +40,37 @@
             dense
           >
             <template v-slot:append>
-              <v-btn class="pb-1" text @click="isUpdatingDid = false"
-                >Cancel</v-btn
-              >
-              <v-btn
+              <v-bpa-button
+                color="secondary"
                 class="pb-1"
-                text
+                @click="isUpdatingDid = false"
+                >{{ $t("button.cancel") }}</v-bpa-button
+              >
+              <v-bpa-button
+                class="pb-1"
                 color="primary"
                 :loading="isBusy"
                 @click="submitDidUpdate()"
-                >Save</v-btn
+                >{{ $t("button.save") }}</v-bpa-button
               >
             </template>
           </v-text-field>
-          <v-btn icon @click="isUpdatingName = !isUpdatingName">
-            <v-icon dark>$vuetify.icons.pencil</v-icon>
-          </v-btn>
+          <v-dialog v-model="updatePartnerDialog" max-width="600px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon v-bind="attrs" v-on="on" color="primary">
+                <v-icon dark>$vuetify.icons.pencil</v-icon>
+              </v-btn>
+            </template>
+            <UpdatePartner
+              v-bind:partner="partner"
+              @success="onUpdatePartner"
+              @cancelled="updatePartnerDialog = false"
+            />
+          </v-dialog>
+
           <v-tooltip top>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn
+              <v-bpa-button
                 color="primary"
                 v-bind="attrs"
                 v-on="on"
@@ -86,9 +78,9 @@
                 @click="refreshPartner()"
               >
                 <v-icon dark>$vuetify.icons.refresh</v-icon>
-              </v-btn>
+              </v-bpa-button>
             </template>
-            <span>Refresh profile from source</span>
+            <span>{{ $t("view.partner.refreshProfile") }}</span>
           </v-tooltip>
 
           <v-btn depressed color="red" icon @click="deletePartner()">
@@ -111,19 +103,19 @@
 
             <v-row>
               <span class="font-weight-medium">
-                Connection request received
+                {{ $t("view.partner.requestReceived") }}
               </span>
             </v-row>
-            <v-row
-              >{{ this.alias }} wants to create a connection with you.</v-row
-            >
+            <v-row>{{
+              $t("view.partner.requestReceivedSubtitle", { alias: this.alias })
+            }}</v-row>
             <template v-slot:actions>
-              <v-btn text color="seconday" @click="deletePartner">
-                Remove Partner
-              </v-btn>
-              <v-btn text color="primary" @click="acceptPartnerRequest">
-                Accept
-              </v-btn>
+              <v-bpa-button color="secondary" @click="deletePartner">
+                {{ $t("view.partner.removePartner") }}
+              </v-bpa-button>
+              <v-bpa-button color="primary" @click="acceptPartnerRequest">
+                {{ $t("view.partner.acceptPartner") }}
+              </v-bpa-button>
             </template>
           </v-banner>
         </template>
@@ -138,9 +130,11 @@
             </v-avatar>
 
             <v-row>
-              <span class="font-weight-medium"> Connection request sent </span>
+              <span class="font-weight-medium">{{
+                $t("view.partner.requestSent")
+              }}</span>
             </v-row>
-            <v-row>Waiting for response...</v-row>
+            <v-row>{{ $t("view.partner.requestSentSubtitle") }}</v-row>
           </v-banner>
         </template>
         <Profile v-if="isReady" v-bind:partner="partner"></Profile>
@@ -148,14 +142,14 @@
           <v-col cols="4">
             <v-row>
               <p class="grey--text text--darken-2 font-weight-medium">
-                Received Presentations
+                {{ $t("view.partner.receivedPresentations.title") }}
               </p>
             </v-row>
-            <v-row>The presentations you received from your partner</v-row>
+            <v-row>{{ $t("view.partner.receivedPresentations.text") }}</v-row>
             <v-row class="mt-4">
-              <v-btn small @click="requestPresentation" :disabled="!isActive"
-                >Request Presentation</v-btn
-              >
+              <v-btn small @click="requestPresentation" :disabled="!isActive">{{
+                $t("view.partner.receivedPresentations.button")
+              }}</v-btn>
             </v-row>
           </v-col>
           <v-col cols="8">
@@ -177,13 +171,13 @@
           <v-col cols="4">
             <v-row>
               <p class="grey--text text--darken-2 font-weight-medium">
-                Sent Presentations
+                {{ $t("view.partner.sentPresentations.title") }}
               </p>
             </v-row>
-            <v-row>The presentations you sent to your partner</v-row>
+            <v-row>{{ $t("view.partner.sentPresentations.text") }}</v-row>
             <v-row class="mt-4">
               <v-btn small @click="sendPresentation" :disabled="!isActive">
-                Send Presentation</v-btn
+                {{ $t("view.partner.sentPresentations.button") }}</v-btn
               >
             </v-row>
           </v-col>
@@ -204,26 +198,26 @@
           <v-col cols="4">
             <v-row>
               <p class="grey--text text--darken-2 font-weight-medium">
-                Issued Credentials
+                {{ $t("view.partner.issuedCredentials.title") }}
               </p>
             </v-row>
-            <v-row>The credentials you issued to your partner</v-row>
+            <v-row>{{ $t("view.partner.issuedCredentials.text") }}</v-row>
             <v-row class="mt-4">
               <v-dialog
-                  v-model="issueCredentialDialog"
-                  persistent
-                  max-width="600px"
+                v-model="issueCredentialDialog"
+                persistent
+                max-width="600px"
               >
                 <template v-slot:activator="{ on, attrs }">
-                  <v-btn small
-                      v-bind="attrs"
-                      v-on="on"
-                  >Issue Credential</v-btn>
+                  <v-btn small v-bind="attrs" v-on="on">{{
+                    $t("view.partner.issuedCredentials.button")
+                  }}</v-btn>
                 </template>
                 <IssueCredential
-                    :partnerId="id"
-                    @success="onCredentialIssued"
-                    @cancelled="issueCredentialDialog = false">
+                  :partnerId="id"
+                  @success="onCredentialIssued"
+                  @cancelled="issueCredentialDialog = false"
+                >
                 </IssueCredential>
               </v-dialog>
             </v-row>
@@ -236,6 +230,25 @@
             ></CredExList>
           </v-col>
         </v-row>
+        <v-row v-if="partner.ariesSupport" class="mx-4">
+          <v-col cols="4">
+            <v-row>
+              <p class="grey--text text--darken-2 font-weight-medium">
+                {{ $t("view.partner.presentationRequests.title") }}
+              </p>
+            </v-row>
+            <v-row>{{ $t("view.partner.presentationRequests.text") }}</v-row>
+          </v-col>
+          <v-col cols="8">
+            <PresentationRequestList
+              v-if="isReady"
+              v-bind:presentationRequests="presentationRequests"
+              v-bind:headers="headersPresentationRequest"
+              v-on:removedItem="removePresentationRequest"
+              v-on:responseSuccess="presentationRequestSuccess"
+            ></PresentationRequestList>
+          </v-col>
+        </v-row>
       </v-card-text>
 
       <v-card-actions>
@@ -243,7 +256,7 @@
           <v-expansion-panel>
             <v-expansion-panel-header
               class="grey--text text--darken-2 font-weight-medium bg-light"
-              >Show raw data</v-expansion-panel-header
+              >{{ $t("showRawData") }}</v-expansion-panel-header
             >
             <v-expansion-panel-content class="bg-light">
               <vue-json-pretty :data="rawData"></vue-json-pretty>
@@ -253,29 +266,28 @@
       </v-card-actions>
     </v-card>
 
-    <v-dialog v-model="attentionPartnerStateDialog" max-width="500">
+    <v-dialog v-model="attentionPartnerStateDialog" max-width="600px">
       <v-card>
         <v-card-title class="headline"
-          >Connection State {{ partner.state }}
+          >{{ $t("view.partner.stateDialog.title", { state: partner.state }) }}
         </v-card-title>
 
         <v-card-text>
-          The connection with your Business Partner is marked as
-          {{ partner.state }}. This could mean that your request will fail. Do
-          you want to try anyways?
+          {{ $t("view.partner.stateDialog.text", { state: partner.state }) }}
         </v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
 
-          <v-btn
+          <v-bpa-button
             color="secondary"
-            text
             @click="attentionPartnerStateDialog = false"
-            >No</v-btn
+            >{{ $t("view.partner.stateDialog.no") }}</v-bpa-button
           >
 
-          <v-btn color="primary" text @click="proceed">Yes</v-btn>
+          <v-bpa-button color="primary" @click="proceed">{{
+            $t("view.partner.stateDialog.yes")
+          }}</v-bpa-button>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -300,22 +312,28 @@ import {
 import { issuerService } from "@/services";
 import CredExList from "@/components/CredExList";
 import IssueCredential from "@/components/IssueCredential";
+import PresentationRequestList from "@/components/PresentationRequestList";
+import UpdatePartner from "@/components/UpdatePartner";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   name: "Partner",
   props: ["id"],
   components: {
+    VBpaButton,
     Profile,
     PresentationList,
     PartnerStateIndicator,
     CredExList,
     IssueCredential,
+    PresentationRequestList,
+    UpdatePartner,
   },
   created() {
-    EventBus.$emit("title", "Partner");
+    EventBus.$emit("title", this.$t("view.partner.title"));
     this.getPartner();
     this.getPresentationRecords();
-    this.getIssuedCredentials();
+    this.getIssuedCredentials(this.id);
     this.$store.commit("partnerSeen", { id: this.id });
   },
   data: () => {
@@ -324,8 +342,8 @@ export default {
       isBusy: false,
       isUpdatingDid: false,
       isLoading: true,
-      isUpdatingName: false,
       attentionPartnerStateDialog: false,
+      updatePartnerDialog: false,
       goTo: {},
       alias: "",
       did: "",
@@ -335,6 +353,7 @@ export default {
       presentationsSent: [],
       presentationsReceived: [],
       issuedCredentials: [],
+      presentationRequests: [],
       rules: {
         required: (value) => !!value || "Can't be empty",
       },
@@ -356,6 +375,25 @@ export default {
         },
       ],
       issueCredentialDialog: false,
+      headersPresentationRequest: [
+        {
+          text: "Schema",
+          value:
+            "proofRequest.requestedAttributes.attribute_group_0.restrictions[0].schema_id",
+        },
+        {
+          text: "Received at",
+          value: "sentAt", //miss labelled.
+        },
+        {
+          text: "State",
+          value: "state",
+        },
+        {
+          text: "",
+          value: "actions",
+        },
+      ],
     };
   },
   computed: {
@@ -371,6 +409,7 @@ export default {
       this.attentionPartnerStateDialog = false;
       this.$router.push(this.goTo);
     },
+    // Presentations
     requestPresentation() {
       if (this.isActive) {
         this.$router.push({
@@ -410,25 +449,40 @@ export default {
     getPresentationRecords() {
       console.log("Getting presentation records...");
       this.$axios
-        .get(`${this.$apiBaseUrl}/partners/${this.id}/proof`)
+        .get(`${this.$apiBaseUrl}/partners/${this.id}/proof-exchanges`)
         .then((result) => {
           if ({}.hasOwnProperty.call(result, "data")) {
             let data = result.data;
             console.log(data);
             this.presentationsSent = data.filter((item) => {
-              console.log(item);
-              return item.role === "prover";
+              console.log("PresentationSent");
+              return (
+                item.role === "prover" &&
+                [
+                  "presentation_sent",
+                  "presentation_acked",
+                  "proposal_sent",
+                ].includes(item.state)
+              );
+            });
+            this.presentationRequests = data.filter((item) => {
+              console.log("PresentationRequest");
+              return (
+                item.role === "prover" && item.state === "request_received"
+              );
             });
             this.presentationsReceived = data.filter((item) => {
+              console.log("PresentationReceived");
               return item.role === "verifier";
             });
-            console.log(this.presentationsSent);
+            console.log(this.presentationRequests);
           }
         })
         .catch((e) => {
           console.error(e);
           // EventBus.$emit("error", e);
         });
+      console.log(this.presentationsRequests);
     },
     removePresentationReceived(id) {
       this.presentationsReceived = this.presentationsReceived.filter((item) => {
@@ -440,10 +494,30 @@ export default {
         return item.id !== id;
       });
     },
-    getIssuedCredentials() {
+    removePresentationRequest(id) {
+      let objIndex = this.presentationRequests.findIndex((item) => {
+        return item.id === id;
+      });
+      this.presentationRequests[objIndex].state = "presentation_rejected"; //not an aries state
+    },
+
+    presentationRequestSuccess(id) {
+      let objIndex = this.presentationRequests.findIndex((item) => {
+        return item.id === id;
+      });
+      this.presentationRequests[objIndex].state = "presentation_sent";
+      this.presentationsSent.push(this.presentationRequests[objIndex]);
+
+      this.presentationRequests = this.presentationRequests.filter((item) => {
+        return item.id !== id;
+      });
+    },
+
+    // Issue Credentials
+    getIssuedCredentials(id) {
       console.log("Getting issued credential records...");
       issuerService
-        .listCredentialExchangesAsIssuer()
+        .listCredentialExchangesAsIssuer(id)
         .then((result) => {
           if ({}.hasOwnProperty.call(result, "data")) {
             let data = result.data;
@@ -480,6 +554,7 @@ export default {
             this.did = this.partner.did;
             this.isReady = true;
             this.isLoading = false;
+
             console.log(this.partner);
           }
         })
@@ -561,29 +636,9 @@ export default {
           EventBus.$emit("error", e);
         });
     },
-    submitNameUpdate() {
-      this.isBusy = true;
-      if (this.alias && this.alias !== "") {
-        this.$axios
-          .put(`${this.$apiBaseUrl}/partners/${this.id}`, {
-            alias: this.alias,
-          })
-          .then((result) => {
-            if (result.status === 200) {
-              this.isBusy = false;
-              this.partner.name = this.alias;
-              this.isUpdatingName = false;
-            }
-          })
-          .catch((e) => {
-            this.isBusy = false;
-            this.isUpdatingName = false;
-            console.error(e);
-            EventBus.$emit("error", e);
-          });
-      } else {
-        this.isBusy = false;
-      }
+    onUpdatePartner() {
+      this.getPartner();
+      this.updatePartnerDialog = false;
     },
     submitDidUpdate() {
       this.isBusy = true;
@@ -611,8 +666,8 @@ export default {
     },
     onCredentialIssued() {
       this.issueCredentialDialog = false;
-      this.getIssuedCredentials();
-    }
+      this.getIssuedCredentials(`${this.id}`);
+    },
   },
 };
 </script>

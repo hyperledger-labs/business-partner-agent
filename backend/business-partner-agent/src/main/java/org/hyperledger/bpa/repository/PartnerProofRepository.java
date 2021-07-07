@@ -21,6 +21,7 @@ import io.micronaut.data.annotation.Id;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
+
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.model.PartnerProof;
 
@@ -35,12 +36,17 @@ public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUI
 
     Optional<PartnerProof> findByPresentationExchangeId(String presentationExchangeId);
 
+    Optional<PartnerProof> findByThreadId(String threadId);
+
     List<PartnerProof> findByPartnerId(UUID partnerId);
 
     List<PartnerProof> findByPartnerIdOrderByRole(UUID partnerId);
 
     void updateState(@Id UUID id, PresentationExchangeState state);
 
+    void updateProblemReport(@Id UUID id, String problemReport);
+
     long updateReceivedProof(@Id UUID id, Instant issuedAt, Boolean valid, PresentationExchangeState state,
             Map<String, Object> proof);
+
 }

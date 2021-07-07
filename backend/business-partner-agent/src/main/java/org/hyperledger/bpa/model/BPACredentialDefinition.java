@@ -53,6 +53,7 @@ public class BPACredentialDefinition {
 
     private String tag;
 
+    @Builder.Default
     private Boolean isSupportRevocation = Boolean.FALSE;
 
     private Integer revocationRegistrySize;

@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
@@ -94,15 +94,16 @@
       ></v-text-field>
       <v-card-actions>
         <v-layout justify-space-between>
-          <v-btn text :to="{ name: 'AddDocument' }">Cancel</v-btn>
-          <v-btn
+          <v-bpa-button color="secondary" :to="{ name: 'AddDocument' }"
+            >Cancel</v-bpa-button
+          >
+          <v-bpa-button
             color="primary"
-            text
             :to="{
               name: 'AddDocument',
               params: { person: person },
             }"
-            >Save</v-btn
+            >Save</v-bpa-button
           >
         </v-layout>
       </v-card-actions>
@@ -112,8 +113,10 @@
 
 <script>
 import { EventBus } from "../main";
+import VBpaButton from "@/components/BpaButton";
 export default {
   name: "ContactPerson",
+  components: { VBpaButton },
   props: {
     person: {
       type: Object,

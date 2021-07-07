@@ -13,18 +13,22 @@
             accept the Transaction Author Agreement for this session which is
             the following:
             <br /><br />
-            <hr>
+            <hr />
             <br />
             <span v-if="isTaaLoaded()">
               <v-markdown :source="taaText()"></v-markdown>
             </span>
             <span v-else>
               <div class="text-center">
-                  <v-progress-circular v-if="!isTaaLoaded()" indeterminate color="primary"></v-progress-circular>
-                  <div>Loading</div>
-                </div>
+                <v-progress-circular
+                  v-if="!isTaaLoaded()"
+                  indeterminate
+                  color="primary"
+                ></v-progress-circular>
+                <div>Loading</div>
+              </div>
             </span>
-            <hr>
+            <hr />
             <small v-show="isTaaLoaded()">Version: {{ getTaaVersion() }}</small>
             <v-checkbox
               v-model="agree"
@@ -35,9 +39,9 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn :disabled="!valid" color="primary" @click="register">
+            <v-bpa-button :disabled="!valid" color="primary" @click="register">
               Write endpoints to ledger
-            </v-btn>
+            </v-bpa-button>
           </v-card-actions>
         </v-card>
       </v-form>
@@ -47,10 +51,12 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import VueMarkdown from "vue-markdown-render";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   props: {},
   components: {
+    VBpaButton,
     "v-markdown": VueMarkdown,
   },
   data() {
@@ -58,7 +64,7 @@ export default {
       valid: true,
       agree: false,
       showDialog: this.isTaaRequired,
-      taaText: this.getTaaText
+      taaText: this.getTaaText,
     };
   },
   methods: {
@@ -67,7 +73,7 @@ export default {
       isTaaRequired: "taaRequired",
       getTaaText: "taaText",
       getTaaVersion: "taaVersion",
-      isTaaLoaded: "taaLoaded"
+      isTaaLoaded: "taaLoaded",
     }),
     register() {
       if (this.$refs.form.validate()) {

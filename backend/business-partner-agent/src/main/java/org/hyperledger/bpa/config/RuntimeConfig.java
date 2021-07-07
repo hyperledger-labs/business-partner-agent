@@ -17,12 +17,14 @@
  */
 package org.hyperledger.bpa.config;
 
+import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Value;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 
 import javax.inject.Singleton;
+import java.util.Map;
 
 @Getter
 @Singleton
@@ -31,9 +33,6 @@ public class RuntimeConfig {
 
     @Value("${bpa.host}")
     String host;
-
-    @Value("${bpa.resolver.url}")
-    String uniResolverUrl;
 
     @Value("${bpa.ledger.browser}")
     String ledgerBrowser;
@@ -58,6 +57,18 @@ public class RuntimeConfig {
 
     @Value("${bpa.creddef.revocationRegistrySize}")
     Integer revocationRegistrySize;
+
+    @Property(name = "bpa.ux")
+    Map<String, Object> ux;
+
+    @Value("${bpa.title}")
+    String title;
+
+    @Value("${bpa.i18n.locale}")
+    String locale;
+
+    @Value("${bpa.i18n.fallbackLocale}")
+    String fallbackLocale;
 
     public String getAgentName() {
         return DidResolver.splitDidFrom(agentName).getLabel();

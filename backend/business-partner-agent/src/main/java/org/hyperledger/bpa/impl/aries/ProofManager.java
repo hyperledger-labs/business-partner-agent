@@ -24,13 +24,16 @@ import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.acy_py.generated.model.V10PresentationProblemReportRequest;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.present_proof.*;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
-import org.hyperledger.bpa.api.aries.AriesProof;
+import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
+import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.impl.MessageService;
@@ -47,6 +50,7 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +60,8 @@ import java.util.UUID;
 @Slf4j
 @Singleton
 public class ProofManager {
+
+    private static final String ACA_PY_ERROR_MSG = "aca-py not available";
 
     @Value("${bpa.did.prefix}")
     String didPrefix;
@@ -105,6 +111,7 @@ public class ProofManager {
                                         .presentationExchangeId(proof.getPresentationExchangeId())
                                         .role(proof.getRole())
                                         .schemaId(schema.get().getId())
+                                        .threadId(proof.getThreadId())
                                         .issuer(req.getFirstIssuerDid())
                                         .build();
                                 pProofRepo.save(pp);
@@ -132,50 +139,86 @@ public class ProofManager {
                 throw new PartnerException("Partner not found");
             }
         } catch (IOException e) {
-            throw new NetworkException("aca-py not available", e);
+            throw new NetworkException(ACA_PY_ERROR_MSG, e);
         }
     }
 
-    // handles all proof events to track state changes
-    public void handleProofEvent(PresentationExchangeRecord proof) {
-        partnerRepo.findByConnectionId(proof.getConnectionId())
-                .ifPresent(p -> pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId())
-                        .ifPresentOrElse(pp -> pProofRepo.updateState(pp.getId(), proof.getState()), () -> {
-                            if (PresentationExchangeState.PROPOSAL_RECEIVED.equals(proof.getState())) {
-                                final PartnerProof pp = PartnerProof
-                                        .builder()
-                                        .partnerId(p.getId())
-                                        .state(proof.getState())
-                                        .presentationExchangeId(proof.getPresentationExchangeId())
-                                        .role(proof.getRole())
-                                        .build();
-                                pProofRepo.save(pp);
-                            }
-                        }));
+    public void rejectPresentProofRequest(@NotNull PartnerProof proofEx, String explainString) {
+        if (PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
+            try {
+                sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString);
+                deletePartnerProof(proofEx.getId());
+            } catch (IOException e) {
+                throw new NetworkException(ACA_PY_ERROR_MSG, e);
+            } catch (AriesException e) {
+                log.error("aca-py wallet item not found, attempting BPA delete");
+            }
+        } else {
+            throw new WrongApiUsageException("PresentationExchangeState != 'request-received'");
+        }
     }
 
-    // handle all acked or verified proof events
-    // connectionless proofs are currently not handled
-    public void handleAckedOrVerifiedProofEvent(PresentationExchangeRecord proof) {
-        pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId()).ifPresent(pp -> {
-            if (CollectionUtils.isNotEmpty(proof.getIdentifiers())) {
-                // TODO first schema id for now
-                String schemaId = proof.getIdentifiers().get(0).getSchemaId();
-                String credDefId = proof.getIdentifiers().get(0).getCredentialDefinitionId();
-                String issuer = resolveIssuer(credDefId);
-                pp
-                        .setIssuedAt(TimeUtil.parseZonedTimestamp(proof.getCreatedAt()))
-                        .setValid(proof.isVerified())
-                        .setState(proof.getState())
-                        .setSchemaId(schemaId)
-                        .setCredentialDefinitionId(credDefId)
-                        .setIssuer(issuer)
-                        .setProof(proof.from(schemaService.getSchemaAttributeNames(schemaId)));
-                final PartnerProof savedProof = pProofRepo.update(pp);
-                didRes.resolveDid(savedProof);
-                messageService.sendMessage(WebSocketMessageBody.proofReceived(toApiProof(savedProof)));
+    public void presentProof(@NotNull PartnerProof proofEx) {
+        if (PresentationExchangeRole.PROVER.equals(proofEx.getRole())
+                && PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
+            try {
+                ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId()).ifPresent(this::presentProof);
+            } catch (IOException e) {
+                log.error(ACA_PY_ERROR_MSG, e);
             }
-        });
+        } else {
+            throw new WrongApiUsageException(
+                    "PresentationExchangeRole!= 'prover' or PresentationExchangeState != 'request-received'");
+        }
+    }
+
+    void presentProof(@NonNull PresentationExchangeRecord presentationExchangeRecord) {
+        if (PresentationExchangeState.REQUEST_RECEIVED.equals(presentationExchangeRecord.getState())) {
+            try {
+                ac.presentProofRecordsCredentials(presentationExchangeRecord.getPresentationExchangeId())
+                        .ifPresentOrElse(creds -> {
+                            if (CollectionUtils.isNotEmpty(creds)) {
+                                PresentationRequestBuilder.acceptAll(presentationExchangeRecord, creds)
+                                        .ifPresent(pr -> {
+                                            try {
+                                                ac.presentProofRecordsSendPresentation(
+                                                        presentationExchangeRecord.getPresentationExchangeId(),
+                                                        pr);
+                                            } catch (IOException e) {
+                                                log.error(ACA_PY_ERROR_MSG, e);
+                                            }
+                                        });
+                            } else {
+                                String msg = "No matching credentials found for proof request: "
+                                        + presentationExchangeRecord.getPresentationExchangeId();
+                                log.warn(msg);
+                                pProofRepo.findByPresentationExchangeId(
+                                        presentationExchangeRecord.getPresentationExchangeId())
+                                        .ifPresent(pp -> pProofRepo.updateProblemReport(pp.getId(), msg));
+                            }
+                        }, () -> log.error("Could not load matching credentials from aca-py"));
+            } catch (IOException e) {
+                log.error(ACA_PY_ERROR_MSG, e);
+            }
+        }
+    }
+
+    PartnerProof handleAckedOrVerifiedProofEvent(@NonNull PresentationExchangeRecord proof, @NonNull PartnerProof pp) {
+        // TODO first schema id for now as the UI can not handle more
+        String schemaId = proof.getIdentifiers().get(0).getSchemaId();
+        String credDefId = proof.getIdentifiers().get(0).getCredentialDefinitionId();
+        String issuer = resolveIssuer(credDefId);
+        pp
+                .setIssuedAt(TimeUtil.parseZonedTimestamp(proof.getCreatedAt()))
+                .setValid(proof.isVerified())
+                .setState(proof.getState())
+                .setSchemaId(schemaId)
+                .setCredentialDefinitionId(credDefId)
+                .setIssuer(issuer)
+                .setProof(proof.from(schemaService.getSchemaAttributeNames(schemaId)));
+        final PartnerProof savedProof = pProofRepo.update(pp);
+        didRes.resolveDid(savedProof);
+        return savedProof;
     }
 
     public void sendProofProposal(@NonNull UUID partnerId, @NonNull UUID myCredentialId) {
@@ -190,6 +233,7 @@ public class ProofManager {
                             .state(proof.getState())
                             .presentationExchangeId(proof.getPresentationExchangeId())
                             .role(proof.getRole())
+                            .threadId(proof.getThreadId())
                             .credentialDefinitionId(cred.getCredentialDefinitionId())
                             .schemaId(cred.getSchemaId())
                             .issuer(resolveIssuer(cred.getCredentialDefinitionId()))
@@ -203,14 +247,14 @@ public class ProofManager {
         }));
     }
 
-    public List<AriesProof> listPartnerProofs(@NonNull UUID partnerId) {
-        List<AriesProof> result = new ArrayList<>();
+    public List<AriesProofExchange> listPartnerProofs(@NonNull UUID partnerId) {
+        List<AriesProofExchange> result = new ArrayList<>();
         pProofRepo.findByPartnerIdOrderByRole(partnerId).forEach(p -> result.add(toApiProof(p)));
         return result;
     }
 
-    public Optional<AriesProof> getPartnerProofById(@NonNull UUID id) {
-        Optional<AriesProof> result = Optional.empty();
+    public Optional<AriesProofExchange> getPartnerProofById(@NonNull UUID id) {
+        Optional<AriesProofExchange> result = Optional.empty();
         final Optional<PartnerProof> proof = pProofRepo.findById(id);
         if (proof.isPresent()) {
             result = Optional.of(toApiProof(proof.get()));
@@ -223,10 +267,23 @@ public class ProofManager {
             try {
                 ac.presentProofRecordsRemove(pp.getPresentationExchangeId());
             } catch (IOException e) {
-                log.error("aca-py not reachable", e);
+                log.error(ACA_PY_ERROR_MSG, e);
+            } catch (AriesException e) {
+                if (e.getCode() == 404) {
+                    log.warn("ACA-py PresentationExchange not found, still deleting BPA Partner Proof");
+                } else {
+                    throw e;
+                }
             }
             pProofRepo.deleteById(id);
         });
+    }
+
+    void sendMessage(
+            @NonNull WebSocketMessageBody.WebSocketMessageState state,
+            @NonNull WebSocketMessageBody.WebSocketMessageType type,
+            @NonNull PartnerProof pp) {
+        messageService.sendMessage(WebSocketMessageBody.proof(state, type, toApiProof(pp)));
     }
 
     private @Nullable String resolveIssuer(String credDefId) {
@@ -237,11 +294,20 @@ public class ProofManager {
         return issuer;
     }
 
-    private AriesProof toApiProof(@NonNull PartnerProof p) {
-        AriesProof proof = AriesProof.from(p, p.getProof() != null ? conv.fromMap(p.getProof(), JsonNode.class) : null);
+    private AriesProofExchange toApiProof(@NonNull PartnerProof p) {
+        AriesProofExchange proof = AriesProofExchange.from(p,
+                p.getProof() != null ? conv.fromMap(p.getProof(), JsonNode.class) : null);
         if (StringUtils.isNotEmpty(p.getSchemaId())) {
             proof.setTypeLabel(schemaService.getSchemaLabel(p.getSchemaId()));
         }
         return proof;
+    }
+
+    private void sendPresentProofProblemReport(@NonNull String PresentationExchangeId, @NonNull String problemString)
+            throws IOException {
+        V10PresentationProblemReportRequest request = V10PresentationProblemReportRequest.builder()
+                .description(problemString)
+                .build();
+        ac.presentProofRecordsProblemReport(PresentationExchangeId, request);
     }
 }

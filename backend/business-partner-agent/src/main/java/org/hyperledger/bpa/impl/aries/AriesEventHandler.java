@@ -19,16 +19,17 @@ package org.hyperledger.bpa.impl.aries;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
+import org.hyperledger.aries.api.connection.ConnectionState;
+import org.hyperledger.aries.api.connection.ConnectionTheirRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.message.PingEvent;
+import org.hyperledger.aries.api.message.ProblemReport;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.webhook.EventHandler;
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.IssuerManager;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -44,7 +45,7 @@ public class AriesEventHandler extends EventHandler {
 
     private final CredentialManager credMgmt;
 
-    private final ProofManager proofMgmt;
+    private final ProofEventHandler proofMgmt;
 
     private final IssuerManager issuerMgr;
 
@@ -53,7 +54,7 @@ public class AriesEventHandler extends EventHandler {
             ConnectionManager conMgmt,
             Optional<PingManager> pingMgmt,
             CredentialManager credMgmt,
-            ProofManager proofMgmt,
+            ProofEventHandler proofMgmt,
             IssuerManager issuerMgr) {
         this.conMgmt = conMgmt;
         this.pingMgmt = pingMgmt;
@@ -65,16 +66,17 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleConnection(ConnectionRecord connection) {
         log.debug("Connection Event: {}", connection);
-        if (!connection.isIncomingConnection() || AriesStringUtil.isUUID(connection.getTheirLabel())) {
-            conMgmt.handleOutgoingConnectionEvent(connection);
-        } else {
-            conMgmt.handleIncomingConnectionEvent(connection);
+        synchronized (conMgmt) {
+            if (!connection.isIncomingConnection() || AriesStringUtil.isUUID(connection.getTheirLabel())) {
+                conMgmt.handleOutgoingConnectionEvent(connection);
+            } else if (isNotAnInvitation(connection)) {
+                conMgmt.handleIncomingConnectionEvent(connection);
+            }
         }
     }
 
     @Override
     public void handlePing(PingEvent ping) {
-        log.debug("Ping: {}", ping);
         pingMgmt.ifPresent(mgmt -> mgmt.handlePingEvent(ping));
     }
 
@@ -82,13 +84,7 @@ public class AriesEventHandler extends EventHandler {
     public void handleProof(PresentationExchangeRecord proof) {
         log.debug("Present Proof Event: {}", proof);
         synchronized (proofMgmt) {
-            if (proof.isVerified() && PresentationExchangeRole.VERIFIER.equals(proof.getRole())
-                    || PresentationExchangeState.PRESENTATION_ACKED.equals(proof.getState())
-                            && PresentationExchangeRole.PROVER.equals(proof.getRole())) {
-                proofMgmt.handleAckedOrVerifiedProofEvent(proof);
-            } else {
-                proofMgmt.handleProofEvent(proof);
-            }
+            proofMgmt.dispatch(proof);
         }
     }
 
@@ -112,7 +108,25 @@ public class AriesEventHandler extends EventHandler {
     }
 
     @Override
+    public void handleProblemReport(ProblemReport report) {
+        // problem reports can happen on several levels, currently we assume that all
+        // reports are proof related
+        proofMgmt.handleProblemReport(report.getThread().getThid(), report.getDescription());
+    }
+
+    @Override
     public void handleRaw(String eventType, String json) {
         log.trace(json);
+    }
+
+    /**
+     * Filter invitations by QR code
+     * 
+     * @param conn {@link ConnectionRecord}
+     * @return true if it is not an invitation event
+     */
+    private boolean isNotAnInvitation(ConnectionRecord conn) {
+        return !(ConnectionState.INVITATION.equals(conn.getState())
+                && ConnectionTheirRole.INVITEE.equals(conn.getTheirRole()));
     }
 }

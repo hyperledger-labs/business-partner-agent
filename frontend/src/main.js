@@ -5,12 +5,13 @@
 
  SPDX-License-Identifier: Apache-2.0
 */
-import '@/assets/scss/style.scss';
+import "@/assets/scss/style.scss";
 
 import Vue from "vue";
 import axios from "axios";
 import VueNativeSock from "vue-native-websocket";
 import App from "./App.vue";
+import i18n from "./plugins/i18n";
 import vuetify from "./plugins/vuetify";
 import "@babel/polyfill";
 import router from "./router";
@@ -69,6 +70,9 @@ Vue.use(VueNativeSock, socketApi, {
           case "PROOF":
             target = "newPresentation";
             break;
+          case "PROOFREQUEST":
+            target = "newPresentationRequest";
+            break;
         }
       }
     }
@@ -79,35 +83,50 @@ Vue.use(VueNativeSock, socketApi, {
 Vue.prototype.$axios = axios;
 Vue.prototype.$apiBaseUrl = apiBaseUrl;
 Vue.config.productionTip = false;
-
-// Get Configuration
 Vue.prototype.$config = {
   ledger: "iil",
+  title: process.env.VUE_APP_TITLE || "Business Partner Agent",
+  locale: process.env.VUE_APP_I18N_LOCALE || "en",
+  fallbackLocale: process.env.VUE_APP_I18N_FALLBACK_LOCALE || "en",
 };
-axios
-  .get(`${apiBaseUrl}/admin/config`)
-  .then((result) => {
-    if ({}.hasOwnProperty.call(result, "data")) {
-      Vue.prototype.$config = result.data;
-      let ledgerPrefix = Vue.prototype.$config.ledgerPrefix;
-      let splitted = ledgerPrefix.split(":");
-      Vue.prototype.$config.ledger = splitted[splitted.length - 2];
-    }
-  })
-  .catch((e) => {
+
+// We need to load the configuration before the Vue application, so we can use the UX configuration
+(async () => {
+  console.log("Loading configuration...");
+  const result = await axios.get(`${apiBaseUrl}/admin/config`).catch((e) => {
     console.error(e);
   });
+  if ({}.hasOwnProperty.call(result, "data")) {
+    Vue.prototype.$config = result.data;
+    let ledgerPrefix = Vue.prototype.$config.ledgerPrefix;
+    let splitted = ledgerPrefix.split(":");
+    Vue.prototype.$config.ledger = splitted[splitted.length - 2];
+    if (result.data.ux) {
+      Object.assign(Vue.prototype.$config.ux, result.data.ux);
+    }
+    console.log("...Configuration loaded");
+  }
+
+  console.log("setting i18n...");
+  i18n.locale = Vue.prototype.$config.locale;
+  i18n.fallbackLocale = Vue.prototype.$config.fallbackLocale;
+  console.log(
+    `i18n.locale = ${i18n.locale}, i18n.fallbackLocale = ${i18n.fallbackLocale}`
+  );
+
+  store.dispatch("loadSettings");
+  store.dispatch("loadSchemas");
+  store.dispatch("loadTags");
+
+  console.log("Create the Vue application");
+  new Vue({
+    vuetify,
+    router,
+    store,
+    i18n,
+    render: (h) => h(App),
+  }).$mount("#app");
+})();
 
 const EventBus = new Vue();
 export { EventBus, axios, apiBaseUrl };
-
-console.log(Vue.prototype);
-store.dispatch("loadSettings");
-store.dispatch("loadSchemas");
-
-new Vue({
-  vuetify,
-  router,
-  store,
-  render: (h) => h(App),
-}).$mount("#app");

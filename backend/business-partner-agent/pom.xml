@@ -80,10 +80,6 @@
             <artifactId>micronaut-jdbc-hikari</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.micronaut.kubernetes</groupId>
-            <artifactId>micronaut-kubernetes-discovery-client</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.micronaut.security</groupId>
             <artifactId>micronaut-security</artifactId>
         </dependency>
@@ -130,9 +126,9 @@
 
         <!-- Hyperledger -->
         <dependency>
-            <groupId>org.hyperledger</groupId>
+            <groupId>network.idu.acapy</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.21.0</version>
+            <version>0.7.0-pre.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>
@@ -159,7 +155,12 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>5.5.0</version>
+            <version>5.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${org.mapstruct.version}</version>
         </dependency>
 
         <!-- Database -->
@@ -241,6 +242,11 @@
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                             <version>${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${org.mapstruct.version}</version>
                         </path>
                         <path>
                             <groupId>io.micronaut.openapi</groupId>
@@ -340,7 +346,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
-                        <version>3.1.2</version>
+                        <version>3.2.0</version>
                         <executions>
                             <execution>
                                 <id>copy</id>

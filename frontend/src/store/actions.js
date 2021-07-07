@@ -5,7 +5,8 @@ import { getPartnerProfile } from "../utils/partnerUtils";
 import adminService from "@/services/adminService";
 
 export const loadSchemas = async ({ commit }) => {
-  adminService.listSchemas()
+  adminService
+    .listSchemas()
     .then((result) => {
       let schemas = result.data;
       schemas.map((schema) => {
@@ -17,12 +18,31 @@ export const loadSchemas = async ({ commit }) => {
         ) {
           schema.type = CredentialTypes.UNKNOWN.type;
         }
-        schema.canIssue = Array.isArray(schema.credentialDefinitions) && schema.credentialDefinitions.length;
+        schema.canIssue =
+          Array.isArray(schema.credentialDefinitions) &&
+          schema.credentialDefinitions.length;
       });
       schemas.unshift(CredentialTypes.PROFILE);
       commit({
         type: "setSchemas",
         schemas: schemas,
+      });
+    })
+    .catch((e) => {
+      console.error(e);
+      EventBus.$emit("error", e);
+    });
+};
+
+export const loadTags = async ({ commit }) => {
+  adminService
+    .listTags()
+    .then((result) => {
+      let tags = result.data;
+      console.log(tags);
+      commit({
+        type: "setTags",
+        tags: tags,
       });
     })
     .catch((e) => {

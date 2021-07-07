@@ -37,7 +37,7 @@ class AriesStringUtilTest {
 
     @Test
     void testGetDidAcyPyFormat() {
-        assertEquals("44XuhwdnXMqxbQw9tFMQAp", AriesStringUtil.getLastSegment("did:sov:iil:44XuhwdnXMqxbQw9tFMQAp"));
+        assertEquals("44XuhwdnXMqxbQw9tFMQAp", AriesStringUtil.getLastSegment("did:sov:44XuhwdnXMqxbQw9tFMQAp"));
         assertEquals("44XuhwdnXMqxbQw9tFMQAp", AriesStringUtil.getLastSegment("44XuhwdnXMqxbQw9tFMQAp"));
     }
 
@@ -78,13 +78,9 @@ class AriesStringUtilTest {
         assertEquals("3kigpmNVRJyj1NpCkqJqpa", AriesStringUtil.schemaGetCreator(validSchemaId));
 
         final String invalidSchemaId = "3kigpmNVRJyj1NpCkqJqpa:2:a-schema"; // no version
-        assertThrows(IllegalArgumentException.class, () -> {
-            AriesStringUtil.schemaGetCreator(invalidSchemaId);
-        });
+        assertThrows(IllegalArgumentException.class, () -> AriesStringUtil.schemaGetCreator(invalidSchemaId));
 
-        assertThrows(NullPointerException.class, () -> {
-            AriesStringUtil.schemaGetCreator(null);
-        });
+        assertThrows(NullPointerException.class, () -> AriesStringUtil.schemaGetCreator(null));
     }
 
     @Test
@@ -95,13 +91,9 @@ class AriesStringUtilTest {
         assertEquals("1.0.01", AriesStringUtil.schemaGetVersion(validSchemaId));
 
         final String invalidSchemaId = "3kigpmNVRJyj1NpCkqJqpa:2:a-schema:1.0.01:abc"; // extra segment
-        assertThrows(IllegalArgumentException.class, () -> {
-            AriesStringUtil.schemaGetVersion(invalidSchemaId);
-        });
+        assertThrows(IllegalArgumentException.class, () -> AriesStringUtil.schemaGetVersion(invalidSchemaId));
 
-        assertThrows(NullPointerException.class, () -> {
-            AriesStringUtil.schemaGetVersion(null);
-        });
+        assertThrows(NullPointerException.class, () -> AriesStringUtil.schemaGetVersion(null));
     }
 
 }

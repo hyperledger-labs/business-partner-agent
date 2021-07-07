@@ -12,10 +12,6 @@ export const presentationListHeaders = [
     value: "type",
   },
   {
-    text: "Issuer",
-    value: "issuer",
-  },
-  {
     text: "Received at",
     value: "receivedAt",
   },

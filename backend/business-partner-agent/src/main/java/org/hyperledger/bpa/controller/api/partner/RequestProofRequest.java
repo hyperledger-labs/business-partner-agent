@@ -67,12 +67,12 @@ public class RequestProofRequest {
         return issuerDid;
     }
 
-    public List<PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions> buildRestrictions() {
-        List<PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions> restrictions = new ArrayList<>();
+    public List<PresentProofRequest.ProofRequest.ProofRestrictions> buildRestrictions() {
+        List<PresentProofRequest.ProofRequest.ProofRestrictions> restrictions = new ArrayList<>();
         if (isRequestBySchema()) {
             if (CollectionUtils.isNotEmpty(requestBySchema.getIssuerDid())) {
                 requestBySchema.getIssuerDid().forEach(iss -> {
-                    PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions.ProofRestrictionsBuilder builder = PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions
+                    PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder builder = PresentProofRequest.ProofRequest.ProofRestrictions
                             .builder();
                     builder.issuerDid(AriesStringUtil.getLastSegment(iss));
                     if (StringUtils.isNotEmpty(requestBySchema.getSchemaId())) {
@@ -81,7 +81,7 @@ public class RequestProofRequest {
                     restrictions.add(builder.build());
                 });
             } else {
-                restrictions.add(PresentProofRequest.ProofRequest.ProofAttributes.ProofRestrictions.builder()
+                restrictions.add(PresentProofRequest.ProofRequest.ProofRestrictions.builder()
                         .schemaId(requestBySchema.getSchemaId())
                         .build());
             }
