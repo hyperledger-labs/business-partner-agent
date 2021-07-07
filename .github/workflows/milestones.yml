@@ -46,12 +46,12 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           onlyLabels: epic
       - name: Commit Milestone Documentation
-        uses: EndBug/add-and-commit@v4.4.0
+        uses: EndBug/add-and-commit@v7
         with:
           message: 'autogen(docs): update milestone document.'
           signoff: true
           author_name: ci-build
           author_email: 'no-reply@github.com'
-          branch: gh-pages
+          branch: 'gh-pages'
         env:
           GITHUB_TOKEN: ${{ secrets.TCR_TOKEN }}
