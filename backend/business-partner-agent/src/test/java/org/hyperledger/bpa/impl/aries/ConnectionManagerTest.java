@@ -58,7 +58,7 @@ class ConnectionManagerTest extends BaseTest {
 
         Optional<Partner> p = repo.findByConnectionId(invite.getConnectionId());
         assertTrue(p.isPresent());
-        assertEquals(ConnectionState.INVITATION, p.get().getState());
+        assertEquals(ConnectionState.REQUEST, p.get().getState());
         assertEquals("Alice", p.get().getAlias());
         assertNotNull(p.get().getConnectionId());
 
@@ -67,7 +67,7 @@ class ConnectionManagerTest extends BaseTest {
 
         p = repo.findByConnectionId(active.getConnectionId());
         assertTrue(p.isPresent());
-        assertEquals(ConnectionState.ACTIVE, p.get().getState());
+        assertEquals(ConnectionState.COMPLETED, p.get().getState());
     }
 
     @Test
@@ -85,7 +85,7 @@ class ConnectionManagerTest extends BaseTest {
 
         p = repo.findByConnectionId(active.getConnectionId());
         assertTrue(p.isPresent());
-        assertEquals(ConnectionState.ACTIVE, p.get().getState());
+        assertEquals(ConnectionState.COMPLETED, p.get().getState());
     }
 
     @Test
@@ -108,66 +108,75 @@ class ConnectionManagerTest extends BaseTest {
     }
 
     private final String createInvite = "{\n" +
-            "    \"accept\": \"auto\",\n" +
-            "    \"connection_id\": \"9275a52f-5733-4951-a54f-7ebd7332922c\",\n" +
-            "    \"updated_at\": \"2021-04-28 08:32:03.980218Z\",\n" +
-            "    \"their_label\": \"a950b832-59ac-480c-8135-e76ba76f03ba\",\n" +
-            "    \"alias\": \"Bob AG\",\n" +
-            "    \"routing_state\": \"none\",\n" +
-            "    \"created_at\": \"2021-04-28 08:32:03.980218Z\",\n" +
-            "    \"their_role\": \"inviter\",\n" +
-            "    \"state\": \"invitation\",\n" +
             "    \"invitation_mode\": \"once\",\n" +
-            "    \"rfc23_state\": \"invitation-received\"\n" +
+            "    \"their_role\": \"inviter\",\n" +
+            "    \"connection_protocol\": \"didexchange/1.0\",\n" +
+            "    \"rfc23_state\": \"request-sent\",\n" +
+            "    \"accept\": \"manual\",\n" +
+            "    \"routing_state\": \"none\",\n" +
+            "    \"alias\": \"a950b832-59ac-480c-8135-e76ba76f03ba\",\n" +
+            "    \"updated_at\": \"2021-07-05 13:31:09.179622Z\",\n" +
+            "    \"their_did\": \"did:sov:EraYCDJUPsChbkw7S1vV96\",\n" +
+            "    \"their_public_did\": \"did:sov:EraYCDJUPsChbkw7S1vV96\",\n" +
+            "    \"state\": \"request\",\n" +
+            "    \"my_did\": \"F6dB7dMVHUQSC64qemnBi7\",\n" +
+            "    \"request_id\": \"e7b668eb-2a26-4dc0-84e5-73b0f2c0fe05\",\n" +
+            "    \"connection_id\": \"de0d51e8-4c7f-4dc9-8b7b-a8f57182d8a5\",\n" +
+            "    \"created_at\": \"2021-07-05 13:31:09.179622Z\"\n" +
             "}";
 
     private final String createActive = "{\n" +
-            "    \"accept\": \"auto\",\n" +
-            "    \"connection_id\": \"9275a52f-5733-4951-a54f-7ebd7332922c\",\n" +
-            "    \"updated_at\": \"2021-04-28 08:32:04.910398Z\",\n" +
-            "    \"their_label\": \"a950b832-59ac-480c-8135-e76ba76f03ba\",\n" +
-            "    \"alias\": \"Bob AG\",\n" +
-            "    \"their_did\": \"3BDeZkKRCkLMW812rxkYha\",\n" +
-            "    \"routing_state\": \"none\",\n" +
-            "    \"created_at\": \"2021-04-28 08:32:03.980218Z\",\n" +
-            "    \"their_role\": \"inviter\",\n" +
-            "    \"state\": \"active\",\n" +
-            "    \"my_did\": \"WrZgFxyJm1Ty5z1PTiiKN4\",\n" +
             "    \"invitation_mode\": \"once\",\n" +
-            "    \"request_id\": \"18eecaa0-9393-4eeb-adaf-46e63a5fc47f\",\n" +
-            "    \"rfc23_state\": \"completed\"\n" +
+            "    \"their_role\": \"inviter\",\n" +
+            "    \"connection_protocol\": \"didexchange/1.0\",\n" +
+            "    \"rfc23_state\": \"completed\",\n" +
+            "    \"accept\": \"manual\",\n" +
+            "    \"routing_state\": \"none\",\n" +
+            "    \"alias\": \"a950b832-59ac-480c-8135-e76ba76f03ba\",\n" +
+            "    \"updated_at\": \"2021-07-05 13:32:29.689513Z\",\n" +
+            "    \"their_did\": \"8hXCW94BRYSm2PQeFHFcV1\",\n" +
+            "    \"their_public_did\": \"did:sov:EraYCDJUPsChbkw7S1vV96\",\n" +
+            "    \"state\": \"completed\",\n" +
+            "    \"my_did\": \"F6dB7dMVHUQSC64qemnBi7\",\n" +
+            "    \"request_id\": \"e7b668eb-2a26-4dc0-84e5-73b0f2c0fe05\",\n" +
+            "    \"connection_id\": \"de0d51e8-4c7f-4dc9-8b7b-a8f57182d8a5\",\n" +
+            "    \"created_at\": \"2021-07-05 13:31:09.179622Z\"\n" +
             "}";
 
     private final String receiveRequest = "{\n" +
-            "    \"accept\": \"auto\",\n" +
-            "    \"connection_id\": \"c8c7ef29-fd4f-4786-a277-9fd512a47497\",\n" +
-            "    \"updated_at\": \"2021-04-28 08:37:47.412662Z\",\n" +
+            "    \"their_role\": \"invitee\",\n" +
             "    \"their_label\": \"bob\",\n" +
-            "    \"their_did\": \"6u1vB2CRUL1z85wdK3WNV1\",\n" +
-            "    \"routing_state\": \"none\",\n" +
-            "    \"invitation_key\": \"CqDPur9zQWRv3ronzRmSFpRYXtdsPHoMVHhcKFmEHapx\",\n" +
-            "    \"created_at\": \"2021-04-28 08:37:47.412662Z\",\n" +
-            "    \"their_role\": \"inviter\",\n" +
+            "    \"request_id\": \"1c6e7e67-3b34-4fa5-83ff-34b1af853499\",\n" +
+            "    \"my_did\": \"MZMurMqVFiS24oxYBPZ3C7\",\n" +
+            "    \"invitation_key\": \"8gdhRLtvJHzKoJGyuEqgdN1QZGYfai4wMHFGgtfDXg3D\",\n" +
             "    \"state\": \"request\",\n" +
-            "    \"my_did\": \"8Ry1L98XdZazJwiDPoqcVA\",\n" +
+            "    \"accept\": \"auto\",\n" +
             "    \"invitation_mode\": \"once\",\n" +
-            "    \"rfc23_state\": \"request-sent\"\n" +
+            "    \"routing_state\": \"none\",\n" +
+            "    \"created_at\": \"2021-07-05 14:31:59.321382Z\",\n" +
+            "    \"connection_protocol\": \"didexchange/1.0\",\n" +
+            "    \"rfc23_state\": \"request-received\",\n" +
+            "    \"their_did\": \"EraYCDJUPsChbkw7S1vV96\",\n" +
+            "    \"connection_id\": \"b8d4f176-7967-4af7-9686-60a59b35f122\",\n" +
+            "    \"updated_at\": \"2021-07-05 14:31:59.321382Z\"\n" +
             "}";
 
     private final String receiveActive = "{\n" +
-            "    \"accept\": \"auto\",\n" +
-            "    \"connection_id\": \"c8c7ef29-fd4f-4786-a277-9fd512a47497\",\n" +
-            "    \"updated_at\": \"2021-04-28 08:37:47.727279Z\",\n" +
+            "    \"their_role\": \"invitee\",\n" +
             "    \"their_label\": \"bob\",\n" +
-            "    \"their_did\": \"6u1vB2CRUL1z85wdK3WNV1\",\n" +
-            "    \"routing_state\": \"none\",\n" +
-            "    \"invitation_key\": \"CqDPur9zQWRv3ronzRmSFpRYXtdsPHoMVHhcKFmEHapx\",\n" +
-            "    \"created_at\": \"2021-04-28 08:37:47.412662Z\",\n" +
-            "    \"their_role\": \"inviter\",\n" +
-            "    \"state\": \"active\",\n" +
-            "    \"my_did\": \"8Ry1L98XdZazJwiDPoqcVA\",\n" +
+            "    \"request_id\": \"1c6e7e67-3b34-4fa5-83ff-34b1af853499\",\n" +
+            "    \"my_did\": \"MZMurMqVFiS24oxYBPZ3C7\",\n" +
+            "    \"invitation_key\": \"8gdhRLtvJHzKoJGyuEqgdN1QZGYfai4wMHFGgtfDXg3D\",\n" +
+            "    \"state\": \"completed\",\n" +
+            "    \"accept\": \"auto\",\n" +
             "    \"invitation_mode\": \"once\",\n" +
-            "    \"rfc23_state\": \"completed\"\n" +
+            "    \"routing_state\": \"none\",\n" +
+            "    \"created_at\": \"2021-07-05 14:31:59.321382Z\",\n" +
+            "    \"connection_protocol\": \"didexchange/1.0\",\n" +
+            "    \"rfc23_state\": \"completed\",\n" +
+            "    \"their_did\": \"EraYCDJUPsChbkw7S1vV96\",\n" +
+            "    \"connection_id\": \"b8d4f176-7967-4af7-9686-60a59b35f122\",\n" +
+            "    \"updated_at\": \"2021-07-05 14:31:59.735196Z\"\n" +
             "}";
 
     private final String inviteReceive = "{\n" +

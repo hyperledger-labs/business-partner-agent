@@ -386,7 +386,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.3.0</version><!-- Issue with multi release jar >= 3.1.0 -->
+                    <version>3.0.1</version><!-- Issue with multi release jar >= 3.1.0 -->
                     <configuration>
                         <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
                     </configuration>
