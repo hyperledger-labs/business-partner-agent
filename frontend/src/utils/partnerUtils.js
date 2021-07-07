@@ -40,7 +40,11 @@ export const getPartnerName = (partner) => {
     if (profile && {}.hasOwnProperty.call(profile, "legalName")) {
       return profile.legalName;
     } else {
-      return partner.did;
+      if ({}.hasOwnProperty.call(partner, "label")) {
+        return partner.label;
+      } else {
+        return partner.did;
+      }
     }
   }
 };

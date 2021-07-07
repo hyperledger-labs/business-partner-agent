@@ -47,6 +47,7 @@ public class PartnerAPI {
     private ConnectionState state;
     private String alias;
     private String did;
+    private String label;
     private List<PartnerCredential> credential;
     private List<TagAPI> tag;
 
@@ -87,6 +88,7 @@ public class PartnerAPI {
                 .setAriesSupport(from.getAriesSupport())
                 .setState(from.getState())
                 .setAlias(from.getAlias())
+                .setLabel(from.getLabel())
                 .setDid(from.getDid())
                 .setIncoming(from.getIncoming() != null ? from.getIncoming() : Boolean.FALSE)
                 .setTag(from.getTags() != null

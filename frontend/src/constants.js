@@ -6,6 +6,8 @@
  SPDX-License-Identifier: Apache-2.0
 */
 
+import i18n from '@/plugins/i18n';
+
 export const CredentialTypes = Object.freeze({
   PROFILE: {
     type: "ORGANIZATIONAL_PROFILE_CREDENTIAL",
@@ -55,7 +57,7 @@ export const PartnerStates = Object.freeze({
   },
   INACTIVE: {
     value: "inactive",
-    label: "inacitve",
+    label: "inactive",
   },
   ACTIVE: {
     value: "active",
@@ -78,3 +80,34 @@ export const PartnerStates = Object.freeze({
     label: "Connection request received",
   },
 });
+
+export const ActivityTypes = Object.freeze({
+  CONNECTION_INVITATION: {
+    value: "connection_invitation",
+    label: i18n.t('constants.activityTypes.connectionInvitation'),
+  },
+  CREDENTIAL_OFFER: {
+    value: "credential_offer",
+    label: i18n.t('constants.activityTypes.credentialOffer'),
+  },
+  PROOF_REQUEST: {
+    value: "proof_request",
+    label: i18n.t('constants.activityTypes.proofRequest'),
+  },
+});
+
+export const ActivityStates = Object.freeze({
+  CONNECTION_REQUEST_ACCEPTED: {
+    value: "connection_request_accepted",
+    label: i18n.t('constants.activityStates.connectionRequestAccepted'),
+  },
+  CONNECTION_REQUEST_RECEIVED: {
+    value: "connection_request_received",
+    label: i18n.t('constants.activityStates.connectionRequestReceived'),
+  },
+  CONNECTION_REQUEST_SENT: {
+    value: "connection_request_sent",
+    label: i18n.t('constants.activityStates.connectionRequestSent'),
+  },
+});
+

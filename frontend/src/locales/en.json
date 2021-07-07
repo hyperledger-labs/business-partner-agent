@@ -39,7 +39,13 @@
   },
   "view": {
     "notifications": {
-      "title": "Notifications"
+      "title": "Notifications",
+      "activities": {
+        "title": "Activity Log"
+      },
+      "tasks" : {
+        "title": "Tasks"
+      }
     },
     "partner": {
       "title": "Partner",
@@ -80,6 +86,19 @@
       "title": "Send Presentation",
       "selectCredential": "Select a credential to send"
     }
+  },
+  "constants": {
+    "activityTypes": {
+      "connectionInvitation": "Connection Invitation",
+      "credentialOffer": "Credential Offer",
+      "proofRequest": "Proof Request"
+    },
+    "activityStates": {
+      "connectionRequestAccepted": "Connection Request Accepted",
+      "connectionRequestReceived": "Connection Request Received",
+      "connectionRequestSent": "Connection Request Sent"
+    }
+
   },
   "showRawData": "Show raw data"
 }

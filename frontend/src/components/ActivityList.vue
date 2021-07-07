@@ -1,0 +1,169 @@
+<!--
+ Copyright (c) 2021 - for information on the respective copyright owner
+ see the NOTICE file and/or the repository at
+ https://github.com/hyperledger-labs/organizational-agent
+
+ SPDX-License-Identifier: Apache-2.0
+-->
+<template>
+  <v-container>
+    <v-layout align-end justify-end>
+      <v-combobox
+          label="Filter by"
+          v-model="filter"
+          :items="filterList"
+          class="mx-4"
+          single-line
+          hide-no-data
+          hide-details
+          return-object
+          flat
+          dense
+          outlined
+          clearable
+          clear-icon="$vuetify.icons.delete"
+      ></v-combobox>
+      <v-combobox
+          v-model="filterValue"
+          :items="filterValueList"
+          class="mx-4"
+          single-line
+          hide-no-data
+          hide-details
+          return-object
+          flat
+          dense
+          outlined
+          clearable
+          clear-icon="$vuetify.icons.delete"
+      ></v-combobox>
+      <v-bpa-button color="primary" @click="fetchItems()">Refresh</v-bpa-button>
+    </v-layout>
+    <v-data-table
+        :hide-default-footer="items.length < 10"
+        :loading="isBusy"
+        :headers="headers"
+        :items="items"
+        single-select
+        :sort-by="['updatedAt']"
+        :sort-desc="[true]"
+        @click:row="openItem"
+    >
+      <template v-slot:[`item.type`]="{ item }">
+        {{ activityTypeLabel(item.type) }}
+      </template>
+
+      <template v-slot:[`item.state`]="{ item }">
+        {{ activityStateLabel(item.state) }}
+      </template>
+
+      <template v-slot:[`item.updatedAt`]="{ item }">
+        {{ item.updatedAt | moment("YYYY-MM-DD HH:mm") }}
+      </template>
+
+    </v-data-table>
+  </v-container>
+</template>
+<script>
+  import { EventBus } from "@/main";
+  import {ActivityStates, ActivityTypes} from "@/constants";
+  import VBpaButton from "@/components/BpaButton";
+
+  export default {
+    name: "ActivityList",
+    components: { VBpaButton },
+    props: {
+      activities: Boolean,
+      tasks: Boolean,
+    },
+    mounted() {
+      this.filter = null;
+      this.filterValue = null;
+      this.filterValueList = [];
+      this.fetchItems();
+    },
+    data: () => {
+      return {
+        isBusy: true,
+        headers: [
+          {
+            text: "Type",
+            value: "type",
+          },
+          {
+            text: "Connection",
+            value: "connectionAlias",
+          },
+          {
+            text: "Last Updated",
+            value: "updatedAt",
+          },
+          {
+            text: "State",
+            value: "state",
+          },
+        ],
+        items: [],
+        filter: null,
+        filterList: [{text: "Type", value: "type"}],
+        filterValue: null,
+        filterValueList: [],
+      };
+    },
+    watch: {
+      filter(val) {
+        this.filterValue = null;
+        this.filterValueList = [];
+        if (val && val.value === "type") {
+          this.filterValueList = [];
+          for (let k in ActivityTypes) {
+            this.filterValueList.push({text: ActivityTypes[k].label, value: ActivityTypes[k].value});
+          }
+        }
+      },
+    },
+    methods: {
+      fetchItems() {
+        let filter = `task=${this.tasks}&activity=${this.activities}`;
+        if (this.filter && this.filterValue) {
+          filter = `${filter}&${this.filter.value}=${this.filterValue.value}`;
+        }
+        this.$axios
+          .get(`${this.$apiBaseUrl}/activities?${filter}`)
+          .then((result) => {
+            if ({}.hasOwnProperty.call(result, "data")) {
+              this.isBusy = false;
+              this.items = result.data;
+            }
+          })
+          .catch((e) => {
+            this.isBusy = false;
+            if (e.response.status === 404) {
+              this.items = [];
+            } else {
+              console.error(e);
+              EventBus.$emit("error", e);
+            }
+          });
+      },
+      openItem(item) {
+        if (item.type === ActivityTypes.CONNECTION_INVITATION.value) {
+          this.$router.push({
+            name: "Partner",
+            params: {
+              id: item.linkId,
+            },
+          });
+        }
+      },
+      activityTypeLabel(type) {
+        const o = ActivityTypes[type.toUpperCase()];
+        return o ? o.label : type;
+      },
+      activityStateLabel(state) {
+        const o = ActivityStates[state.toUpperCase()];
+        return o ? o.label : state;
+      }
+    },
+  };
+</script>

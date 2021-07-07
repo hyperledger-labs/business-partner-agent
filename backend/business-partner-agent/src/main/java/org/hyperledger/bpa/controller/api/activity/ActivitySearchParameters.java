@@ -17,20 +17,25 @@
  */
 package org.hyperledger.bpa.controller.api.activity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.annotations.SerializedName;
+import io.micronaut.core.annotation.Introspected;
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.http.annotation.QueryValue;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-public enum ActivityType {
-    @JsonProperty("connection_invitation")
-    @SerializedName("connection_invitation")
-    CONNECTION_INVITATION,
-    @JsonProperty("credential_offer")
-    @SerializedName("credential_offer")
-    CREDENTIAL_OFFER,
-    @JsonProperty("proof_request")
-    @SerializedName("proof_request")
-    PROOF_REQUEST;
-
-    ActivityType() {
-    }
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Introspected
+public class ActivitySearchParameters {
+    @Nullable
+    @QueryValue
+    private Boolean activity;
+    @Nullable
+    @QueryValue
+    private Boolean task;
+    @Nullable
+    @QueryValue
+    private ActivityType type;
 }

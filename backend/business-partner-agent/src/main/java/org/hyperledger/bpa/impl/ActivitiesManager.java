@@ -23,6 +23,7 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.controller.api.activity.ActivityItem;
+import org.hyperledger.bpa.controller.api.activity.ActivitySearchParameters;
 import org.hyperledger.bpa.controller.api.activity.ActivityState;
 import org.hyperledger.bpa.controller.api.activity.ActivityType;
 import org.hyperledger.bpa.model.Partner;
@@ -54,7 +55,8 @@ public class ActivitiesManager {
     }
 
     static List<ConnectionState> connectionStatesForActivities() {
-        return connectionStates(ConnectionState.REQUEST, ConnectionState.INVITATION);
+        return connectionStates(ConnectionState.REQUEST, ConnectionState.INVITATION, ConnectionState.ACTIVE,
+                ConnectionState.INVITATION.RESPONSE);
     }
 
     static List<ConnectionState> connectionStatesForTasks() {
@@ -97,49 +99,68 @@ public class ActivitiesManager {
                 CredentialExchangeState.PROPOSAL_RECEIVED);
     }
 
-    public List<ActivityItem> getActivityListItems() {
+    public List<ActivityItem> getActivityListItems(ActivitySearchParameters parameters) {
         List<ActivityItem> results = new ArrayList<>();
-        Iterable<Partner> partners = partnerRepo.findByStateIn(connectionStatesForActivities());
-
-        for (Partner p : partners) {
-            if (p.getIncoming() == null) {
-                results.add(getConnectionInvitationItem(p, false));
-            }
+        if (parameters.getActivity() == null || parameters.getActivity()) {
+            // connection invitations... outgoing.
+            results.addAll(getConnectionInvitations(parameters.getType(), connectionStatesForActivities(), false));
         }
-
         return results;
     }
 
-    public List<ActivityItem> getTaskListItems() {
+    public List<ActivityItem> getTaskListItems(ActivitySearchParameters parameters) {
         List<ActivityItem> results = new ArrayList<>();
-        Iterable<Partner> partners = partnerRepo.findByStateIn(connectionStatesForTasks());
-
-        for (Partner p : partners) {
-            // for now, only want ones we received...
-            if (p.getIncoming() != null) {
-                results.add(getConnectionInvitationItem(p, true));
-            }
+        if (parameters.getTask() == null || parameters.getTask()) {
+            // connection invitations... incoming.
+            results.addAll(getConnectionInvitations(parameters.getType(), connectionStatesForTasks(), true));
         }
-
         return results;
     }
 
-    public List<ActivityItem> getItems(@Nullable Boolean activity, @Nullable Boolean task) {
+    public List<ActivityItem> getItems(ActivitySearchParameters parameters) {
         List<ActivityItem> results = new ArrayList<>();
-        if (activity == null || activity) {
-            results.addAll(getActivityListItems());
-        }
-        if (task == null || task) {
-            results.addAll(getTaskListItems());
-        }
+        results.addAll(getActivityListItems(parameters));
+        results.addAll(getTaskListItems(parameters));
         results.sort(Comparator.comparingLong(ActivityItem::getUpdatedAt).reversed());
         return results;
     }
 
+    private List<ActivityItem> getConnectionInvitations(@Nullable ActivityType type, List<ConnectionState> states,
+            Boolean incoming) {
+        List<ActivityItem> results = new ArrayList<>();
+        if (type == null || type == ActivityType.CONNECTION_INVITATION) {
+            Iterable<Partner> partners = partnerRepo.findByStateIn(states);
+            for (Partner p : partners) {
+                if (incoming) {
+                    // then we are looking for tasks...
+                    if (p.getIncoming() != null) {
+                        results.add(getConnectionInvitationItem(p, true));
+                    }
+                } else {
+                    // we want outgoing, ones we sent...
+                    if (p.getIncoming() == null) {
+                        results.add(getConnectionInvitationItem(p, false));
+                    }
+                }
+            }
+        }
+        return results;
+    }
+
     private ActivityItem getConnectionInvitationItem(Partner p, Boolean task) {
-        ActivityState state = (p.getIncoming() != null) ? ActivityState.CONNECTION_REQUEST_RECEIVED
-                : ActivityState.CONNECTION_REQUEST_SENT;
         ActivityType type = ActivityType.CONNECTION_INVITATION;
+        ActivityState state = ActivityState.CONNECTION_REQUEST_RECEIVED;
+        if (p.getIncoming() == null) {
+            // we sent the invitation...
+            switch (p.getState()) {
+            case ACTIVE:
+            case RESPONSE:
+                state = ActivityState.CONNECTION_REQUEST_ACCEPTED;
+                break;
+            default:
+                state = ActivityState.CONNECTION_REQUEST_SENT;
+            }
+        }
         String alias = StringUtils.isNotEmpty(p.getAlias()) ? p.getAlias()
                 : StringUtils.isNotEmpty(p.getLabel()) ? p.getLabel() : p.getDid();
         Long updatedAt = p.getUpdatedAt().toEpochMilli();

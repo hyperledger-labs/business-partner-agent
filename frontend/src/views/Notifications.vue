@@ -7,22 +7,19 @@
 -->
 <template>
   <v-container>
-    <v-card class="mx-auto px-8">
-      <v-data-table
-          :hide-default-footer="tasks.length < 10"
-          :loading="isBusy"
-          :headers="headers"
-          :items="tasks"
-          single-select
-          :sort-by="['updatedAt']"
-          :sort-desc="[true]"
-          @click:row="open"
-      >
-        <template v-slot:[`item.updatedAt`]="{ item }">
-          {{ item.updatedAt | moment("YYYY-MM-DD HH:mm") }}
-        </template>
-
-      </v-data-table>
+    <v-card class="my-4">
+      <v-card-title class="bg-light">{{ $t("view.notifications.tasks.title") }}</v-card-title>
+      <v-card-text>
+        <activity-list :activities="false" :tasks="true" />
+      </v-card-text>
+      <v-card-actions>
+      </v-card-actions>
+    </v-card>
+    <v-card class="my-4">
+      <v-card-title class="bg-light">{{ $t("view.notifications.activities.title") }}</v-card-title>
+      <v-card-text>
+        <activity-list :activities="true" :tasks="false" />
+      </v-card-text>
       <v-card-actions>
       </v-card-actions>
     </v-card>
@@ -31,71 +28,13 @@
 
 <script>
 import { EventBus } from "@/main";
+import ActivityList from "@/components/ActivityList";
 
 export default {
   name: "Notifications",
-  components: { },
+  components: {ActivityList},
   created() {
     EventBus.$emit("title", this.$t("view.notifications.title"));
-  },
-  mounted() {
-    this.fetchTasks();
-  },
-  data: () => {
-    return {
-      isBusy: true,
-      headers: [
-        {
-          text: "Type",
-          value: "type",
-        },
-        {
-          text: "Connection",
-          value: "connectionAlias",
-        },
-        {
-          text: "Last Updated",
-          value: "updatedAt",
-        },
-        {
-          text: "State",
-          value: "state",
-        },
-      ],
-      tasks: [],
-    };
-  },
-  methods: {
-    fetchTasks() {
-      this.$axios
-        .get(`${this.$apiBaseUrl}/activities?task=true&activity=false`)
-        .then((result) => {
-          if ({}.hasOwnProperty.call(result, "data")) {
-            this.isBusy = false;
-            this.tasks = result.data;
-          }
-        })
-        .catch((e) => {
-          this.isBusy = false;
-          if (e.response.status === 404) {
-            this.data = [];
-          } else {
-            console.error(e);
-            EventBus.$emit("error", e);
-          }
-        });
-    },
-    open(item) {
-      if (item.type === "connection_invitation") {
-        this.$router.push({
-          name: "Partner",
-          params: {
-            id: item.linkId,
-          },
-        });
-      }
-    },
-
   },
 };
 </script>

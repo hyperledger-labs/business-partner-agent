@@ -17,20 +17,21 @@
  */
 package org.hyperledger.bpa.controller;
 
-import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.QueryValue;
+import io.micronaut.http.annotation.RequestBean;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hyperledger.bpa.controller.api.activity.ActivityItem;
+import org.hyperledger.bpa.controller.api.activity.ActivitySearchParameters;
 import org.hyperledger.bpa.impl.ActivitiesManager;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller("/api/activities")
@@ -45,14 +46,12 @@ public class ActivitiesController {
     /**
      * List Items, if no filters return all
      *
-     * @param activity Boolean Filter for activities
-     * @param task     Boolean Filter for tasks
+     * @param parameters ActivitySearchParameters Filters for list
      * @return list of {@link ActivityItem}
      */
     @Get("/")
-    public HttpResponse<List<ActivityItem>> listActivities(@Nullable @QueryValue Boolean activity,
-            @Nullable @QueryValue Boolean task) {
-        return HttpResponse.ok(activitiesManager.getItems(activity, task));
+    public HttpResponse<List<ActivityItem>> listActivities(@RequestBean @Valid ActivitySearchParameters parameters) {
+        return HttpResponse.ok(activitiesManager.getItems(parameters));
     }
 
 }
