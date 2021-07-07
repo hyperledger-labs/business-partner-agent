@@ -193,6 +193,9 @@ public class ProofManager {
                                 String msg = "No matching credentials found for proof request: "
                                         + presentationExchangeRecord.getPresentationExchangeId();
                                 log.warn(msg);
+                                pProofRepo.findByPresentationExchangeId(
+                                    presentationExchangeRecord.getPresentationExchangeId())
+                                    .ifPresent(pp -> pProofRepo.updateProblemReport(pp.getId(), msg));
                                 throw new PresentationConstructionException(msg);
                             }
                         }, () -> log.error("Could not load matching credentials from aca-py"));
