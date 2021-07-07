@@ -277,7 +277,7 @@ public class CredentialManager {
                     }
                 }
                 if (issuer == null && p.get().getIncoming() != null && p.get().getIncoming()) {
-                    issuer = p.get().getLabel();
+                    issuer = p.get().getAlias();
                 }
             }
             if (issuer == null) {

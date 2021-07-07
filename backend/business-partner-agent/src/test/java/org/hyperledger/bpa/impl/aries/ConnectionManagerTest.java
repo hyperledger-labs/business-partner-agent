@@ -48,7 +48,7 @@ class ConnectionManagerTest extends BaseTest {
         repo.save(Partner
                 .builder()
                 .ariesSupport(Boolean.TRUE)
-                .label("a950b832-59ac-480c-8135-e76ba76f03ba")
+                .connectionId("de0d51e8-4c7f-4dc9-8b7b-a8f57182d8a5")
                 .alias("Alice")
                 .state(ConnectionState.INIT)
                 .did("dummy")
@@ -78,7 +78,7 @@ class ConnectionManagerTest extends BaseTest {
         Optional<Partner> p = repo.findByConnectionId(invite.getConnectionId());
         assertTrue(p.isPresent());
         assertEquals(ConnectionState.REQUEST, p.get().getState());
-        assertEquals("bob", p.get().getLabel());
+        assertEquals("bob", p.get().getAlias());
 
         final ConnectionRecord active = gson.fromJson(receiveActive, ConnectionRecord.class);
         eventHandler.handleConnection(active);
@@ -104,7 +104,7 @@ class ConnectionManagerTest extends BaseTest {
         assertTrue(p.isPresent());
         assertEquals(ConnectionState.RESPONSE, p.get().getState());
         assertTrue(p.get().getDid().endsWith("QjqxU2wnrBGwLJnW585QWp"));
-        assertEquals("Wallet", p.get().getLabel());
+        assertEquals("Wallet", p.get().getAlias());
     }
 
     private final String createInvite = "{\n" +

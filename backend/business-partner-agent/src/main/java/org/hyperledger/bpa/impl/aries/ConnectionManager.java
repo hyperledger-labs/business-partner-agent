@@ -17,11 +17,9 @@
  */
 package org.hyperledger.bpa.impl.aries;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
-import io.micronaut.scheduling.annotation.Async;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,14 +28,11 @@ import org.hyperledger.aries.api.connection.*;
 import org.hyperledger.aries.api.did_exchange.DidExchangeAcceptRequestFilter;
 import org.hyperledger.aries.api.did_exchange.DidExchangeCreateRequestFilter;
 import org.hyperledger.aries.api.exception.AriesException;
-import org.hyperledger.aries.api.out_of_band.InvitationMessage;
-import org.hyperledger.aries.api.out_of_band.ReceiveInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
-import org.hyperledger.aries.api.resolver.DIDDocument;
-import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
@@ -57,14 +52,12 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
 public class ConnectionManager {
 
-    private static final String ACA_PY_ERROR_MSG = "aca-py not available";
     private static final String UNKNOWN_DID = "unknown";
     private static final String CONNECTION_INVITATION = "Invitation";
 
@@ -93,7 +86,7 @@ public class ConnectionManager {
     DidResolver didResolver;
 
     @Inject
-    ObjectMapper mapper;
+    BPAMessageSource.DefaultMessageSource messageSource;
 
     /**
      * Creates a connection invitation to be used within a barcode
@@ -131,85 +124,23 @@ public class ConnectionManager {
     }
 
     /**
-     * Create a connection based on a public did that is registered on a ledger.
+     * Create a connection based on a did, e.g. did:web or did:indy.
      * 
-     * @param did   the fully qualified did like did:indy:123
-     * @param label the connection label
+     * @param did the fully qualified did like did:indy:123
+     * @return {@link ConnectionRecord}
      */
-    @Async
-    public void createConnection(@NonNull String did, @NonNull String label) {
+    public Optional<ConnectionRecord> createConnection(@NonNull String did) {
         try {
-            ac.didExchangeCreateRequest(
+            return ac.didExchangeCreateRequest(
                     DidExchangeCreateRequestFilter
                             .builder()
                             .theirPublicDid(did)
-                            .myLabel(label)
                             .usePublicDid(Boolean.TRUE)
                             .build());
         } catch (IOException e) {
-            log.error(ACA_PY_ERROR_MSG, e);
-        }
-    }
-
-    /**
-     * Create a out of band connection based on information that is found in the
-     * partners did document. Requires at least the endpoint and a verification
-     * method to be present in the did document.
-     * 
-     * @param didDoc {@link DIDDocument}
-     * @param label  the connection label
-     * @param alias  optional connection alias
-     */
-    @Async
-    public void createConnection(@NonNull DIDDocument didDoc, @NonNull String label, @Nullable String alias) {
-
-        // TODO did should be enough
-
-        // resolve endpoint
-        String endpoint = null;
-        Optional<String> acaPyEndpoint = didDoc.findAriesEndpointUrl();
-        if (acaPyEndpoint.isPresent() && StringUtils.isNotEmpty(acaPyEndpoint.get())) {
-            endpoint = acaPyEndpoint.get();
-        } else {
-            log.warn("No aca-py endpoint found in the partners did document.");
-        }
-
-        // resolve public key
-        String pk = null;
-        Optional<DIDDocument.VerificationMethod> verificationMethod = didDoc.getVerificationMethod()
-                .stream()
-                .filter(m -> ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE.equals(m.getType()))
-                .findFirst();
-        if (verificationMethod.isPresent() && StringUtils.isNotEmpty(verificationMethod.get().getPublicKeyBase58())) {
-            pk = verificationMethod.get().getPublicKeyBase58();
-        } else {
-            log.warn("No public key found in the partners did document.");
-        }
-
-        try {
-            if (endpoint != null && pk != null) {
-                String didExchange = "didexchange/1.0";
-                ac.outOfBandReceiveInvitation(
-                        InvitationMessage
-                                .builder()
-                                .label(label)
-                                .services(List.of(InvitationMessage.InvitationMessageService
-                                        .builder()
-                                        .id(UUID.randomUUID().toString())
-                                        .type(didExchange)
-                                        .did(didDoc.getId())
-                                        // .serviceEndpoint("https://purplepoppy.aries.bosch-digital.de:8080")
-                                        // .recipientKeys(List.of("did:key:z6MkpyWbMBzAvBJGZcFxbkpJMmZ3UEAhKaaFLKeY3WjyGpXg"))
-                                        .build()))
-                                .build(),
-                        ReceiveInvitationFilter
-                                .builder()
-                                .alias(alias)
-                                .autoAccept(Boolean.TRUE)
-                                .build());
-            }
-        } catch (IOException e) {
-            log.error(ACA_PY_ERROR_MSG, e);
+            String msg = messageSource.getMessage("acapy.unavailable");
+            log.error(msg, e);
+            throw new NetworkException(msg);
         }
     }
 
@@ -217,17 +148,18 @@ public class ConnectionManager {
         try {
             ac.didExchangeAcceptRequest(connectionId, DidExchangeAcceptRequestFilter.builder().build());
         } catch (IOException e) {
-            log.error(ACA_PY_ERROR_MSG, e);
-            throw new NetworkException(ACA_PY_ERROR_MSG);
+            String msg = messageSource.getMessage("acapy.unavailable");
+            log.error(msg, e);
+            throw new NetworkException(msg);
         }
     }
 
+    // connection that originated from this agent
     public synchronized void handleOutgoingConnectionEvent(ConnectionRecord record) {
-        // connection that originated from this agent
-        partnerRepo.findByLabel(record.getAlias()).ifPresent(
+        partnerRepo.findByConnectionId(record.getConnectionId()).ifPresent(
                 dbP -> {
-                    if (dbP.getConnectionId() == null) {
-                        dbP.setConnectionId(record.getConnectionId());
+                    if (StringUtils.isEmpty(dbP.getAlias())) {
+                        dbP.setAlias(record.getTheirLabel());
                         dbP.setState(record.getState());
                         partnerRepo.update(dbP);
                     } else {
@@ -240,14 +172,11 @@ public class ConnectionManager {
     public synchronized void handleIncomingConnectionEvent(ConnectionRecord record) {
         partnerRepo.findByConnectionId(record.getConnectionId()).ifPresentOrElse(
                 dbP -> {
-                    if (StringUtils.isEmpty(dbP.getLabel())) {
-                        dbP.setLabel(record.getTheirLabel());
+                    if (StringUtils.isEmpty(dbP.getAlias()) || dbP.getAlias().startsWith(CONNECTION_INVITATION)) {
+                        dbP.setAlias(record.getTheirLabel());
                     }
                     if (StringUtils.isEmpty(dbP.getDid()) || dbP.getDid().endsWith(UNKNOWN_DID)) {
                         dbP.setDid(didPrefix + record.getTheirDid());
-                    }
-                    if (StringUtils.isEmpty(dbP.getAlias()) || dbP.getAlias().startsWith(CONNECTION_INVITATION)) {
-                        dbP.setAlias(record.getTheirLabel());
                     }
                     dbP.setState(record.getState());
                     partnerRepo.update(dbP);
@@ -261,8 +190,8 @@ public class ConnectionManager {
                             .did(StringUtils.isNotEmpty(record.getTheirDid())
                                     ? didPrefix + record.getTheirDid()
                                     : didPrefix + UNKNOWN_DID)
-                            .label(record.getTheirLabel())
                             .state(record.getState())
+                            .alias(record.getTheirLabel())
                             .incoming(Boolean.TRUE)
                             .build();
                     p = partnerRepo.save(p);

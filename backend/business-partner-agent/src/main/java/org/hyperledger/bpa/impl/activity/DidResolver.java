@@ -20,7 +20,6 @@ package org.hyperledger.bpa.impl.activity;
 import io.micronaut.scheduling.annotation.Async;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.exception.AriesException;
@@ -105,40 +104,44 @@ public class DidResolver {
     }
 
     /**
-     * Tries to resolve the partners public profile based on a did that is embedded
-     * in the partners label. The label is supposed to adhere to the following
-     * format: did:sov:xxx:123:MyLabel
+     * Tries to resolve the partners public profile in two steps. First try is the
+     * did can be resolved to a profile, if this is not possible try to do this
+     * based on a did that is embedded in the partners label. The label is supposed
+     * to adhere to the following format: did:sov:xxx:123:MyLabel
      * 
      * @param p {@link Partner}
      */
     @Async
     public void lookupIncoming(Partner p) {
-        if (StringUtils.isNotEmpty(p.getDid())) {
-            lookupPartnerSave(p.getDid()).ifPresentOrElse(pAPI -> {
+        lookupPartnerSave(p.getDid()).ifPresentOrElse(pAPI -> {
+            partnerRepo.updateVerifiablePresentation(
+                    p.getId(),
+                    converter.toMap(pAPI.getVerifiablePresentation()),
+                    pAPI.getValid());
+            webhook.convertAndSend(RegisteredWebhook.WebhookEventType.PARTNER_ADD, pAPI);
+        }, () -> {
+            ConnectionLabel cl = splitDidFrom(p.getAlias());
+            cl.getDid().ifPresent(did -> {
+                final PartnerAPI pAPI = partnerLookup.lookupPartner(did);
                 partnerRepo.updateVerifiablePresentation(
                         p.getId(),
                         converter.toMap(pAPI.getVerifiablePresentation()),
-                        pAPI.getValid());
+                        pAPI.getValid(),
+                        cl.getLabel(),
+                        did);
                 webhook.convertAndSend(RegisteredWebhook.WebhookEventType.PARTNER_ADD, pAPI);
-            }, () -> {
-                ConnectionLabel cl = splitDidFrom(p.getLabel());
-                cl.getDid().ifPresent(did -> {
-                    final PartnerAPI pAPI = partnerLookup.lookupPartner(did);
-                    partnerRepo.updateVerifiablePresentation(
-                            p.getId(),
-                            converter.toMap(pAPI.getVerifiablePresentation()),
-                            pAPI.getValid(),
-                            cl.getLabel(),
-                            did);
-                    webhook.convertAndSend(RegisteredWebhook.WebhookEventType.PARTNER_ADD, pAPI);
-                });
             });
-        }
+        });
     }
 
-    private Optional<PartnerAPI> lookupPartnerSave(@NonNull String did) {
+    private Optional<PartnerAPI> lookupPartnerSave(String did) {
         try {
-            return Optional.of(partnerLookup.lookupPartner(did));
+            if (StringUtils.isNotEmpty(did)) {
+                PartnerAPI partnerAPI = partnerLookup.lookupPartner(did);
+                if (partnerAPI.getVerifiablePresentation() != null) {
+                    return Optional.of(partnerAPI);
+                }
+            }
         } catch (PartnerException | AriesException e) {
             log.debug("Did: {} could not be resolved", did);
         }
