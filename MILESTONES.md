@@ -3,7 +3,7 @@ id: milestones
 title: Milestones and Roadmap
 ---
 
-## [0.7.0](https://github.com/hyperledger-labs/business-partner-agent/milestone/6) - 2021-07-13T00:00:00Z
+## [0.7.0](https://github.com/hyperledger-labs/business-partner-agent/milestone/6) - 2021-07-14T00:00:00Z
 
 _This milestone does not have a description._
 
@@ -14,7 +14,7 @@ _This milestone does not have a description._
 - [ ] First version of proof templates
       ([business-partner-agent#530](https://github.com/hyperledger-labs/business-partner-agent/issues/530))
 
-## [0.6.0](https://github.com/hyperledger-labs/business-partner-agent/milestone/5)
+## [0.6.0](https://github.com/hyperledger-labs/business-partner-agent/milestone/5) - 2021-06-23T00:00:00Z
 
 _This milestone does not have a description._
 
