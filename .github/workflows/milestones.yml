@@ -48,8 +48,10 @@ jobs:
       - name: Commit Milestone Documentation
         uses: EndBug/add-and-commit@v4.4.0
         with:
-          message: 'autogen(docs): update milestone document. Signed-off-by: ci-build <no-reply@github.com'
+          message: 'autogen(docs): update milestone document.
+          signoff: true
           author_name: ci-build
           author_email: 'no-reply@github.com'
+          branch: gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.TCR_TOKEN }}
