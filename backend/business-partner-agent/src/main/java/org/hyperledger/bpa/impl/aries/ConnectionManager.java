@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.*;
+import org.hyperledger.aries.api.did_exchange.DidExchangeAcceptRequestFilter;
 import org.hyperledger.aries.api.did_exchange.DidExchangeCreateRequestFilter;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.out_of_band.InvitationMessage;
@@ -98,7 +99,7 @@ public class ConnectionManager {
      * Creates a connection invitation to be used within a barcode
      *
      * @param alias optional connection alias
-     * @param tags tags associated with this connection/invitation
+     * @param tags  tags associated with this connection/invitation
      */
     public Optional<CreateInvitationResponse> createConnectionInvitation(
             @Nullable String alias, @Nullable List<Tag> tags) {
@@ -151,9 +152,9 @@ public class ConnectionManager {
     }
 
     /**
-     * Create a out of band connection based on information that is found in the partners did
-     * document. Requires at least the endpoint and a verification method to be
-     * present in the did document.
+     * Create a out of band connection based on information that is found in the
+     * partners did document. Requires at least the endpoint and a verification
+     * method to be present in the did document.
      * 
      * @param didDoc {@link DIDDocument}
      * @param label  the connection label
@@ -192,12 +193,13 @@ public class ConnectionManager {
                         InvitationMessage
                                 .builder()
                                 .label(label)
-                                .handshakeProtocols(List.of(didDoc.getId() + ";spec/" + didExchange))
                                 .services(List.of(InvitationMessage.InvitationMessageService
                                         .builder()
                                         .id(UUID.randomUUID().toString())
                                         .type(didExchange)
                                         .did(didDoc.getId())
+                                        // .serviceEndpoint("https://purplepoppy.aries.bosch-digital.de:8080")
+                                        // .recipientKeys(List.of("did:key:z6MkpyWbMBzAvBJGZcFxbkpJMmZ3UEAhKaaFLKeY3WjyGpXg"))
                                         .build()))
                                 .build(),
                         ReceiveInvitationFilter
@@ -213,7 +215,7 @@ public class ConnectionManager {
 
     public void acceptConnection(@NonNull String connectionId) {
         try {
-            ac.connectionsAcceptRequest(connectionId, ConnectionAcceptRequestFilter.builder().build());
+            ac.didExchangeAcceptRequest(connectionId, DidExchangeAcceptRequestFilter.builder().build());
         } catch (IOException e) {
             log.error(ACA_PY_ERROR_MSG, e);
             throw new NetworkException(ACA_PY_ERROR_MSG);
@@ -242,7 +244,7 @@ public class ConnectionManager {
                         dbP.setLabel(record.getTheirLabel());
                     }
                     if (StringUtils.isEmpty(dbP.getDid()) || dbP.getDid().endsWith(UNKNOWN_DID)) {
-                        dbP.setDid(didPrefix + record.getTheirPublicDid());
+                        dbP.setDid(didPrefix + record.getTheirDid());
                     }
                     if (StringUtils.isEmpty(dbP.getAlias()) || dbP.getAlias().startsWith(CONNECTION_INVITATION)) {
                         dbP.setAlias(record.getTheirLabel());

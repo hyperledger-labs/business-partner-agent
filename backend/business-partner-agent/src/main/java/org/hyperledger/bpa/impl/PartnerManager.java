@@ -114,7 +114,8 @@ public class PartnerManager {
             cm.createConnection(did, connectionLabel);
             credLookup.lookupTypesForAllPartnersAsync();
         } else if (lookupP.getAriesSupport()) {
-            cm.createConnection(lookupP.getDidDocAPI(), connectionLabel, alias);
+            cm.createConnection(did, connectionLabel);
+            // cm.createConnection(lookupP.getDidDocAPI(), connectionLabel, alias);
         }
         final PartnerAPI apiPartner = converter.toAPIObject(result);
         webhook.convertAndSend(WebhookEventType.PARTNER_ADD, apiPartner);

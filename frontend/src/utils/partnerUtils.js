@@ -74,7 +74,7 @@ export const getPartnerState = (partner) => {
 export const getPartnerStateColor = (state) => {
   if (state === PartnerStates.REQUEST.value) {
     return "yellow";
-  } else if (state === PartnerStates.INACTIVE.value) {
+  } else if (state === PartnerStates.ABANDONED.value) {
     return "red";
   } else if (
     state === PartnerStates.ACTIVE.value ||

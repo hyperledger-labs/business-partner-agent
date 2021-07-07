@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.PartnerException;
@@ -138,7 +139,7 @@ public class DidResolver {
     private Optional<PartnerAPI> lookupPartnerSave(@NonNull String did) {
         try {
             return Optional.of(partnerLookup.lookupPartner(did));
-        } catch (PartnerException e) {
+        } catch (PartnerException | AriesException e) {
             log.debug("Did: {} could not be resolved", did);
         }
         return Optional.empty();

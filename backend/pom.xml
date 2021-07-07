@@ -72,19 +72,6 @@
         <maven.surefire.plugin.version>3.0.0-M5</maven.surefire.plugin.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>bds-snapshots</id>
-            <url>https://nexus.bosch-digital.com/repository/bds-all</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
     <pluginRepositories>
         <pluginRepository>
             <id>plugin-snapshots</id>
