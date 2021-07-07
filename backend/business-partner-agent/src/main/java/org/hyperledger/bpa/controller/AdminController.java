@@ -19,7 +19,14 @@ package org.hyperledger.bpa.controller;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Delete;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.PathVariable;
+import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.Put;
+import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
@@ -27,23 +34,31 @@ import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.ledger.TAAInfo.TAARecord;
-import org.hyperledger.bpa.api.aries.SchemaAPI;
-import org.hyperledger.bpa.api.TagAPI;
-import org.hyperledger.bpa.api.exception.WrongApiUsageException;
-import org.hyperledger.bpa.config.RuntimeConfig;
-import org.hyperledger.bpa.controller.api.admin.*;
-import org.hyperledger.bpa.impl.aries.config.RestrictionsManager;
-import org.hyperledger.bpa.impl.aries.config.SchemaService;
-import org.hyperledger.bpa.impl.TagService;
-import org.hyperledger.bpa.impl.mode.indy.EndpointService;
-import org.hyperledger.bpa.model.BPARestrictions;
-
-import javax.inject.Inject;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import javax.inject.Inject;
+import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.ledger.TAAInfo.TAARecord;
+import org.hyperledger.aries.api.server.AdminConfig;
+import org.hyperledger.bpa.api.TagAPI;
+import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.config.RuntimeConfig;
+import org.hyperledger.bpa.controller.api.admin.AddSchemaRequest;
+import org.hyperledger.bpa.controller.api.admin.AddTagRequest;
+import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
+import org.hyperledger.bpa.controller.api.admin.TAADigestRequest;
+import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
+import org.hyperledger.bpa.controller.api.admin.UpdateSchemaRequest;
+import org.hyperledger.bpa.controller.api.admin.UpdateTagRequest;
+import org.hyperledger.bpa.controller.api.admin.UpdateTrustedIssuerRequest;
+import org.hyperledger.bpa.impl.TagService;
+import org.hyperledger.bpa.impl.aries.config.RestrictionsManager;
+import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.mode.indy.EndpointService;
+import org.hyperledger.bpa.model.BPARestrictions;
 
 @Controller("/api/admin")
 @Tag(name = "Configuration")
@@ -51,7 +66,6 @@ import java.util.UUID;
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @ExecuteOn(TaskExecutors.IO)
 public class AdminController {
-
     @Inject
     SchemaService schemaService;
 
@@ -103,8 +117,12 @@ public class AdminController {
      */
     @Post("/schema")
     public HttpResponse<SchemaAPI> addSchema(@Body AddSchemaRequest req) {
-        return HttpResponse.ok(schemaService.addSchema(req.getSchemaId(), req.getLabel(),
-                req.getDefaultAttributeName(), req.getTrustedIssuer()));
+        return HttpResponse.ok(
+                schemaService.addSchema(
+                        req.getSchemaId(),
+                        req.getLabel(),
+                        req.getDefaultAttributeName(),
+                        req.getTrustedIssuer()));
     }
 
     /**
@@ -115,8 +133,12 @@ public class AdminController {
      * @return {@link HttpResponse}
      */
     @Put("/schema/{id}")
-    public HttpResponse<SchemaAPI> updateSchema(@PathVariable UUID id, @Body UpdateSchemaRequest req) {
-        Optional<SchemaAPI> schemaAPI = schemaService.updateSchema(id, req.getDefaultAttribute());
+    public HttpResponse<SchemaAPI> updateSchema(
+            @PathVariable UUID id,
+            @Body UpdateSchemaRequest req) {
+        Optional<SchemaAPI> schemaAPI = schemaService.updateSchema(
+                id,
+                req.getDefaultAttribute());
         if (schemaAPI.isPresent()) {
             return HttpResponse.ok(schemaAPI.get());
         }
@@ -154,7 +176,9 @@ public class AdminController {
             @PathVariable UUID id,
             @Body AddTrustedIssuerRequest request) {
         Optional<TrustedIssuer> res = restrictionsManager.addRestriction(
-                id, request.getIssuerDid(), request.getLabel());
+                id,
+                request.getIssuerDid(),
+                request.getLabel());
         if (res.isPresent()) {
             return HttpResponse.ok(res.get());
         }
@@ -243,7 +267,9 @@ public class AdminController {
      * @return {@link HttpResponse}
      */
     @Put("/tag/{id}")
-    public HttpResponse<TagAPI> updateTag(@PathVariable UUID id, @Body UpdateTagRequest req) {
+    public HttpResponse<TagAPI> updateTag(
+            @PathVariable UUID id,
+            @Body UpdateTagRequest req) {
         Optional<TagAPI> tagAPI = tagService.updateTag(id, req.getName());
         if (tagAPI.isPresent()) {
             return HttpResponse.ok(tagAPI.get());
@@ -260,7 +286,9 @@ public class AdminController {
     @Delete("/tag/{id}")
     @ApiResponse(responseCode = "404", description = "If the tag does not exist")
     @ApiResponse(responseCode = "405", description = "If the tag is read only")
-    public HttpResponse<Void> removeTag(@PathVariable UUID id, @Nullable @QueryValue Boolean force) {
+    public HttpResponse<Void> removeTag(
+            @PathVariable UUID id,
+            @Nullable @QueryValue Boolean force) {
         Optional<TagAPI> tag = tagService.getTag(id);
         if (tag.isPresent()) {
             if (!tag.get().getIsReadOnly()) {
@@ -283,10 +311,27 @@ public class AdminController {
     }
 
     /**
+     * @return true if a tails server is configured in acapy
+     * @throws IOException
+     */
+    @Get("/config/tailsConfigured")
+    public HttpResponse<Boolean> getTailsConfigured() throws IOException {
+        Boolean retVal = Boolean.FALSE;
+
+        Optional<AdminConfig> statusConfig = ac.statusConfig();
+        if (statusConfig.isPresent()) {
+            if (!statusConfig.get().getAs("tails_server_base_url", String.class).isEmpty())
+                retVal = Boolean.TRUE;
+        }
+
+        return HttpResponse.ok(retVal);
+    }
+
+    /**
      * Trigger the backend to write configured endpoints to the ledger. TAA digest
      * has to be passed to explicitly confirm prior TTA acceptance by the user for
      * this ledger interaction / session.
-     * 
+     *
      * @param tAADigest {@link TAADigestRequest}
      * @return {@link HttpResponse}
      */
@@ -312,7 +357,7 @@ public class AdminController {
 
     /**
      * Get TAA record (digest, text, version)
-     * 
+     *
      * @return {@link TAARecord}
      */
     @Get("/taa/get")
