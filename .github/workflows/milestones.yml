@@ -39,6 +39,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
+          ref: 'gh-pages'
           token: ${{ github.token }}
       - name: Milestone Documentation Generator
         uses: ory/milestone-action@v0
