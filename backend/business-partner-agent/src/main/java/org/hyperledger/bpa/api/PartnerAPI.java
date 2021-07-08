@@ -48,7 +48,6 @@ public class PartnerAPI {
     private String alias;
     private String label;
     private String did;
-    private String label;
     private List<PartnerCredential> credential;
     private List<TagAPI> tag;
 
