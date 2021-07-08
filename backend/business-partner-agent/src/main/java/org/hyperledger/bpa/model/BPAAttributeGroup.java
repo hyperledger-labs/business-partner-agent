@@ -47,12 +47,21 @@ public class BPAAttributeGroup {
     @DistinctAttributeNames
     List<BPAAttribute> attributes;
 
+    @NotNull
+    @Singular
+    @Valid
+    List<BPACondition> schemaLevelConditions;
+
     public AttributeGroup toRepresentation() {
         return new AttributeGroup(
                 schemaId,
                 attributes.stream()
                         .map(BPAAttribute::toRepresentation)
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList()),
+                schemaLevelConditions.stream()
+                        .map(BPACondition::toRepresentation)
+                        .collect(Collectors.toList())
+        );
     }
 
     public static BPAAttributeGroup fromRepresentation(AttributeGroup attributeGroup) {
@@ -60,6 +69,10 @@ public class BPAAttributeGroup {
                 attributeGroup.getSchemaId(),
                 attributeGroup.getAttributes().stream()
                         .map(BPAAttribute::fromRepresentation)
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList()),
+                attributeGroup.getSchemaLevelConditions().stream()
+                        .map(BPACondition::fromRepresentation)
+                        .collect(Collectors.toList())
+        );
     }
 }
