@@ -16,20 +16,25 @@
  * limitations under the License.
  */
 
-package org.hyperledger.bpa.impl.verification.prooftemplates;
+package org.hyperledger.bpa.impl.prooftemplates;
 
-import javax.validation.Constraint;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.annotation.NonNull;
 
-import static java.lang.annotation.ElementType.*;
 
-@Target({ TYPE_USE, FIELD, })
-@Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {})
-public @interface ValidBPASchemaAttribute {
-    String message() default "Schema id not valid or existent: {validatedValue}";
+public interface ProofTemplateConditionOperator<T> {
 
-    String schemaIdField() default "schemaId";
+    boolean attributeOnlyLevel();
+
+
+    default int getPrecedence() {
+        return 0;
+    }
+
+    void applyOnBuilder(
+            @NonNull T builder,
+            @Nullable String value,
+            @Nullable String name
+    );
+
 }

@@ -38,7 +38,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @MicronautTest
-class ProofTemplateTest {
+class BPAProofTemplateTest {
     @Inject
     Validator validator;
     @Inject

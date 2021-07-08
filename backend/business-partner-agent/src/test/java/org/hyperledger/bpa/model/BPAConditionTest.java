@@ -20,7 +20,7 @@ package org.hyperledger.bpa.model;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.validation.validator.Validator;
-import org.hyperledger.bpa.controller.api.prooftemplates.Condition;
+import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConditionOperators;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +29,7 @@ import javax.validation.ConstraintViolation;
 import java.util.Set;
 
 @MicronautTest()
-class ConditionTest {
+class BPAConditionTest {
 
     @Inject
     Validator validator;
@@ -63,12 +63,31 @@ class ConditionTest {
     }
 
     @Test
-    void testThatEqualsConditionIsInvalid() {
-        BPACondition sut = BPACondition.builder().value("any").operator("==").build();
+    void testThatEqualsConditionIsValid() {
+        BPACondition sut = BPACondition.builder().value("any").operator(ProofTemplateConditionOperators.EQUALS_OPERATOR_STRING).build();
         Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
-        Assertions.assertEquals(1, constraintViolations.size());
-        Assertions.assertEquals("==",
-                constraintViolations.stream().findFirst().map(ConstraintViolation::getInvalidValue).get());
+        Assertions.assertEquals(0, constraintViolations.size());
+    }
+
+    @Test
+    void testThatIssuerConditionIsValid() {
+        BPACondition sut = BPACondition.builder().value("somebody").operator(ProofTemplateConditionOperators.ISSUED_BY_OPERATOR_STRING).build();
+        Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
+        Assertions.assertEquals(0, constraintViolations.size());
+    }
+
+    @Test
+    void testThatNonRevocationBeforeConditionIsValid() {
+        BPACondition sut = BPACondition.builder().value("somebody").operator(ProofTemplateConditionOperators.NON_REVOKED_OPERATOR_STRING).build();
+        Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
+        Assertions.assertEquals(0, constraintViolations.size());
+    }
+
+    @Test
+        // non-revocation proof should use for 'from' the same value as 'to' or omit it.
+        // See https://github.com/hyperledger/aries-rfcs/blob/master/concepts/0441-present-proof-best-practices/README.md
+    void testThatNonRevocationAfterConditionIsInvalid() {
+        Assertions.assertTrue(true);
     }
 
     @Test
