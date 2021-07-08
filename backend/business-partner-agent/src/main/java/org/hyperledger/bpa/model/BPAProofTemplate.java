@@ -57,7 +57,7 @@ public class BPAProofTemplate {
     @TypeDef(type = DataType.JSON)
     BPAAttributeGroups attributeGroups;
 
-    public Stream<BPAAttributeGroup> streamAttributeGroups(){
+    public Stream<BPAAttributeGroup> streamAttributeGroups() {
         return attributeGroups.getAttributeGroups().stream();
     }
 

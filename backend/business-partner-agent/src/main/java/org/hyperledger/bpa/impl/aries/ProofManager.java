@@ -102,8 +102,7 @@ public class ProofManager {
             String issuerId = null;
             String schemaId = null;
             ac.presentProofSendRequest(proofRequest).ifPresent(
-                    persistProof(partnerId, issuerId, schemaId)
-            );
+                    persistProof(partnerId, issuerId, schemaId));
             // TODO persist proofRequest
         } catch (IOException e) {
             throw new NetworkException(ACA_PY_ERROR_MSG, e);
@@ -127,19 +126,18 @@ public class ProofManager {
                         .buildForAllAttributes(partner.getConnectionId(),
                                 schema.getAttrNames(), req.buildRestrictions());
                 ac.presentProofSendRequest(proofRequest).ifPresent(
-                        persistProof(partnerId, req.getFirstIssuerDid(), schema.getId())
-                );
+                        persistProof(partnerId, req.getFirstIssuerDid(), schema.getId()));
             } else {
                 ac.presentProofSendRequest(req.getRequestRaw().toString()).ifPresent(
-                        persistProof(partnerId, null, null)
-                );
+                        persistProof(partnerId, null, null));
             }
         } catch (IOException e) {
             throw new NetworkException(ACA_PY_ERROR_MSG, e);
         }
     }
 
-    private Consumer<PresentationExchangeRecord> persistProof(@NonNull UUID partnerId, @Nullable String issuerId, @Nullable String schemaId) {
+    private Consumer<PresentationExchangeRecord> persistProof(@NonNull UUID partnerId, @Nullable String issuerId,
+            @Nullable String schemaId) {
         return exchange -> {
             final PartnerProof pp = PartnerProof
                     .builder()
@@ -298,8 +296,7 @@ public class ProofManager {
         messageService.sendMessage(WebSocketMessageBody.proof(state, type, toApiProof(pp)));
     }
 
-    private @Nullable
-    String resolveIssuer(String credDefId) {
+    private @Nullable String resolveIssuer(String credDefId) {
         String issuer = null;
         if (StringUtils.isNotEmpty(credDefId)) {
             issuer = didPrefix + AriesStringUtil.credDefIdGetDid(credDefId);

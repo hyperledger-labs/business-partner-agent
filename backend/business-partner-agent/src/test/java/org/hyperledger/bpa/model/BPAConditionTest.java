@@ -64,28 +64,32 @@ class BPAConditionTest {
 
     @Test
     void testThatEqualsConditionIsValid() {
-        BPACondition sut = BPACondition.builder().value("any").operator(ProofTemplateConditionOperators.EQUALS_OPERATOR_STRING).build();
+        BPACondition sut = BPACondition.builder().value("any")
+                .operator(ProofTemplateConditionOperators.EQUALS_OPERATOR_STRING).build();
         Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(0, constraintViolations.size());
     }
 
     @Test
     void testThatIssuerConditionIsValid() {
-        BPACondition sut = BPACondition.builder().value("somebody").operator(ProofTemplateConditionOperators.ISSUED_BY_OPERATOR_STRING).build();
+        BPACondition sut = BPACondition.builder().value("somebody")
+                .operator(ProofTemplateConditionOperators.ISSUED_BY_OPERATOR_STRING).build();
         Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(0, constraintViolations.size());
     }
 
     @Test
     void testThatNonRevocationBeforeConditionIsValid() {
-        BPACondition sut = BPACondition.builder().value("somebody").operator(ProofTemplateConditionOperators.NON_REVOKED_OPERATOR_STRING).build();
+        BPACondition sut = BPACondition.builder().value("somebody")
+                .operator(ProofTemplateConditionOperators.NON_REVOKED_OPERATOR_STRING).build();
         Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(0, constraintViolations.size());
     }
 
     @Test
-        // non-revocation proof should use for 'from' the same value as 'to' or omit it.
-        // See https://github.com/hyperledger/aries-rfcs/blob/master/concepts/0441-present-proof-best-practices/README.md
+    // non-revocation proof should use for 'from' the same value as 'to' or omit it.
+    // See
+    // https://github.com/hyperledger/aries-rfcs/blob/master/concepts/0441-present-proof-best-practices/README.md
     void testThatNonRevocationAfterConditionIsInvalid() {
         Assertions.assertTrue(true);
     }

@@ -90,10 +90,10 @@ public class ValidatorFactory {
         };
     }
 
-
     @Singleton
-    ConstraintValidator<ValidAttributeConditionOperator, CharSequence> attributeConditionOperatorValidator(ProofTemplateConditionOperators<?, ?, ?> conditionOperators) {
-        return (value, annotationMetadata, context) ->
-                conditionOperators.getConditionOperatorFor(String.valueOf(value)).isPresent();
+    ConstraintValidator<ValidAttributeConditionOperator, CharSequence> attributeConditionOperatorValidator(
+            ProofTemplateConditionOperators<?, ?, ?> conditionOperators) {
+        return (value, annotationMetadata, context) -> conditionOperators.getConditionOperatorFor(String.valueOf(value))
+                .isPresent();
     }
 }

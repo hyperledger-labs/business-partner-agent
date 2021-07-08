@@ -60,8 +60,7 @@ public class BPAAttributeGroup {
                         .collect(Collectors.toList()),
                 schemaLevelConditions.stream()
                         .map(BPACondition::toRepresentation)
-                        .collect(Collectors.toList())
-        );
+                        .collect(Collectors.toList()));
     }
 
     public static BPAAttributeGroup fromRepresentation(AttributeGroup attributeGroup) {
@@ -72,7 +71,6 @@ public class BPAAttributeGroup {
                         .collect(Collectors.toList()),
                 attributeGroup.getSchemaLevelConditions().stream()
                         .map(BPACondition::fromRepresentation)
-                        .collect(Collectors.toList())
-        );
+                        .collect(Collectors.toList()));
     }
 }

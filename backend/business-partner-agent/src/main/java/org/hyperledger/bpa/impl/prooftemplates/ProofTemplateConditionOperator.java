@@ -21,11 +21,9 @@ package org.hyperledger.bpa.impl.prooftemplates;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.annotation.NonNull;
 
-
 public interface ProofTemplateConditionOperator<T> {
 
     boolean attributeOnlyLevel();
-
 
     default int getPrecedence() {
         return 0;
@@ -34,7 +32,6 @@ public interface ProofTemplateConditionOperator<T> {
     void applyOnBuilder(
             @NonNull T builder,
             @Nullable String value,
-            @Nullable String name
-    );
+            @Nullable String name);
 
 }

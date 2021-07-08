@@ -37,23 +37,15 @@ import java.util.Optional;
 public class AriesProofTemplateConditionOperatorFactory {
 
     @Singleton
-    ProofTemplateConditionOperators<
-            PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder,
-            PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder,
-            PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder
-            >
-    proofTemplateOperators() {
-        ProofTemplateConditionOperators<
-                PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder,
-                PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder,
-                PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder
-                > knownOperators;
+    ProofTemplateConditionOperators<PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder, PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder, PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> proofTemplateOperators() {
+        ProofTemplateConditionOperators<PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder, PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder, PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> knownOperators;
         knownOperators = new ProofTemplateConditionOperators<>();
         knownOperators.put(null, noneOperator());
         knownOperators.put(IndyProofReqPredSpec.PTypeEnum.LESS_THAN.getValue(), lessThanOperator());
         knownOperators.put(IndyProofReqPredSpec.PTypeEnum.LESS_THAN_OR_EQUAL_TO.getValue(), lessThanEqualsOperator());
         knownOperators.put(IndyProofReqPredSpec.PTypeEnum.GREATER_THAN.getValue(), greaterThanOperator());
-        knownOperators.put(IndyProofReqPredSpec.PTypeEnum.GREATER_THAN_OR_EQUAL_TO.getValue(), greaterThanEqualsOperator());
+        knownOperators.put(IndyProofReqPredSpec.PTypeEnum.GREATER_THAN_OR_EQUAL_TO.getValue(),
+                greaterThanEqualsOperator());
         knownOperators.put(ProofTemplateConditionOperators.EQUALS_OPERATOR_STRING, equalsOperator());
         knownOperators.put(ProofTemplateConditionOperators.SCHEMA_ID_OPERATOR_STRING, schemaIdOperator());
         knownOperators.put(ProofTemplateConditionOperators.NON_REVOKED_OPERATOR_STRING, nonRevokedOperator());
@@ -61,26 +53,16 @@ public class AriesProofTemplateConditionOperatorFactory {
         return knownOperators;
     }
 
-    public interface AttributeOperator extends ProofTemplateConditionOperator<
-            ProofTemplateRequestBuilder<
-                    PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder,
-                    PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder,
-                    PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder
-                    >
-            > {
+    public interface AttributeOperator extends
+            ProofTemplateConditionOperator<ProofTemplateRequestBuilder<PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder, PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder, PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder>> {
         @Override
         default boolean attributeOnlyLevel() {
             return true;
         }
     }
 
-    public interface AttributeAndAttributeGroupOperator extends ProofTemplateConditionOperator<
-            ProofTemplateRequestBuilder<
-                    PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder,
-                    PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder,
-                    PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder
-                    >
-            > {
+    public interface AttributeAndAttributeGroupOperator extends
+            ProofTemplateConditionOperator<ProofTemplateRequestBuilder<PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder, PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder, PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder>> {
         @Override
         default boolean attributeOnlyLevel() {
             return false;
@@ -88,10 +70,8 @@ public class AriesProofTemplateConditionOperatorFactory {
     }
 
     AttributeAndAttributeGroupOperator schemaIdOperator() {
-        return (proofRequestBuilder, name, value) ->
-                proofRequestBuilder.putRestriction(name,
-                        restrictions -> restrictions.schemaId(value)
-                );
+        return (proofRequestBuilder, name, value) -> proofRequestBuilder.putRestriction(name,
+                restrictions -> restrictions.schemaId(value));
     }
 
     AttributeOperator nonRevokedOperator() {
@@ -100,8 +80,7 @@ public class AriesProofTemplateConditionOperatorFactory {
             Optional<PresentProofRequest.ProofRequest.ProofNonRevoked> revoked = toNonRevoked(value);
             proofRequestBuilder.onAttribute(name, attr -> {
 
-                revoked.ifPresentOrElse(attr::nonRevoked, () ->
-                {
+                revoked.ifPresentOrElse(attr::nonRevoked, () -> {
                     // FIXME add this to ProofRequest
                 });
 
@@ -118,15 +97,13 @@ public class AriesProofTemplateConditionOperatorFactory {
                     PresentProofRequest.ProofRequest.ProofNonRevoked.builder()
                             .from(longValue)
                             .to(longValue)
-                            .build()
-            );
+                            .build());
         } catch (NumberFormatException e) {
             log.error("non revocation operator need a number value.", e);
 
         }
         return Optional.empty();
     }
-
 
     AttributeOperator noneOperator() {
         return (proofRequestBuilder, name, value) -> {
@@ -135,45 +112,39 @@ public class AriesProofTemplateConditionOperatorFactory {
         };
     }
 
-
     AttributeOperator equalsOperator() {
         return (proofRequestBuilder, name, value) -> {
             if (name == null || value == null) {
                 throw new RuntimeException("equals conditions require an attribute name and a value.");
             }
             proofRequestBuilder.addAttribute(name);
-            proofRequestBuilder.putRestriction(name, restriction ->
-                    restriction.addAttributeValueRestriction(name, value)
-            );
+            proofRequestBuilder.putRestriction(name,
+                    restriction -> restriction.addAttributeValueRestriction(name, value));
         };
     }
 
     AttributeOperator lessThanOperator() {
-        return (proofRequestBuilder, name, value) ->
-                predicateRelation(proofRequestBuilder, name, value, IndyProofReqPredSpec.PTypeEnum.LESS_THAN);
+        return (proofRequestBuilder, name, value) -> predicateRelation(proofRequestBuilder, name, value,
+                IndyProofReqPredSpec.PTypeEnum.LESS_THAN);
     }
 
     AttributeOperator lessThanEqualsOperator() {
-        return (proofRequestBuilder, name, value) ->
-                predicateRelation(proofRequestBuilder, name, value, IndyProofReqPredSpec.PTypeEnum.LESS_THAN_OR_EQUAL_TO);
+        return (proofRequestBuilder, name, value) -> predicateRelation(proofRequestBuilder, name, value,
+                IndyProofReqPredSpec.PTypeEnum.LESS_THAN_OR_EQUAL_TO);
     }
 
     AttributeOperator greaterThanOperator() {
-        return (proofRequestBuilder, name, value) ->
-                predicateRelation(proofRequestBuilder, name, value, IndyProofReqPredSpec.PTypeEnum.GREATER_THAN);
+        return (proofRequestBuilder, name, value) -> predicateRelation(proofRequestBuilder, name, value,
+                IndyProofReqPredSpec.PTypeEnum.GREATER_THAN);
     }
 
     AttributeOperator greaterThanEqualsOperator() {
-        return (proofRequestBuilder, name, value) ->
-                predicateRelation(proofRequestBuilder, name, value, IndyProofReqPredSpec.PTypeEnum.GREATER_THAN_OR_EQUAL_TO);
+        return (proofRequestBuilder, name, value) -> predicateRelation(proofRequestBuilder, name, value,
+                IndyProofReqPredSpec.PTypeEnum.GREATER_THAN_OR_EQUAL_TO);
     }
 
     private void predicateRelation(
-            @NonNull ProofTemplateRequestBuilder<
-                    PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder,
-                    PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder,
-                    PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder
-                    > proofRequestBuilder,
+            @NonNull ProofTemplateRequestBuilder<PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder, PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder, PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> proofRequestBuilder,
             @Nullable String name,
             @Nullable String value,
             @NonNull IndyProofReqPredSpec.PTypeEnum greaterThanOrEqualTo) {
@@ -181,8 +152,6 @@ public class AriesProofTemplateConditionOperatorFactory {
             throw new RuntimeException("predicate conditions require an attribute name and a value.");
         }
         proofRequestBuilder.addPredicate(name);
-        proofRequestBuilder.onPredicate(name, pred ->
-                pred.pType(greaterThanOrEqualTo).pValue(value)
-        );
+        proofRequestBuilder.onPredicate(name, pred -> pred.pType(greaterThanOrEqualTo).pValue(value));
     }
 }

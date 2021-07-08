@@ -43,26 +43,18 @@ public class ProofTemplateConverion {
     PartnerRepository partnerRepo;
 
     @Inject
-    ProofTemplateConditionOperators<
-            PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder,
-            PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder,
-            PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder
-            > ariesConditionOperators;
+    ProofTemplateConditionOperators<PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder, PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder, PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> ariesConditionOperators;
 
-    public PresentProofRequest proofRequestFrom(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
+    public PresentProofRequest proofRequestFrom(@NonNull UUID partnerId,
+            @NonNull @Valid BPAProofTemplate proofTemplate) {
         final Partner partner = partnerRepo.findById(partnerId)
                 .orElseThrow(() -> new PartnerException("Partner not found"));
         if (!partner.hasConnectionId()) {
             throw new PartnerException("Partner has no aca-py connection");
         }
 
-        RequestBuilderMap<
-                        ProofTemplateRequestBuilder<
-                                PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder,
-                                PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder,
-                                PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder
-                                >
-                        > builderSet = new RequestBuilderMap<>(this::proofTemplateRequestBuilderSupplier);
+        RequestBuilderMap<ProofTemplateRequestBuilder<PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder, PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder, PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder>> builderSet = new RequestBuilderMap<>(
+                this::proofTemplateRequestBuilderSupplier);
         ProofTemplateConditionContext.forTemplate(proofTemplate, builderSet::getNewBuilder)
                 .map(resolveOperator(ariesConditionOperators::getConditionOperatorFor))
                 .sorted()
@@ -70,33 +62,29 @@ public class ProofTemplateConverion {
         PresentProofRequest.ProofRequest.ProofRequestBuilder proofRequestBuilder = PresentProofRequest.ProofRequest
                 .builder();
         builderSet.getBuilders().forEach(builder -> {
-                    builder.getValue()
-                            .attributeStream((attr, restr) -> attr.restriction(restr.build().toJsonObject()))
-                            .forEach(attr -> proofRequestBuilder.requestedAttribute(builder.getKey(), attr.build()));
-                    builder.getValue()
-                            .predicateStream((pred, restr) -> pred.restriction(restr.build().toJsonObject()))
-                            .forEach(pred -> proofRequestBuilder.requestedPredicate(builder.getKey(), pred.build()));
-                }
-        );
+            builder.getValue()
+                    .attributeStream((attr, restr) -> attr.restriction(restr.build().toJsonObject()))
+                    .forEach(attr -> proofRequestBuilder.requestedAttribute(builder.getKey(), attr.build()));
+            builder.getValue()
+                    .predicateStream((pred, restr) -> pred.restriction(restr.build().toJsonObject()))
+                    .forEach(pred -> proofRequestBuilder.requestedPredicate(builder.getKey(), pred.build()));
+        });
         return PresentProofRequest.builder()
                 .proofRequest(proofRequestBuilder.build())
                 .connectionId(partner.getConnectionId())
                 .build();
     }
 
-
-    ProofTemplateRequestBuilder<
-            PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder,
-            PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder,
-            PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder
-            > proofTemplateRequestBuilderSupplier() {
+    ProofTemplateRequestBuilder<PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder, PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder, PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> proofTemplateRequestBuilderSupplier() {
         return new ProofTemplateRequestBuilder<>(
                 name -> PresentProofRequest.ProofRequest.ProofRequestedPredicates.builder().name(name),
                 name -> PresentProofRequest.ProofRequest.ProofRequestedAttributes.builder().name(name),
                 PresentProofRequest.ProofRequest.ProofRestrictions::builder);
     }
 
-    static <T> UnaryOperator<ProofTemplateConditionContext<T>> resolveOperator(Function<String, Optional<ProofTemplateConditionOperator<T>>> resolver) {
-        return context -> resolver.apply(context.getConditionOperatorString()).map(context::withConditionOperator).orElse(context);
+    static <T> UnaryOperator<ProofTemplateConditionContext<T>> resolveOperator(
+            Function<String, Optional<ProofTemplateConditionOperator<T>>> resolver) {
+        return context -> resolver.apply(context.getConditionOperatorString()).map(context::withConditionOperator)
+                .orElse(context);
     }
 }

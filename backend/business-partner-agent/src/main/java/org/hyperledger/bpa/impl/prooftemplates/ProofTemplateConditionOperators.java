@@ -31,20 +31,20 @@ public class ProofTemplateConditionOperators<Predicate, Attribute, Restrictions>
     public static final String NON_REVOKED_OPERATOR_STRING = "<R";
     public static final String SCHEMA_ID_OPERATOR_STRING = "schema-id";
 
-    private Map<
-            String,
-            ProofTemplateConditionOperator<ProofTemplateRequestBuilder<Predicate, Attribute, Restrictions>>
-            > knownOperators = new HashMap<>();
+    private Map<String, ProofTemplateConditionOperator<ProofTemplateRequestBuilder<Predicate, Attribute, Restrictions>>> knownOperators = new HashMap<>();
 
-    public void put(@Nullable String operatorName, ProofTemplateConditionOperator<ProofTemplateRequestBuilder<Predicate, Attribute, Restrictions>> operator) {
+    public void put(@Nullable String operatorName,
+            ProofTemplateConditionOperator<ProofTemplateRequestBuilder<Predicate, Attribute, Restrictions>> operator) {
         knownOperators.put(operatorName, operator);
     }
 
-    public void putIfAbsent(@Nullable String operatorName, ProofTemplateConditionOperator<ProofTemplateRequestBuilder<Predicate, Attribute, Restrictions>> operator) {
+    public void putIfAbsent(@Nullable String operatorName,
+            ProofTemplateConditionOperator<ProofTemplateRequestBuilder<Predicate, Attribute, Restrictions>> operator) {
         knownOperators.putIfAbsent(operatorName, operator);
     }
 
-    public Optional<ProofTemplateConditionOperator<ProofTemplateRequestBuilder<Predicate, Attribute, Restrictions>>> getConditionOperatorFor(String operatorString) {
+    public Optional<ProofTemplateConditionOperator<ProofTemplateRequestBuilder<Predicate, Attribute, Restrictions>>> getConditionOperatorFor(
+            String operatorString) {
         return Optional.ofNullable(knownOperators.get(operatorString));
     }
 }

@@ -55,7 +55,6 @@ public class ProofTemplateRequestBuilder<Predicate, Attribute, Restrictions> {
         return attributes.computeIfAbsent(name, attributeCreator);
     }
 
-
     public void onAttribute(@NotEmpty String name, @NotNull UnaryOperator<Attribute> modifier) {
         attributes.computeIfPresent(name, (key, attr) -> modifier.apply(attr));
     }
@@ -65,27 +64,26 @@ public class ProofTemplateRequestBuilder<Predicate, Attribute, Restrictions> {
     }
 
     public Restrictions putRestriction(@NotEmpty String name, @NotNull UnaryOperator<Restrictions> modifier) {
-        return restrictions.compute(name, (key, oldAttr) ->
-                modifier.apply(Optional.ofNullable(oldAttr).orElseGet(restrictionCreator))
-        );
+        return restrictions.compute(name,
+                (key, oldAttr) -> modifier.apply(Optional.ofNullable(oldAttr).orElseGet(restrictionCreator)));
     }
 
-    public Stream<Predicate> predicateStream(BiFunction<@NotNull Predicate, @NotNull Restrictions, @NotNull Predicate> applyRestriction) {
+    public Stream<Predicate> predicateStream(
+            BiFunction<@NotNull Predicate, @NotNull Restrictions, @NotNull Predicate> applyRestriction) {
         return predicates.entrySet()
                 .stream()
                 .map(entry -> restrictionsFor(entry.getKey())
                         .map(r -> applyRestriction.apply(entry.getValue(), r))
-                        .orElseGet(entry::getValue)
-                );
+                        .orElseGet(entry::getValue));
     }
 
-    public Stream<Attribute> attributeStream(BiFunction<@NotNull Attribute, @NotNull Restrictions, @NotNull Attribute> applyRestriction) {
+    public Stream<Attribute> attributeStream(
+            BiFunction<@NotNull Attribute, @NotNull Restrictions, @NotNull Attribute> applyRestriction) {
         return attributes.entrySet()
                 .stream()
                 .map(entry -> restrictionsFor(entry.getKey())
                         .map(r -> applyRestriction.apply(entry.getValue(), r))
-                        .orElseGet(entry::getValue)
-                );
+                        .orElseGet(entry::getValue));
     }
 
     public Optional<Restrictions> restrictionsFor(@NotEmpty String name) {

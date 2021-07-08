@@ -25,6 +25,7 @@ import org.hyperledger.bpa.RunWithAries;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.*;
 import org.hyperledger.bpa.repository.PartnerRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -35,9 +36,10 @@ import java.util.Set;
 import java.util.UUID;
 
 @MicronautTest
-public class ProofManagerTest extends RunWithAries {
+public class ProofTemplateConversionTest extends RunWithAries {
     @Inject
     SchemaService schemaService;
+
     @MockBean(SchemaService.class)
     SchemaService schemaService() {
         return Mockito.mock(SchemaService.class);
@@ -54,7 +56,6 @@ public class ProofManagerTest extends RunWithAries {
     @Inject
     ProofTemplateConverion proofTemplateConverion;
 
-
     @Test
     public void testProofManagerCreateValidRequestFromProofTemplate() throws IOException {
 
@@ -66,8 +67,7 @@ public class ProofManagerTest extends RunWithAries {
         Mockito.when(partnerRepo.findById(partnerId))
                 .thenReturn(Optional.of(Partner.builder()
                         .connectionId("myConnectionId")
-                        .build())
-                );
+                        .build()));
         BPAProofTemplate template = BPAProofTemplate.builder()
                 .id(UUID.randomUUID())
                 .name("MyTestTemplate")

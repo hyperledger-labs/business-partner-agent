@@ -60,21 +60,23 @@ public class ProofTemplateConditionContext<T> implements Comparable<ProofTemplat
     @Nullable
     private ProofTemplateConditionOperator<T> conditionOperator;
 
-    public static <T> Stream<ProofTemplateConditionContext<T>> forTemplate(BPAProofTemplate template, Function<String, T> builder) {
+    public static <T> Stream<ProofTemplateConditionContext<T>> forTemplate(BPAProofTemplate template,
+            Function<String, T> builder) {
         return template.streamAttributeGroups()
                 .flatMap(group -> contextForGroup(builder, group)
-                        .flattenAttributeGroup(group)
-                );
+                        .flattenAttributeGroup(group));
     }
 
-    private static <T> ProofTemplateConditionContext<T> contextForGroup(Function<String, T> builder, BPAAttributeGroup group) {
+    private static <T> ProofTemplateConditionContext<T> contextForGroup(Function<String, T> builder,
+            BPAAttributeGroup group) {
         return new ProofTemplateConditionContext<T>(builder.apply(group.getSchemaId()));
     }
 
-
     Stream<ProofTemplateConditionContext<T>> flattenAttributeGroup(@NonNull BPAAttributeGroup attributeGroup) {
-        Stream<ProofTemplateConditionContext<T>> attributes = attributeGroup.getAttributes().stream().flatMap(withAttributeGroup(attributeGroup)::flattenAttribute);
-        Stream<ProofTemplateConditionContext<T>> groupConditions = attributeGroup.getSchemaLevelConditions().stream().flatMap(withAttributeGroup(attributeGroup)::flattenCondition);
+        Stream<ProofTemplateConditionContext<T>> attributes = attributeGroup.getAttributes().stream()
+                .flatMap(withAttributeGroup(attributeGroup)::flattenAttribute);
+        Stream<ProofTemplateConditionContext<T>> groupConditions = attributeGroup.getSchemaLevelConditions().stream()
+                .flatMap(withAttributeGroup(attributeGroup)::flattenCondition);
         return Stream.concat(attributes, groupConditions);
     }
 
@@ -95,9 +97,10 @@ public class ProofTemplateConditionContext<T> implements Comparable<ProofTemplat
         return Stream.of(withConditionOperatorString(condition.getOperator()).withConditionValue(condition.getValue()));
     }
 
-
     /**
-     * sorts {@link ProofTemplateConditionContext} descending by {@link ProofTemplateConditionOperator#getPrecedence()}, so that operators with highest precedence are applied first.
+     * sorts {@link ProofTemplateConditionContext} descending by
+     * {@link ProofTemplateConditionOperator#getPrecedence()}, so that operators
+     * with highest precedence are applied first.
      *
      * @param other
      * @return
@@ -127,7 +130,8 @@ public class ProofTemplateConditionContext<T> implements Comparable<ProofTemplat
             conditionOperator.applyOnBuilder(builder, conditionValue, attributeName);
         } else {
             if (attributeName == null) {
-                log.warn("Attribute group {} had an unresolvable condition operator: {}", attributeGroup.getSchemaId(), conditionOperatorString);
+                log.warn("Attribute group {} had an unresolvable condition operator: {}", attributeGroup.getSchemaId(),
+                        conditionOperatorString);
             }
         }
     }
