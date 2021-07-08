@@ -40,16 +40,16 @@ public class AriesProofTemplateConditionOperatorFactory {
     ProofTemplateConditionOperators<PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder, PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder, PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> proofTemplateOperators() {
         ProofTemplateConditionOperators<PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder, PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder, PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> knownOperators;
         knownOperators = new ProofTemplateConditionOperators<>();
-        knownOperators.put(ProofTemplateConditionOperators.FETCH_VALUE, fetchValueOperator());
         knownOperators.put(IndyProofReqPredSpec.PTypeEnum.LESS_THAN.getValue(), lessThanOperator());
         knownOperators.put(IndyProofReqPredSpec.PTypeEnum.LESS_THAN_OR_EQUAL_TO.getValue(), lessThanEqualsOperator());
         knownOperators.put(IndyProofReqPredSpec.PTypeEnum.GREATER_THAN.getValue(), greaterThanOperator());
         knownOperators.put(IndyProofReqPredSpec.PTypeEnum.GREATER_THAN_OR_EQUAL_TO.getValue(),
                 greaterThanEqualsOperator());
+        knownOperators.put(ProofTemplateConditionOperators.FETCH_VALUE, fetchValueOperator());
+        knownOperators.put(ProofTemplateConditionOperators.ISSUED_BY_OPERATOR_STRING, issuedByRestrictionOperator());
         knownOperators.put(ProofTemplateConditionOperators.EQUALS_OPERATOR_STRING, equalsOperator());
-        knownOperators.put(ProofTemplateConditionOperators.SCHEMA_ID_OPERATOR_STRING, schemaIdOperator());
+        knownOperators.put(ProofTemplateConditionOperators.SCHEMA_ID_OPERATOR_STRING, schemaIdRestrictionOperator());
         knownOperators.put(ProofTemplateConditionOperators.NON_REVOKED_OPERATOR_STRING, nonRevokedOperator());
-        // TODO support 'issued-by'
         return knownOperators;
     }
 
@@ -83,36 +83,38 @@ public class AriesProofTemplateConditionOperatorFactory {
         }
     }
 
-    AttributeAndAttributeGroupOperator schemaIdOperator() {
+    AttributeOperator schemaIdRestrictionOperator() {
         return (proofRequestBuilder, name, value) -> proofRequestBuilder.putRestriction(name,
                 restrictions -> restrictions.schemaId(value));
     }
 
-    AttributeOperator nonRevokedOperator() {
+    AttributeOperator issuedByRestrictionOperator() {
+        return (proofRequestBuilder, name, value) -> proofRequestBuilder.putRestriction(name,
+                restrictions -> restrictions.issuerDid(value));
+    }
+
+    AttributeAndAttributeGroupOperator nonRevokedOperator() {
         return (proofRequestBuilder, name, value) -> {
             if (name == null) {
                 // FIXME add this to ProofRequest
             } else {
-                proofRequestBuilder.onAttribute(name, attr ->
-                        setNonRevoked(value, attr::nonRevoked)
-                                .orElseGet(() -> {
-                                    log.error("Non-Revocation check was not added to " + name);
-                                    return attr;
-                                })
-                );
-                proofRequestBuilder.onPredicate(name, pred ->
-                        setNonRevoked(value, pred::nonRevoked)
-                                .orElseGet(() -> {
-                                    log.error("Non-Revocation check was not added to " + name);
-                                    return pred;
-                                })
-                );
+                proofRequestBuilder.onAttribute(name, attr -> setNonRevoked(value, attr::nonRevoked)
+                        .orElseGet(() -> {
+                            log.error("Non-Revocation check was not added to " + name);
+                            return attr;
+                        }));
+                proofRequestBuilder.onPredicate(name, pred -> setNonRevoked(value, pred::nonRevoked)
+                        .orElseGet(() -> {
+                            log.error("Non-Revocation check was not added to " + name);
+                            return pred;
+                        }));
 
             }
         };
     }
 
-    private <T> Optional<T> setNonRevoked(@Nullable String value, @NonNull Function<PresentProofRequest.ProofRequest.ProofNonRevoked, T> nonRevokedTarget) {
+    private <T> Optional<T> setNonRevoked(@Nullable String value,
+            @NonNull Function<PresentProofRequest.ProofRequest.ProofNonRevoked, T> nonRevokedTarget) {
         Optional<PresentProofRequest.ProofRequest.ProofNonRevoked> nonRevoked = Optional.empty();
         if (value != null) {
             try {

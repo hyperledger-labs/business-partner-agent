@@ -61,16 +61,18 @@ public class ProofTemplateConditionContext<T> implements Comparable<ProofTemplat
     @Nullable
     private ProofTemplateConditionOperator<T> conditionOperator;
 
-    private static final BPACondition DEFAULT_CONDITION_FETCH_VALUE = BPACondition.builder().operator(FETCH_VALUE).build();
+    private static final BPACondition DEFAULT_CONDITION_FETCH_VALUE = BPACondition.builder().operator(FETCH_VALUE)
+            .build();
 
     public static <T> Stream<ProofTemplateConditionContext<T>> forTemplate(BPAProofTemplate template,
-                                                                           Function<String, T> builder) {
+            Function<String, T> builder) {
         return template.streamAttributeGroups()
                 .flatMap(group -> contextForGroup(builder, group)
                         .flattenAttributeGroup(group));
     }
 
-    private static <T> ProofTemplateConditionContext<T> contextForGroup(Function<String, T> builder, BPAAttributeGroup group) {
+    private static <T> ProofTemplateConditionContext<T> contextForGroup(Function<String, T> builder,
+            BPAAttributeGroup group) {
         return new ProofTemplateConditionContext<>(builder.apply(group.getSchemaId()));
     }
 
@@ -114,11 +116,16 @@ public class ProofTemplateConditionContext<T> implements Comparable<ProofTemplat
      * {@link ProofTemplateConditionOperator#getPrecedence()}, so that operators
      * with highest precedence are applied first.
      *
-     * @param other templateConditionContext whose operator precedence is compared to this'
-     * @return a value < 0 if this' operator's precedence is greater than the other's,<br>
-     *  a value > 0 if this' operator's precedence is less than the other's,<br>
-     *  0 if precendences are equal or both operators are <code>null</code>.<br>
-     *  An absent operator (<code>null</code>) is treated as having a precedence which is less than a present operator's precedence.
+     * @param other templateConditionContext whose operator precedence is compared
+     *              to this'
+     * @return a value < 0 if this' operator's precedence is greater than the
+     *         other's,<br>
+     *         a value > 0 if this' operator's precedence is less than the
+     *         other's,<br>
+     *         0 if precendences are equal or both operators are
+     *         <code>null</code>.<br>
+     *         An absent operator (<code>null</code>) is treated as having a
+     *         precedence which is less than a present operator's precedence.
      */
     @Override
     public int compareTo(@NonNull ProofTemplateConditionContext<T> other) {
