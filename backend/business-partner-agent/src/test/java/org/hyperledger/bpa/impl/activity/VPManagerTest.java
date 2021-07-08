@@ -152,6 +152,7 @@ class VPManagerTest {
                 .type(CredentialType.SCHEMA_BASED)
                 .build();
         VerifiableCredential.VerifiableIndyCredential indyCred = vpm.buildFromCredential(myCredential);
+        assertNotNull(indyCred.getCredentialSubject());
         assertEquals(2, c.toMap(indyCred.getCredentialSubject()).size());
         assertEquals(2, indyCred.getType().size());
         assertEquals(2, indyCred.getContext().size());

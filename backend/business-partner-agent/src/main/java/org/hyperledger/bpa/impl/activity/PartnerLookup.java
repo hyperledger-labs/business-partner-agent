@@ -29,7 +29,7 @@ import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.PartnerException;
-import org.hyperledger.bpa.client.URClient;
+import org.hyperledger.bpa.client.DidDocClient;
 import org.hyperledger.bpa.impl.util.Converter;
 
 import javax.inject.Inject;
@@ -45,7 +45,7 @@ public class PartnerLookup {
     Converter converter;
 
     @Inject
-    URClient ur;
+    DidDocClient ur;
 
     @Inject
     CryptoManager crypto;
@@ -71,6 +71,7 @@ public class PartnerLookup {
                     .builder()
                     .ariesSupport(didDocument.get().hasAriesEndpoint())
                     .didDocAPI(didDocument.get())
+                    .did(didDocument.get().getId())
                     .build();
         }
         throw new PartnerException("Could not retrieve did document from universal resolver");

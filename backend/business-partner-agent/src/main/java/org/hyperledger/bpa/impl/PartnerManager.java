@@ -102,20 +102,19 @@ public class PartnerManager {
         }
         PartnerAPI lookupP = partnerLookup.lookupPartner(did);
 
-        String connectionLabel = UUID.randomUUID().toString();
         Partner partner = converter.toModelObject(did, lookupP)
-                .setLabel(connectionLabel)
                 .setAriesSupport(lookupP.getAriesSupport())
                 .setAlias(alias)
                 .setTags(tags != null ? new HashSet<>(tags) : null)
                 .setState(ConnectionState.REQUEST);
-        Partner result = repo.save(partner); // save before creating the connection
-        if (did.startsWith(ledgerPrefix) && lookupP.getAriesSupport()) {
-            cm.createConnection(did, connectionLabel, alias);
+
+        cm.createConnection(did).ifPresent(c -> partner.setConnectionId(c.getConnectionId()));
+        Partner result = repo.save(partner);
+
+        if (did.startsWith(ledgerPrefix)) {
             credLookup.lookupTypesForAllPartnersAsync();
-        } else if (lookupP.getAriesSupport()) {
-            cm.createConnection(lookupP.getDidDocAPI(), connectionLabel, alias);
         }
+
         final PartnerAPI apiPartner = converter.toAPIObject(result);
         webhook.convertAndSend(WebhookEventType.PARTNER_ADD, apiPartner);
         return apiPartner;

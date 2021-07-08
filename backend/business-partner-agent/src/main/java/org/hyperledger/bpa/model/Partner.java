@@ -78,11 +78,10 @@ public class Partner {
 
     @Nullable
     private String label; // aries connection label
-                          // if incoming connection set by the partner, if outgoing set by us to match
-                          // connection events
+                          // if incoming connection set by the partner
 
     @Nullable
-    private String alias; // aries connection alias
+    private String alias; // partner alias
 
     @Nullable
     private Boolean incoming; // incoming aries connection

@@ -29,16 +29,16 @@ export const getPartnerName = (partner) => {
     return "";
   } else if ({}.hasOwnProperty.call(partner, "alias")) {
     return partner.alias;
-  } else if (
-    {}.hasOwnProperty.call(partner, "profile") &&
-    partner.profile !== null &&
-    {}.hasOwnProperty.call(partner.profile, "legalName")
-  ) {
+  } else if ({}.hasOwnProperty.call(partner, "profile")
+      && partner.profile !== null
+      && {}.hasOwnProperty.call(partner.profile, "legalName")) {
     return partner.profile.legalName;
   } else {
     const profile = getPartnerProfile(partner);
     if (profile && {}.hasOwnProperty.call(profile, "legalName")) {
       return profile.legalName;
+    } else if ({}.hasOwnProperty.call(partner, "label")) {
+      return partner.label;
     } else {
       if ({}.hasOwnProperty.call(partner, "label")) {
         return partner.label;
@@ -59,7 +59,7 @@ export const getPartnerState = (partner) => {
       }
     } else if (
       partner.state ===
-      (PartnerStates.ACTIVE.value || PartnerStates.RESPONSE.value)
+      (PartnerStates.ACTIVE.value || PartnerStates.RESPONSE.value || PartnerStates.COMPLETED.value)
     ) {
       return PartnerStates.ACTIVE_OR_RESPONSE;
     } else {
@@ -78,11 +78,12 @@ export const getPartnerState = (partner) => {
 export const getPartnerStateColor = (state) => {
   if (state === PartnerStates.REQUEST.value) {
     return "yellow";
-  } else if (state === PartnerStates.INACTIVE.value) {
+  } else if (state === PartnerStates.ABANDONED.value) {
     return "red";
   } else if (
     state === PartnerStates.ACTIVE.value ||
-    state === PartnerStates.RESPONSE.value
+    state === PartnerStates.RESPONSE.value ||
+    state === PartnerStates.COMPLETED.value
   ) {
     return "green";
   } else {

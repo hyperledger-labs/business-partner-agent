@@ -46,6 +46,7 @@ public class PartnerAPI {
     private Boolean incoming;
     private ConnectionState state;
     private String alias;
+    private String label;
     private String did;
     private String label;
     private List<PartnerCredential> credential;
