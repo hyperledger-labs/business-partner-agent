@@ -27,10 +27,10 @@ import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConditionOperator;
 import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConditionOperators;
 import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateRequestBuilder;
-import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Singleton;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Slf4j
 @Factory
@@ -40,7 +40,7 @@ public class AriesProofTemplateConditionOperatorFactory {
     ProofTemplateConditionOperators<PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder, PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder, PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> proofTemplateOperators() {
         ProofTemplateConditionOperators<PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder, PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder, PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> knownOperators;
         knownOperators = new ProofTemplateConditionOperators<>();
-        knownOperators.put(null, noneOperator());
+        knownOperators.put(ProofTemplateConditionOperators.FETCH_VALUE, fetchValueOperator());
         knownOperators.put(IndyProofReqPredSpec.PTypeEnum.LESS_THAN.getValue(), lessThanOperator());
         knownOperators.put(IndyProofReqPredSpec.PTypeEnum.LESS_THAN_OR_EQUAL_TO.getValue(), lessThanEqualsOperator());
         knownOperators.put(IndyProofReqPredSpec.PTypeEnum.GREATER_THAN.getValue(), greaterThanOperator());
@@ -61,6 +61,20 @@ public class AriesProofTemplateConditionOperatorFactory {
         }
     }
 
+    public interface AttributeCreatingOperator extends AttributeOperator {
+        @Override
+        default int getPrecedence() {
+            return 10;
+        }
+    }
+
+    public interface PredicateCreatingOperator extends AttributeOperator {
+        @Override
+        default int getPrecedence() {
+            return 10;
+        }
+    }
+
     public interface AttributeAndAttributeGroupOperator extends
             ProofTemplateConditionOperator<ProofTemplateRequestBuilder<PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder, PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder, PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder>> {
         @Override
@@ -76,43 +90,50 @@ public class AriesProofTemplateConditionOperatorFactory {
 
     AttributeOperator nonRevokedOperator() {
         return (proofRequestBuilder, name, value) -> {
+            if (name == null) {
+                // FIXME add this to ProofRequest
+            } else {
+                proofRequestBuilder.onAttribute(name, attr ->
+                        setNonRevoked(value, attr::nonRevoked)
+                                .orElseGet(() -> {
+                                    log.error("Non-Revocation check was not added to " + name);
+                                    return attr;
+                                })
+                );
+                proofRequestBuilder.onPredicate(name, pred ->
+                        setNonRevoked(value, pred::nonRevoked)
+                                .orElseGet(() -> {
+                                    log.error("Non-Revocation check was not added to " + name);
+                                    return pred;
+                                })
+                );
 
-            Optional<PresentProofRequest.ProofRequest.ProofNonRevoked> revoked = toNonRevoked(value);
-            proofRequestBuilder.onAttribute(name, attr -> {
-
-                revoked.ifPresentOrElse(attr::nonRevoked, () -> {
-                    // FIXME add this to ProofRequest
-                });
-
-                return attr;
-            });
+            }
         };
     }
 
-    @NotNull
-    private Optional<PresentProofRequest.ProofRequest.ProofNonRevoked> toNonRevoked(String value) {
-        try {
-            Long longValue = Long.decode(value);
-            return Optional.of(
-                    PresentProofRequest.ProofRequest.ProofNonRevoked.builder()
-                            .from(longValue)
-                            .to(longValue)
-                            .build());
-        } catch (NumberFormatException e) {
-            log.error("non revocation operator need a number value.", e);
-
+    private <T> Optional<T> setNonRevoked(@Nullable String value, @NonNull Function<PresentProofRequest.ProofRequest.ProofNonRevoked, T> nonRevokedTarget) {
+        Optional<PresentProofRequest.ProofRequest.ProofNonRevoked> nonRevoked = Optional.empty();
+        if (value != null) {
+            try {
+                Long longValue = Long.decode(value);
+                nonRevoked = Optional.of(
+                        PresentProofRequest.ProofRequest.ProofNonRevoked.builder()
+                                .from(longValue)
+                                .to(longValue)
+                                .build());
+            } catch (NumberFormatException e) {
+                log.error("non revocation operator need a number value.", e);
+            }
         }
-        return Optional.empty();
+        return nonRevoked.map(nonRevokedTarget);
     }
 
-    AttributeOperator noneOperator() {
-        return (proofRequestBuilder, name, value) -> {
-            log.warn("The attribute {} was added without any restrictions, use at least a schema restriction.", name);
-            proofRequestBuilder.addAttribute(name);
-        };
+    AttributeCreatingOperator fetchValueOperator() {
+        return (proofRequestBuilder, name, value) -> proofRequestBuilder.addAttribute(name);
     }
 
-    AttributeOperator equalsOperator() {
+    AttributeCreatingOperator equalsOperator() {
         return (proofRequestBuilder, name, value) -> {
             if (name == null || value == null) {
                 throw new RuntimeException("equals conditions require an attribute name and a value.");
@@ -123,22 +144,22 @@ public class AriesProofTemplateConditionOperatorFactory {
         };
     }
 
-    AttributeOperator lessThanOperator() {
+    PredicateCreatingOperator lessThanOperator() {
         return (proofRequestBuilder, name, value) -> predicateRelation(proofRequestBuilder, name, value,
                 IndyProofReqPredSpec.PTypeEnum.LESS_THAN);
     }
 
-    AttributeOperator lessThanEqualsOperator() {
+    PredicateCreatingOperator lessThanEqualsOperator() {
         return (proofRequestBuilder, name, value) -> predicateRelation(proofRequestBuilder, name, value,
                 IndyProofReqPredSpec.PTypeEnum.LESS_THAN_OR_EQUAL_TO);
     }
 
-    AttributeOperator greaterThanOperator() {
+    PredicateCreatingOperator greaterThanOperator() {
         return (proofRequestBuilder, name, value) -> predicateRelation(proofRequestBuilder, name, value,
                 IndyProofReqPredSpec.PTypeEnum.GREATER_THAN);
     }
 
-    AttributeOperator greaterThanEqualsOperator() {
+    PredicateCreatingOperator greaterThanEqualsOperator() {
         return (proofRequestBuilder, name, value) -> predicateRelation(proofRequestBuilder, name, value,
                 IndyProofReqPredSpec.PTypeEnum.GREATER_THAN_OR_EQUAL_TO);
     }

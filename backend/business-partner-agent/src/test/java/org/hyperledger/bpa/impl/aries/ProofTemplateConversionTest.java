@@ -83,14 +83,30 @@ public class ProofTemplateConversionTest extends RunWithAries {
                 .build();
 
         PresentProofRequest actual = proofTemplateConversion.proofRequestFrom(partnerId, template);
+        PresentProofRequest expected = PresentProofRequest.builder()
+                .connectionId("myConnectionId")
+                .proofRequest(PresentProofRequest.ProofRequest.builder()
+                        .requestedAttribute("mySchemaId",
+                                PresentProofRequest.ProofRequest.ProofRequestedAttributes.builder()
+                                        .name("name")
+                                        .restriction(
+                                                PresentProofRequest.ProofRequest.ProofRestrictions.builder()
+                                                        .schemaId("mySchemaId")
+                                                        .build()
+                                                        .toJsonObject())
+                                        .build())
+
+                        .build())
+                .build();
+        Assertions.assertEquals(expected, actual);
         assertWithAcapy(actual);
     }
 
-    void assertWithAcapy(PresentProofRequest proofRequest){
+    void assertWithAcapy(PresentProofRequest proofRequest) {
         try {
             ac.presentProofCreateRequest(proofRequest);
-        }catch (IOException e        ){
-            Assertions.fail("aca-py cannot process the request "+ proofRequest,e);
+        } catch (IOException e) {
+            Assertions.fail("aca-py cannot process the request " + proofRequest, e);
         }
     }
 

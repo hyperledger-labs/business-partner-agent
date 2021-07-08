@@ -30,6 +30,7 @@ public class ProofTemplateConditionOperators<Predicate, Attribute, Restrictions>
     public static final String ISSUED_BY_OPERATOR_STRING = "issued-by";
     public static final String NON_REVOKED_OPERATOR_STRING = "<R";
     public static final String SCHEMA_ID_OPERATOR_STRING = "schema-id";
+    public static final String FETCH_VALUE="fetch-value";
 
     private Map<String, ProofTemplateConditionOperator<ProofTemplateRequestBuilder<Predicate, Attribute, Restrictions>>> knownOperators = new HashMap<>();
 

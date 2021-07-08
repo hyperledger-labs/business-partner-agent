@@ -30,6 +30,7 @@ import javax.validation.constraints.NotNull;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConditionOperators.FETCH_VALUE;
 import static org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConditionOperators.SCHEMA_ID_OPERATOR_STRING;
 
 /**
@@ -60,16 +61,17 @@ public class ProofTemplateConditionContext<T> implements Comparable<ProofTemplat
     @Nullable
     private ProofTemplateConditionOperator<T> conditionOperator;
 
+    private static final BPACondition DEFAULT_CONDITION_FETCH_VALUE = BPACondition.builder().operator(FETCH_VALUE).build();
+
     public static <T> Stream<ProofTemplateConditionContext<T>> forTemplate(BPAProofTemplate template,
-            Function<String, T> builder) {
+                                                                           Function<String, T> builder) {
         return template.streamAttributeGroups()
                 .flatMap(group -> contextForGroup(builder, group)
                         .flattenAttributeGroup(group));
     }
 
-    private static <T> ProofTemplateConditionContext<T> contextForGroup(Function<String, T> builder,
-            BPAAttributeGroup group) {
-        return new ProofTemplateConditionContext<T>(builder.apply(group.getSchemaId()));
+    private static <T> ProofTemplateConditionContext<T> contextForGroup(Function<String, T> builder, BPAAttributeGroup group) {
+        return new ProofTemplateConditionContext<>(builder.apply(group.getSchemaId()));
     }
 
     Stream<ProofTemplateConditionContext<T>> flattenAttributeGroup(@NonNull BPAAttributeGroup attributeGroup) {
@@ -81,8 +83,18 @@ public class ProofTemplateConditionContext<T> implements Comparable<ProofTemplat
     }
 
     Stream<ProofTemplateConditionContext<T>> flattenAttribute(@NonNull BPAAttribute attribute) {
-        return prependSchemaIdCondition(attribute.getConditions().stream())
+
+        Stream<BPACondition> conditionStream = haveAtLeastOneCondition(attribute);
+        return prependSchemaIdCondition(conditionStream)
                 .flatMap(withAttributeName(attribute.getName())::flattenCondition);
+    }
+
+    private Stream<BPACondition> haveAtLeastOneCondition(@org.jetbrains.annotations.NotNull BPAAttribute attribute) {
+        Stream<BPACondition> conditionStream = attribute.getConditions().stream();
+        if (attribute.getConditions().isEmpty()) {
+            conditionStream = Stream.of(DEFAULT_CONDITION_FETCH_VALUE);
+        }
+        return conditionStream;
     }
 
     Stream<BPACondition> prependSchemaIdCondition(Stream<BPACondition> conditions) {
@@ -102,8 +114,11 @@ public class ProofTemplateConditionContext<T> implements Comparable<ProofTemplat
      * {@link ProofTemplateConditionOperator#getPrecedence()}, so that operators
      * with highest precedence are applied first.
      *
-     * @param other
-     * @return
+     * @param other templateConditionContext whose operator precedence is compared to this'
+     * @return a value < 0 if this' operator's precedence is greater than the other's,<br>
+     *  a value > 0 if this' operator's precedence is less than the other's,<br>
+     *  0 if precendences are equal or both operators are <code>null</code>.<br>
+     *  An absent operator (<code>null</code>) is treated as having a precedence which is less than a present operator's precedence.
      */
     @Override
     public int compareTo(@NonNull ProofTemplateConditionContext<T> other) {
@@ -127,7 +142,7 @@ public class ProofTemplateConditionContext<T> implements Comparable<ProofTemplat
 
     public void applyOnBuilder() {
         if (conditionOperator != null) {
-            conditionOperator.applyOnBuilder(builder, conditionValue, attributeName);
+            conditionOperator.applyOnBuilder(builder, attributeName, conditionValue);
         } else {
             if (attributeName == null) {
                 log.warn("Attribute group {} had an unresolvable condition operator: {}", attributeGroup.getSchemaId(),

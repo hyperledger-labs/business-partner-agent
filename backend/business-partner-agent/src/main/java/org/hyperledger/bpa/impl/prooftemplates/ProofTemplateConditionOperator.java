@@ -31,7 +31,7 @@ public interface ProofTemplateConditionOperator<T> {
 
     void applyOnBuilder(
             @NonNull T builder,
-            @Nullable String value,
-            @Nullable String name);
+            @Nullable String name,
+            @Nullable String value);
 
 }
