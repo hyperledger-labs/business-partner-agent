@@ -20,7 +20,7 @@
           - {{ name }}
         </v-row>
       </v-col>
-      <v-col cols="6" class="pb-0">
+      <v-col cols="8" class="pb-0">
         <v-row>
           <p class="grey--text text--darken-2 font-weight-medium">
             Restrictions

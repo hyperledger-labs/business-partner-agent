@@ -38,6 +38,20 @@
           :disabled="submitDisabled"
           >Accept</v-btn
         >
+        <v-tooltip v-if="presentationRequest.problemReport" top>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon
+              color="error"
+              small
+              v-bind="attrs"
+              v-on="on"
+              style="margin-bottom: 11px; margin-right: 15px"
+            >
+              $vuetify.icons.connectionAlert
+            </v-icon>
+          </template>
+          <span>{{ presentationRequest.problemReport }}</span>
+        </v-tooltip>
       </v-layout>
       <v-card-actions>
         <v-expansion-panels v-if="expertMode" accordion flat>
