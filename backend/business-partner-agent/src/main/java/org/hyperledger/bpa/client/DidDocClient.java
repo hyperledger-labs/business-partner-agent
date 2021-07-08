@@ -42,12 +42,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Universal Resolver Client
- *
+ * Did document and public profile resolution
  */
 @Slf4j
 @Singleton
-public class URClient {
+public class DidDocClient {
 
     private static final Type VP_TYPE = new TypeToken<VerifiablePresentation<VerifiableIndyCredential>>() {
     }.getType();
