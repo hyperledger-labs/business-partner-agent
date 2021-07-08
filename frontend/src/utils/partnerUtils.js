@@ -29,21 +29,15 @@ export const getPartnerName = (partner) => {
     return "";
   } else if ({}.hasOwnProperty.call(partner, "alias")) {
     return partner.alias;
-  } else if (
-    {}.hasOwnProperty.call(partner, "profile") &&
-    partner.profile !== null &&
-    {}.hasOwnProperty.call(partner.profile, "legalName")
-  ) {
-    return partner.profile.legalName;
-  } else if ({}.hasOwnProperty.call(partner, "label")) {
-    return partner.label;
-  } else {
+  } else if (getPartnerProfile(partner)) {
     const profile = getPartnerProfile(partner);
     if (profile && {}.hasOwnProperty.call(profile, "legalName")) {
       return profile.legalName;
     } else {
       return partner.did;
     }
+  } else {
+    return partner.label;
   }
 };
 
