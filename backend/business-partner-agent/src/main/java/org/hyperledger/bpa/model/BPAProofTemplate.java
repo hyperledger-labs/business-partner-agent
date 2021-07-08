@@ -34,6 +34,7 @@ import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Data
 @AllArgsConstructor
@@ -55,6 +56,10 @@ public class BPAProofTemplate {
     @ValidAttributeGroup
     @TypeDef(type = DataType.JSON)
     BPAAttributeGroups attributeGroups;
+
+    public Stream<BPAAttributeGroup> streamAttributeGroups(){
+        return attributeGroups.getAttributeGroups().stream();
+    }
 
     public ProofTemplate toRepresentation() {
         return new ProofTemplate(
