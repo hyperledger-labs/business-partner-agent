@@ -18,26 +18,27 @@
 
 package org.hyperledger.bpa.impl.prooftemplates;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-public class RequestBuilderSet<T> {
+public class RequestBuilderMap<T> {
 
-    private final Set<T> createdBuilders=new HashSet<>();
-    private final  Supplier<T> builderCreator;
+    private final Map<String, T> createdBuilders = new HashMap<>();
+    private final Supplier<T> builderCreator;
 
-    public RequestBuilderSet(Supplier<T> builderCreator){
+    public RequestBuilderMap(Supplier<T> builderCreator) {
         this.builderCreator = builderCreator;
     }
-    public T getNewBuilder(){
+
+    public T getNewBuilder(String name) {
         T result = builderCreator.get();
-        createdBuilders.add(result);
-        return result;
+        createdBuilders.putIfAbsent(name, result);
+        return createdBuilders.get(name);
     }
 
-    public Stream<T> getBuilders(){
-        return createdBuilders.stream();
+    public Stream<Map.Entry<String, T>> getBuilders() {
+        return createdBuilders.entrySet().stream();
     }
 }

@@ -27,42 +27,48 @@ import org.hyperledger.bpa.model.BPACondition;
 import org.hyperledger.bpa.model.BPAProofTemplate;
 
 import javax.validation.constraints.NotNull;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConditionOperators.SCHEMA_ID_OPERATOR_STRING;
 
+/**
+ * @param <T>
+ */
 @Slf4j
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProofTemplateConditionContext<T> implements Comparable<ProofTemplateConditionContext<T>> {
-
-    final T builder;
+    @With(AccessLevel.PRIVATE)
+    private final T builder;
 
     @With(AccessLevel.PACKAGE)
     @NotNull
-    BPAAttributeGroup attributeGroup;
-    @With(AccessLevel.PACKAGE)
-    @Nullable
-    BPAAttribute bpaAttribute;
+    private BPAAttributeGroup attributeGroup;
 
     @With(AccessLevel.PACKAGE)
     @Nullable
-    String conditionOperatorString;
+    private String conditionOperatorString;
     @With(AccessLevel.PACKAGE)
     @Nullable
-    String conditionValue;
+    private String conditionValue;
     @With(AccessLevel.PACKAGE)
     @Nullable
-    String attributeName;
+    private String attributeName;
     @With(AccessLevel.PUBLIC)
     @Nullable
-    ProofTemplateConditionOperator<T> conditionOperator;
+    private ProofTemplateConditionOperator<T> conditionOperator;
 
-    public static <T> Stream<ProofTemplateConditionContext<T>> forTemplate(BPAProofTemplate template, Supplier<T> builder) {
-        ProofTemplateConditionContext<T> context = new ProofTemplateConditionContext<>(builder.get());
-        return template.streamAttributeGroups().flatMap(context::flattenAttributeGroup);
+    public static <T> Stream<ProofTemplateConditionContext<T>> forTemplate(BPAProofTemplate template, Function<String, T> builder) {
+        return template.streamAttributeGroups()
+                .flatMap(group -> contextForGroup(builder, group)
+                        .flattenAttributeGroup(group)
+                );
+    }
+
+    private static <T> ProofTemplateConditionContext<T> contextForGroup(Function<String, T> builder, BPAAttributeGroup group) {
+        return new ProofTemplateConditionContext<T>(builder.apply(group.getSchemaId()));
     }
 
 
