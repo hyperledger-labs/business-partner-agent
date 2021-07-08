@@ -93,7 +93,7 @@ Vue.prototype.$config = {
 // We need to load the configuration before the Vue application, so we can use the UX configuration
 (async () => {
   console.log("Loading configuration...");
-  const result = await axios.get(`${apiBaseUrl}/admin/config`).catch((e) => {
+  let result = await axios.get(`${apiBaseUrl}/admin/config`).catch((e) => {
     console.error(e);
   });
   if ({}.hasOwnProperty.call(result, "data")) {
@@ -104,6 +104,16 @@ Vue.prototype.$config = {
     if (result.data.ux) {
       Object.assign(Vue.prototype.$config.ux, result.data.ux);
     }
+  }
+
+  //Tails configured?
+  result = await axios
+    .get(`${apiBaseUrl}/admin/config/tailsConfigured`)
+    .catch((e) => {
+      console.error(e);
+    });
+  if ({}.hasOwnProperty.call(result, "data")) {
+    Vue.prototype.$config.tailsConfigured = result.data.tailsConfigured;
     console.log("...Configuration loaded");
   }
 
