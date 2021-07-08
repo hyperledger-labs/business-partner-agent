@@ -9,7 +9,7 @@
   <v-container>
     <v-card class="my-4">
       <v-card-title class="bg-light">{{ $t("view.notifications.tasks.title") }}
-        <v-btn icon @click="showTasks = !showTasks">
+        <v-btn icon @click="showTasks = !showTasks" style="margin-left: auto;">
           <v-icon v-if="showTasks">$vuetify.icons.up</v-icon>
           <v-icon v-else>$vuetify.icons.down</v-icon>
         </v-btn>
@@ -24,7 +24,7 @@
     </v-card>
     <v-card class="my-4">
       <v-card-title class="bg-light">{{ $t("view.notifications.activities.title") }}
-        <v-btn icon @click="showActivities = !showActivities">
+        <v-btn icon @click="showActivities = !showActivities" style="margin-left: auto;">
           <v-icon v-if="showActivities">$vuetify.icons.up</v-icon>
           <v-icon v-else>$vuetify.icons.down</v-icon>
         </v-btn>
