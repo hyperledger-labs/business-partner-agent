@@ -30,10 +30,10 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @MicronautTest
-class URClientTest {
+class DidDocClientTest {
 
     @Inject
-    private URClient c;
+    private DidDocClient c;
 
     @Test
     @Disabled

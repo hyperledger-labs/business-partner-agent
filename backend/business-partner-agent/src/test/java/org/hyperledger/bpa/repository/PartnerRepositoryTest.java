@@ -26,13 +26,15 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.model.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -234,7 +236,7 @@ class PartnerRepositoryTest {
 
         Optional<Partner> reload = partnerRepo.findById(partner.getId());
         assertTrue(reload.isPresent());
-        assertEquals("alias", reload.get().getAlias());
+        assertEquals("alias", reload.get().getLabel());
         assertEquals("did:indy:public", reload.get().getDid());
         assertEquals(Boolean.TRUE, reload.get().getValid());
     }

@@ -77,8 +77,8 @@ class PingManagerTest {
 
         ping.checkConnections();
 
-        verify(repo, times(1)).updateStateByConnectionId("1", ConnectionState.INACTIVE);
-        verify(repo, times(1)).updateStateByConnectionId("2", ConnectionState.INACTIVE);
+        verify(repo, times(1)).updateStateByConnectionId("1", ConnectionState.ABANDONED);
+        verify(repo, times(1)).updateStateByConnectionId("2", ConnectionState.ABANDONED);
         verify(repo, never()).updateStateAndLastSeenByConnectionId(any(), any(), any());
 
         assertEquals(2, ping.getSentSize());
