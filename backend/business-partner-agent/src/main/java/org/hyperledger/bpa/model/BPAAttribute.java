@@ -23,7 +23,6 @@ import io.micronaut.core.annotation.Introspected;
 import lombok.*;
 import org.hyperledger.bpa.controller.api.prooftemplates.Attribute;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeConditionOperator;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidBPASchemaAttribute;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -38,7 +37,6 @@ import java.util.stream.Collectors;
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public class BPAAttribute {
     @NotEmpty
-    @ValidBPASchemaAttribute
     private String name;
     @Valid
     @Singular

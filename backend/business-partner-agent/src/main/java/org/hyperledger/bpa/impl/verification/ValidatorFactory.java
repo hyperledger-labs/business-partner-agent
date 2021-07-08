@@ -20,14 +20,17 @@ package org.hyperledger.bpa.impl.verification;
 
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.validation.validator.constraints.ConstraintValidator;
-import org.hyperledger.acy_py.generated.model.IndyProofReqPredSpec;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConditionOperators;
 import org.hyperledger.bpa.impl.verification.prooftemplates.*;
 import org.hyperledger.bpa.model.BPAAttribute;
 import org.hyperledger.bpa.model.BPAAttributeGroup;
 
 import javax.inject.Singleton;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 @Factory
@@ -64,12 +67,9 @@ public class ValidatorFactory {
                 List<BPAAttribute> attributes = value.getAttributes();
                 if (attributes != null) {
                     // an empty AttributeGroup is treated as valid
-                    valid = true;
-                    if (!attributes.isEmpty()) {
-                        valid = attributes.stream()
-                                .map(BPAAttribute::getName)
-                                .allMatch(attributeInSchema);
-                    }
+                    valid = attributes.isEmpty() || attributes.stream()
+                            .map(BPAAttribute::getName)
+                            .allMatch(attributeInSchema);
                 }
             }
             return valid;
@@ -90,31 +90,10 @@ public class ValidatorFactory {
         };
     }
 
-    @Singleton
-    ConstraintValidator<ValidBPASchemaAttribute, BPAAttribute> attributeNameValidator(SchemaService schemaService) {
-        return (value, annotationMetadata, context) -> {
-            if (value != null) {
-                // FIXME this does not work yet.
-//                Optional<String[]> schemaIdField = annotationMetadata.stringValue("schemaIdField")
-//                        .map(s -> s.split("\\."));
-//                Object bean = context.getRootBean();
-
-                String schemaId = "";
-                return schemaService.getSchemaAttributeNames(schemaId).contains(value.getName());
-            }
-            return false;
-        };
-    }
 
     @Singleton
-    ConstraintValidator<ValidAttributeConditionOperator, CharSequence> attributeConditionOperatorValidator() {
-        return (value, annotationMetadata, context) -> {
-            try {
-                IndyProofReqPredSpec.PTypeEnum.fromValue(String.valueOf(value));
-                return true;
-            } catch (IllegalArgumentException e) {
-                return false;
-            }
-        };
+    ConstraintValidator<ValidAttributeConditionOperator, CharSequence> attributeConditionOperatorValidator(ProofTemplateConditionOperators<?, ?, ?> conditionOperators) {
+        return (value, annotationMetadata, context) ->
+                conditionOperators.getConditionOperatorFor(String.valueOf(value)).isPresent();
     }
 }
