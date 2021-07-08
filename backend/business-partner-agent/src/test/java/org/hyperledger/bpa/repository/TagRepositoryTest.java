@@ -113,12 +113,12 @@ class TagRepositoryTest {
                 .partners(Set.of())
                 .build());
 
-        Partner p1 = partnerRepo.save(
+        partnerRepo.save(
                 buildPartnerWithoutTag()
                         .tags(Set.of(tag))
                         .build());
 
-        Partner p2 = partnerRepo.save(
+        partnerRepo.save(
                 buildPartnerWithoutTag()
                         .tags(Set.of(tag))
                         .build());
