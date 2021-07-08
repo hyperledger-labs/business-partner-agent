@@ -91,14 +91,22 @@
     "activityTypes": {
       "connectionInvitation": "Connection Invitation",
       "credentialOffer": "Credential Offer",
-      "proofRequest": "Proof Request"
+      "presentationExchange": "Presentation of Proof"
     },
     "activityStates": {
-      "connectionRequestAccepted": "Connection Request Accepted",
-      "connectionRequestReceived": "Connection Request Received",
-      "connectionRequestSent": "Connection Request Sent"
-    }
-
+      "connectionRequestAccepted": "Connection Request accepted",
+      "connectionRequestReceived": "Connection Request received",
+      "connectionRequestSent": "Connection Request sent",
+      "presentationExchangeAccepted": "Proof Presentation accepted",
+      "presentationExchangeReceived": "A Presentation of Proof has been requested",
+      "presentationExchangeSent": "Request for Presentation of Proof sent"
+    },
+    "activityRoles": {
+      "connectionInvitationSender": "Sender",
+      "connectionInvitationRecipient": "Recipient",
+      "presentationExchangeProver": "Prover",
+      "presentationExchangeVerifier": "Verifier"
+   }
   },
   "showRawData": "Show raw data"
 }

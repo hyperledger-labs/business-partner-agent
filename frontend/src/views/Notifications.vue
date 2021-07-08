@@ -8,20 +8,34 @@
 <template>
   <v-container>
     <v-card class="my-4">
-      <v-card-title class="bg-light">{{ $t("view.notifications.tasks.title") }}</v-card-title>
-      <v-card-text>
-        <activity-list :activities="false" :tasks="true" />
-      </v-card-text>
-      <v-card-actions>
-      </v-card-actions>
+      <v-card-title class="bg-light">{{ $t("view.notifications.tasks.title") }}
+        <v-btn icon @click="showTasks = !showTasks">
+          <v-icon v-if="showTasks">$vuetify.icons.up</v-icon>
+          <v-icon v-else>$vuetify.icons.down</v-icon>
+        </v-btn>
+      </v-card-title>
+      <v-expand-transition>
+        <div v-show="showTasks">
+          <v-card-text>
+            <activity-list :activities="false" :tasks="true" />
+          </v-card-text>
+        </div>
+      </v-expand-transition>
     </v-card>
     <v-card class="my-4">
-      <v-card-title class="bg-light">{{ $t("view.notifications.activities.title") }}</v-card-title>
-      <v-card-text>
-        <activity-list :activities="true" :tasks="false" />
-      </v-card-text>
-      <v-card-actions>
-      </v-card-actions>
+      <v-card-title class="bg-light">{{ $t("view.notifications.activities.title") }}
+        <v-btn icon @click="showActivities = !showActivities">
+          <v-icon v-if="showActivities">$vuetify.icons.up</v-icon>
+          <v-icon v-else>$vuetify.icons.down</v-icon>
+        </v-btn>
+      </v-card-title>
+      <v-expand-transition>
+        <div v-show="showActivities">
+          <v-card-text>
+            <activity-list :activities="true" :tasks="false" :headers="activityHeaders"/>
+          </v-card-text>
+        </div>
+      </v-expand-transition>
     </v-card>
   </v-container>
 </template>
@@ -36,5 +50,33 @@ export default {
   created() {
     EventBus.$emit("title", this.$t("view.notifications.title"));
   },
+  data: () => {
+    return {
+      activityHeaders: [
+        {
+          text: "Type",
+          value: "type",
+        },
+        {
+          text: "Connection",
+          value: "connectionAlias",
+        },
+        {
+          text: "Last Updated",
+          value: "updatedAt",
+        },
+        {
+          text: "Role",
+          value: "role",
+        },
+        {
+          text: "State",
+          value: "state",
+        },
+      ],
+      showTasks: true,
+      showActivities: false,
+    }
+  }
 };
 </script>

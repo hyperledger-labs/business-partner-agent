@@ -16,5 +16,15 @@
       "title": "Send Proof",
       "selectCredential": "Select a credential to send"
     }
+  },
+  "constants": {
+    "activityTypes": {
+      "presentationExchange": "Proof Request"
+    },
+    "activityStates": {
+      "presentationExchangeAccepted": "Proof accepted",
+      "presentationExchangeReceived": "A Proof has been requested",
+      "presentationExchangeSent": "Request for Proof sent"
+    }
   }
 }

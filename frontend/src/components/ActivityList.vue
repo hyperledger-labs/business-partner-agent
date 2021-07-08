@@ -57,6 +57,10 @@
         {{ activityStateLabel(item.state) }}
       </template>
 
+      <template v-slot:[`item.role`]="{ item }">
+        {{ activityRoleLabel(item.role) }}
+      </template>
+
       <template v-slot:[`item.updatedAt`]="{ item }">
         {{ item.updatedAt | moment("YYYY-MM-DD HH:mm") }}
       </template>
@@ -66,26 +70,24 @@
 </template>
 <script>
   import { EventBus } from "@/main";
-  import {ActivityStates, ActivityTypes} from "@/constants";
+  import {ActivityRoles, ActivityStates, ActivityTypes} from "@/constants";
   import VBpaButton from "@/components/BpaButton";
 
   export default {
     name: "ActivityList",
     components: { VBpaButton },
     props: {
-      activities: Boolean,
-      tasks: Boolean,
-    },
-    mounted() {
-      this.filter = null;
-      this.filterValue = null;
-      this.filterValueList = [];
-      this.fetchItems();
-    },
-    data: () => {
-      return {
-        isBusy: true,
-        headers: [
+      activities: {
+        type: Boolean,
+        default: () => false
+      },
+      tasks: {
+        type: Boolean,
+        default: () => true
+      },
+      headers: {
+        type: Array,
+        default: () => [
           {
             text: "Type",
             value: "type",
@@ -103,6 +105,17 @@
             value: "state",
           },
         ],
+      },
+    },
+    mounted() {
+      this.filter = null;
+      this.filterValue = null;
+      this.filterValueList = [];
+      this.fetchItems();
+    },
+    data: () => {
+      return {
+        isBusy: true,
         items: [],
         filter: null,
         filterList: [{text: "Type", value: "type"}],
@@ -155,6 +168,16 @@
             },
           });
         }
+        // TODO: change this to go to the Proof/Presentation details screen when it exists...
+        if (item.type === ActivityTypes.PRESENTATION_EXCHANGE.value) {
+          this.$router.push({
+            name: "Partner",
+            params: {
+              id: item.linkId,
+            },
+          });
+        }
+
       },
       activityTypeLabel(type) {
         const o = ActivityTypes[type.toUpperCase()];
@@ -163,6 +186,10 @@
       activityStateLabel(state) {
         const o = ActivityStates[state.toUpperCase()];
         return o ? o.label : state;
+      },
+      activityRoleLabel(role) {
+        const o = ActivityRoles[role.toUpperCase()];
+        return o ? o.label : role;
       }
     },
   };

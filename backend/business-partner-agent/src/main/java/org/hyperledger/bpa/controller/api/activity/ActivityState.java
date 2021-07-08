@@ -29,7 +29,16 @@ public enum ActivityState {
     CONNECTION_REQUEST_SENT,
     @JsonProperty("connection_request_accepted")
     @SerializedName("connection_request_accepted")
-    CONNECTION_REQUEST_ACCEPTED;
+    CONNECTION_REQUEST_ACCEPTED,
+    @JsonProperty("presentation_exchange_sent")
+    @SerializedName("presentation_exchange_sent")
+    PRESENTATION_EXCHANGE_SENT,
+    @JsonProperty("presentation_exchange_received")
+    @SerializedName("presentation_exchange_received")
+    PRESENTATION_EXCHANGE_RECEIVED,
+    @JsonProperty("presentation_exchange_accepted")
+    @SerializedName("presentation_exchange_accepted")
+    PRESENTATION_EXCHANGE_ACCEPTED;
 
     ActivityState() {
     }

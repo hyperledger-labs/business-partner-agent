@@ -90,9 +90,9 @@ export const ActivityTypes = Object.freeze({
     value: "credential_offer",
     label: i18n.t('constants.activityTypes.credentialOffer'),
   },
-  PROOF_REQUEST: {
-    value: "proof_request",
-    label: i18n.t('constants.activityTypes.proofRequest'),
+  PRESENTATION_EXCHANGE: {
+    value: "presentation_exchange",
+    label: i18n.t('constants.activityTypes.presentationExchange'),
   },
 });
 
@@ -109,5 +109,38 @@ export const ActivityStates = Object.freeze({
     value: "connection_request_sent",
     label: i18n.t('constants.activityStates.connectionRequestSent'),
   },
+  PRESENTATION_EXCHANGE_ACCEPTED: {
+    value: "presentation_exchange_accepted",
+    label: i18n.t('constants.activityStates.presentationExchangeAccepted'),
+  },
+  PRESENTATION_EXCHANGE_RECEIVED: {
+    value: "presentation_exchange_received",
+    label: i18n.t('constants.activityStates.presentationExchangeReceived'),
+  },
+  PRESENTATION_EXCHANGE_SENT: {
+    value: "presentation_exchange_sent",
+    label: i18n.t('constants.activityStates.presentationExchangeSent'),
+  },
+
+});
+
+export const ActivityRoles = Object.freeze({
+  CONNECTION_INVITATION_SENDER: {
+    value: "connection_invitation_sender",
+    label: i18n.t('constants.activityRoles.connectionInvitationSender'),
+  },
+  CONNECTION_INVITATION_RECIPIENT: {
+    value: "connection_invitation_recipient",
+    label: i18n.t('constants.activityRoles.connectionInvitationRecipient'),
+  },
+  PRESENTATION_EXCHANGE_PROVER: {
+    value: "presentation_exchange_prover",
+    label: i18n.t('constants.activityRoles.presentationExchangeProver'),
+  },
+  PRESENTATION_EXCHANGE_VERIFIER: {
+    value: "presentation_exchange_verifier",
+    label: i18n.t('constants.activityRoles.presentationExchangeVerifier'),
+  },
+
 });
 

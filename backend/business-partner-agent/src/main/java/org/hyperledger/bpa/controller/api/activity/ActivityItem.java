@@ -28,6 +28,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ActivityItem {
 
+    private ActivityRole role;
     private ActivityState state;
     private ActivityType type;
     private Long updatedAt;

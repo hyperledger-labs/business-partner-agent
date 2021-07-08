@@ -30,7 +30,7 @@ import {
   mdiHandshake,
   mdiAlertCircleOutline,
   mdiClockTimeThreeOutline,
-  mdiContentSave,
+  mdiContentSave, mdiChevronUp, mdiChevronDown,
 } from "@mdi/js";
 
 Vue.use(Vuetify);
@@ -56,6 +56,8 @@ export default new Vuetify({
       about: mdiInformationOutline,
       prev: mdiChevronLeft,
       next: mdiChevronRight,
+      up: mdiChevronUp,
+      down: mdiChevronDown,
       delete: mdiDelete,
       copy: mdiContentCopy,
       add: mdiPlus,

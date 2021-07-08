@@ -21,20 +21,17 @@ import com.github.jknack.handlebars.internal.lang3.StringUtils;
 import io.micronaut.core.annotation.Nullable;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
-import org.hyperledger.bpa.controller.api.activity.ActivityItem;
-import org.hyperledger.bpa.controller.api.activity.ActivitySearchParameters;
-import org.hyperledger.bpa.controller.api.activity.ActivityState;
-import org.hyperledger.bpa.controller.api.activity.ActivityType;
+import org.hyperledger.bpa.controller.api.activity.*;
 import org.hyperledger.bpa.model.Partner;
+import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.repository.BPACredentialExchangeRepository;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class ActivitiesManager {
 
@@ -71,13 +68,14 @@ public class ActivitiesManager {
     }
 
     static List<PresentationExchangeState> presentationExchangeStatesForActivities() {
-        return presentationExchangeStates(PresentationExchangeState.REQUEST_SENT,
-                PresentationExchangeState.PROPOSAL_SENT);
+        return presentationExchangeStates(PresentationExchangeState.REQUEST_RECEIVED,
+                PresentationExchangeState.REQUEST_SENT,
+                PresentationExchangeState.VERIFIED,
+                PresentationExchangeState.PRESENTATION_ACKED);
     }
 
     static List<PresentationExchangeState> presentationExchangeStatesForTasks() {
-        return presentationExchangeStates(PresentationExchangeState.REQUEST_RECEIVED,
-                PresentationExchangeState.PROPOSAL_RECEIVED);
+        return presentationExchangeStates(PresentationExchangeState.REQUEST_RECEIVED);
     }
 
     static List<CredentialExchangeState> credentialExchangeStates(CredentialExchangeState... states) {
@@ -104,6 +102,8 @@ public class ActivitiesManager {
         if (parameters.getActivity() == null || parameters.getActivity()) {
             // connection invitations... outgoing.
             results.addAll(getConnectionInvitations(parameters.getType(), connectionStatesForActivities(), false));
+            results.addAll(
+                    getPresentationExchanges(parameters.getType(), presentationExchangeStatesForActivities(), false));
         }
         return results;
     }
@@ -113,6 +113,7 @@ public class ActivitiesManager {
         if (parameters.getTask() == null || parameters.getTask()) {
             // connection invitations... incoming.
             results.addAll(getConnectionInvitations(parameters.getType(), connectionStatesForTasks(), true));
+            results.addAll(getPresentationExchanges(parameters.getType(), presentationExchangeStatesForTasks(), true));
         }
         return results;
     }
@@ -137,35 +138,51 @@ public class ActivitiesManager {
                         results.add(getConnectionInvitationItem(p, true));
                     }
                 } else {
-                    // we want outgoing, ones we sent...
-                    if (p.getIncoming() == null) {
-                        results.add(getConnectionInvitationItem(p, false));
-                    }
+                    results.add(getConnectionInvitationItem(p, false));
                 }
             }
         }
         return results;
     }
 
-    private ActivityItem getConnectionInvitationItem(Partner p, Boolean task) {
-        ActivityType type = ActivityType.CONNECTION_INVITATION;
-        ActivityState state = ActivityState.CONNECTION_REQUEST_RECEIVED;
-        if (p.getIncoming() == null) {
-            // we sent the invitation...
-            switch (p.getState()) {
-            case ACTIVE:
-            case RESPONSE:
-                state = ActivityState.CONNECTION_REQUEST_ACCEPTED;
-                break;
-            default:
-                state = ActivityState.CONNECTION_REQUEST_SENT;
+    private List<ActivityItem> getPresentationExchanges(ActivityType type, List<PresentationExchangeState> states,
+            Boolean task) {
+        List<ActivityItem> results = new ArrayList<>();
+        if (type == null || type == ActivityType.PRESENTATION_EXCHANGE) {
+            Iterable<PartnerProof> proofs = proofRepository.findByStateIn(states);
+            for (PartnerProof p : proofs) {
+                results.add(getPresentationExchangeItem(p, task));
             }
         }
-        String alias = StringUtils.isNotEmpty(p.getAlias()) ? p.getAlias()
-                : StringUtils.isNotEmpty(p.getLabel()) ? p.getLabel() : p.getDid();
+        return results;
+    }
+
+    private ActivityItem getConnectionInvitationItem(Partner p, Boolean task) {
+        ActivityRole role = (p.getIncoming() == null) ? ActivityRole.CONNECTION_INVITATION_SENDER
+                : ActivityRole.CONNECTION_INVITATION_RECIPIENT;
+        ActivityType type = ActivityType.CONNECTION_INVITATION;
+
+        ActivityState state;
+        switch (p.getState()) {
+        case ACTIVE:
+        case RESPONSE:
+            state = ActivityState.CONNECTION_REQUEST_ACCEPTED;
+            break;
+        default:
+            switch (role) {
+            case CONNECTION_INVITATION_SENDER:
+                state = ActivityState.CONNECTION_REQUEST_SENT;
+                break;
+            default:
+                state = ActivityState.CONNECTION_REQUEST_RECEIVED;
+            }
+        }
+
+        String alias = getConnectionAlias(p);
         Long updatedAt = p.getUpdatedAt().toEpochMilli();
         String linkId = p.getId().toString();
         return ActivityItem.builder()
+                .role(role)
                 .state(state)
                 .type(type)
                 .connectionAlias(alias)
@@ -173,6 +190,60 @@ public class ActivitiesManager {
                 .task(task)
                 .updatedAt(updatedAt)
                 .build();
+    }
+
+    private ActivityItem getPresentationExchangeItem(PartnerProof p, Boolean task) {
+        ActivityRole role = p.getRole() == PresentationExchangeRole.PROVER ? ActivityRole.PRESENTATION_EXCHANGE_PROVER
+                : ActivityRole.PRESENTATION_EXCHANGE_VERIFIER;
+        ActivityType type = ActivityType.PRESENTATION_EXCHANGE;
+
+        ActivityState state;
+        switch (p.getState()) {
+        case VERIFIED:
+        case PRESENTATION_ACKED:
+            state = ActivityState.PRESENTATION_EXCHANGE_ACCEPTED;
+            break;
+        case REQUEST_SENT:
+        case PRESENTATIONS_SENT:
+            state = ActivityState.PRESENTATION_EXCHANGE_SENT;
+            break;
+        case REQUEST_RECEIVED:
+        case PRESENTATION_RECEIVED:
+            state = ActivityState.PRESENTATION_EXCHANGE_RECEIVED;
+            break;
+        default:
+            switch (role) {
+            case PRESENTATION_EXCHANGE_PROVER:
+                state = ActivityState.PRESENTATION_EXCHANGE_SENT;
+                break;
+            default:
+                state = ActivityState.PRESENTATION_EXCHANGE_RECEIVED;
+            }
+        }
+        String linkId = p.getId().toString();
+        String alias = "";
+        Optional<Partner> partner = partnerRepo.findById(p.getPartnerId());
+        if (partner.isPresent()) {
+            alias = getConnectionAlias(partner.get());
+            // TODO: remove this when we have the proof request details screen
+            linkId = partner.get().getId().toString();
+        }
+        Long updatedAt = (p.getIssuedAt() != null) ? p.getIssuedAt().toEpochMilli() : p.getCreatedAt().toEpochMilli();
+
+        return ActivityItem.builder()
+                .role(role)
+                .state(state)
+                .type(type)
+                .connectionAlias(alias)
+                .linkId(linkId)
+                .task(task)
+                .updatedAt(updatedAt)
+                .build();
+    }
+
+    private String getConnectionAlias(Partner partner) {
+        return StringUtils.isNotEmpty(partner.getAlias()) ? partner.getAlias()
+                : StringUtils.isNotEmpty(partner.getLabel()) ? partner.getLabel() : partner.getDid();
     }
 
 }

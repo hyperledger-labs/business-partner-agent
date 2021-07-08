@@ -20,17 +20,20 @@ package org.hyperledger.bpa.controller.api.activity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 
-public enum ActivityType {
-    @JsonProperty("connection_invitation")
-    @SerializedName("connection_invitation")
-    CONNECTION_INVITATION,
-    @JsonProperty("credential_offer")
-    @SerializedName("credential_offer")
-    CREDENTIAL_OFFER,
-    @JsonProperty("presentation_exchange")
-    @SerializedName("presentation_exchange")
-    PRESENTATION_EXCHANGE;
+public enum ActivityRole {
+    @JsonProperty("connection_invitation_sender")
+    @SerializedName("connection_invitation_sender")
+    CONNECTION_INVITATION_SENDER,
+    @JsonProperty("connection_invitation_recipient")
+    @SerializedName("connection_invitation_recipient")
+    CONNECTION_INVITATION_RECIPIENT,
+    @JsonProperty("presentation_exchange_prover")
+    @SerializedName("presentation_exchange_prover")
+    PRESENTATION_EXCHANGE_PROVER,
+    @JsonProperty("presentation_exchange_verifier")
+    @SerializedName("presentation_exchange_verifier")
+    PRESENTATION_EXCHANGE_VERIFIER;
 
-    ActivityType() {
+    ActivityRole() {
     }
 }
