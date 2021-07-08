@@ -94,11 +94,11 @@ public class ProofManager {
     MessageService messageService;
 
     @Inject
-    ProofTemplateConverion proofTemplateConverion;
+    ProofTemplateConversion proofTemplateConversion;
 
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
         try {
-            PresentProofRequest proofRequest = proofTemplateConverion.proofRequestFrom(partnerId, proofTemplate);
+            PresentProofRequest proofRequest = proofTemplateConversion.proofRequestFrom(partnerId, proofTemplate);
             String issuerId = null;
             String schemaId = null;
             ac.presentProofSendRequest(proofRequest).ifPresent(

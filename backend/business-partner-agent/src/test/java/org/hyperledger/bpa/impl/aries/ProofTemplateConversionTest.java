@@ -54,15 +54,15 @@ public class ProofTemplateConversionTest extends RunWithAries {
     }
 
     @Inject
-    ProofTemplateConverion proofTemplateConverion;
+    ProofTemplateConversion proofTemplateConversion;
 
     @Test
-    public void testProofManagerCreateValidRequestFromProofTemplate() throws IOException {
+    public void testProofManagerCreateValidRequestFromProofTemplate() {
 
         Mockito.when(schemaService.getSchemaFor("mySchemaId"))
                 .thenReturn(Optional.of(new BPASchema()));
         Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
-                .thenReturn(Set.of("anotherAttributeName"));
+                .thenReturn(Set.of("name"));
         UUID partnerId = UUID.randomUUID();
         Mockito.when(partnerRepo.findById(partnerId))
                 .thenReturn(Optional.of(Partner.builder()
@@ -74,21 +74,24 @@ public class ProofTemplateConversionTest extends RunWithAries {
                 .attributeGroups(
                         BPAAttributeGroups.builder()
                                 .attributeGroup(BPAAttributeGroup.builder()
-                                        .schemaId("notExistingSchema")
-                                        .attribute(BPAAttribute.builder()
-                                                .name("myAttributeName")
-                                                .build())
-                                        .build())
-                                .attributeGroup(BPAAttributeGroup.builder()
                                         .schemaId("mySchemaId")
                                         .attribute(BPAAttribute.builder()
-                                                .name("notASchemaAttribute")
+                                                .name("name")
                                                 .build())
                                         .build())
                                 .build())
                 .build();
 
-        PresentProofRequest actual = proofTemplateConverion.proofRequestFrom(partnerId, template);
-        ac.presentProofCreateRequest(actual);
+        PresentProofRequest actual = proofTemplateConversion.proofRequestFrom(partnerId, template);
+        assertWithAcapy(actual);
     }
+
+    void assertWithAcapy(PresentProofRequest proofRequest){
+        try {
+            ac.presentProofCreateRequest(proofRequest);
+        }catch (IOException e        ){
+            Assertions.fail("aca-py cannot process the request "+ proofRequest,e);
+        }
+    }
+
 }

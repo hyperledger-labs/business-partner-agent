@@ -37,7 +37,7 @@ import java.util.function.UnaryOperator;
 
 @Slf4j
 @Singleton
-public class ProofTemplateConverion {
+public class ProofTemplateConversion {
 
     @Inject
     PartnerRepository partnerRepo;
