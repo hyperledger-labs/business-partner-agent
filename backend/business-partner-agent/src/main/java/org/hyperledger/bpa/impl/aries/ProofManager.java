@@ -93,9 +93,12 @@ public class ProofManager {
     @Inject
     MessageService messageService;
 
+    @Inject
+    ProofTemplateConverion proofTemplateConverion;
+
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
         try {
-            PresentProofRequest proofRequest = proofRequestFrom(partnerId, proofTemplate);
+            PresentProofRequest proofRequest = proofTemplateConverion.proofRequestFrom(partnerId, proofTemplate);
             String issuerId = null;
             String schemaId = null;
             ac.presentProofSendRequest(proofRequest).ifPresent(
@@ -105,23 +108,6 @@ public class ProofManager {
         } catch (IOException e) {
             throw new NetworkException(ACA_PY_ERROR_MSG, e);
         }
-    }
-
-    PresentProofRequest proofRequestFrom(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
-        final Partner partner = partnerRepo.findById(partnerId)
-                .orElseThrow(() -> new PartnerException("Partner not found"));
-        if (!partner.hasConnectionId()) {
-            throw new PartnerException("Partner has no aca-py connection");
-        }
-
-        // TODO add non-revoked-proof
-        // zkp -> predicate
-        // schemaId -> restriction
-//
-//        PresentProofRequestHelper
-//                .buildForAllAttributes(partner.getConnectionId(),
-//                        schema.getAttrNames(), req.buildRestrictions());
-        return null;
     }
 
     // request proof from partner
