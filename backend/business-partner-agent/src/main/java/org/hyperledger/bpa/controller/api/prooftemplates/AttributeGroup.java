@@ -34,8 +34,14 @@ public class AttributeGroup {
     @NotNull
     @NotNull
     String schemaId;
+
     @Singular
     @Valid
     @NotNull
     List<Attribute> attributes;
+
+    @NotNull
+    @Singular
+    @Valid
+    List<Condition> schemaLevelConditions;
 }
