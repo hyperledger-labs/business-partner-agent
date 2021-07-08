@@ -42,6 +42,10 @@ import java.util.Optional;
 @RequiresWeb
 public class WebDidDocManager implements DidDocManager {
 
+    private static final String TYPE_PROFILE = DIDEndpointWithType.EndpointTypeEnum.PROFILE.getValue()
+            .toLowerCase(Locale.US);
+    private static final String TYPE_DID_COMM = DIDDocument.ENDPOINT_TYPE_DID_COMM;
+
     @Value("${bpa.acapy.endpoint}")
     String acapyEndpoint;
 
@@ -65,29 +69,28 @@ public class WebDidDocManager implements DidDocManager {
         String myDid = id.getMyDid();
         String myKeyId = id.getMyKeyId(myDid);
 
-        List<DIDDocument.VerificationMethod> verificationMethods = List.of(DIDDocument.VerificationMethod.builder()
-                .id(myKeyId)
-                .type(ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE)
-                .publicKeyBase58(verkey)
-                .build());
-
-        String profile = DIDEndpointWithType.EndpointTypeEnum.PROFILE.getValue().toLowerCase(Locale.US);
-        String endpoint = DIDEndpointWithType.EndpointTypeEnum.ENDPOINT.getValue().toLowerCase(Locale.US);
-
         DIDDocument didDoc = DIDDocument.builder()
                 .id(myDid)
+                .verificationMethod(List.of(DIDDocument.VerificationMethod.builder()
+                        .id(myKeyId)
+                        .type(ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE)
+                        .controller(myDid)
+                        .publicKeyBase58(verkey)
+                        .build()))
+                .authentication(List.of(myKeyId))
+                .assertionMethod(List.of(myKeyId))
                 .service(List.of(
                         DIDDocument.Service.builder()
-                                .serviceEndpoint(scheme + "://" + host + "/profile.jsonld")
-                                .id(myDid + "#" + profile)
-                                .type(profile)
+                                .id(myDid + "#" + TYPE_DID_COMM)
+                                .type(TYPE_DID_COMM)
+                                .serviceEndpoint(acapyEndpoint)
+                                .recipientKeys(List.of(myKeyId))
                                 .build(),
                         DIDDocument.Service.builder()
-                                .serviceEndpoint(acapyEndpoint)
-                                .id(myDid + "#" + endpoint)
-                                .type(endpoint)
+                                .id(myDid + "#" + TYPE_PROFILE)
+                                .type(TYPE_PROFILE)
+                                .serviceEndpoint(scheme + "://" + host + "/profile.jsonld")
                                 .build()))
-                .verificationMethod(verificationMethods)
                 .build();
 
         try {

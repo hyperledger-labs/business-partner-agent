@@ -32,7 +32,7 @@ services:
       - ${BPA_PORT}:${BPA_PORT}
     restart: always
   bpa-agent1:
-    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.7-pre.3
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.0rc0
     ports:
       - ${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}
       - ${ACAPY_HTTP_PORT}:${ACAPY_HTTP_PORT}
@@ -59,6 +59,8 @@ services:
         --label '${AGENT_NAME}' \
         ${ACAPY_ADMIN_CONFIG} \
         ${ACAPY_READ_ONLY_MODE} \
+        ${ACAPY_TAILS_BASE_URL} \       
+        ${ACAPY_TAILS_UPLOAD_URL} \   
         "
     ]
     volumes:
@@ -109,10 +111,10 @@ services:
   bpa-agent2:
     profiles:
       - second_bpa
-    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.7-pre.3
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.0rc0
     ports:
       - ${ACAPY2_ADMIN_PORT}:${ACAPY2_ADMIN_PORT}
-      - ${ACAPY2_HTTP_PORT}:${ACAPY2_HTTP_PORT}
+      - ${ACAPY2_HTTP_PORT}:${ACAPY2_HTTP_PORT}       
     depends_on:
       - bpa-wallet-db2
     entrypoint: /bin/bash
@@ -136,6 +138,8 @@ services:
         --label '${AGENT2_NAME}' \
         ${ACAPY_ADMIN_CONFIG} \
         ${ACAPY_READ_ONLY_MODE} \
+        ${ACAPY_TAILS_BASE_URL} \       
+        ${ACAPY_TAILS_UPLOAD_URL} \
         "
     ]
     volumes:
@@ -150,9 +154,10 @@ services:
     ports:
       - ${POSTGRESQL2_PORT}:5432
     volumes:
-      - bpa-wallet-db2:/var/lib/postgresql/data
+      - bpa-wallet-db2:/var/lib/postgresql/data 
+
 #######
-# Volumes for the databases
+# Volumes
 #######
 volumes:
   bpa-wallet-db1:

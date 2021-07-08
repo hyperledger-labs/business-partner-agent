@@ -95,7 +95,7 @@ public class PingManager {
                 state = ConnectionState.ACTIVE;
                 repo.updateStateAndLastSeenByConnectionId(v, state, Instant.now());
             } else {
-                state = ConnectionState.INACTIVE;
+                state = ConnectionState.ABANDONED;
                 repo.updateStateByConnectionId(v, state);
             }
         });
