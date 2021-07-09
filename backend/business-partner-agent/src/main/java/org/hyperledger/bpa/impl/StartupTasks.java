@@ -20,8 +20,15 @@ package org.hyperledger.bpa.impl;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.env.Environment;
+import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.context.event.StartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
+import java.time.Duration;
+import java.util.Iterator;
+import java.util.Optional;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.bpa.impl.activity.VPManager;
@@ -32,112 +39,116 @@ import org.hyperledger.bpa.impl.mode.web.WebStartupTasks;
 import org.hyperledger.bpa.model.BPAState;
 import org.hyperledger.bpa.repository.BPAStateRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.time.Duration;
-import java.util.Iterator;
-import java.util.Optional;
-
 @Slf4j
 @Singleton
 @Requires(notEnv = { Environment.TEST })
 public class StartupTasks {
 
-    @Value("${bpa.web.only}")
-    Boolean envState;
+  @NoArgsConstructor
+  public static final class AcaPyReady {}
 
-    @Value("${bpa.host}")
-    String host;
+  @Value("${bpa.web.only}")
+  Boolean envState;
 
-    @Inject
-    BPAStateRepository stateRepo;
+  @Value("${bpa.host}")
+  String host;
 
-    @Inject
-    AriesClient ac;
+  @Inject
+  BPAStateRepository stateRepo;
 
-    @Inject
-    SchemaService schemaService;
+  @Inject
+  AriesClient ac;
 
-    @Inject
-    TagService tagService;
+  @Inject
+  SchemaService schemaService;
 
-    @Inject
-    PartnerCredDefLookup credLookup;
+  @Inject
+  TagService tagService;
 
-    @Inject
-    VPManager vpMgmt;
+  @Inject
+  PartnerCredDefLookup credLookup;
 
-    @Inject
-    Optional<WebStartupTasks> webTasks;
+  @Inject
+  VPManager vpMgmt;
 
-    @Inject
-    Optional<IndyStartupTasks> indyTasks;
+  @Inject
+  Optional<WebStartupTasks> webTasks;
 
-    @EventListener
-    public void onServiceStartedEvent(@SuppressWarnings("unused") StartupEvent startEvent) {
-        checkModeChange();
+  @Inject
+  Optional<IndyStartupTasks> indyTasks;
 
-        ac.statusWaitUntilReady(Duration.ofSeconds(60));
+  @Inject
+  ApplicationEventPublisher eventPublisher;
 
-        createDefaultSchemas();
-        createDefaultTags();
+  @EventListener
+  public void onServiceStartedEvent(@SuppressWarnings("unused") StartupEvent startEvent) {
+    checkModeChange();
 
-        if (envState) {
-            log.info("Running in Web Only mode.");
-            webTasks.ifPresent(WebStartupTasks::onServiceStartedEvent);
+    ac.statusWaitUntilReady(Duration.ofSeconds(60));
+    eventPublisher.publishEvent(new AcaPyReady());
+
+    createDefaultSchemas();
+    createDefaultTags();
+
+    if (envState) {
+      log.info("Running in Web Only mode.");
+      webTasks.ifPresent(WebStartupTasks::onServiceStartedEvent);
+    } else {
+      log.info("Running in Indy mode");
+      indyTasks.ifPresent(IndyStartupTasks::onServiceStartedEvent);
+    }
+
+    vpMgmt
+      .getVerifiablePresentation()
+      .ifPresentOrElse(
+        vp -> log.info("VP already exists, skipping: {}", host),
+        () -> {
+          log.info("Creating default public profile for host: {}", host);
+          vpMgmt.recreateVerifiablePresentation();
+        }
+      );
+
+    credLookup.lookupTypesForAllPartnersAsync();
+  }
+
+  private void checkModeChange() {
+    Optional<BPAState> dbState = getState();
+    if (dbState.isPresent()) {
+      Boolean state = dbState.get().getWebOnly();
+      if (!state.equals(envState)) {
+        String msg;
+        if (state.equals(Boolean.TRUE)) {
+          msg = "Switching from web only mode to aries is not supported";
         } else {
-            log.info("Running in Indy mode");
-            indyTasks.ifPresent(IndyStartupTasks::onServiceStartedEvent);
+          msg = "Switching from aries to web mode is not supported";
         }
-
-        vpMgmt.getVerifiablePresentation().ifPresentOrElse(
-                vp -> log.info("VP already exists, skipping: {}", host),
-                () -> {
-                    log.info("Creating default public profile for host: {}", host);
-                    vpMgmt.recreateVerifiablePresentation();
-                });
-
-        credLookup.lookupTypesForAllPartnersAsync();
+        log.error(msg);
+        throw new RuntimeException(msg);
+      }
+      log.debug("Mode check succeeded");
+    } else {
+      stateRepo.save(new BPAState(envState));
     }
+  }
 
-    private void checkModeChange() {
-        Optional<BPAState> dbState = getState();
-        if (dbState.isPresent()) {
-            Boolean state = dbState.get().getWebOnly();
-            if (!state.equals(envState)) {
-                String msg;
-                if (state.equals(Boolean.TRUE)) {
-                    msg = "Switching from web only mode to aries is not supported";
-                } else {
-                    msg = "Switching from aries to web mode is not supported";
-                }
-                log.error(msg);
-                throw new RuntimeException(msg);
-            }
-            log.debug("Mode check succeeded");
-        } else {
-            stateRepo.save(new BPAState(envState));
-        }
+  private Optional<BPAState> getState() {
+    Optional<BPAState> result = Optional.empty();
+    final Iterator<BPAState> it = stateRepo.findAll().iterator();
+    while (it.hasNext()) {
+      result = Optional.of(it.next());
+      if (it.hasNext()) {
+        throw new RuntimeException("More then one state entry found, db is corrupted");
+      }
     }
+    return result;
+  }
 
-    private Optional<BPAState> getState() {
-        Optional<BPAState> result = Optional.empty();
-        final Iterator<BPAState> it = stateRepo.findAll().iterator();
-        while (it.hasNext()) {
-            result = Optional.of(it.next());
-            if (it.hasNext()) {
-                throw new RuntimeException("More then one state entry found, db is corrupted");
-            }
-        }
-        return result;
-    }
+  private void createDefaultSchemas() {
+    log.debug("Purging and re-setting default schemas.");
+    schemaService.resetWriteOnlySchemas();
+  }
 
-    private void createDefaultSchemas() {
-        log.debug("Purging and re-setting default schemas.");
-        schemaService.resetWriteOnlySchemas();
-    }
-
-    private void createDefaultTags() {
-        tagService.createDefaultTags();
-    }
+  private void createDefaultTags() {
+    tagService.createDefaultTags();
+  }
 }
