@@ -16,7 +16,12 @@ import Vue from "vue";
  * @returns {object} An axios instance
  */
 export function appAxios(timeout = 0) {
-  const axiosOptions = { timeout: timeout };
+  const axiosOptions = {
+    timeout: timeout,
+    params: {
+      t: new Date().getTime()
+    }
+  };
   if (Vue.prototype.$config) {
     // any other options we can set here?
     axiosOptions.baseURL = Vue.prototype.$apiBaseUrl;

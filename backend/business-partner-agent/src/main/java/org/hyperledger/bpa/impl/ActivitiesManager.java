@@ -60,6 +60,10 @@ public class ActivitiesManager {
         return connectionStates(ConnectionState.REQUEST);
     }
 
+    static List<ConnectionState> connectionStatesCompleted() {
+        return connectionStates(ConnectionState.ACTIVE, ConnectionState.INVITATION.RESPONSE);
+    }
+
     static List<PresentationExchangeState> presentationExchangeStates(PresentationExchangeState... states) {
         List<PresentationExchangeState> results = new ArrayList<>();
         for (PresentationExchangeState state : states)
@@ -76,6 +80,11 @@ public class ActivitiesManager {
 
     static List<PresentationExchangeState> presentationExchangeStatesForTasks() {
         return presentationExchangeStates(PresentationExchangeState.REQUEST_RECEIVED);
+    }
+
+    static List<PresentationExchangeState> presentationExchangeStatesCompleted() {
+        return presentationExchangeStates(PresentationExchangeState.VERIFIED,
+                PresentationExchangeState.PRESENTATION_ACKED);
     }
 
     static List<CredentialExchangeState> credentialExchangeStates(CredentialExchangeState... states) {

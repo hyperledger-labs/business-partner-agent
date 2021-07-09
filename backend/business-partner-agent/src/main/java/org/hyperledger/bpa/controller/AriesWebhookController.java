@@ -31,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.webhook.EventHandler;
 
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Handles incoming aca-py webhook events
@@ -46,7 +47,7 @@ public class AriesWebhookController {
     public static final String WEBHOOK_CONTROLLER_PATH = "/log/topic";
 
     @Inject
-    EventHandler handler;
+    List<EventHandler> handlers;
 
     @Post(WEBHOOK_CONTROLLER_PATH + "/{eventType}")
     public void logEvent(
@@ -55,6 +56,6 @@ public class AriesWebhookController {
 
         log.info("Webhook received, type: {}", eventType);
 
-        handler.handleEvent(eventType, eventBody);
+        handlers.stream().forEach(eventHandler -> eventHandler.handleEvent(eventType, eventBody));
     }
 }

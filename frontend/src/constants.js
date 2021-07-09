@@ -27,6 +27,7 @@ export const ApiRoutes = Object.freeze({
   ADMIN: "/admin",
   ISSUER: "/issuer",
   PARTNERS: "/partners",
+  ACTIVITIES: "/activities",
 });
 
 export const CredentialExchangeRoles = Object.freeze({

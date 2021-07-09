@@ -72,6 +72,7 @@
   import { EventBus } from "@/main";
   import {ActivityRoles, ActivityStates, ActivityTypes} from "@/constants";
   import VBpaButton from "@/components/BpaButton";
+  import activitiesService from "@/services/activitiesService";
 
   export default {
     name: "ActivityList",
@@ -137,12 +138,11 @@
     },
     methods: {
       fetchItems() {
-        let filter = `task=${this.tasks}&activity=${this.activities}`;
+        let filter = undefined;
         if (this.filter && this.filterValue) {
-          filter = `${filter}&${this.filter.value}=${this.filterValue.value}`;
+          filter = { name: this.filter.value, value: this.filterValue.value };
         }
-        this.$axios
-          .get(`${this.$apiBaseUrl}/activities?${filter}`)
+        activitiesService.listActivities(this.tasks, this.activities, filter)
           .then((result) => {
             if ({}.hasOwnProperty.call(result, "data")) {
               this.isBusy = false;

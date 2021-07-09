@@ -49,6 +49,7 @@ export default {
   components: {ActivityList},
   created() {
     EventBus.$emit("title", this.$t("view.notifications.title"));
+    this.$store.commit("notificationsSeen");
   },
   data: () => {
     return {
