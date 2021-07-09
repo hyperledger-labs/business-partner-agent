@@ -23,7 +23,7 @@
           class="mt-1"
           label="Revocable"
           v-model="entry.supportRevocation"
-          :disabled="isTailsConfigured && !entry.isEdit"
+          :disabled="!isTailsConfigured || !entry.isEdit"
           outlined
           dense
         >
@@ -99,7 +99,7 @@ export default {
   },
   computed: {
     isTailsConfigured() {
-      return this.$config.tailsConfigured;
+      return this.$config.tailsServerConfigured;
     },
   },
   methods: {

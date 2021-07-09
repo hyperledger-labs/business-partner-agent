@@ -37,65 +37,64 @@ import org.hyperledger.bpa.impl.activity.DidResolver;
 @NoArgsConstructor
 @Slf4j
 public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaPyReady> {
-  @JsonIgnore
-  @Inject
-  AriesClient ac;
+    @JsonIgnore
+    @Inject
+    AriesClient ac;
 
-  Boolean tailsServerConfigured;
+    Boolean tailsServerConfigured;
 
-  @Value("${bpa.host}")
-  String host;
+    @Value("${bpa.host}")
+    String host;
 
-  @Value("${bpa.ledger.browser}")
-  String ledgerBrowser;
+    @Value("${bpa.ledger.browser}")
+    String ledgerBrowser;
 
-  @Value("${bpa.did.prefix}")
-  String ledgerPrefix;
+    @Value("${bpa.did.prefix}")
+    String ledgerPrefix;
 
-  @Value("${bpa.web.only}")
-  Boolean webOnly;
+    @Value("${bpa.web.only}")
+    Boolean webOnly;
 
-  @Value("${bpa.name}")
-  String agentName;
+    @Value("${bpa.name}")
+    String agentName;
 
-  @Value("${bpa.acapy.endpoint}")
-  String acapyEndpoint;
+    @Value("${bpa.acapy.endpoint}")
+    String acapyEndpoint;
 
-  @Value("${bpa.imprint.url}")
-  String imprint;
+    @Value("${bpa.imprint.url}")
+    String imprint;
 
-  @Value("${bpa.privacy.policy.url}")
-  String dataPrivacyPolicy;
+    @Value("${bpa.privacy.policy.url}")
+    String dataPrivacyPolicy;
 
-  @Value("${bpa.creddef.revocationRegistrySize}")
-  Integer revocationRegistrySize;
+    @Value("${bpa.creddef.revocationRegistrySize}")
+    Integer revocationRegistrySize;
 
-  @Property(name = "bpa.ux")
-  Map<String, Object> ux;
+    @Property(name = "bpa.ux")
+    Map<String, Object> ux;
 
-  @Value("${bpa.title}")
-  String title;
+    @Value("${bpa.title}")
+    String title;
 
-  @Value("${bpa.i18n.locale}")
-  String locale;
+    @Value("${bpa.i18n.locale}")
+    String locale;
 
-  @Value("${bpa.i18n.fallbackLocale}")
-  String fallbackLocale;
+    @Value("${bpa.i18n.fallbackLocale}")
+    String fallbackLocale;
 
-  public String getAgentName() {
-    return DidResolver.splitDidFrom(agentName).getLabel();
-  }
-
-  @Override
-  public void onApplicationEvent(StartupTasks.AcaPyReady event) {
-    try {
-      this.tailsServerConfigured =
-        ac
-          .statusConfig()
-          .flatMap(c -> c.getAs("tails_server_base_url", String.class))
-          .isPresent();
-    } catch (IOException e) {
-      log.warn("No aca-py");
+    public String getAgentName() {
+        return DidResolver.splitDidFrom(agentName).getLabel();
     }
-  }
+
+    @Override
+    public void onApplicationEvent(StartupTasks.AcaPyReady event) {
+        try {
+            this.tailsServerConfigured = ac
+                    .statusConfig()
+                    .flatMap(c -> c.getAs("tails_server_base_url", String.class))
+                    .isPresent();
+        } catch (IOException e) {
+            log.warn("No aca-py");
+        }
+    }
 }
