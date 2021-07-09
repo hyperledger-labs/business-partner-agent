@@ -17,60 +17,85 @@
  */
 package org.hyperledger.bpa.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.context.event.ApplicationEventListener;
+import java.io.IOException;
+import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.aries.AriesClient;
+import org.hyperledger.bpa.impl.StartupTasks;
 import org.hyperledger.bpa.impl.activity.DidResolver;
-
-import javax.inject.Singleton;
-import java.util.Map;
 
 @Getter
 @Singleton
 @NoArgsConstructor
-public class RuntimeConfig {
+@Slf4j
+public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaPyReady> {
+  @JsonIgnore
+  @Inject
+  AriesClient ac;
 
-    @Value("${bpa.host}")
-    String host;
+  Boolean tailsServerConfigured;
 
-    @Value("${bpa.ledger.browser}")
-    String ledgerBrowser;
+  @Value("${bpa.host}")
+  String host;
 
-    @Value("${bpa.did.prefix}")
-    String ledgerPrefix;
+  @Value("${bpa.ledger.browser}")
+  String ledgerBrowser;
 
-    @Value("${bpa.web.only}")
-    Boolean webOnly;
+  @Value("${bpa.did.prefix}")
+  String ledgerPrefix;
 
-    @Value("${bpa.name}")
-    String agentName;
+  @Value("${bpa.web.only}")
+  Boolean webOnly;
 
-    @Value("${bpa.acapy.endpoint}")
-    String acapyEndpoint;
+  @Value("${bpa.name}")
+  String agentName;
 
-    @Value("${bpa.imprint.url}")
-    String imprint;
+  @Value("${bpa.acapy.endpoint}")
+  String acapyEndpoint;
 
-    @Value("${bpa.privacy.policy.url}")
-    String dataPrivacyPolicy;
+  @Value("${bpa.imprint.url}")
+  String imprint;
 
-    @Value("${bpa.creddef.revocationRegistrySize}")
-    Integer revocationRegistrySize;
+  @Value("${bpa.privacy.policy.url}")
+  String dataPrivacyPolicy;
 
-    @Property(name = "bpa.ux")
-    Map<String, Object> ux;
+  @Value("${bpa.creddef.revocationRegistrySize}")
+  Integer revocationRegistrySize;
 
-    @Value("${bpa.title}")
-    String title;
+  @Property(name = "bpa.ux")
+  Map<String, Object> ux;
 
-    @Value("${bpa.i18n.locale}")
-    String locale;
+  @Value("${bpa.title}")
+  String title;
 
-    @Value("${bpa.i18n.fallbackLocale}")
-    String fallbackLocale;
+  @Value("${bpa.i18n.locale}")
+  String locale;
 
-    public String getAgentName() {
-        return DidResolver.splitDidFrom(agentName).getLabel();
+  @Value("${bpa.i18n.fallbackLocale}")
+  String fallbackLocale;
+
+  public String getAgentName() {
+    return DidResolver.splitDidFrom(agentName).getLabel();
+  }
+
+  @Override
+  public void onApplicationEvent(StartupTasks.AcaPyReady event) {
+    try {
+      this.tailsServerConfigured =
+        ac
+          .statusConfig()
+          .flatMap(c -> c.getAs("tails_server_base_url", String.class))
+          .isPresent();
+    } catch (IOException e) {
+      log.warn("No aca-py");
     }
+  }
 }
