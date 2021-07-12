@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.api.PartnerAPI;
 
 @Data
 @NoArgsConstructor
@@ -33,6 +34,6 @@ public class ActivityItem {
     private ActivityType type;
     private Long updatedAt;
     private String linkId;
-    private String connectionAlias;
+    private PartnerAPI partner;
     private Boolean task;
 }

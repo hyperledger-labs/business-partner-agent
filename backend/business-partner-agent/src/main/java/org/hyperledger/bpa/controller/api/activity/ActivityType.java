@@ -18,19 +18,14 @@
 package org.hyperledger.bpa.controller.api.activity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.annotations.SerializedName;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public enum ActivityType {
-    @JsonProperty("connection_invitation")
-    @SerializedName("connection_invitation")
-    CONNECTION_INVITATION,
+    @JsonProperty("connection_request")
+    CONNECTION_REQUEST,
     @JsonProperty("credential_offer")
-    @SerializedName("credential_offer")
     CREDENTIAL_OFFER,
     @JsonProperty("presentation_exchange")
-    @SerializedName("presentation_exchange")
     PRESENTATION_EXCHANGE;
-
-    ActivityType() {
-    }
 }

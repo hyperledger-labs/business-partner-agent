@@ -17,12 +17,16 @@
  */
 package org.hyperledger.bpa.impl;
 
-import com.github.jknack.handlebars.internal.lang3.StringUtils;
 import io.micronaut.core.annotation.Nullable;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.ConnectionState;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
+import org.hyperledger.bpa.api.PartnerAPI;
+import org.hyperledger.bpa.config.ActivityLogConfig;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.activity.*;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
@@ -31,8 +35,14 @@ import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
+@Slf4j
+@NoArgsConstructor
 public class ActivitiesManager {
 
     @Inject
@@ -44,75 +54,27 @@ public class ActivitiesManager {
     @Inject
     BPACredentialExchangeRepository credExRepository;
 
-    static List<ConnectionState> connectionStates(ConnectionState... states) {
-        List<ConnectionState> results = new ArrayList<>();
-        for (ConnectionState state : states)
-            results.add(state);
-        return results;
-    }
+    @Inject
+    ActivityLogConfig activityLogConfig;
 
-    static List<ConnectionState> connectionStatesForActivities() {
-        return connectionStates(ConnectionState.REQUEST, ConnectionState.INVITATION, ConnectionState.ACTIVE,
-                ConnectionState.INVITATION.RESPONSE);
-    }
+    @Inject
+    AriesClient ac;
 
-    static List<ConnectionState> connectionStatesForTasks() {
-        return connectionStates(ConnectionState.REQUEST);
-    }
+    @Inject
+    BPAMessageSource.DefaultMessageSource messageSource;
 
-    static List<ConnectionState> connectionStatesCompleted() {
-        return connectionStates(ConnectionState.ACTIVE, ConnectionState.INVITATION.RESPONSE);
-    }
-
-    static List<PresentationExchangeState> presentationExchangeStates(PresentationExchangeState... states) {
-        List<PresentationExchangeState> results = new ArrayList<>();
-        for (PresentationExchangeState state : states)
-            results.add(state);
-        return results;
-    }
-
-    static List<PresentationExchangeState> presentationExchangeStatesForActivities() {
-        return presentationExchangeStates(PresentationExchangeState.REQUEST_RECEIVED,
-                PresentationExchangeState.REQUEST_SENT,
-                PresentationExchangeState.VERIFIED,
-                PresentationExchangeState.PRESENTATION_ACKED);
-    }
-
-    static List<PresentationExchangeState> presentationExchangeStatesForTasks() {
-        return presentationExchangeStates(PresentationExchangeState.REQUEST_RECEIVED);
-    }
-
-    static List<PresentationExchangeState> presentationExchangeStatesCompleted() {
-        return presentationExchangeStates(PresentationExchangeState.VERIFIED,
-                PresentationExchangeState.PRESENTATION_ACKED);
-    }
-
-    static List<CredentialExchangeState> credentialExchangeStates(CredentialExchangeState... states) {
-        List<CredentialExchangeState> results = new ArrayList<>();
-        for (CredentialExchangeState state : states)
-            results.add(state);
-        return results;
-    }
-
-    static List<CredentialExchangeState> credentialExchangeStatesForActivities() {
-        return credentialExchangeStates(CredentialExchangeState.OFFER_SENT,
-                CredentialExchangeState.REQUEST_SENT,
-                CredentialExchangeState.PROPOSAL_SENT);
-    }
-
-    static List<CredentialExchangeState> credentialExchangeStatesForTasks() {
-        return credentialExchangeStates(CredentialExchangeState.OFFER_RECEIVED,
-                CredentialExchangeState.REQUEST_RECEIVED,
-                CredentialExchangeState.PROPOSAL_RECEIVED);
-    }
+    @Inject
+    PartnerManager partnerManager;
 
     public List<ActivityItem> getActivityListItems(ActivitySearchParameters parameters) {
         List<ActivityItem> results = new ArrayList<>();
         if (parameters.getActivity() == null || parameters.getActivity()) {
             // connection invitations... outgoing.
-            results.addAll(getConnectionInvitations(parameters.getType(), connectionStatesForActivities(), false));
+            results.addAll(getConnectionRequests(parameters.getType(),
+                    activityLogConfig.getConnectionStatesForActivities(), false));
             results.addAll(
-                    getPresentationExchanges(parameters.getType(), presentationExchangeStatesForActivities(), false));
+                    getPresentationExchanges(parameters.getType(),
+                            activityLogConfig.getPresentationExchangeStatesForActivities(), false));
         }
         return results;
     }
@@ -120,9 +82,14 @@ public class ActivitiesManager {
     public List<ActivityItem> getTaskListItems(ActivitySearchParameters parameters) {
         List<ActivityItem> results = new ArrayList<>();
         if (parameters.getTask() == null || parameters.getTask()) {
-            // connection invitations... incoming.
-            results.addAll(getConnectionInvitations(parameters.getType(), connectionStatesForTasks(), true));
-            results.addAll(getPresentationExchanges(parameters.getType(), presentationExchangeStatesForTasks(), true));
+            if (manualFlag(ActivityType.CONNECTION_REQUEST)) {
+                results.addAll(getConnectionRequests(parameters.getType(),
+                        activityLogConfig.getConnectionStatesForTasks(), true));
+            }
+            if (manualFlag(ActivityType.PRESENTATION_EXCHANGE)) {
+                results.addAll(getPresentationExchanges(parameters.getType(),
+                        activityLogConfig.getPresentationExchangeStatesForTasks(), true));
+            }
         }
         return results;
     }
@@ -135,19 +102,19 @@ public class ActivitiesManager {
         return results;
     }
 
-    private List<ActivityItem> getConnectionInvitations(@Nullable ActivityType type, List<ConnectionState> states,
+    private List<ActivityItem> getConnectionRequests(@Nullable ActivityType type, List<ConnectionState> states,
             Boolean incoming) {
         List<ActivityItem> results = new ArrayList<>();
-        if (type == null || type == ActivityType.CONNECTION_INVITATION) {
+        if (type == null || type == ActivityType.CONNECTION_REQUEST) {
             Iterable<Partner> partners = partnerRepo.findByStateIn(states);
             for (Partner p : partners) {
                 if (incoming) {
                     // then we are looking for tasks...
                     if (p.getIncoming() != null) {
-                        results.add(getConnectionInvitationItem(p, true));
+                        results.add(getConnectionRequestItem(p, true));
                     }
                 } else {
-                    results.add(getConnectionInvitationItem(p, false));
+                    results.add(getConnectionRequestItem(p, false));
                 }
             }
         }
@@ -166,10 +133,10 @@ public class ActivitiesManager {
         return results;
     }
 
-    private ActivityItem getConnectionInvitationItem(Partner p, Boolean task) {
-        ActivityRole role = (p.getIncoming() == null) ? ActivityRole.CONNECTION_INVITATION_SENDER
-                : ActivityRole.CONNECTION_INVITATION_RECIPIENT;
-        ActivityType type = ActivityType.CONNECTION_INVITATION;
+    private ActivityItem getConnectionRequestItem(Partner p, Boolean task) {
+        ActivityRole role = (p.getIncoming() == null) ? ActivityRole.CONNECTION_REQUEST_SENDER
+                : ActivityRole.CONNECTION_REQUEST_RECIPIENT;
+        ActivityType type = ActivityType.CONNECTION_REQUEST;
 
         ActivityState state;
         switch (p.getState()) {
@@ -179,7 +146,7 @@ public class ActivitiesManager {
             break;
         default:
             switch (role) {
-            case CONNECTION_INVITATION_SENDER:
+            case CONNECTION_REQUEST_SENDER:
                 state = ActivityState.CONNECTION_REQUEST_SENT;
                 break;
             default:
@@ -187,14 +154,13 @@ public class ActivitiesManager {
             }
         }
 
-        String alias = getConnectionAlias(p);
         Long updatedAt = p.getUpdatedAt().toEpochMilli();
         String linkId = p.getId().toString();
         return ActivityItem.builder()
                 .role(role)
                 .state(state)
                 .type(type)
-                .connectionAlias(alias)
+                .partner(partnerManager.refreshPartner(p.getId()).get())
                 .linkId(linkId)
                 .task(task)
                 .updatedAt(updatedAt)
@@ -230,12 +196,9 @@ public class ActivitiesManager {
             }
         }
         String linkId = p.getId().toString();
-        String alias = "";
-        Optional<Partner> partner = partnerRepo.findById(p.getPartnerId());
+        Optional<PartnerAPI> partner = partnerManager.refreshPartner(p.getPartnerId());
         if (partner.isPresent()) {
-            alias = getConnectionAlias(partner.get());
-            // TODO: remove this when we have the proof request details screen
-            linkId = partner.get().getId().toString();
+            linkId = partner.get().getId();
         }
         Long updatedAt = (p.getIssuedAt() != null) ? p.getIssuedAt().toEpochMilli() : p.getCreatedAt().toEpochMilli();
 
@@ -243,16 +206,33 @@ public class ActivitiesManager {
                 .role(role)
                 .state(state)
                 .type(type)
-                .connectionAlias(alias)
+                .partner(partner.get())
                 .linkId(linkId)
                 .task(task)
                 .updatedAt(updatedAt)
                 .build();
     }
 
-    private String getConnectionAlias(Partner partner) {
-        return StringUtils.isNotEmpty(partner.getAlias()) ? partner.getAlias()
-                : StringUtils.isNotEmpty(partner.getLabel()) ? partner.getLabel() : partner.getDid();
+    private boolean manualFlag(ActivityType type) {
+        String key = null;
+        if (ActivityType.CONNECTION_REQUEST.equals(type)) {
+            key = "debug.auto_accept_requests";
+        } else if (ActivityType.PRESENTATION_EXCHANGE.equals(type)) {
+            key = "debug.auto_respond_presentation_request";
+        } else if (ActivityType.CREDENTIAL_OFFER.equals(type)) {
+            key = "debug.auto_respond_credential_offer";
+        }
+        try {
+            String finalKey = key;
+            // if we there is no value for key then we have set to manual...
+            return !ac.statusConfig()
+                    .flatMap(c -> c.getAs(finalKey, String.class))
+                    .isPresent();
+        } catch (IOException e) {
+            String msg = messageSource.getMessage("acapy.unavailable");
+            log.error(msg, e);
+        }
+        return false;
     }
 
 }

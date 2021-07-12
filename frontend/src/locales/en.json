@@ -89,23 +89,31 @@
   },
   "constants": {
     "activityTypes": {
-      "connectionInvitation": "Connection Invitation",
+      "connectionRequest": "Connection Request",
       "credentialOffer": "Credential Offer",
       "presentationExchange": "Presentation of Proof"
     },
     "activityStates": {
-      "connectionRequestAccepted": "Connection Request accepted",
-      "connectionRequestReceived": "Connection Request received",
-      "connectionRequestSent": "Connection Request sent",
-      "presentationExchangeAccepted": "Proof Presentation accepted",
-      "presentationExchangeReceived": "A Presentation of Proof has been requested",
-      "presentationExchangeSent": "Request for Presentation of Proof sent"
+      "connectionRequest": {
+        "accepted": "Connection Request accepted",
+        "received": "Connection Request received",
+        "sent": "Connection Request sent"
+      },
+      "presentationExchange": {
+        "accepted": "Proof Presentation accepted",
+        "received": "A Presentation of Proof has been requested",
+        "sent": "Request for Presentation of Proof sent"
+      }
     },
     "activityRoles": {
-      "connectionInvitationSender": "Sender",
-      "connectionInvitationRecipient": "Recipient",
-      "presentationExchangeProver": "Prover",
-      "presentationExchangeVerifier": "Verifier"
+      "connectionRequest": {
+        "sender": "Sender",
+        "recipient": "Recipient"
+      },
+      "presentationExchange": {
+        "prover": "Prover",
+        "verifier": "Verifier"
+      }
    }
   },
   "showRawData": "Show raw data"

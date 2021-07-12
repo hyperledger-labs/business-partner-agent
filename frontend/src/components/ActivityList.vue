@@ -49,6 +49,10 @@
         :sort-desc="[true]"
         @click:row="openItem"
     >
+      <template v-slot:[`item.partner`]="{ item }">
+        {{ partnerLabel(item.partner) }}
+      </template>
+
       <template v-slot:[`item.type`]="{ item }">
         {{ activityTypeLabel(item.type) }}
       </template>
@@ -73,6 +77,7 @@
   import {ActivityRoles, ActivityStates, ActivityTypes} from "@/constants";
   import VBpaButton from "@/components/BpaButton";
   import activitiesService from "@/services/activitiesService";
+  import * as partnerUtils from "@/utils/partnerUtils";
 
   export default {
     name: "ActivityList",
@@ -95,7 +100,7 @@
           },
           {
             text: "Connection",
-            value: "connectionAlias",
+            value: "partner",
           },
           {
             text: "Last Updated",
@@ -160,7 +165,7 @@
           });
       },
       openItem(item) {
-        if (item.type === ActivityTypes.CONNECTION_INVITATION.value) {
+        if (item.type === ActivityTypes.CONNECTION_REQUEST.value) {
           this.$router.push({
             name: "Partner",
             params: {
@@ -190,6 +195,9 @@
       activityRoleLabel(role) {
         const o = ActivityRoles[role.toUpperCase()];
         return o ? o.label : role;
+      },
+      partnerLabel(partner) {
+        return partner ? partnerUtils.getPartnerName(partner) : "Unknown";
       }
     },
   };

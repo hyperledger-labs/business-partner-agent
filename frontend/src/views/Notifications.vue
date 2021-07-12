@@ -60,7 +60,7 @@ export default {
         },
         {
           text: "Connection",
-          value: "connectionAlias",
+          value: "partner",
         },
         {
           text: "Last Updated",

@@ -22,9 +22,11 @@
       "presentationExchange": "Proof Request"
     },
     "activityStates": {
-      "presentationExchangeAccepted": "Proof accepted",
-      "presentationExchangeReceived": "A Proof has been requested",
-      "presentationExchangeSent": "Request for Proof sent"
+      "presentationExchange": {
+        "accepted": "Proof accepted",
+        "received": "A Proof has been requested",
+        "sent": "Request for Proof sent"
+      }
     }
   }
 }

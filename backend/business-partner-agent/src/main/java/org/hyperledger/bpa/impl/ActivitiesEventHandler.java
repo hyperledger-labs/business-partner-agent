@@ -17,10 +17,12 @@
  */
 package org.hyperledger.bpa.impl;
 
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
+import org.hyperledger.bpa.config.ActivityLogConfig;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.controller.api.activity.ActivityType;
 
@@ -29,33 +31,32 @@ import javax.inject.Singleton;
 
 @Slf4j
 @Singleton
+@NoArgsConstructor
 public class ActivitiesEventHandler extends EventHandler {
     @Inject
     MessageService messageService;
 
-    public ActivitiesEventHandler() {
-    }
+    @Inject
+    ActivityLogConfig activityLogConfig;
 
     public void handleConnection(ConnectionRecord connection) {
-        log.debug("Connection Event: {}", connection);
         Boolean completed = null;
-        if (ActivitiesManager.connectionStatesForTasks().contains(connection.getState())) {
+        if (activityLogConfig.getConnectionStatesForTasks().contains(connection.getState())) {
             completed = false;
-        } else if (ActivitiesManager.connectionStatesCompleted().contains(connection.getState())) {
+        } else if (activityLogConfig.getConnectionStatesCompleted().contains(connection.getState())) {
             completed = true;
         }
         if (completed != null) {
             messageService
-                    .sendMessage(WebSocketMessageBody.notification(ActivityType.CONNECTION_INVITATION, completed));
+                    .sendMessage(WebSocketMessageBody.notification(ActivityType.CONNECTION_REQUEST, completed));
         }
     }
 
     public void handleProof(PresentationExchangeRecord proof) {
-        log.debug("Present Proof Event: {}", proof);
         Boolean completed = null;
-        if (ActivitiesManager.presentationExchangeStatesForTasks().contains(proof.getState())) {
+        if (activityLogConfig.getPresentationExchangeStatesForTasks().contains(proof.getState())) {
             completed = false;
-        } else if (ActivitiesManager.presentationExchangeStatesCompleted().contains(proof.getState())) {
+        } else if (activityLogConfig.getPresentationExchangeStatesCompleted().contains(proof.getState())) {
             completed = true;
         }
         if (completed != null) {
