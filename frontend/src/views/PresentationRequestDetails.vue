@@ -24,19 +24,19 @@
         <v-divider></v-divider>
       </v-card-text>
       <v-layout align-end justify-end>
-        <v-btn
+        <v-bpa-button
           color="secondary"
           text
           @click="declinePresentationRequest(presentationRequest)"
-          >Decline</v-btn
+          >Decline</v-bpa-button
         >
-        <v-btn
+        <v-bpa-button
           :loading="this.isBusy"
           color="primary"
           text
           @click="respondToPresentationRequest(presentationRequest)"
           :disabled="submitDisabled"
-          >Accept</v-btn
+          >Accept</v-bpa-button
         >
         <v-tooltip v-if="presentationRequest.problemReport" top>
           <template v-slot:activator="{ on, attrs }">
@@ -73,6 +73,7 @@
 <script>
 import { EventBus } from "../main";
 import ProofRequest from "@/components/ProofRequest";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   props: {
@@ -151,6 +152,13 @@ export default {
   },
   components: {
     ProofRequest,
+    VBpaButton,
   },
 };
 </script>
+
+<style scoped>
+.v-btn {
+  margin-right: 10px;
+}
+</style>

@@ -26,20 +26,25 @@
             Restrictions
           </p>
         </v-row>
-        <v-row
-          v-for="(value, restrict) in value.restrictions[0]"
-          :key="value"
-          style="height: 30px"
-        >
-          {{ restrict }} = {{ value }}
-          <v-btn
-            x-small
-            v-if="restrict === 'schema_id'"
-            slot="badge"
-            @click="navigateToCredentialby(restrict, value)"
-          >
-            Go To
-          </v-btn>
+        <v-row v-for="(value, restrict) in value.restrictions[0]" :key="value">
+          <v-expansion-panels accordion flat>
+            <v-expansion-panel>
+              <v-expansion-panel-header
+                class="grey--text text--darken-2 font-weight-medium bg-light"
+              >
+                {{ restrict }} = {{ value }}</v-expansion-panel-header
+              >
+              <v-expansion-panel-content class="bg-light">
+                <Cred
+                  v-if="restrict === 'schema_id'"
+                  :document="findCredentialby(restrict, value)"
+                  class="right"
+                  isReadOnly
+                  showOnlyContent
+                ></Cred>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
         </v-row>
       </v-col>
     </v-row>
@@ -48,7 +53,7 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
+import Cred from "@/components/Credential.vue";
 
 export default {
   name: "ProofRequest",
@@ -58,30 +63,31 @@ export default {
   },
   mounted() {},
   methods: {
-    navigateToCredentialby(field, value) {
+    navigateToCredential(cred) {
+      this.$router.push({
+        name: "Credential",
+        params: {
+          id: cred.id,
+        },
+      });
+    },
+    findCredentialby(field, value) {
       let creds = this.credentials.filter((cred) => {
         return cred[this.field_map[field]] === value;
       });
-      console.log("CRED" + creds[0].id);
-      let cred = creds[0];
-      if (cred) {
-        this.$router.push({
-          name: "Credential",
-          params: {
-            id: cred.id,
-          },
-        });
-      } else {
-        EventBus.$emit("error", "No credential that has this schema_id");
-      }
+      console.log("CREDs   " + creds[0].id);
+      return creds[0];
     },
   },
   data: () => {
     return {
       credentials: [],
-      valid_credential: {},
+      valid_credentials: {},
       field_map: { schema_id: "schemaId" },
     };
+  },
+  components: {
+    Cred,
   },
 };
 </script>
