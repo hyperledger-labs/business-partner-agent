@@ -63,19 +63,11 @@ export default {
   },
   mounted() {},
   methods: {
-    navigateToCredential(cred) {
-      this.$router.push({
-        name: "Credential",
-        params: {
-          id: cred.id,
-        },
-      });
-    },
     findCredentialby(field, value) {
       let creds = this.credentials.filter((cred) => {
         return cred[this.field_map[field]] === value;
       });
-      console.log("CREDs   " + creds[0].id);
+      console.log("CREDs   " + creds);
       return creds[0];
     },
   },
