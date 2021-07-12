@@ -26,6 +26,7 @@
     "credentialManagement": "Credential Management",
     "partners": "Business Partners",
     "settings": "Settings",
+    "notifications": "Notifications",
     "about": "About",
     "signout": "Sign out"
   },
@@ -37,6 +38,15 @@
     "no": "No"
   },
   "view": {
+    "notifications": {
+      "title": "Notifications",
+      "activities": {
+        "title": "Activity Log"
+      },
+      "tasks" : {
+        "title": "Tasks"
+      }
+    },
     "partner": {
       "title": "Partner",
       "refreshProfile": "Refresh profile from source",
@@ -76,6 +86,27 @@
       "title": "Send Presentation",
       "selectCredential": "Select a credential to send"
     }
+  },
+  "constants": {
+    "activityTypes": {
+      "connectionInvitation": "Connection Invitation",
+      "credentialOffer": "Credential Offer",
+      "presentationExchange": "Presentation of Proof"
+    },
+    "activityStates": {
+      "connectionRequestAccepted": "Connection Request accepted",
+      "connectionRequestReceived": "Connection Request received",
+      "connectionRequestSent": "Connection Request sent",
+      "presentationExchangeAccepted": "Proof Presentation accepted",
+      "presentationExchangeReceived": "A Presentation of Proof has been requested",
+      "presentationExchangeSent": "Request for Presentation of Proof sent"
+    },
+    "activityRoles": {
+      "connectionInvitationSender": "Sender",
+      "connectionInvitationRecipient": "Recipient",
+      "presentationExchangeProver": "Prover",
+      "presentationExchangeVerifier": "Verifier"
+   }
   },
   "showRawData": "Show raw data"
 }

@@ -588,7 +588,8 @@ export default {
           console.log(result);
           if (result.status === 200) {
             EventBus.$emit("success", "Connection request accepted");
-            this.getPartner();
+            // allow a little time for the partner state to change, so the remove/accept panel will not be displayed
+            setTimeout(() => this.getPartner(), 1000);
           }
         })
         .catch((e) => {

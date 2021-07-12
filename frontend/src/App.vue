@@ -126,6 +126,26 @@
             <v-list-item-title>{{ $t("nav.settings") }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item link :to="{ name: 'Notifications' }">
+          <v-list-item-action>
+            <v-badge
+                overlap
+                bordered
+                :content="notificationsCount"
+                :value="notificationsCount"
+                color="red"
+                offset-x="10"
+                offset-y="10"
+            >
+              <v-icon>$vuetify.icons.notifications</v-icon>
+            </v-badge>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>{{
+              $t("nav.notifications")
+              }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
       <template v-slot:append>
         <v-list dense>
@@ -348,6 +368,9 @@ export default {
     },
     newCredentialsCount() {
       return this.$store.getters.newCredentialsCount;
+    },
+    notificationsCount() {
+      return this.$store.getters.notificationsCount;
     },
     getAgentName() {
       let bpaName = "Business Partner Agent";

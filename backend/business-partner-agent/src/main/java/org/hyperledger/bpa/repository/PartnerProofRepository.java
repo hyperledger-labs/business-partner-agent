@@ -49,4 +49,6 @@ public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUI
     long updateReceivedProof(@Id UUID id, Instant issuedAt, Boolean valid, PresentationExchangeState state,
             Map<String, Object> proof);
 
+    Iterable<PartnerProof> findByStateIn(List<PresentationExchangeState> states);
+
 }

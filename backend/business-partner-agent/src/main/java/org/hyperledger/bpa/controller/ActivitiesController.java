@@ -17,45 +17,41 @@
  */
 package org.hyperledger.bpa.controller;
 
-import io.micronaut.http.annotation.Body;
+import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.PathVariable;
-import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.RequestBean;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.aries.webhook.EventHandler;
+import org.hyperledger.bpa.controller.api.activity.ActivityItem;
+import org.hyperledger.bpa.controller.api.activity.ActivitySearchParameters;
+import org.hyperledger.bpa.impl.ActivitiesManager;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import java.util.List;
 
-/**
- * Handles incoming aca-py webhook events
- */
-@Slf4j
-@Hidden
-@Tag(name = "Aries Webhook")
-@Controller
-@Secured(SecurityRule.IS_ANONYMOUS)
+@Controller("/api/activities")
+@Tag(name = "Activities")
+@Secured(SecurityRule.IS_AUTHENTICATED)
 @ExecuteOn(TaskExecutors.IO)
-public class AriesWebhookController {
-
-    public static final String WEBHOOK_CONTROLLER_PATH = "/log/topic";
+public class ActivitiesController {
 
     @Inject
-    List<EventHandler> handlers;
+    ActivitiesManager activitiesManager;
 
-    @Post(WEBHOOK_CONTROLLER_PATH + "/{eventType}")
-    public void logEvent(
-            @PathVariable String eventType,
-            @Body String eventBody) {
-
-        log.info("Webhook received, type: {}", eventType);
-
-        handlers.stream().forEach(eventHandler -> eventHandler.handleEvent(eventType, eventBody));
+    /**
+     * List Items, if no filters return all
+     *
+     * @param parameters ActivitySearchParameters Filters for list
+     * @return list of {@link ActivityItem}
+     */
+    @Get("/")
+    public HttpResponse<List<ActivityItem>> listActivities(@RequestBean @Valid ActivitySearchParameters parameters) {
+        return HttpResponse.ok(activitiesManager.getItems(parameters));
     }
+
 }
