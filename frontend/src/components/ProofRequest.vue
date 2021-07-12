@@ -42,6 +42,7 @@
                   isReadOnly
                   showOnlyContent
                 ></Cred>
+                <div v-else>No matching credential found</div>
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>
