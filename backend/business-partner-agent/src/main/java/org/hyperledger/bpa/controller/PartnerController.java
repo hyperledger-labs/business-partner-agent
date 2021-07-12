@@ -220,17 +220,6 @@ public class PartnerController {
         return HttpResponse.ok();
     }
 
-
-    /**
-     * Get all proof exchanges
-     *
-     * @return list of partners
-     */
-    @Get("/proof-exchanges")
-    public HttpResponse<List<AriesProofExchange>> getProofExchanges() {
-        return HttpResponse.ok(proofM.getAllPartnerProof());        
-    }
-
     /**
      * Get partner by id
      *
