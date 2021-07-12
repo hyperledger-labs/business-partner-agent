@@ -377,11 +377,6 @@ export default {
       issueCredentialDialog: false,
       headersPresentationRequest: [
         {
-          text: "Schema",
-          value:
-            "proofRequest.requestedAttributes.attribute_group_0.restrictions[0].schema_id",
-        },
-        {
           text: "Received at",
           value: "sentAt", //miss labelled.
         },

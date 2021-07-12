@@ -15,6 +15,9 @@
     "sendPresentation": {
       "title": "Send Proof",
       "selectCredential": "Select a credential to send"
+    },
+    "presentationRequestDetails": {
+      "header": "Proof Request Details"
     }
   }
 }

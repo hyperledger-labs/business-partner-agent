@@ -29,6 +29,10 @@ export const getSchemas = (state) => {
   return state.schemas;
 };
 
+export const getCredentials = (state) => {
+  return state.credentials;
+};
+
 export const getSchemaBasedSchemas = (state) => {
   return state.schemas.filter((schema) => {
     return schema.type === CredentialTypes.SCHEMA_BASED.type;
