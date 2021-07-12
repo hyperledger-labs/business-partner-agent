@@ -18,12 +18,13 @@
 
 package org.hyperledger.bpa.impl.prooftemplates;
 
+
+import io.micronaut.core.annotation.NonNull;
+
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -55,38 +56,44 @@ public class ProofTemplateRequestBuilder<Predicate, Attribute, Restrictions> {
         return attributes.computeIfAbsent(name, attributeCreator);
     }
 
-    public void onAttribute(@NotEmpty String name, @NotNull UnaryOperator<Attribute> modifier) {
+    public void onAttribute(@NotEmpty String name, @NonNull UnaryOperator<Attribute> modifier) {
         attributes.computeIfPresent(name, (key, attr) -> modifier.apply(attr));
     }
 
-    public void onPredicate(@NotEmpty String name, @NotNull UnaryOperator<Predicate> modifier) {
+    public void onPredicate(@NotEmpty String name, @NonNull UnaryOperator<Predicate> modifier) {
         predicates.computeIfPresent(name, (key, attr) -> modifier.apply(attr));
     }
 
-    public Restrictions putRestriction(@NotEmpty String name, @NotNull UnaryOperator<Restrictions> modifier) {
+    public Restrictions putRestriction(@NotEmpty String name, @NonNull UnaryOperator<Restrictions> modifier) {
         return restrictions.compute(name,
                 (key, oldAttr) -> modifier.apply(Optional.ofNullable(oldAttr).orElseGet(restrictionCreator)));
     }
 
-    public Stream<Predicate> predicateStream(
-            BiFunction<@NotNull Predicate, @NotNull Restrictions, @NotNull Predicate> applyRestriction) {
+    public Stream<Predicate> predicateStream() {
         return predicates.entrySet()
                 .stream()
                 .map(entry -> restrictionsFor(entry.getKey())
-                        .map(r -> applyRestriction.apply(entry.getValue(), r))
+                        .map(r -> this.joinPredicateWithRestrictions(entry.getValue(), r))
                         .orElseGet(entry::getValue));
     }
 
-    public Stream<Attribute> attributeStream(
-            BiFunction<@NotNull Attribute, @NotNull Restrictions, @NotNull Attribute> applyRestriction) {
+    public Stream<Attribute> attributeStream() {
         return attributes.entrySet()
                 .stream()
                 .map(entry -> restrictionsFor(entry.getKey())
-                        .map(r -> applyRestriction.apply(entry.getValue(), r))
+                        .map(r -> this.joinAttributeWithRestrictions(entry.getValue(), r))
                         .orElseGet(entry::getValue));
     }
 
     public Optional<Restrictions> restrictionsFor(@NotEmpty String name) {
         return Optional.ofNullable(restrictions.get(name));
+    }
+
+    public Attribute joinAttributeWithRestrictions(Attribute attribute, Restrictions restrictions) {
+        return attribute;
+    }
+
+    public Predicate joinPredicateWithRestrictions(Predicate predicate, Restrictions restrictions) {
+        return predicate;
     }
 }

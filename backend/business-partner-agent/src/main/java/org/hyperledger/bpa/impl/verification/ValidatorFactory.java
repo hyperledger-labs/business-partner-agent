@@ -92,7 +92,7 @@ public class ValidatorFactory {
 
     @Singleton
     ConstraintValidator<ValidAttributeConditionOperator, CharSequence> attributeConditionOperatorValidator(
-            ProofTemplateConditionOperators<?, ?, ?> conditionOperators) {
+            ProofTemplateConditionOperators<?> conditionOperators) {
         return (value, annotationMetadata, context) -> conditionOperators.getConditionOperatorFor(String.valueOf(value))
                 .isPresent();
     }

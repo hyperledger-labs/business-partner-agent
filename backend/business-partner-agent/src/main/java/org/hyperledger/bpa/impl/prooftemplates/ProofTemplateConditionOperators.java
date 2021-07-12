@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class ProofTemplateConditionOperators<Predicate, Attribute, Restrictions> {
+public class ProofTemplateConditionOperators<T extends ProofTemplateRequestBuilder<?, ?, ?>> {
 
     public static final String EQUALS_OPERATOR_STRING = "==";
     public static final String ISSUED_BY_OPERATOR_STRING = "issued-by";
@@ -32,19 +32,19 @@ public class ProofTemplateConditionOperators<Predicate, Attribute, Restrictions>
     public static final String SCHEMA_ID_OPERATOR_STRING = "schema-id";
     public static final String FETCH_VALUE = "fetch-value";
 
-    private Map<String, ProofTemplateConditionOperator<ProofTemplateRequestBuilder<Predicate, Attribute, Restrictions>>> knownOperators = new HashMap<>();
+    private Map<String, ProofTemplateConditionOperator<T>> knownOperators = new HashMap<>();
 
     public void put(@Nullable String operatorName,
-            ProofTemplateConditionOperator<ProofTemplateRequestBuilder<Predicate, Attribute, Restrictions>> operator) {
+                    ProofTemplateConditionOperator<T> operator) {
         knownOperators.put(operatorName, operator);
     }
 
     public void putIfAbsent(@Nullable String operatorName,
-            ProofTemplateConditionOperator<ProofTemplateRequestBuilder<Predicate, Attribute, Restrictions>> operator) {
+                            ProofTemplateConditionOperator<T> operator) {
         knownOperators.putIfAbsent(operatorName, operator);
     }
 
-    public Optional<ProofTemplateConditionOperator<ProofTemplateRequestBuilder<Predicate, Attribute, Restrictions>>> getConditionOperatorFor(
+    public Optional<ProofTemplateConditionOperator<T>> getConditionOperatorFor(
             String operatorString) {
         return Optional.ofNullable(knownOperators.get(operatorString));
     }

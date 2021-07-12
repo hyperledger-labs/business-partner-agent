@@ -37,8 +37,8 @@ import java.util.function.Function;
 public class AriesProofTemplateConditionOperatorFactory {
 
     @Singleton
-    ProofTemplateConditionOperators<PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder, PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder, PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> proofTemplateOperators() {
-        ProofTemplateConditionOperators<PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder, PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder, PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> knownOperators;
+    ProofTemplateConditionOperators<AriesProofTemplateRequestBuilder> proofTemplateOperators() {
+        ProofTemplateConditionOperators<AriesProofTemplateRequestBuilder> knownOperators;
         knownOperators = new ProofTemplateConditionOperators<>();
         knownOperators.put(IndyProofReqPredSpec.PTypeEnum.LESS_THAN.getValue(), lessThanOperator());
         knownOperators.put(IndyProofReqPredSpec.PTypeEnum.LESS_THAN_OR_EQUAL_TO.getValue(), lessThanEqualsOperator());
@@ -54,7 +54,7 @@ public class AriesProofTemplateConditionOperatorFactory {
     }
 
     public interface AttributeOperator extends
-            ProofTemplateConditionOperator<ProofTemplateRequestBuilder<PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder, PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder, PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder>> {
+            ProofTemplateConditionOperator<AriesProofTemplateRequestBuilder> {
         @Override
         default boolean attributeOnlyLevel() {
             return true;
@@ -76,7 +76,7 @@ public class AriesProofTemplateConditionOperatorFactory {
     }
 
     public interface AttributeAndAttributeGroupOperator extends
-            ProofTemplateConditionOperator<ProofTemplateRequestBuilder<PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder, PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder, PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder>> {
+            ProofTemplateConditionOperator<AriesProofTemplateRequestBuilder> {
         @Override
         default boolean attributeOnlyLevel() {
             return false;
@@ -114,7 +114,7 @@ public class AriesProofTemplateConditionOperatorFactory {
     }
 
     private <T> Optional<T> setNonRevoked(@Nullable String value,
-            @NonNull Function<PresentProofRequest.ProofRequest.ProofNonRevoked, T> nonRevokedTarget) {
+                                          @NonNull Function<PresentProofRequest.ProofRequest.ProofNonRevoked, T> nonRevokedTarget) {
         Optional<PresentProofRequest.ProofRequest.ProofNonRevoked> nonRevoked = Optional.empty();
         if (value != null) {
             try {
