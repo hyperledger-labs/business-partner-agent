@@ -54,8 +54,8 @@
         <!-- Dependency Versions -->
         <log4j2.version>2.14.1</log4j2.version>
         <lombok.version>1.18.20</lombok.version>
-        <micronaut.version>2.5.7</micronaut.version>
-        <micronaut.data.version>2.4.6</micronaut.data.version>
+        <micronaut.version>2.5.8</micronaut.version>
+        <micronaut.data.version>2.4.7</micronaut.data.version>
         <micronaut.openapi.version>2.5.0</micronaut.openapi.version>
         <micronaut.security.version>2.5.0</micronaut.security.version>
         <mockito.version>3.11.2</mockito.version>
@@ -68,7 +68,7 @@
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
         <maven.failsafe.plugin.version>3.0.0-M5</maven.failsafe.plugin.version>
         <maven.pmd.plugin.version>3.14.0</maven.pmd.plugin.version>
-        <maven.spotbugs.plugin.version>4.2.3</maven.spotbugs.plugin.version>
+        <maven.spotbugs.plugin.version>4.3.0</maven.spotbugs.plugin.version>
         <maven.surefire.plugin.version>3.0.0-M5</maven.surefire.plugin.version>
     </properties>
 
