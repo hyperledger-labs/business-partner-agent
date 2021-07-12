@@ -70,6 +70,9 @@ public class RuntimeConfig {
     @Value("${bpa.i18n.fallbackLocale}")
     String fallbackLocale;
 
+    @Value("${bpa.endorser.role}")
+    String endorserRole;
+
     public String getAgentName() {
         return DidResolver.splitDidFrom(agentName).getLabel();
     }

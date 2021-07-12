@@ -33,6 +33,7 @@ services:
       BPA_IMPRINT_URL: ${BPA_IMPRINT_URL}
       BPA_PRIVACY_POLICY_URL: ${BPA_PRIVACY_POLICY_URL}
       BPA_CREDDEF_REVOCATION_REGISTRY_SIZE: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE}
+      BPA_ENDORSER_ROLE: ${BPA1_ENDORSER_ROLE}
       NODE_ENV: development
     ports:
       - ${BPA1_PORT}:${BPA1_PORT}
@@ -41,7 +42,7 @@ services:
     extra_hosts:
      - host.docker.internal:host-gateway
   bpa-agent1:
-    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.7-pre.3
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.0rc1
     ports:
       - ${ACAPY1_ADMIN_PORT}:${ACAPY1_ADMIN_PORT}
       - ${ACAPY1_HTTP_PORT}:${ACAPY1_HTTP_PORT}
@@ -50,7 +51,8 @@ services:
     entrypoint: /bin/bash
     command: [
         "-c",
-        "sleep 1;
+        "curl -d '{\"seed\":\"${ACAPY_SEED1}\", \"role\":\"ENDORSER\", \"alias\":\"BPA-1\"}' -X POST ${BPA_LEDGER_BROWSER}/register; \
+        sleep 5; \
         aca-py start \
         --auto-provision
         --arg-file acapy-static-args.yml \
@@ -116,6 +118,7 @@ services:
       BPA_IMPRINT_URL: ${BPA_IMPRINT_URL}
       BPA_PRIVACY_POLICY_URL: ${BPA_PRIVACY_POLICY_URL}
       BPA_CREDDEF_REVOCATION_REGISTRY_SIZE: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE}
+      BPA_ENDORSER_ROLE: ${BPA2_ENDORSER_ROLE}
       NODE_ENV: development
     ports:
       - ${BPA2_PORT}:${BPA2_PORT}
@@ -125,7 +128,7 @@ services:
     extra_hosts:
      - host.docker.internal:host-gateway
   bpa-agent2:
-    image: bcgovimages/aries-cloudagent:py36-1.16-0_0.7-pre.3
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.0rc1
     ports:
       - ${ACAPY2_ADMIN_PORT}:${ACAPY2_ADMIN_PORT}
       - ${ACAPY2_HTTP_PORT}:${ACAPY2_HTTP_PORT}
@@ -134,7 +137,8 @@ services:
     entrypoint: /bin/bash
     command: [
         "-c",
-        "sleep 1;
+        "curl -d '{\"seed\":\"${ACAPY_SEED2}\", \"role\":\"ENDORSER\", \"alias\":\"BPA-1\"}' -X POST ${BPA_LEDGER_BROWSER}/register; \
+        sleep 5; \
         aca-py start \
         --auto-provision
         --arg-file acapy-static-args.yml \

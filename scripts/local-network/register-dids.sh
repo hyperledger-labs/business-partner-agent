@@ -13,6 +13,7 @@ if [[ ${ARCHITECTURE} == "Linux"* ]]; then
 elif [[ ${ARCHITECTURE} == "Darwin"* ]]; then
     ARCHITECTURE="Mac"
 fi
+echo "ARCHITECTURE=${ARCHITECTURE}"
 
 if [ "$ARCHITECTURE" != "Linux" ] && [ "$ARCHITECTURE" != "Mac" ]; then
     echo "No Linux or Mac OSX detected. You might need to do some steps manually."
@@ -52,7 +53,9 @@ register_did() {
         fi
         # sed on Mac and Linux work differently
         if [ "$ARCHITECTURE" = "Mac" ]; then
-            echo "sed -i '' '/${1}=/c\ ${1}=${SEED} ' $DEST_FILE"
+            echo "sed -i '' '/${1}=/c\\
+${1}=${SEED}
+' $DEST_FILE"
             sed -i '' '/$1=/c\
 $1=$SEED
 ' $DEST_FILE
