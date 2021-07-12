@@ -20,8 +20,15 @@ package org.hyperledger.bpa.impl;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.env.Environment;
+import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.context.event.StartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
+import java.time.Duration;
+import java.util.Iterator;
+import java.util.Optional;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.bpa.impl.activity.VPManager;
@@ -32,16 +39,14 @@ import org.hyperledger.bpa.impl.mode.web.WebStartupTasks;
 import org.hyperledger.bpa.model.BPAState;
 import org.hyperledger.bpa.repository.BPAStateRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.time.Duration;
-import java.util.Iterator;
-import java.util.Optional;
-
 @Slf4j
 @Singleton
 @Requires(notEnv = { Environment.TEST })
 public class StartupTasks {
+
+    @NoArgsConstructor
+    public static final class AcaPyReady {
+    }
 
     @Value("${bpa.web.only}")
     Boolean envState;
@@ -73,11 +78,15 @@ public class StartupTasks {
     @Inject
     Optional<IndyStartupTasks> indyTasks;
 
+    @Inject
+    ApplicationEventPublisher eventPublisher;
+
     @EventListener
     public void onServiceStartedEvent(@SuppressWarnings("unused") StartupEvent startEvent) {
         checkModeChange();
 
         ac.statusWaitUntilReady(Duration.ofSeconds(60));
+        eventPublisher.publishEvent(new AcaPyReady());
 
         createDefaultSchemas();
         createDefaultTags();
@@ -90,12 +99,14 @@ public class StartupTasks {
             indyTasks.ifPresent(IndyStartupTasks::onServiceStartedEvent);
         }
 
-        vpMgmt.getVerifiablePresentation().ifPresentOrElse(
-                vp -> log.info("VP already exists, skipping: {}", host),
-                () -> {
-                    log.info("Creating default public profile for host: {}", host);
-                    vpMgmt.recreateVerifiablePresentation();
-                });
+        vpMgmt
+                .getVerifiablePresentation()
+                .ifPresentOrElse(
+                        vp -> log.info("VP already exists, skipping: {}", host),
+                        () -> {
+                            log.info("Creating default public profile for host: {}", host);
+                            vpMgmt.recreateVerifiablePresentation();
+                        });
 
         credLookup.lookupTypesForAllPartnersAsync();
     }
