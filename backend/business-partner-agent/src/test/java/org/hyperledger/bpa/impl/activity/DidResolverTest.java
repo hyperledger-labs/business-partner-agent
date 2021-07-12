@@ -20,7 +20,7 @@ package org.hyperledger.bpa.impl.activity;
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.api.PartnerAPI;
-import org.hyperledger.bpa.client.URClient;
+import org.hyperledger.bpa.client.DidDocClient;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
@@ -52,7 +52,7 @@ class DidResolverTest extends BaseTest {
     PartnerLookup partnerLookup;
 
     @Mock
-    URClient ur;
+    DidDocClient ur;
 
     @Mock
     Converter converter;

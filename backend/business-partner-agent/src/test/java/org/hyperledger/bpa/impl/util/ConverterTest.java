@@ -95,6 +95,7 @@ class ConverterTest extends BaseTest {
         final PartnerAPI partner = conv.toAPIObject(vp);
         final Partner model = conv.toModelObject("did:web:test.foo", partner);
         assertTrue(model.getDid().startsWith("did"));
+        assertNotNull(model.getVerifiablePresentation());
         assertEquals(vp, conv.fromMap(model.getVerifiablePresentation(), Converter.VP_TYPEREF));
     }
 
