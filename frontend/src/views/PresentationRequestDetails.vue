@@ -77,8 +77,8 @@ export default {
     id: String,
   },
   mounted() {
-    this.fetch();
     this.$store.dispatch("loadCredentials");
+    this.fetch();
     console.log(this.$store.getters.getCredentials);
   },
   data: () => {
