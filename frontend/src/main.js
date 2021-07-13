@@ -103,8 +103,8 @@ Vue.prototype.$config = {
     Vue.prototype.$config.ledger = splitted[splitted.length - 2];
     if (result.data.ux) {
       Object.assign(Vue.prototype.$config.ux, result.data.ux);
+      console.log("...Configuration loaded");
     }
-    console.log("...Configuration loaded");
   }
 
   console.log("setting i18n...");
