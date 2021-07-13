@@ -15,13 +15,6 @@ const state = {
 };
 
 const getters = {
-  newPartnerEventsCount: () => {
-    return (
-      Object.keys(state.newPartners).length +
-      Object.keys(state.newPresentationRequests).length +
-      Object.keys(state.newPresentations).length
-    );
-  },
   newPartnersCount: (state) => {
     return Object.keys(state.newPartners).length;
   },

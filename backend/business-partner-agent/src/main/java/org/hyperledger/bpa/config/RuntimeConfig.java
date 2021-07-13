@@ -43,6 +43,9 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
 
     Boolean tailsServerConfigured;
 
+    @Inject
+    AcaPyConfig acaPyConfig;
+
     @Value("${bpa.host}")
     String host;
 
@@ -93,6 +96,38 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
                     .statusConfig()
                     .flatMap(c -> c.getAs("tails_server_base_url", String.class))
                     .isPresent();
+
+            acaPyConfig.autoAcceptInvites = ac.statusConfig()
+                    .flatMap(c -> c.getAs("debug.auto_accept_invites", Boolean.class))
+                    .isPresent();
+            acaPyConfig.autoAcceptRequests = ac.statusConfig()
+                    .flatMap(c -> c.getAs("debug.auto_accept_requests", Boolean.class))
+                    .isPresent();
+            acaPyConfig.autoRespondMessages = ac.statusConfig()
+                    .flatMap(c -> c.getAs("debug.auto_respond_messages", Boolean.class))
+                    .isPresent();
+            acaPyConfig.autoRespondCredentialOffer = ac.statusConfig()
+                    .flatMap(c -> c.getAs("debug.auto_respond_credential_offer", Boolean.class))
+                    .isPresent();
+            acaPyConfig.autoRespondCredentialProposal = ac.statusConfig()
+                    .flatMap(c -> c.getAs("debug.auto_respond_credential_proposal", Boolean.class))
+                    .isPresent();
+            acaPyConfig.autoRespondCredentialRequest = ac.statusConfig()
+                    .flatMap(c -> c.getAs("debug.auto_respond_credential_request", Boolean.class))
+                    .isPresent();
+            acaPyConfig.autoRespondPresentationProposal = ac.statusConfig()
+                    .flatMap(c -> c.getAs("debug.auto_respond_presentation_proposal", Boolean.class))
+                    .isPresent();
+            acaPyConfig.autoRespondPresentationRequest = ac.statusConfig()
+                    .flatMap(c -> c.getAs("debug.auto_respond_presentation_request", Boolean.class))
+                    .isPresent();
+            acaPyConfig.autoStoreCredential = ac.statusConfig()
+                    .flatMap(c -> c.getAs("debug.auto_store_credential", Boolean.class))
+                    .isPresent();
+            acaPyConfig.autoVerifyPresentation = ac.statusConfig()
+                    .flatMap(c -> c.getAs("debug.auto_verify_presentation", Boolean.class))
+                    .isPresent();
+
         } catch (IOException e) {
             log.warn("No aca-py");
         }

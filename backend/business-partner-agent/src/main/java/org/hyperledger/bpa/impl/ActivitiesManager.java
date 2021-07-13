@@ -25,6 +25,7 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.api.PartnerAPI;
+import org.hyperledger.bpa.config.AcaPyConfig;
 import org.hyperledger.bpa.config.ActivityLogConfig;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.activity.*;
@@ -35,7 +36,6 @@ import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -65,6 +65,9 @@ public class ActivitiesManager {
 
     @Inject
     PartnerManager partnerManager;
+
+    @Inject
+    AcaPyConfig acaPyConfig;
 
     public List<ActivityItem> getActivityListItems(ActivitySearchParameters parameters) {
         List<ActivityItem> results = new ArrayList<>();
@@ -214,25 +217,21 @@ public class ActivitiesManager {
     }
 
     private boolean manualFlag(ActivityType type) {
-        String key = null;
-        if (ActivityType.CONNECTION_REQUEST.equals(type)) {
-            key = "debug.auto_accept_requests";
-        } else if (ActivityType.PRESENTATION_EXCHANGE.equals(type)) {
-            key = "debug.auto_respond_presentation_request";
-        } else if (ActivityType.CREDENTIAL_OFFER.equals(type)) {
-            key = "debug.auto_respond_credential_offer";
+        boolean result;
+        switch (type) {
+        case CONNECTION_REQUEST:
+            result = !acaPyConfig.getAutoAcceptRequests();
+            break;
+        case PRESENTATION_EXCHANGE:
+            result = !acaPyConfig.getAutoRespondPresentationRequest();
+            break;
+        case CREDENTIAL_OFFER:
+            result = !acaPyConfig.getAutoRespondCredentialOffer();
+            break;
+        default:
+            result = false;
         }
-        try {
-            String finalKey = key;
-            // if we there is no value for key then we have set to manual...
-            return !ac.statusConfig()
-                    .flatMap(c -> c.getAs(finalKey, String.class))
-                    .isPresent();
-        } catch (IOException e) {
-            String msg = messageSource.getMessage("acapy.unavailable");
-            log.error(msg, e);
-        }
-        return false;
+        return result;
     }
 
 }

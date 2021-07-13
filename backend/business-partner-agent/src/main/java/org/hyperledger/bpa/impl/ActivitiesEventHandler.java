@@ -41,12 +41,15 @@ public class ActivitiesEventHandler extends EventHandler {
 
     public void handleConnection(ConnectionRecord connection) {
         Boolean completed = null;
+        Boolean notify = true;
         if (activityLogConfig.getConnectionStatesForTasks().contains(connection.getState())) {
             completed = false;
+            // we do not always want to notify... it is only a task on incoming request
+            notify = connection.isIncomingConnection();
         } else if (activityLogConfig.getConnectionStatesCompleted().contains(connection.getState())) {
             completed = true;
         }
-        if (completed != null) {
+        if (completed != null && notify) {
             messageService
                     .sendMessage(WebSocketMessageBody.notification(ActivityType.CONNECTION_REQUEST, completed));
         }

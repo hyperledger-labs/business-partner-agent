@@ -17,89 +17,58 @@
  */
 package org.hyperledger.bpa.config;
 
-import io.micronaut.context.annotation.Value;
-import io.micronaut.core.util.StringUtils;
 import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
-import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Singleton;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
 
 @Singleton
 @NoArgsConstructor
 public class ActivityLogConfig {
-
-    @Value("${bpa.activityLog.connectionStates.activities}")
-    private String connectionStatesForActivities;
-    @Value("${bpa.activityLog.connectionStates.tasks}")
-    private String connectionStatesForTasks;
-    @Value("${bpa.activityLog.connectionStates.completed}")
-    private String connectionStatesCompleted;
-
-    @Value("${bpa.activityLog.presentationExchangeStates.activities}")
-    private String presentationExchangeStatesForActivities;
-    @Value("${bpa.activityLog.presentationExchangeStates.tasks}")
-    private String presentationExchangeStatesForTasks;
-    @Value("${bpa.activityLog.presentationExchangeStates.completed}")
-    private String presentationExchangeStatesCompleted;
+    /*
+     * For now, we are not sure what to do with this configuration. Will each
+     * installation determine what their own definition of "complete" is, or which
+     * events will be "tasks"? And tasks are going to be dependant in the
+     * AcaPyConfig, which flags are set to auto respond...
+     */
 
     public List<ConnectionState> getConnectionStatesForActivities() {
-        return getConnectionStates(connectionStatesForActivities);
+        return connectionStates(ConnectionState.REQUEST, ConnectionState.INVITATION, ConnectionState.ACTIVE,
+                ConnectionState.RESPONSE);
     }
 
     public List<ConnectionState> getConnectionStatesForTasks() {
-        return getConnectionStates(connectionStatesForTasks);
+        return connectionStates(ConnectionState.REQUEST);
     }
 
     public List<ConnectionState> getConnectionStatesCompleted() {
-        return getConnectionStates(connectionStatesCompleted);
+        return connectionStates(ConnectionState.ACTIVE, ConnectionState.RESPONSE);
     }
 
     public List<PresentationExchangeState> getPresentationExchangeStatesForActivities() {
-        return getPresentationExchangeStates(presentationExchangeStatesForActivities);
+        return presentationExchangeStates(PresentationExchangeState.REQUEST_RECEIVED,
+                PresentationExchangeState.REQUEST_SENT,
+                PresentationExchangeState.VERIFIED,
+                PresentationExchangeState.PRESENTATION_ACKED);
     }
 
     public List<PresentationExchangeState> getPresentationExchangeStatesForTasks() {
-        return getPresentationExchangeStates(presentationExchangeStatesForTasks);
+        return presentationExchangeStates(PresentationExchangeState.REQUEST_RECEIVED);
     }
 
     public List<PresentationExchangeState> getPresentationExchangeStatesCompleted() {
-        return getPresentationExchangeStates(presentationExchangeStatesCompleted);
+        return presentationExchangeStates(PresentationExchangeState.VERIFIED,
+                PresentationExchangeState.PRESENTATION_ACKED);
     }
 
-    @NotNull
-    private List<ConnectionState> getConnectionStates(String states) {
-        if (StringUtils.isNotEmpty(states)) {
-            return List.of(parseStates(states))
-                    .stream()
-                    .map(m -> ConnectionState.valueOf(getEnumName(m)))
-                    .collect(Collectors.toList());
-        }
-        return Collections.emptyList();
+    private List<ConnectionState> connectionStates(ConnectionState... states) {
+        return List.of(states);
     }
 
-    @NotNull
-    private List<PresentationExchangeState> getPresentationExchangeStates(String states) {
-        if (StringUtils.isNotEmpty(states)) {
-            return List.of(parseStates(states))
-                    .stream()
-                    .map(m -> PresentationExchangeState.valueOf(getEnumName(m)))
-                    .collect(Collectors.toList());
-        }
-        return Collections.emptyList();
-    }
-
-    private String getEnumName(String s) {
-        return StringUtils.trimToNull(s.toUpperCase(Locale.getDefault()));
-    }
-
-    private String[] parseStates(String states) {
-        return StringUtils.tokenizeToStringArray(states, ", ", true, true);
+    private List<PresentationExchangeState> presentationExchangeStates(PresentationExchangeState... states) {
+        return List.of(states);
     }
 
 }
