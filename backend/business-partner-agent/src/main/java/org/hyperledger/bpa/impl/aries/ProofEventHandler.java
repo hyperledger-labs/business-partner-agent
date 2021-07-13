@@ -72,7 +72,14 @@ public class ProofEventHandler {
         partnerRepo.findByConnectionId(proof.getConnectionId())
                 .ifPresentOrElse(
                         p -> pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId()).ifPresentOrElse(
-                                pp -> pProofRepo.updateState(pp.getId(), proof.getState()),
+                                pp -> {
+                                    if (proof.getState() != null){
+                                        pProofRepo.updateState(pp.getId(), proof.getState());
+                                    }
+                                    if (proof.getErrorMsg() != null){
+                                        pProofRepo.updateProblemReport(pp.getId(), proof.getErrorMsg());
+                                    }
+                                },
                                 () -> pProofRepo.save(defaultProof(p.getId(), proof))),
                         () -> log.warn("Received proof event that does not match any connection"));
     }
