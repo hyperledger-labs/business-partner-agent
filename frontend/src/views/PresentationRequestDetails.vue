@@ -26,16 +26,13 @@
       <v-layout align-end justify-end>
         <v-bpa-button
           color="secondary"
-          text
           @click="declinePresentationRequest(presentationRequest)"
           >Decline</v-bpa-button
         >
         <v-bpa-button
           :loading="this.isBusy"
           color="primary"
-          text
           @click="respondToPresentationRequest(presentationRequest)"
-          :disabled="submitDisabled"
           >Accept</v-bpa-button
         >
         <v-tooltip v-if="presentationRequest.problemReport" top>
@@ -156,9 +153,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.v-btn {
-  margin-right: 10px;
-}
-</style>
