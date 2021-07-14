@@ -31,7 +31,6 @@ import javax.inject.Singleton;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.impl.activity.VPManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
@@ -61,9 +60,6 @@ public class StartupTasks {
     @Inject
     AriesClient ac;
 
-    @Inject
-    RuntimeConfig config;
-    
     @Inject
     SchemaService schemaService;
 
@@ -112,16 +108,6 @@ public class StartupTasks {
                             vpMgmt.recreateVerifiablePresentation();
                         });
 
-        // if an endorser/autor role is explicitely set ...
-        if (config.getEndorserRole() != null && !config.getEndorserRole().trim().isEmpty()) {
-            if (config.getEndorserRole().equalsIgnoreCase("Endorser")) {
-                // if BPA is an Endorser, can set connected partners as Authors
-                tagService.addTag("Author");
-            } else if (config.getEndorserRole().equalsIgnoreCase("Author")) {
-                // if BPA is an Author, can set connected partners as Endorsers
-                tagService.addTag("Endorser");
-            }
-        }
         credLookup.lookupTypesForAllPartnersAsync();
     }
 

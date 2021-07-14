@@ -95,5 +95,4 @@ public class PartnerAPI {
                         ? from.getTags().stream().map(TagAPI::from).collect(Collectors.toList())
                         : null);
     }
-
 }

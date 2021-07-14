@@ -100,4 +100,8 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
             log.warn("No aca-py");
         }
     }
+
+    public boolean hasEndorserRole() {
+        return (getEndorserRole() != null && !getEndorserRole().trim().isEmpty());
+    }
 }

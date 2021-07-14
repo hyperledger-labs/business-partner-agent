@@ -36,6 +36,7 @@ import javax.persistence.Id;
 import javax.persistence.Transient;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Flat representation of a partner. In the web context a partner is just a
@@ -114,4 +115,13 @@ public class Partner {
         return connectionId != null;
     }
 
+    @Transient
+    public boolean hasTag(String name) {
+        if (tags == null)
+            return false;
+        Set<Tag> filtered = tags.stream()
+            .filter(tag -> tag.getName().equalsIgnoreCase(name))
+            .collect(Collectors.toSet());
+        return (0 < filtered.size());
+    }
 }

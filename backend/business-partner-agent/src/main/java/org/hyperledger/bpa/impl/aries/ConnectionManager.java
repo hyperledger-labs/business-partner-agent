@@ -32,6 +32,7 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
@@ -86,6 +87,9 @@ public class ConnectionManager {
 
     @Inject
     BPAMessageSource.DefaultMessageSource messageSource;
+
+    @Inject
+    RuntimeConfig config;
 
     /**
      * Creates a connection invitation to be used within a barcode
@@ -153,6 +157,16 @@ public class ConnectionManager {
         }
     }
 
+    public synchronized void addConnectionEndorserMetadata(ConnectionRecord record, Partner p) {
+        log.info("TODO addConnectionEndorserMetadata() for: {}", p);
+
+        if (p.hasTag("Author")) {
+            log.info("TODO add connection metadata for Author connection: {}", p);
+        } else if (p.hasTag("Endorser")) {
+            log.info("TODO add connection metadata for Endorser connection: {}", p);
+        }
+    }
+
     // connection that originated from this agent
     public synchronized void handleOutgoingConnectionEvent(ConnectionRecord record) {
         partnerRepo.findByConnectionId(record.getConnectionId()).ifPresent(
@@ -163,6 +177,12 @@ public class ConnectionManager {
                         partnerRepo.update(dbP);
                     } else {
                         partnerRepo.updateState(dbP.getId(), record.getState());
+                    }
+
+                    // if partner is tagged as "Author"/"Endorser" create appropriate meta-data
+                    log.info("TODO check for outbound Endorser event for existing partner: {} {}", record, dbP);
+                    if (config.hasEndorserRole()) {
+                        addConnectionEndorserMetadata(record, dbP);
                     }
                 });
     }
@@ -180,6 +200,12 @@ public class ConnectionManager {
                     dbP.setState(record.getState());
                     partnerRepo.update(dbP);
                     resolveAndSend(record, dbP);
+
+                    // if partner is tagged as "Author"/"Endorser" create appropriate meta-data
+                    log.info("TODO check for inbound Endorser event for existing partner: {} {}", record, dbP);
+                    if (config.hasEndorserRole()) {
+                        addConnectionEndorserMetadata(record, dbP);
+                    }
                 },
                 () -> {
                     Partner p = Partner
@@ -195,6 +221,12 @@ public class ConnectionManager {
                             .build();
                     p = partnerRepo.save(p);
                     resolveAndSend(record, p);
+
+                    // if partner is tagged as "Author"/"Endorser" create appropriate meta-data
+                    log.info("TODO check for inbound Endorser event for new partner: {} {}", record, p);
+                    if (config.hasEndorserRole()) {
+                        addConnectionEndorserMetadata(record, p);
+                    }
                 });
     }
 

@@ -21,6 +21,7 @@ import io.micronaut.cache.annotation.CacheInvalidate;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.api.PartnerAPI;
@@ -41,6 +42,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
 
+@Slf4j
 @Singleton
 public class PartnerManager {
 
@@ -74,6 +76,7 @@ public class PartnerManager {
     public List<PartnerAPI> getPartners() {
         List<PartnerAPI> result = new ArrayList<>();
         repo.findAll().forEach(dbPartner -> result.add(converter.toAPIObject(dbPartner)));
+        log.info("getPartners() returns: {}", result);
         return result;
     }
 
@@ -83,6 +86,7 @@ public class PartnerManager {
         if (dbPartner.isPresent()) {
             result = Optional.of(converter.toAPIObject(dbPartner.get()));
         }
+        log.info("getPartnerById() returns: {}", result);
         return result;
     }
 

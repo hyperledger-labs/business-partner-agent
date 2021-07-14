@@ -65,8 +65,10 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
     Number updateVerifiablePresentation(@Id UUID id,
             Map<String, Object> verifiablePresentation, @Nullable Boolean valid);
 
+    @Join(value = "tags", type = Join.Type.LEFT_FETCH)
     Optional<Partner> findByDid(String did);
 
+    @Join(value = "tags", type = Join.Type.LEFT_FETCH)
     Optional<Partner> findByConnectionId(String connectionId);
 
     List<Partner> findByDidIn(List<String> did);
