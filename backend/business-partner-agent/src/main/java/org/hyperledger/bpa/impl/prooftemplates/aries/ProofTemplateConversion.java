@@ -44,9 +44,6 @@ public class ProofTemplateConversion {
     PartnerRepository partnerRepo;
 
     @Inject
-    ProofTemplateConditionOperators<AriesProofTemplateRequestBuilder> ariesConditionOperators;
-
-    @Inject
     Clock clock;
 
     @NonNull

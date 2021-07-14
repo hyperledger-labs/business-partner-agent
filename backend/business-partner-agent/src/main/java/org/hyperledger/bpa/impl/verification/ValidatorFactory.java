@@ -21,7 +21,6 @@ package org.hyperledger.bpa.impl.verification;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.validation.validator.constraints.ConstraintValidator;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
-import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConditionOperators;
 import org.hyperledger.bpa.impl.verification.prooftemplates.*;
 import org.hyperledger.bpa.model.prooftemplate2.BPAAttribute;
 import org.hyperledger.bpa.model.prooftemplate2.BPAAttributeGroup;
@@ -104,17 +103,15 @@ public class ValidatorFactory {
     // TODO find a way to validate single list entries in isolation. This shows the
     // whole list as invalid, even if it's only one entry.
     @Singleton
-    ConstraintValidator<ValidAttributeCondition, List<BPACondition>> attributeConditionsOperatorAndValueValidator(
-            ProofTemplateConditionOperators<?> conditionOperators) {
+    ConstraintValidator<ValidAttributeCondition, List<BPACondition>> attributeConditionsOperatorAndValueValidator() {
         return (value, annotationMetadata, context) -> Objects.requireNonNull(value)
                 .stream()
-                .allMatch(condition -> attributeConditionOperatorAndValueValidator(conditionOperators)
+                .allMatch(condition -> attributeConditionOperatorAndValueValidator()
                         .isValid(condition, annotationMetadata, context));
     }
 
     @Singleton
-    ConstraintValidator<ValidAttributeCondition, BPACondition> attributeConditionOperatorAndValueValidator(
-            ProofTemplateConditionOperators<?> conditionOperators) {
+    ConstraintValidator<ValidAttributeCondition, BPACondition> attributeConditionOperatorAndValueValidator() {
         return (value, annotationMetadata, context) -> Optional.ofNullable(value)
                 .map(condition -> new Pair<>(condition.getValue(), condition.getOperator()))
                 .filter(pair -> pair.getRight().conditionValueIsValid(pair.getLeft()))

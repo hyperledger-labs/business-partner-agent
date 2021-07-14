@@ -21,16 +21,18 @@ package org.hyperledger.bpa.impl;
 import lombok.AllArgsConstructor;
 import org.hyperledger.bpa.api.exception.ProofTemplateException;
 import org.hyperledger.bpa.impl.aries.ProofManager;
-import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConditionOperators;
 import org.hyperledger.bpa.model.BPAProofTemplate;
+import org.hyperledger.bpa.model.prooftemplate2.ValueOperators;
 import org.hyperledger.bpa.repository.BPAProofTemplateRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -43,9 +45,6 @@ public class ProofTemplateManager {
 
     @Inject
     private final ProofManager proofManager;
-
-    @Inject
-    private final ProofTemplateConditionOperators<?> proofTemplateConditionOperators;
 
     public void invokeProofRequestByTemplate(@NotNull UUID id, @NotNull UUID partnerId) {
         Optional<BPAProofTemplate> proofTemplate = repo.findById(id);
@@ -66,6 +65,6 @@ public class ProofTemplateManager {
     }
 
     public Set<String> getKnownConditionOperators() {
-        return proofTemplateConditionOperators.getKnownOperatorStrings();
+        return Arrays.stream(ValueOperators.values()).map(ValueOperators::getValue).collect(Collectors.toSet());
     }
 }

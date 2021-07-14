@@ -73,7 +73,7 @@ class ProofTemplateManagerTest {
                         .build());
         doNothing().when(proofManager).sendPresentProofRequest(eq(partnerId), eq(template));
 
-        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, null);
+        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager);
         sut.invokeProofRequestByTemplate(template.getId(), partnerId);
 
         verify(proofManager, times(1)).sendPresentProofRequest(partnerId, template);
@@ -81,7 +81,7 @@ class ProofTemplateManagerTest {
 
     @Test
     void testThatProofManagerIsNotInvokedIfProofTemplateDoesNotExist() {
-        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, null);
+        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager);
 
         Assertions.assertThrows(
                 ProofTemplateException.class,
@@ -99,7 +99,7 @@ class ProofTemplateManagerTest {
                                 .build())
                 .build();
 
-        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, null);
+        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager);
 
         Assertions.assertEquals(0, repo.count(), "There should be no templates initially.");
         BPAProofTemplate storedTemplate = sut.addProofTemplate(template);
@@ -116,7 +116,7 @@ class ProofTemplateManagerTest {
 
         Assertions.assertThrows(
                 ConstraintViolationException.class,
-                () -> new ProofTemplateManager(repo, proofManager, null).addProofTemplate(template),
+                () -> new ProofTemplateManager(repo, proofManager).addProofTemplate(template),
                 "ProofTemplateManager#addProofTemplate should reject invalid templates with a ConstraintViolationException");
         Assertions.assertEquals(0, repo.count(), "There should be no templates persisted.");
     }
@@ -135,7 +135,7 @@ class ProofTemplateManagerTest {
                 .name("mySecondTemplate")
                 .build());
 
-        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, null);
+        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager);
 
         List<BPAProofTemplate> allTemplates = sut.listProofTemplates().collect(Collectors.toList());
         assertEquals(2, allTemplates.size(), "Expected exactly 2 persisted proof templates.");
@@ -154,7 +154,7 @@ class ProofTemplateManagerTest {
                         .build())
                 .getId();
 
-        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, null);
+        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager);
         assertTrue(repo.findById(templateId).isPresent(), "The to-be-removed proof template should exist.");
         sut.removeProofTemplate(templateId);
         assertTrue(repo.findById(templateId).isEmpty(), "The proof template was not removed.");
