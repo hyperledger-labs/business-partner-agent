@@ -194,8 +194,8 @@ public class ProofManager {
                                         + presentationExchangeRecord.getPresentationExchangeId();
                                 log.warn(msg);
                                 pProofRepo.findByPresentationExchangeId(
-                                    presentationExchangeRecord.getPresentationExchangeId())
-                                    .ifPresent(pp -> pProofRepo.updateProblemReport(pp.getId(), msg));
+                                        presentationExchangeRecord.getPresentationExchangeId())
+                                        .ifPresent(pp -> pProofRepo.updateProblemReport(pp.getId(), msg));
                                 throw new PresentationConstructionException(msg);
                             }
                         }, () -> log.error("Could not load matching credentials from aca-py"));
@@ -254,7 +254,6 @@ public class ProofManager {
         pProofRepo.findByPartnerIdOrderByRole(partnerId).forEach(p -> result.add(toApiProof(p)));
         return result;
     }
-
 
     public Optional<AriesProofExchange> getPartnerProofById(@NonNull UUID id) {
         Optional<AriesProofExchange> result = Optional.empty();

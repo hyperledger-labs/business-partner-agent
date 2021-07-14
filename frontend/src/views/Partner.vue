@@ -22,39 +22,13 @@
           tag.name
         }}</v-chip>
         <v-layout align-center justify-end>
-          <v-btn icon @click="isUpdatingDid = !isUpdatingDid">
+          <v-btn icon disabled>
             <v-icon small dark>$vuetify.icons.identity</v-icon>
           </v-btn>
           <span
-            v-if="!isUpdatingDid"
-            class="grey--text text--darken-2 font-weight-medium text-caption pl-1 pr-4"
+              class="grey--text text--darken-2 font-weight-medium text-caption pl-1 pr-4"
             >{{ partner.did }}</span
           >
-          <v-text-field
-            class="mt-4 col-lg-6 col-md-6 col-sm-8"
-            v-else
-            label="DID"
-            v-model="did"
-            outlined
-            :rules="[rules.required]"
-            dense
-          >
-            <template v-slot:append>
-              <v-bpa-button
-                color="secondary"
-                class="pb-1"
-                @click="isUpdatingDid = false"
-                >{{ $t("button.cancel") }}</v-bpa-button
-              >
-              <v-bpa-button
-                class="pb-1"
-                color="primary"
-                :loading="isBusy"
-                @click="submitDidUpdate()"
-                >{{ $t("button.save") }}</v-bpa-button
-              >
-            </template>
-          </v-text-field>
           <v-dialog v-model="updatePartnerDialog" max-width="600px">
             <template v-slot:activator="{ on, attrs }">
               <v-btn icon v-bind="attrs" v-on="on" color="primary">
@@ -340,7 +314,6 @@ export default {
     return {
       isReady: false,
       isBusy: false,
-      isUpdatingDid: false,
       isLoading: true,
       attentionPartnerStateDialog: false,
       updatePartnerDialog: false,
@@ -583,7 +556,8 @@ export default {
           console.log(result);
           if (result.status === 200) {
             EventBus.$emit("success", "Connection request accepted");
-            this.getPartner();
+            // allow a little time for the partner state to change, so the remove/accept panel will not be displayed
+            setTimeout(() => this.getPartner(), 1000);
           }
         })
         .catch((e) => {
@@ -634,30 +608,6 @@ export default {
     onUpdatePartner() {
       this.getPartner();
       this.updatePartnerDialog = false;
-    },
-    submitDidUpdate() {
-      this.isBusy = true;
-      if (this.did && this.did !== "") {
-        this.$axios
-          .put(`${this.$apiBaseUrl}/partners/${this.id}/did`, {
-            did: this.did,
-          })
-          .then((result) => {
-            if (result.status === 200) {
-              this.isBusy = false;
-              this.partner.did = this.did;
-              this.isUpdatingDid = false;
-            }
-          })
-          .catch((e) => {
-            this.isBusy = false;
-            this.isUpdatingDid = false;
-            console.error(e);
-            EventBus.$emit("error", e);
-          });
-      } else {
-        this.isBusy = false;
-      }
     },
     onCredentialIssued() {
       this.issueCredentialDialog = false;

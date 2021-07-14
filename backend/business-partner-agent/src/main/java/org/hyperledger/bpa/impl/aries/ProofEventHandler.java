@@ -73,10 +73,10 @@ public class ProofEventHandler {
                 .ifPresentOrElse(
                         p -> pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId()).ifPresentOrElse(
                                 pp -> {
-                                    if (proof.getState() != null){
+                                    if (proof.getState() != null) {
                                         pProofRepo.updateState(pp.getId(), proof.getState());
                                     }
-                                    if (proof.getErrorMsg() != null){
+                                    if (proof.getErrorMsg() != null) {
                                         pProofRepo.updateProblemReport(pp.getId(), proof.getErrorMsg());
                                     }
                                 },

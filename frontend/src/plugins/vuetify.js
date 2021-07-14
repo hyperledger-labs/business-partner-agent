@@ -56,6 +56,8 @@ export default new Vuetify({
       about: mdiInformationOutline,
       prev: mdiChevronLeft,
       next: mdiChevronRight,
+      up: "fas fa-chevron-up",
+      down: "fas fa-chevron-down",
       delete: mdiDelete,
       copy: mdiContentCopy,
       add: mdiPlus,
