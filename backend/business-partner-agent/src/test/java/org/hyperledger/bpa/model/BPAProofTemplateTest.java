@@ -26,10 +26,7 @@ import io.micronaut.validation.validator.Validator;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidBPASchemaId;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroups;
-import org.hyperledger.bpa.model.prooftemplate.BPACondition;
+import org.hyperledger.bpa.model.prooftemplate2.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -93,37 +90,6 @@ class BPAProofTemplateTest {
     }
 
     @Test
-    void testThatAttributeConditionsAreVerified() {
-        Mockito.when(schemaService.getSchemaFor("mySchemaId"))
-                .thenReturn(Optional.of(new BPASchema()));
-        Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
-                .thenReturn(Set.of("myAttributeName"));
-        BPACondition invalidCondtion = BPACondition.builder()
-                .value("any")
-                .operator("invalid operator")
-                .build();
-        BPAProofTemplate sut = BPAProofTemplate.builder()
-                .id(UUID.randomUUID())
-                .name("MyTestTemplate")
-                .attributeGroups(
-                        BPAAttributeGroups.builder()
-                                .attributeGroup(BPAAttributeGroup.builder()
-                                        .schemaId("mySchemaId")
-                                        .attribute(BPAAttribute.builder()
-                                                .name("myAttributeName")
-                                                .condition(invalidCondtion)
-                                                .build())
-                                        .build())
-                                .build())
-                .build();
-
-        Set<ConstraintViolation<BPAProofTemplate>> constraintViolations = validator.validate(sut);
-        Assertions.assertEquals(1, constraintViolations.size());
-        Assertions.assertEquals(List.of(invalidCondtion),
-                constraintViolations.stream().findFirst().map(ConstraintViolation::getInvalidValue).orElse(null));
-    }
-
-    @Test
     void testThatSerializationWorksBothWays() throws JsonProcessingException {
         BPAProofTemplate proofTemplate = BPAProofTemplate.builder()
                 .id(UUID.randomUUID())
@@ -136,7 +102,7 @@ class BPAProofTemplateTest {
                                                 .name("myAttributeName")
                                                 .condition(BPACondition.builder()
                                                         .value("any")
-                                                        .operator("invalid operator")
+                                                        .operator(ValueOperators.LESS_THAN)
                                                         .build())
                                                 .build())
                                         .build())

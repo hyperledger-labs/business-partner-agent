@@ -20,8 +20,8 @@ package org.hyperledger.bpa.model;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.validation.validator.Validator;
-import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConditionOperators;
-import org.hyperledger.bpa.model.prooftemplate.BPACondition;
+import org.hyperledger.bpa.model.prooftemplate2.BPACondition;
+import org.hyperledger.bpa.model.prooftemplate2.ValueOperators;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -37,28 +37,29 @@ class BPAConditionTest {
 
     @Test
     void testThatLessThenConditionIsValid() {
-        BPACondition sut = BPACondition.builder().value("else").operator("<").build();
+        BPACondition sut = BPACondition.builder().value("11").operator(ValueOperators.LESS_THAN).build();
         Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(0, constraintViolations.size());
     }
 
     @Test
     void testThatLessOrEqualsConditionIsValid() {
-        BPACondition sut = BPACondition.builder().value("some").operator("<=").build();
+        BPACondition sut = BPACondition.builder().value("2").operator(ValueOperators.LESS_THAN_OR_EQUAL_TO).build();
         Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(0, constraintViolations.size());
     }
 
     @Test
     void testThatGreaterOrEqualsConditionIsValid() {
-        BPACondition sut = BPACondition.builder().value("thing").operator(">=").build();
+        BPACondition sut = BPACondition.builder().value("5").operator(ValueOperators.GREATER_THAN_OR_EQUAL_TO)
+                .build();
         Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(0, constraintViolations.size());
     }
 
     @Test
     void testThatGreaterThanConditionIsValid() {
-        BPACondition sut = BPACondition.builder().value("any").operator(">").build();
+        BPACondition sut = BPACondition.builder().value("3").operator(ValueOperators.GREATER_THAN).build();
         Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(0, constraintViolations.size());
     }
@@ -66,41 +67,8 @@ class BPAConditionTest {
     @Test
     void testThatEqualsConditionIsValid() {
         BPACondition sut = BPACondition.builder().value("any")
-                .operator(ProofTemplateConditionOperators.EQUALS_OPERATOR_STRING).build();
+                .operator(ValueOperators.EQUALS).build();
         Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(0, constraintViolations.size());
-    }
-
-    @Test
-    void testThatIssuerConditionIsValid() {
-        BPACondition sut = BPACondition.builder().value("somebody")
-                .operator(ProofTemplateConditionOperators.ISSUED_BY_OPERATOR_STRING).build();
-        Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
-        Assertions.assertEquals(0, constraintViolations.size());
-    }
-
-    @Test
-    void testThatNonRevocationBeforeConditionIsValid() {
-        BPACondition sut = BPACondition.builder().value("somebody")
-                .operator(ProofTemplateConditionOperators.NON_REVOKED_OPERATOR_STRING).build();
-        Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
-        Assertions.assertEquals(0, constraintViolations.size());
-    }
-
-    @Test
-    // non-revocation proof should use for 'from' the same value as 'to' or omit it.
-    // See
-    // https://github.com/hyperledger/aries-rfcs/blob/master/concepts/0441-present-proof-best-practices/README.md
-    void testThatNonRevocationAfterConditionIsInvalid() {
-        Assertions.assertTrue(true);
-    }
-
-    @Test
-    void testThatATextConditionIsInvalid() {
-        BPACondition sut = BPACondition.builder().value("any").operator("A text").build();
-        Set<ConstraintViolation<BPACondition>> constraintViolations = validator.validate(sut);
-        Assertions.assertEquals(1, constraintViolations.size());
-        Assertions.assertEquals(sut,
-                constraintViolations.stream().findFirst().map(ConstraintViolation::getInvalidValue).orElse(null));
     }
 }

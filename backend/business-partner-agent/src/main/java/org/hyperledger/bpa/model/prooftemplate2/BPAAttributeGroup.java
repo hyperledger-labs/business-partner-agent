@@ -21,7 +21,7 @@ package org.hyperledger.bpa.model.prooftemplate2;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.micronaut.core.annotation.Introspected;
 import lombok.*;
-import org.hyperledger.bpa.controller.api.prooftemplates.AttributeGroup;
+import org.hyperledger.bpa.controller.api.prooftemplates2.AttributeGroup;
 import org.hyperledger.bpa.impl.verification.prooftemplates.DistinctAttributeNames;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondition;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
@@ -49,12 +49,14 @@ public class BPAAttributeGroup {
     @Valid
     @DistinctAttributeNames
     List<BPAAttribute> attributes;
-
     @NotNull
-    @Singular
+    @Builder.Default
+    Boolean nonRevoked = Boolean.FALSE;
+    @NotNull
+    @Builder.Default
     @Valid
     @ValidAttributeCondition
-    List<BPACondition> schemaLevelConditions;
+    BPASchemaRestrictions schemaLevelRestrictions = BPASchemaRestrictions.builder().build();
 
     public AttributeGroup toRepresentation() {
         return new AttributeGroup(
@@ -62,19 +64,20 @@ public class BPAAttributeGroup {
                 attributes.stream()
                         .map(BPAAttribute::toRepresentation)
                         .collect(Collectors.toList()),
-                schemaLevelConditions.stream()
-                        .map(BPACondition::toRepresentation)
-                        .collect(Collectors.toList()));
+                nonRevoked,
+                schemaLevelRestrictions.toRepresentation());
     }
 
     public static BPAAttributeGroup fromRepresentation(AttributeGroup attributeGroup) {
-        return new BPAAttributeGroup(
-                attributeGroup.getSchemaId(),
-                attributeGroup.getAttributes().stream()
+        return BPAAttributeGroup.builder()
+                .schemaId(attributeGroup.getSchemaId())
+                .attributes(attributeGroup.getAttributes().stream()
                         .map(BPAAttribute::fromRepresentation)
-                        .collect(Collectors.toList()),
-                attributeGroup.getSchemaLevelConditions().stream()
-                        .map(BPACondition::fromRepresentation)
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList()))
+                .nonRevoked(attributeGroup.getNonRevoked())
+                .schemaLevelRestrictions(
+                        BPASchemaRestrictions.fromRepresentation(
+                                attributeGroup.getSchemaLevelRestrictions()))
+                .build();
     }
 }

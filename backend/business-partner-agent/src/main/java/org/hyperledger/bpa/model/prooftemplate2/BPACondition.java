@@ -21,11 +21,8 @@ package org.hyperledger.bpa.model.prooftemplate2;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.Nullable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.controller.api.prooftemplates.Condition;
+import lombok.*;
+import org.hyperledger.bpa.controller.api.prooftemplates2.ValueCondition;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondition;
 
 @Data
@@ -36,16 +33,16 @@ import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondit
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 @ValidAttributeCondition
 public class BPACondition {
-
-    private String operator;
-    @Nullable
+    @NonNull
+    private ValueOperators operator;
+    @NonNull
     private String value;
 
-    public Condition toRepresentation() {
-        return new Condition(operator, value);
+    public ValueCondition toRepresentation() {
+        return new ValueCondition(operator, value);
     }
 
-    public static BPACondition fromRepresentation(Condition condition) {
+    public static BPACondition fromRepresentation(ValueCondition condition) {
         return new BPACondition(condition.getOperator(), condition.getValue());
     }
 }

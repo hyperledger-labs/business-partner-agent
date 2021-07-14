@@ -21,12 +21,11 @@ package org.hyperledger.bpa.impl.verification;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.validation.validator.constraints.ConstraintValidator;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
-import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConditionOperator;
 import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConditionOperators;
 import org.hyperledger.bpa.impl.verification.prooftemplates.*;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
-import org.hyperledger.bpa.model.prooftemplate.BPACondition;
+import org.hyperledger.bpa.model.prooftemplate2.BPAAttribute;
+import org.hyperledger.bpa.model.prooftemplate2.BPAAttributeGroup;
+import org.hyperledger.bpa.model.prooftemplate2.BPACondition;
 import org.hyperledger.bpa.model.Pair;
 
 import javax.inject.Singleton;
@@ -118,16 +117,8 @@ public class ValidatorFactory {
             ProofTemplateConditionOperators<?> conditionOperators) {
         return (value, annotationMetadata, context) -> Optional.ofNullable(value)
                 .map(condition -> new Pair<>(condition.getValue(), condition.getOperator()))
-                .flatMap(Pair.flatMapRight(conditionOperators::getConditionOperatorFor))
-                .filter(ValidatorFactory::conditionHasValueIfOperatorRequiresIt)
+                .filter(pair -> pair.getRight().conditionValueIsValid(pair.getLeft()))
                 .isPresent();
 
-    }
-
-    private static <T> boolean conditionHasValueIfOperatorRequiresIt(
-            Pair<String, ProofTemplateConditionOperator<T>> conditionValueAndOperator) {
-        boolean hasValue = conditionValueAndOperator.getRight() != null;
-        boolean valueOptionalForOperator = !conditionValueAndOperator.getRight().attributeOnlyLevel();
-        return hasValue || valueOptionalForOperator;
     }
 }

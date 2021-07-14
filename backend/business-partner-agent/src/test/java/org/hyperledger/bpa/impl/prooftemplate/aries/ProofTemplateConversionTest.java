@@ -21,12 +21,8 @@ package org.hyperledger.bpa.impl.prooftemplate.aries;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.acy_py.generated.model.IndyProofReqPredSpec;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
-import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConditionOperators;
 import org.hyperledger.bpa.model.*;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroups;
-import org.hyperledger.bpa.model.prooftemplate.BPACondition;
+import org.hyperledger.bpa.model.prooftemplate2.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -146,9 +142,7 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
                 .attributeGroups(BPAAttributeGroups.builder()
                         .attributeGroup(BPAAttributeGroup.builder()
                                 .schemaId("mySchemaId")
-                                .schemaLevelCondition(BPACondition.builder()
-                                        .operator(ProofTemplateConditionOperators.NON_REVOKED_OPERATOR_STRING)
-                                        .build())
+                                .nonRevoked(true)
                                 .attribute(BPAAttribute.builder()
                                         .name("name1")
                                         .build())
@@ -199,9 +193,7 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
                 .attributeGroups(BPAAttributeGroups.builder()
                         .attributeGroup(BPAAttributeGroup.builder()
                                 .schemaId("mySchemaId1")
-                                .schemaLevelCondition(BPACondition.builder()
-                                        .operator(ProofTemplateConditionOperators.NON_REVOKED_OPERATOR_STRING)
-                                        .build())
+                                .nonRevoked(true)
                                 .attribute(BPAAttribute.builder()
                                         .name("name1")
                                         .build())
@@ -211,9 +203,7 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
                                 .build())
                         .attributeGroup(BPAAttributeGroup.builder()
                                 .schemaId("mySchemaId2")
-                                .schemaLevelCondition(BPACondition.builder()
-                                        .operator(ProofTemplateConditionOperators.NON_REVOKED_OPERATOR_STRING)
-                                        .build())
+                                .nonRevoked(true)
                                 .attribute(BPAAttribute.builder()
                                         .name("name3")
                                         .build())
@@ -266,8 +256,6 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
     }
 
     @Test
-    @Disabled
-    // FIXME
     public void testOneAttributeGroupsAndOnePredicateWithRevocation() {
         prepareSchemaWithAttributes("mySchemaId1", "name1", "name2", "secret1");
         prepareConnectionId("myConnectionId");
@@ -278,9 +266,7 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
                 .attributeGroups(BPAAttributeGroups.builder()
                         .attributeGroup(BPAAttributeGroup.builder()
                                 .schemaId("mySchemaId1")
-                                .schemaLevelCondition(BPACondition.builder()
-                                        .operator(ProofTemplateConditionOperators.NON_REVOKED_OPERATOR_STRING)
-                                        .build())
+                                .nonRevoked(true)
                                 .attribute(BPAAttribute.builder()
                                         .name("name1")
                                         .build())
@@ -290,8 +276,7 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
                                 .attribute(BPAAttribute.builder()
                                         .name("secret1")
                                         .condition(BPACondition.builder()
-                                                .operator(IndyProofReqPredSpec.PTypeEnum.GREATER_THAN_OR_EQUAL_TO
-                                                        .getValue())
+                                                .operator(ValueOperators.GREATER_THAN_OR_EQUAL_TO)
                                                 .value("10")
                                                 .build())
                                         .build())

@@ -21,7 +21,7 @@ package org.hyperledger.bpa.model.prooftemplate2;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.micronaut.core.annotation.Introspected;
 import lombok.*;
-import org.hyperledger.bpa.controller.api.prooftemplates.Attribute;
+import org.hyperledger.bpa.controller.api.prooftemplates2.Attribute;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondition;
 
 import javax.validation.Valid;

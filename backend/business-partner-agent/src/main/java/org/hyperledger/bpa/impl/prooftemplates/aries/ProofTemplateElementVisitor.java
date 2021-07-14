@@ -18,132 +18,224 @@
 
 package org.hyperledger.bpa.impl.prooftemplates.aries;
 
-import io.micronaut.core.annotation.NonNull;
+import lombok.Builder;
+import lombok.Singular;
+import org.hyperledger.acy_py.generated.model.IndyProofReqPredSpec;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
-import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConditionOperator;
 import org.hyperledger.bpa.impl.prooftemplates.RevocationTimeStampProvider;
 import org.hyperledger.bpa.model.*;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
-import org.hyperledger.bpa.model.prooftemplate.BPACondition;
+import org.hyperledger.bpa.model.prooftemplate2.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.*;
 import java.util.stream.Stream;
-
-import static org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConditionOperators.NON_REVOKED_OPERATOR_STRING;
-import static org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConditionOperators.SCHEMA_ID_OPERATOR_STRING;
 
 public class ProofTemplateElementVisitor {
 
     private final RevocationTimeStampProvider revocationTimeStampProvider;
-    private final Function<String, Optional<ProofTemplateConditionOperator<AriesProofTemplateRequestBuilder>>> operatorResolver;
-    private final Map<String, AriesProofTemplateRequestBuilder> builderWrapperBySchemaId = new HashMap<>();
-    private PresentProofRequest.ProofRequest.ProofRequestBuilder proofRequestBuilder = PresentProofRequest.ProofRequest
-            .builder();
+    private static final NonRevocationApplicator DEFAULT_NON_REVOCATION = new NonRevocationApplicator(false, null);
+
+    private final Map<String, Attributes.AttributesBuilder> attributesBySchemaId = new HashMap<>();
+    private final Map<String, List<Predicate.PredicateBuilder>> predicatesBySchemaId = new HashMap<>();
+    private final Map<String, BPASchemaRestrictions> schemaRestrictions = new HashMap<>();
+    private final Map<String, NonRevocationApplicator> nonRevocationApplicatorMap = new HashMap<>();
+    private final Map<String, AtomicInteger> sameSchemaCounters = new HashMap<>();
+    private String templateName;
+
+    static PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder asProofRestrictionsBuilder(
+            BPASchemaRestrictions schemaRestrictions) {
+        return PresentProofRequest.ProofRequest.ProofRestrictions.builder()
+                .schemaId(schemaRestrictions.getSchemaId())
+                .schemaName(schemaRestrictions.getSchemaName())
+                .schemaVersion(schemaRestrictions.getSchemaVersion())
+                .schemaIssuerDid(schemaRestrictions.getSchemaIssuerDid())
+                .credentialDefinitionId(schemaRestrictions.getCredentialDefinitionId())
+                .issuerDid(schemaRestrictions.getIssuerDid());
+    }
+
+    private NonRevocationApplicator getRevocationApplicator(Pair<String, ?> schemaAndAttributesBuilder) {
+        return nonRevocationApplicatorMap.computeIfAbsent(schemaAndAttributesBuilder.getLeft(),
+                schemaId -> DEFAULT_NON_REVOCATION);
+    }
+
+    private BPASchemaRestrictions getSchemaRestrictions(Pair<String, ?> schemaAndAttributesBuilder) {
+        return schemaRestrictions.computeIfAbsent(
+                schemaAndAttributesBuilder.getLeft(),
+                schemaId -> BPASchemaRestrictions.builder().build());
+    }
+
+    private AtomicInteger getSameSchemaCounter(Pair<String, ?> schemaAndAttributesBuilder) {
+        return sameSchemaCounters.computeIfAbsent(schemaAndAttributesBuilder.getLeft(), s -> new AtomicInteger(0));
+    }
+
+    @Builder
+    private static class Attributes {
+        String schemaId;
+        NonRevocationApplicator revocationApplicator;
+        BPASchemaRestrictions schemaRestrictions;
+        @Singular
+        List<String> names;
+        @Singular
+        Map<String, String> equals;
+
+        public void addToBuilder(
+                BiConsumer<String, PresentProofRequest.ProofRequest.ProofRequestedAttributes> builderSink) {
+            PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder restrictionsBuilder = asProofRestrictionsBuilder(
+                    schemaRestrictions);
+            equals.forEach(restrictionsBuilder::addAttributeValueRestriction);
+
+            PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder builder = PresentProofRequest.ProofRequest.ProofRequestedAttributes
+                    .builder()
+                    .names(names)
+                    .restriction(restrictionsBuilder.schemaId(schemaId).build().toJsonObject());
+
+            builderSink.accept(schemaId, revocationApplicator.applyOn(builder).build());
+
+        }
+    }
+
+    @Builder
+    private static class Predicate {
+        String schemaId;
+        AtomicInteger sameSchemaCounter;
+        NonRevocationApplicator revocationApplicator;
+        BPASchemaRestrictions schemaRestrictions;
+        String name;
+        IndyProofReqPredSpec.PTypeEnum operator;
+        Integer value;
+
+        public void addToBuilder(
+                BiConsumer<String, PresentProofRequest.ProofRequest.ProofRequestedPredicates> builderSink) {
+            PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder restrictionsBuilder = asProofRestrictionsBuilder(
+                    schemaRestrictions);
+            PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder builder = PresentProofRequest.ProofRequest.ProofRequestedPredicates
+                    .builder()
+                    .name(name)
+                    .pType(operator)
+                    .pValue(value)
+                    .restriction(restrictionsBuilder.schemaId(schemaId).build().toJsonObject());
+            String predicateName = schemaId + sameSchemaCounter.incrementAndGet();
+            builderSink.accept(predicateName, revocationApplicator.applyOn(builder).build());
+
+        }
+    }
 
     public ProofTemplateElementVisitor(
-            Function<String, Optional<ProofTemplateConditionOperator<AriesProofTemplateRequestBuilder>>> operatorResolver,
             RevocationTimeStampProvider revocationTimeStampProvider) {
-        this.operatorResolver = operatorResolver;
         this.revocationTimeStampProvider = revocationTimeStampProvider;
     }
 
     public void visit(BPAProofTemplate bpaProofTemplate) {
-        proofRequestBuilder = applyProofTemplateToBuilder(bpaProofTemplate);
-    }
-
-    private PresentProofRequest.ProofRequest.ProofRequestBuilder applyProofTemplateToBuilder(
-            BPAProofTemplate bpaProofTemplate) {
-        return proofRequestBuilder.name(bpaProofTemplate.getName());
+        templateName = bpaProofTemplate.getName();
     }
 
     public void visit(BPAAttributeGroup bpaAttributeGroup) {
-        builderWrapperBySchemaId.computeIfAbsent(bpaAttributeGroup.getSchemaId(),
-                name -> new AriesProofTemplateRequestBuilder());
-        Stream<BPACondition> schemaLevelConditions = bpaAttributeGroup.getSchemaLevelConditions().stream();
-        String schemaId = bpaAttributeGroup.getSchemaId();
-        prependSchemaIdCondition(bpaAttributeGroup.getSchemaId(), schemaLevelConditions)
-                .map(bpaCondition -> new Pair<>(bpaCondition.getValue(), bpaCondition.getOperator()))
-                .map(this::presetNonRevocationDateIfAbsent)
-                .map(Pair.flatMapRight(this.operatorResolver))
-                .flatMap(Optional::stream)
-                .filter(Pair.filterRight(Predicate.not(ProofTemplateConditionOperator::attributeOnlyLevel)))
-                .forEach(valueAndConditionOperator -> builderWrapperBySchemaId.compute(schemaId,
-                        applyOperatorOnBuilder(valueAndConditionOperator, null)));
-    }
-
-    @NonNull
-    private BiFunction<String, AriesProofTemplateRequestBuilder, AriesProofTemplateRequestBuilder> applyOperatorOnBuilder(
-            @NonNull Pair<String, ProofTemplateConditionOperator<AriesProofTemplateRequestBuilder>> valueAndConditionOperator,
-            String attributeName) {
-        return (key, builder) -> valueAndConditionOperator.getRight().applicatorFor(
-                attributeName, valueAndConditionOperator.getLeft()).apply(builder);
+        nonRevocationApplicatorMap.put(bpaAttributeGroup.getSchemaId(), NonRevocationApplicator.builder()
+                .applyNonRevocation(bpaAttributeGroup.getNonRevoked())
+                .revocationTimeStampProvider(revocationTimeStampProvider)
+                .build());
+        schemaRestrictions.put(bpaAttributeGroup.getSchemaId(), bpaAttributeGroup.getSchemaLevelRestrictions());
     }
 
     public void visit(Pair<String, BPAAttribute> schemaIdAndBpaAttribute) {
         String schemaId = schemaIdAndBpaAttribute.getLeft();
-        builderWrapperBySchemaId.computeIfAbsent(schemaId,
-                name -> new AriesProofTemplateRequestBuilder());
         BPAAttribute attribute = schemaIdAndBpaAttribute.getRight();
-        if (doesNotContainAnyCondition(attribute) && doesNotContainAnyPredicateCondition(attribute)) {
-            builderWrapperBySchemaId.get(schemaId).addAttribute(attribute.getName());
+        if (shouldAddAsAttribute(attribute)) {
+            attributesBySchemaId.compute(schemaId, addAttribute(attribute));
         }
-        attribute.getConditions().stream()
-                .map(bpaCondition -> new Pair<>(bpaCondition.getValue(), bpaCondition.getOperator()))
-                .map(this::presetNonRevocationDateIfAbsent)
-                .map(Pair.flatMapRight(this.operatorResolver))
-                .flatMap(Optional::stream)
-                .forEach(valueAndConditionOperator -> builderWrapperBySchemaId.compute(schemaId,
-                        applyOperatorOnBuilder(valueAndConditionOperator, attribute.getName())));
+        if (shouldAddAsPredicate(attribute)) {
+            predicatesBySchemaId.compute(schemaId, addPredicates(attribute));
+        }
     }
 
-    private boolean doesNotContainAnyCondition(BPAAttribute attribute) {
-        return attribute.getConditions().isEmpty();
+    private BiFunction<String, Attributes.AttributesBuilder, Attributes.AttributesBuilder> addAttribute(
+            BPAAttribute attribute) {
+        return (schemaId, builder) -> {
+            Optional<String> equalsValue = attribute.getConditions().stream()
+                    .map(Pair.with(BPACondition::getValue, BPACondition::getOperator))
+                    .filter(Pair.filterRight(ValueOperators.EQUALS::equals))
+                    .findAny()
+                    .map(Pair::getLeft);
+
+            Attributes.AttributesBuilder result = Optional.ofNullable(builder).orElseGet(Attributes::builder)
+                    .schemaId(schemaId)
+                    .name(attribute.getName());
+            equalsValue.ifPresent(value -> result.equal(attribute.getName(), value));
+            return result;
+        };
     }
 
-    private boolean doesNotContainAnyPredicateCondition(BPAAttribute attribute) {
+    private BiFunction<String, List<Predicate.PredicateBuilder>, List<Predicate.PredicateBuilder>> addPredicates(
+            BPAAttribute attribute) {
+        return (schemaId, predicateBuilderList) -> {
+            List<Predicate.PredicateBuilder> buildersList = Optional.ofNullable(predicateBuilderList)
+                    .orElseGet(ArrayList::new);
+            attribute.getConditions().stream()
+                    .map(Pair.with(BPACondition::getValue, BPACondition::getOperator))
+                    .flatMap(Pair.streamMapRight(o -> o.getPredicateOperator().stream()))
+                    .flatMap(Pair.streamMapLeft(this::mapValueToInteger))
+                    .map(valueAndOperator -> Predicate.builder()
+                            .schemaId(schemaId)
+                            .name(attribute.getName())
+                            .operator(valueAndOperator.getRight())
+                            .value(valueAndOperator.getLeft()))
+                    .forEach(buildersList::add);
+            return buildersList;
+        };
+    }
+
+    private Stream<Integer> mapValueToInteger(String value) {
+        try {
+            return Optional.ofNullable(value).map(Integer::parseInt).stream();
+        } catch (NumberFormatException e) {
+            // TODO log error?
+            return Stream.empty();
+        }
+    }
+
+    private boolean shouldAddAsAttribute(BPAAttribute attribute) {
+        return attribute.getConditions().isEmpty() || attribute.getConditions().stream()
+                .map(BPACondition::getOperator).anyMatch(ValueOperators.EQUALS::equals);
+    }
+
+    private boolean shouldAddAsPredicate(BPAAttribute attribute) {
         return attribute.getConditions()
                 .stream()
                 .map(BPACondition::getOperator)
-                .map(this.operatorResolver)
-                .flatMap(Optional::stream)
-                .noneMatch(ProofTemplateConditionOperator::isPredicate);
+                .anyMatch(ValueOperators::handleAsPredicate);
     }
 
     public PresentProofRequest.ProofRequest getResult() {
-        builderWrapperBySchemaId.forEach(this::writeAttributesToBuilder);
-        builderWrapperBySchemaId.forEach(this::wrtiePredicatesToBuilder);
+        PresentProofRequest.ProofRequest.ProofRequestBuilder proofRequestBuilder = PresentProofRequest.ProofRequest
+                .builder()
+                .name(templateName);
+
+        addAttributesTo(proofRequestBuilder);
+        addPredicates(proofRequestBuilder);
         return proofRequestBuilder.build();
     }
 
-    private void wrtiePredicatesToBuilder(String schemaId, AriesProofTemplateRequestBuilder builder) {
-        builder.predicateStream()
-                .forEach(pred -> proofRequestBuilder.requestedPredicate(schemaId, pred.build()));
+    public void addAttributesTo(PresentProofRequest.ProofRequest.ProofRequestBuilder proofRequestBuilder) {
+        attributesBySchemaId.entrySet().stream()
+                .map(Pair::new)
+                .map(Pair.lookUpAndSetOnRight(this::getRevocationApplicator, builder -> builder::revocationApplicator))
+                .map(Pair.lookUpAndSetOnRight(this::getSchemaRestrictions, builder -> builder::schemaRestrictions))
+                .map(Pair::getRight)
+                .map(Attributes.AttributesBuilder::build)
+                .forEach(attributes -> attributes.addToBuilder(proofRequestBuilder::requestedAttribute));
     }
 
-    private void writeAttributesToBuilder(String schemaId, AriesProofTemplateRequestBuilder builder) {
-        builder.attributeStream()
-                .forEach(attr -> proofRequestBuilder.requestedAttribute(schemaId, attr.build()));
+    public void addPredicates(PresentProofRequest.ProofRequest.ProofRequestBuilder proofRequestBuilder) {
+        predicatesBySchemaId.entrySet().stream()
+                .map(Pair::new)
+                .flatMap(Pair.streamMapRight(List::stream))
+                .map(Pair.lookUpAndSetOnRight(this::getRevocationApplicator, builder -> builder::revocationApplicator))
+                .map(Pair.lookUpAndSetOnRight(this::getSchemaRestrictions, builder -> builder::schemaRestrictions))
+                .map(Pair.lookUpAndSetOnRight(this::getSameSchemaCounter, builder -> builder::sameSchemaCounter))
+                .map(Pair::getRight)
+                .map(Predicate.PredicateBuilder::build)
+                .forEach(attributes -> attributes.addToBuilder(proofRequestBuilder::requestedPredicate));
     }
 
-    private Pair<String, String> presetNonRevocationDateIfAbsent(Pair<String, String> valueAndConditionString) {
-        if (NON_REVOKED_OPERATOR_STRING.equals(valueAndConditionString.getRight())
-                && valueAndConditionString.getLeft() == null) {
-            return valueAndConditionString.withLeft(revocationTimeStampProvider.get().toString());
-        }
-        return valueAndConditionString;
-    }
-
-    Stream<BPACondition> prependSchemaIdCondition(String schemaId, Stream<BPACondition> conditions) {
-        BPACondition schemaIdCondition = BPACondition.builder()
-                .operator(SCHEMA_ID_OPERATOR_STRING)
-                .value(schemaId)
-                .build();
-        return Stream.concat(Stream.of(schemaIdCondition), conditions);
-    }
 }

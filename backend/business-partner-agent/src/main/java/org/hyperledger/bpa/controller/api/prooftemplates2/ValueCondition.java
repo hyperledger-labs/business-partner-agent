@@ -20,10 +20,8 @@ package org.hyperledger.bpa.controller.api.prooftemplates2;
 
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.Nullable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hyperledger.bpa.model.prooftemplate2.ValueOperators;
 
 import javax.validation.constraints.NotNull;
 
@@ -35,6 +33,6 @@ import javax.validation.constraints.NotNull;
 public class ValueCondition {
     @NotNull
     ValueOperators operator;
-    @Nullable
+    @NonNull
     String value;
 }

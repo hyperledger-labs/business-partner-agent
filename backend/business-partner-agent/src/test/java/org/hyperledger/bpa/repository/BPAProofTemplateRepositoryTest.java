@@ -22,10 +22,7 @@ import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.*;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroups;
-import org.hyperledger.bpa.model.prooftemplate.BPACondition;
+import org.hyperledger.bpa.model.prooftemplate2.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -68,8 +65,8 @@ class BPAProofTemplateRepositoryTest {
                                                                 .name("myAttribute")
                                                                 .condition(
                                                                         BPACondition.builder()
-                                                                                .value("myValue")
-                                                                                .operator("<=")
+                                                                                .value("113")
+                                                                                .operator(ValueOperators.LESS_THAN)
                                                                                 .build())
                                                                 .build())
                                                 .build())
