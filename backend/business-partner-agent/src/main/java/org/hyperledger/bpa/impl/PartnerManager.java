@@ -76,7 +76,6 @@ public class PartnerManager {
     public List<PartnerAPI> getPartners() {
         List<PartnerAPI> result = new ArrayList<>();
         repo.findAll().forEach(dbPartner -> result.add(converter.toAPIObject(dbPartner)));
-        log.info("getPartners() returns: {}", result);
         return result;
     }
 
@@ -86,7 +85,6 @@ public class PartnerManager {
         if (dbPartner.isPresent()) {
             result = Optional.of(converter.toAPIObject(dbPartner.get()));
         }
-        log.info("getPartnerById() returns: {}", result);
         return result;
     }
 

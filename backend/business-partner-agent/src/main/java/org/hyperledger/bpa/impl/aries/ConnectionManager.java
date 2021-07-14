@@ -26,9 +26,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.*;
 import org.hyperledger.aries.api.did_exchange.DidExchangeCreateRequestFilter;
+import org.hyperledger.aries.api.endorser.SetEndorserInfoFilter;
+import org.hyperledger.aries.api.endorser.SetEndorserRoleFilter;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.acy_py.generated.model.TransactionJobs;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
@@ -160,12 +163,47 @@ public class ConnectionManager {
     public synchronized void addConnectionEndorserMetadata(ConnectionRecord record, Partner p) {
         log.info("TODO addConnectionEndorserMetadata() for: {}", p);
 
+        TransactionJobs.TransactionMyJobEnum txJob;
         if (p.hasTag("Author")) {
+            // our partner is tagged as an "Author" so we set our role on the connection as "Endorser"
             log.info("TODO add connection metadata for Author connection: {}", p);
+            txJob = TransactionJobs.TransactionMyJobEnum.TRANSACTION_ENDORSER;
         } else if (p.hasTag("Endorser")) {
+            // our partner is tagged as an "Endorser" so we set our role on the connection as "Author"
             log.info("TODO add connection metadata for Endorser connection: {}", p);
+            txJob = TransactionJobs.TransactionMyJobEnum.TRANSACTION_AUTHOR;
+        } else {
+            return;
         }
-    }
+
+        try {
+            // set the endorser role on the connection
+            log.info("TODO set endorser role to: {}", txJob);
+            ac.endorseTransactionSetEndorserRole(record.getConnectionId(), SetEndorserRoleFilter
+                .builder()
+                .transactionMyJob(TransactionJobs
+                    .builder()
+                    .transactionMyJob(txJob)
+                    .build()
+                )
+                .build()
+            );
+            if (p.hasTag("Author")) {
+                // we have to set the extra Endorser info
+                log.info("TODO set endorser info to: {} {}", p.getDid(), p.getAlias());
+                ac.endorseTransactionSetEndorserInfo(record.getConnectionId(), SetEndorserInfoFilter
+                    .builder()
+                    .endorserDid(p.getDid())
+                    .endorserName(p.getAlias())
+                    .build()
+                );
+            }
+        } catch (IOException e) {
+            String msg = messageSource.getMessage("acapy.unavailable");
+            log.error(msg, e);
+            throw new NetworkException(msg);
+        }
+}
 
     // connection that originated from this agent
     public synchronized void handleOutgoingConnectionEvent(ConnectionRecord record) {

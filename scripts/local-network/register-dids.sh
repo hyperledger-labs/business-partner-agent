@@ -13,7 +13,6 @@ if [[ ${ARCHITECTURE} == "Linux"* ]]; then
 elif [[ ${ARCHITECTURE} == "Darwin"* ]]; then
     ARCHITECTURE="Mac"
 fi
-echo "ARCHITECTURE=${ARCHITECTURE}"
 
 if [ "$ARCHITECTURE" != "Linux" ] && [ "$ARCHITECTURE" != "Mac" ]; then
     echo "No Linux or Mac OSX detected. You might need to do some steps manually."
@@ -29,7 +28,6 @@ DEST_FILE=${DEST_FILE:-".env"}
 
 # Set URL
 URL=${LEDGER_URL:-https://indy-test.bosch-digital.de}
-echo $URL
 
 register_did() {
     # arg 1 is the env file var we are replacing
