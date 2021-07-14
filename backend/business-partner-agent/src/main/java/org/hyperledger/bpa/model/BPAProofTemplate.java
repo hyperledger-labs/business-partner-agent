@@ -25,9 +25,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.controller.api.prooftemplates2.ProofTemplate;
-import org.hyperledger.bpa.model.prooftemplate2.BPAAttributeGroup;
-import org.hyperledger.bpa.model.prooftemplate2.BPAAttributeGroups;
+import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
+import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
+import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroups;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

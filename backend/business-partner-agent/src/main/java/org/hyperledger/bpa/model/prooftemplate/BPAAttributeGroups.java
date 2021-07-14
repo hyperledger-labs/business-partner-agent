@@ -16,16 +16,16 @@
  * limitations under the License.
  */
 
-package org.hyperledger.bpa.model.prooftemplate2;
+package org.hyperledger.bpa.model.prooftemplate;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.micronaut.core.annotation.Introspected;
 import lombok.*;
-import org.hyperledger.bpa.controller.api.prooftemplates2.Attribute;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondition;
+import org.hyperledger.bpa.controller.api.prooftemplates.AttributeGroup;
+import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,27 +35,24 @@ import java.util.stream.Collectors;
 @Builder
 @Introspected
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
-public class BPAAttribute {
-    @NotEmpty
-    private String name;
-    @Valid
+// using a concrete class instead of a generic list does not unmarshal correctly
+// see https://github.com/micronaut-projects/micronaut-data/issues/1064
+public class BPAAttributeGroups {
     @Singular
-    @ValidAttributeCondition
-    private List<BPACondition> conditions;
+    @Valid
+    @NotNull
+    @ValidAttributeGroup
+    List<BPAAttributeGroup> attributeGroups;
 
-    public Attribute toRepresentation() {
-        return new Attribute(
-                name,
-                conditions.stream()
-                        .map(BPACondition::toRepresentation)
-                        .collect(Collectors.toList()));
+    public List<AttributeGroup> toRepresentation() {
+        return attributeGroups.stream()
+                .map(BPAAttributeGroup::toRepresentation)
+                .collect(Collectors.toList());
     }
 
-    public static BPAAttribute fromRepresentation(Attribute attribute) {
-        return new BPAAttribute(
-                attribute.getName(),
-                attribute.getConditions().stream()
-                        .map(BPACondition::fromRepresentation)
-                        .collect(Collectors.toList()));
+    public static BPAAttributeGroups fromRepresentation(List<AttributeGroup> proofTemplate) {
+        return new BPAAttributeGroups(proofTemplate.stream()
+                .map(BPAAttributeGroup::fromRepresentation)
+                .collect(Collectors.toList()));
     }
 }

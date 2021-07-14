@@ -1,4 +1,4 @@
-package org.hyperledger.bpa.impl.prooftemplates.aries;
+package org.hyperledger.bpa.impl.prooftemplates;
 
 import io.micronaut.core.annotation.Nullable;
 import lombok.Builder;

@@ -22,9 +22,9 @@ import io.micronaut.context.annotation.Factory;
 import io.micronaut.validation.validator.constraints.ConstraintValidator;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.verification.prooftemplates.*;
-import org.hyperledger.bpa.model.prooftemplate2.BPAAttribute;
-import org.hyperledger.bpa.model.prooftemplate2.BPAAttributeGroup;
-import org.hyperledger.bpa.model.prooftemplate2.BPACondition;
+import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
+import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
+import org.hyperledger.bpa.model.prooftemplate.BPACondition;
 import org.hyperledger.bpa.model.Pair;
 
 import javax.inject.Singleton;

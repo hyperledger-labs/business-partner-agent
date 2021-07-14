@@ -22,7 +22,7 @@ import lombok.AllArgsConstructor;
 import org.hyperledger.bpa.api.exception.ProofTemplateException;
 import org.hyperledger.bpa.impl.aries.ProofManager;
 import org.hyperledger.bpa.model.BPAProofTemplate;
-import org.hyperledger.bpa.model.prooftemplate2.ValueOperators;
+import org.hyperledger.bpa.model.prooftemplate.ValueOperators;
 import org.hyperledger.bpa.repository.BPAProofTemplateRepository;
 
 import javax.inject.Inject;

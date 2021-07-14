@@ -15,33 +15,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.hyperledger.bpa.controller.api.prooftemplates;
 
-package org.hyperledger.bpa.controller.api.prooftemplates2;
-
+import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.Nullable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidUUID;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class SchemaRestrictions {
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Introspected
+public class ProofTemplate {
     @Nullable
     @ValidUUID
-    private String schemaId;
-    @Nullable
-    private String schemaName;
-    @Nullable
-    private String schemaVersion;
-    @Nullable
-    private String schemaIssuerDid;
-    @Nullable
-    private String credentialDefinitionId;
-    @Nullable
-    private String issuerDid;
+    String id;
+    @NotEmpty
+    String name;
+    @NotEmpty
+    @Valid
+    @Singular
+    List<AttributeGroup> attributeGroups;
 }

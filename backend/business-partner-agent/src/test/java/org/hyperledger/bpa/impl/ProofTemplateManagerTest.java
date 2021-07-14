@@ -23,7 +23,7 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.bpa.api.exception.ProofTemplateException;
 import org.hyperledger.bpa.impl.aries.ProofManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
-import org.hyperledger.bpa.model.prooftemplate2.BPAAttributeGroups;
+import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroups;
 import org.hyperledger.bpa.model.BPAProofTemplate;
 import org.hyperledger.bpa.repository.BPAProofTemplateRepository;
 import org.junit.jupiter.api.Assertions;

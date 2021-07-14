@@ -16,36 +16,22 @@
  * limitations under the License.
  */
 
-package org.hyperledger.bpa.controller.api.prooftemplates2;
+package org.hyperledger.bpa.controller.api.prooftemplates;
 
 import io.micronaut.core.annotation.Introspected;
 import lombok.*;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidUUID;
+import org.hyperledger.bpa.model.prooftemplate.ValueOperators;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Introspected
-public class AttributeGroup {
+public class ValueCondition {
     @NotNull
-    @ValidUUID
-    String schemaId;
-
-    @Singular
-    @Valid
-    @NotNull
-    List<Attribute> attributes;
-
-    @NotNull
-    @Builder.Default
-    Boolean nonRevoked = Boolean.FALSE;
-    @NotNull
-    @Builder.Default
-    @Valid
-    SchemaRestrictions schemaLevelRestrictions = SchemaRestrictions.builder().build();
+    ValueOperators operator;
+    @NonNull
+    String value;
 }

@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
-package org.hyperledger.bpa.model.prooftemplate2;
+package org.hyperledger.bpa.model.prooftemplate;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.micronaut.core.annotation.Introspected;
 import lombok.*;
-import org.hyperledger.bpa.controller.api.prooftemplates2.AttributeGroup;
+import org.hyperledger.bpa.controller.api.prooftemplates.AttributeGroup;
 import org.hyperledger.bpa.impl.verification.prooftemplates.DistinctAttributeNames;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondition;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;

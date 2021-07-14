@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.model.prooftemplate2;
+package org.hyperledger.bpa.model.prooftemplate;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.micronaut.core.annotation.Introspected;
@@ -24,7 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.controller.api.prooftemplates2.SchemaRestrictions;
+import org.hyperledger.bpa.controller.api.prooftemplates.SchemaRestrictions;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidUUID;
 
 import java.util.Optional;

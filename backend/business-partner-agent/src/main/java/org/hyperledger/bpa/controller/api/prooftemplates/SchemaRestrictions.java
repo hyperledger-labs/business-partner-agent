@@ -16,23 +16,32 @@
  * limitations under the License.
  */
 
-package org.hyperledger.bpa.controller.api.prooftemplates2;
+package org.hyperledger.bpa.controller.api.prooftemplates;
 
-import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.Nullable;
-import lombok.*;
-import org.hyperledger.bpa.model.prooftemplate2.ValueOperators;
-
-import javax.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.impl.verification.prooftemplates.ValidUUID;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-@Introspected
-public class ValueCondition {
-    @NotNull
-    ValueOperators operator;
-    @NonNull
-    String value;
+public class SchemaRestrictions {
+
+    @Nullable
+    @ValidUUID
+    private String schemaId;
+    @Nullable
+    private String schemaName;
+    @Nullable
+    private String schemaVersion;
+    @Nullable
+    private String schemaIssuerDid;
+    @Nullable
+    private String credentialDefinitionId;
+    @Nullable
+    private String issuerDid;
 }

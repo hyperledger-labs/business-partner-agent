@@ -16,15 +16,14 @@
  * limitations under the License.
  */
 
-package org.hyperledger.bpa.impl.prooftemplates.aries;
+package org.hyperledger.bpa.impl.prooftemplates;
 
 import lombok.Builder;
 import lombok.Singular;
 import org.hyperledger.acy_py.generated.model.IndyProofReqPredSpec;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
-import org.hyperledger.bpa.impl.prooftemplates.RevocationTimeStampProvider;
 import org.hyperledger.bpa.model.*;
-import org.hyperledger.bpa.model.prooftemplate2.*;
+import org.hyperledger.bpa.model.prooftemplate.*;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;

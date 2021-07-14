@@ -22,9 +22,8 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.acy_py.generated.model.IndyProofReqPredSpec;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.model.*;
-import org.hyperledger.bpa.model.prooftemplate2.*;
+import org.hyperledger.bpa.model.prooftemplate.*;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;

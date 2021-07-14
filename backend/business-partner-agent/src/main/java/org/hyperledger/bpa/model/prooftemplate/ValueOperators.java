@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.hyperledger.bpa.model.prooftemplate2;
+package org.hyperledger.bpa.model.prooftemplate;
 
 import org.hyperledger.acy_py.generated.model.IndyProofReqPredSpec;
 

@@ -16,27 +16,32 @@
  * limitations under the License.
  */
 
-package org.hyperledger.bpa.controller.api.prooftemplates2;
+package org.hyperledger.bpa.model.prooftemplate;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.micronaut.core.annotation.Introspected;
 import lombok.*;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.util.List;
+import org.hyperledger.bpa.controller.api.prooftemplates.ValueCondition;
+import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondition;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Introspected
-public class Attribute {
-    @NotNull
-    @NotEmpty
-    String name;
-    @Valid
-    @Singular
-    @NotNull
-    List<ValueCondition> conditions;
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+@ValidAttributeCondition
+public class BPACondition {
+    @NonNull
+    private ValueOperators operator;
+    @NonNull
+    private String value;
+
+    public ValueCondition toRepresentation() {
+        return new ValueCondition(operator, value);
+    }
+
+    public static BPACondition fromRepresentation(ValueCondition condition) {
+        return new BPACondition(condition.getOperator(), condition.getValue());
+    }
 }

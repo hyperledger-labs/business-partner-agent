@@ -22,7 +22,7 @@ import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.*;
-import org.hyperledger.bpa.model.prooftemplate2.*;
+import org.hyperledger.bpa.model.prooftemplate.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 

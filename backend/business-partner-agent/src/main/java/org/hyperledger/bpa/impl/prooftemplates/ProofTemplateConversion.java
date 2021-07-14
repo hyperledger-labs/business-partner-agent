@@ -16,16 +16,15 @@
  * limitations under the License.
  */
 
-package org.hyperledger.bpa.impl.prooftemplates.aries;
+package org.hyperledger.bpa.impl.prooftemplates;
 
 import io.micronaut.core.annotation.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.api.exception.PartnerException;
-import org.hyperledger.bpa.impl.prooftemplates.*;
 import org.hyperledger.bpa.model.*;
-import org.hyperledger.bpa.model.prooftemplate2.BPAAttribute;
-import org.hyperledger.bpa.model.prooftemplate2.BPAAttributeGroup;
+import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
+import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.jetbrains.annotations.NotNull;
 

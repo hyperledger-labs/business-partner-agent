@@ -23,8 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.core.convert.TypeConverter;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.bpa.model.prooftemplate2.BPAAttributeGroup;
-import org.hyperledger.bpa.model.prooftemplate2.BPAAttributeGroups;
+import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
+import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroups;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

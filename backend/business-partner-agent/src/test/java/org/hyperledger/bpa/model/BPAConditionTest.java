@@ -20,8 +20,8 @@ package org.hyperledger.bpa.model;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.validation.validator.Validator;
-import org.hyperledger.bpa.model.prooftemplate2.BPACondition;
-import org.hyperledger.bpa.model.prooftemplate2.ValueOperators;
+import org.hyperledger.bpa.model.prooftemplate.BPACondition;
+import org.hyperledger.bpa.model.prooftemplate.ValueOperators;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
