@@ -25,10 +25,10 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.api.PartnerAPI;
-import org.hyperledger.bpa.config.AcaPyConfig;
 import org.hyperledger.bpa.config.ActivityLogConfig;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.activity.*;
+import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.repository.BPACredentialExchangeRepository;
@@ -36,10 +36,7 @@ import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @NoArgsConstructor
@@ -67,7 +64,7 @@ public class ActivitiesManager {
     PartnerManager partnerManager;
 
     @Inject
-    AcaPyConfig acaPyConfig;
+    Converter converter;
 
     public List<ActivityItem> getActivityListItems(ActivitySearchParameters parameters) {
         List<ActivityItem> results = new ArrayList<>();
@@ -85,14 +82,10 @@ public class ActivitiesManager {
     public List<ActivityItem> getTaskListItems(ActivitySearchParameters parameters) {
         List<ActivityItem> results = new ArrayList<>();
         if (parameters.getTask() == null || parameters.getTask()) {
-            if (manualFlag(ActivityType.CONNECTION_REQUEST)) {
-                results.addAll(getConnectionRequests(parameters.getType(),
-                        activityLogConfig.getConnectionStatesForTasks(), true));
-            }
-            if (manualFlag(ActivityType.PRESENTATION_EXCHANGE)) {
-                results.addAll(getPresentationExchanges(parameters.getType(),
-                        activityLogConfig.getPresentationExchangeStatesForTasks(), true));
-            }
+            results.addAll(getConnectionRequests(parameters.getType(),
+                    activityLogConfig.getConnectionStatesForTasks(), true));
+            results.addAll(getPresentationExchanges(parameters.getType(),
+                    activityLogConfig.getPresentationExchangeStatesForTasks(), true));
         }
         return results;
     }
@@ -158,13 +151,14 @@ public class ActivitiesManager {
         }
 
         Long updatedAt = p.getUpdatedAt().toEpochMilli();
-        String linkId = p.getId().toString();
+        UUID linkId = p.getId();
+        PartnerAPI apiPartner = getPartner(linkId);
         return ActivityItem.builder()
                 .role(role)
                 .state(state)
                 .type(type)
-                .partner(partnerManager.refreshPartner(p.getId()).get())
-                .linkId(linkId)
+                .partner(apiPartner)
+                .linkId(linkId.toString())
                 .task(task)
                 .updatedAt(updatedAt)
                 .build();
@@ -198,40 +192,30 @@ public class ActivitiesManager {
                 state = ActivityState.PRESENTATION_EXCHANGE_RECEIVED;
             }
         }
-        String linkId = p.getId().toString();
-        Optional<PartnerAPI> partner = partnerManager.refreshPartner(p.getPartnerId());
-        if (partner.isPresent()) {
-            linkId = partner.get().getId();
-        }
+
+        UUID linkId = p.getPartnerId();
+        PartnerAPI apiPartner = getPartner(linkId);
         Long updatedAt = (p.getIssuedAt() != null) ? p.getIssuedAt().toEpochMilli() : p.getCreatedAt().toEpochMilli();
 
         return ActivityItem.builder()
                 .role(role)
                 .state(state)
                 .type(type)
-                .partner(partner.get())
-                .linkId(linkId)
+                .partner(apiPartner)
+                .linkId(linkId.toString())
                 .task(task)
                 .updatedAt(updatedAt)
                 .build();
     }
 
-    private boolean manualFlag(ActivityType type) {
-        boolean result;
-        switch (type) {
-        case CONNECTION_REQUEST:
-            result = !acaPyConfig.getAutoAcceptRequests();
-            break;
-        case PRESENTATION_EXCHANGE:
-            result = !acaPyConfig.getAutoRespondPresentationRequest();
-            break;
-        case CREDENTIAL_OFFER:
-            result = !acaPyConfig.getAutoRespondCredentialOffer();
-            break;
-        default:
-            result = false;
+    @Nullable
+    private PartnerAPI getPartner(UUID linkId) {
+        PartnerAPI apiPartner = null;
+        Optional<Partner> dbPartner = partnerRepo.findById(linkId);
+        if (dbPartner.isPresent()) {
+            apiPartner = converter.toAPIObject(dbPartner.get());
         }
-        return result;
+        return apiPartner;
     }
 
 }

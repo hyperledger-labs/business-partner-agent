@@ -142,18 +142,6 @@ bpa:
   i18n:
     locale: ${BPA_I18N_LOCALE:en}
     fallbackLocale: ${BPA_I18N_FALLBACK_LOCALE:en}
-  activityLog:
-    # use strings instead of arrays so we can override with Environment Variables
-    # these can be comma or " " separated strings. They will be parsed and converted in ActivityLogConfig
-    connectionStates:
-      activities: ${BPA_ACTIVITYLOG_CONN_ACTIVITIES:`request invitation active response`}
-      tasks: ${BPA_ACTIVITYLOG_CONN_TASKS:`request`}
-      completed: ${BPA_ACTIVITYLOG_CONN_COMPLETED:`active response`}
-    presentationExchangeStates:
-      activities: ${BPA_ACTIVITYLOG_PRES_EX_ACTIVITIES:`request_received request_sent verified presentation_acked`}
-      tasks: ${BPA_ACTIVITYLOG_PRES_EX_TASKS:`request_received`}
-      completed: ${BPA_ACTIVITYLOG_PRES_EX_COMPLETED:`verified presentation_acked`}
-
 # The following is an example on how to override the default ux.
 # This will have all of the alternate layout and themes/colors loaded.
 # To override theme, then set themes.light properties

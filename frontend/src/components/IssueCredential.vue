@@ -73,6 +73,7 @@
 import { EventBus } from "@/main";
 import { issuerService, partnerService } from "@/services";
 import * as textUtils from "@/utils/textUtils";
+import * as partnerUtils from "@/utils/partnerUtils";
 import VBpaButton from "@/components/BpaButton";
 
 export default {
@@ -133,7 +134,7 @@ export default {
         const presp = await partnerService.listPartners();
         if (presp.status === 200) {
           this.partners = presp.data.map((p) => {
-            return { value: p.id, text: p.alias, ...p };
+            return { value: p.id, text: partnerUtils.getPartnerName(p), ...p };
           });
         }
       } else {

@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
 
@@ -34,17 +35,27 @@ public class ActivityLogConfig {
      * AcaPyConfig, which flags are set to auto respond...
      */
 
+    @Inject
+    AcaPyConfig acaPyConfig;
+
     public List<ConnectionState> getConnectionStatesForActivities() {
         return connectionStates(ConnectionState.REQUEST, ConnectionState.INVITATION, ConnectionState.ACTIVE,
                 ConnectionState.RESPONSE);
     }
 
     public List<ConnectionState> getConnectionStatesForTasks() {
-        return connectionStates(ConnectionState.REQUEST);
+        if (this.isConnectionRequestTask()) {
+            return connectionStates(ConnectionState.REQUEST);
+        }
+        return List.of();
     }
 
     public List<ConnectionState> getConnectionStatesCompleted() {
         return connectionStates(ConnectionState.ACTIVE, ConnectionState.RESPONSE);
+    }
+
+    public boolean isConnectionRequestTask() {
+        return (acaPyConfig.getAutoAcceptRequests() != null && !acaPyConfig.getAutoAcceptRequests());
     }
 
     public List<PresentationExchangeState> getPresentationExchangeStatesForActivities() {
@@ -55,12 +66,19 @@ public class ActivityLogConfig {
     }
 
     public List<PresentationExchangeState> getPresentationExchangeStatesForTasks() {
-        return presentationExchangeStates(PresentationExchangeState.REQUEST_RECEIVED);
+        if (this.isPresentationExchangeTask()) {
+            return presentationExchangeStates(PresentationExchangeState.REQUEST_RECEIVED);
+        }
+        return List.of();
     }
 
     public List<PresentationExchangeState> getPresentationExchangeStatesCompleted() {
         return presentationExchangeStates(PresentationExchangeState.VERIFIED,
                 PresentationExchangeState.PRESENTATION_ACKED);
+    }
+
+    public boolean isPresentationExchangeTask() {
+        return (acaPyConfig.getAutoRespondPresentationRequest() != null && !acaPyConfig.getAutoRespondPresentationRequest());
     }
 
     private List<ConnectionState> connectionStates(ConnectionState... states) {
