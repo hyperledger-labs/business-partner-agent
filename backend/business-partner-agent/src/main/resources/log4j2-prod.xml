@@ -5,7 +5,7 @@
     </Properties>
     <Appenders>
         <Console name="ConsoleJSONAppender" target="SYSTEM_OUT">
-            <JsonLayout complete="false" compact="false"/>
+            <JsonLayout complete="false" compact="true"/>
         </Console>    
     </Appenders>
     <Loggers>
