@@ -1,0 +1,60 @@
+/*
+ * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * see the NOTICE file and/or the repository at
+ * https://github.com/hyperledger-labs/business-partner-agent
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.hyperledger.bpa.controller.api.prooftemplates2;
+
+import org.hyperledger.acy_py.generated.model.IndyProofReqPredSpec;
+
+public enum ValueOperators {
+
+    EQUALS("==", "Compares the attributes value with the given value for equality. This reveals the value."),
+    LESS_THAN(IndyProofReqPredSpec.PTypeEnum.LESS_THAN,
+            "True, if the attributes value is less than given. Do not reveal the value."),
+    LESS_THAN_OR_EQUAL_TO(IndyProofReqPredSpec.PTypeEnum.LESS_THAN_OR_EQUAL_TO,
+            "True, if the attributes value is less than or equal given. Do not reveal the value."),
+    GREATER_THAN(IndyProofReqPredSpec.PTypeEnum.GREATER_THAN,
+            "True, if the attributes value is greater than given. Do not reveal the value."),
+    GREATER_THAN_OR_EQUAL_TO(IndyProofReqPredSpec.PTypeEnum.GREATER_THAN_OR_EQUAL_TO,
+            "True, if the attributes value is greater than or equal given. Do not reveal the value.");
+
+    private final String value;
+    private final String description;
+
+    ValueOperators(String value, String description) {
+        this.value = value;
+        this.description = description;
+    }
+
+    ValueOperators(IndyProofReqPredSpec.PTypeEnum value, String description) {
+        this.value = value.getValue();
+        this.description = description;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public String toString() {
+        return value + " - " + description;
+    }
+}
