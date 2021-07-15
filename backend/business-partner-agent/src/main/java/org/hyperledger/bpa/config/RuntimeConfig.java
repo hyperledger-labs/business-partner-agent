@@ -95,7 +95,7 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
                     .flatMap(c -> c.getAs("tails_server_base_url", String.class))
                     .isPresent();
         } catch (IOException e) {
-            log.warn("No aca-py");
+            log.warn("aca-py is not reachable");
         }
     }
 }
