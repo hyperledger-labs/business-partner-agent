@@ -21,8 +21,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micronaut.context.event.ApplicationEventListener;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.server.AdminConfig;
 import org.hyperledger.bpa.impl.StartupTasks;
 
 import javax.inject.Inject;
@@ -39,38 +41,38 @@ public class AcaPyConfig implements ApplicationEventListener<StartupTasks.AcaPyR
     @Inject
     transient AriesClient ac;
 
-    private Boolean autoRespondCredentialOffer;
-    private Boolean autoRespondCredentialProposal;
-    private Boolean autoRespondCredentialRequest;
-    private Boolean autoRespondPresentationProposal;
-    private Boolean autoRespondPresentationRequest;
-    private Boolean autoVerifyPresentation;
-    private Boolean autoStoreCredential;
-    private Boolean autoAcceptInvites;
-    private Boolean autoAcceptRequests;
-    private Boolean autoRespondMessages;
+    private Boolean autoRespondCredentialOffer = false;
+    private Boolean autoRespondCredentialProposal = false;
+    private Boolean autoRespondCredentialRequest = false;
+    private Boolean autoRespondPresentationProposal = false;
+    private Boolean autoRespondPresentationRequest = false;
+    private Boolean autoVerifyPresentation = false;
+    private Boolean autoStoreCredential = false;
+    private Boolean autoAcceptInvites = false;
+    private Boolean autoAcceptRequests = false;
+    private Boolean autoRespondMessages = false;
 
     @Override
     public void onApplicationEvent(StartupTasks.AcaPyReady event) {
         try {
             ac.statusConfig().ifPresent(c -> {
-                autoAcceptInvites = c.getUnwrapped("debug.auto_accept_invites", Boolean.class);
-                autoAcceptRequests = c.getUnwrapped("debug.auto_accept_requests", Boolean.class);
-                autoRespondMessages = c.getUnwrapped("debug.auto_respond_messages", Boolean.class);
-                autoRespondCredentialOffer = c.getUnwrapped("debug.auto_respond_credential_offer", Boolean.class);
-                autoRespondCredentialProposal = c.getUnwrapped("debug.auto_respond_credential_proposal",
-                        Boolean.class);
-                autoRespondCredentialRequest = c.getUnwrapped("debug.auto_respond_credential_request",
-                        Boolean.class);
-                autoRespondPresentationProposal = c.getUnwrapped("debug.auto_respond_presentation_proposal",
-                        Boolean.class);
-                autoRespondPresentationRequest = c.getUnwrapped("debug.auto_respond_presentation_request",
-                        Boolean.class);
-                autoStoreCredential = c.getUnwrapped("debug.auto_store_credential", Boolean.class);
-                autoVerifyPresentation = c.getUnwrapped("debug.auto_verify_presentation", Boolean.class);
+                autoAcceptInvites = resolveFromConfig(c, "debug.auto_accept_invites");
+                autoAcceptRequests = resolveFromConfig(c, "debug.auto_accept_requests");
+                autoRespondMessages = resolveFromConfig(c, "debug.auto_respond_messages");
+                autoRespondCredentialOffer = resolveFromConfig(c, "debug.auto_respond_credential_offer");
+                autoRespondCredentialProposal = resolveFromConfig(c, "debug.auto_respond_credential_proposal");
+                autoRespondCredentialRequest = resolveFromConfig(c, "debug.auto_respond_credential_request");
+                autoRespondPresentationProposal = resolveFromConfig(c, "debug.auto_respond_presentation_proposal");
+                autoRespondPresentationRequest = resolveFromConfig(c, "debug.auto_respond_presentation_request");
+                autoStoreCredential = resolveFromConfig(c, "debug.auto_store_credential");
+                autoVerifyPresentation = resolveFromConfig(c, "debug.auto_verify_presentation");
             });
         } catch (IOException e) {
             log.warn("aca-py not reachable");
         }
+    }
+
+    private static Boolean resolveFromConfig(@NonNull AdminConfig c, @NonNull String key)  {
+        return Boolean.TRUE.equals(c.getUnwrapped(key, Boolean.class));
     }
 }

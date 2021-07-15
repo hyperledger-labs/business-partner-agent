@@ -55,7 +55,7 @@ public class ActivityLogConfig {
     }
 
     public boolean isConnectionRequestTask() {
-        return acaPyConfig.getAutoAcceptRequests() == null || !acaPyConfig.getAutoAcceptRequests();
+        return !acaPyConfig.getAutoAcceptRequests();
     }
 
     public List<PresentationExchangeState> getPresentationExchangeStatesForActivities() {
@@ -78,8 +78,7 @@ public class ActivityLogConfig {
     }
 
     public boolean isPresentationExchangeTask() {
-        return acaPyConfig.getAutoRespondPresentationRequest() == null
-                || !acaPyConfig.getAutoRespondPresentationRequest();
+        return !acaPyConfig.getAutoRespondPresentationRequest();
     }
 
     private List<ConnectionState> connectionStates(ConnectionState... states) {
