@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 // using a concrete class instead of a generic list does not unmarshal correctly
 // see https://github.com/micronaut-projects/micronaut-data/issues/1064
 public class BPAAttributeGroup {
+    @NotNull
     @ValidBPASchemaId
     String schemaId;
     @NotNull

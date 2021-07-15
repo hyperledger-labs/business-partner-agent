@@ -72,8 +72,9 @@ public class ProofTemplateConversion {
 
     @NotNull
     private Stream<Pair<String, BPAAttribute>> pairSchemaIdWithAttributes(@NonNull BPAAttributeGroup ag) {
-        Pair<String, BPAAttribute> pair = new Pair<>(ag.getSchemaId(), null);
-        return ag.getAttributes().stream().map(pair::withRight);
+        Pair.PairBuilder<String, BPAAttribute> pairBuilder = Pair.<String, BPAAttribute>builder()
+                .left(ag.getSchemaId());
+        return ag.getAttributes().stream().map(pairBuilder::right).map(Pair.PairBuilder::build);
     }
 
 }
