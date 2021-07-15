@@ -18,7 +18,9 @@
 package org.hyperledger.bpa.model;
 
 import io.micronaut.core.annotation.Introspected;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
+import io.micronaut.data.annotation.DateCreated;
 import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
 import lombok.AllArgsConstructor;
@@ -34,6 +36,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import java.time.Instant;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -48,6 +51,10 @@ public class BPAProofTemplate {
     @Id
     @AutoPopulated
     UUID id;
+
+    @Nullable
+    @DateCreated
+    private Instant createdAt;
 
     @NotEmpty
     String name;
@@ -66,6 +73,7 @@ public class BPAProofTemplate {
     public ProofTemplate toRepresentation() {
         return new ProofTemplate(
                 id.toString(),
+                createdAt,
                 name,
                 attributeGroups.toRepresentation());
     }
@@ -77,6 +85,7 @@ public class BPAProofTemplate {
         }
         return new BPAProofTemplate(
                 id,
+                proofTemplate.getCreatedAt(),
                 proofTemplate.getName(),
                 BPAAttributeGroups.fromRepresentation(proofTemplate.getAttributeGroups()));
     }

@@ -27,12 +27,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import javax.inject.Inject;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @MicronautTest
 class BPAProofTemplateRepositoryTest {
@@ -48,7 +49,7 @@ class BPAProofTemplateRepositoryTest {
     }
 
     @Test
-    void test() {
+    void testSavingAnEntity() {
         Mockito.when(schemaService.getSchemaFor("mySchemaId"))
                 .thenReturn(Optional.of(new BPASchema()));
         Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
@@ -75,12 +76,106 @@ class BPAProofTemplateRepositoryTest {
                 .build();
 
         UUID newEntityId = repo.save(proofTemplateToSave).getId();
-        BPAProofTemplate expectedProofTemplate = proofTemplateBuilder
-                .id(newEntityId)
-                .build();
 
         Optional<BPAProofTemplate> savedProofTemplate = repo.findById(newEntityId);
         assertTrue(savedProofTemplate.isPresent());
+        assertTrue(savedProofTemplate.map(BPAProofTemplate::getCreatedAt).isPresent());
+        BPAProofTemplate expectedProofTemplate = proofTemplateBuilder
+                .id(newEntityId)
+                // copy database generated time stamp
+                .createdAt(savedProofTemplate.get().getCreatedAt())
+                .build();
         assertEquals(expectedProofTemplate, savedProofTemplate.get());
+    }
+
+    @Test
+    void testThatCreatedAtIsOverwrittenByDB() {
+        Mockito.when(schemaService.getSchemaFor("mySchemaId"))
+                .thenReturn(Optional.of(new BPASchema()));
+        Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
+                .thenReturn(Set.of("myAttribute"));
+        Instant givenCreatedAt = Instant.now().minus(Duration.ofMillis(1000));
+        BPAProofTemplate.BPAProofTemplateBuilder proofTemplateBuilder = BPAProofTemplate.builder()
+                .name("myProofTemplate")
+                .createdAt(givenCreatedAt)
+                .attributeGroups(
+                        BPAAttributeGroups.builder()
+                                .attributeGroup(
+                                        BPAAttributeGroup.builder()
+                                                .schemaId("mySchemaId")
+                                                .attribute(
+                                                        BPAAttribute.builder()
+                                                                .name("myAttribute")
+                                                                .condition(
+                                                                        BPACondition.builder()
+                                                                                .value("113")
+                                                                                .operator(ValueOperators.LESS_THAN)
+                                                                                .build())
+                                                                .build())
+                                                .build())
+                                .build());
+        BPAProofTemplate proofTemplateToSave = proofTemplateBuilder
+                .build();
+
+        UUID newEntityId = repo.save(proofTemplateToSave).getId();
+
+        Optional<BPAProofTemplate> savedProofTemplate = repo.findById(newEntityId);
+        assertTrue(savedProofTemplate.isPresent());
+        assertTrue(savedProofTemplate.map(BPAProofTemplate::getCreatedAt).isPresent());
+        assertNotEquals(givenCreatedAt, savedProofTemplate.get().getCreatedAt());
+        assertTrue(givenCreatedAt.isBefore(savedProofTemplate.get().getCreatedAt()));
+        BPAProofTemplate expectedProofTemplate = proofTemplateBuilder
+                .id(newEntityId)
+                // copy database generated time stamp
+                .createdAt(savedProofTemplate.get().getCreatedAt())
+                .build();
+        assertEquals(expectedProofTemplate, savedProofTemplate.get());
+    }
+
+    @Test
+    void testThatCreatedAtIsNotOverwrittenOnUpdatingByDB() throws InterruptedException {
+        Mockito.when(schemaService.getSchemaFor("mySchemaId"))
+                .thenReturn(Optional.of(new BPASchema()));
+        Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
+                .thenReturn(Set.of("myAttribute"));
+        Instant givenCreatedAt = Instant.now().minus(Duration.ofMillis(1000));
+        BPAProofTemplate.BPAProofTemplateBuilder proofTemplateBuilder = BPAProofTemplate.builder()
+                .name("myProofTemplate")
+                .createdAt(givenCreatedAt)
+                .attributeGroups(
+                        BPAAttributeGroups.builder()
+                                .attributeGroup(
+                                        BPAAttributeGroup.builder()
+                                                .schemaId("mySchemaId")
+                                                .attribute(
+                                                        BPAAttribute.builder()
+                                                                .name("myAttribute")
+                                                                .condition(
+                                                                        BPACondition.builder()
+                                                                                .value("113")
+                                                                                .operator(ValueOperators.LESS_THAN)
+                                                                                .build())
+                                                                .build())
+                                                .build())
+                                .build());
+        BPAProofTemplate proofTemplateToSave = proofTemplateBuilder
+                .build();
+
+        UUID newEntityId = repo.save(proofTemplateToSave).getId();
+
+        Optional<BPAProofTemplate> savedProofTemplate = repo.findById(newEntityId);
+        assertTrue(savedProofTemplate.isPresent());
+        assertTrue(savedProofTemplate.map(BPAProofTemplate::getCreatedAt).isPresent());
+        Instant firstCreatedAt = savedProofTemplate.get().getCreatedAt();
+        Thread.sleep(50);
+        proofTemplateToSave.setName("update to save");
+        // modified timestamp from cliet
+        proofTemplateToSave.setCreatedAt(Instant.now());
+        repo.save(proofTemplateToSave);
+        savedProofTemplate = repo.findById(newEntityId);
+        assertTrue(savedProofTemplate.isPresent());
+        assertTrue(savedProofTemplate.map(BPAProofTemplate::getCreatedAt).isPresent());
+        Instant secondCreatedAt = savedProofTemplate.get().getCreatedAt();
+        assertEquals(firstCreatedAt, secondCreatedAt);
     }
 }

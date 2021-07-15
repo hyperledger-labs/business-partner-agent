@@ -24,6 +24,7 @@ import org.hyperledger.bpa.impl.verification.prooftemplates.ValidUUID;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -35,6 +36,9 @@ public class ProofTemplate {
     @Nullable
     @ValidUUID
     String id;
+    @Nullable
+    private Instant createdAt;
+
     @NotEmpty
     String name;
     @NotEmpty
