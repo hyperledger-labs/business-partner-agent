@@ -89,6 +89,9 @@ public class Partner {
     @Nullable
     private Boolean valid; // if the public profile is valid
 
+    @Nullable
+    private Boolean trustPing;
+
     /**
      * The Partners Public Profile {@link VerifiablePresentation} to be used in the
      * {@link PartnerAPI}

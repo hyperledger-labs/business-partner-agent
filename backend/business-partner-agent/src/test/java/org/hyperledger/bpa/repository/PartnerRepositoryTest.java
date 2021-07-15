@@ -241,6 +241,19 @@ class PartnerRepositoryTest {
         assertEquals(Boolean.TRUE, reload.get().getValid());
     }
 
+    @Test
+    void testFindByStatesAndTrustPing() {
+        partnerRepo.save(Partner.builder().ariesSupport(Boolean.TRUE).did("did1").connectionId("con1")
+                .state(ConnectionState.ACTIVE).trustPing(Boolean.TRUE).build());
+        partnerRepo.save(Partner.builder().ariesSupport(Boolean.TRUE).did("did2").connectionId("con2")
+                .state(ConnectionState.ACTIVE).trustPing(Boolean.FALSE).build());
+        partnerRepo.save(Partner.builder().ariesSupport(Boolean.TRUE).did("did3").connectionId("con3")
+                .state(ConnectionState.ABANDONED).trustPing(Boolean.TRUE).build());
+
+        List<Partner> pingTrue = partnerRepo.findByStateInAndTrustPingTrue(List.of(ConnectionState.ACTIVE));
+        assertEquals(1, pingTrue.size());
+    }
+
     @Data
     @AllArgsConstructor
     @NoArgsConstructor

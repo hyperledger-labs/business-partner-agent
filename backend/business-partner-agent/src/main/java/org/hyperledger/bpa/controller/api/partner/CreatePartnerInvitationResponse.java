@@ -17,17 +17,16 @@
  */
 package org.hyperledger.bpa.controller.api.partner;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.model.Tag;
+import org.hyperledger.acy_py.generated.model.InvitationRecord;
+import org.hyperledger.aries.api.connection.CreateInvitationResponse;
 
-import java.util.List;
-
-@Data
+@Builder
 @NoArgsConstructor
-public class CreatePartnerInvitationRequest {
-    private String alias;
-    private List<Tag> tag;
-    private Boolean trustPing;
-    private Boolean useOutOfBand;
+@AllArgsConstructor
+public class CreatePartnerInvitationResponse {
+    private CreateInvitationResponse connectionProtocol;
+    private InvitationRecord didExchange;
 }

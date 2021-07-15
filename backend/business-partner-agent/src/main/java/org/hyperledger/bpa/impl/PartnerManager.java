@@ -26,6 +26,7 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.PartnerException;
+import org.hyperledger.bpa.controller.api.partner.AddPartnerRequest;
 import org.hyperledger.bpa.core.RegisteredWebhook.WebhookEventType;
 import org.hyperledger.bpa.impl.activity.PartnerLookup;
 import org.hyperledger.bpa.impl.aries.ConnectionManager;
@@ -97,23 +98,24 @@ public class PartnerManager {
         repo.deleteById(id);
     }
 
-    public PartnerAPI addPartnerFlow(@NonNull String did, @Nullable String alias, List<Tag> tags) {
-        Optional<Partner> dbPartner = repo.findByDid(did);
+    public PartnerAPI addPartnerFlow(@NonNull AddPartnerRequest req) {
+        Optional<Partner> dbPartner = repo.findByDid(req.getDid());
         if (dbPartner.isPresent()) {
-            throw new PartnerException("Partner for did already exists: " + did);
+            throw new PartnerException("Partner for did already exists: " + req.getDid());
         }
-        PartnerAPI lookupP = partnerLookup.lookupPartner(did);
+        PartnerAPI lookupP = partnerLookup.lookupPartner(req.getDid());
 
-        Partner partner = converter.toModelObject(did, lookupP)
+        Partner partner = converter.toModelObject(req.getDid(), lookupP)
                 .setAriesSupport(lookupP.getAriesSupport())
-                .setAlias(alias)
-                .setTags(tags != null ? new HashSet<>(tags) : null)
-                .setState(ConnectionState.REQUEST);
+                .setAlias(req.getAlias())
+                .setTags(req.getTag() != null ? new HashSet<>(req.getTag()) : null)
+                .setState(ConnectionState.REQUEST)
+                .setTrustPing(req.getTrustPing());
 
-        cm.createConnection(did).ifPresent(c -> partner.setConnectionId(c.getConnectionId()));
+        cm.createConnection(req.getDid()).ifPresent(c -> partner.setConnectionId(c.getConnectionId()));
         Partner result = repo.save(partner);
 
-        if (did.startsWith(ledgerPrefix)) {
+        if (req.getDid().startsWith(ledgerPrefix)) {
             credLookup.lookupTypesForAllPartnersAsync();
         }
 

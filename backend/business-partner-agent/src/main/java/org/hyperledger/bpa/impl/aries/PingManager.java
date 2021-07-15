@@ -23,10 +23,10 @@ import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.scheduling.annotation.Scheduled;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.connection.ConnectionFilter;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.message.PingRequest;
+import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
@@ -72,8 +72,10 @@ public class PingManager {
     @Scheduled(fixedRate = "1m", initialDelay = "90s") // init delay needs to be > than aca-py connection timeout
     public void checkConnections() {
         try {
-            List<String> activeConnections = aries.connectionIds(
-                    ConnectionFilter.builder().state(ConnectionState.ACTIVE).build());
+            List<String> activeConnections = repo
+                    .findByStateInAndTrustPingTrue(List.of(ConnectionState.ACTIVE, ConnectionState.COMPLETED))
+                    .stream().map(Partner::getConnectionId).collect(Collectors.toList());
+
             if (CollectionUtils.isNotEmpty(activeConnections)) {
                 if (!firstRun) {
                     setNewState();

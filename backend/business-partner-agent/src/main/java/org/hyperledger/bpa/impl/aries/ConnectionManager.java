@@ -18,7 +18,6 @@
 package org.hyperledger.bpa.impl.aries;
 
 import io.micronaut.context.annotation.Value;
-import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -33,13 +32,14 @@ import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
+import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
+import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationResponse;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
-import org.hyperledger.bpa.model.Tag;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
@@ -90,36 +90,40 @@ public class ConnectionManager {
     /**
      * Creates a connection invitation to be used within a barcode
      *
-     * @param alias optional connection alias
-     * @param tags  tags associated with this connection/invitation
+     * @param req {@link CreatePartnerInvitationRequest}
+     * @return {@link CreatePartnerInvitationResponse}
      */
-    public Optional<CreateInvitationResponse> createConnectionInvitation(
-            @Nullable String alias, @Nullable List<Tag> tags) {
-        Optional<CreateInvitationResponse> result = Optional.empty();
+    public CreatePartnerInvitationResponse createConnectionInvitation(
+            @NonNull CreatePartnerInvitationRequest req) {
+        CreatePartnerInvitationResponse.CreatePartnerInvitationResponseBuilder result = CreatePartnerInvitationResponse.
+                builder();
         try {
-            String aliasWithFallback = StringUtils.isNotEmpty(alias) ? alias
+            String aliasWithFallback = StringUtils.isNotEmpty(req.getAlias()) ? req.getAlias()
                     : CONNECTION_INVITATION + TimeUtil.currentTimeFormatted(Instant.now());
-            result = ac.connectionsCreateInvitation(
+            CreateInvitationResponse connectionProtocol = ac.connectionsCreateInvitation(
                     CreateInvitationRequest.builder()
                             .build(),
                     CreateInvitationParams.builder()
                             .alias(aliasWithFallback)
                             .autoAccept(Boolean.TRUE)
-                            .build());
-            result.ifPresent(r -> partnerRepo.save(Partner
+                            .build())
+                    .orElseThrow();
+            partnerRepo.save(Partner
                     .builder()
                     .ariesSupport(Boolean.TRUE)
                     .alias(aliasWithFallback)
-                    .connectionId(r.getConnectionId())
+                    .connectionId(connectionProtocol.getConnectionId())
                     .did(didPrefix + UNKNOWN_DID)
                     .state(ConnectionState.INVITATION)
                     .incoming(Boolean.TRUE)
-                    .tags(tags != null ? new HashSet<>(tags) : null)
-                    .build()));
+                    .tags(req.getTag() != null ? new HashSet<>(req.getTag()) : null)
+                    .trustPing(req.getTrustPing())
+                    .build());
+            result.connectionProtocol(connectionProtocol);
         } catch (IOException e) {
             log.error("Could not create aries connection invitation", e);
         }
-        return result;
+        return result.build();
     }
 
     /**
