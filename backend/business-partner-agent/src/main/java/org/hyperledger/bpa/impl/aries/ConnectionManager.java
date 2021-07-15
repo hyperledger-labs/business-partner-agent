@@ -117,7 +117,7 @@ public class ConnectionManager {
                     .state(ConnectionState.INVITATION)
                     .incoming(Boolean.TRUE)
                     .tags(req.getTag() != null ? new HashSet<>(req.getTag()) : null)
-                    .trustPing(req.getTrustPing())
+                    .trustPing(req.getTrustPing() != null ? req.getTrustPing() : Boolean.FALSE)
                     .build());
             result.connectionProtocol(connectionProtocol);
         } catch (IOException e) {

@@ -28,4 +28,5 @@ import java.util.List;
 public class UpdatePartnerRequest {
     private String alias;
     private List<Tag> tag;
+    private Boolean trustPing;
 }

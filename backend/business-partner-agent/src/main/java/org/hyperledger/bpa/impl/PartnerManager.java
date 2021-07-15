@@ -110,7 +110,7 @@ public class PartnerManager {
                 .setAlias(req.getAlias())
                 .setTags(req.getTag() != null ? new HashSet<>(req.getTag()) : null)
                 .setState(ConnectionState.REQUEST)
-                .setTrustPing(req.getTrustPing());
+                .setTrustPing(req.getTrustPing() != null ? req.getTrustPing() : Boolean.TRUE);
 
         cm.createConnection(req.getDid()).ifPresent(c -> partner.setConnectionId(c.getConnectionId()));
         Partner result = repo.save(partner);
