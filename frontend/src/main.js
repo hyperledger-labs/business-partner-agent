@@ -73,6 +73,10 @@ Vue.use(VueNativeSock, socketApi, {
           case "PROOFREQUEST":
             target = "newPresentationRequest";
             break;
+          case "NOTIFICATION":
+            target = "notification";
+            break;
+
         }
       }
     }

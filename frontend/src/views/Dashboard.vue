@@ -84,9 +84,6 @@
               <span class="newHighlight" v-show="newPartnersCount > 0">
                 (+{{ newPartnersCount }})
               </span>
-              <span class="newHighlight" v-show="newPartnerEventsCount > 0">
-                (+{{ newPartnerEventsCount }})
-              </span>
             </v-card-title>
             <v-card-title class="justify-center"
               >Business Partners</v-card-title
@@ -117,9 +114,6 @@ export default {
     };
   },
   computed: {
-    newPartnerEventsCount() {
-      return this.$store.getters.newPartnerEventsCount;
-    },
     newPartnersCount() {
       return this.$store.getters.newPartnersCount;
     },

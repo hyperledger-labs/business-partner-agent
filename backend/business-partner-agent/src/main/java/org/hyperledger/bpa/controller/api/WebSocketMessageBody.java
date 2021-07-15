@@ -54,12 +54,15 @@ public class WebSocketMessageBody {
         PARTNER,
         PROOF,
         PROOFREQUEST,
+        NOTIFICATION
     }
 
     public enum WebSocketMessageState {
         RECEIVED,
         UPDATED,
-        SENT
+        SENT,
+        NEW,
+        COMPLETED
     }
 
     public static WebSocketMessageBody partnerConnectionRequest(PartnerAPI partner) {
@@ -104,4 +107,14 @@ public class WebSocketMessageBody {
                 .info(proof)
                 .build());
     }
+
+    public static WebSocketMessageBody notification(Object info, Boolean completed) {
+        return WebSocketMessageBody.of(WebSocketMessage
+                .builder()
+                .type(WebSocketMessageType.NOTIFICATION)
+                .state(completed ? WebSocketMessageState.COMPLETED : WebSocketMessageState.NEW)
+                .info(info)
+                .build());
+    }
+
 }

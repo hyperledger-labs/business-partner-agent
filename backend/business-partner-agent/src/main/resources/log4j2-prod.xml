@@ -4,9 +4,9 @@
         <Property name="PATTERN">%d{HH:mm:ss.SSS} [%t] %-5level %c{1} - %replace{%msg}{[\r\n]+}{}%n</Property>
     </Properties>
     <Appenders>
-        <Console name="ConsolePatternAppender" target="SYSTEM_OUT">
-            <PatternLayout pattern="${PATTERN}"/>
-        </Console>   
+        <Console name="ConsoleJSONAppender" target="SYSTEM_OUT">
+            <JsonLayout compact="true" properties="true" eventEol="true" />
+        </Console>    
     </Appenders>
     <Loggers>
         <Logger name="io.micronaut.context" level="info"/>
@@ -18,7 +18,7 @@
         <Logger name="org.hyperledger.aries" level="trace"/>
         <logger name="org.hyperledger.bpa.impl.aries" level="trace"/>
         <Root level="warn">
-            <AppenderRef ref="ConsolePatternAppender"/>
+            <AppenderRef ref="ConsoleJSONAppender"/>
         </Root>
     </Loggers>
 </Configuration>
