@@ -31,6 +31,7 @@ import AddSchema from "../views/AddSchema.vue";
 import About from "../views/About.vue";
 import CredentialManagement from "@/views/issuer/CredentialManagement.vue";
 import PresentationRequestDetails from "@/views/PresentationRequestDetails.vue";
+import ProofTemplates from "@/views/ProofTemplates";
 
 Vue.use(VueRouter);
 
@@ -166,6 +167,11 @@ const routes = [
     path: "/app/credentialManagement",
     name: "CredentialManagement",
     component: CredentialManagement,
+  },
+  {
+    path: "/app/proofTemplates",
+    name: "ProofTemplates",
+    component: ProofTemplates,
   },
 ];
 
