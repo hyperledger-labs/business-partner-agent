@@ -40,6 +40,8 @@ import org.hyperledger.bpa.repository.TagRepository;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Singleton
 public class PartnerManager {
@@ -72,18 +74,18 @@ public class PartnerManager {
     WebhookService webhook;
 
     public List<PartnerAPI> getPartners() {
-        List<PartnerAPI> result = new ArrayList<>();
-        repo.findAll().forEach(dbPartner -> result.add(converter.toAPIObject(dbPartner)));
-        return result;
+        return StreamSupport.stream(repo.findAll().spliterator(), false)
+                .map(converter::toAPIObject)
+                .collect(Collectors.toList());
     }
 
     public Optional<PartnerAPI> getPartnerById(@NonNull UUID id) {
-        Optional<PartnerAPI> result = Optional.empty();
-        Optional<Partner> dbPartner = repo.findById(id);
-        if (dbPartner.isPresent()) {
-            result = Optional.of(converter.toAPIObject(dbPartner.get()));
-        }
-        return result;
+        return repo.findById(id).map(converter::toAPIObject);
+    }
+
+    @Nullable
+    public PartnerAPI getPartner(@NonNull UUID id) {
+        return repo.findById(id).map(converter::toAPIObject).orElse(null);
     }
 
     public void removePartnerById(@NonNull UUID id) {

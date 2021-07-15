@@ -41,7 +41,7 @@ public class ActivitiesEventHandler extends EventHandler {
 
     public void handleConnection(ConnectionRecord connection) {
         Boolean completed = null;
-        Boolean notify = true;
+        boolean notify = true;
         if (activityLogConfig.getConnectionStatesForTasks().contains(connection.getState())) {
             completed = false;
             // we do not always want to notify... it is only a task on incoming request

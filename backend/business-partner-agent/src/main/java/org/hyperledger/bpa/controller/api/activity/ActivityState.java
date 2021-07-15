@@ -33,5 +33,5 @@ public enum ActivityState {
     @JsonProperty("presentation_exchange_received")
     PRESENTATION_EXCHANGE_RECEIVED,
     @JsonProperty("presentation_exchange_accepted")
-    PRESENTATION_EXCHANGE_ACCEPTED;
+    PRESENTATION_EXCHANGE_ACCEPTED
 }

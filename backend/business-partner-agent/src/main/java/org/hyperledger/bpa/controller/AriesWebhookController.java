@@ -56,6 +56,6 @@ public class AriesWebhookController {
 
         log.info("Webhook received, type: {}", eventType);
 
-        handlers.stream().forEach(eventHandler -> eventHandler.handleEvent(eventType, eventBody));
+        handlers.forEach(eventHandler -> eventHandler.handleEvent(eventType, eventBody));
     }
 }

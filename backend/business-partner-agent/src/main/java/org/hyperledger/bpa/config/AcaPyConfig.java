@@ -17,11 +17,14 @@
  */
 package org.hyperledger.bpa.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micronaut.context.event.ApplicationEventListener;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.server.AdminConfig;
 import org.hyperledger.bpa.impl.StartupTasks;
 
 import javax.inject.Inject;
@@ -34,42 +37,42 @@ import java.io.IOException;
 @Slf4j
 public class AcaPyConfig implements ApplicationEventListener<StartupTasks.AcaPyReady> {
 
+    @JsonIgnore
     @Inject
-    AriesClient ac;
+    transient AriesClient ac;
 
-    Boolean autoRespondCredentialOffer;
-    Boolean autoRespondCredentialProposal;
-    Boolean autoRespondCredentialRequest;
-    Boolean autoRespondPresentationProposal;
-    Boolean autoRespondPresentationRequest;
-    Boolean autoVerifyPresentation;
-    Boolean autoStoreCredential;
-    Boolean autoAcceptInvites;
-    Boolean autoAcceptRequests;
-    Boolean autoRespondMessages;
+    private Boolean autoRespondCredentialOffer = false;
+    private Boolean autoRespondCredentialProposal = false;
+    private Boolean autoRespondCredentialRequest = false;
+    private Boolean autoRespondPresentationProposal = false;
+    private Boolean autoRespondPresentationRequest = false;
+    private Boolean autoVerifyPresentation = false;
+    private Boolean autoStoreCredential = false;
+    private Boolean autoAcceptInvites = false;
+    private Boolean autoAcceptRequests = false;
+    private Boolean autoRespondMessages = false;
 
     @Override
     public void onApplicationEvent(StartupTasks.AcaPyReady event) {
         try {
-            ac.statusConfig().ifPresent(adminConfig -> {
-                autoAcceptInvites = adminConfig.getAs("debug.auto_accept_invites", Boolean.class).isPresent();
-                autoAcceptRequests = adminConfig.getAs("debug.auto_accept_requests", Boolean.class).isPresent();
-                autoRespondMessages = adminConfig.getAs("debug.auto_respond_messages", Boolean.class).isPresent();
-                autoRespondCredentialOffer = adminConfig.getAs("debug.auto_respond_credential_offer", Boolean.class)
-                        .isPresent();
-                autoRespondCredentialProposal = adminConfig
-                        .getAs("debug.auto_respond_credential_proposal", Boolean.class).isPresent();
-                autoRespondCredentialRequest = adminConfig.getAs("debug.auto_respond_credential_request", Boolean.class)
-                        .isPresent();
-                autoRespondPresentationProposal = adminConfig
-                        .getAs("debug.auto_respond_presentation_proposal", Boolean.class).isPresent();
-                autoRespondPresentationRequest = adminConfig
-                        .getAs("debug.auto_respond_presentation_request", Boolean.class).isPresent();
-                autoStoreCredential = adminConfig.getAs("debug.auto_store_credential", Boolean.class).isPresent();
-                autoVerifyPresentation = adminConfig.getAs("debug.auto_verify_presentation", Boolean.class).isPresent();
+            ac.statusConfig().ifPresent(c -> {
+                autoAcceptInvites = resolveFromConfig(c, "debug.auto_accept_invites");
+                autoAcceptRequests = resolveFromConfig(c, "debug.auto_accept_requests");
+                autoRespondMessages = resolveFromConfig(c, "debug.auto_respond_messages");
+                autoRespondCredentialOffer = resolveFromConfig(c, "debug.auto_respond_credential_offer");
+                autoRespondCredentialProposal = resolveFromConfig(c, "debug.auto_respond_credential_proposal");
+                autoRespondCredentialRequest = resolveFromConfig(c, "debug.auto_respond_credential_request");
+                autoRespondPresentationProposal = resolveFromConfig(c, "debug.auto_respond_presentation_proposal");
+                autoRespondPresentationRequest = resolveFromConfig(c, "debug.auto_respond_presentation_request");
+                autoStoreCredential = resolveFromConfig(c, "debug.auto_store_credential");
+                autoVerifyPresentation = resolveFromConfig(c, "debug.auto_verify_presentation");
             });
         } catch (IOException e) {
-            log.warn("No aca-py");
+            log.warn("aca-py not reachable");
         }
+    }
+
+    private static Boolean resolveFromConfig(@NonNull AdminConfig c, @NonNull String key)  {
+        return Boolean.TRUE.equals(c.getUnwrapped(key, Boolean.class));
     }
 }

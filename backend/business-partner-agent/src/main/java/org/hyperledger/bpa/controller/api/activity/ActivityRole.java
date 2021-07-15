@@ -29,5 +29,5 @@ public enum ActivityRole {
     @JsonProperty("presentation_exchange_prover")
     PRESENTATION_EXCHANGE_PROVER,
     @JsonProperty("presentation_exchange_verifier")
-    PRESENTATION_EXCHANGE_VERIFIER;
+    PRESENTATION_EXCHANGE_VERIFIER
 }

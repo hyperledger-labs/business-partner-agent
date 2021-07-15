@@ -49,7 +49,7 @@ public class ActivitiesController {
      * @param parameters ActivitySearchParameters Filters for list
      * @return list of {@link ActivityItem}
      */
-    @Get("/")
+    @Get
     public HttpResponse<List<ActivityItem>> listActivities(@RequestBean @Valid ActivitySearchParameters parameters) {
         return HttpResponse.ok(activitiesManager.getItems(parameters));
     }
