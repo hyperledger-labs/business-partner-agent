@@ -320,4 +320,44 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
                 attributes -> Assertions.assertEquals(epochSeconds, attributes.getNonRevoked().getFrom().longValue()));
         assertEqualAttributesInProofRequests(expected, actual);
     }
+
+    @Test
+    public void testThatATemplateWithOneAttributeFromOneSchemaAndIssuedByIsConvertedCorrectly() {
+        prepareSchemaWithAttributes("mySchemaId", "name");
+        prepareConnectionId("myConnectionId");
+        BPAProofTemplate template = BPAProofTemplate.builder()
+                .id(UUID.randomUUID())
+                .name("MyTestTemplate")
+                .attributeGroups(BPAAttributeGroups.builder()
+                        .attributeGroup(BPAAttributeGroup.builder()
+                                .schemaLevelRestrictions(BPASchemaRestrictions.builder()
+                                        .issuerDid("issuerDid")
+                                        .build())
+                                .schemaId("mySchemaId")
+                                .attribute(BPAAttribute.builder()
+                                        .name("name")
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        PresentProofRequest expected = PresentProofRequest.builder()
+                .connectionId("myConnectionId")
+                .proofRequest(PresentProofRequest.ProofRequest.builder()
+                        .name("MyTestTemplate")
+                        .requestedAttribute("mySchemaId",
+                                PresentProofRequest.ProofRequest.ProofRequestedAttributes.builder()
+                                        .names(List.of("name"))
+                                        .restriction(
+                                                PresentProofRequest.ProofRequest.ProofRestrictions.builder()
+                                                        .schemaId("mySchemaId")
+                                                        .issuerDid("issuerDid")
+                                                        .build()
+                                                        .toJsonObject())
+                                        .build())
+                        .build())
+                .build();
+        PresentProofRequest actual = proofTemplateConversion.proofRequestViaVisitorFrom(UUID.randomUUID(), template);
+        assertWithAcapy(actual);
+        assertEqualAttributesInProofRequests(expected, actual);
+    }
 }
