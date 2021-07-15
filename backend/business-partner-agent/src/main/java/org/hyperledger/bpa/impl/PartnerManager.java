@@ -86,6 +86,16 @@ public class PartnerManager {
         return result;
     }
 
+    @Nullable
+    public PartnerAPI getPartner(@NonNull UUID id) {
+        PartnerAPI apiPartner = null;
+        Optional<Partner> dbPartner = repo.findById(id);
+        if (dbPartner.isPresent()) {
+            apiPartner = converter.toAPIObject(dbPartner.get());
+        }
+        return apiPartner;
+    }
+
     public void removePartnerById(@NonNull UUID id) {
         repo.findById(id).ifPresent(p -> {
             if (p.getConnectionId() != null) {

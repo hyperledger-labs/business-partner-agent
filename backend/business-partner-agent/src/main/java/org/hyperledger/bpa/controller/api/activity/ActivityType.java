@@ -27,5 +27,5 @@ public enum ActivityType {
     @JsonProperty("credential_offer")
     CREDENTIAL_OFFER,
     @JsonProperty("presentation_exchange")
-    PRESENTATION_EXCHANGE;
+    PRESENTATION_EXCHANGE
 }
