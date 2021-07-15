@@ -33,11 +33,11 @@ import org.mockito.Mockito;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @MicronautTest
@@ -102,12 +102,15 @@ class ProofTemplateManagerTest {
         ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager);
 
         Assertions.assertEquals(0, repo.count(), "There should be no templates initially.");
-        BPAProofTemplate storedTemplate = sut.addProofTemplate(template);
+        BPAProofTemplate expected = sut.addProofTemplate(template);
         Assertions.assertEquals(1, repo.count(), "There should be one template.");
-        Assertions.assertEquals(
-                storedTemplate,
-                repo.findById(storedTemplate.getId()).orElse(null),
-                "The passed proof template should be persisted with an id.");
+        Optional<BPAProofTemplate> actual = repo.findById(expected.getId());
+        assertTrue(actual.isPresent());
+        assertTrue(actual.map(BPAProofTemplate::getCreatedAt).isPresent());
+        // equalize the time stamp, because Java's value is more detailed that the
+        // database's.
+        actual.ifPresent(t -> t.setCreatedAt(expected.getCreatedAt()));
+        Assertions.assertEquals(expected, actual.get(), "The passed proof template should be persisted with an id.");
     }
 
     @Test
@@ -128,19 +131,21 @@ class ProofTemplateManagerTest {
                 .attributeGroups(
                         BPAAttributeGroups.builder()
                                 .build());
-        BPAProofTemplate template1 = repo.save(templateBuilder
+        repo.save(templateBuilder
                 .name("myFirstTemplate")
                 .build());
-        BPAProofTemplate template2 = repo.save(templateBuilder
+        repo.save(templateBuilder
                 .name("mySecondTemplate")
                 .build());
 
         ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager);
 
-        List<BPAProofTemplate> allTemplates = sut.listProofTemplates().collect(Collectors.toList());
+        List<String> allTemplates = sut.listProofTemplates().map(BPAProofTemplate::getName)
+                .collect(Collectors.toList());
         assertEquals(2, allTemplates.size(), "Expected exactly 2 persisted proof templates.");
-        assertTrue(allTemplates.contains(template1), "Expected template1 in the listed proof templates");
-        assertTrue(allTemplates.contains(template2), "Expected template2 in the listed proof templates");
+        assertTrue(allTemplates.contains("myFirstTemplate"), "Expected myFirstTemplate in the listed proof templates");
+        assertTrue(allTemplates.contains("mySecondTemplate"),
+                "Expected mySecondTemplate in the listed proof templates");
     }
 
     @Test
