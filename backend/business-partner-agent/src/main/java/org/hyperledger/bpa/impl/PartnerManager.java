@@ -88,6 +88,11 @@ public class PartnerManager {
         return repo.findById(id).map(converter::toAPIObject).orElse(null);
     }
 
+    @Nullable
+    public PartnerAPI getPartnerByConnectionId(@NonNull String id) {
+        return repo.findByConnectionId(id).map(converter::toAPIObject).orElse(null);
+    }
+
     public void removePartnerById(@NonNull UUID id) {
         repo.findById(id).ifPresent(p -> {
             if (p.getConnectionId() != null) {
@@ -187,6 +192,13 @@ public class PartnerManager {
                 .map(Partner::getConnectionId)
                 .orElseThrow(EntityNotFoundException::new);
         cm.acceptConnection(connectionId);
+    }
+
+    public void sendMessage(@NonNull UUID id, String content) {
+        final Optional<Partner> dbP = repo.findById(id);
+        if (dbP.isPresent()) {
+            cm.sendMessage(dbP.get().getConnectionId(), content);
+        }
     }
 
 }

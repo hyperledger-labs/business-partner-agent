@@ -210,6 +210,19 @@
       <router-view
         v-if="!sessionDialog && !$store.getters.taaRequired"
       ></router-view>
+        <v-btn
+            color="primary"
+            fab
+            absolute
+            large
+            dark
+            bottom
+            right
+            @click="chatWindow = !chatWindow"
+        >
+          <v-icon v-if="chatWindow">$vuetify.icons.close</v-icon>
+          <v-icon v-else>$vuetify.icons.chat</v-icon>
+        </v-btn>
     </v-main>
 
     <v-snackbar
@@ -250,8 +263,12 @@
       </v-card>
     </v-dialog>
 
-    <v-footer v-if="showFooter" app>
-      <v-col cols="12" class="text-center">
+    <div class="sc-chat-window" :class="{opened: chatWindow, closed: !chatWindow}">
+     <BasicMessages />
+    </div>
+
+    <v-footer app>
+      <v-col v-if="showFooter" cols="12" class="text-center">
         <span v-if="imprintUrl" class="mr-4 subtitle-2"
           ><a :href="imprintUrl">{{
             $t("app.footer.imprintUrl.text")
@@ -270,9 +287,11 @@
 <script>
 import { EventBus } from "./main";
 import Taa from "./components/taa/TransactionAuthorAgreement";
+import BasicMessages from "@/components/messages/BasicMessages";
 
 export default {
   components: {
+    BasicMessages,
     "app-taa": Taa,
   },
   props: {
@@ -289,6 +308,8 @@ export default {
     snackbarMsg: "",
 
     sessionDialog: false,
+
+    chatWindow: false,
     // These are defaults, if no ux configuration passed in via $config.ux...
     ux: {
       header: {
@@ -450,5 +471,30 @@ export default {
 }
 a {
   text-decoration: none;
+}
+
+ .sc-chat-window {
+   width: 370px;
+   height: calc(100% - 120px);
+   max-height: 590px;
+   position: fixed;
+   right: 25px;
+   bottom: 100px;
+   box-sizing: border-box;
+   box-shadow: 0px 7px 40px 2px rgba(148, 149, 150, 0.1);
+   background: white;
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+   border-radius: 10px;
+   animation: fadeIn;
+   animation-duration: 0.3s;
+   animation-timing-function: ease-in-out;
+ }
+
+.sc-chat-window.closed {
+  opacity: 0;
+  display: none;
+  bottom: 90px;
 }
 </style>

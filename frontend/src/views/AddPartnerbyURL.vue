@@ -77,6 +77,7 @@
 import { EventBus } from "../main";
 import QrcodeVue from "qrcode.vue";
 import VBpaButton from "@/components/BpaButton";
+import store from "@/store";
 export default {
   name: "AddPartnerbyURL",
   created: () => {},
@@ -117,6 +118,7 @@ export default {
           this.invitationURL = result.data.invitationUrl;
 
           if (result.status === 200 || result.status === 201) {
+            store.dispatch("loadPartners");
             EventBus.$emit(
               "success",
               "Partner Invitation created successfully"

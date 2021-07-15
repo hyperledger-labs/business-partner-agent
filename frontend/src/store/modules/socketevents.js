@@ -6,6 +6,7 @@ const state = {
   newPresentationRequests: {},
   newPresentations: {},
   notifications: 0,
+  messages: [],
 
   socket: {
     isConnected: false,
@@ -36,6 +37,9 @@ const getters = {
   notificationsCount: () => {
     return state.notifications;
   },
+  getPartnerMessages: (state) => {
+    return state.messages;
+  }
 };
 
 const mutations = {
@@ -86,6 +90,12 @@ const mutations = {
     // check the payload... are we adding one, or has it been handled and we are removing one?
     const count = payload.message.state === "NEW" ? 1 : -1;
     state.notifications = Math.max(state.notifications + count, 0) ;
+  },
+  message(state, payload) {
+    let basicMsg = payload.message.info;
+    let msgs = state.messages ? state.messages : [];
+    msgs.push(basicMsg);
+    state.messages = msgs;
   },
   partnerSeen(state, payload) {
     let id = payload.id;

@@ -23,6 +23,7 @@ import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.acy_py.generated.model.SendMessage;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.*;
 import org.hyperledger.aries.api.did_exchange.DidExchangeCreateRequestFilter;
@@ -124,7 +125,7 @@ public class ConnectionManager {
 
     /**
      * Create a connection based on a did, e.g. did:web or did:indy.
-     * 
+     *
      * @param did the fully qualified did like did:indy:123
      * @return {@link ConnectionRecord}
      */
@@ -255,6 +256,17 @@ public class ConnectionManager {
 
         } catch (IOException e) {
             log.error("Could not delete connection: {}", connectionId, e);
+        }
+    }
+
+    public void sendMessage(String connectionId, String content) {
+        if (StringUtils.isNotEmpty(content)) {
+            try {
+                ac.connectionsSendMessage(connectionId,
+                        SendMessage.builder().content(content).build());
+            } catch (IOException e) {
+                log.error("Could not send message to connection: {}", connectionId, e);
+            }
         }
     }
 }

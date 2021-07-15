@@ -30,7 +30,7 @@ import {
   mdiHandshake,
   mdiAlertCircleOutline,
   mdiClockTimeThreeOutline,
-  mdiContentSave,
+  mdiContentSave, mdiMessageText,
 } from "@mdi/js";
 
 Vue.use(Vuetify);
@@ -77,6 +77,7 @@ export default new Vuetify({
       connectionWaiting: mdiClockTimeThreeOutline,
       cancel: "fas fa-times-circle",
       save: mdiContentSave,
+      chat: mdiMessageText
     },
   },
   theme: {

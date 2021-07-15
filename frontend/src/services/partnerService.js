@@ -20,4 +20,7 @@ export default {
   updatePartner({ id, data }) {
     return appAxios().put(`${ApiRoutes.PARTNERS}/${id}`, data);
   },
+  sendMessage(id, content) {
+    return appAxios().post(`${ApiRoutes.PARTNERS}/${id}/message`, {content: content});
+  },
 };
