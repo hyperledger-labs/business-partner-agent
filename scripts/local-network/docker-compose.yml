@@ -68,6 +68,9 @@ services:
         --seed '${ACAPY_SEED1}' \
         --admin '0.0.0.0' ${ACAPY1_ADMIN_PORT} \
         --label '${AGENT1_NAME}' \
+        --trace \
+        --trace-tag 'bpa-agent-1' \
+        --trace-label 'bpa-agent-1' \
         ${ACAPY_ADMIN_CONFIG} \
         ${ACAPY_READ_ONLY_MODE} \
         "
@@ -154,6 +157,9 @@ services:
         --seed '${ACAPY_SEED2}' \
         --admin '0.0.0.0' ${ACAPY2_ADMIN_PORT} \
         --label '${AGENT2_NAME}' \
+        --trace \
+        --trace-tag 'bpa-agent-2' \
+        --trace-label 'bpa-agent-2' \
         ${ACAPY_ADMIN_CONFIG} \
         ${ACAPY_READ_ONLY_MODE} \
         "

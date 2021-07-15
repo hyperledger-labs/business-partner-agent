@@ -163,40 +163,46 @@ public class ConnectionManager {
     public synchronized void addConnectionEndorserMetadata(ConnectionRecord record, Partner p) {
         log.info("TODO addConnectionEndorserMetadata() for: {}", p);
 
-        TransactionJobs.TransactionMyJobEnum txJob;
+        TransactionJobs.TransactionMyJobEnum txMyJob;
+        TransactionJobs.TransactionTheirJobEnum txTheirJob;
         if (p.hasTag("Author")) {
-            // our partner is tagged as an "Author" so we set our role on the connection as "Endorser"
+            // our partner is tagged as an "Author" so we set our role on the connection as "Author"
             log.info("TODO add connection metadata for Author connection: {}", p);
-            txJob = TransactionJobs.TransactionMyJobEnum.TRANSACTION_ENDORSER;
+            txMyJob = TransactionJobs.TransactionMyJobEnum.TRANSACTION_ENDORSER;
+            txTheirJob = TransactionJobs.TransactionTheirJobEnum.TRANSACTION_AUTHOR;
         } else if (p.hasTag("Endorser")) {
             // our partner is tagged as an "Endorser" so we set our role on the connection as "Author"
             log.info("TODO add connection metadata for Endorser connection: {}", p);
-            txJob = TransactionJobs.TransactionMyJobEnum.TRANSACTION_AUTHOR;
+            txMyJob = TransactionJobs.TransactionMyJobEnum.TRANSACTION_AUTHOR;
+            txTheirJob = TransactionJobs.TransactionTheirJobEnum.TRANSACTION_ENDORSER;
         } else {
+            log.info("TODO no connection role, return no-op");
             return;
         }
 
         try {
             // set the endorser role on the connection
-            log.info("TODO set endorser role to: {}", txJob);
-            ac.endorseTransactionSetEndorserRole(record.getConnectionId(), SetEndorserRoleFilter
+            SetEndorserRoleFilter serf = SetEndorserRoleFilter
                 .builder()
                 .transactionMyJob(TransactionJobs
                     .builder()
-                    .transactionMyJob(txJob)
+                    .transactionMyJob(txMyJob)
+                    .transactionTheirJob(txTheirJob)
                     .build()
                 )
-                .build()
-            );
-            if (p.hasTag("Author")) {
+                .build();
+            log.info("TODO set endorser role to: {} with {}", txMyJob, serf);
+            ac.endorseTransactionSetEndorserRole(record.getConnectionId(), serf);
+
+            if (p.hasTag("Endorser")) {
                 // we have to set the extra Endorser info
-                log.info("TODO set endorser info to: {} {}", p.getDid(), p.getAlias());
-                ac.endorseTransactionSetEndorserInfo(record.getConnectionId(), SetEndorserInfoFilter
+                SetEndorserInfoFilter seif = SetEndorserInfoFilter
                     .builder()
                     .endorserDid(p.getDid())
                     .endorserName(p.getAlias())
-                    .build()
-                );
+                    .build();
+                log.info("TODO set endorser info to: {} {} with {}", p.getDid(), p.getAlias(), seif);
+                ac.endorseTransactionSetEndorserInfo(record.getConnectionId(), seif);
             }
         } catch (IOException e) {
             String msg = messageSource.getMessage("acapy.unavailable");
