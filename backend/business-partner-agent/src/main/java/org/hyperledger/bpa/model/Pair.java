@@ -104,7 +104,7 @@ public class Pair<L, R> implements Map.Entry<L, R> {
 
     @NonNull
     public static <T, L, R> Function<T, Pair<L, R>> with(@NonNull Function<T, L> getLeft,
-                                                         @NonNull Function<T, R> getRight) {
+            @NonNull Function<T, R> getRight) {
         return o -> new Pair<>(getLeft.apply(o), getRight.apply(o));
     }
 
