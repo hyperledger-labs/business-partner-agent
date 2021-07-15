@@ -160,21 +160,22 @@ public class ConnectionManager {
         }
     }
 
-    public synchronized void addConnectionEndorserMetadata(ConnectionRecord record, Partner p) {
+    public synchronized void addConnectionEndorserMetadata(Partner p) {
         log.info("TODO addConnectionEndorserMetadata() for: {}", p);
 
-        TransactionJobs.TransactionMyJobEnum txMyJob;
-        TransactionJobs.TransactionTheirJobEnum txTheirJob;
+        //TransactionJobs.TransactionMyJobEnum txMyJob;
+        //TransactionJobs.TransactionTheirJobEnum txTheirJob;
+        String txMyJob;
         if (p.hasTag("Author")) {
             // our partner is tagged as an "Author" so we set our role on the connection as "Author"
             log.info("TODO add connection metadata for Author connection: {}", p);
-            txMyJob = TransactionJobs.TransactionMyJobEnum.TRANSACTION_ENDORSER;
-            txTheirJob = TransactionJobs.TransactionTheirJobEnum.TRANSACTION_AUTHOR;
+            txMyJob = TransactionJobs.TransactionMyJobEnum.TRANSACTION_ENDORSER.toString();
+            //txTheirJob = TransactionJobs.TransactionTheirJobEnum.TRANSACTION_AUTHOR;
         } else if (p.hasTag("Endorser")) {
             // our partner is tagged as an "Endorser" so we set our role on the connection as "Author"
             log.info("TODO add connection metadata for Endorser connection: {}", p);
-            txMyJob = TransactionJobs.TransactionMyJobEnum.TRANSACTION_AUTHOR;
-            txTheirJob = TransactionJobs.TransactionTheirJobEnum.TRANSACTION_ENDORSER;
+            txMyJob = TransactionJobs.TransactionMyJobEnum.TRANSACTION_AUTHOR.toString();
+            //txTheirJob = TransactionJobs.TransactionTheirJobEnum.TRANSACTION_ENDORSER;
         } else {
             log.info("TODO no connection role, return no-op");
             return;
@@ -184,15 +185,10 @@ public class ConnectionManager {
             // set the endorser role on the connection
             SetEndorserRoleFilter serf = SetEndorserRoleFilter
                 .builder()
-                .transactionMyJob(TransactionJobs
-                    .builder()
-                    .transactionMyJob(txMyJob)
-                    .transactionTheirJob(txTheirJob)
-                    .build()
-                )
+                .transactionMyJob(txMyJob)
                 .build();
             log.info("TODO set endorser role to: {} with {}", txMyJob, serf);
-            ac.endorseTransactionSetEndorserRole(record.getConnectionId(), serf);
+            ac.endorseTransactionSetEndorserRole(p.getConnectionId(), serf);
 
             if (p.hasTag("Endorser")) {
                 // we have to set the extra Endorser info
@@ -202,7 +198,7 @@ public class ConnectionManager {
                     .endorserName(p.getAlias())
                     .build();
                 log.info("TODO set endorser info to: {} {} with {}", p.getDid(), p.getAlias(), seif);
-                ac.endorseTransactionSetEndorserInfo(record.getConnectionId(), seif);
+                ac.endorseTransactionSetEndorserInfo(p.getConnectionId(), seif);
             }
         } catch (IOException e) {
             String msg = messageSource.getMessage("acapy.unavailable");
@@ -226,7 +222,7 @@ public class ConnectionManager {
                     // if partner is tagged as "Author"/"Endorser" create appropriate meta-data
                     log.info("TODO check for outbound Endorser event for existing partner: {} {}", record, dbP);
                     if (config.hasEndorserRole()) {
-                        addConnectionEndorserMetadata(record, dbP);
+                        addConnectionEndorserMetadata(dbP);
                     }
                 });
     }
@@ -248,7 +244,7 @@ public class ConnectionManager {
                     // if partner is tagged as "Author"/"Endorser" create appropriate meta-data
                     log.info("TODO check for inbound Endorser event for existing partner: {} {}", record, dbP);
                     if (config.hasEndorserRole()) {
-                        addConnectionEndorserMetadata(record, dbP);
+                        addConnectionEndorserMetadata(dbP);
                     }
                 },
                 () -> {
@@ -269,7 +265,7 @@ public class ConnectionManager {
                     // if partner is tagged as "Author"/"Endorser" create appropriate meta-data
                     log.info("TODO check for inbound Endorser event for new partner: {} {}", record, p);
                     if (config.hasEndorserRole()) {
-                        addConnectionEndorserMetadata(record, p);
+                        addConnectionEndorserMetadata(p);
                     }
                 });
     }

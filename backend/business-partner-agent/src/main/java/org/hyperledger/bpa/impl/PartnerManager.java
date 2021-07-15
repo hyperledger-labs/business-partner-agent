@@ -132,6 +132,7 @@ public class PartnerManager {
             p.setTags(tags != null ? new HashSet<>(tags) : null);
             p.setAlias(alias);
             tagRepo.updateAllPartnerToTagMappings(id, tags);
+            cm.addConnectionEndorserMetadata(p);
             repo.updateAlias(id, alias);
             if (StringUtils.isNotBlank(alias)) {
                 myCredRepo.updateByConnectionId(dbP.get().getConnectionId(), dbP.get().getConnectionId(), alias);
