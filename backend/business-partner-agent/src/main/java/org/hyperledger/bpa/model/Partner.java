@@ -92,6 +92,9 @@ public class Partner {
     @Nullable
     private Boolean trustPing;
 
+    @Nullable
+    private String invitationMsgId; // aries oob invitation message id
+
     /**
      * The Partners Public Profile {@link VerifiablePresentation} to be used in the
      * {@link PartnerAPI}

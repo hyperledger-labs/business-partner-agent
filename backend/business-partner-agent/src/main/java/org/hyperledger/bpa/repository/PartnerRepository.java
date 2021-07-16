@@ -76,6 +76,8 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     List<Partner> findByStateInAndTrustPingTrue(List<ConnectionState> state);
 
+    Optional<Partner> findByInvitationMsgId(String invitationMsgId);
+
     // The queries below are native queries to prevent changes to the lastupdated
     // timestamp. As this timestamp indicates user interaction, whereas the queries
     // below indicate changes made by jobs.

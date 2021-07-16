@@ -20,6 +20,7 @@ package org.hyperledger.bpa.impl.aries;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.env.Environment;
 import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.core.util.StringUtils;
 import io.micronaut.scheduling.annotation.Scheduled;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
@@ -33,11 +34,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Singleton
@@ -129,8 +130,10 @@ public class PingManager {
 
     @Scheduled(fixedRate = "30m", initialDelay = "1m")
     public void deleteStaleConnections() {
-        List<String> bpaConIds = new ArrayList<>();
-        repo.findAll().forEach(p -> bpaConIds.add(p.getConnectionId()));
+        List<String> bpaConIds = StreamSupport.stream(repo.findAll().spliterator(), false)
+                .map(Partner::getConnectionId)
+                .filter(StringUtils::isNotEmpty)
+                .collect(Collectors.toList());
 
         try {
             List<String> acaConIds = aries.connectionIds();

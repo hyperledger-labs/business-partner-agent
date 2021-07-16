@@ -29,4 +29,9 @@ public class CreatePartnerInvitationRequest {
     private String alias;
     private List<Tag> tag;
     private Boolean trustPing;
+    private Boolean useOutOfBand;
+
+    public boolean getUseOutOfBand() {
+        return useOutOfBand != null && useOutOfBand;
+    }
 }

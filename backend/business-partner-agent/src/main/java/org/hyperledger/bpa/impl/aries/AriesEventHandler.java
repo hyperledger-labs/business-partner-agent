@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl.aries;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.connection.ConnectionTheirRole;
@@ -68,8 +69,12 @@ public class AriesEventHandler extends EventHandler {
         synchronized (conMgmt) {
             if (!connection.isIncomingConnection()) {
                 conMgmt.handleOutgoingConnectionEvent(connection);
-            } else if (isNotAnInvitation(connection)) {
-                conMgmt.handleIncomingConnectionEvent(connection);
+            } else {
+                if (isNotConnectionInvitation(connection)) {
+                    conMgmt.handleIncomingConnectionEvent(connection);
+                } else if (isOOBInvitation(connection)) {
+                    conMgmt.handleOOBInvitation(connection);
+                }
             }
         }
     }
@@ -124,8 +129,14 @@ public class AriesEventHandler extends EventHandler {
      * @param conn {@link ConnectionRecord}
      * @return true if it is not an invitation event
      */
-    private boolean isNotAnInvitation(ConnectionRecord conn) {
-        return !(ConnectionState.INVITATION.equals(conn.getState())
-                && ConnectionTheirRole.INVITEE.equals(conn.getTheirRole()));
+    private boolean isNotConnectionInvitation(ConnectionRecord conn) {
+        return StringUtils.isEmpty(conn.getInvitationMsgId())
+                && !(ConnectionState.INVITATION.equals(conn.getState())
+                        && ConnectionTheirRole.INVITEE.equals(conn.getTheirRole()));
+    }
+
+    private boolean isOOBInvitation(ConnectionRecord conn) {
+        return StringUtils.isNotEmpty(conn.getInvitationMsgId())
+                && !ConnectionState.INVITATION.equals(conn.getState());
     }
 }
