@@ -88,6 +88,15 @@
     },
     "presentationRequestDetails": {
       "header": "Presentation Request Details"
+    },
+    "addPartnerbyURL": {
+      "title": "Invite new Business Partner",
+      "setName": "Set a name",
+      "setTags": "Set tags",
+      "trustPing": "Trust Ping",
+      "createInvitation": "Generate Invitation (QR Code)",
+      "invitationURL": "Invitation URL",
+      "useOOB": "Use Out of Band"
     }
   },
   "constants": {
