@@ -361,7 +361,7 @@ public class PartnerController {
      * @return {@link PartnerAPI}
      */
     @Post("/invitation")
-    public HttpResponse<CreatePartnerInvitationResponse> requestConnectionInvitation(
+    public HttpResponse<?> requestConnectionInvitation(
             @Body CreatePartnerInvitationRequest req) {
         return HttpResponse.ok(cm.createConnectionInvitation(req));
     }

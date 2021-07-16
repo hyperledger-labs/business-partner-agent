@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl.aries;
 
 import io.micronaut.context.annotation.Value;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,6 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
-import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationResponse;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.util.Converter;
@@ -91,39 +91,29 @@ public class ConnectionManager {
      * Creates a connection invitation to be used within a barcode
      *
      * @param req {@link CreatePartnerInvitationRequest}
-     * @return {@link CreatePartnerInvitationResponse}
+     * @return {@link CreateInvitationResponse}
      */
-    public CreatePartnerInvitationResponse createConnectionInvitation(
-            @NonNull CreatePartnerInvitationRequest req) {
-        CreatePartnerInvitationResponse.CreatePartnerInvitationResponseBuilder result = CreatePartnerInvitationResponse.
-                builder();
+    public CreateInvitationResponse createConnectionInvitation(@NonNull CreatePartnerInvitationRequest req) {
+        CreateInvitationResponse invitation = null;
         try {
             String aliasWithFallback = StringUtils.isNotEmpty(req.getAlias()) ? req.getAlias()
                     : CONNECTION_INVITATION + TimeUtil.currentTimeFormatted(Instant.now());
-            CreateInvitationResponse connectionProtocol = ac.connectionsCreateInvitation(
-                    CreateInvitationRequest.builder()
-                            .build(),
-                    CreateInvitationParams.builder()
-                            .alias(aliasWithFallback)
-                            .autoAccept(Boolean.TRUE)
-                            .build())
-                    .orElseThrow();
+            invitation = createInvitation(aliasWithFallback);
             partnerRepo.save(Partner
                     .builder()
                     .ariesSupport(Boolean.TRUE)
                     .alias(aliasWithFallback)
-                    .connectionId(connectionProtocol.getConnectionId())
+                    .connectionId(invitation.getConnectionId())
                     .did(didPrefix + UNKNOWN_DID)
                     .state(ConnectionState.INVITATION)
                     .incoming(Boolean.TRUE)
                     .tags(req.getTag() != null ? new HashSet<>(req.getTag()) : null)
                     .trustPing(req.getTrustPing() != null ? req.getTrustPing() : Boolean.FALSE)
                     .build());
-            result.connectionProtocol(connectionProtocol);
         } catch (IOException e) {
             log.error("Could not create aries connection invitation", e);
         }
-        return result.build();
+        return invitation;
     }
 
     /**
@@ -196,6 +186,7 @@ public class ConnectionManager {
                             .state(record.getState())
                             .label(record.getTheirLabel())
                             .incoming(Boolean.TRUE)
+                            .trustPing(Boolean.TRUE)
                             .build();
                     p = partnerRepo.save(p);
                     resolveAndSend(record, p);
@@ -260,5 +251,16 @@ public class ConnectionManager {
         } catch (IOException e) {
             log.error("Could not delete connection: {}", connectionId, e);
         }
+    }
+
+    private CreateInvitationResponse createInvitation(@Nullable String alias) throws IOException {
+        return ac.connectionsCreateInvitation(
+                CreateInvitationRequest.builder()
+                        .build(),
+                CreateInvitationParams.builder()
+                        .alias(alias)
+                        .autoAccept(Boolean.TRUE)
+                        .build())
+                .orElseThrow();
     }
 }

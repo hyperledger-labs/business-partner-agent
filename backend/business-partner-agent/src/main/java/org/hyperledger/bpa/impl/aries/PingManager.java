@@ -44,6 +44,9 @@ import java.util.stream.Collectors;
 @Requires(notEnv = { Environment.TEST })
 public class PingManager {
 
+    final static List<ConnectionState> statesToFilter = List.of(
+            ConnectionState.ACTIVE, ConnectionState.COMPLETED, ConnectionState.ABANDONED);
+
     @Inject
     AriesClient aries;
 
@@ -72,15 +75,14 @@ public class PingManager {
     @Scheduled(fixedRate = "1m", initialDelay = "90s") // init delay needs to be > than aca-py connection timeout
     public void checkConnections() {
         try {
-            List<String> activeConnections = repo
-                    .findByStateInAndTrustPingTrue(List.of(ConnectionState.ACTIVE, ConnectionState.COMPLETED))
+            List<String> connectionsToPing = repo
+                    .findByStateInAndTrustPingTrue(statesToFilter)
                     .stream().map(Partner::getConnectionId).collect(Collectors.toList());
-
-            if (CollectionUtils.isNotEmpty(activeConnections)) {
+            if (CollectionUtils.isNotEmpty(connectionsToPing)) {
                 if (!firstRun) {
                     setNewState();
                 }
-                sendPingToActiveConnections(activeConnections);
+                sendPingToConnections(connectionsToPing);
             }
             if (firstRun) {
                 firstRun = false;
@@ -105,9 +107,9 @@ public class PingManager {
         received.clear();
     }
 
-    private void sendPingToActiveConnections(List<String> activeConnections) {
+    private void sendPingToConnections(List<String> connectionsToPing) {
         try {
-            for (String connectionId : activeConnections) {
+            for (String connectionId : connectionsToPing) {
                 log.debug("Sending ping to: {}", connectionId);
                 aries.connectionsSendPing(connectionId, new PingRequest(connectionId))
                         .ifPresent(resp -> sent.put(resp.getThreadId(), connectionId));

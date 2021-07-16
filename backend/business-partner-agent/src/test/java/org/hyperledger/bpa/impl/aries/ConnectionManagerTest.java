@@ -182,6 +182,7 @@ class ConnectionManagerTest extends BaseTest {
     private final String inviteReceive = "{\n" +
             "    \"accept\": \"auto\",\n" +
             "    \"connection_id\": \"5d41c1cb-2856-4026-984e-24d2976a05ba\",\n" +
+            "    \"connection_protocol\": \"connections/1.0\",\n" +
             "    \"updated_at\": \"2021-04-28 08:20:17.034908Z\",\n" +
             "    \"alias\": \"Invitation 1\",\n" +
             "    \"routing_state\": \"none\",\n" +

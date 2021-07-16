@@ -25,7 +25,6 @@ import org.hyperledger.aries.api.message.PingRequest;
 import org.hyperledger.aries.api.message.PingResponse;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.PartnerRepository;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -52,15 +51,14 @@ class PingManagerTest {
     @InjectMocks
     private PingManager ping;
 
-    @Test @Disabled
+    @Test
     void testHappyFlow() throws Exception {
         ping.checkConnections();
 
-        when(repo.findByStateInAndTrustPingTrue(List.of(ConnectionState.ACTIVE, ConnectionState.COMPLETED)))
+        when(repo.findByStateInAndTrustPingTrue(PingManager.statesToFilter))
                 .thenReturn(List.of(
                         createPartner("1"),
-                        createPartner("2"),
-                        createPartner("3")));
+                        createPartner("2")));
 
         when(aries.connectionsSendPing(anyString(), any(PingRequest.class)))
                 .thenReturn(Optional.of(new PingResponse("a")))
@@ -75,6 +73,7 @@ class PingManagerTest {
 
         ping.checkConnections();
 
+        verify(repo, times(2)).findByStateInAndTrustPingTrue(PingManager.statesToFilter);
         verify(repo, never()).updateStateByConnectionId(anyString(), any(ConnectionState.class));
         verify(repo, never()).updateStateAndLastSeenByConnectionId(any(), any(), any());
 
@@ -83,8 +82,7 @@ class PingManagerTest {
 
         ping.checkConnections();
 
-        verify(repo, times(3)).findByStateInAndTrustPingTrue(
-                List.of(ConnectionState.ACTIVE, ConnectionState.COMPLETED));
+        verify(repo, times(3)).findByStateInAndTrustPingTrue(PingManager.statesToFilter);
         verify(repo, times(1)).updateStateByConnectionId("1", ConnectionState.ABANDONED);
         verify(repo, times(1)).updateStateByConnectionId("2", ConnectionState.ABANDONED);
         verify(repo, never()).updateStateAndLastSeenByConnectionId(any(), any(), any());
@@ -114,7 +112,7 @@ class PingManagerTest {
 
     @Test
     void testInitialState() {
-        when(repo.findByStateInAndTrustPingTrue(List.of(ConnectionState.ACTIVE, ConnectionState.COMPLETED)))
+        when(repo.findByStateInAndTrustPingTrue(PingManager.statesToFilter))
                 .thenReturn(List.of(
                         createPartner("1"),
                         createPartner("2")));
