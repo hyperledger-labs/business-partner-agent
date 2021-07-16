@@ -2,8 +2,9 @@ process.env.VUE_APP_VERSION = require("./package.json").version;
 
 module.exports = {
   devServer: {
+    disableHostCheck: true,
     proxy: {
-      "^/api": {
+      "^/api/*": {
         target: "http://localhost:8080",
         ws: true,
       },
@@ -20,8 +21,5 @@ module.exports = {
   },
   configureWebpack: {
     devtool: "source-map",
-  },
-  devServer: {
-    disableHostCheck: true,
   },
 };
