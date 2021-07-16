@@ -19,7 +19,7 @@
                 <v-list-item-title
                   class="grey--text text--darken-2 font-weight-medium"
                 >
-                  {{ $t("view.addPartnerbyURL.setName") }}
+                  {{ $t("view.addPartner.setName") }}
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -40,7 +40,7 @@
                 <v-list-item-title
                   class="grey--text text--darken-2 font-weight-medium"
                 >
-                  {{ $t("view.addPartnerbyURL.setTags") }}
+                  {{ $t("view.addPartner.setTags") }}
                 </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -60,7 +60,7 @@
               <v-list-item-content>
                 <v-list-item-title
                   class="grey--text text--darken-2 font-weight-medium"
-                  >{{ $t("view.addPartnerbyURL.trustPing") }}</v-list-item-title
+                  >{{ $t("view.addPartner.trustPing") }}</v-list-item-title
                 >
               </v-list-item-content>
               <v-list-item-action>
