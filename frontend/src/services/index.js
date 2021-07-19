@@ -8,3 +8,4 @@
 export { default as adminService } from "./adminService";
 export { default as issuerService } from "./issuerService";
 export { default as partnerService } from "./partnerService";
+export { default as proofTemplateService } from "./proofTemplateService";

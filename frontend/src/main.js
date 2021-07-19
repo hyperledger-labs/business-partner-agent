@@ -117,6 +117,7 @@ Vue.prototype.$config = {
   store.dispatch("loadSettings");
   store.dispatch("loadSchemas");
   store.dispatch("loadTags");
+  store.dispatch("loadProofTemplates");
 
   console.log("Create the Vue application");
   new Vue({

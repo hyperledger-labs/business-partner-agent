@@ -22,6 +22,7 @@ const store = new Vuex.Store({
     documents: [],
     credentials: [],
     schemas: [],
+    proofTemplates: [],
     tags: [],
     busyStack: 0,
     expertMode: false,
@@ -53,6 +54,9 @@ const store = new Vuex.Store({
     },
     setSettings(state, payload) {
       state.settings = payload.settings;
+    },
+    setProofTemplates(state, payload) {
+      state.proofTemplates = payload.proofTemplates;
     },
   },
 

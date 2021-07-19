@@ -25,6 +25,7 @@ export const ApiRoutes = Object.freeze({
   ADMIN: "/admin",
   ISSUER: "/issuer",
   PARTNERS: "/partners",
+  PROOF_TEMPLATES: "/proof-templates",
 });
 
 export const CredentialExchangeRoles = Object.freeze({
