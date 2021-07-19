@@ -89,11 +89,11 @@ export const PartnerStates = Object.freeze({
     label: "Connection request received",
   },
   PING_RESPONSE: {
-    value: "PING_RESPONSE",
+    value: "ping_response",
     label: "Trust Ping active",
   },
   PING_NO_RESPONSE: {
-    value: "PING_NO_RESPONSE",
+    value: "ping_no_response",
     label: "Trust Ping no response",
   },
 });
