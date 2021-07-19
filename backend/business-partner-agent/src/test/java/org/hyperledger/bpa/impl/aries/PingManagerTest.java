@@ -19,10 +19,10 @@ package org.hyperledger.bpa.impl.aries;
 
 import lombok.NonNull;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.message.PingRequest;
 import org.hyperledger.aries.api.message.PingResponse;
-import org.hyperledger.bpa.api.aries.TrustPingState;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
@@ -74,7 +74,7 @@ class PingManagerTest {
         ping.checkConnections();
 
         verify(repo, times(2)).findByStateInAndTrustPingTrueAndAriesSupportTrue(PingManager.statesToFilter);
-        verify(repo, never()).updateStateByConnectionId(anyString(), any(TrustPingState.class));
+        verify(repo, never()).updateStateByConnectionId(anyString(), any(ConnectionState.class));
         verify(repo, never()).updateStateAndLastSeenByConnectionId(any(), any(), any());
 
         assertEquals(2, ping.getSentSize());
@@ -83,8 +83,8 @@ class PingManagerTest {
         ping.checkConnections();
 
         verify(repo, times(3)).findByStateInAndTrustPingTrueAndAriesSupportTrue(PingManager.statesToFilter);
-        verify(repo, times(1)).updateStateByConnectionId("1", TrustPingState.PING_NO_RESPONSE);
-        verify(repo, times(1)).updateStateByConnectionId("2", TrustPingState.PING_NO_RESPONSE);
+        verify(repo, times(1)).updateStateByConnectionId("1", ConnectionState.PING_NO_RESPONSE);
+        verify(repo, times(1)).updateStateByConnectionId("2", ConnectionState.PING_NO_RESPONSE);
         verify(repo, never()).updateStateAndLastSeenByConnectionId(any(), any(), any());
 
         assertEquals(2, ping.getSentSize());
@@ -100,11 +100,11 @@ class PingManagerTest {
 
         verify(repo, times(1)).updateStateAndLastSeenByConnectionId(
                 argThat(a -> a.equals("1")),
-                argThat(a -> a.equals(TrustPingState.PING_RESPONSE)),
+                argThat(a -> a.equals(ConnectionState.PING_RESPONSE)),
                 argThat(a -> a.isBefore(Instant.now())));
         verify(repo, times(1)).updateStateAndLastSeenByConnectionId(
                 argThat(a -> a.equals("2")),
-                argThat(a -> a.equals(TrustPingState.PING_RESPONSE)),
+                argThat(a -> a.equals(ConnectionState.PING_RESPONSE)),
                 argThat(a -> a.isBefore(Instant.now())));
 
         assertEquals(2, ping.getSentSize());
@@ -118,7 +118,7 @@ class PingManagerTest {
                         createPartner("2")));
 
         ping.checkConnections();
-        verify(repo, never()).updateStateByConnectionId(anyString(), any(TrustPingState.class));
+        verify(repo, never()).updateStateByConnectionId(anyString(), any(ConnectionState.class));
 
         assertEquals(0, ping.getSentSize());
     }

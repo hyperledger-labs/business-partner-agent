@@ -26,7 +26,6 @@ import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.aries.api.connection.ConnectionState;
-import org.hyperledger.bpa.api.aries.TrustPingState;
 import org.hyperledger.bpa.model.Partner;
 
 import java.time.Instant;
@@ -83,11 +82,11 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
     // timestamp. As this timestamp indicates user interaction, whereas the queries
     // below indicate changes made by jobs.
 
-    @Query("UPDATE partner SET trust_ping_state = :newState WHERE connection_id = :connectionId AND (trust_ping_state IS NULL OR trust_ping_state != :newState)")
-    void updateStateByConnectionId(String connectionId, TrustPingState newState);
+    @Query("UPDATE partner SET state = :newState WHERE connection_id = :connectionId AND (state IS NULL OR state != :newState)")
+    void updateStateByConnectionId(String connectionId, ConnectionState newState);
 
-    @Query("UPDATE partner SET trust_ping_state = :newState, last_seen = :lastSeen WHERE connection_id = :connectionId")
-    void updateStateAndLastSeenByConnectionId(String connectionId, TrustPingState newState, Instant lastSeen);
+    @Query("UPDATE partner SET state = :newState, last_seen = :lastSeen WHERE connection_id = :connectionId")
+    void updateStateAndLastSeenByConnectionId(String connectionId, ConnectionState newState, Instant lastSeen);
 
     Iterable<Partner> findByStateIn(List<ConnectionState> states);
 

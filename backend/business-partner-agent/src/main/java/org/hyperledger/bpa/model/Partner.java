@@ -27,7 +27,6 @@ import lombok.experimental.Accessors;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.api.PartnerAPI;
-import org.hyperledger.bpa.api.aries.TrustPingState;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 
 import io.micronaut.core.annotation.Nullable;
@@ -106,11 +105,6 @@ public class Partner {
     /** If the trust ping feature is active for this partner */
     @Nullable
     private Boolean trustPing;
-
-    /** The state of the trust ping if active */
-    @Nullable
-    @Enumerated(EnumType.STRING)
-    private TrustPingState trustPingState;
 
     /** Aries OOB invitation message id */
     @Nullable
