@@ -24,10 +24,20 @@ create new ones
       @click:row="openItem"
     >
     </v-data-table>
+    <v-dialog v-model="dialog" persistent max-width="800px">
+      <ViewProofTemplate
+        :dialog="dialog"
+        :proofTemplate="proofTemplate"
+        @closed="onClosed"
+        @changed="onChanged"
+        @deleted="onDeleted"
+      />
+    </v-dialog>
   </v-container>
 </template>
 <script>
 import store from "@/store";
+import ViewProofTemplate from "@/components/ViewProofTemplate";
 export default {
   props: {
     headers: {
@@ -60,8 +70,10 @@ export default {
     },
   },
   methods: {
-    openItem(item) {
-      console.log("opened: %s", JSON.stringify(item));
+    openItem(proofTemplate) {
+      this.dialog = true;
+      this.dirty = false;
+      this.proofTemplate = proofTemplate;
     },
     onClosed() {
       this.dialog = false;
@@ -78,6 +90,8 @@ export default {
       this.dirty = true;
     },
   },
-  components: {},
+  components: {
+    ViewProofTemplate,
+  },
 };
 </script>
