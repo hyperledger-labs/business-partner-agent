@@ -27,7 +27,6 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.message.PingRequest;
-import org.hyperledger.bpa.api.aries.TrustPingState;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
@@ -47,7 +46,8 @@ import java.util.stream.StreamSupport;
 public class PingManager {
 
     final static List<ConnectionState> statesToFilter = List.of(
-            ConnectionState.ACTIVE, ConnectionState.COMPLETED);
+            ConnectionState.ACTIVE, ConnectionState.COMPLETED,
+            ConnectionState.PING_RESPONSE, ConnectionState.PING_NO_RESPONSE);
 
     @Inject
     AriesClient aries;
@@ -96,12 +96,12 @@ public class PingManager {
 
     private void setNewState() {
         sent.forEach((k, v) -> {
-            TrustPingState state;
+            ConnectionState state;
             if (received.containsKey(k)) {
-                state = TrustPingState.PING_RESPONSE;
+                state = ConnectionState.PING_RESPONSE;
                 repo.updateStateAndLastSeenByConnectionId(v, state, Instant.now());
             } else {
-                state = TrustPingState.PING_NO_RESPONSE;
+                state = ConnectionState.PING_NO_RESPONSE;
                 repo.updateStateByConnectionId(v, state);
             }
         });

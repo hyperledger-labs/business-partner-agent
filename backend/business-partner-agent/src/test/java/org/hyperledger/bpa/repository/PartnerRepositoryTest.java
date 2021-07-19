@@ -23,7 +23,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hyperledger.aries.api.connection.ConnectionState;
-import org.hyperledger.bpa.api.aries.TrustPingState;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
@@ -81,21 +80,21 @@ class PartnerRepositoryTest {
         Optional<Partner> reload = partnerRepo.findByConnectionId(connectionId);
         assertTrue(reload.isPresent());
 
-        partnerRepo.updateStateByConnectionId(connectionId, TrustPingState.PING_RESPONSE);
+        partnerRepo.updateStateByConnectionId(connectionId, ConnectionState.PING_RESPONSE);
 
         Optional<Partner> mod = partnerRepo.findByConnectionId(connectionId);
 
         assertTrue(mod.isPresent());
         assertEquals(0, reload.get().getUpdatedAt().compareTo(mod.get().getUpdatedAt()));
-        assertEquals(TrustPingState.PING_RESPONSE, mod.get().getTrustPingState());
+        assertEquals(ConnectionState.PING_RESPONSE, mod.get().getState());
 
-        partnerRepo.updateStateByConnectionId(connectionId, TrustPingState.PING_NO_RESPONSE);
+        partnerRepo.updateStateByConnectionId(connectionId, ConnectionState.PING_NO_RESPONSE);
 
         mod = partnerRepo.findByConnectionId(connectionId);
 
         assertTrue(mod.isPresent());
         assertEquals(0, reload.get().getUpdatedAt().compareTo(mod.get().getUpdatedAt()));
-        assertEquals(TrustPingState.PING_NO_RESPONSE, mod.get().getTrustPingState());
+        assertEquals(ConnectionState.PING_NO_RESPONSE, mod.get().getState());
     }
 
     @Test
@@ -116,7 +115,6 @@ class PartnerRepositoryTest {
                 .did("did:bit:321")
                 .connectionId(p2Cid)
                 .state(ConnectionState.INIT)
-                .trustPingState(TrustPingState.PING_RESPONSE)
                 .build());
 
         final String p3Cid = "id-3";
@@ -127,21 +125,20 @@ class PartnerRepositoryTest {
                 .connectionId(p3Cid)
                 .build());
 
-        partnerRepo.updateStateByConnectionId(p1CId, TrustPingState.PING_NO_RESPONSE);
+        partnerRepo.updateStateByConnectionId(p1CId, ConnectionState.PING_NO_RESPONSE);
 
         Optional<Partner> p1 = partnerRepo.findByConnectionId(p1CId);
         assertTrue(p1.isPresent());
-        assertEquals(TrustPingState.PING_NO_RESPONSE, p1.get().getTrustPingState());
+        assertEquals(ConnectionState.PING_NO_RESPONSE, p1.get().getState());
 
         Optional<Partner> p2 = partnerRepo.findByConnectionId(p2Cid);
         assertTrue(p2.isPresent());
         assertEquals(ConnectionState.INIT, p2.get().getState());
-        assertEquals(TrustPingState.PING_RESPONSE, p2.get().getTrustPingState());
 
         Optional<Partner> p3 = partnerRepo.findByConnectionId(p3Cid);
         assertTrue(p3.isPresent());
         assertNull(p3.get().getState());
-        assertNull(p3.get().getTrustPingState());
+        assertNull(p3.get().getState());
     }
 
     @Test
@@ -163,11 +160,11 @@ class PartnerRepositoryTest {
                 .build());
 
         Instant now = Instant.now().truncatedTo(ChronoUnit.MILLIS);
-        partnerRepo.updateStateAndLastSeenByConnectionId(p1CId, TrustPingState.PING_RESPONSE, now);
+        partnerRepo.updateStateAndLastSeenByConnectionId(p1CId, ConnectionState.PING_RESPONSE, now);
 
         Optional<Partner> p1 = partnerRepo.findByConnectionId(p1CId);
         assertTrue(p1.isPresent());
-        assertEquals(TrustPingState.PING_RESPONSE, p1.get().getTrustPingState());
+        assertEquals(ConnectionState.PING_RESPONSE, p1.get().getState());
         assertEquals(now, p1.get().getLastSeen());
 
         Optional<Partner> p2 = partnerRepo.findByConnectionId(p2Cid);
