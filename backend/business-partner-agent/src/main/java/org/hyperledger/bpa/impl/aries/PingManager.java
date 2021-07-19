@@ -27,6 +27,7 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.message.PingRequest;
+import org.hyperledger.bpa.api.aries.TrustPingState;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
@@ -46,7 +47,7 @@ import java.util.stream.StreamSupport;
 public class PingManager {
 
     final static List<ConnectionState> statesToFilter = List.of(
-            ConnectionState.ACTIVE, ConnectionState.COMPLETED, ConnectionState.ABANDONED);
+            ConnectionState.ACTIVE, ConnectionState.COMPLETED);
 
     @Inject
     AriesClient aries;
@@ -77,7 +78,7 @@ public class PingManager {
     public void checkConnections() {
         try {
             List<String> connectionsToPing = repo
-                    .findByStateInAndTrustPingTrue(statesToFilter)
+                    .findByStateInAndTrustPingTrueAndAriesSupportTrue(statesToFilter)
                     .stream().map(Partner::getConnectionId).collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(connectionsToPing)) {
                 if (!firstRun) {
@@ -95,12 +96,12 @@ public class PingManager {
 
     private void setNewState() {
         sent.forEach((k, v) -> {
-            ConnectionState state;
+            TrustPingState state;
             if (received.containsKey(k)) {
-                state = ConnectionState.ACTIVE;
+                state = TrustPingState.PING_RESPONSE;
                 repo.updateStateAndLastSeenByConnectionId(v, state, Instant.now());
             } else {
-                state = ConnectionState.ABANDONED;
+                state = TrustPingState.PING_NO_RESPONSE;
                 repo.updateStateByConnectionId(v, state);
             }
         });

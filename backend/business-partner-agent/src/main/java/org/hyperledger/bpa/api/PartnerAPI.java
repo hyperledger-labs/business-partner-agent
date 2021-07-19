@@ -26,6 +26,7 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.resolver.DIDDocument;
+import org.hyperledger.bpa.api.aries.TrustPingState;
 import org.hyperledger.bpa.model.Partner;
 
 import java.util.List;
@@ -41,6 +42,8 @@ public class PartnerAPI {
     private Long createdAt;
     private Long updatedAt;
     private Long lastSeen;
+    private Boolean trustPing;
+    private TrustPingState trustPingState;
     private Boolean valid;
     private Boolean ariesSupport;
     private Boolean incoming;
@@ -87,6 +90,8 @@ public class PartnerAPI {
                 .setValid(from.getValid())
                 .setAriesSupport(from.getAriesSupport())
                 .setState(from.getState())
+                .setTrustPing(from.getTrustPing())
+                .setTrustPingState(from.getTrustPingState())
                 .setAlias(from.getAlias())
                 .setLabel(from.getLabel())
                 .setDid(from.getDid())
