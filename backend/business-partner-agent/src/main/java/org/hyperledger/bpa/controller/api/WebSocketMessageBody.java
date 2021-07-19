@@ -65,16 +65,6 @@ public class WebSocketMessageBody {
         COMPLETED
     }
 
-    public static WebSocketMessageBody partnerConnectionRequest(PartnerAPI partner) {
-        return WebSocketMessageBody.of(WebSocketMessage
-                .builder()
-                .type(WebSocketMessageType.CONNECTION_REQUEST)
-                .state(WebSocketMessageState.RECEIVED)
-                .linkId(partner.getId())
-                .info(partner)
-                .build());
-    }
-
     public static WebSocketMessageBody partnerReceived(PartnerAPI partner) {
         return WebSocketMessageBody.of(WebSocketMessage
                 .builder()

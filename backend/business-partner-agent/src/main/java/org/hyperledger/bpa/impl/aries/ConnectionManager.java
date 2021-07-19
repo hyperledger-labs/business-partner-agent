@@ -34,7 +34,6 @@ import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
-import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
@@ -226,21 +225,7 @@ public class ConnectionManager {
         // only incoming connections in state request
         if (ConnectionState.REQUEST.equals(record.getState())) {
             didResolver.lookupIncoming(p);
-            sendConnectionEvent(record, conv.toAPIObject(p));
         }
-    }
-
-    private void sendConnectionEvent(@NonNull ConnectionRecord record, @NonNull PartnerAPI p) {
-        // TODO both or either?
-        messageService.sendMessage(WebSocketMessageBody.partnerReceived(p));
-        if (isConnectionRequest(record)) {
-            messageService.sendMessage(WebSocketMessageBody.partnerConnectionRequest(p));
-        }
-    }
-
-    private boolean isConnectionRequest(ConnectionRecord connection) {
-        return ConnectionAcceptance.MANUAL.equals(connection.getAccept())
-                && ConnectionState.REQUEST.equals(connection.getState());
     }
 
     public void removeConnection(String connectionId) {
