@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
 import org.hyperledger.bpa.model.BPARestrictions;
 import org.hyperledger.bpa.model.BPASchema;
@@ -59,6 +60,9 @@ public class RestrictionsManager {
 
     @Inject
     BPASchemaRepository schemaRepo;
+
+    @Inject
+    BPAMessageSource.DefaultMessageSource message;
 
     public Optional<TrustedIssuer> addRestriction(
             @NonNull UUID sId, @NonNull String issuerDid, @Nullable String label) {
@@ -100,8 +104,11 @@ public class RestrictionsManager {
                         log.error("aca-py not available", e);
                     } catch (AriesException e) {
                         if (e.getCode() == 404) {
-                            log.warn("Did: {} is not on the ledger", issuerDid);
+                            String msg = message.getMessage("api.schema.restriction.issuer.not.found",
+                                    Map.of("did", issuerDid));
+                            throw new WrongApiUsageException(msg);
                         }
+                        throw new WrongApiUsageException(e.getMessage());
                     }
                 }
             });
