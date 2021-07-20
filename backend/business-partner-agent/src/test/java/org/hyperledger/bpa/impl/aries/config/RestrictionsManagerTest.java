@@ -68,9 +68,8 @@ public class RestrictionsManagerTest {
                 .seqNo(571)
                 .build());
 
-        Assertions.assertThrows(WrongApiUsageException.class, () -> {
-            mgmt.addRestriction(dbSchema.getId(), "5mwQSWnRePrZ3oF67C4Kqe", null);
-        });
+        Assertions.assertThrows(WrongApiUsageException.class, () ->
+                mgmt.addRestriction(dbSchema.getId(), "5mwQSWnRePrZ3oF67C4Kqe", null));
     }
 
     @Test

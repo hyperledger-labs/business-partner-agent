@@ -56,14 +56,15 @@ class PartnerRepositoryTest {
                 .save(Partner.builder().did("dummy").alias("alias").ariesSupport(Boolean.FALSE).build());
         assertEquals("alias", dbP.getAlias());
 
-        int uCount = partnerRepo.updateAlias(UUID.fromString(dbP.getId().toString()), "newAlias");
+        int uCount = partnerRepo.updateAlias(UUID.fromString(dbP.getId().toString()), "newAlias", Boolean.TRUE);
         assertEquals(1, uCount);
 
         Optional<Partner> updatedP = partnerRepo.findByDid("dummy");
         assertTrue(updatedP.isPresent());
         assertEquals("newAlias", updatedP.get().getAlias());
+        assertEquals(Boolean.TRUE, updatedP.get().getTrustPing());
 
-        int nonExistingP = partnerRepo.updateAlias(UUID.randomUUID(), "dummy");
+        int nonExistingP = partnerRepo.updateAlias(UUID.randomUUID(), "dummy", Boolean.TRUE);
         assertEquals(0, nonExistingP);
     }
 

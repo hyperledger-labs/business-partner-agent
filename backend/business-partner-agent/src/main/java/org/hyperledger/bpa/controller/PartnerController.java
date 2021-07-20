@@ -116,7 +116,7 @@ public class PartnerController {
     public HttpResponse<PartnerAPI> updatePartner(
             @PathVariable String id,
             @Body UpdatePartnerRequest update) {
-        Optional<PartnerAPI> partner = pm.updatePartner(UUID.fromString(id), update.getAlias(), update.getTag());
+        Optional<PartnerAPI> partner = pm.updatePartner(UUID.fromString(id), update);
         if (partner.isPresent()) {
             return HttpResponse.ok(partner.get());
         }

@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import org.hyperledger.bpa.controller.api.partner.UpdatePartnerRequest;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.Tag;
 import org.hyperledger.bpa.repository.PartnerRepository;
@@ -62,28 +63,28 @@ public class PartnerManagerTest {
 
         Partner partner = partnerRepo.save(buildPartnerWithoutTag().build());
 
-        System.out.println(partnerManager.updatePartner(partner.getId(), null, List.of(t1)));
+        partnerManager.updatePartner(partner.getId(), UpdatePartnerRequest.builder().tag(List.of(t1)).build());
         Assertions.assertEquals(3, tagRepo.count());
         Assertions.assertEquals(1, partnerRepo.count());
         checkTagOnPartner(partner.getId(), "tag1");
 
-        partnerManager.updatePartner(partner.getId(), null, List.of(t1, t2));
+        partnerManager.updatePartner(partner.getId(), UpdatePartnerRequest.builder().tag(List.of(t1, t2)).build());
         Assertions.assertEquals(3, tagRepo.count());
         checkTagOnPartner(partner.getId(), "tag1", "tag2");
 
-        partnerManager.updatePartner(partner.getId(), null, List.of(t1, t3));
+        partnerManager.updatePartner(partner.getId(), UpdatePartnerRequest.builder().tag(List.of(t1, t3)).build());
         Assertions.assertEquals(3, tagRepo.count());
         checkTagOnPartner(partner.getId(), "tag1", "tag3");
 
-        partnerManager.updatePartner(partner.getId(), null, List.of(t2, t3));
+        partnerManager.updatePartner(partner.getId(), UpdatePartnerRequest.builder().tag(List.of(t2, t3)).build());
         Assertions.assertEquals(3, tagRepo.count());
         checkTagOnPartner(partner.getId(), "tag2", "tag3");
 
-        partnerManager.updatePartner(partner.getId(), null, List.of(t1));
+        partnerManager.updatePartner(partner.getId(), UpdatePartnerRequest.builder().tag(List.of(t1)).build());
         Assertions.assertEquals(3, tagRepo.count());
         checkTagOnPartner(partner.getId(), "tag1");
 
-        partnerManager.updatePartner(partner.getId(), null, List.of(t4));
+        partnerManager.updatePartner(partner.getId(), UpdatePartnerRequest.builder().tag(List.of(t4)).build());
         Assertions.assertEquals(4, tagRepo.count());
         checkTagOnPartner(partner.getId(), "tag4");
 
@@ -91,7 +92,7 @@ public class PartnerManagerTest {
         Assertions.assertTrue(dbTag2.isPresent());
         Assertions.assertEquals(0, dbTag2.get().getPartners().size());
 
-        partnerManager.updatePartner(partner.getId(), null, null);
+        partnerManager.updatePartner(partner.getId(), UpdatePartnerRequest.builder().build());
         Assertions.assertEquals(4, tagRepo.count());
         Optional<Tag> dbTag1 = tagRepo.findById(t1.getId());
         Assertions.assertTrue(dbTag1.isPresent());

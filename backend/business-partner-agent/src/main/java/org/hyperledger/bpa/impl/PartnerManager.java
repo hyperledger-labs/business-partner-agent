@@ -27,6 +27,7 @@ import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.controller.api.partner.AddPartnerRequest;
+import org.hyperledger.bpa.controller.api.partner.UpdatePartnerRequest;
 import org.hyperledger.bpa.core.RegisteredWebhook.WebhookEventType;
 import org.hyperledger.bpa.impl.activity.PartnerLookup;
 import org.hyperledger.bpa.impl.aries.ConnectionManager;
@@ -124,17 +125,19 @@ public class PartnerManager {
         return apiPartner;
     }
 
-    public Optional<PartnerAPI> updatePartner(@NonNull UUID id, @Nullable String alias, @Nullable List<Tag> tags) {
+    public Optional<PartnerAPI> updatePartner(@NonNull UUID id, @NonNull UpdatePartnerRequest req) {
         Optional<PartnerAPI> result = Optional.empty();
         final Optional<Partner> dbP = repo.findById(id);
         if (dbP.isPresent()) {
             Partner p = dbP.get();
-            p.setTags(tags != null ? new HashSet<>(tags) : null);
-            p.setAlias(alias);
-            tagRepo.updateAllPartnerToTagMappings(id, tags);
-            repo.updateAlias(id, alias);
-            if (StringUtils.isNotBlank(alias)) {
-                myCredRepo.updateByConnectionId(dbP.get().getConnectionId(), dbP.get().getConnectionId(), alias);
+            p.setTags(req.getTag() != null ? new HashSet<>(req.getTag()) : null);
+            p.setAlias(req.getAlias());
+            p.setTrustPing(req.getTrustPing());
+            tagRepo.updateAllPartnerToTagMappings(id, req.getTag());
+            repo.updateAlias(id, req.getAlias(), req.getTrustPing());
+            if (StringUtils.isNotBlank(req.getAlias())) {
+                myCredRepo.updateByConnectionId(
+                        dbP.get().getConnectionId(), dbP.get().getConnectionId(), req.getAlias());
             }
             result = Optional.of(converter.toAPIObject(p));
         }

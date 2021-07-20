@@ -52,7 +52,7 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     void updateState(@Id UUID id, ConnectionState state);
 
-    int updateAlias(@Id UUID id, @Nullable String alias);
+    int updateAlias(@Id UUID id, @Nullable String alias, @Nullable Boolean trustPing);
 
     int updateDid(@Id UUID id, String did);
 
