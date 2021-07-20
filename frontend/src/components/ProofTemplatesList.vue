@@ -25,7 +25,7 @@ create new ones
     >
     </v-data-table>
     <v-dialog v-model="dialog" persistent max-width="800px">
-      <ViewProofTemplate
+      <ProofTemplateView
         :dialog="dialog"
         :proofTemplate="proofTemplate"
         @closed="onClosed"
@@ -37,7 +37,7 @@ create new ones
 </template>
 <script>
 import store from "@/store";
-import ViewProofTemplate from "@/components/ViewProofTemplate";
+import ProofTemplateView from "@/components/ProofTemplateView";
 export default {
   props: {
     headers: {
@@ -91,7 +91,7 @@ export default {
     },
   },
   components: {
-    ViewProofTemplate,
+    ProofTemplateView,
   },
 };
 </script>
