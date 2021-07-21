@@ -3,7 +3,7 @@
 In this scenario you will setup a public profile and get your bank account verified by your bank.
 
 ## Prerequisites 
-We assume that you started the Business Partner Agent in Aries mode and your Agent is publicly available.
+We assume that you started the Business Partner Agent in Aries mode on the default ledger, and your Agent's endpoint is publicly available.
 
 ## Setup a public profile for your organization
 
@@ -26,7 +26,7 @@ This information is currently self-attested, but we like to have this informatio
 ## Add our bank as a business partner
 
 1. Go to `Business Partners` and click the `+ button`
-2. Paste `did:sov:EU27wcYdYTecuosWxzRc4C` (in case you're working with the [IDunion](https://idunion.org/) Test Network use `did:sov:4PDz9iiQqgVXhMA7nWqRzS`)in the DID Box. This is the DID of your bank
+2. Paste `did:sov:M6Mbe3qx7vB4wpZF4sBRjt` in the DID Box. This is the DID of your bank
 3. Click on `Lookup Partner`. You'll see the public profile of your partner.
 4. Click on `Add Partner`. Now you have a connection with your bank.
 
