@@ -3,6 +3,7 @@ import { CredentialTypes } from "../constants";
 import { EventBus, axios, apiBaseUrl } from "../main";
 import { getPartnerProfile } from "../utils/partnerUtils";
 import adminService from "@/services/adminService";
+import proofTemplateService from "@/services/proofTemplateService";
 
 export const loadSchemas = async ({ commit }) => {
   adminService
@@ -137,6 +138,22 @@ export const loadSettings = async ({ commit }) => {
           settings: settings,
         });
       }
+    })
+    .catch((e) => {
+      console.error(e);
+      EventBus.$emit("error", e);
+    });
+};
+
+export const loadProofTemplates = async ({ commit }) => {
+  proofTemplateService
+    .getProofTemplates()
+    .then((result) => {
+      let proofTemplates = result.data;
+      commit({
+        type: "setProofTemplates",
+        proofTemplates: proofTemplates,
+      });
     })
     .catch((e) => {
       console.error(e);

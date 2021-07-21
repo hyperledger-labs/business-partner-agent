@@ -70,6 +70,7 @@ export default new Vuetify({
       newMessage: mdiShapePolygonPlus,
       qrCode: mdiQrcode,
       credentialManagement: "fas fa-file-signature",
+      proofTemplates: "fas fa-clone",
       proofRequests: "fas fa-exchange-alt",
       connectionAlert: mdiAlertCircleOutline,
       connectionWaiting: mdiClockTimeThreeOutline,
