@@ -52,7 +52,7 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     void updateState(@Id UUID id, ConnectionState state);
 
-    int updateAlias(@Id UUID id, @Nullable String alias);
+    int updateAlias(@Id UUID id, @Nullable String alias, @Nullable Boolean trustPing);
 
     int updateDid(@Id UUID id, String did);
 
@@ -73,6 +73,10 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     @Query("SELECT distinct partner.* FROM partner,jsonb_to_recordset(partner.supported_credentials->'wrapped') as items(seqno text) where items.seqno = :seqNo")
     List<Partner> findBySupportedCredential(String seqNo);
+
+    List<Partner> findByStateInAndTrustPingTrueAndAriesSupportTrue(List<ConnectionState> state);
+
+    Optional<Partner> findByInvitationMsgId(String invitationMsgId);
 
     // The queries below are native queries to prevent changes to the lastupdated
     // timestamp. As this timestamp indicates user interaction, whereas the queries

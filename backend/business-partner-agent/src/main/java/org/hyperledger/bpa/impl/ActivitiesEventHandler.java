@@ -39,6 +39,7 @@ public class ActivitiesEventHandler extends EventHandler {
     @Inject
     ActivityLogConfig activityLogConfig;
 
+    @Override
     public void handleConnection(ConnectionRecord connection) {
         Boolean completed = null;
         boolean notify = true;
@@ -55,6 +56,7 @@ public class ActivitiesEventHandler extends EventHandler {
         }
     }
 
+    @Override
     public void handleProof(PresentationExchangeRecord proof) {
         Boolean completed = null;
         if (activityLogConfig.getPresentationExchangeStatesForTasks().contains(proof.getState())) {

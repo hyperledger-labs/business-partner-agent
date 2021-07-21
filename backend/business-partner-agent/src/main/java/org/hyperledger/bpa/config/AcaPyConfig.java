@@ -72,7 +72,7 @@ public class AcaPyConfig implements ApplicationEventListener<StartupTasks.AcaPyR
         }
     }
 
-    private static Boolean resolveFromConfig(@NonNull AdminConfig c, @NonNull String key)  {
+    private static Boolean resolveFromConfig(@NonNull AdminConfig c, @NonNull String key) {
         return Boolean.TRUE.equals(c.getUnwrapped(key, Boolean.class));
     }
 }

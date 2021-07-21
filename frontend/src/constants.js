@@ -6,7 +6,7 @@
  SPDX-License-Identifier: Apache-2.0
 */
 
-import i18n from '@/plugins/i18n';
+import i18n from "@/plugins/i18n";
 
 export const CredentialTypes = Object.freeze({
   PROFILE: {
@@ -88,68 +88,73 @@ export const PartnerStates = Object.freeze({
     value: "conn_request_received",
     label: "Connection request received",
   },
+  PING_RESPONSE: {
+    value: "ping_response",
+    label: "Trust Ping active",
+  },
+  PING_NO_RESPONSE: {
+    value: "ping_no_response",
+    label: "Trust Ping no response",
+  },
 });
 
 export const ActivityTypes = Object.freeze({
   CONNECTION_REQUEST: {
     value: "connection_request",
-    label: i18n.t('constants.activityTypes.connectionRequest'),
+    label: i18n.t("constants.activityTypes.connectionRequest"),
   },
   CREDENTIAL_OFFER: {
     value: "credential_offer",
-    label: i18n.t('constants.activityTypes.credentialOffer'),
+    label: i18n.t("constants.activityTypes.credentialOffer"),
   },
   PRESENTATION_EXCHANGE: {
     value: "presentation_exchange",
-    label: i18n.t('constants.activityTypes.presentationExchange'),
+    label: i18n.t("constants.activityTypes.presentationExchange"),
   },
 });
 
 export const ActivityStates = Object.freeze({
   CONNECTION_REQUEST_ACCEPTED: {
     value: "connection_request_accepted",
-    label: i18n.t('constants.activityStates.connectionRequest.accepted'),
+    label: i18n.t("constants.activityStates.connectionRequest.accepted"),
   },
   CONNECTION_REQUEST_RECEIVED: {
     value: "connection_request_received",
-    label: i18n.t('constants.activityStates.connectionRequest.received'),
+    label: i18n.t("constants.activityStates.connectionRequest.received"),
   },
   CONNECTION_REQUEST_SENT: {
     value: "connection_request_sent",
-    label: i18n.t('constants.activityStates.connectionRequest.sent'),
+    label: i18n.t("constants.activityStates.connectionRequest.sent"),
   },
   PRESENTATION_EXCHANGE_ACCEPTED: {
     value: "presentation_exchange_accepted",
-    label: i18n.t('constants.activityStates.presentationExchange.accepted'),
+    label: i18n.t("constants.activityStates.presentationExchange.accepted"),
   },
   PRESENTATION_EXCHANGE_RECEIVED: {
     value: "presentation_exchange_received",
-    label: i18n.t('constants.activityStates.presentationExchange.received'),
+    label: i18n.t("constants.activityStates.presentationExchange.received"),
   },
   PRESENTATION_EXCHANGE_SENT: {
     value: "presentation_exchange_sent",
-    label: i18n.t('constants.activityStates.presentationExchange.sent'),
+    label: i18n.t("constants.activityStates.presentationExchange.sent"),
   },
-
 });
 
 export const ActivityRoles = Object.freeze({
   CONNECTION_REQUEST_SENDER: {
     value: "connection_request_sender",
-    label: i18n.t('constants.activityRoles.connectionRequest.sender'),
+    label: i18n.t("constants.activityRoles.connectionRequest.sender"),
   },
   CONNECTION_REQUEST_RECIPIENT: {
     value: "connection_request_recipient",
-    label: i18n.t('constants.activityRoles.connectionRequest.recipient'),
+    label: i18n.t("constants.activityRoles.connectionRequest.recipient"),
   },
   PRESENTATION_EXCHANGE_PROVER: {
     value: "presentation_exchange_prover",
-    label: i18n.t('constants.activityRoles.presentationExchange.prover'),
+    label: i18n.t("constants.activityRoles.presentationExchange.prover"),
   },
   PRESENTATION_EXCHANGE_VERIFIER: {
     value: "presentation_exchange_verifier",
-    label: i18n.t('constants.activityRoles.presentationExchange.verifier'),
+    label: i18n.t("constants.activityRoles.presentationExchange.verifier"),
   },
-
 });
-

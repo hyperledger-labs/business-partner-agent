@@ -67,10 +67,9 @@ public class RestrictionsManagerTest {
                 .schemaId(schemaId)
                 .seqNo(571)
                 .build());
-        Optional<TrustedIssuer> restriction = mgmt
-                .addRestriction(dbSchema.getId(), "5mwQSWnRePrZ3oF67C4Kqe", null);
 
-        Assertions.assertTrue(restriction.isEmpty());
+        Assertions.assertThrows(WrongApiUsageException.class, () ->
+                mgmt.addRestriction(dbSchema.getId(), "5mwQSWnRePrZ3oF67C4Kqe", null));
     }
 
     @Test
