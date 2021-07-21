@@ -17,30 +17,33 @@
  */
 package org.hyperledger.bpa.impl.aries;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.acy_py.generated.model.InvitationCreateRequest;
+import org.hyperledger.acy_py.generated.model.InvitationRecord;
 import org.hyperledger.acy_py.generated.model.SendMessage;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.*;
 import org.hyperledger.aries.api.did_exchange.DidExchangeCreateRequestFilter;
 import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
-import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
+import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
-import org.hyperledger.bpa.model.Tag;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
@@ -48,7 +51,6 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -59,7 +61,6 @@ import java.util.stream.Collectors;
 public class ConnectionManager {
 
     private static final String UNKNOWN_DID = "unknown";
-    private static final String CONNECTION_INVITATION = "Invitation";
 
     @Value("${bpa.did.prefix}")
     String didPrefix;
@@ -86,41 +87,47 @@ public class ConnectionManager {
     DidResolver didResolver;
 
     @Inject
+    ObjectMapper mapper;
+
+    @Inject
     BPAMessageSource.DefaultMessageSource messageSource;
 
     /**
      * Creates a connection invitation to be used within a barcode
      *
-     * @param alias optional connection alias
-     * @param tags  tags associated with this connection/invitation
+     * @param req {@link CreatePartnerInvitationRequest}
+     * @return {@link CreateInvitationResponse}
      */
-    public Optional<CreateInvitationResponse> createConnectionInvitation(
-            @Nullable String alias, @Nullable List<Tag> tags) {
-        Optional<CreateInvitationResponse> result = Optional.empty();
+    public JsonNode createConnectionInvitation(@NonNull CreatePartnerInvitationRequest req) {
+        Object invitation = null;
+        String connId = null;
+        String invMsgId = null;
         try {
-            String aliasWithFallback = StringUtils.isNotEmpty(alias) ? alias
-                    : CONNECTION_INVITATION + TimeUtil.currentTimeFormatted(Instant.now());
-            result = ac.connectionsCreateInvitation(
-                    CreateInvitationRequest.builder()
-                            .build(),
-                    CreateInvitationParams.builder()
-                            .alias(aliasWithFallback)
-                            .autoAccept(Boolean.TRUE)
-                            .build());
-            result.ifPresent(r -> partnerRepo.save(Partner
+            if (req.getUseOutOfBand()) {
+                InvitationRecord oobInvitation = createOOBInvitation(req.getAlias());
+                invitation = oobInvitation;
+                invMsgId = oobInvitation.getInviMsgId();
+            } else {
+                CreateInvitationResponse conInvite = createInvitation(req.getAlias());
+                invitation = conInvite;
+                connId = conInvite.getConnectionId();
+            }
+            partnerRepo.save(Partner
                     .builder()
                     .ariesSupport(Boolean.TRUE)
-                    .alias(aliasWithFallback)
-                    .connectionId(r.getConnectionId())
+                    .alias(StringUtils.trimToNull(req.getAlias()))
+                    .connectionId(connId)
+                    .invitationMsgId(invMsgId)
                     .did(didPrefix + UNKNOWN_DID)
                     .state(ConnectionState.INVITATION)
                     .incoming(Boolean.TRUE)
-                    .tags(tags != null ? new HashSet<>(tags) : null)
-                    .build()));
+                    .tags(req.getTag() != null ? new HashSet<>(req.getTag()) : null)
+                    .trustPing(req.getTrustPing() != null ? req.getTrustPing() : Boolean.FALSE)
+                    .build());
         } catch (IOException e) {
             log.error("Could not create aries connection invitation", e);
         }
-        return result;
+        return mapper.valueToTree(invitation);
     }
 
     /**
@@ -155,7 +162,7 @@ public class ConnectionManager {
     }
 
     // connection that originated from this agent
-    public synchronized void handleOutgoingConnectionEvent(ConnectionRecord record) {
+    public void handleOutgoingConnectionEvent(ConnectionRecord record) {
         partnerRepo.findByConnectionId(record.getConnectionId()).ifPresent(
                 dbP -> {
                     if (StringUtils.isEmpty(dbP.getLabel())) {
@@ -169,11 +176,11 @@ public class ConnectionManager {
     }
 
     // handles invitations and incoming connection events
-    public synchronized void handleIncomingConnectionEvent(ConnectionRecord record) {
+    public void handleIncomingConnectionEvent(ConnectionRecord record) {
         partnerRepo.findByConnectionId(record.getConnectionId()).ifPresentOrElse(
                 dbP -> {
-                    if (dbP.getAlias() != null && dbP.getAlias().startsWith(CONNECTION_INVITATION)) {
-                        dbP.setAlias(record.getTheirLabel());
+                    if (StringUtils.isEmpty(dbP.getLabel())) {
+                        dbP.setLabel(record.getTheirLabel());
                     }
                     if (StringUtils.isEmpty(dbP.getDid()) || dbP.getDid().endsWith(UNKNOWN_DID)) {
                         dbP.setDid(didPrefix + record.getTheirDid());
@@ -193,31 +200,34 @@ public class ConnectionManager {
                             .state(record.getState())
                             .label(record.getTheirLabel())
                             .incoming(Boolean.TRUE)
+                            .trustPing(Boolean.TRUE)
                             .build();
                     p = partnerRepo.save(p);
                     resolveAndSend(record, p);
                 });
     }
 
+    public void handleOOBInvitation(ConnectionRecord record) {
+        partnerRepo.findByInvitationMsgId(record.getInvitationMsgId()).ifPresent(dbP -> {
+            if (StringUtils.isEmpty(dbP.getConnectionId())) {
+                dbP.setConnectionId(record.getConnectionId());
+                dbP.setDid(didPrefix + record.getTheirDid());
+                dbP.setState(record.getState());
+                dbP.setLabel(record.getTheirLabel());
+                partnerRepo.update(dbP);
+            } else {
+                partnerRepo.updateState(dbP.getId(), record.getState());
+            }
+            resolveAndSend(record, dbP);
+        });
+    }
+
     private void resolveAndSend(ConnectionRecord record, Partner p) {
         // only incoming connections in state request
         if (ConnectionState.REQUEST.equals(record.getState())) {
             didResolver.lookupIncoming(p);
-            sendConnectionEvent(record, conv.toAPIObject(p));
+            messageService.sendMessage(WebSocketMessageBody.partnerReceived(conv.toAPIObject(p)));
         }
-    }
-
-    private void sendConnectionEvent(@NonNull ConnectionRecord record, @NonNull PartnerAPI p) {
-        // TODO both or either?
-        messageService.sendMessage(WebSocketMessageBody.partnerReceived(p));
-        if (isConnectionRequest(record)) {
-            messageService.sendMessage(WebSocketMessageBody.partnerConnectionRequest(p));
-        }
-    }
-
-    private boolean isConnectionRequest(ConnectionRecord connection) {
-        return ConnectionAcceptance.MANUAL.equals(connection.getAccept())
-                && ConnectionState.REQUEST.equals(connection.getState());
     }
 
     public void removeConnection(String connectionId) {
@@ -259,6 +269,7 @@ public class ConnectionManager {
         }
     }
 
+
     public void sendMessage(String connectionId, String content) {
         if (StringUtils.isNotEmpty(content)) {
             try {
@@ -268,5 +279,29 @@ public class ConnectionManager {
                 log.error("Could not send message to connection: {}", connectionId, e);
             }
         }
+    }
+
+    private InvitationRecord createOOBInvitation(@Nullable String alias) throws IOException {
+        return ac.outOfBandCreateInvitation(
+                InvitationCreateRequest.builder()
+                        .alias(alias)
+                        .usePublicDid(Boolean.TRUE)
+                        .handshakeProtocols(List.of(ConnectionRecord.ConnectionProtocol.DID_EXCHANGE_V1.getValue()))
+                        .build(),
+                CreateInvitationFilter.builder()
+                        .autoAccept(Boolean.TRUE)
+                        .build())
+                .orElseThrow();
+    }
+
+    private CreateInvitationResponse createInvitation(@Nullable String alias) throws IOException {
+        return ac.connectionsCreateInvitation(
+                CreateInvitationRequest.builder()
+                        .build(),
+                CreateInvitationParams.builder()
+                        .alias(alias)
+                        .autoAccept(Boolean.TRUE)
+                        .build())
+                .orElseThrow();
     }
 }

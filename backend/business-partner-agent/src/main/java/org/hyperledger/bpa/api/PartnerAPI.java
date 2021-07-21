@@ -41,6 +41,7 @@ public class PartnerAPI {
     private Long createdAt;
     private Long updatedAt;
     private Long lastSeen;
+    private Boolean trustPing;
     private Boolean valid;
     private Boolean ariesSupport;
     private Boolean incoming;
@@ -87,6 +88,7 @@ public class PartnerAPI {
                 .setValid(from.getValid())
                 .setAriesSupport(from.getAriesSupport())
                 .setState(from.getState())
+                .setTrustPing(from.getTrustPing())
                 .setAlias(from.getAlias())
                 .setLabel(from.getLabel())
                 .setDid(from.getDid())

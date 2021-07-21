@@ -135,12 +135,6 @@ public class ProofEventHandler {
                             final PartnerProof pp = defaultProof(p.getId(), proof)
                                     .setProofRequest(proof.getPresentationRequest());
                             pProofRepo.save(pp);
-                            if (proof.getAutoPresent() == null || !proof.getAutoPresent()) {
-                                proofManager.sendMessage(
-                                        WebSocketMessageBody.WebSocketMessageState.RECEIVED,
-                                        WebSocketMessageBody.WebSocketMessageType.PROOFREQUEST,
-                                        pp);
-                            }
                         }));
 
     }
