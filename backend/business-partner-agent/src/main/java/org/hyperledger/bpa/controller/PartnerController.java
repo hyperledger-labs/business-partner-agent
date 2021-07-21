@@ -379,7 +379,7 @@ public class PartnerController {
      * @return HTTP status
      */
     @Post("/{id}/message")
-    public HttpResponse<Void> requestCredential(
+    public HttpResponse<Void> sendMessage(
             @PathVariable String id,
             @Body SendMessageRequest msg) {
         pm.sendMessage(UUID.fromString(id), msg.getContent());

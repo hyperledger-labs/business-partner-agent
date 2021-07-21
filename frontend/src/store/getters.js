@@ -23,6 +23,10 @@ export const getPartners = (state) => {
   return state.partners;
 };
 
+export const partnersCount = (state) => {
+  return state.partners ? state.partners.length : 0;
+};
+
 export const getPartnerByDID = (state) => (did) => {
   return state.partners.find((partner) => {
     return partner.did === did;

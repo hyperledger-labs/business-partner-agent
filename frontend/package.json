@@ -7,7 +7,7 @@
     "test:unit": "vue-cli-service test:unit",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "license-check": "license-checker --production --json --onlyAllow 'MIT;Python-2.0;Apache-2.0;BSD-2-Clause;BSD-3-Clause;LGPL-3.0;ISC' --excludePackages 'company-agent-frontend@0.1.0'",
+    "license-check": "license-checker --production --json --onlyAllow 'MIT;Python-2.0;Apache-2.0;BSD-2-Clause;BSD-3-Clause;LGPL-3.0;ISC;' --excludePackages 'company-agent-frontend@0.1.0'",
     "license": "generate-attribution -o ./licenses",
     "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'"
   },
@@ -20,7 +20,7 @@
     "moment": "^2.29.1",
     "qrcode.vue": "^1.7.0",
     "vue": "^2.6.12",
-    "vue-advanced-chat": "^0.8.6",
+    "vue-advanced-chat": "^0.8.7",
     "vue-i18n": "^8.24.5",
     "vue-json-pretty": "^1.7.0",
     "vue-markdown-render": "^1.0.2",

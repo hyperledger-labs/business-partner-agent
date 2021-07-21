@@ -213,15 +213,24 @@
         <v-btn
             color="primary"
             fab
-            absolute
-            large
             dark
             bottom
             right
-            @click="chatWindow = !chatWindow"
+            fixed
+            @click="showChatWindow"
         >
           <v-icon v-if="chatWindow">$vuetify.icons.close</v-icon>
-          <v-icon v-else>$vuetify.icons.chat</v-icon>
+          <v-badge v-else
+              overlap
+              bordered
+              :content="incomingMessageCount"
+              :value="incomingMessageCount"
+              color="red"
+              offset-x="10"
+              offset-y="10"
+          >
+            <v-icon>$vuetify.icons.chat</v-icon>
+          </v-badge>
         </v-btn>
     </v-main>
 
@@ -263,12 +272,12 @@
       </v-card>
     </v-dialog>
 
-    <div class="sc-chat-window" :class="{opened: chatWindow, closed: !chatWindow}">
+    <div class="chat-window" :class="{opened: chatWindow, closed: !chatWindow}">
      <BasicMessages />
     </div>
 
-    <v-footer app>
-      <v-col v-if="showFooter" cols="12" class="text-center">
+    <v-footer v-if="showFooter" app>
+      <v-col cols="12" class="text-center">
         <span v-if="imprintUrl" class="mr-4 subtitle-2"
           ><a :href="imprintUrl">{{
             $t("app.footer.imprintUrl.text")
@@ -378,6 +387,9 @@ export default {
     notificationsCount() {
       return this.$store.getters.notificationsCount;
     },
+    incomingMessageCount() {
+      return this.$store.getters.incomingMessageCount;
+    },
     getAgentName() {
       let bpaName = "Business Partner Agent";
       const nameSettingValue = this.$store.getters.getSettingByKey("agentName");
@@ -462,6 +474,12 @@ export default {
       // logout must have get-allowed, get the browser to do all the logout redirects...
       location.href = `${this.$apiBaseUrl}/logout`;
     },
+    showChatWindow() {
+      // for now, reset the count if we open (we will look for new messages) or close (we already saw messages)
+      this.$store.commit("incomingMessagesSeen");
+      // now, open of close it
+      this.chatWindow = !this.chatWindow;
+    }
   },
 };
 </script>
@@ -471,30 +489,5 @@ export default {
 }
 a {
   text-decoration: none;
-}
-
- .sc-chat-window {
-   width: 370px;
-   height: calc(100% - 120px);
-   max-height: 590px;
-   position: fixed;
-   right: 25px;
-   bottom: 100px;
-   box-sizing: border-box;
-   box-shadow: 0px 7px 40px 2px rgba(148, 149, 150, 0.1);
-   background: white;
-   display: flex;
-   flex-direction: column;
-   justify-content: space-between;
-   border-radius: 10px;
-   animation: fadeIn;
-   animation-duration: 0.3s;
-   animation-timing-function: ease-in-out;
- }
-
-.sc-chat-window.closed {
-  opacity: 0;
-  display: none;
-  bottom: 90px;
 }
 </style>

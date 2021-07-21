@@ -1,4 +1,5 @@
 import Vue from "vue";
+import { CHAT_CURRENT_USERID } from "@/constants";
 
 const state = {
   newPartners: {},
@@ -7,6 +8,7 @@ const state = {
   newPresentations: {},
   notifications: 0,
   messages: [],
+  incomingMessageCount: 0,
 
   socket: {
     isConnected: false,
@@ -39,6 +41,12 @@ const getters = {
   },
   getPartnerMessages: (state) => {
     return state.messages;
+  },
+  messagesCount: (state) => {
+    return state.messages.length;
+  },
+  incomingMessageCount: (state) => {
+    return state.incomingMessageCount;
   }
 };
 
@@ -94,8 +102,12 @@ const mutations = {
   message(state, payload) {
     let basicMsg = payload.message.info;
     let msgs = state.messages ? state.messages : [];
+    basicMsg.time = new Date().getTime(); // use for sorting
     msgs.push(basicMsg);
     state.messages = msgs;
+    if (basicMsg.partnerId !== CHAT_CURRENT_USERID) {
+      state.incomingMessageCount = state.incomingMessageCount + 1;
+    }
   },
   partnerSeen(state, payload) {
     let id = payload.id;
@@ -133,6 +145,9 @@ const mutations = {
     // once they go to the notification screen, they see them all...
     state.notifications = 0;
   },
+  incomingMessagesSeen() {
+    state.incomingMessageCount = 0;
+  }
 };
 
 const actions = {};
