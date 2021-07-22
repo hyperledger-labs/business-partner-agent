@@ -105,4 +105,12 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
     public boolean hasEndorserRole() {
         return (getEndorserRole() != null && !getEndorserRole().trim().isEmpty());
     }
+
+    public boolean isEndorser() {
+        return (hasEndorserRole() && endorserRole.equalsIgnoreCase("Endorser"));
+    }
+
+    public boolean isAuthor() {
+        return (hasEndorserRole() && endorserRole.equalsIgnoreCase("Endorser"));
+    }
 }
