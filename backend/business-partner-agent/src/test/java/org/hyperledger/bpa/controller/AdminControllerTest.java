@@ -143,8 +143,7 @@ public class AdminControllerTest {
     @Test
     void testAddRestrictionToNonExistingSchema() {
         URI uri = UriBuilder.of("/{id}/trustedIssuer").expand(Map.of("id", UUID.randomUUID().toString()));
-        Assertions.assertThrows(HttpClientResponseException.class, () ->
-                addRestriction(uri, "something", null));
+        Assertions.assertThrows(HttpClientResponseException.class, () -> addRestriction(uri, "something", null));
     }
 
     private SchemaAPI getSchema(@NonNull UUID id) {
