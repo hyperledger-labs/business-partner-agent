@@ -8,6 +8,16 @@
             "mainClass": "org.hyperledger.bpa.Application",
             "projectName": "business-partner-agent",
             "vmArgs": "-Dmicronaut.environments=dev"
+        }, {
+            "type": "chrome",
+            "name": "Vue.js chrome",
+            "request": "launch", 
+            "url": "http://localhost:8081",
+            "webRoot": "${workspaceFolder}/frontend/src",
+            "breakOnLoad": true,
+            "sourceMapPathOverrides": {
+              "webpack:///src/*": "${webRoot}/*"
+            } 
         }
     ]
 }
