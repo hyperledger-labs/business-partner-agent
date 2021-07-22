@@ -31,11 +31,9 @@ import io.micronaut.core.annotation.Nullable;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
+import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
@@ -98,4 +96,7 @@ public class PartnerProof {
     @TypeDef(type = DataType.JSON)
     private PresentProofRequest.ProofRequest proofRequest;
 
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    private BPAProofTemplate proofTemplate;
 }

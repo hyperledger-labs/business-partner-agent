@@ -102,11 +102,11 @@ public class ProofManager {
         try {
             PresentProofRequest proofRequest = proofTemplateConversion.proofRequestViaVisitorFrom(partnerId,
                     proofTemplate);
-            // TODO link proofRequest with proofTemplate
+            // TODO the link from proofRequest the proofTemplate does not contain the proof request Non-Revocation value, if that was not part of the template and set during proof request creation.
             ac.presentProofSendRequest(proofRequest).ifPresent(
                     // using null for issuerId and schemaId because the template could have multiple
                     // of each.
-                    persistProof(partnerId, null, null));
+                    persistProof(partnerId, null, null, proofTemplate));
         } catch (IOException e) {
             throw new NetworkException(ACA_PY_ERROR_MSG, e);
         }
@@ -129,10 +129,10 @@ public class ProofManager {
                         .buildForAllAttributes(partner.getConnectionId(),
                                 schema.getAttrNames(), req.buildRestrictions());
                 ac.presentProofSendRequest(proofRequest).ifPresent(
-                        persistProof(partnerId, req.getFirstIssuerDid(), schema.getId()));
+                        persistProof(partnerId, req.getFirstIssuerDid(), schema.getId(), null));
             } else {
                 ac.presentProofSendRequest(req.getRequestRaw().toString()).ifPresent(
-                        persistProof(partnerId, null, null));
+                        persistProof(partnerId, null, null, null));
             }
         } catch (IOException e) {
             throw new NetworkException(ACA_PY_ERROR_MSG, e);
@@ -140,7 +140,7 @@ public class ProofManager {
     }
 
     private Consumer<PresentationExchangeRecord> persistProof(@NonNull UUID partnerId, @Nullable String issuerId,
-            @Nullable String schemaId) {
+                                                              @Nullable String schemaId, @Nullable BPAProofTemplate proofTemplate) {
         return exchange -> {
             final PartnerProof pp = PartnerProof
                     .builder()
@@ -150,6 +150,7 @@ public class ProofManager {
                     .role(exchange.getRole())
                     .threadId(exchange.getThreadId())
                     .schemaId(schemaId)
+                    .proofTemplate(proofTemplate)
                     .issuer(issuerId)
                     .build();
             pProofRepo.save(pp);
@@ -300,7 +301,8 @@ public class ProofManager {
         messageService.sendMessage(WebSocketMessageBody.proof(state, type, toApiProof(pp)));
     }
 
-    private @Nullable String resolveIssuer(String credDefId) {
+    private @Nullable
+    String resolveIssuer(String credDefId) {
         String issuer = null;
         if (StringUtils.isNotEmpty(credDefId)) {
             issuer = didPrefix + AriesStringUtil.credDefIdGetDid(credDefId);

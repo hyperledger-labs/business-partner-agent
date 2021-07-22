@@ -40,6 +40,10 @@ class BPAProofTemplateRepositoryTest {
 
     @Inject
     BPAProofTemplateRepository repo;
+
+    @Inject
+    PartnerProofRepository proofRepository;
+
     @Inject
     SchemaService schemaService;
 
@@ -178,4 +182,52 @@ class BPAProofTemplateRepositoryTest {
         Instant secondCreatedAt = savedProofTemplate.get().getCreatedAt();
         assertEquals(firstCreatedAt, secondCreatedAt);
     }
+
+    @Test
+    void testThatDeletionIsConstrainedToUnusedTemplates() {
+        Mockito.when(schemaService.getSchemaFor("mySchemaId"))
+                .thenReturn(Optional.of(new BPASchema()));
+        Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
+                .thenReturn(Set.of("myAttribute"));
+        BPAProofTemplate.BPAProofTemplateBuilder proofTemplateBuilder = BPAProofTemplate.builder()
+                .name("myProofTemplate")
+                .attributeGroups(
+                        BPAAttributeGroups.builder()
+                                .attributeGroup(
+                                        BPAAttributeGroup.builder()
+                                                .schemaId("mySchemaId")
+                                                .attribute(
+                                                        BPAAttribute.builder()
+                                                                .name("myAttribute")
+                                                                .condition(
+                                                                        BPACondition.builder()
+                                                                                .value("113")
+                                                                                .operator(ValueOperators.LESS_THAN)
+                                                                                .build())
+                                                                .build())
+                                                .build())
+                                .build());
+        BPAProofTemplate proofTemplateToSave = proofTemplateBuilder
+                .build();
+
+        BPAProofTemplate savedTemplate = repo.save(proofTemplateToSave);
+        System.out.println(savedTemplate);
+        PartnerProof proof = proofRepository.save(PartnerProof.builder()
+                .partnerId(UUID.randomUUID())
+                .presentationExchangeId("presentationExchangeId")
+                .proofTemplate(savedTemplate)
+                .build());
+
+//        try {
+//            repo.deleteById(savedTemplate.getId());
+//            fail("Deleting a referenced proofTemplate should fail.");
+//        }catch (DataAccessException e){
+//            e.printStackTrace();
+//        }
+        proofRepository.deleteById(proof.getId());
+        assertTrue(proofRepository.findById(proof.getId()).isEmpty());
+        assertTrue(repo.findById(proofTemplateToSave.getId()).isPresent());
+
+    }
+
 }
