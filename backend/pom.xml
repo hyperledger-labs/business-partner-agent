@@ -86,6 +86,7 @@
     </pluginRepositories>
 
     <modules>
+        <module>acapy-java-client</module>
         <module>business-partner-agent-core</module>
         <module>business-partner-agent</module>
     </modules>
