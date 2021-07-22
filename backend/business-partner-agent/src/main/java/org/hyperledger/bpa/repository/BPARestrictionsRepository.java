@@ -31,9 +31,9 @@ import java.util.UUID;
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface BPARestrictionsRepository extends CrudRepository<BPARestrictions, UUID> {
 
-    void deleteBySchema(BPASchema schema);
-
     void updateLabel(@Id UUID id, @Nullable String label);
+
+    boolean existsByIssuerDid(String issuerDid);
 
     List<BPARestrictions> findBySchema(BPASchema schema);
 }

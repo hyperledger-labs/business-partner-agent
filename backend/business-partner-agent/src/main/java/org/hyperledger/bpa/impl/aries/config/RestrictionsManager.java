@@ -62,13 +62,17 @@ public class RestrictionsManager {
     BPASchemaRepository schemaRepo;
 
     @Inject
-    BPAMessageSource.DefaultMessageSource message;
+    BPAMessageSource.DefaultMessageSource msg;
 
     public Optional<TrustedIssuer> addRestriction(
             @NonNull UUID sId, @NonNull String issuerDid, @Nullable String label) {
-        Optional<BPASchema> dbSchema = schemaRepo.findById(sId);
-        if (dbSchema.isEmpty()) {
-            throw new WrongApiUsageException("Schema with id: " + sId + " does not exist in the db");
+        if (!schemaRepo.existsById(sId)) {
+            throw new WrongApiUsageException(msg.getMessage("api.schema.restriction.schema.not.found",
+                    Map.of("id", sId)));
+        }
+        if (repo.existsByIssuerDid(prefixIssuerDid(issuerDid))) {
+            throw new WrongApiUsageException(msg.getMessage("api.schema.restriction.already.configured",
+                    Map.of("did", issuerDid)));
         }
         return addRestriction(sId,
                 List.of(Map.of("issuerDid", issuerDid, "label", label != null ? label : "")));
@@ -87,7 +91,7 @@ public class RestrictionsManager {
                         ac.ledgerDidVerkey(issuerDid).ifPresent(verkey -> {
                             BPARestrictions def = BPARestrictions
                                     .builder()
-                                    .issuerDid(issuerDid.startsWith("did:") ? issuerDid : didPrefix + issuerDid)
+                                    .issuerDid(prefixIssuerDid(issuerDid))
                                     .label(c.get("label"))
                                     .schema(BPASchema.builder().id(schemaId).build())
                                     .build();
@@ -104,7 +108,7 @@ public class RestrictionsManager {
                         log.error("aca-py not available", e);
                     } catch (AriesException e) {
                         if (e.getCode() == 404) {
-                            String msg = message.getMessage("api.schema.restriction.issuer.not.found",
+                            String msg = this.msg.getMessage("api.schema.restriction.issuer.not.found",
                                     Map.of("did", issuerDid));
                             throw new WrongApiUsageException(msg);
                         }
@@ -126,6 +130,10 @@ public class RestrictionsManager {
 
     public Optional<BPARestrictions> findById(@NonNull UUID id) {
         return repo.findById(id);
+    }
+
+    private String prefixIssuerDid(@NonNull String issuerDid) {
+        return issuerDid.startsWith("did:") ? issuerDid : didPrefix + issuerDid;
     }
 
     @Data
