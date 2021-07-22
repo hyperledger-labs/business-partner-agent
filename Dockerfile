@@ -13,6 +13,7 @@ WORKDIR /home/maven
 
 # Copy Files
 COPY backend/pom.xml backend/formatter.xml ./
+COPY backend/acapy-java-client ./acapy-java-client
 COPY backend/business-partner-agent ./business-partner-agent
 COPY backend/business-partner-agent-core ./business-partner-agent-core
 # Copy Vue App
