@@ -275,7 +275,6 @@ import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import { CredentialTypes, PartnerStates } from "../constants";
 import {
   getPartnerProfile,
-  getPartnerName,
   getPartnerState,
 } from "@/utils/partnerUtils";
 import { EventBus } from "../main";
@@ -515,9 +514,6 @@ export default {
 
             this.partner.bpa_state = getPartnerState(this.partner);
 
-            // Hacky way to define a partner name
-            // Todo: Make this consistent. Probably in backend
-            this.partner.name = getPartnerName(this.partner);
             this.alias = this.partner.name;
             this.did = this.partner.did;
             this.isReady = true;
@@ -587,9 +583,6 @@ export default {
                 });
               }
 
-              // Hacky way to define a partner name
-              // Todo: Make this consistent. Probably in backend
-              this.partner.name = getPartnerName(this.partner);
               this.partner.bpa_state = getPartnerState(this.partner);
               this.alias = this.partner.name;
               this.did = this.partner.did;

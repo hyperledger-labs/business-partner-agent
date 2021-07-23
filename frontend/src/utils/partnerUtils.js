@@ -24,33 +24,6 @@ export const getPartnerProfile = (partner) => {
   return null;
 };
 
-export const getPartnerName = (partner) => {
-  if (typeof partner !== "object") {
-    return "";
-  } else if ({}.hasOwnProperty.call(partner, "alias")) {
-    return partner.alias;
-  } else if (
-    {}.hasOwnProperty.call(partner, "profile") &&
-    partner.profile !== null &&
-    {}.hasOwnProperty.call(partner.profile, "legalName")
-  ) {
-    return partner.profile.legalName;
-  } else {
-    const profile = getPartnerProfile(partner);
-    if (profile && {}.hasOwnProperty.call(profile, "legalName")) {
-      return profile.legalName;
-    } else if ({}.hasOwnProperty.call(partner, "label")) {
-      return partner.label;
-    } else {
-      if ({}.hasOwnProperty.call(partner, "label")) {
-        return partner.label;
-      } else {
-        return partner.did;
-      }
-    }
-  }
-};
-
 export const getPartnerState = (partner) => {
   if ({}.hasOwnProperty.call(partner, "state")) {
     if (partner.state === PartnerStates.REQUEST.value) {
