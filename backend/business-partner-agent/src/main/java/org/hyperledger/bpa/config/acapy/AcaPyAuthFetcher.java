@@ -76,6 +76,8 @@ public class AcaPyAuthFetcher implements AuthenticationFetcher {
     @NoArgsConstructor
     public static final class AcaPyAuthentication implements Authentication {
 
+        private static final long serialVersionUID = -2423706290718045174L;
+
         @NotNull
         @Override
         public Map<String, Object> getAttributes() {
