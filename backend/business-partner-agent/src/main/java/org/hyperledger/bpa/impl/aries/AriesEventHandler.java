@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.connection.ConnectionTheirRole;
+import org.hyperledger.aries.api.endorser.EndorseTransactionEvent;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
@@ -29,6 +30,7 @@ import org.hyperledger.aries.api.message.ProblemReport;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.impl.IssuerManager;
+import org.hyperledger.bpa.impl.TransactionManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -48,18 +50,22 @@ public class AriesEventHandler extends EventHandler {
 
     private final IssuerManager issuerMgr;
 
+    private final TransactionManager transactionMgr;
+
     @Inject
     public AriesEventHandler(
             ConnectionManager conMgmt,
             Optional<PingManager> pingMgmt,
             CredentialManager credMgmt,
             ProofEventHandler proofMgmt,
-            IssuerManager issuerMgr) {
+            IssuerManager issuerMgr,
+            TransactionManager transactionMgr) {
         this.conMgmt = conMgmt;
         this.pingMgmt = pingMgmt;
         this.credMgmt = credMgmt;
         this.proofMgmt = proofMgmt;
         this.issuerMgr = issuerMgr;
+        this.transactionMgr = transactionMgr;
     }
 
     @Override
@@ -103,6 +109,14 @@ public class AriesEventHandler extends EventHandler {
             synchronized (issuerMgr) {
                 issuerMgr.handleCredentialExchange(credential);
             }
+        }
+    }
+
+    @Override
+    public void handleEndorseTransaction(EndorseTransactionEvent transaction) {
+        log.debug("Endorse Transaction (override): {}", transaction);
+        synchronized (transactionMgr) {
+            transactionMgr.handleEndorserTransactionEvent(transaction);
         }
     }
 

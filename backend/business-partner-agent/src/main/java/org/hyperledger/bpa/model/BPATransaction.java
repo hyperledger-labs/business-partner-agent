@@ -64,12 +64,10 @@ public class BPATransaction {
     private TransactionState state;
 
     @Enumerated(EnumType.STRING)
+    @Nullable
     private TransactionType type;
 
     private Boolean endorserWriteTransaction;
-
-    @TypeDef(type = DataType.JSON)
-    private Map<String, Object> signatureRequest;
 
     @Nullable
     private Instant expiresAt;
