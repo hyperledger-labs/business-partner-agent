@@ -269,7 +269,6 @@ public class ConnectionManager {
         }
     }
 
-
     public void sendMessage(String connectionId, String content) {
         if (StringUtils.isNotEmpty(content)) {
             try {

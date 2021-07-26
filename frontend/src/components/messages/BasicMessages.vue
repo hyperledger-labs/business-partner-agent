@@ -94,25 +94,28 @@
         const partners = this.$store.getters.getPartners;
         for (let i = 0; i < partners.length; i++) {
           const p = partners[i];
-          const name = partnerUtils.getPartnerName(p);
-          // each room is for a single partner/connection
-          // so set the room id to the partner id.
-          // add users to represent the partner and us.
-          const room = {
-            roomId: p.id,
-            roomName: name,
-            users: [
-              {
-                _id: p.id,
-                username: name
-              },
-              {
-                _id: CHAT_CURRENT_USERID,
-                username: "Me"
-              }
+          // assume they have a connection id, but check to make sure this partner is ARIES
+          if (p.ariesSupport) {
+            const name = partnerUtils.getPartnerName(p);
+            // each room is for a single partner/connection
+            // so set the room id to the partner id.
+            // add users to represent the partner and us.
+            const room = {
+              roomId: p.id,
+              roomName: name,
+              users: [
+                {
+                  _id: p.id,
+                  username: name
+                },
+                {
+                  _id: CHAT_CURRENT_USERID,
+                  username: "Me"
+                }
               ]
-          };
-          _rooms.push(room);
+            };
+            _rooms.push(room);
+          }
         }
         _rooms.sort((a,b) => a.roomName.localeCompare(b.roomName))
         this.rooms = _rooms;
