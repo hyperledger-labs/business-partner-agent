@@ -28,9 +28,12 @@ import org.reactivestreams.Publisher;
 
 import javax.inject.Singleton;
 
+/**
+ * Backwards compatible AuthFetcher if security is set to true, but no properties are set.
+ */
 @Slf4j
 @Singleton
-@Requires(missingProperty = "bpa.webhook.apiKey")
+@Requires(missingProperty = "bpa.webhook.key")
 public class AcaPyAuthFetcherAllowAll implements AuthenticationFetcher {
 
     @Override
@@ -38,8 +41,9 @@ public class AcaPyAuthFetcherAllowAll implements AuthenticationFetcher {
         return Maybe.<Authentication>create(emitter -> {
             if (HttpMethod.POST.equals(request.getMethod())
                     && request.getPath().startsWith(AriesWebhookController.WEBHOOK_CONTROLLER_PATH)) {
-                log.debug("Handling aca-py webhook authentication");
+                log.trace("Handling aca-py webhook authentication");
                 emitter.onSuccess(new AcaPyAuthFetcher.AcaPyAuthentication());
+                return;
             }
             emitter.onComplete();
         }).toFlowable();

@@ -41,17 +41,20 @@ import java.util.Map;
  * http://localhost/hook/topic#123 The api key is then sent via the x-api-key
  * HTTP header. As this is not something micronaut handles out of the box, a
  * custom {@link AuthenticationFetcher} needs to be provided.
+ *
+ * The AuthFetcher becomes active if either the environment variable BPA_WEBHOOK_KEY
+ * or the system property bpy.webhook.key is set.
  */
 @Slf4j
 @Singleton
-@Requires(property = "bpa.webhook.apiKey")
+@Requires(property = "bpa.webhook.key")
 public class AcaPyAuthFetcher implements AuthenticationFetcher {
 
     private static final String X_API_KEY = "x-api-key";
 
     public static final String ROLE_ACA_PY = "ROLE_ACA_PY";
 
-    @Value("${bpa.webhook.apiKey}")
+    @Value("${bpa.webhook.key}")
     String apiKey;
 
     @Override
@@ -60,13 +63,13 @@ public class AcaPyAuthFetcher implements AuthenticationFetcher {
             if (HttpMethod.POST.equals(request.getMethod())
                     && request.getPath().startsWith(AriesWebhookController.WEBHOOK_CONTROLLER_PATH)) {
                 String apiKeyHeader = request.getHeaders().get(X_API_KEY);
-                log.debug("Handling aca-py webhook authentication");
+                log.trace("Handling aca-py webhook authentication");
                 if (StringUtils.isNotBlank(apiKeyHeader) && apiKey.equals(apiKeyHeader)) {
                     emitter.onSuccess(new AcaPyAuthentication());
-                    log.debug("aca-py webhook authentication success");
+                    log.trace("aca-py webhook authentication success");
                     return;
                 }
-                log.warn("aca-py webhook authentication failed: {}", apiKeyHeader);
+                log.error("aca-py webhook authentication failed: {}", apiKeyHeader);
             }
             emitter.onComplete();
         }).toFlowable();
