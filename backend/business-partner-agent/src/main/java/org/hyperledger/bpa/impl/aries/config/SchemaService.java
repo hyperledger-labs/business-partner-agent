@@ -129,7 +129,7 @@ public class SchemaService {
             if (ariesSchema.isPresent()) {
                 BPASchema dbS = BPASchema.builder()
                         .label(label)
-                        .schemaId(sId)
+                        .schemaId(ariesSchema.get().getId())
                         .schemaAttributeNames(new LinkedHashSet<>(ariesSchema.get().getAttrNames()))
                         .defaultAttributeName(defaultAttributeName)
                         .seqNo(ariesSchema.get().getSeqNo())
