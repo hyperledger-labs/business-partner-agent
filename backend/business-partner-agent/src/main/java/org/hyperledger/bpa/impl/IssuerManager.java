@@ -35,6 +35,7 @@ import org.hyperledger.aries.api.issue_credential_v1.V1CredentialProposalRequest
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.api.aries.TransactionAPI;
 import org.hyperledger.bpa.api.exception.IssuerException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
@@ -89,6 +90,22 @@ public class IssuerManager {
 
     public SchemaAPI createSchema(@NonNull String schemaName, @NonNull String schemaVersion,
             @NonNull List<String> attributes, @NonNull String schemaLabel, String defaultAttributeName) {
+        
+        // TODO if we are configured as an Author, re-route the schema create request to an endorser
+        if (config.hasEndorserRole() && config.isAuthor()) {
+            StringBuffer endorserConnectionId = new StringBuffer();
+            partnerRepo.findAll().forEach(p -> {
+                log.info("TODO partner: {}", p);
+                if (p.hasTag("Endorser")) {
+                    endorserConnectionId.append(p.getConnectionId());
+                }
+            });
+            log.info("TODO calling sendSchemaEndorseRequest() with: {}", endorserConnectionId.toString());
+            TransactionAPI txn = schemaService.sendSchemaEndorseRequest(schemaName, schemaVersion, attributes, schemaLabel, defaultAttributeName, endorserConnectionId.toString());
+            return SchemaAPI.builder()
+                        .label("Transaction created for endorsement")
+                        .build();
+        }
         return schemaService.createSchema(schemaName, schemaVersion, attributes, schemaLabel, defaultAttributeName);
     }
 

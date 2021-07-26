@@ -24,10 +24,13 @@ import io.micronaut.data.exceptions.DataAccessException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.acy_py.generated.model.TxnOrSchemaSendResult;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.endorser.EndorserInfoFilter;
 import org.hyperledger.aries.api.schema.SchemaSendRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.api.aries.TransactionAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.SchemaException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
@@ -91,6 +94,44 @@ public class SchemaService {
             } else {
                 log.error("Schema not created.");
                 throw new SchemaException("Schema not created; could not complete request with ledger");
+            }
+
+        } catch (IOException e) {
+            log.error("aca-py not reachable", e);
+            throw new NetworkException("No aries connection", e);
+        }
+        return result;
+    }
+
+    public TransactionAPI sendSchemaEndorseRequest(@NonNull String schemaName, @NonNull String schemaVersion,
+            @NonNull List<String> attributes, @NonNull String schemaLabel, String defaultAttributeName,
+            String endorserConnectionId) {
+        TransactionAPI result;
+        // ensure no leading or trailing spaces on attribute names... bad things happen
+        // when crypto signing.
+        attributes.replaceAll(AriesStringUtil::schemaAttributeFormat);
+        try {
+            // send schema to ledger...
+            SchemaSendRequest request = SchemaSendRequest.builder()
+                    .schemaName(AriesStringUtil.schemaAttributeFormat(schemaName))
+                    .schemaVersion(schemaVersion)
+                    .attributes(attributes)
+                    .build();
+            EndorserInfoFilter endorserInfo = EndorserInfoFilter.builder()
+                    .connId(endorserConnectionId)
+                    .createTransactionForEndorser(true)
+                    .build();
+            log.info("TODO calling schema create with: {} {}", request, endorserInfo);
+            Optional<TxnOrSchemaSendResult> response = ac.schemas(request, endorserInfo);
+            if (response.isPresent()) {
+                // TODO don't save it to the db, it will be handled by the callback ...
+                TxnOrSchemaSendResult txnSsr = response.get();
+                log.info("TODO schema create returns: {}", txnSsr);
+                //result = this.addSchema(ssr.getSchemaId(), schemaLabel, defaultAttributeName, null);
+                result = TransactionAPI.from(txnSsr.getTxn());
+            } else {
+                log.error("Transaction not created.");
+                throw new SchemaException("Transaction not created; could not complete request");
             }
 
         } catch (IOException e) {
