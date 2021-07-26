@@ -53,6 +53,8 @@ import java.util.UUID;
 @MicronautTest
 public class AdminControllerTest {
 
+    private final String schemaId = "NZhb9EqpN9a6gkHge9fTmv:2:a-schema-name:0.0.1";
+
     @Value("${bpa.did.prefix}")
     String didPrefix;
 
@@ -69,10 +71,9 @@ public class AdminControllerTest {
     @Test
     void testAddSchemaWithRestriction() throws Exception {
         mockGetSchemaAndVerkey();
-        String schemaId = "NZhb9EqpN9a6gkHge9fTmv:2:a-schema-name:0.0.1";
 
         // add schema
-        HttpResponse<SchemaAPI> addedSchema = addSchemaWithRestriction(schemaId);
+        HttpResponse<SchemaAPI> addedSchema = addSchemaWithRestriction();
         Assertions.assertEquals(HttpStatus.OK, addedSchema.getStatus());
         Assertions.assertTrue(addedSchema.getBody().isPresent());
 
@@ -151,7 +152,7 @@ public class AdminControllerTest {
                 .retrieve(HttpRequest.GET("/" + id), SchemaAPI.class);
     }
 
-    private HttpResponse<SchemaAPI> addSchemaWithRestriction(@NonNull String schemaId) {
+    private HttpResponse<SchemaAPI> addSchemaWithRestriction() {
         return client.toBlocking()
                 .exchange(HttpRequest.POST("",
                         AddSchemaRequest.builder()
@@ -180,7 +181,7 @@ public class AdminControllerTest {
     private void mockGetSchemaAndVerkey() throws IOException {
         Mockito.when(ac.schemasGetById(Mockito.anyString())).thenReturn(Optional.of(SchemaSendResponse.Schema
                 .builder()
-                .id("schema1")
+                .id(schemaId)
                 .seqNo(1)
                 .attrNames(List.of("name"))
                 .name("dummy")
