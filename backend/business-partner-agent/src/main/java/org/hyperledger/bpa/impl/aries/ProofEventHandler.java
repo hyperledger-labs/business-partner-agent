@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.impl.aries;
 
+import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,8 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.MessageService;
+import org.hyperledger.bpa.impl.notification.PresentationRequestCompletedEvent;
+import org.hyperledger.bpa.impl.notification.PresentationRequestReceivedEvent;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
@@ -50,6 +53,9 @@ public class ProofEventHandler {
     @Inject
     MessageService messageService;
 
+    @Inject
+    ApplicationEventPublisher eventPublisher;
+
     void dispatch(PresentationExchangeRecord proof) {
         if (proof.isVerified() && PresentationExchangeRole.VERIFIER.equals(proof.getRole())
                 || PresentationExchangeState.PRESENTATION_ACKED.equals(proof.getState())
@@ -65,7 +71,7 @@ public class ProofEventHandler {
 
     /**
      * Default proof event handler that either stores or updates partner proofs
-     * 
+     *
      * @param proof {@link PresentationExchangeRecord}
      */
     private void handleAll(PresentationExchangeRecord proof) {
@@ -87,7 +93,7 @@ public class ProofEventHandler {
     /**
      * Handles all events that are either acked or verified connectionless proofs
      * are currently not handled
-     * 
+     *
      * @param proof {@link PresentationExchangeRecord}
      */
     private void handleAckedOrVerified(PresentationExchangeRecord proof) {
@@ -102,6 +108,9 @@ public class ProofEventHandler {
                         state,
                         WebSocketMessageBody.WebSocketMessageType.PROOF,
                         savedProof);
+                eventPublisher.publishEvent(PresentationRequestCompletedEvent.builder()
+                        .partnerProof(savedProof)
+                        .build());
             } else {
                 log.warn("Proof does not contain any identifiers event will not be persisted");
             }
@@ -110,7 +119,7 @@ public class ProofEventHandler {
 
     /**
      * Handles all proof request
-     * 
+     *
      * @param proof {@link PresentationExchangeRecord}
      */
     private void handleProofRequest(@NonNull PresentationExchangeRecord proof) {
@@ -135,13 +144,17 @@ public class ProofEventHandler {
                             final PartnerProof pp = defaultProof(p.getId(), proof)
                                     .setProofRequest(proof.getPresentationRequest());
                             pProofRepo.save(pp);
+                            eventPublisher.publishEvent(PresentationRequestReceivedEvent.builder()
+                                    .partnerProof(pp)
+                                    .build());
+
                         }));
 
     }
 
     /**
      * Handle present proof problem report message
-     * 
+     *
      * @param threadId    the thread id of the exchange
      * @param description the problem description
      */
@@ -151,7 +164,7 @@ public class ProofEventHandler {
 
     /**
      * Build db proof representation with all mandatory fields that are required
-     * 
+     *
      * @param partnerId the partner id
      * @param proof     {link PresentationExchangeRecord}
      * @return {@link PartnerProof}

@@ -15,24 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.activity;
+package org.hyperledger.bpa.impl.notification;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
+import org.hyperledger.bpa.api.aries.AriesCredential;
 
+@Builder
 @NoArgsConstructor
-public enum ActivityRole {
-    @JsonProperty("connection_request_sender")
-    CONNECTION_REQUEST_SENDER,
-    @JsonProperty("connection_request_recipient")
-    CONNECTION_REQUEST_RECIPIENT,
-    @JsonProperty("presentation_exchange_prover")
-    PRESENTATION_EXCHANGE_PROVER,
-    @JsonProperty("presentation_exchange_verifier")
-    PRESENTATION_EXCHANGE_VERIFIER,
-    @JsonProperty("credential_exchange_holder")
-    CREDENTIAL_EXCHANGE_HOLDER,
-    @JsonProperty("credential_exchange_prover")
-    CREDENTIAL_EXCHANGE_ISSUER,
+@AllArgsConstructor
+@Getter
+public class CredentialAddedEvent {
 
+    private AriesCredential credential;
+    private V1CredentialExchange credentialExchange;
 }

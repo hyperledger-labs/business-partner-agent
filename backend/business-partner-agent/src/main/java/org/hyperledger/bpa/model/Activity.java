@@ -15,24 +15,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.activity;
+package org.hyperledger.bpa.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
-public enum ActivityRole {
-    @JsonProperty("connection_request_sender")
-    CONNECTION_REQUEST_SENDER,
-    @JsonProperty("connection_request_recipient")
-    CONNECTION_REQUEST_RECIPIENT,
-    @JsonProperty("presentation_exchange_prover")
-    PRESENTATION_EXCHANGE_PROVER,
-    @JsonProperty("presentation_exchange_verifier")
-    PRESENTATION_EXCHANGE_VERIFIER,
-    @JsonProperty("credential_exchange_holder")
-    CREDENTIAL_EXCHANGE_HOLDER,
-    @JsonProperty("credential_exchange_prover")
-    CREDENTIAL_EXCHANGE_ISSUER,
+import javax.persistence.*;
+import java.time.Instant;
+import java.util.UUID;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "activity_vw")
+public class Activity {
+
+    @Id
+    private UUID id;
+
+    @OneToOne
+    private Partner partner;
+
+    private String type;
+    private String role;
+    private String state;
+
+    private Instant updatedAt;
 }

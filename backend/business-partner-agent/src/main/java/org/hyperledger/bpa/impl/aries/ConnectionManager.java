@@ -20,6 +20,7 @@ package org.hyperledger.bpa.impl.aries;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
@@ -34,12 +35,16 @@ import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
+import org.hyperledger.bpa.impl.notification.PartnerRequestReceivedEvent;
+import org.hyperledger.bpa.impl.notification.PartnerAddedEvent;
+import org.hyperledger.bpa.impl.notification.PartnerRemovedEvent;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
@@ -91,6 +96,9 @@ public class ConnectionManager {
     @Inject
     BPAMessageSource.DefaultMessageSource messageSource;
 
+    @Inject
+    ApplicationEventPublisher eventPublisher;
+
     /**
      * Creates a connection invitation to be used within a barcode
      *
@@ -131,7 +139,7 @@ public class ConnectionManager {
 
     /**
      * Create a connection based on a did, e.g. did:web or did:indy.
-     * 
+     *
      * @param did the fully qualified did like did:indy:123
      * @return {@link ConnectionRecord}
      */
@@ -170,6 +178,11 @@ public class ConnectionManager {
                         partnerRepo.update(dbP);
                     } else {
                         partnerRepo.updateState(dbP.getId(), record.getState());
+                    }
+                    // should it be on request, when you ask for new partner, or when partner
+                    // accepts?
+                    if (ConnectionState.REQUEST.equals(record.getState())) {
+                        eventPublisher.publishEvent(PartnerAddedEvent.builder().partner(conv.toAPIObject(dbP)).build());
                     }
                 });
     }
@@ -225,7 +238,11 @@ public class ConnectionManager {
         // only incoming connections in state request
         if (ConnectionState.REQUEST.equals(record.getState())) {
             didResolver.lookupIncoming(p);
-            messageService.sendMessage(WebSocketMessageBody.partnerReceived(conv.toAPIObject(p)));
+            PartnerAPI o = conv.toAPIObject(p);
+            messageService.sendMessage(WebSocketMessageBody.partnerReceived(o));
+            if (record.isIncomingConnection()) {
+                eventPublisher.publishEvent(PartnerRequestReceivedEvent.builder().partner(o).build());
+            }
         }
     }
 
@@ -238,7 +255,10 @@ public class ConnectionManager {
                 log.warn("Could not delete aries connection.", e);
             }
 
-            partnerRepo.findByConnectionId(connectionId).ifPresent(p -> {
+            Optional<Partner> partner = partnerRepo.findByConnectionId(connectionId);
+            final PartnerAPI[] partnerAPI = { null };
+            partner.ifPresent(p -> {
+                partnerAPI[0] = conv.toAPIObject(p);
                 final List<PartnerProof> proofs = partnerProofRepo.findByPartnerId(p.getId());
                 if (CollectionUtils.isNotEmpty(proofs)) {
                     partnerProofRepo.deleteAll(proofs);
@@ -262,7 +282,9 @@ public class ConnectionManager {
                     });
 
             myCredRepo.updateByConnectionId(connectionId, null);
-
+            if (partnerAPI[0] != null) {
+                eventPublisher.publishEvent(PartnerRemovedEvent.builder().partner(partnerAPI[0]).build());
+            }
         } catch (IOException e) {
             log.error("Could not delete connection: {}", connectionId, e);
         }

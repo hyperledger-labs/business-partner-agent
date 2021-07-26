@@ -23,6 +23,7 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
 import java.util.List;
 
 @Singleton
@@ -39,8 +40,10 @@ public class ActivityLogConfig {
     AcaPyConfig acaPyConfig;
 
     public List<ConnectionState> getConnectionStatesForActivities() {
-        return connectionStates(ConnectionState.REQUEST, ConnectionState.INVITATION, ConnectionState.ACTIVE,
-                ConnectionState.RESPONSE);
+        List<ConnectionState> results = new ArrayList<>(getConnectionStatesCompleted());
+        results.addAll(getConnectionStatesForTasks());
+        results.add(ConnectionState.INVITATION);
+        return List.copyOf(results);
     }
 
     public List<ConnectionState> getConnectionStatesForTasks() {
@@ -51,7 +54,11 @@ public class ActivityLogConfig {
     }
 
     public List<ConnectionState> getConnectionStatesCompleted() {
-        return connectionStates(ConnectionState.ACTIVE, ConnectionState.RESPONSE);
+        return connectionStates(ConnectionState.ACTIVE,
+                ConnectionState.RESPONSE,
+                ConnectionState.COMPLETED,
+                ConnectionState.PING_RESPONSE,
+                ConnectionState.PING_NO_RESPONSE);
     }
 
     public boolean isConnectionRequestTask() {
@@ -59,10 +66,10 @@ public class ActivityLogConfig {
     }
 
     public List<PresentationExchangeState> getPresentationExchangeStatesForActivities() {
-        return presentationExchangeStates(PresentationExchangeState.REQUEST_RECEIVED,
-                PresentationExchangeState.REQUEST_SENT,
-                PresentationExchangeState.VERIFIED,
-                PresentationExchangeState.PRESENTATION_ACKED);
+        List<PresentationExchangeState> results = new ArrayList<>(getPresentationExchangeStatesCompleted());
+        results.addAll(getPresentationExchangeStatesForTasks());
+        results.add(PresentationExchangeState.REQUEST_SENT);
+        return List.copyOf(results);
     }
 
     public List<PresentationExchangeState> getPresentationExchangeStatesForTasks() {
