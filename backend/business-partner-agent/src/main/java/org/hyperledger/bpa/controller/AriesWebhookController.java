@@ -29,6 +29,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.webhook.EventHandler;
+import org.hyperledger.bpa.config.acapy.AcaPyAuthFetcher;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -40,7 +41,7 @@ import java.util.List;
 @Hidden
 @Tag(name = "Aries Webhook")
 @Controller
-@Secured(SecurityRule.IS_ANONYMOUS)
+@Secured(SecurityRule.IS_AUTHENTICATED)
 @ExecuteOn(TaskExecutors.IO)
 public class AriesWebhookController {
 
@@ -49,6 +50,7 @@ public class AriesWebhookController {
     @Inject
     List<EventHandler> handlers;
 
+    @Secured({ AcaPyAuthFetcher.ROLE_ACA_PY })
     @Post(WEBHOOK_CONTROLLER_PATH + "/{eventType}")
     public void logEvent(
             @PathVariable String eventType,
