@@ -18,11 +18,13 @@
 
 package org.hyperledger.bpa.repository;
 
+import io.micronaut.data.exceptions.DataAccessException;
 import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.*;
 import org.hyperledger.bpa.model.prooftemplate.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -35,7 +37,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@MicronautTest
+@MicronautTest(transactional = false)
 class BPAProofTemplateRepositoryTest {
 
     @Inject
@@ -52,30 +54,15 @@ class BPAProofTemplateRepositoryTest {
         return Mockito.mock(SchemaService.class);
     }
 
+    @BeforeEach
+    public void setup() {
+        proofRepository.deleteAll();
+        repo.deleteAll();
+    }
+
     @Test
     void testSavingAnEntity() {
-        Mockito.when(schemaService.getSchemaFor("mySchemaId"))
-                .thenReturn(Optional.of(new BPASchema()));
-        Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
-                .thenReturn(Set.of("myAttribute"));
-        BPAProofTemplate.BPAProofTemplateBuilder proofTemplateBuilder = BPAProofTemplate.builder()
-                .name("myProofTemplate")
-                .attributeGroups(
-                        BPAAttributeGroups.builder()
-                                .attributeGroup(
-                                        BPAAttributeGroup.builder()
-                                                .schemaId("mySchemaId")
-                                                .attribute(
-                                                        BPAAttribute.builder()
-                                                                .name("myAttribute")
-                                                                .condition(
-                                                                        BPACondition.builder()
-                                                                                .value("113")
-                                                                                .operator(ValueOperators.LESS_THAN)
-                                                                                .build())
-                                                                .build())
-                                                .build())
-                                .build());
+        BPAProofTemplate.BPAProofTemplateBuilder proofTemplateBuilder = getBpaProofTemplateBuilder();
         BPAProofTemplate proofTemplateToSave = proofTemplateBuilder
                 .build();
 
@@ -99,25 +86,8 @@ class BPAProofTemplateRepositoryTest {
         Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
                 .thenReturn(Set.of("myAttribute"));
         Instant givenCreatedAt = Instant.now().minus(Duration.ofMillis(1000));
-        BPAProofTemplate.BPAProofTemplateBuilder proofTemplateBuilder = BPAProofTemplate.builder()
-                .name("myProofTemplate")
-                .createdAt(givenCreatedAt)
-                .attributeGroups(
-                        BPAAttributeGroups.builder()
-                                .attributeGroup(
-                                        BPAAttributeGroup.builder()
-                                                .schemaId("mySchemaId")
-                                                .attribute(
-                                                        BPAAttribute.builder()
-                                                                .name("myAttribute")
-                                                                .condition(
-                                                                        BPACondition.builder()
-                                                                                .value("113")
-                                                                                .operator(ValueOperators.LESS_THAN)
-                                                                                .build())
-                                                                .build())
-                                                .build())
-                                .build());
+        BPAProofTemplate.BPAProofTemplateBuilder proofTemplateBuilder = getBpaProofTemplateBuilder()
+                .createdAt(givenCreatedAt);
         BPAProofTemplate proofTemplateToSave = proofTemplateBuilder
                 .build();
 
@@ -143,25 +113,8 @@ class BPAProofTemplateRepositoryTest {
         Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
                 .thenReturn(Set.of("myAttribute"));
         Instant givenCreatedAt = Instant.now().minus(Duration.ofMillis(1000));
-        BPAProofTemplate.BPAProofTemplateBuilder proofTemplateBuilder = BPAProofTemplate.builder()
-                .name("myProofTemplate")
-                .createdAt(givenCreatedAt)
-                .attributeGroups(
-                        BPAAttributeGroups.builder()
-                                .attributeGroup(
-                                        BPAAttributeGroup.builder()
-                                                .schemaId("mySchemaId")
-                                                .attribute(
-                                                        BPAAttribute.builder()
-                                                                .name("myAttribute")
-                                                                .condition(
-                                                                        BPACondition.builder()
-                                                                                .value("113")
-                                                                                .operator(ValueOperators.LESS_THAN)
-                                                                                .build())
-                                                                .build())
-                                                .build())
-                                .build());
+        BPAProofTemplate.BPAProofTemplateBuilder proofTemplateBuilder = getBpaProofTemplateBuilder()
+                .createdAt(givenCreatedAt);
         BPAProofTemplate proofTemplateToSave = proofTemplateBuilder
                 .build();
 
@@ -184,12 +137,50 @@ class BPAProofTemplateRepositoryTest {
     }
 
     @Test
+    void testThatPartnerProofResolvesItsTemplate() {
+        BPAProofTemplate.BPAProofTemplateBuilder proofTemplateBuilder = getBpaProofTemplateBuilder();
+        BPAProofTemplate proofTemplateToSave = proofTemplateBuilder
+                .build();
+
+        BPAProofTemplate savedTemplate = repo.save(proofTemplateToSave);
+        System.out.println(savedTemplate);
+        PartnerProof proof = proofRepository.save(PartnerProof.builder()
+                .partnerId(UUID.randomUUID())
+                .presentationExchangeId("presentationExchangeId")
+                .proofTemplate(savedTemplate)
+                .build());
+
+        assertTrue(proofRepository.findById(proof.getId()).map(PartnerProof::getProofTemplate).isPresent());
+    }
+
+    @Test
     void testThatDeletionIsConstrainedToUnusedTemplates() {
+        BPAProofTemplate.BPAProofTemplateBuilder proofTemplateBuilder = getBpaProofTemplateBuilder();
+        BPAProofTemplate proofTemplateToSave = proofTemplateBuilder
+                .build();
+
+        BPAProofTemplate savedTemplate = repo.save(proofTemplateToSave);
+        System.out.println(savedTemplate);
+        PartnerProof proof = proofRepository.save(PartnerProof.builder()
+                .partnerId(UUID.randomUUID())
+                .presentationExchangeId("presentationExchangeId")
+                .proofTemplate(savedTemplate)
+                .build());
+
+        assertThrows(DataAccessException.class, () -> repo.deleteById(savedTemplate.getId()));
+        proofRepository.deleteById(proof.getId());
+        assertTrue(proofRepository.findById(proof.getId()).isEmpty());
+        assertTrue(repo.findById(proofTemplateToSave.getId()).isPresent());
+        repo.deleteById(savedTemplate.getId());
+
+    }
+
+    private BPAProofTemplate.BPAProofTemplateBuilder getBpaProofTemplateBuilder() {
         Mockito.when(schemaService.getSchemaFor("mySchemaId"))
                 .thenReturn(Optional.of(new BPASchema()));
         Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
                 .thenReturn(Set.of("myAttribute"));
-        BPAProofTemplate.BPAProofTemplateBuilder proofTemplateBuilder = BPAProofTemplate.builder()
+        return BPAProofTemplate.builder()
                 .name("myProofTemplate")
                 .attributeGroups(
                         BPAAttributeGroups.builder()
@@ -207,27 +198,5 @@ class BPAProofTemplateRepositoryTest {
                                                                 .build())
                                                 .build())
                                 .build());
-        BPAProofTemplate proofTemplateToSave = proofTemplateBuilder
-                .build();
-
-        BPAProofTemplate savedTemplate = repo.save(proofTemplateToSave);
-        System.out.println(savedTemplate);
-        PartnerProof proof = proofRepository.save(PartnerProof.builder()
-                .partnerId(UUID.randomUUID())
-                .presentationExchangeId("presentationExchangeId")
-                .proofTemplate(savedTemplate)
-                .build());
-
-//        try {
-//            repo.deleteById(savedTemplate.getId());
-//            fail("Deleting a referenced proofTemplate should fail.");
-//        }catch (DataAccessException e){
-//            e.printStackTrace();
-//        }
-        proofRepository.deleteById(proof.getId());
-        assertTrue(proofRepository.findById(proof.getId()).isEmpty());
-        assertTrue(repo.findById(proofTemplateToSave.getId()).isPresent());
-
     }
-
 }

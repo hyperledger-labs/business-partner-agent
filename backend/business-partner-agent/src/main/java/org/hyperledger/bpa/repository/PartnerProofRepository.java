@@ -25,7 +25,6 @@ import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
-import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
 
 import java.time.Instant;
@@ -36,8 +35,6 @@ import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUID> {
-
-
 
     @Override
     @NonNull

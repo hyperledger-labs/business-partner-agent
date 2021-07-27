@@ -31,7 +31,6 @@ import io.micronaut.core.annotation.Nullable;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
-import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 
 import javax.persistence.*;
 import java.time.Instant;

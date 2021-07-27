@@ -38,6 +38,7 @@ import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroups;
 import org.hyperledger.bpa.repository.BPAProofTemplateRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -47,7 +48,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@MicronautTest
+@MicronautTest()
 class ProofTemplateControllerTest {
     @Inject
     @Client("/api/proof-templates")
@@ -64,6 +65,10 @@ class ProofTemplateControllerTest {
     @Inject
     BPAProofTemplateRepository repository;
 
+    @BeforeEach
+    public void setup() {
+        repository.deleteAll();
+    }
 
     private UUID prepareSchemaWithAttributes(String... attributes) {
         UUID schemaId = UUID.randomUUID();

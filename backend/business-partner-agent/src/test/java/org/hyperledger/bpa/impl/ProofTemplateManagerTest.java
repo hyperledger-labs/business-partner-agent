@@ -71,7 +71,8 @@ class ProofTemplateManagerTest {
                                 BPAAttributeGroups.builder()
                                         .build())
                         .build());
-        // reset created at with value from db., because Java's value is more detailed that the database's.
+        // reset created at with value from db., because Java's value is more detailed
+        // that the database's.
         repo.findById(template.getId()).map(BPAProofTemplate::getCreatedAt).ifPresent(template::setCreatedAt);
         doNothing().when(proofManager).sendPresentProofRequest(eq(partnerId), eq(template));
 
