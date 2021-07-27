@@ -38,6 +38,6 @@ public class PartnerCredentialType {
         return new PartnerCredentialType(
                 credDefId,
                 AriesStringUtil.getLastSegment(credDefId),
-                AriesStringUtil.credDefIdGetSquenceNo(credDefId));
+                AriesStringUtil.credDefIdGetSequenceNo(credDefId));
     }
 }

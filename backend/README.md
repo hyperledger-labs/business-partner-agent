@@ -44,8 +44,8 @@ Depending on the docker version the .env file either needs to reside in the root
 
 3. Start dependent services
 ```s
-# e.g. run from the root directory
-docker-compose -f scripts/docker-compose.yml up bpa-agent1 bpa-wallet-db1
+# e.g. run from the scripts directory
+docker-compose up bpa-agent1 bpa-wallet-db1
 ```
 
 4. Set VM Options
@@ -74,12 +74,3 @@ If you want to run in web only mode you also have to set:
 
 Swagger UI: http://localhost:8080/swagger-ui   
 Frontend: http://localhost:8080
-
-# Websocket Events
-
-see: WebSocketMessageBody.java
-
-1. Connection Request (no auto flags)
-2. Partner Received (with auto flags)
-3. Credential Received
-4. Proof Received

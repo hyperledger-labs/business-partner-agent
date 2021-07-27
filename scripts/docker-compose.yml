@@ -28,6 +28,7 @@ services:
       BPA_IMPRINT_URL: ${BPA_IMPRINT_URL}
       BPA_PRIVACY_POLICY_URL: ${BPA_PRIVACY_POLICY_URL}
       BPA_CREDDEF_REVOCATION_REGISTRY_SIZE: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE}
+      BPA_WEBHOOK_KEY: ${BPA_WEBHOOK_KEY}
     ports:
       - ${BPA_PORT}:${BPA_PORT}
     restart: always
@@ -46,7 +47,7 @@ services:
         --auto-provision
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY_HTTP_PORT} \
-        --webhook-url '${BPA_WEBHOOK_URL}' \
+        --webhook-url '${BPA_WEBHOOK_URL}#${BPA_WEBHOOK_KEY}' \
         --genesis-url '${ACAPY_GENESIS_URL}' \
         --endpoint ${ACAPY_ENDPOINT} \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \
@@ -105,6 +106,7 @@ services:
       BPA_IMPRINT_URL: ${BPA_IMPRINT_URL}
       BPA_PRIVACY_POLICY_URL: ${BPA_PRIVACY_POLICY_URL}
       BPA_CREDDEF_REVOCATION_REGISTRY_SIZE: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE}
+      BPA_WEBHOOK_KEY: ${BPA_WEBHOOK_KEY}
     ports:
       - "${BPA2_PORT}:${BPA2_PORT}"
     restart: always
@@ -125,7 +127,7 @@ services:
         --auto-provision
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY2_HTTP_PORT} \
-        --webhook-url '${BPA2_WEBHOOK_URL}' \
+        --webhook-url '${BPA2_WEBHOOK_URL}#${BPA_WEBHOOK_KEY}' \
         --genesis-url '${ACAPY_GENESIS_URL}' \
         --endpoint ${ACAPY2_ENDPOINT} \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \
