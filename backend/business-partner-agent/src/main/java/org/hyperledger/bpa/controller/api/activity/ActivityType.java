@@ -15,17 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.partner;
+package org.hyperledger.bpa.controller.api.activity;
 
-import lombok.Data;
-import org.hyperledger.bpa.model.Tag;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
-
-@Data
-public class AddPartnerRequest {
-    private String did;
-    private String alias;
-    private List<Tag> tag;
-    private Boolean trustPing;
+@NoArgsConstructor
+public enum ActivityType {
+    @JsonProperty("connection_request")
+    CONNECTION_REQUEST,
+    @JsonProperty("credential_offer")
+    CREDENTIAL_OFFER,
+    @JsonProperty("presentation_exchange")
+    PRESENTATION_EXCHANGE
 }

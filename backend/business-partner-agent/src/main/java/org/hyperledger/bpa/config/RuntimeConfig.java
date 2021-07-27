@@ -21,16 +21,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.ApplicationEventListener;
-import java.io.IOException;
-import java.util.Map;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.bpa.impl.StartupTasks;
 import org.hyperledger.bpa.impl.activity.DidResolver;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.util.Map;
 
 @Getter
 @Singleton
@@ -94,7 +95,7 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
                     .flatMap(c -> c.getAs("tails_server_base_url", String.class))
                     .isPresent();
         } catch (IOException e) {
-            log.warn("No aca-py");
+            log.warn("aca-py is not reachable");
         }
     }
 }

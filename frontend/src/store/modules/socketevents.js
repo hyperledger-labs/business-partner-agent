@@ -5,6 +5,7 @@ const state = {
   newCredentials: {},
   newPresentationRequests: {},
   newPresentations: {},
+  notifications: 0,
 
   socket: {
     isConnected: false,
@@ -14,13 +15,6 @@ const state = {
 };
 
 const getters = {
-  newPartnerEventsCount: () => {
-    return (
-      Object.keys(state.newPartners).length +
-      Object.keys(state.newPresentationRequests).length +
-      Object.keys(state.newPresentations).length
-    );
-  },
   newPartnersCount: (state) => {
     return Object.keys(state.newPartners).length;
   },
@@ -38,6 +32,9 @@ const getters = {
   },
   newPresentations: (state) => {
     return state.newPresentations;
+  },
+  notificationsCount: () => {
+    return state.notifications;
   },
 };
 
@@ -85,6 +82,11 @@ const mutations = {
     let id = payload.message.linkId;
     state.newPresentations = { ...state.newPresentations, [id]: payload };
   },
+  notification(state, payload) {
+    // check the payload... are we adding one, or has it been handled and we are removing one?
+    const count = payload.message.state === "NEW" ? 1 : -1;
+    state.notifications = Math.max(state.notifications + count, 0) ;
+  },
   partnerSeen(state, payload) {
     let id = payload.id;
     if ({}.hasOwnProperty.call(state.newPartners, id)) {
@@ -116,6 +118,10 @@ const mutations = {
       delete tmpProofs[id];
       state.newPresentations = tmpProofs;
     }
+  },
+  notificationsSeen() {
+    // once they go to the notification screen, they see them all...
+    state.notifications = 0;
   },
 };
 

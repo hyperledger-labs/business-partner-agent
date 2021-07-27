@@ -15,17 +15,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.partner;
+package org.hyperledger.bpa.controller.api.activity;
 
+import io.micronaut.core.annotation.Introspected;
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.http.annotation.QueryValue;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.hyperledger.bpa.model.Tag;
-
-import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Data
-public class AddPartnerRequest {
-    private String did;
-    private String alias;
-    private List<Tag> tag;
-    private Boolean trustPing;
+@NoArgsConstructor
+@AllArgsConstructor
+@Introspected
+public class ActivitySearchParameters {
+    @Nullable
+    @QueryValue
+    private Boolean activity;
+    @Nullable
+    @QueryValue
+    private Boolean task;
+    @Nullable
+    @QueryValue
+    private ActivityType type;
 }

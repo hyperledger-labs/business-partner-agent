@@ -62,6 +62,26 @@
             <v-list-item-title>{{ $t("nav.dashboard") }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item link :to="{ name: 'Notifications' }">
+          <v-list-item-action>
+            <v-badge
+                overlap
+                bordered
+                :content="notificationsCount"
+                :value="notificationsCount"
+                color="red"
+                offset-x="10"
+                offset-y="10"
+            >
+              <v-icon>$vuetify.icons.notifications</v-icon>
+            </v-badge>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>{{
+              $t("nav.notifications")
+              }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <v-list-item link :to="{ name: 'PublicProfile' }">
           <v-list-item-action>
             <v-icon>$vuetify.icons.profile</v-icon>
@@ -110,17 +130,7 @@
 
         <v-list-item link :to="{ name: 'Partners' }">
           <v-list-item-action>
-            <v-badge
-              overlap
-              bordered
-              :content="newPartnerEventsCount"
-              :value="newPartnerEventsCount"
-              color="red"
-              offset-x="10"
-              offset-y="10"
-            >
-              <v-icon>$vuetify.icons.partners</v-icon>
-            </v-badge>
+            <v-icon>$vuetify.icons.partners</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>{{ $t("nav.partners") }}</v-list-item-title>
@@ -353,13 +363,11 @@ export default {
     privacyPolicyUrl() {
       return this.$store.state.settings.dataPrivacyPolicy;
     },
-    newPartnerEventsCount() {
-      console.log("read newPartnerEventsCount");
-      console.log(this.$store.getters.newPartnerEventsCount);
-      return this.$store.getters.newPartnerEventsCount;
-    },
     newCredentialsCount() {
       return this.$store.getters.newCredentialsCount;
+    },
+    notificationsCount() {
+      return this.$store.getters.notificationsCount;
     },
     getAgentName() {
       let bpaName = "Business Partner Agent";

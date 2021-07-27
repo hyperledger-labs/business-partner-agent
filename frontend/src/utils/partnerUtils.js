@@ -29,9 +29,11 @@ export const getPartnerName = (partner) => {
     return "";
   } else if ({}.hasOwnProperty.call(partner, "alias")) {
     return partner.alias;
-  } else if ({}.hasOwnProperty.call(partner, "profile")
-      && partner.profile !== null
-      && {}.hasOwnProperty.call(partner.profile, "legalName")) {
+  } else if (
+    {}.hasOwnProperty.call(partner, "profile") &&
+    partner.profile !== null &&
+    {}.hasOwnProperty.call(partner.profile, "legalName")
+  ) {
     return partner.profile.legalName;
   } else {
     const profile = getPartnerProfile(partner);
@@ -40,7 +42,11 @@ export const getPartnerName = (partner) => {
     } else if ({}.hasOwnProperty.call(partner, "label")) {
       return partner.label;
     } else {
-      return partner.did;
+      if ({}.hasOwnProperty.call(partner, "label")) {
+        return partner.label;
+      } else {
+        return partner.did;
+      }
     }
   }
 };
@@ -54,8 +60,10 @@ export const getPartnerState = (partner) => {
         return PartnerStates.CONNECTION_REQUEST_SENT;
       }
     } else if (
-      partner.state ===
-      (PartnerStates.ACTIVE.value || PartnerStates.RESPONSE.value || PartnerStates.COMPLETED.value)
+      partner.state === PartnerStates.ACTIVE.value ||
+      partner.state === PartnerStates.RESPONSE.value ||
+      partner.state === PartnerStates.COMPLETED.value ||
+      partner.state === PartnerStates.PING_RESPONSE.value
     ) {
       return PartnerStates.ACTIVE_OR_RESPONSE;
     } else {
@@ -74,12 +82,17 @@ export const getPartnerState = (partner) => {
 export const getPartnerStateColor = (state) => {
   if (state === PartnerStates.REQUEST.value) {
     return "yellow";
-  } else if (state === PartnerStates.ABANDONED.value) {
+  } else if (
+    state === PartnerStates.ABANDONED.value ||
+    state === PartnerStates.PING_NO_RESPONSE.value
+  ) {
     return "red";
   } else if (
+    state === PartnerStates.ACTIVE_OR_RESPONSE ||
     state === PartnerStates.ACTIVE.value ||
     state === PartnerStates.RESPONSE.value ||
-    state === PartnerStates.COMPLETED.value
+    state === PartnerStates.COMPLETED.value ||
+    state === PartnerStates.PING_RESPONSE.value
   ) {
     return "green";
   } else {

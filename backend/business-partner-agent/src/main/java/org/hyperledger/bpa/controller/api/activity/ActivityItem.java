@@ -15,17 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.partner;
+package org.hyperledger.bpa.controller.api.activity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.hyperledger.bpa.model.Tag;
-
-import java.util.List;
+import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.api.PartnerAPI;
 
 @Data
-public class AddPartnerRequest {
-    private String did;
-    private String alias;
-    private List<Tag> tag;
-    private Boolean trustPing;
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class ActivityItem {
+
+    private ActivityRole role;
+    private ActivityState state;
+    private ActivityType type;
+    private Long updatedAt;
+    private String linkId;
+    private PartnerAPI partner;
+    private Boolean task;
 }

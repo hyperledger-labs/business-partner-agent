@@ -56,14 +56,15 @@ class PartnerRepositoryTest {
                 .save(Partner.builder().did("dummy").alias("alias").ariesSupport(Boolean.FALSE).build());
         assertEquals("alias", dbP.getAlias());
 
-        int uCount = partnerRepo.updateAlias(UUID.fromString(dbP.getId().toString()), "newAlias");
+        int uCount = partnerRepo.updateAlias(UUID.fromString(dbP.getId().toString()), "newAlias", Boolean.TRUE);
         assertEquals(1, uCount);
 
         Optional<Partner> updatedP = partnerRepo.findByDid("dummy");
         assertTrue(updatedP.isPresent());
         assertEquals("newAlias", updatedP.get().getAlias());
+        assertEquals(Boolean.TRUE, updatedP.get().getTrustPing());
 
-        int nonExistingP = partnerRepo.updateAlias(UUID.randomUUID(), "dummy");
+        int nonExistingP = partnerRepo.updateAlias(UUID.randomUUID(), "dummy", Boolean.TRUE);
         assertEquals(0, nonExistingP);
     }
 
@@ -80,21 +81,21 @@ class PartnerRepositoryTest {
         Optional<Partner> reload = partnerRepo.findByConnectionId(connectionId);
         assertTrue(reload.isPresent());
 
-        partnerRepo.updateStateByConnectionId(connectionId, ConnectionState.ACTIVE);
+        partnerRepo.updateStateByConnectionId(connectionId, ConnectionState.PING_RESPONSE);
 
         Optional<Partner> mod = partnerRepo.findByConnectionId(connectionId);
 
         assertTrue(mod.isPresent());
         assertEquals(0, reload.get().getUpdatedAt().compareTo(mod.get().getUpdatedAt()));
-        assertEquals(ConnectionState.ACTIVE, mod.get().getState());
+        assertEquals(ConnectionState.PING_RESPONSE, mod.get().getState());
 
-        partnerRepo.updateStateByConnectionId(connectionId, ConnectionState.ABANDONED);
+        partnerRepo.updateStateByConnectionId(connectionId, ConnectionState.PING_NO_RESPONSE);
 
         mod = partnerRepo.findByConnectionId(connectionId);
 
         assertTrue(mod.isPresent());
         assertEquals(0, reload.get().getUpdatedAt().compareTo(mod.get().getUpdatedAt()));
-        assertEquals(ConnectionState.ABANDONED, mod.get().getState());
+        assertEquals(ConnectionState.PING_NO_RESPONSE, mod.get().getState());
     }
 
     @Test
@@ -125,11 +126,11 @@ class PartnerRepositoryTest {
                 .connectionId(p3Cid)
                 .build());
 
-        partnerRepo.updateStateByConnectionId(p1CId, ConnectionState.ERROR);
+        partnerRepo.updateStateByConnectionId(p1CId, ConnectionState.PING_NO_RESPONSE);
 
         Optional<Partner> p1 = partnerRepo.findByConnectionId(p1CId);
         assertTrue(p1.isPresent());
-        assertEquals(ConnectionState.ERROR, p1.get().getState());
+        assertEquals(ConnectionState.PING_NO_RESPONSE, p1.get().getState());
 
         Optional<Partner> p2 = partnerRepo.findByConnectionId(p2Cid);
         assertTrue(p2.isPresent());
@@ -137,6 +138,7 @@ class PartnerRepositoryTest {
 
         Optional<Partner> p3 = partnerRepo.findByConnectionId(p3Cid);
         assertTrue(p3.isPresent());
+        assertNull(p3.get().getState());
         assertNull(p3.get().getState());
     }
 
@@ -159,11 +161,11 @@ class PartnerRepositoryTest {
                 .build());
 
         Instant now = Instant.now().truncatedTo(ChronoUnit.MILLIS);
-        partnerRepo.updateStateAndLastSeenByConnectionId(p1CId, ConnectionState.START, now);
+        partnerRepo.updateStateAndLastSeenByConnectionId(p1CId, ConnectionState.PING_RESPONSE, now);
 
         Optional<Partner> p1 = partnerRepo.findByConnectionId(p1CId);
         assertTrue(p1.isPresent());
-        assertEquals(ConnectionState.START, p1.get().getState());
+        assertEquals(ConnectionState.PING_RESPONSE, p1.get().getState());
         assertEquals(now, p1.get().getLastSeen());
 
         Optional<Partner> p2 = partnerRepo.findByConnectionId(p2Cid);
@@ -239,6 +241,24 @@ class PartnerRepositoryTest {
         assertEquals("alias", reload.get().getLabel());
         assertEquals("did:indy:public", reload.get().getDid());
         assertEquals(Boolean.TRUE, reload.get().getValid());
+    }
+
+    @Test
+    void testFindByStatesAndTrustPing() {
+        partnerRepo.save(Partner.builder().ariesSupport(Boolean.TRUE).did("did1").connectionId("con1")
+                .state(ConnectionState.ACTIVE).trustPing(Boolean.TRUE).build());
+        partnerRepo.save(Partner.builder().ariesSupport(Boolean.TRUE).did("did2").connectionId("con2")
+                .state(ConnectionState.ACTIVE).trustPing(Boolean.FALSE).build());
+        partnerRepo.save(Partner.builder().ariesSupport(Boolean.TRUE).did("did3").connectionId("con3")
+                .state(ConnectionState.COMPLETED).trustPing(Boolean.TRUE).build());
+        partnerRepo.save(Partner.builder().ariesSupport(Boolean.TRUE).did("did4").connectionId("con4")
+                .state(ConnectionState.ACTIVE).trustPing(Boolean.FALSE).build());
+        partnerRepo.save(Partner.builder().ariesSupport(Boolean.TRUE).did("did5").connectionId("con5")
+                .state(ConnectionState.ACTIVE).trustPing(null).build());
+
+        List<Partner> pingTrue = partnerRepo
+                .findByStateInAndTrustPingTrueAndAriesSupportTrue(List.of(ConnectionState.ACTIVE));
+        assertEquals(1, pingTrue.size());
     }
 
     @Data

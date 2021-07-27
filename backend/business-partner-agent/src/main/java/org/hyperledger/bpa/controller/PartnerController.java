@@ -29,7 +29,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.aries.api.connection.CreateInvitationResponse;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
@@ -117,7 +116,7 @@ public class PartnerController {
     public HttpResponse<PartnerAPI> updatePartner(
             @PathVariable String id,
             @Body UpdatePartnerRequest update) {
-        Optional<PartnerAPI> partner = pm.updatePartner(UUID.fromString(id), update.getAlias(), update.getTag());
+        Optional<PartnerAPI> partner = pm.updatePartner(UUID.fromString(id), update);
         if (partner.isPresent()) {
             return HttpResponse.ok(partner.get());
         }
@@ -157,12 +156,12 @@ public class PartnerController {
     /**
      * Add a new partner
      *
-     * @param partner {@link AddPartnerRequest}
+     * @param request {@link AddPartnerRequest}
      * @return {@link PartnerAPI}
      */
     @Post
-    public HttpResponse<PartnerAPI> addPartner(@Body AddPartnerRequest partner) {
-        return HttpResponse.created(pm.addPartnerFlow(partner.getDid(), partner.getAlias(), partner.getTag()));
+    public HttpResponse<PartnerAPI> addPartner(@Body AddPartnerRequest request) {
+        return HttpResponse.created(pm.addPartnerFlow(request));
     }
 
     /**
@@ -362,12 +361,8 @@ public class PartnerController {
      * @return {@link PartnerAPI}
      */
     @Post("/invitation")
-    public HttpResponse<CreateInvitationResponse> requestConnectionInvitation(
+    public HttpResponse<?> requestConnectionInvitation(
             @Body CreatePartnerInvitationRequest req) {
-        final Optional<CreateInvitationResponse> invitation = cm.createConnectionInvitation(req.alias, req.getTag());
-        if (invitation.isPresent()) {
-            return HttpResponse.ok(invitation.get());
-        }
-        return HttpResponse.serverError();
+        return HttpResponse.ok(cm.createConnectionInvitation(req));
     }
 }

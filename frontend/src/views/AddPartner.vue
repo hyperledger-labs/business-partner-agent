@@ -9,7 +9,7 @@
   <v-container>
     <v-card max-width="600" class="mx-auto" flat>
       <v-card-title class="grey--text text--darken-2">
-        Add new Business Partner
+        {{ $t("view.addPartner.title") }}
       </v-card-title>
       <v-container>
         <v-row>
@@ -41,11 +41,13 @@
             <div class="font-weight-medium">{{ msg }}</div>
           </v-layout>
         </v-row>
-        <v-row class="mx-2" v-if="partnerLoaded">
+        <v-row v-if="partnerLoaded">
           <v-col cols="4">
-            <p class="grey--text text--darken-2 font-weight-medium">
-              Set a name
-            </p>
+            <v-list-item-title
+              class="grey--text text--darken-2 font-weight-medium"
+            >
+              {{ $t("view.addPartner.setName") }}
+            </v-list-item-title>
           </v-col>
           <v-col cols="8">
             <v-text-field
@@ -57,36 +59,49 @@
             >
             </v-text-field>
           </v-col>
-        </v-row>
-        <v-row class="mx-2" v-if="partnerLoaded">
           <v-col cols="4">
-            <p class="grey--text text--darken-2 font-weight-medium">Set tags</p>
+            <v-list-item-title
+              class="grey--text text--darken-2 font-weight-medium"
+            >
+              {{ $t("view.addPartner.setTags") }}
+            </v-list-item-title>
           </v-col>
           <v-col cols="8">
-            <v-combobox
+            <v-autocomplete
               multiple
               v-model="selectedTags"
               :items="tags"
               chips
               deletable-chips
             >
-            </v-combobox>
+            </v-autocomplete>
           </v-col>
+          <v-list-item>
+            <v-list-item-title
+              class="grey--text text--darken-2 font-weight-medium"
+              >{{ $t("view.addPartner.trustPing") }}</v-list-item-title
+            >
+
+            <v-list-item-action>
+              <v-switch v-model="trustPing"></v-switch>
+            </v-list-item-action>
+          </v-list-item>
         </v-row>
+
         <Profile v-if="partnerLoaded" v-bind:partner="partner" />
       </v-container>
       <v-card-actions>
         <v-layout justify-space-between>
-          <v-bpa-button color="secondary" to="/app/partners"
-            >Cancel</v-bpa-button
+          <v-bpa-button color="secondary" to="/app/partners">
+            {{ $t("button.cancel") }}</v-bpa-button
           >
 
-          <v-bpa-button v-if="!partnerLoaded" color="primary" @click="lookup()"
-            >Lookup Partner</v-bpa-button
+          <v-bpa-button v-if="!partnerLoaded" color="primary" @click="lookup()">
+            {{ $t("view.addPartner.lookupPartnerBtnLabel") }}</v-bpa-button
           >
-          <v-bpa-button v-else color="primary" @click="addPartner()"
-            >Add Partner</v-bpa-button
-          >
+          <v-bpa-button v-else color="primary" @click="addPartner()">{{
+            $t("view.addPartner.addPartnerBtnLabel")
+          }}</v-bpa-button>
         </v-layout>
       </v-card-actions>
     </v-card>
@@ -115,6 +130,7 @@ export default {
       partner: {},
       search: "",
       selectedTags: [],
+      trustPing: true,
     };
   },
   computed: {
@@ -171,6 +187,8 @@ export default {
       partnerToAdd.tag = this.$store.state.tags.filter((tag) => {
         return this.selectedTags.includes(tag.name);
       });
+
+      partnerToAdd.trustPing = this.trustPing;
       this.$axios
         .post(`${this.$apiBaseUrl}/partners`, partnerToAdd)
         .then((result) => {
