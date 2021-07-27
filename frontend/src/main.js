@@ -76,9 +76,11 @@ Vue.use(VueNativeSock, socketApi, {
           case "NOTIFICATION":
             target = "notification";
             break;
+          case "MESSAGE":
+            target = "message";
+            break;
           default:
             target = "onNotification";
-            break;
         }
       }
     }
@@ -122,6 +124,7 @@ Vue.prototype.$config = {
 
   store.dispatch("loadSettings");
   store.dispatch("loadSchemas");
+  store.dispatch("loadPartners");
   store.dispatch("loadTags");
 
   console.log("Create the Vue application");

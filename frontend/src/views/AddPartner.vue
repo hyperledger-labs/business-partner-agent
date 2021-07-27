@@ -113,6 +113,7 @@ import Profile from "@/components/Profile";
 import { getPartnerName } from "../utils/partnerUtils";
 import { EventBus } from "../main";
 import VBpaButton from "@/components/BpaButton";
+import store from "@/store";
 export default {
   name: "AddPartner",
   components: {
@@ -193,6 +194,7 @@ export default {
         .post(`${this.$apiBaseUrl}/partners`, partnerToAdd)
         .then((result) => {
           if (result.status === 201) {
+            store.dispatch("loadPartners");
             EventBus.$emit("success", "Partner added successfully");
             this.$router.push({
               name: "Partners",

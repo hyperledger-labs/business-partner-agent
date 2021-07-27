@@ -166,7 +166,7 @@ public class PartnerController {
 
     /**
      * Accept partner connection request
-     * 
+     *
      * @param id {@link UUID} the partner id
      * @return HTTP status, no body
      */
@@ -364,5 +364,20 @@ public class PartnerController {
     public HttpResponse<?> requestConnectionInvitation(
             @Body CreatePartnerInvitationRequest req) {
         return HttpResponse.ok(cm.createConnectionInvitation(req));
+    }
+
+    /**
+     * Aries: Send message to partner
+     *
+     * @param id  {@link UUID} the partner id
+     * @param msg {@link SendMessageRequest}
+     * @return HTTP status
+     */
+    @Post("/{id}/message")
+    public HttpResponse<Void> sendMessage(
+            @PathVariable String id,
+            @Body SendMessageRequest msg) {
+        pm.sendMessage(UUID.fromString(id), msg.getContent());
+        return HttpResponse.ok();
     }
 }

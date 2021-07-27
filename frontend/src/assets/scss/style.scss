@@ -58,6 +58,30 @@ a {
   background-color: var(--v-bg-light2-base);
 }
 
+.chat-window {
+  width: 370px;
+  height: calc(100% - 120px);
+  max-height: 590px;
+  position: fixed;
+  right: 25px;
+  bottom: 100px;
+  box-sizing: border-box;
+  box-shadow: 0px 7px 40px 2px rgba(148, 149, 150, 0.1);
+  background: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 10px;
+  animation: fadeIn;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-in-out;
+
+  &.closed {
+    opacity: 0;
+    display: none;
+    bottom: 90px;
+  }
+}
 
 // buttons in v-card
 .v-card__actions > .v-btn {

@@ -96,6 +96,11 @@ public class PartnerManager {
         return repo.findById(id).map(converter::toAPIObject).orElse(null);
     }
 
+    @Nullable
+    public PartnerAPI getPartnerByConnectionId(@NonNull String id) {
+        return repo.findByConnectionId(id).map(converter::toAPIObject).orElse(null);
+    }
+
     public void removePartnerById(@NonNull UUID id) {
         repo.findById(id).ifPresent(p -> {
             if (p.getConnectionId() != null) {
@@ -198,6 +203,18 @@ public class PartnerManager {
                 .map(Partner::getConnectionId)
                 .orElseThrow(EntityNotFoundException::new);
         cm.acceptConnection(connectionId);
+    }
+
+    public void sendMessage(@NonNull UUID id, String content) {
+        // check two things here.
+        // 1. If the connection id is set, as it might be null in some states
+        // 2. If the partner has ariesSupport== true as we have none aries partners in
+        // web mode
+        repo.findById(id).ifPresent(p -> {
+            if (StringUtils.isNotEmpty(p.getConnectionId()) && p.getAriesSupport()) {
+                cm.sendMessage(p.getConnectionId(), content);
+            }
+        });
     }
 
 }

@@ -289,6 +289,7 @@ import IssueCredential from "@/components/IssueCredential";
 import PresentationRequestList from "@/components/PresentationRequestList";
 import UpdatePartner from "@/components/UpdatePartner";
 import VBpaButton from "@/components/BpaButton";
+import store from "@/store";
 
 export default {
   name: "Partner",
@@ -538,6 +539,7 @@ export default {
         .then((result) => {
           console.log(result);
           if (result.status === 200) {
+            store.dispatch("loadPartners");
             EventBus.$emit("success", "Partner deleted");
             this.$router.push({
               name: "Partners",

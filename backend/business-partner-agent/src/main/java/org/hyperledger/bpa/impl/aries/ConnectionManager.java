@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.acy_py.generated.model.InvitationCreateRequest;
 import org.hyperledger.acy_py.generated.model.InvitationRecord;
+import org.hyperledger.acy_py.generated.model.SendMessage;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.*;
 import org.hyperledger.aries.api.did_exchange.DidExchangeCreateRequestFilter;
@@ -287,6 +288,17 @@ public class ConnectionManager {
             }
         } catch (IOException e) {
             log.error("Could not delete connection: {}", connectionId, e);
+        }
+    }
+
+    public void sendMessage(String connectionId, String content) {
+        if (StringUtils.isNotEmpty(content)) {
+            try {
+                ac.connectionsSendMessage(connectionId,
+                        SendMessage.builder().content(content).build());
+            } catch (IOException e) {
+                log.error("Could not send message to connection: {}", connectionId, e);
+            }
         }
     }
 

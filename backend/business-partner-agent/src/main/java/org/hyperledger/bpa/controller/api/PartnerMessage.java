@@ -15,29 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.partner;
-
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
+package org.hyperledger.bpa.controller.api;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PartnerCredentialType {
-    /** The credential definition id */
-    private String credentialDefinitionId;
-    /** The credential definitions tag */
-    private String type;
-    /** The schemas TRX id */
-    private String seqno;
-
-    public static PartnerCredentialType fromCredDefId(String credDefId) {
-        return new PartnerCredentialType(
-                credDefId,
-                AriesStringUtil.getLastSegment(credDefId),
-                AriesStringUtil.credDefIdGetSequenceNo(credDefId));
-    }
+@Builder
+@Getter
+public class PartnerMessage {
+    private String partnerId;
+    private String messageId;
+    private String content;
 }
