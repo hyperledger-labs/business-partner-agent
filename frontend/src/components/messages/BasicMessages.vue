@@ -49,7 +49,6 @@
         responsiveBreakpoint: 9999,
         rooms: [],
         roomsLoaded: true,
-        loadingRooms: false,
         roomId: null,
         messages: [],
         messagesLoaded: true,

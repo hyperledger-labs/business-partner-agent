@@ -30,7 +30,8 @@ import {
   mdiHandshake,
   mdiAlertCircleOutline,
   mdiClockTimeThreeOutline,
-  mdiContentSave, mdiMessageText,
+  mdiContentSave,
+  mdiMessageText,
 } from "@mdi/js";
 
 Vue.use(Vuetify);
