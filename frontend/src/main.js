@@ -76,7 +76,9 @@ Vue.use(VueNativeSock, socketApi, {
           case "NOTIFICATION":
             target = "notification";
             break;
-
+          default:
+            target = "onNotification";
+            break;
         }
       }
     }

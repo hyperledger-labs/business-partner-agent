@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.aries;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
@@ -251,7 +250,7 @@ public class ProofManager {
 
     public List<AriesProofExchange> listPartnerProofs(@NonNull UUID partnerId) {
         List<AriesProofExchange> result = new ArrayList<>();
-        pProofRepo.findByPartnerIdOrderByRole(partnerId).forEach(p -> result.add(toApiProof(p)));
+        pProofRepo.findByPartnerIdOrderByRole(partnerId).forEach(p -> result.add(conv.toAPIObject(p)));
         return result;
     }
 
@@ -259,7 +258,7 @@ public class ProofManager {
         Optional<AriesProofExchange> result = Optional.empty();
         final Optional<PartnerProof> proof = pProofRepo.findById(id);
         if (proof.isPresent()) {
-            result = Optional.of(toApiProof(proof.get()));
+            result = Optional.of(conv.toAPIObject(proof.get()));
         }
         return result;
     }
@@ -285,7 +284,7 @@ public class ProofManager {
             @NonNull WebSocketMessageBody.WebSocketMessageState state,
             @NonNull WebSocketMessageBody.WebSocketMessageType type,
             @NonNull PartnerProof pp) {
-        messageService.sendMessage(WebSocketMessageBody.proof(state, type, toApiProof(pp)));
+        messageService.sendMessage(WebSocketMessageBody.proof(state, type, conv.toAPIObject(pp)));
     }
 
     private @Nullable String resolveIssuer(String credDefId) {
@@ -294,15 +293,6 @@ public class ProofManager {
             issuer = didPrefix + AriesStringUtil.credDefIdGetDid(credDefId);
         }
         return issuer;
-    }
-
-    private AriesProofExchange toApiProof(@NonNull PartnerProof p) {
-        AriesProofExchange proof = AriesProofExchange.from(p,
-                p.getProof() != null ? conv.fromMap(p.getProof(), JsonNode.class) : null);
-        if (StringUtils.isNotEmpty(p.getSchemaId())) {
-            proof.setTypeLabel(schemaService.getSchemaLabel(p.getSchemaId()));
-        }
-        return proof;
     }
 
     private void sendPresentProofProblemReport(@NonNull String PresentationExchangeId, @NonNull String problemString)

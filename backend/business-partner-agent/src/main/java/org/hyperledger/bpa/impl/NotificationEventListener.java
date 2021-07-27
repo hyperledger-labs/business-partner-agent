@@ -20,6 +20,9 @@ package org.hyperledger.bpa.impl;
 import io.micronaut.runtime.event.annotation.EventListener;
 import io.micronaut.scheduling.annotation.Async;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
+import org.hyperledger.bpa.config.ActivityLogConfig;
+import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.notification.*;
 
 import javax.inject.Inject;
@@ -32,6 +35,12 @@ public class NotificationEventListener {
     @Inject
     PartnerManager partnerManager;
 
+    @Inject
+    MessageService messageService;
+
+    @Inject
+    ActivityLogConfig activityLogConfig;
+
     @EventListener
     @Async
     public void onCredentialAddedEvent(CredentialAddedEvent event) {
@@ -39,7 +48,20 @@ public class NotificationEventListener {
         // we have the connection id, but not the partner, will need to look up
         // partner...
         partnerManager.getPartnerByConnectionId(event.getCredential().getConnectionId()).ifPresent(p -> {
-            log.debug(p.getDid());
+            WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
+                    WebSocketMessageBody.WebSocketMessageType.onCredentialAdded,
+                    event.getCredential().getId().toString(),
+                    event.getCredential(),
+                    p);
+            messageService.sendMessage(message);
+
+            WebSocketMessageBody task = WebSocketMessageBody.notificationEvent(
+                    WebSocketMessageBody.WebSocketMessageType.onNewTask,
+                    event.getCredential().getId().toString(),
+                    event.getCredential(),
+                    p);
+            messageService.sendMessage(task);
+
         });
     }
 
@@ -47,21 +69,39 @@ public class NotificationEventListener {
     @Async
     public void onPartnerRequestReceivedEvent(PartnerRequestReceivedEvent event) {
         log.debug("onPartnerRequestReceivedEvent");
-        // we have the partner
+        // only notify if this is a task (requires manual intervention)
+        if (activityLogConfig.getConnectionStatesForTasks().contains(event.getPartner().getState())) {
+            WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
+                    WebSocketMessageBody.WebSocketMessageType.onPartnerRequestReceived,
+                    event.getPartner().getId(),
+                    null,
+                    event.getPartner());
+            messageService.sendMessage(message);
+        }
     }
 
     @EventListener
     @Async
     public void onPartnerAddedEvent(PartnerAddedEvent event) {
         log.debug("onPartnerAddedEvent");
-        // we have the partner
+        WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
+                WebSocketMessageBody.WebSocketMessageType.onPartnerAdded,
+                event.getPartner().getId(),
+                null,
+                event.getPartner());
+        messageService.sendMessage(message);
     }
 
     @EventListener
     @Async
     public void onPartnerRemovedEvent(PartnerRemovedEvent event) {
         log.debug("onPartnerRemovedEvent");
-        // we have the partner
+        WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
+                WebSocketMessageBody.WebSocketMessageType.onPartnerRemoved,
+                event.getPartner().getId(),
+                null,
+                event.getPartner());
+        messageService.sendMessage(message);
     }
 
     @EventListener
@@ -69,9 +109,22 @@ public class NotificationEventListener {
     public void onPresentationRequestCompletedEvent(PresentationRequestCompletedEvent event) {
         log.debug("onPresentationRequestCompletedEvent");
         // we have the partner id, but not the partner, will need to look up partner...
-        partnerManager.getPartnerById(event.getPartnerProof().getPartnerId()).ifPresent(p -> {
-            log.debug(p.getDid());
-            // send out separate notifications for verified or received.
+        partnerManager.getPartnerById(event.getProofExchange().getPartnerId()).ifPresent(p -> {
+            WebSocketMessageBody message = null;
+            if (event.getProofExchange().getRole().equals(PresentationExchangeRole.PROVER)) {
+                message = WebSocketMessageBody.notificationEvent(
+                        WebSocketMessageBody.WebSocketMessageType.onPresentationProved,
+                        event.getProofExchange().getId().toString(),
+                        event.getProofExchange(),
+                        p);
+            } else {
+                message = WebSocketMessageBody.notificationEvent(
+                        WebSocketMessageBody.WebSocketMessageType.onPresentationVerified,
+                        event.getProofExchange().getId().toString(),
+                        event.getProofExchange(),
+                        p);
+            }
+            messageService.sendMessage(message);
         });
     }
 
@@ -79,11 +132,24 @@ public class NotificationEventListener {
     @Async
     public void onPresentationRequestReceivedEvent(PresentationRequestReceivedEvent event) {
         log.debug("onPresentationRequestReceivedEvent");
-        // we have the partner id, but not the partner, will need to look up partner...
-        partnerManager.getPartnerById(event.getPartnerProof().getPartnerId()).ifPresent(p -> {
-            log.debug(p.getDid());
-        });
-    }
+        // only notify if this is a task (requires manual intervention)
+        if (activityLogConfig.getPresentationExchangeStatesForTasks().contains(event.getProofExchange().getState())) {
+            // we have the partner id, but not the partner, will need to look up partner...
+            partnerManager.getPartnerById(event.getProofExchange().getPartnerId()).ifPresent(p -> {
+                WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
+                        WebSocketMessageBody.WebSocketMessageType.onPresentationRequestReceived,
+                        event.getProofExchange().getId().toString(),
+                        event.getProofExchange(),
+                        p);
+                messageService.sendMessage(message);
 
-    // send message over socket...
+                WebSocketMessageBody task = WebSocketMessageBody.notificationEvent(
+                        WebSocketMessageBody.WebSocketMessageType.onNewTask,
+                        event.getProofExchange().getId().toString(),
+                        event.getProofExchange(),
+                        p);
+                messageService.sendMessage(task);
+            });
+        }
+    }
 }

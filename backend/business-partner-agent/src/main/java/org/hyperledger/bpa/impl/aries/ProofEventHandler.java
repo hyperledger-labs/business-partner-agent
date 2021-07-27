@@ -29,6 +29,7 @@ import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.notification.PresentationRequestCompletedEvent;
 import org.hyperledger.bpa.impl.notification.PresentationRequestReceivedEvent;
+import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
@@ -52,6 +53,9 @@ public class ProofEventHandler {
 
     @Inject
     MessageService messageService;
+
+    @Inject
+    Converter conv;
 
     @Inject
     ApplicationEventPublisher eventPublisher;
@@ -109,7 +113,7 @@ public class ProofEventHandler {
                         WebSocketMessageBody.WebSocketMessageType.PROOF,
                         savedProof);
                 eventPublisher.publishEvent(PresentationRequestCompletedEvent.builder()
-                        .partnerProof(savedProof)
+                        .proofExchange(conv.toAPIObject(savedProof))
                         .build());
             } else {
                 log.warn("Proof does not contain any identifiers event will not be persisted");
@@ -145,7 +149,7 @@ public class ProofEventHandler {
                                     .setProofRequest(proof.getPresentationRequest());
                             pProofRepo.save(pp);
                             eventPublisher.publishEvent(PresentationRequestReceivedEvent.builder()
-                                    .partnerProof(pp)
+                                    .proofExchange(conv.toAPIObject(pp))
                                     .build());
 
                         }));

@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 */
 
@@ -12,6 +12,7 @@ import taa from "./modules/taa";
 import socketEvents from "./modules/socketevents";
 import * as actions from "./actions";
 import * as getters from "./getters";
+import notifications from "@/store/modules/notifications";
 
 Vue.use(Vuex);
 
@@ -59,6 +60,7 @@ const store = new Vuex.Store({
   modules: {
     taa,
     socketEvents,
+    notifications,
   },
 });
 

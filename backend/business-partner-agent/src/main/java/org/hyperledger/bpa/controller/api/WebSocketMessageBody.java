@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.controller.api;
 
+import io.micronaut.core.annotation.Nullable;
 import lombok.*;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
@@ -46,6 +47,7 @@ public class WebSocketMessageBody {
         private WebSocketMessageState state;
         private String linkId;
         private Object info;
+        private PartnerAPI partner;
     }
 
     public enum WebSocketMessageType {
@@ -54,7 +56,15 @@ public class WebSocketMessageBody {
         PARTNER,
         PROOF,
         PROOFREQUEST,
-        NOTIFICATION
+        NOTIFICATION,
+        onCredentialAdded,
+        onPartnerRequestReceived,
+        onPartnerAdded,
+        onPartnerRemoved,
+        onPresentationVerified,
+        onPresentationProved,
+        onPresentationRequestReceived,
+        onNewTask
     }
 
     public enum WebSocketMessageState {
@@ -104,6 +114,20 @@ public class WebSocketMessageBody {
                 .type(WebSocketMessageType.NOTIFICATION)
                 .state(completed ? WebSocketMessageState.COMPLETED : WebSocketMessageState.NEW)
                 .info(info)
+                .build());
+    }
+
+    public static WebSocketMessageBody notificationEvent(@NonNull WebSocketMessageType type,
+            @Nullable String linkId,
+            @Nullable Object info,
+            @Nullable PartnerAPI partner) {
+        return WebSocketMessageBody.of(WebSocketMessage
+                .builder()
+                .type(type)
+                .state(WebSocketMessageState.SENT)
+                .info(info)
+                .partner(partner)
+                .linkId(linkId)
                 .build());
     }
 
