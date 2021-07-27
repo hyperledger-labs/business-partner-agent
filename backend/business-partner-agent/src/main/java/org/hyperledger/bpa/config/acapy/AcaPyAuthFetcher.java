@@ -43,7 +43,7 @@ import java.util.Map;
  * custom {@link AuthenticationFetcher} needs to be provided.
  *
  * The AuthFetcher becomes active if either the environment variable BPA_WEBHOOK_KEY
- * or the system property bpy.webhook.key is set.
+ * or the system property bpa.webhook.key is set.
  */
 @Slf4j
 @Singleton
@@ -64,12 +64,13 @@ public class AcaPyAuthFetcher implements AuthenticationFetcher {
                     && request.getPath().startsWith(AriesWebhookController.WEBHOOK_CONTROLLER_PATH)) {
                 String apiKeyHeader = request.getHeaders().get(X_API_KEY);
                 log.trace("Handling aca-py webhook authentication");
-                if (StringUtils.isNotBlank(apiKeyHeader) && apiKey.equals(apiKeyHeader)) {
+                if (StringUtils.isNotBlank(apiKeyHeader) && apiKeyHeader.equals(apiKey)) {
                     emitter.onSuccess(new AcaPyAuthentication());
                     log.trace("aca-py webhook authentication success");
                     return;
                 }
-                log.error("aca-py webhook authentication failed: {}", apiKeyHeader);
+                log.error("aca-py webhook authentication failed. " +
+                        "Configured bpa.webhook.key: {}, received x-api-key header: {}", apiKey, apiKeyHeader);
             }
             emitter.onComplete();
         }).toFlowable();
