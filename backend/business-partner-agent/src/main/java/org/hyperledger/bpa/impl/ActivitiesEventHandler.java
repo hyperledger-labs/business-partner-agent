@@ -20,8 +20,10 @@ package org.hyperledger.bpa.impl;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
+import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
+import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.config.ActivityLogConfig;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.controller.api.activity.ActivityType;
@@ -38,6 +40,9 @@ public class ActivitiesEventHandler extends EventHandler {
 
     @Inject
     ActivityLogConfig activityLogConfig;
+
+    @Inject
+    PartnerManager partnerManager;
 
     @Override
     public void handleConnection(ConnectionRecord connection) {
@@ -69,4 +74,13 @@ public class ActivitiesEventHandler extends EventHandler {
                     .sendMessage(WebSocketMessageBody.notification(ActivityType.PRESENTATION_EXCHANGE, completed));
         }
     }
+
+    @Override
+    public void handleBasicMessage(BasicMessage message) {
+        PartnerAPI partner = partnerManager.getPartnerByConnectionId(message.getConnectionId());
+        if (partner != null) {
+            messageService.sendMessage(WebSocketMessageBody.message(partner, message));
+        }
+    }
+
 }

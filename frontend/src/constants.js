@@ -8,6 +8,8 @@
 
 import i18n from "@/plugins/i18n";
 
+export const CHAT_CURRENT_USERID = "__self__";
+
 export const CredentialTypes = Object.freeze({
   PROFILE: {
     type: "ORGANIZATIONAL_PROFILE_CREDENTIAL",
