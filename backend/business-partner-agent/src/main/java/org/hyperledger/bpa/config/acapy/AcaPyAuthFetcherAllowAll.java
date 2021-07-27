@@ -29,7 +29,8 @@ import org.reactivestreams.Publisher;
 import javax.inject.Singleton;
 
 /**
- * Backwards compatible AuthFetcher if security is set to true, but no properties are set.
+ * Backwards compatible AuthFetcher if security is set to true, but no
+ * properties are set.
  */
 @Slf4j
 @Singleton
