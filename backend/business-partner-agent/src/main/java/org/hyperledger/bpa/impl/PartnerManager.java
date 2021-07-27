@@ -26,13 +26,14 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.PartnerException;
+import org.hyperledger.bpa.controller.api.partner.AddPartnerRequest;
+import org.hyperledger.bpa.controller.api.partner.UpdatePartnerRequest;
 import org.hyperledger.bpa.core.RegisteredWebhook.WebhookEventType;
 import org.hyperledger.bpa.impl.activity.PartnerLookup;
 import org.hyperledger.bpa.impl.aries.ConnectionManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.model.Tag;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.hyperledger.bpa.repository.TagRepository;
@@ -88,6 +89,11 @@ public class PartnerManager {
         return repo.findById(id).map(converter::toAPIObject).orElse(null);
     }
 
+    @Nullable
+    public PartnerAPI getPartnerByConnectionId(@NonNull String id) {
+        return repo.findByConnectionId(id).map(converter::toAPIObject).orElse(null);
+    }
+
     public void removePartnerById(@NonNull UUID id) {
         repo.findById(id).ifPresent(p -> {
             if (p.getConnectionId() != null) {
@@ -97,23 +103,24 @@ public class PartnerManager {
         repo.deleteById(id);
     }
 
-    public PartnerAPI addPartnerFlow(@NonNull String did, @Nullable String alias, List<Tag> tags) {
-        Optional<Partner> dbPartner = repo.findByDid(did);
+    public PartnerAPI addPartnerFlow(@NonNull AddPartnerRequest req) {
+        Optional<Partner> dbPartner = repo.findByDid(req.getDid());
         if (dbPartner.isPresent()) {
-            throw new PartnerException("Partner for did already exists: " + did);
+            throw new PartnerException("Partner for did already exists: " + req.getDid());
         }
-        PartnerAPI lookupP = partnerLookup.lookupPartner(did);
+        PartnerAPI lookupP = partnerLookup.lookupPartner(req.getDid());
 
-        Partner partner = converter.toModelObject(did, lookupP)
+        Partner partner = converter.toModelObject(req.getDid(), lookupP)
                 .setAriesSupport(lookupP.getAriesSupport())
-                .setAlias(alias)
-                .setTags(tags != null ? new HashSet<>(tags) : null)
-                .setState(ConnectionState.REQUEST);
+                .setAlias(req.getAlias())
+                .setTags(req.getTag() != null ? new HashSet<>(req.getTag()) : null)
+                .setState(ConnectionState.REQUEST)
+                .setTrustPing(req.getTrustPing() != null ? req.getTrustPing() : Boolean.TRUE);
 
-        cm.createConnection(did).ifPresent(c -> partner.setConnectionId(c.getConnectionId()));
+        cm.createConnection(req.getDid()).ifPresent(c -> partner.setConnectionId(c.getConnectionId()));
         Partner result = repo.save(partner);
 
-        if (did.startsWith(ledgerPrefix)) {
+        if (req.getDid().startsWith(ledgerPrefix)) {
             credLookup.lookupTypesForAllPartnersAsync();
         }
 
@@ -122,17 +129,19 @@ public class PartnerManager {
         return apiPartner;
     }
 
-    public Optional<PartnerAPI> updatePartner(@NonNull UUID id, @Nullable String alias, @Nullable List<Tag> tags) {
+    public Optional<PartnerAPI> updatePartner(@NonNull UUID id, @NonNull UpdatePartnerRequest req) {
         Optional<PartnerAPI> result = Optional.empty();
         final Optional<Partner> dbP = repo.findById(id);
         if (dbP.isPresent()) {
             Partner p = dbP.get();
-            p.setTags(tags != null ? new HashSet<>(tags) : null);
-            p.setAlias(alias);
-            tagRepo.updateAllPartnerToTagMappings(id, tags);
-            repo.updateAlias(id, alias);
-            if (StringUtils.isNotBlank(alias)) {
-                myCredRepo.updateByConnectionId(dbP.get().getConnectionId(), dbP.get().getConnectionId(), alias);
+            p.setTags(req.getTag() != null ? new HashSet<>(req.getTag()) : null);
+            p.setAlias(req.getAlias());
+            p.setTrustPing(req.getTrustPing());
+            tagRepo.updateAllPartnerToTagMappings(id, req.getTag());
+            repo.updateAlias(id, req.getAlias(), req.getTrustPing());
+            if (StringUtils.isNotBlank(req.getAlias())) {
+                myCredRepo.updateByConnectionId(
+                        dbP.get().getConnectionId(), dbP.get().getConnectionId(), req.getAlias());
             }
             result = Optional.of(converter.toAPIObject(p));
         }
@@ -187,6 +196,18 @@ public class PartnerManager {
                 .map(Partner::getConnectionId)
                 .orElseThrow(EntityNotFoundException::new);
         cm.acceptConnection(connectionId);
+    }
+
+    public void sendMessage(@NonNull UUID id, String content) {
+        // check two things here.
+        // 1. If the connection id is set, as it might be null in some states
+        // 2. If the partner has ariesSupport== true as we have none aries partners in
+        // web mode
+        repo.findById(id).ifPresent(p -> {
+            if (StringUtils.isNotEmpty(p.getConnectionId()) && p.getAriesSupport()) {
+                cm.sendMessage(p.getConnectionId(), content);
+            }
+        });
     }
 
 }

@@ -32,8 +32,8 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.DidVerkeyResponse;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
-import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
 import org.hyperledger.bpa.controller.api.admin.AddSchemaRequest;
+import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
 import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
 import org.hyperledger.bpa.controller.api.admin.UpdateTrustedIssuerRequest;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
@@ -53,6 +53,8 @@ import java.util.UUID;
 @MicronautTest
 public class AdminControllerTest {
 
+    private final String schemaId = "NZhb9EqpN9a6gkHge9fTmv:2:a-schema-name:0.0.1";
+
     @Value("${bpa.did.prefix}")
     String didPrefix;
 
@@ -69,10 +71,9 @@ public class AdminControllerTest {
     @Test
     void testAddSchemaWithRestriction() throws Exception {
         mockGetSchemaAndVerkey();
-        String schemaId = "NZhb9EqpN9a6gkHge9fTmv:2:a-schema-name:0.0.1";
 
         // add schema
-        HttpResponse<SchemaAPI> addedSchema = addSchemaWithRestriction(schemaId);
+        HttpResponse<SchemaAPI> addedSchema = addSchemaWithRestriction();
         Assertions.assertEquals(HttpStatus.OK, addedSchema.getStatus());
         Assertions.assertTrue(addedSchema.getBody().isPresent());
 
@@ -86,19 +87,17 @@ public class AdminControllerTest {
         // add a restriction to the schema
         URI uri = UriBuilder.of("/{id}/trustedIssuer")
                 .expand(Map.of("id", schema.getId().toString()));
-        client.toBlocking()
-                .exchange(HttpRequest.POST(uri,
-                        AddTrustedIssuerRequest.builder()
-                                .issuerDid("issuer2")
-                                .label("Demo Bank")
-                                .build()),
-                        TrustedIssuer.class);
+        addRestriction(uri, "issuer2", "Demo Bank");
 
         // check if the restriction was added
         schema = getSchema(addedSchema.getBody().get().getId());
         Assertions.assertNotNull(schema.getTrustedIssuer());
         Assertions.assertEquals(2, schema.getTrustedIssuer().size());
         Assertions.assertEquals(didPrefix + "issuer2", schema.getTrustedIssuer().get(1).getIssuerDid());
+
+        // try adding the same restriction twice
+        Assertions.assertThrows(HttpClientResponseException.class,
+                () -> addRestriction(uri, "issuer2", null));
 
         // delete the first restriction
         URI delete = UriBuilder.of("/{id}/trustedIssuer/{trustedIssuerId}")
@@ -142,12 +141,18 @@ public class AdminControllerTest {
         Assertions.assertThrows(HttpClientResponseException.class, () -> getSchema(deleteId));
     }
 
+    @Test
+    void testAddRestrictionToNonExistingSchema() {
+        URI uri = UriBuilder.of("/{id}/trustedIssuer").expand(Map.of("id", UUID.randomUUID().toString()));
+        Assertions.assertThrows(HttpClientResponseException.class, () -> addRestriction(uri, "something", null));
+    }
+
     private SchemaAPI getSchema(@NonNull UUID id) {
         return client.toBlocking()
                 .retrieve(HttpRequest.GET("/" + id), SchemaAPI.class);
     }
 
-    private HttpResponse<SchemaAPI> addSchemaWithRestriction(@NonNull String schemaId) {
+    private HttpResponse<SchemaAPI> addSchemaWithRestriction() {
         return client.toBlocking()
                 .exchange(HttpRequest.POST("",
                         AddSchemaRequest.builder()
@@ -163,10 +168,20 @@ public class AdminControllerTest {
                         SchemaAPI.class);
     }
 
+    private void addRestriction(URI uri, String issuerDid, String label) {
+        client.toBlocking()
+                .exchange(HttpRequest.POST(uri,
+                        AddTrustedIssuerRequest.builder()
+                                .issuerDid(issuerDid)
+                                .label(label)
+                                .build()),
+                        TrustedIssuer.class);
+    }
+
     private void mockGetSchemaAndVerkey() throws IOException {
         Mockito.when(ac.schemasGetById(Mockito.anyString())).thenReturn(Optional.of(SchemaSendResponse.Schema
                 .builder()
-                .id("schema1")
+                .id(schemaId)
                 .seqNo(1)
                 .attrNames(List.of("name"))
                 .name("dummy")

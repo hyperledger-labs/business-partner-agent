@@ -26,6 +26,12 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class CreatePartnerInvitationRequest {
-    public String alias;
+    private String alias;
     private List<Tag> tag;
+    private Boolean trustPing;
+    private Boolean useOutOfBand;
+
+    public boolean getUseOutOfBand() {
+        return useOutOfBand != null && useOutOfBand;
+    }
 }

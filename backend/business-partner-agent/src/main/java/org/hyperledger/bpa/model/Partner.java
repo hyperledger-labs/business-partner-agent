@@ -39,9 +39,9 @@ import java.util.*;
 
 /**
  * Flat representation of a partner. In the web context a partner is just a
- * reference to a did and the public profile thats referenced via the did
+ * reference to a did and the public profile that's referenced by the did
  * documents profile endpoint. In the context of aries a partner also becomes a
- * connection including pairwise did's and states etc.
+ * connection including pairwise did's, states, trust ping etc.
  */
 @Data
 @NoArgsConstructor
@@ -61,33 +61,54 @@ public class Partner {
     @DateUpdated
     private Instant updatedAt;
 
+    /** The last time a ping response was received from the partner */
     @Nullable
-    private Instant lastSeen; // last time a ping response was received from the partner
+    private Instant lastSeen;
 
     /** The fully qualified did like did:sov:123 */
     private String did;
 
+    /**
+     * If the partner supports aries, set if the partner has a endpoint that
+     * supports did communication
+     */
     private Boolean ariesSupport;
 
+    /** aries connection id */
     @Nullable
-    private String connectionId; // aries connection id
+    private String connectionId;
 
+    /** Aries connection state */
     @Nullable
     @Enumerated(EnumType.STRING)
-    private ConnectionState state; // aries connection state
+    private ConnectionState state;
 
+    /**
+     * Aries connection label, if incoming connection set by the partner via the
+     * --label flag, or through rest overwrite
+     */
     @Nullable
-    private String label; // aries connection label
-                          // if incoming connection set by the partner
+    private String label;
 
+    /** The partners alias or name, always set by a user in the UI */
     @Nullable
-    private String alias; // partner alias
+    private String alias;
 
+    /** Direction of the communication, incoming or outgoing aries connection */
     @Nullable
-    private Boolean incoming; // incoming aries connection
+    private Boolean incoming;
 
+    /** If the partners public profile is valid */
     @Nullable
-    private Boolean valid; // if the public profile is valid
+    private Boolean valid;
+
+    /** If the trust ping feature is active for this partner */
+    @Nullable
+    private Boolean trustPing;
+
+    /** Aries OOB invitation message id */
+    @Nullable
+    private String invitationMsgId;
 
     /**
      * The Partners Public Profile {@link VerifiablePresentation} to be used in the

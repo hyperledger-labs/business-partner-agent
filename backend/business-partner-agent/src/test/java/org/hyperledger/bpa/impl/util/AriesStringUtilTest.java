@@ -27,7 +27,7 @@ class AriesStringUtilTest {
 
     @Test
     void testGetSeqNo() {
-        assertEquals("571", AriesStringUtil.credDefIdGetSquenceNo("M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account"));
+        assertEquals("571", AriesStringUtil.credDefIdGetSequenceNo("M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account"));
     }
 
     @Test

@@ -88,6 +88,20 @@
     },
     "presentationRequestDetails": {
       "header": "Presentation Request Details"
+    },
+    "addPartner": {
+      "title": "Add new Business Partner",
+      "setName": "Set a name",
+      "setTags": "Set tags",
+      "trustPing": "Trust Ping",
+      "lookupPartnerBtnLabel": "Lookup Partner",
+      "addPartnerBtnLabel": "Add Partner"
+    },
+    "addPartnerbyURL": {
+      "title": "Invite new Business Partner",
+      "createInvitation": "Generate Invitation (QR Code)",
+      "invitationURL": "Invitation URL",
+      "useOOB": "Use Out of Band"
     }
   },
   "constants": {

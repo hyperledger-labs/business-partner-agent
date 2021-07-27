@@ -29,7 +29,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.aries.api.connection.CreateInvitationResponse;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
@@ -117,7 +116,7 @@ public class PartnerController {
     public HttpResponse<PartnerAPI> updatePartner(
             @PathVariable String id,
             @Body UpdatePartnerRequest update) {
-        Optional<PartnerAPI> partner = pm.updatePartner(UUID.fromString(id), update.getAlias(), update.getTag());
+        Optional<PartnerAPI> partner = pm.updatePartner(UUID.fromString(id), update);
         if (partner.isPresent()) {
             return HttpResponse.ok(partner.get());
         }
@@ -157,17 +156,17 @@ public class PartnerController {
     /**
      * Add a new partner
      *
-     * @param partner {@link AddPartnerRequest}
+     * @param request {@link AddPartnerRequest}
      * @return {@link PartnerAPI}
      */
     @Post
-    public HttpResponse<PartnerAPI> addPartner(@Body AddPartnerRequest partner) {
-        return HttpResponse.created(pm.addPartnerFlow(partner.getDid(), partner.getAlias(), partner.getTag()));
+    public HttpResponse<PartnerAPI> addPartner(@Body AddPartnerRequest request) {
+        return HttpResponse.created(pm.addPartnerFlow(request));
     }
 
     /**
      * Accept partner connection request
-     * 
+     *
      * @param id {@link UUID} the partner id
      * @return HTTP status, no body
      */
@@ -362,12 +361,23 @@ public class PartnerController {
      * @return {@link PartnerAPI}
      */
     @Post("/invitation")
-    public HttpResponse<CreateInvitationResponse> requestConnectionInvitation(
+    public HttpResponse<?> requestConnectionInvitation(
             @Body CreatePartnerInvitationRequest req) {
-        final Optional<CreateInvitationResponse> invitation = cm.createConnectionInvitation(req.alias, req.getTag());
-        if (invitation.isPresent()) {
-            return HttpResponse.ok(invitation.get());
-        }
-        return HttpResponse.serverError();
+        return HttpResponse.ok(cm.createConnectionInvitation(req));
+    }
+
+    /**
+     * Aries: Send message to partner
+     *
+     * @param id  {@link UUID} the partner id
+     * @param msg {@link SendMessageRequest}
+     * @return HTTP status
+     */
+    @Post("/{id}/message")
+    public HttpResponse<Void> sendMessage(
+            @PathVariable String id,
+            @Body SendMessageRequest msg) {
+        pm.sendMessage(UUID.fromString(id), msg.getContent());
+        return HttpResponse.ok();
     }
 }

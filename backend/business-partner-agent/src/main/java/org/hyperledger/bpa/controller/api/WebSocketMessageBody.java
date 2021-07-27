@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.controller.api;
 
 import lombok.*;
+import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
@@ -54,7 +55,8 @@ public class WebSocketMessageBody {
         PARTNER,
         PROOF,
         PROOFREQUEST,
-        NOTIFICATION
+        NOTIFICATION,
+        MESSAGE
     }
 
     public enum WebSocketMessageState {
@@ -63,16 +65,6 @@ public class WebSocketMessageBody {
         SENT,
         NEW,
         COMPLETED
-    }
-
-    public static WebSocketMessageBody partnerConnectionRequest(PartnerAPI partner) {
-        return WebSocketMessageBody.of(WebSocketMessage
-                .builder()
-                .type(WebSocketMessageType.CONNECTION_REQUEST)
-                .state(WebSocketMessageState.RECEIVED)
-                .linkId(partner.getId())
-                .info(partner)
-                .build());
     }
 
     public static WebSocketMessageBody partnerReceived(PartnerAPI partner) {
@@ -114,6 +106,19 @@ public class WebSocketMessageBody {
                 .type(WebSocketMessageType.NOTIFICATION)
                 .state(completed ? WebSocketMessageState.COMPLETED : WebSocketMessageState.NEW)
                 .info(info)
+                .build());
+    }
+
+    public static WebSocketMessageBody message(PartnerAPI partner, BasicMessage message) {
+        return WebSocketMessageBody.of(WebSocketMessage
+                .builder()
+                .type(WebSocketMessageType.MESSAGE)
+                .state(WebSocketMessageState.RECEIVED)
+                .info(PartnerMessage.builder()
+                        .partnerId(partner.getId())
+                        .messageId(message.getMessageId())
+                        .content(message.getContent())
+                        .build())
                 .build());
     }
 

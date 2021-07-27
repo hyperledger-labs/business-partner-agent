@@ -48,7 +48,7 @@ public class BPAMessageSource {
         }
 
         public String getMessage(@NonNull String key, Map<String, Object> variables) {
-            return ms.getMessage(key, messageContext, "");
+            return ms.getMessage(key, MessageSource.MessageContext.of(variables), "");
         }
     }
 }
