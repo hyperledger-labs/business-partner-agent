@@ -29,9 +29,8 @@
 </template>
 
 <script>
-  import ChatWindow from 'vue-advanced-chat'
-  import 'vue-advanced-chat/dist/vue-advanced-chat.css'
-  import * as partnerUtils from "@/utils/partnerUtils";
+  import ChatWindow from 'vue-advanced-chat';
+  import 'vue-advanced-chat/dist/vue-advanced-chat.css';
   import partnerService from "@/services/partnerService";
   import { mapMutations } from 'vuex';
   import {CHAT_CURRENT_USERID} from "@/constants";
@@ -95,7 +94,7 @@
           const p = partners[i];
           // assume they have a connection id, but check to make sure this partner is ARIES
           if (p.ariesSupport) {
-            const name = partnerUtils.getPartnerName(p);
+            const name = p.name;
             // each room is for a single partner/connection
             // so set the room id to the partner id.
             // add users to represent the partner and us.
