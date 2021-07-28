@@ -2,7 +2,7 @@ CREATE TABLE bpa_proof_template (
     id uuid PRIMARY KEY,
     created_at timestamp without time zone NOT NULL,
     name character varying(255) NOT NULL,
-    attribute_groups jsonb
+    attribute_groups_json jsonb
 );
 
 ALTER TABLE partner_proof ADD COLUMN proof_template_id uuid; -- field name plus _id

@@ -31,6 +31,7 @@ import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroups;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -61,6 +62,7 @@ public class BPAProofTemplate {
 
     @NotEmpty
     @Valid
+    @Column(name = "attribute_groups_json")
     @TypeDef(type = DataType.JSON)
     // using a concrete class instead of a generic list does not unmarshal correctly
     // see https://github.com/micronaut-projects/micronaut-data/issues/1064
