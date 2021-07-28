@@ -25,7 +25,6 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeInitiator;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
-import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.notification.PresentationRequestCompletedEvent;
 import org.hyperledger.bpa.impl.notification.PresentationRequestDeclinedEvent;
@@ -107,14 +106,6 @@ public class ProofEventHandler {
         pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId()).ifPresent(pp -> {
             if (CollectionUtils.isNotEmpty(proof.getIdentifiers())) {
                 PartnerProof savedProof = proofManager.handleAckedOrVerifiedProofEvent(proof, pp);
-
-                WebSocketMessageBody.WebSocketMessageState state = PresentationExchangeRole.VERIFIER
-                        .equals(proof.getRole()) ? WebSocketMessageBody.WebSocketMessageState.RECEIVED
-                                : WebSocketMessageBody.WebSocketMessageState.SENT;
-                proofManager.sendMessage(
-                        state,
-                        WebSocketMessageBody.WebSocketMessageType.PROOF,
-                        savedProof);
                 eventPublisher.publishEventAsync(PresentationRequestCompletedEvent.builder()
                         .partnerProof(savedProof)
                         .build());

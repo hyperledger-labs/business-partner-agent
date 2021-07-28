@@ -40,7 +40,6 @@ import org.hyperledger.bpa.api.aries.AriesCredential.AriesCredentialBuilder;
 import org.hyperledger.bpa.api.aries.ProfileVC;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
-import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.activity.VPManager;
@@ -175,7 +174,6 @@ public class CredentialManager {
                             .setLabel(label);
                     MyCredential updated = credRepo.update(cred);
                     AriesCredential ariesCredential = buildAriesCredential(updated);
-                    messageService.sendMessage(WebSocketMessageBody.credentialReceived(ariesCredential));
                     eventPublisher.publishEventAsync(CredentialAddedEvent.builder()
                             .credential(ariesCredential)
                             .credentialExchange(credEx)
@@ -265,7 +263,7 @@ public class CredentialManager {
      *
      * @param ariesCred {@link Credential}
      * @return the issuer or null when the credential or the credential definition
-     *         id is null
+     * id is null
      */
     @Nullable
     String resolveIssuer(@Nullable Credential ariesCred) {

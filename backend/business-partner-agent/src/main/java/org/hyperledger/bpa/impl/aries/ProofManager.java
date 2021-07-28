@@ -35,7 +35,6 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.api.exception.PresentationConstructionException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
-import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
@@ -298,13 +297,6 @@ public class ProofManager {
             }
             pProofRepo.deleteById(id);
         });
-    }
-
-    void sendMessage(
-            @NonNull WebSocketMessageBody.WebSocketMessageState state,
-            @NonNull WebSocketMessageBody.WebSocketMessageType type,
-            @NonNull PartnerProof pp) {
-        messageService.sendMessage(WebSocketMessageBody.proof(state, type, conv.toAPIObject(pp)));
     }
 
     private @Nullable String resolveIssuer(String credDefId) {
