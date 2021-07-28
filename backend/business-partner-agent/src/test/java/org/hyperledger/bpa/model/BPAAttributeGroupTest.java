@@ -26,6 +26,7 @@ import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.model.prooftemplate.BPACondition;
 import org.hyperledger.bpa.model.prooftemplate.ValueOperators;
+import org.hyperledger.bpa.util.SchemaMockFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -35,6 +36,7 @@ import javax.validation.ConstraintViolation;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @MicronautTest
 class BPAAttributeGroupTest {
@@ -49,25 +51,24 @@ class BPAAttributeGroupTest {
         return Mockito.mock(SchemaService.class);
     }
 
+    @Inject
+    SchemaMockFactory.SchemaMock schemaMock;
+
     @Test
     void testThatSchemaIdIsCheckedForExistenceInSchemaService() {
-        Mockito.when(schemaService.getSchemaFor("mySchemaId"))
-                .thenReturn(Optional.empty());
-        BPAAttributeGroup sut = BPAAttributeGroup.builder().schemaId("mySchemaId").build();
+        UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId");
+        BPAAttributeGroup sut = BPAAttributeGroup.builder().schemaId(schemaId.toString()).build();
         Set<ConstraintViolation<BPAAttributeGroup>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(1, constraintViolations.size());
-        Assertions.assertEquals("mySchemaId",
+        Assertions.assertEquals(schemaId.toString(),
                 constraintViolations.stream().findFirst().map(ConstraintViolation::getInvalidValue).orElse(null));
     }
 
     @Test
     void testThatAttributeNamesAreCheckedAgainstSchemaFromSchemaService() {
-        Mockito.when(schemaService.getSchemaFor("mySchemaId"))
-                .thenReturn(Optional.of(new BPASchema()));
-        Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
-                .thenReturn(Set.of("surname", "lastname"));
+        UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId", "surname", "lastname");
         BPAAttributeGroup sut = BPAAttributeGroup.builder()
-                .schemaId("mySchemaId")
+                .schemaId(schemaId.toString())
                 .attribute(BPAAttribute.builder()
                         .name("fullname")
                         .build())
@@ -86,12 +87,9 @@ class BPAAttributeGroupTest {
 
     @Test
     void testThatAttributesNamesAreDistinct() {
-        Mockito.when(schemaService.getSchemaFor("mySchemaId"))
-                .thenReturn(Optional.of(new BPASchema()));
-        Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
-                .thenReturn(Set.of("fullname"));
+        UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId", "fullname");
         BPAAttributeGroup sut = BPAAttributeGroup.builder()
-                .schemaId("mySchemaId")
+                .schemaId(schemaId.toString())
                 .attribute(BPAAttribute.builder()
                         .name("fullname")
                         .build())
@@ -114,21 +112,17 @@ class BPAAttributeGroupTest {
 
     @Test
     void testThatAttributeConditionsAreVerified() {
-        Mockito.when(schemaService.getSchemaFor("mySchemaId"))
-                .thenReturn(Optional.of(new BPASchema()));
-        Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
-                .thenReturn(Set.of("myAttributeName"));
+        UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId", "myAttributeName");
         BPACondition invalidCondition = BPACondition.builder()
                 .value("any")
                 .operator(ValueOperators.GREATER_THAN)
                 .build();
         BPAAttributeGroup sut = BPAAttributeGroup.builder()
-                .schemaId("mySchemaId")
+                .schemaId(schemaId.toString())
                 .attribute(BPAAttribute.builder()
                         .name("myAttributeName")
                         .condition(invalidCondition)
                         .build())
-
                 .build();
 
         Set<ConstraintViolation<BPAAttributeGroup>> constraintViolations = validator.validate(sut);

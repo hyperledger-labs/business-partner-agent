@@ -33,14 +33,14 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
 
     @Test
     public void testThatATemplateWithOneAttributeFromOneSchemaIsConvertedCorrectly() {
-        prepareSchemaWithAttributes("mySchemaId", "name");
+        UUID schemaId = prepareSchemaWithAttributes("mySchemaId", "name");
         prepareConnectionId("myConnectionId");
         BPAProofTemplate template = BPAProofTemplate.builder()
                 .id(UUID.randomUUID())
                 .name("MyTestTemplate")
                 .attributeGroups(BPAAttributeGroups.builder()
                         .attributeGroup(BPAAttributeGroup.builder()
-                                .schemaId("mySchemaId")
+                                .schemaId(schemaId.toString())
                                 .attribute(BPAAttribute.builder()
                                         .name("name")
                                         .build())
@@ -69,8 +69,8 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
 
     @Test
     public void testThatATemplateWithSeveralAttributesFromTwoSchemaIsConvertedCorrectly() {
-        prepareSchemaWithAttributes("schema1", "name1", "name2");
-        prepareSchemaWithAttributes("schema2", "name1", "name2", "name3");
+        UUID schemaId1 = prepareSchemaWithAttributes("schema1", "name1", "name2");
+        UUID schemaId2 = prepareSchemaWithAttributes("schema2", "name1", "name2", "name3");
         prepareConnectionId("myConnectionId");
 
         BPAProofTemplate template = BPAProofTemplate.builder()
@@ -78,7 +78,7 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
                 .name("MyTestTemplate")
                 .attributeGroups(BPAAttributeGroups.builder()
                         .attributeGroup(BPAAttributeGroup.builder()
-                                .schemaId("schema1")
+                                .schemaId(schemaId1.toString())
                                 .attribute(BPAAttribute.builder()
                                         .name("name1")
                                         .build())
@@ -87,7 +87,7 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
                                         .build())
                                 .build())
                         .attributeGroup(BPAAttributeGroup.builder()
-                                .schemaId("schema2")
+                                .schemaId(schemaId2.toString())
                                 .attribute(BPAAttribute.builder()
                                         .name("name1")
                                         .build())
@@ -132,7 +132,7 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
 
     @Test
     public void testOneAttributeGroupsWithRevocation() {
-        prepareSchemaWithAttributes("mySchemaId", "name1", "name2");
+        UUID schemaId = prepareSchemaWithAttributes("mySchemaId", "name1", "name2");
         prepareConnectionId("myConnectionId");
 
         BPAProofTemplate template = BPAProofTemplate.builder()
@@ -140,7 +140,7 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
                 .name("MyTestTemplate")
                 .attributeGroups(BPAAttributeGroups.builder()
                         .attributeGroup(BPAAttributeGroup.builder()
-                                .schemaId("mySchemaId")
+                                .schemaId(schemaId.toString())
                                 .nonRevoked(true)
                                 .attribute(BPAAttribute.builder()
                                         .name("name1")
@@ -182,8 +182,8 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
 
     @Test
     public void testTwoAttributeGroupsWithRevocation() {
-        prepareSchemaWithAttributes("mySchemaId1", "name1", "name2");
-        prepareSchemaWithAttributes("mySchemaId2", "name3", "name4");
+        UUID schemaId1 = prepareSchemaWithAttributes("mySchemaId1", "name1", "name2");
+        UUID schemaId2 = prepareSchemaWithAttributes("mySchemaId2", "name3", "name4");
         prepareConnectionId("myConnectionId");
 
         BPAProofTemplate template = BPAProofTemplate.builder()
@@ -191,7 +191,7 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
                 .name("MyTestTemplate")
                 .attributeGroups(BPAAttributeGroups.builder()
                         .attributeGroup(BPAAttributeGroup.builder()
-                                .schemaId("mySchemaId1")
+                                .schemaId(schemaId1.toString())
                                 .nonRevoked(true)
                                 .attribute(BPAAttribute.builder()
                                         .name("name1")
@@ -201,7 +201,7 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
                                         .build())
                                 .build())
                         .attributeGroup(BPAAttributeGroup.builder()
-                                .schemaId("mySchemaId2")
+                                .schemaId(schemaId2.toString())
                                 .nonRevoked(true)
                                 .attribute(BPAAttribute.builder()
                                         .name("name3")
@@ -256,7 +256,7 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
 
     @Test
     public void testOneAttributeGroupsAndOnePredicateWithRevocation() {
-        prepareSchemaWithAttributes("mySchemaId1", "name1", "name2", "secret1");
+        UUID schemaId = prepareSchemaWithAttributes("mySchemaId1", "name1", "name2", "secret1");
         prepareConnectionId("myConnectionId");
 
         BPAProofTemplate template = BPAProofTemplate.builder()
@@ -264,7 +264,7 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
                 .name("MyTestTemplate")
                 .attributeGroups(BPAAttributeGroups.builder()
                         .attributeGroup(BPAAttributeGroup.builder()
-                                .schemaId("mySchemaId1")
+                                .schemaId(schemaId.toString())
                                 .nonRevoked(true)
                                 .attribute(BPAAttribute.builder()
                                         .name("name1")
@@ -323,7 +323,7 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
 
     @Test
     public void testThatATemplateWithOneAttributeFromOneSchemaAndIssuedByIsConvertedCorrectly() {
-        prepareSchemaWithAttributes("mySchemaId", "name");
+        UUID schemaId = prepareSchemaWithAttributes("mySchemaId", "name");
         prepareConnectionId("myConnectionId");
         BPAProofTemplate template = BPAProofTemplate.builder()
                 .id(UUID.randomUUID())
@@ -333,7 +333,7 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
                                 .schemaLevelRestrictions(BPASchemaRestrictions.builder()
                                         .issuerDid("issuerDid")
                                         .build())
-                                .schemaId("mySchemaId")
+                                .schemaId(schemaId.toString())
                                 .attribute(BPAAttribute.builder()
                                         .name("name")
                                         .build())

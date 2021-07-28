@@ -27,6 +27,7 @@ import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidBPASchemaId;
 import org.hyperledger.bpa.model.prooftemplate.*;
+import org.hyperledger.bpa.util.SchemaMockFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -34,7 +35,6 @@ import org.mockito.Mockito;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -45,35 +45,32 @@ class BPAProofTemplateTest {
     Validator validator;
     @Inject
     ObjectMapper om;
-    @Inject
-    SchemaService schemaService;
 
     @MockBean(SchemaService.class)
-    SchemaService schemaService() {
+    public SchemaService schemaService() {
         return Mockito.mock(SchemaService.class);
     }
 
+    @Inject
+    SchemaMockFactory.SchemaMock schemaMock;
+
     @Test
-    // FIXME this test is broken, because AttributeGroups from ProofTemplates are
-    // not custom validated.
     void testThatAttributeGroupsAreVerified() {
-        Mockito.when(schemaService.getSchemaFor("mySchemaId"))
-                .thenReturn(Optional.of(new BPASchema()));
-        Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
-                .thenReturn(Set.of("anotherAttributeName"));
+        UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId", "anotherAttributeName");
+        UUID notExistingSchema = UUID.randomUUID();
         BPAProofTemplate sut = BPAProofTemplate.builder()
                 .id(UUID.randomUUID())
                 .name("MyTestTemplate")
                 .attributeGroups(
                         BPAAttributeGroups.builder()
                                 .attributeGroup(BPAAttributeGroup.builder()
-                                        .schemaId("notExistingSchema")
+                                        .schemaId(notExistingSchema.toString())
                                         .attribute(BPAAttribute.builder()
                                                 .name("myAttributeName")
                                                 .build())
                                         .build())
                                 .attributeGroup(BPAAttributeGroup.builder()
-                                        .schemaId("mySchemaId")
+                                        .schemaId(schemaId.toString())
                                         .attribute(BPAAttribute.builder()
                                                 .name("notASchemaAttribute")
                                                 .build())

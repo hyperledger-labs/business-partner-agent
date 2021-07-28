@@ -21,7 +21,9 @@ package org.hyperledger.bpa.impl.prooftemplates;
 import io.micronaut.core.annotation.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
+import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.PartnerException;
+import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.*;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
@@ -32,6 +34,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.Valid;
 import java.time.Clock;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -45,6 +48,9 @@ public class ProofTemplateConversion {
     @Inject
     Clock clock;
 
+    @Inject
+    SchemaService schemaService;
+
     @NonNull
     public PresentProofRequest proofRequestViaVisitorFrom(@NonNull UUID partnerId,
             @NonNull @Valid BPAProofTemplate proofTemplate) {
@@ -55,6 +61,7 @@ public class ProofTemplateConversion {
         }
 
         ProofTemplateElementVisitor proofTemplateElementVisitor = new ProofTemplateElementVisitor(
+                this::resolveLedgerSchemaId,
                 new RevocationTimeStampProvider(clock));
 
         proofTemplateElementVisitor.visit(proofTemplate);
@@ -70,11 +77,19 @@ public class ProofTemplateConversion {
                 .build();
     }
 
+    public Optional<String> resolveLedgerSchemaId(String databaseSchemaId) {
+        return schemaService.getSchema(UUID.fromString(databaseSchemaId)).map(SchemaAPI::getSchemaId);
+    }
+
     @NotNull
     private Stream<Pair<String, BPAAttribute>> pairSchemaIdWithAttributes(@NonNull BPAAttributeGroup ag) {
-        Pair.PairBuilder<String, BPAAttribute> pairBuilder = Pair.<String, BPAAttribute>builder()
-                .left(ag.getSchemaId());
-        return ag.getAttributes().stream().map(pairBuilder::right).map(Pair.PairBuilder::build);
+        Optional<Pair.PairBuilder<String, BPAAttribute>> pairBuilder = resolveLedgerSchemaId(ag.getSchemaId())
+                .map(Pair.<String, BPAAttribute>builder()::left);
+        return pairBuilder.map(
+                pair -> ag.getAttributes().stream()
+                        .map(pair::right)
+                        .map(Pair.PairBuilder::build))
+                .orElse(Stream.empty());
     }
 
 }

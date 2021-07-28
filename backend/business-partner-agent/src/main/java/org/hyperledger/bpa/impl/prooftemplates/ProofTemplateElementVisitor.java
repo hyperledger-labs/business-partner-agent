@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 public class ProofTemplateElementVisitor {
 
+    private Function<String, Optional<String>> resolveLedgerSchemaId;
     private final RevocationTimeStampProvider revocationTimeStampProvider;
     private static final NonRevocationApplicator DEFAULT_NON_REVOCATION = new NonRevocationApplicator(false, null);
 
@@ -66,7 +67,9 @@ public class ProofTemplateElementVisitor {
     }
 
     public ProofTemplateElementVisitor(
+            Function<String, Optional<String>> resolveLedgerSchemaId,
             RevocationTimeStampProvider revocationTimeStampProvider) {
+        this.resolveLedgerSchemaId = resolveLedgerSchemaId;
         this.revocationTimeStampProvider = revocationTimeStampProvider;
     }
 
@@ -75,11 +78,13 @@ public class ProofTemplateElementVisitor {
     }
 
     public void visit(BPAAttributeGroup bpaAttributeGroup) {
-        nonRevocationApplicatorMap.put(bpaAttributeGroup.getSchemaId(), NonRevocationApplicator.builder()
-                .applyNonRevocation(bpaAttributeGroup.getNonRevoked())
-                .revocationTimeStampProvider(revocationTimeStampProvider)
-                .build());
-        schemaRestrictions.put(bpaAttributeGroup.getSchemaId(), bpaAttributeGroup.getSchemaLevelRestrictions());
+        resolveLedgerSchemaId.apply(bpaAttributeGroup.getSchemaId()).ifPresent(ledgerSchemaId -> {
+            nonRevocationApplicatorMap.put(ledgerSchemaId, NonRevocationApplicator.builder()
+                    .applyNonRevocation(bpaAttributeGroup.getNonRevoked())
+                    .revocationTimeStampProvider(revocationTimeStampProvider)
+                    .build());
+            schemaRestrictions.put(ledgerSchemaId, bpaAttributeGroup.getSchemaLevelRestrictions());
+        });
     }
 
     public void visit(Pair<String, BPAAttribute> schemaIdAndBpaAttribute) {

@@ -17,26 +17,19 @@
  */
 package org.hyperledger.bpa.controller;
 
-import com.google.gson.Gson;
-import com.nimbusds.jose.shaded.json.JSONObject;
-import io.micronaut.core.type.Argument;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
-import io.micronaut.http.client.netty.FullNettyClientHttpResponse;
 import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.bpa.controller.api.prooftemplates.Attribute;
 import org.hyperledger.bpa.controller.api.prooftemplates.AttributeGroup;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
-import org.hyperledger.bpa.impl.ProofTemplateManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
-import org.hyperledger.bpa.model.BPAProofTemplate;
-import org.hyperledger.bpa.model.BPASchema;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroups;
 import org.hyperledger.bpa.repository.BPAProofTemplateRepository;
+import org.hyperledger.bpa.util.SchemaMockFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,13 +47,13 @@ class ProofTemplateControllerTest {
     @Client("/api/proof-templates")
     HttpClient client;
 
-    @Inject
-    SchemaService schemaService;
-
     @MockBean(SchemaService.class)
     SchemaService schemaService() {
         return Mockito.mock(SchemaService.class);
     }
+
+    @Inject
+    SchemaMockFactory.SchemaMock schemaMock;
 
     @Inject
     BPAProofTemplateRepository repository;
@@ -70,18 +63,9 @@ class ProofTemplateControllerTest {
         repository.deleteAll();
     }
 
-    private UUID prepareSchemaWithAttributes(String... attributes) {
-        UUID schemaId = UUID.randomUUID();
-        Mockito.when(schemaService.getSchemaFor(schemaId.toString()))
-                .thenReturn(Optional.of(new BPASchema()));
-        Mockito.when(schemaService.getSchemaAttributeNames(schemaId.toString()))
-                .thenReturn(Set.of(attributes));
-        return schemaId;
-    }
-
     @Test
     void testAddProofTemplateRequestsAreHandledCorrectly() {
-        UUID schemaId = prepareSchemaWithAttributes("myAttribute");
+        UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId", "myAttribute");
 
         HttpResponse<ProofTemplate> addedTemplate = client.toBlocking().exchange(
                 HttpRequest.POST("",
@@ -105,7 +89,7 @@ class ProofTemplateControllerTest {
 
     @Test
     void testThatListProofTemplatesReturnTheCorrectDateFormat() {
-        UUID schemaId = prepareSchemaWithAttributes("myAttribute");
+        UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId", "myAttribute");
         Assertions.assertEquals(0, repository.count());
         client.toBlocking().exchange(
                 HttpRequest.POST("",

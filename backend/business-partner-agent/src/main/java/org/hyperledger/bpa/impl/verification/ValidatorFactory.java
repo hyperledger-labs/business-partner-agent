@@ -20,6 +20,7 @@ package org.hyperledger.bpa.impl.verification;
 
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.validation.validator.constraints.ConstraintValidator;
+import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.verification.prooftemplates.*;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
@@ -52,7 +53,8 @@ public class ValidatorFactory {
 
     @Singleton
     ConstraintValidator<ValidBPASchemaId, CharSequence> schemaIdValidator(SchemaService schemaService) {
-        return (value, annotationMetadata, context) -> schemaService.getSchemaFor(String.valueOf(value)).isPresent();
+        return (value, annotationMetadata, context) -> schemaService.getSchema(UUID.fromString(String.valueOf(value)))
+                .isPresent();
     }
 
     // TODO find a way to validate single list entries in isolation. This shows the
@@ -72,14 +74,21 @@ public class ValidatorFactory {
         return (value, annotationMetadata, context) -> {
             boolean valid = false;
             if (value != null) {
-                Predicate<String> attributeInSchema = schemaService
-                        .getSchemaAttributeNames(value.getSchemaId())::contains;
+                Optional<Predicate<String>> attributeInSchema = schemaService
+                        .getSchema(UUID.fromString(value.getSchemaId()))
+                        .map(SchemaAPI::getSchemaId)
+                        .map(schemaId -> schemaService
+                                .getSchemaAttributeNames(schemaId)::contains);
                 List<BPAAttribute> attributes = value.getAttributes();
-                if (attributes != null) {
+                if (attributes != null && attributeInSchema.isPresent()) {
                     // an empty AttributeGroup is treated as valid
                     valid = attributes.isEmpty() || attributes.stream()
                             .map(BPAAttribute::getName)
-                            .allMatch(attributeInSchema);
+                            .allMatch(attributeInSchema.get());
+                } else if (attributeInSchema.isEmpty()) {
+                    // treat attributes in an attribute group for a not existing schema as valid,
+                    // because these would be a follow error.
+                    valid = true;
                 }
             }
             return valid;

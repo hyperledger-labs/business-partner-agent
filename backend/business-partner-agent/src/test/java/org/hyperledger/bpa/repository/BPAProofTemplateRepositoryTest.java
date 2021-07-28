@@ -24,6 +24,7 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.*;
 import org.hyperledger.bpa.model.prooftemplate.*;
+import org.hyperledger.bpa.util.SchemaMockFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -46,13 +47,13 @@ class BPAProofTemplateRepositoryTest {
     @Inject
     PartnerProofRepository proofRepository;
 
-    @Inject
-    SchemaService schemaService;
-
     @MockBean(SchemaService.class)
     SchemaService schemaService() {
         return Mockito.mock(SchemaService.class);
     }
+
+    @Inject
+    SchemaMockFactory.SchemaMock schemaMock;
 
     @BeforeEach
     public void setup() {
@@ -81,10 +82,6 @@ class BPAProofTemplateRepositoryTest {
 
     @Test
     void testThatCreatedAtIsOverwrittenByDB() {
-        Mockito.when(schemaService.getSchemaFor("mySchemaId"))
-                .thenReturn(Optional.of(new BPASchema()));
-        Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
-                .thenReturn(Set.of("myAttribute"));
         Instant givenCreatedAt = Instant.now().minus(Duration.ofMillis(1000));
         BPAProofTemplate.BPAProofTemplateBuilder proofTemplateBuilder = getBpaProofTemplateBuilder()
                 .createdAt(givenCreatedAt);
@@ -108,10 +105,6 @@ class BPAProofTemplateRepositoryTest {
 
     @Test
     void testThatCreatedAtIsNotOverwrittenOnUpdatingByDB() throws InterruptedException {
-        Mockito.when(schemaService.getSchemaFor("mySchemaId"))
-                .thenReturn(Optional.of(new BPASchema()));
-        Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
-                .thenReturn(Set.of("myAttribute"));
         Instant givenCreatedAt = Instant.now().minus(Duration.ofMillis(1000));
         BPAProofTemplate.BPAProofTemplateBuilder proofTemplateBuilder = getBpaProofTemplateBuilder()
                 .createdAt(givenCreatedAt);
@@ -176,17 +169,14 @@ class BPAProofTemplateRepositoryTest {
     }
 
     private BPAProofTemplate.BPAProofTemplateBuilder getBpaProofTemplateBuilder() {
-        Mockito.when(schemaService.getSchemaFor("mySchemaId"))
-                .thenReturn(Optional.of(new BPASchema()));
-        Mockito.when(schemaService.getSchemaAttributeNames("mySchemaId"))
-                .thenReturn(Set.of("myAttribute"));
+        UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId", "myAttribute");
         return BPAProofTemplate.builder()
                 .name("myProofTemplate")
                 .attributeGroups(
                         BPAAttributeGroups.builder()
                                 .attributeGroup(
                                         BPAAttributeGroup.builder()
-                                                .schemaId("mySchemaId")
+                                                .schemaId(schemaId.toString())
                                                 .attribute(
                                                         BPAAttribute.builder()
                                                                 .name("myAttribute")
