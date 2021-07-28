@@ -35,5 +35,5 @@ public class ActivityItem {
     private Long updatedAt;
     private String linkId;
     private PartnerAPI partner;
-    private Boolean task;
+    private Boolean completed;
 }

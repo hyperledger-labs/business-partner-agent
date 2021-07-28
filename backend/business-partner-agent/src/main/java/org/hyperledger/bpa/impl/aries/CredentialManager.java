@@ -176,7 +176,7 @@ public class CredentialManager {
                     MyCredential updated = credRepo.update(cred);
                     AriesCredential ariesCredential = buildAriesCredential(updated);
                     messageService.sendMessage(WebSocketMessageBody.credentialReceived(ariesCredential));
-                    eventPublisher.publishEvent(CredentialAddedEvent.builder()
+                    eventPublisher.publishEventAsync(CredentialAddedEvent.builder()
                             .credential(ariesCredential)
                             .credentialExchange(credEx)
                             .build());

@@ -21,14 +21,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.model.PartnerProof;
+import org.hyperledger.bpa.model.Partner;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class PresentationRequestReceivedEvent {
+public class PartnerRequestCompletedEvent {
 
-    private PartnerProof partnerProof;
+    private Partner partner;
 
 }

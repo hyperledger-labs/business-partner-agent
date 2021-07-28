@@ -34,11 +34,7 @@ public enum ActivityState {
     PRESENTATION_EXCHANGE_RECEIVED,
     @JsonProperty("presentation_exchange_accepted")
     PRESENTATION_EXCHANGE_ACCEPTED,
-    @JsonProperty("credential_exchange_sent")
-    CREDENTIAL_EXCHANGE_SENT,
-    @JsonProperty("credential_exchange_received")
-    CREDENTIAL_EXCHANGE_RECEIVED,
-    @JsonProperty("credential_exchange_accepted")
-    CREDENTIAL_EXCHANGE_ACCEPTED
+    @JsonProperty("presentation_exchange_declined")
+    PRESENTATION_EXCHANGE_DECLINED,
 
 }

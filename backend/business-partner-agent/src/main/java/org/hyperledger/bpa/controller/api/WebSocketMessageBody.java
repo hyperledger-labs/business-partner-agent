@@ -62,10 +62,12 @@ public class WebSocketMessageBody {
         onCredentialAdded,
         onPartnerRequestReceived,
         onPartnerAdded,
+        onPartnerAccepted,
         onPartnerRemoved,
         onPresentationVerified,
         onPresentationProved,
         onPresentationRequestReceived,
+        onPresentationRequestSent,
         onNewTask
     }
 

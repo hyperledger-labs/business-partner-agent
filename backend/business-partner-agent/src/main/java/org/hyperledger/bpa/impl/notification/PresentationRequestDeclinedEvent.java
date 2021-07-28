@@ -27,7 +27,7 @@ import org.hyperledger.bpa.model.PartnerProof;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class PresentationRequestReceivedEvent {
+public class PresentationRequestDeclinedEvent {
 
     private PartnerProof partnerProof;
 

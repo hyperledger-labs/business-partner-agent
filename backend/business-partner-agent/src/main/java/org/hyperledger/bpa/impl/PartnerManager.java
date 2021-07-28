@@ -87,10 +87,6 @@ public class PartnerManager {
         return repo.findById(id).map(converter::toAPIObject);
     }
 
-    public Optional<PartnerAPI> getPartnerByConnectionId(@NonNull String connectionId) {
-        return repo.findByConnectionId(connectionId).map(converter::toAPIObject);
-    }
-
     @Nullable
     public PartnerAPI getPartner(@NonNull UUID id) {
         return repo.findById(id).map(converter::toAPIObject).orElse(null);

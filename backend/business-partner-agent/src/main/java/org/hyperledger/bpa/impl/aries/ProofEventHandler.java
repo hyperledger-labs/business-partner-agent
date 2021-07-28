@@ -28,6 +28,7 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.notification.PresentationRequestCompletedEvent;
+import org.hyperledger.bpa.impl.notification.PresentationRequestDeclinedEvent;
 import org.hyperledger.bpa.impl.notification.PresentationRequestReceivedEvent;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.PartnerProof;
@@ -88,6 +89,8 @@ public class ProofEventHandler {
                                     }
                                     if (proof.getErrorMsg() != null) {
                                         pProofRepo.updateProblemReport(pp.getId(), proof.getErrorMsg());
+                                        eventPublisher.publishEventAsync(
+                                                PresentationRequestDeclinedEvent.builder().partnerProof(pp).build());
                                     }
                                 },
                                 () -> pProofRepo.save(defaultProof(p.getId(), proof))),
@@ -112,8 +115,8 @@ public class ProofEventHandler {
                         state,
                         WebSocketMessageBody.WebSocketMessageType.PROOF,
                         savedProof);
-                eventPublisher.publishEvent(PresentationRequestCompletedEvent.builder()
-                        .proofExchange(conv.toAPIObject(savedProof))
+                eventPublisher.publishEventAsync(PresentationRequestCompletedEvent.builder()
+                        .partnerProof(savedProof)
                         .build());
             } else {
                 log.warn("Proof does not contain any identifiers event will not be persisted");
@@ -148,8 +151,8 @@ public class ProofEventHandler {
                             final PartnerProof pp = defaultProof(p.getId(), proof)
                                     .setProofRequest(proof.getPresentationRequest());
                             pProofRepo.save(pp);
-                            eventPublisher.publishEvent(PresentationRequestReceivedEvent.builder()
-                                    .proofExchange(conv.toAPIObject(pp))
+                            eventPublisher.publishEventAsync(PresentationRequestReceivedEvent.builder()
+                                    .partnerProof(pp)
                                     .build());
 
                         }));

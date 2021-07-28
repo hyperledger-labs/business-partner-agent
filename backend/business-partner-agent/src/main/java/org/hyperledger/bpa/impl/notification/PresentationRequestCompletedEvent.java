@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.api.aries.AriesProofExchange;
+import org.hyperledger.bpa.model.PartnerProof;
 
 @Builder
 @NoArgsConstructor
@@ -29,6 +29,6 @@ import org.hyperledger.bpa.api.aries.AriesProofExchange;
 @Getter
 public class PresentationRequestCompletedEvent {
 
-    private AriesProofExchange proofExchange;
+    private PartnerProof partnerProof;
 
 }

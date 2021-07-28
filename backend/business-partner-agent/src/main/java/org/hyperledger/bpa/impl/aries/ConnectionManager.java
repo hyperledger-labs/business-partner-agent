@@ -36,16 +36,12 @@ import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
-import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
-import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
-import org.hyperledger.bpa.impl.notification.PartnerRequestReceivedEvent;
-import org.hyperledger.bpa.impl.notification.PartnerAddedEvent;
-import org.hyperledger.bpa.impl.notification.PartnerRemovedEvent;
+import org.hyperledger.bpa.impl.notification.*;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
@@ -180,10 +176,11 @@ public class ConnectionManager {
                     } else {
                         partnerRepo.updateState(dbP.getId(), record.getState());
                     }
-                    // should it be on request, when you ask for new partner, or when partner
-                    // accepts?
                     if (ConnectionState.REQUEST.equals(record.getState())) {
-                        eventPublisher.publishEvent(PartnerAddedEvent.builder().partner(conv.toAPIObject(dbP)).build());
+                        eventPublisher.publishEventAsync(PartnerAddedEvent.builder().partner(dbP).build());
+                    } else if (ConnectionState.RESPONSE.equals(record.getState()) ||
+                            ConnectionState.COMPLETED.equals(record.getState())) {
+                        eventPublisher.publishEventAsync(PartnerAcceptedEvent.builder().partner(dbP).build());
                     }
                 });
     }
@@ -239,11 +236,11 @@ public class ConnectionManager {
         // only incoming connections in state request
         if (ConnectionState.REQUEST.equals(record.getState())) {
             didResolver.lookupIncoming(p);
-            PartnerAPI o = conv.toAPIObject(p);
-            messageService.sendMessage(WebSocketMessageBody.partnerReceived(o));
             if (record.isIncomingConnection()) {
-                eventPublisher.publishEvent(PartnerRequestReceivedEvent.builder().partner(o).build());
+                eventPublisher.publishEventAsync(PartnerRequestReceivedEvent.builder().partner(p).build());
             }
+        } else if (ConnectionState.COMPLETED.equals(record.getState()) && record.isIncomingConnection()) {
+            eventPublisher.publishEventAsync(PartnerRequestCompletedEvent.builder().partner(p).build());
         }
     }
 
@@ -257,9 +254,7 @@ public class ConnectionManager {
             }
 
             Optional<Partner> partner = partnerRepo.findByConnectionId(connectionId);
-            final PartnerAPI[] partnerAPI = { null };
             partner.ifPresent(p -> {
-                partnerAPI[0] = conv.toAPIObject(p);
                 final List<PartnerProof> proofs = partnerProofRepo.findByPartnerId(p.getId());
                 if (CollectionUtils.isNotEmpty(proofs)) {
                     partnerProofRepo.deleteAll(proofs);
@@ -283,8 +278,8 @@ public class ConnectionManager {
                     });
 
             myCredRepo.updateByConnectionId(connectionId, null);
-            if (partnerAPI[0] != null) {
-                eventPublisher.publishEvent(PartnerRemovedEvent.builder().partner(partnerAPI[0]).build());
+            if (partner.isPresent()) {
+                eventPublisher.publishEventAsync(PartnerRemovedEvent.builder().partner(partner.get()).build());
             }
         } catch (IOException e) {
             log.error("Could not delete connection: {}", connectionId, e);

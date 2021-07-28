@@ -11,7 +11,7 @@
     <Loggers>
         <Logger name="io.micronaut.context" level="info"/>
         <Logger name="io.micronaut.security" level="info"/>
-        <logger name="io.micronaut.data.query" level="trace"/>
+        <logger name="io.micronaut.data.query" level="info"/>
         <Logger name="com.zaxxer.hikari" level="warn"/>
         <Logger name="org.flywaydb.core" level="info"/>
         <Logger name="org.hyperledger.bpa" level="debug"/>

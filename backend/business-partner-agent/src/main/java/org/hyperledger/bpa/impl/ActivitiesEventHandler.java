@@ -19,14 +19,8 @@ package org.hyperledger.bpa.impl;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.aries.api.connection.ConnectionRecord;
-import org.hyperledger.aries.api.message.BasicMessage;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
-import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.config.ActivityLogConfig;
-import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
-import org.hyperledger.bpa.controller.api.activity.ActivityType;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -43,44 +37,30 @@ public class ActivitiesEventHandler extends EventHandler {
 
     @Inject
     PartnerManager partnerManager;
-
-    @Override
-    public void handleConnection(ConnectionRecord connection) {
-        Boolean completed = null;
-        boolean notify = true;
-        if (activityLogConfig.getConnectionStatesForTasks().contains(connection.getState())) {
-            completed = false;
-            // we do not always want to notify... it is only a task on incoming request
-            notify = connection.isIncomingConnection();
-        } else if (activityLogConfig.getConnectionStatesCompleted().contains(connection.getState())) {
-            completed = true;
-        }
-        if (completed != null && notify) {
-            messageService
-                    .sendMessage(WebSocketMessageBody.notification(ActivityType.CONNECTION_REQUEST, completed));
-        }
-    }
-
-    @Override
-    public void handleProof(PresentationExchangeRecord proof) {
-        Boolean completed = null;
-        if (activityLogConfig.getPresentationExchangeStatesForTasks().contains(proof.getState())) {
-            completed = false;
-        } else if (activityLogConfig.getPresentationExchangeStatesCompleted().contains(proof.getState())) {
-            completed = true;
-        }
-        if (completed != null) {
-            messageService
-                    .sendMessage(WebSocketMessageBody.notification(ActivityType.PRESENTATION_EXCHANGE, completed));
-        }
-    }
-
-    @Override
-    public void handleBasicMessage(BasicMessage message) {
-        PartnerAPI partner = partnerManager.getPartnerByConnectionId(message.getConnectionId());
-        if (partner != null) {
-            messageService.sendMessage(WebSocketMessageBody.message(partner, message));
-        }
-    }
-
+    /*
+     * @Override public void handleConnection(ConnectionRecord connection) { Boolean
+     * completed = null; boolean notify = true; if
+     * (activityLogConfig.getConnectionStatesForTasks().contains(connection.getState
+     * ())) { completed = false; // we do not always want to notify... it is only a
+     * task on incoming request notify = connection.isIncomingConnection(); } else
+     * if (activityLogConfig.getConnectionStatesCompleted().contains(connection.
+     * getState())) { completed = true; } if (completed != null && notify) {
+     * messageService .sendMessage(WebSocketMessageBody.notification(ActivityType.
+     * CONNECTION_REQUEST, completed)); } }
+     *
+     * @Override public void handleProof(PresentationExchangeRecord proof) { Boolean
+     * completed = null; if
+     * (activityLogConfig.getPresentationExchangeStatesForTasks().contains(proof.
+     * getState())) { completed = false; } else if
+     * (activityLogConfig.getPresentationExchangeStatesCompleted().contains(proof.
+     * getState())) { completed = true; } if (completed != null) { messageService
+     * .sendMessage(WebSocketMessageBody.notification(ActivityType.
+     * PRESENTATION_EXCHANGE, completed)); } }
+     *
+     * @Override public void handleBasicMessage(BasicMessage message) { PartnerAPI
+     * partner = partnerManager.getPartnerByConnectionId(message.getConnectionId());
+     * if (partner != null) {
+     * messageService.sendMessage(WebSocketMessageBody.message(partner, message)); }
+     * }
+     */
 }

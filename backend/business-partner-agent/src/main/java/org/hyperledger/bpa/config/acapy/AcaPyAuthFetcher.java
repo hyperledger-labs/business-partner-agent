@@ -42,8 +42,8 @@ import java.util.Map;
  * HTTP header. As this is not something micronaut handles out of the box, a
  * custom {@link AuthenticationFetcher} needs to be provided.
  *
- * The AuthFetcher becomes active if either the environment variable BPA_WEBHOOK_KEY
- * or the system property bpa.webhook.key is set.
+ * The AuthFetcher becomes active if either the environment variable
+ * BPA_WEBHOOK_KEY or the system property bpa.webhook.key is set.
  */
 @Slf4j
 @Singleton

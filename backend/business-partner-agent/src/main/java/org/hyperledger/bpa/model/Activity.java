@@ -17,9 +17,16 @@
  */
 package org.hyperledger.bpa.model;
 
+import io.micronaut.data.annotation.AutoPopulated;
+import io.micronaut.data.annotation.DateCreated;
+import io.micronaut.data.annotation.DateUpdated;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.controller.api.activity.ActivityRole;
+import org.hyperledger.bpa.controller.api.activity.ActivityState;
+import org.hyperledger.bpa.controller.api.activity.ActivityType;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -28,19 +35,33 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
-@Table(name = "activity_vw")
+@Table(name = "activity")
 public class Activity {
 
     @Id
+    @AutoPopulated
     private UUID id;
+
+    private UUID linkId;
 
     @OneToOne
     private Partner partner;
 
-    private String type;
-    private String role;
-    private String state;
+    @Enumerated(EnumType.STRING)
+    private ActivityType type;
 
+    @Enumerated(EnumType.STRING)
+    private ActivityRole role;
+
+    @Enumerated(EnumType.STRING)
+    private ActivityState state;
+
+    private boolean completed;
+
+    @DateCreated
+    private Instant createdAt;
+    @DateUpdated
     private Instant updatedAt;
 }

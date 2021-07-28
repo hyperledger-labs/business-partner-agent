@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl.aries;
 
 import io.micronaut.context.annotation.Value;
+import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
@@ -39,6 +40,8 @@ import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.notification.PresentationRequestDeletedEvent;
+import org.hyperledger.bpa.impl.notification.PresentationRequestSentEvent;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.TimeUtil;
@@ -90,6 +93,9 @@ public class ProofManager {
     @Inject
     MessageService messageService;
 
+    @Inject
+    ApplicationEventPublisher eventPublisher;
+
     // request proof from partner
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {
         try {
@@ -115,6 +121,10 @@ public class ProofManager {
                                         .issuer(req.getFirstIssuerDid())
                                         .build();
                                 pProofRepo.save(pp);
+
+                                eventPublisher.publishEventAsync(PresentationRequestSentEvent.builder()
+                                        .partnerProof(pp)
+                                        .build());
                             });
                         } else {
                             throw new PartnerException("Could not find any schema on the ledger for id: "
@@ -130,6 +140,10 @@ public class ProofManager {
                                     .role(exchange.getRole())
                                     .build();
                             pProofRepo.save(pp);
+
+                            eventPublisher.publishEventAsync(PresentationRequestSentEvent.builder()
+                                    .partnerProof(pp)
+                                    .build());
                         });
                     }
                 } else {
@@ -148,6 +162,8 @@ public class ProofManager {
             try {
                 sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString);
                 deletePartnerProof(proofEx.getId());
+                eventPublisher
+                        .publishEventAsync(PresentationRequestDeletedEvent.builder().partnerProof(proofEx).build());
             } catch (IOException e) {
                 throw new NetworkException(ACA_PY_ERROR_MSG, e);
             } catch (AriesException e) {
@@ -240,6 +256,10 @@ public class ProofManager {
                             .issuer(resolveIssuer(cred.getCredentialDefinitionId()))
                             .build();
                     pProofRepo.save(pp);
+
+                    eventPublisher.publishEventAsync(PresentationRequestSentEvent.builder()
+                            .partnerProof(pp)
+                            .build());
                 });
 
             } catch (IOException e) {

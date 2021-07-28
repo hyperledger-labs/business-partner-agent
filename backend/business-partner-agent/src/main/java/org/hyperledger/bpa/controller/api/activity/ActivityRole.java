@@ -30,9 +30,4 @@ public enum ActivityRole {
     PRESENTATION_EXCHANGE_PROVER,
     @JsonProperty("presentation_exchange_verifier")
     PRESENTATION_EXCHANGE_VERIFIER,
-    @JsonProperty("credential_exchange_holder")
-    CREDENTIAL_EXCHANGE_HOLDER,
-    @JsonProperty("credential_exchange_prover")
-    CREDENTIAL_EXCHANGE_ISSUER,
-
 }

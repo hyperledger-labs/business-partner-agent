@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.api.PartnerAPI;
+import org.hyperledger.bpa.model.Partner;
 
 @Builder
 @NoArgsConstructor
@@ -29,5 +29,5 @@ import org.hyperledger.bpa.api.PartnerAPI;
 @Getter
 public class PartnerRemovedEvent {
 
-    private PartnerAPI partner;
+    private Partner partner;
 }

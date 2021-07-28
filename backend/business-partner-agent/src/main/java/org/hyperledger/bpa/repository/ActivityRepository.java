@@ -21,22 +21,53 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.annotation.Join;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
-import io.micronaut.data.repository.GenericRepository;
+import io.micronaut.data.repository.CrudRepository;
+import org.hyperledger.bpa.controller.api.activity.ActivityRole;
+import org.hyperledger.bpa.controller.api.activity.ActivityType;
 import org.hyperledger.bpa.model.Activity;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface ActivityRepository extends GenericRepository<Activity, UUID> {
+public interface ActivityRepository extends CrudRepository<Activity, UUID> {
 
-    // @Join and @Query do not work together
-    // Need @Query to select in 2 lists, but since not possible? let's take
-    // advantage of the join to not have N+1 queries to get the partner
-    // Will have to process the result set to match the states we want...
-    // @Query("SELECT act.* FROM activity_vw as act where act.type in (:types) and
-    // act.state in (:states)")
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
-    Iterable<Activity> findByTypeIn(@NonNull List<String> types);
+    List<Activity> findByPartnerId(@NonNull UUID partnerId);
 
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    List<Activity> findByLinkId(@NonNull UUID linkId);
+
+    Optional<Activity> findByLinkIdAndTypeAndRole(@NonNull UUID linkId,
+            @NonNull ActivityType type,
+            @NonNull ActivityRole role);
+
+    void updateByLinkIdAndTypeAndRole(@NonNull UUID linkId,
+            @NonNull ActivityType type,
+            @NonNull ActivityRole role,
+            boolean completed);
+
+    void deleteByLinkIdAndType(@NonNull UUID linkId,
+            @NonNull ActivityType type);
+
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    List<Activity> listOrderByUpdatedAtDesc();
+
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    List<Activity> findByTypeOrderByUpdatedAt(@NonNull ActivityType type);
+
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    List<Activity> findByCompletedFalseOrderByUpdatedAtDesc();
+
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    List<Activity> findByTypeAndCompletedFalseOrderByUpdatedAtDesc(@NonNull ActivityType type);
+
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    List<Activity> findByCompletedTrueOrderByUpdatedAtDesc();
+
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    List<Activity> findByTypeAndCompletedTrueOrderByUpdatedAtDesc(@NonNull ActivityType type);
+
+    void deleteByPartnerId(@NonNull UUID partnerId);
 }
