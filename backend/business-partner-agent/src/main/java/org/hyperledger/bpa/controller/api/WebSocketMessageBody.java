@@ -21,8 +21,6 @@ import io.micronaut.core.annotation.Nullable;
 import lombok.*;
 import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.bpa.api.PartnerAPI;
-import org.hyperledger.bpa.api.aries.AriesCredential;
-import org.hyperledger.bpa.api.aries.AriesProofExchange;
 
 /**
  * Websocket events
@@ -45,93 +43,38 @@ public class WebSocketMessageBody {
     @Builder
     public static final class WebSocketMessage {
         private WebSocketMessageType type;
-        private WebSocketMessageState state;
         private String linkId;
         private Object info;
         private PartnerAPI partner;
     }
 
     public enum WebSocketMessageType {
-        CONNECTION_REQUEST,
-        CREDENTIAL,
-        PARTNER,
-        PROOF,
-        PROOFREQUEST,
-        NOTIFICATION,
-        MESSAGE,
-        onCredentialAdded,
-        onPartnerRequestReceived,
-        onPartnerAdded,
-        onPartnerAccepted,
-        onPartnerRemoved,
-        onPresentationVerified,
-        onPresentationProved,
-        onPresentationRequestReceived,
-        onPresentationRequestSent,
-        onNewTask
-    }
-
-    public enum WebSocketMessageState {
-        RECEIVED,
-        UPDATED,
-        SENT,
-        NEW,
-        COMPLETED
-    }
-
-    public static WebSocketMessageBody partnerReceived(PartnerAPI partner) {
-        return WebSocketMessageBody.of(WebSocketMessage
-                .builder()
-                .type(WebSocketMessageType.PARTNER)
-                .state(WebSocketMessageState.RECEIVED)
-                .linkId(partner.getId())
-                .info(partner)
-                .build());
-    }
-
-    public static WebSocketMessageBody credentialReceived(AriesCredential credential) {
-        return WebSocketMessageBody.of(WebSocketMessage
-                .builder()
-                .type(WebSocketMessageType.CREDENTIAL)
-                .state(WebSocketMessageState.RECEIVED)
-                .linkId(credential.getId().toString())
-                .info(credential)
-                .build());
-    }
-
-    public static WebSocketMessageBody proof(
-            @NonNull WebSocketMessageState state,
-            @NonNull WebSocketMessageType type,
-            @NonNull AriesProofExchange proof) {
-        return WebSocketMessageBody.of(WebSocketMessage
-                .builder()
-                .type(type)
-                .state(state)
-                .linkId(proof.getId().toString())
-                .info(proof)
-                .build());
-    }
-
-    public static WebSocketMessageBody notification(Object info, Boolean completed) {
-        return WebSocketMessageBody.of(WebSocketMessage
-                .builder()
-                .type(WebSocketMessageType.NOTIFICATION)
-                .state(completed ? WebSocketMessageState.COMPLETED : WebSocketMessageState.NEW)
-                .info(info)
-                .build());
+        ON_MESSAGE_RECEIVED,
+        ON_CREDENTIAL_ADDED,
+        ON_PARTNER_REQUEST_COMPLETED,
+        ON_PARTNER_REQUEST_RECEIVED,
+        ON_PARTNER_ADDED,
+        ON_PARTNER_ACCEPTED,
+        ON_PARTNER_REMOVED,
+        ON_PRESENTATION_VERIFIED,
+        ON_PRESENTATION_PROVED,
+        ON_PRESENTATION_REQUEST_DECLINED,
+        ON_PRESENTATION_REQUEST_DELETED,
+        ON_PRESENTATION_REQUEST_RECEIVED,
+        ON_PRESENTATION_REQUEST_SENT,
+        TASK_ADDED,
+        TASK_COMPLETED
     }
 
     public static WebSocketMessageBody message(PartnerAPI partner, BasicMessage message) {
-        return WebSocketMessageBody.of(WebSocketMessage
-                .builder()
-                .type(WebSocketMessageType.MESSAGE)
-                .state(WebSocketMessageState.RECEIVED)
-                .info(PartnerMessage.builder()
+        return notificationEvent(WebSocketMessageType.ON_MESSAGE_RECEIVED,
+                partner.getId(),
+                PartnerMessage.builder()
                         .partnerId(partner.getId())
                         .messageId(message.getMessageId())
                         .content(message.getContent())
-                        .build())
-                .build());
+                        .build(),
+                partner);
     }
 
     public static WebSocketMessageBody notificationEvent(@NonNull WebSocketMessageType type,
@@ -141,7 +84,6 @@ public class WebSocketMessageBody {
         return WebSocketMessageBody.of(WebSocketMessage
                 .builder()
                 .type(type)
-                .state(WebSocketMessageState.SENT)
                 .info(info)
                 .partner(partner)
                 .linkId(linkId)

@@ -61,7 +61,7 @@ public class NotificationEventListener {
         PartnerAPI partnerAPI = partnerManager.getPartnerByConnectionId(event.getCredential().getConnectionId());
         if (partnerAPI != null) {
             WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
-                    WebSocketMessageBody.WebSocketMessageType.onCredentialAdded,
+                    WebSocketMessageBody.WebSocketMessageType.ON_CREDENTIAL_ADDED,
                     event.getCredential().getId().toString(),
                     event.getCredential(),
                     partnerAPI);
@@ -73,6 +73,13 @@ public class NotificationEventListener {
     @Async
     public void onPartnerRequestCompletedEvent(PartnerRequestCompletedEvent event) {
         log.debug("onPartnerRequestCompletedEvent");
+        WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
+                WebSocketMessageBody.WebSocketMessageType.ON_PARTNER_REQUEST_COMPLETED,
+                event.getPartner().getId().toString(),
+                null,
+                conv.toAPIObject(event.getPartner()));
+        messageService.sendMessage(message);
+
         activityManager.completePartnerRequestTask(event.getPartner());
     }
 
@@ -86,7 +93,7 @@ public class NotificationEventListener {
             activityManager.addPartnerRequestReceivedTask(event.getPartner());
 
             WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
-                    WebSocketMessageBody.WebSocketMessageType.onPartnerRequestReceived,
+                    WebSocketMessageBody.WebSocketMessageType.ON_PARTNER_REQUEST_RECEIVED,
                     event.getPartner().getId().toString(),
                     null,
                     conv.toAPIObject(event.getPartner()));
@@ -99,7 +106,7 @@ public class NotificationEventListener {
     public void onPartnerAddedEvent(PartnerAddedEvent event) {
         log.debug("onPartnerAddedEvent");
         WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
-                WebSocketMessageBody.WebSocketMessageType.onPartnerAdded,
+                WebSocketMessageBody.WebSocketMessageType.ON_PARTNER_ADDED,
                 event.getPartner().getId().toString(),
                 null,
                 conv.toAPIObject(event.getPartner()));
@@ -113,7 +120,7 @@ public class NotificationEventListener {
     public void onPartnerAcceptedEvent(PartnerAcceptedEvent event) {
         log.debug("onPartnerAcceptedEvent");
         WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
-                WebSocketMessageBody.WebSocketMessageType.onPartnerAccepted,
+                WebSocketMessageBody.WebSocketMessageType.ON_PARTNER_ACCEPTED,
                 event.getPartner().getId().toString(),
                 null,
                 conv.toAPIObject(event.getPartner()));
@@ -127,7 +134,7 @@ public class NotificationEventListener {
     public void onPartnerRemovedEvent(PartnerRemovedEvent event) {
         log.debug("onPartnerRemovedEvent");
         WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
-                WebSocketMessageBody.WebSocketMessageType.onPartnerRemoved,
+                WebSocketMessageBody.WebSocketMessageType.ON_PARTNER_REMOVED,
                 event.getPartner().getId().toString(),
                 null,
                 conv.toAPIObject(event.getPartner()));
@@ -145,13 +152,13 @@ public class NotificationEventListener {
             WebSocketMessageBody message = null;
             if (event.getPartnerProof().getRole().equals(PresentationExchangeRole.PROVER)) {
                 message = WebSocketMessageBody.notificationEvent(
-                        WebSocketMessageBody.WebSocketMessageType.onPresentationProved,
+                        WebSocketMessageBody.WebSocketMessageType.ON_PRESENTATION_PROVED,
                         event.getPartnerProof().getId().toString(),
                         conv.toAPIObject(event.getPartnerProof()),
                         p);
             } else {
                 message = WebSocketMessageBody.notificationEvent(
-                        WebSocketMessageBody.WebSocketMessageType.onPresentationVerified,
+                        WebSocketMessageBody.WebSocketMessageType.ON_PRESENTATION_VERIFIED,
                         event.getPartnerProof().getId().toString(),
                         conv.toAPIObject(event.getPartnerProof()),
                         p);
@@ -165,6 +172,8 @@ public class NotificationEventListener {
     @Async
     public void onPresentationRequestDeclinedEvent(PresentationRequestDeclinedEvent event) {
         log.debug("onPresentationRequestDeclinedEvent");
+        handlePresentationRequestEvent(event.getPartnerProof(),
+                WebSocketMessageBody.WebSocketMessageType.ON_PRESENTATION_REQUEST_DECLINED);
         activityManager.declinePresentationExchangeTask(event.getPartnerProof());
     }
 
@@ -172,6 +181,8 @@ public class NotificationEventListener {
     @Async
     public void onPresentationRequestDeletedEvent(PresentationRequestDeletedEvent event) {
         log.debug("onPresentationRequestDeletedEvent");
+        handlePresentationRequestEvent(event.getPartnerProof(),
+                WebSocketMessageBody.WebSocketMessageType.ON_PRESENTATION_REQUEST_DELETED);
         activityManager.deletePresentationExchangeTask(event.getPartnerProof());
     }
 
@@ -180,7 +191,7 @@ public class NotificationEventListener {
     public void onPresentationRequestReceivedEvent(PresentationRequestReceivedEvent event) {
         log.debug("onPresentationRequestReceivedEvent");
         handlePresentationRequestEvent(event.getPartnerProof(),
-                WebSocketMessageBody.WebSocketMessageType.onPresentationRequestReceived);
+                WebSocketMessageBody.WebSocketMessageType.ON_PRESENTATION_REQUEST_RECEIVED);
     }
 
     @EventListener
@@ -188,7 +199,7 @@ public class NotificationEventListener {
     public void onPresentationRequestSentEvent(PresentationRequestSentEvent event) {
         log.debug("onPresentationRequestSentEvent");
         handlePresentationRequestEvent(event.getPartnerProof(),
-                WebSocketMessageBody.WebSocketMessageType.onPresentationRequestSent);
+                WebSocketMessageBody.WebSocketMessageType.ON_PRESENTATION_REQUEST_SENT);
     }
 
     @EventListener
@@ -201,6 +212,30 @@ public class NotificationEventListener {
             WebSocketMessageBody message = WebSocketMessageBody.message(partner, event.getMessage());
             messageService.sendMessage(message);
         }
+    }
+
+    @EventListener
+    @Async
+    public void onTaskAddedEvent(TaskAddedEvent event) {
+        log.debug("onTaskAddedEvent");
+        WebSocketMessageBody task = WebSocketMessageBody.notificationEvent(
+                WebSocketMessageBody.WebSocketMessageType.TASK_ADDED,
+                event.getActivity().getId().toString(),
+                event.getActivity(),
+                conv.toAPIObject(event.getActivity().getPartner()));
+        messageService.sendMessage(task);
+    }
+
+    @EventListener
+    @Async
+    public void onTaskCompletedEvent(TaskCompletedEvent event) {
+        log.debug("onTaskCompletedEvent");
+        WebSocketMessageBody task = WebSocketMessageBody.notificationEvent(
+                WebSocketMessageBody.WebSocketMessageType.TASK_COMPLETED,
+                event.getActivity().getId().toString(),
+                event.getActivity(),
+                conv.toAPIObject(event.getActivity().getPartner()));
+        messageService.sendMessage(task);
     }
 
     private void handlePresentationRequestEvent(@NonNull PartnerProof partnerProof,
@@ -220,13 +255,6 @@ public class NotificationEventListener {
                         conv.toAPIObject(partnerProof),
                         p);
                 messageService.sendMessage(message);
-
-                WebSocketMessageBody task = WebSocketMessageBody.notificationEvent(
-                        WebSocketMessageBody.WebSocketMessageType.onNewTask,
-                        partnerProof.getId().toString(),
-                        conv.toAPIObject(partnerProof),
-                        p);
-                messageService.sendMessage(task);
             }
         }
     }

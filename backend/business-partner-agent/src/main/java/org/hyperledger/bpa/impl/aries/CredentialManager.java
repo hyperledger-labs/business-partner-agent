@@ -263,7 +263,7 @@ public class CredentialManager {
      *
      * @param ariesCred {@link Credential}
      * @return the issuer or null when the credential or the credential definition
-     * id is null
+     *         id is null
      */
     @Nullable
     String resolveIssuer(@Nullable Credential ariesCred) {

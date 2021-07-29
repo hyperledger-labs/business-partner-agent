@@ -1,177 +1,120 @@
+const addItem = (collection, id, payload) => {
+  return { ...collection, [id]: payload };
+};
+
+const removeItem = (collection, id) => {
+  if ({}.hasOwnProperty.call(collection, id)) {
+    const tmp = { ...collection };
+    delete tmp[id];
+    return tmp;
+  }
+  return collection;
+};
+
 const state = {
-  credentialsAdded: {},
-  partnerRequestsReceived: {},
-  partnersAdded: {},
-  partnersRemoved: {},
-  presentationsProved: {},
-  presentationsVerified: {},
-  presentationRequestsReceived: {},
-  tasksAdded: {}
+  credentialNotifications: {},
+  partnerNotifications: {},
+  presentationNotifications: {},
+  taskNotifications: {},
 };
 
 const getters = {
-  credentialsAddedCount: (state) => {
-    return Object.keys(state.credentialsAdded).length;
+  credentialNotifications: (state) => {
+    return state.credentialNotifications;
   },
-  credentialsAdded: (state) => {
-    return state.credentialsAdded;
+  credentialNotificationsCount: (state) => {
+    return Object.keys(state.credentialNotifications).length;
   },
-  partnerRequestsReceivedCount: (state) => {
-    return Object.keys(state.partnerRequestsReceived).length;
+  partnerNotifications: (state) => {
+    return state.partnerNotifications;
   },
-  partnerRequestsReceived: (state) => {
-    return state.partnerRequestsReceived;
+  partnerNotificationsCount: (state) => {
+    return Object.keys(state.partnerNotifications).length;
   },
-  partnersAddedCount: (state) => {
-    return Object.keys(state.partnersAdded).length;
+  presentationNotifications: (state) => {
+    return state.presentationNotifications;
   },
-  partnersAdded: (state) => {
-    return state.partnersAdded;
+  presentationNotificationsCount: (state) => {
+    return Object.keys(state.presentationNotifications).length;
   },
-  partnersRemovedCount: (state) => {
-    return Object.keys(state.partnersRemoved).length;
+  taskNotifications: (state) => {
+    return state.taskNotifications;
   },
-  partnersRemoved: (state) => {
-    return state.partnersRemoved;
-  },
-  presentationsProvedCount: (state) => {
-    return Object.keys(state.presentationsProved).length;
-  },
-  presentationsProved: (state) => {
-    return state.presentationsProved;
-  },
-  presentationsVerifiedCount: (state) => {
-    return Object.keys(state.presentationsVerified).length;
-  },
-  presentationsVerified: (state) => {
-    return state.presentationsVerified;
-  },
-  presentationRequestsReceivedCount: (state) => {
-    return Object.keys(state.presentationRequestsReceived).length;
-  },
-  presentationRequestsReceived: (state) => {
-    return state.presentationRequestsReceived;
-  },
-  tasksAddedCount: (state) => {
-    return Object.keys(state.tasksAdded).length;
-  },
-  tasksAdded: (state) => {
-    return state.tasksAdded;
+  taskNotificationsCount: (state) => {
+    return Object.keys(state.taskNotifications).length;
   },
 };
+
+const actions = {};
 
 const mutations = {
   onNotification(state, payload) {
     let type = payload.message.type;
     let id = payload.message.linkId;
+    console.log(`onNotification(type=${type}, id=${id})`);
     switch (type) {
-      case "onCredentialAdded":
-        state.credentialsAdded = { ...state.credentialsAdded, [id]: payload };
+      case "ON_CREDENTIAL_ADDED":
+        state.credentialNotifications = addItem(state.credentialNotifications, id, payload);
         break;
-      case "onPartnerRequestReceived":
-        state.partnerRequestsReceived = { ...state.partnerRequestsReceived, [id]: payload };
+      case "ON_PARTNER_REQUEST_COMPLETED":
+      case "ON_PARTNER_REMOVED":
+        state.partnerNotifications = removeItem(state.partnerNotifications, payload.message.partner.id);
         break;
-      case "onPartnerAdded":
-        state.partnersAdded = { ...state.partnersAdded, [id]: payload };
+      case "ON_PARTNER_REQUEST_RECEIVED":
+      case "ON_PARTNER_ACCEPTED":
+      case "ON_PARTNER_ADDED":
+        state.partnerNotifications = addItem(state.partnerNotifications, payload.message.partner.id, payload.message.partner);
         break;
-      case "onPartnerRemoved":
-        state.partnersRemoved = { ...state.partnersRemoved, [id]: payload };
+      case "ON_PRESENTATION_PROVED":
+      case "ON_PRESENTATION_VERIFIED":
+      case "ON_PRESENTATION_REQUEST_RECEIVED":
+      case "ON_PRESENTATION_REQUEST_SENT":
+        state.presentationNotifications = addItem(state.presentationNotifications, id, payload);
+        state.partnerNotifications = addItem(state.partnerNotifications, payload.message.partner.id, payload.message.partner);
         break;
-      case "onPresentationProved":
-        state.presentationsProved = { ...state.presentationsProved, [id]: payload };
+      case "TASK_ADDED":
+        state.taskNotifications = addItem(state.taskNotifications, id, payload);
         break;
-      case "onPresentationVerified":
-        state.presentationsVerified = { ...state.presentationsVerified, [id]: payload };
-        break;
-      case "onPresentationRequestReceived":
-        state.presentationRequestsReceived = { ...state.presentationRequestsReceived, [id]: payload };
-        break;
-      case "onNewTask":
-        state.tasksAdded = { ...state.tasksAdded, [id]: payload };
+      case "TASK_COMPLETED":
+        state.taskNotifications = removeItem(state.taskNotifications, id);
         break;
       default:
         console.log(`Unknown notification type: ${type}`);
     }
   },
-};
-
-const actions = {
-  credentialsAddedSeen(state, payload) {
+  credentialNotificationSeen(state, payload) {
     let id = payload.id;
-    if ({}.hasOwnProperty.call(state.credentialsAdded, id)) {
-      const tmp = { ...state.credentialsAdded };
-      delete tmp[id];
-      state.credentialsAdded = tmp;
-    }
+    state.credentialNotifications = removeItem(state.credentialNotifications, id);
   },
-  partnerRequestsReceivedSeen(state, payload) {
+  partnerNotificationSeen(state, payload) {
     let id = payload.id;
-    if ({}.hasOwnProperty.call(state.partnerRequestsReceived, id)) {
-      const tmp = { ...state.partnerRequestsReceived };
-      delete tmp[id];
-      state.partnerRequestsReceived = tmp;
-    }
+    state.partnerNotifications = removeItem(state.partnerNotifications, id);
   },
-  partnersAddedSeen(state, payload) {
+  presentationNotificationSeen(state, payload) {
     let id = payload.id;
-    if ({}.hasOwnProperty.call(state.partnersAdded, id)) {
-      const tmp = { ...state.partnersAdded };
-      delete tmp[id];
-      state.partnersAdded = tmp;
-    }
+    state.presentationNotifications = removeItem(state.presentationNotifications, id);
   },
-  partnersRemovedSeen(state, payload) {
+  taskNotificationSeen(state, payload) {
     let id = payload.id;
-    if ({}.hasOwnProperty.call(state.partnersRemoved, id)) {
-      const tmp = { ...state.partnersRemoved };
-      delete tmp[id];
-      state.partnersRemoved = tmp;
-    }
+    state.taskNotifications = removeItem(state.taskNotifications, id);
   },
-  presentationsReceivedSeen(state, payload) {
-    let id = payload.id;
-    if ({}.hasOwnProperty.call(state.presentationsReceived, id)) {
-      const tmp = { ...state.presentationsReceived };
-      delete tmp[id];
-      state.presentationsReceived = tmp;
-    }
+  credentialNotificationsClear(state) {
+    state.credentialNotifications = {};
   },
-  presentationsVerifiedSeen(state, payload) {
-    let id = payload.id;
-    if ({}.hasOwnProperty.call(state.presentationsVerified, id)) {
-      const tmp = { ...state.presentationsVerified };
-      delete tmp[id];
-      state.presentationsVerified = tmp;
-    }
+  partnerNotificationsClear(state) {
+    state.partnerNotifications = {};
   },
-  presentationRequestsReceivedSeen(state, payload) {
-    let id = payload.id;
-    if ({}.hasOwnProperty.call(state.presentationRequestsReceived, id)) {
-      const tmp = { ...state.presentationRequestsReceived };
-      delete tmp[id];
-      state.presentationRequestsReceived = tmp;
-    }
+  presentationNotificationsClear(state) {
+    state.presentationNotifications = {};
   },
-  tasksAddedSeen(state, payload) {
-    let id = payload.id;
-    if ({}.hasOwnProperty.call(state.tasksAdded, id)) {
-      const tmp = { ...state.tasksAdded };
-      delete tmp[id];
-      state.tasksAdded = tmp;
-    }
+  taskNotificationsClear(state) {
+    state.taskNotifications = {};
   },
-  clearTasksAdded() {
-    state.tasksAdded = {};
-  },
-  clearAllNotifications() {
-    state.tasksAdded = {};
-    state.presentationRequestsReceived = {};
-    state.presentationsVerified = {};
-    state.presentationsReceived = {};
-    state.partnersRemoved = {};
-    state.partnersAdded = {};
-    state.partnerRequestsReceived = {};
-    state.credentialsAdded = {};
+  allNotificationsClear(state) {
+    state.credentialNotifications = {};
+    state.partnerNotifications = {};
+    state.presentationNotifications = {};
+    state.taskNotifications = {};
   }
 };
 

@@ -60,8 +60,8 @@
               <span class="cardTitle">
                 {{ status.credentials }}
               </span>
-              <span class="newHighlight" v-show="newCredentialsCount > 0">
-                (+{{ newCredentialsCount }})
+              <span class="newHighlight" v-show="credentialNotificationsCount > 0">
+                (+{{ credentialNotificationsCount }})
               </span>
             </v-card-title>
             <v-card-title class="justify-center"
@@ -81,8 +81,8 @@
               <span class="cardTitle">
                 {{ status.partners }}
               </span>
-              <span class="newHighlight" v-show="newPartnersCount > 0">
-                (+{{ newPartnersCount }})
+              <span class="newHighlight" v-show="partnerNotificationsCount > 0">
+                (+{{ partnerNotificationsCount }})
               </span>
             </v-card-title>
             <v-card-title class="justify-center"
@@ -114,11 +114,11 @@ export default {
     };
   },
   computed: {
-    newPartnersCount() {
-      return this.$store.getters.newPartnersCount;
+    partnerNotificationsCount() {
+      return this.$store.getters.partnerNotificationsCount;
     },
-    newCredentialsCount() {
-      return this.$store.getters.newCredentialsCount;
+    credentialNotificationsCount() {
+      return this.$store.getters.credentialNotificationsCount;
     },
   },
   methods: {

@@ -70,6 +70,7 @@ export default new Vuetify({
       public: mdiEye,
       private: mdiEyeOff,
       partnerState: mdiBrightness1,
+      notificationIndicator: mdiBrightness1,
       newMessage: mdiShapePolygonPlus,
       qrCode: mdiQrcode,
       credentialManagement: "fas fa-file-signature",

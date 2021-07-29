@@ -82,7 +82,7 @@
 
     methods: {
       ...mapMutations([
-        'message'
+        'onMessageReceived'
       ]),
       loadRooms() {
         console.log("loadRooms()");
@@ -129,7 +129,7 @@
         this.roomId = room.roomId;
 
         const _msgs = [];
-        const allMessages = this.$store.getters.getPartnerMessages.map((x) => x);
+        const allMessages = this.$store.getters.messages.map((x) => x);
         const _pms = allMessages.filter(m => m.partnerId === room.roomId || m.roomId === room.roomId);
         _pms.sort((a, b) => a.time - b.time);
 
@@ -167,7 +167,7 @@
           }
         };
         // store with incoming messages...
-        this.message(payload);
+        this.onMessageReceived(payload);
 
         // we are sending content to roomId (partner)...
         await partnerService.sendMessage(roomId, content);

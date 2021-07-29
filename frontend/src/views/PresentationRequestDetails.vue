@@ -80,6 +80,7 @@ export default {
     this.$store.dispatch("loadCredentials");
     this.fetch();
     console.log(this.$store.getters.getCredentials);
+    this.$store.commit("presentationNotificationSeen", {id: this.id});
   },
   data: () => {
     return {

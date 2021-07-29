@@ -15,26 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.activity;
+package org.hyperledger.bpa.impl.notification;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.api.PartnerAPI;
+import org.hyperledger.bpa.model.Activity;
 
-@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class ActivityItem {
-
-    private String id;
-    private ActivityRole role;
-    private ActivityState state;
-    private ActivityType type;
-    private Long updatedAt;
-    private String linkId;
-    private PartnerAPI partner;
-    private Boolean completed;
+@Getter
+public class TaskAddedEvent {
+    private Activity activity;
 }

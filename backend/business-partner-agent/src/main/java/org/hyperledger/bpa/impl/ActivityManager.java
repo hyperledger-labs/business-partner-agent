@@ -17,12 +17,15 @@
  */
 package org.hyperledger.bpa.impl;
 
+import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.NonNull;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.bpa.config.ActivityLogConfig;
 import org.hyperledger.bpa.controller.api.activity.*;
+import org.hyperledger.bpa.impl.notification.TaskAddedEvent;
+import org.hyperledger.bpa.impl.notification.TaskCompletedEvent;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Activity;
 import org.hyperledger.bpa.model.Partner;
@@ -30,6 +33,7 @@ import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.repository.ActivityRepository;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -55,6 +59,9 @@ public class ActivityManager {
 
     @Inject
     Converter converter;
+
+    @Inject
+    ApplicationEventPublisher eventPublisher;
 
     public List<ActivityItem> getItems(ActivitySearchParameters parameters) {
         List<Activity> activities = new ArrayList<>();
@@ -99,6 +106,7 @@ public class ActivityManager {
                     .completed(false)
                     .build();
             activityRepository.save(a);
+            eventPublisher.publishEventAsync(TaskAddedEvent.builder().activity(a).build());
         }
     }
 
@@ -110,6 +118,7 @@ public class ActivityManager {
                     activity.setState(ActivityState.CONNECTION_REQUEST_ACCEPTED);
                     activity.setCompleted(true);
                     activityRepository.update(activity);
+                    eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
                 }, () -> {
                     // add in a completed activity
                     Activity a = Activity.builder()
@@ -169,9 +178,7 @@ public class ActivityManager {
     public void addPresentationExchangeTask(@NonNull PartnerProof partnerProof) {
         partnerRepo.findById(partnerProof.getPartnerId()).ifPresent(partner -> {
             // in case event is fired multiple times, see if already exists.
-            ActivityRole role = PresentationExchangeRole.PROVER.equals(partnerProof.getRole())
-                    ? ActivityRole.PRESENTATION_EXCHANGE_PROVER
-                    : ActivityRole.PRESENTATION_EXCHANGE_VERIFIER;
+            ActivityRole role = getPresentationExchangeRole(partnerProof);
             ActivityState state = getPresentationExchangeState(partnerProof);
 
             Optional<Activity> existing = activityRepository.findByLinkIdAndTypeAndRole(partnerProof.getId(),
@@ -188,6 +195,11 @@ public class ActivityManager {
                         .completed(ActivityState.PRESENTATION_EXCHANGE_SENT.equals(state))
                         .build();
                 activityRepository.save(a);
+
+                if (!a.isCompleted()) {
+                    // this looks like we created a task!
+                    eventPublisher.publishEventAsync(TaskAddedEvent.builder().activity(a).build());
+                }
             }
         });
     }
@@ -195,9 +207,7 @@ public class ActivityManager {
     public void completePresentationExchangeTask(@NonNull PartnerProof partnerProof) {
         partnerRepo.findById(partnerProof.getPartnerId()).ifPresent(partner -> {
             // in case event is fired multiple times, see if already exists.
-            ActivityRole role = PresentationExchangeRole.PROVER.equals(partnerProof.getRole())
-                    ? ActivityRole.PRESENTATION_EXCHANGE_PROVER
-                    : ActivityRole.PRESENTATION_EXCHANGE_VERIFIER;
+            ActivityRole role = getPresentationExchangeRole(partnerProof);
             ActivityState state = ActivityState.PRESENTATION_EXCHANGE_ACCEPTED;
 
             activityRepository.findByLinkIdAndTypeAndRole(partnerProof.getId(),
@@ -207,6 +217,8 @@ public class ActivityManager {
                         activity.setState(state);
                         activity.setCompleted(true);
                         activityRepository.update(activity);
+
+                        eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
                     }, () -> {
                         // add in a completed activity
                         Activity a = Activity.builder()
@@ -225,9 +237,7 @@ public class ActivityManager {
     public void declinePresentationExchangeTask(@NonNull PartnerProof partnerProof) {
         partnerRepo.findById(partnerProof.getPartnerId()).ifPresent(partner -> {
             // in case event is fired multiple times, see if already exists.
-            ActivityRole role = PresentationExchangeRole.PROVER.equals(partnerProof.getRole())
-                    ? ActivityRole.PRESENTATION_EXCHANGE_PROVER
-                    : ActivityRole.PRESENTATION_EXCHANGE_VERIFIER;
+            ActivityRole role = getPresentationExchangeRole(partnerProof);
 
             activityRepository.findByLinkIdAndTypeAndRole(partnerProof.getId(),
                     ActivityType.PRESENTATION_EXCHANGE,
@@ -235,16 +245,24 @@ public class ActivityManager {
                         activity.setState(ActivityState.PRESENTATION_EXCHANGE_DECLINED);
                         activity.setCompleted(true);
                         activityRepository.update(activity);
+                        eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
                     });
         });
     }
 
     public void deletePresentationExchangeTask(@NonNull PartnerProof partnerProof) {
-        activityRepository.deleteByLinkIdAndType(partnerProof.getId(), ActivityType.PRESENTATION_EXCHANGE);
+        ActivityRole role = getPresentationExchangeRole(partnerProof);
+        activityRepository.findByLinkIdAndTypeAndRole(partnerProof.getId(),
+                ActivityType.PRESENTATION_EXCHANGE,
+                role).ifPresent(activity -> {
+                    activityRepository.delete(activity);
+                    eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
+                });
     }
 
     private ActivityItem convert(Activity activity) {
         return ActivityItem.builder()
+                .id(activity.getId().toString())
                 .linkId(activity.getLinkId().toString())
                 .partner(converter.toAPIObject(activity.getPartner()))
                 .role(activity.getRole())
@@ -275,6 +293,13 @@ public class ActivityManager {
                 return ActivityState.PRESENTATION_EXCHANGE_SENT;
             }
         }
+    }
+
+    @NotNull
+    private ActivityRole getPresentationExchangeRole(@NonNull PartnerProof partnerProof) {
+        return PresentationExchangeRole.PROVER.equals(partnerProof.getRole())
+                ? ActivityRole.PRESENTATION_EXCHANGE_PROVER
+                : ActivityRole.PRESENTATION_EXCHANGE_VERIFIER;
     }
 
 }
