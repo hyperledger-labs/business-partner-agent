@@ -41,7 +41,7 @@
               v-for="field in credDef.fields"
               :key="field.type"
               :label="field.label"
-              placeholder
+              placeholder=""
               :rules="[(v) => !!v || 'Item is required']"
               :required="field.required"
               outlined
@@ -73,7 +73,6 @@
 import { EventBus } from "@/main";
 import { issuerService, partnerService } from "@/services";
 import * as textUtils from "@/utils/textUtils";
-import * as partnerUtils from "@/utils/partnerUtils";
 import VBpaButton from "@/components/BpaButton";
 
 export default {
@@ -134,7 +133,7 @@ export default {
         const presp = await partnerService.listPartners();
         if (presp.status === 200) {
           this.partners = presp.data.map((p) => {
-            return { value: p.id, text: partnerUtils.getPartnerName(p), ...p };
+            return { value: p.id, text: p.name, ...p };
           });
         }
       } else {
