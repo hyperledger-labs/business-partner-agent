@@ -18,6 +18,7 @@
 
 package org.hyperledger.bpa.model.prooftemplate;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hyperledger.acy_py.generated.model.IndyProofReqPredSpec;
 
 import java.util.Optional;
@@ -36,18 +37,22 @@ class ParseableAsInteger implements Predicate<String> {
 }
 
 public enum ValueOperators {
-
+    @JsonProperty("==")
     EQUALS("==",
             "Compares the attributes value with the given value for equality. This reveals the value.", s -> true),
+    @JsonProperty("<")
     LESS_THAN(IndyProofReqPredSpec.PTypeEnum.LESS_THAN,
             "True, if the attributes value is less than given. Do not reveal the value.",
             new ParseableAsInteger()),
+    @JsonProperty("<=")
     LESS_THAN_OR_EQUAL_TO(IndyProofReqPredSpec.PTypeEnum.LESS_THAN_OR_EQUAL_TO,
             "True, if the attributes value is less than or equal given. Do not reveal the value.",
             new ParseableAsInteger()),
+    @JsonProperty("<")
     GREATER_THAN(IndyProofReqPredSpec.PTypeEnum.GREATER_THAN,
             "True, if the attributes value is greater than given. Do not reveal the value.",
             new ParseableAsInteger()),
+    @JsonProperty("<=")
     GREATER_THAN_OR_EQUAL_TO(IndyProofReqPredSpec.PTypeEnum.GREATER_THAN_OR_EQUAL_TO,
             "True, if the attributes value is greater than or equal given. Do not reveal the value.",
             new ParseableAsInteger());
