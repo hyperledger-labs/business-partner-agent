@@ -59,11 +59,18 @@
                 :key="idx"
               >
                 <v-expansion-panel-header>
-                  {{ attributeGroup.schemaId }}
+                  {{
+                    schemas.find((s) => s.id === attributeGroup.schemaId)
+                      .schemaId
+                  }}
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-container>
-                    <h4>Attributes</h4>
+                    <v-row>
+                      <v-col cols="4" class="pb-10">
+                        <h4 class="pb-5">Attributes</h4>
+                      </v-col>
+                    </v-row>
                     <v-data-table
                       disable-sort
                       :headers="attributeGroupHeaders"
@@ -73,6 +80,14 @@
                       show-expand
                       hide-default-footer
                     >
+                      <!-- actions on attribute -->
+                      <template v-slot:item.actions="{ item: attribute }">
+                        <v-btn icon @click="deleteAttribute(idx, attribute)">
+                          <v-icon color="error">$vuetify.icons.delete</v-icon>
+                        </v-btn>
+                      </template>
+
+                      <!-- expanded section for attribute conditions -->
                       <template
                         v-slot:expanded-item="{
                           attributeGroupHeaders,
@@ -169,58 +184,83 @@
 
                   <!-- Schema Restrictions -->
                   <v-container>
-                    <h4>Restrictions</h4>
+                    <h4 class="pb-5">Restrictions</h4>
                     <v-simple-table>
                       <tbody>
                         <tr>
                           <td>Schema ID</td>
                           <td>
-                            {{
-                              attributeGroup.schemaLevelRestrictions.schemaId
-                            }}
+                            <v-text-field
+                              id="proofTemplateName"
+                              v-model="
+                                attributeGroup.schemaLevelRestrictions.schemaId
+                              "
+                              dense
+                            ></v-text-field>
                           </td>
                         </tr>
                         <tr>
                           <td>Schema Name</td>
                           <td>
-                            {{
-                              attributeGroup.schemaLevelRestrictions.schemaName
-                            }}
+                            <v-text-field
+                              id="proofTemplateName"
+                              v-model="
+                                attributeGroup.schemaLevelRestrictions
+                                  .schemaName
+                              "
+                              dense
+                            ></v-text-field>
                           </td>
                         </tr>
                         <tr>
                           <td>Schema Version</td>
                           <td>
-                            {{
-                              attributeGroup.schemaLevelRestrictions
-                                .schemaVersion
-                            }}
+                            <v-text-field
+                              id="proofTemplateName"
+                              v-model="
+                                attributeGroup.schemaLevelRestrictions
+                                  .schemaVersion
+                              "
+                              dense
+                            ></v-text-field>
                           </td>
                         </tr>
                         <tr>
                           <td>Schema Issuer DID</td>
                           <td>
-                            {{
-                              attributeGroup.schemaLevelRestrictions
-                                .schemaIssuerDid
-                            }}
+                            <v-text-field
+                              id="proofTemplateName"
+                              v-model="
+                                attributeGroup.schemaLevelRestrictions
+                                  .schemaIssuerDid
+                              "
+                              dense
+                            ></v-text-field>
                           </td>
                         </tr>
                         <tr>
                           <td>Issuer DID</td>
                           <td>
-                            {{
-                              attributeGroup.schemaLevelRestrictions.issuerDid
-                            }}
+                            <v-text-field
+                              id="proofTemplateName"
+                              v-model="
+                                attributeGroup.schemaLevelRestrictions.issuerDid
+                              "
+                              dense
+                            ></v-text-field>
                           </td>
                         </tr>
                         <tr>
                           <td>Credential Definition ID</td>
                           <td>
-                            {{
-                              attributeGroup.schemaLevelRestrictions
-                                .credentialDefinitionId
-                            }}
+                            <v-text-field
+                              id="proofTemplateName"
+                              v-model="
+                                attributeGroup.schemaLevelRestrictions
+                                  .credentialDefinitionId
+                              "
+                              dense
+                            ></v-text-field>
                           </td>
                         </tr>
                       </tbody>
@@ -255,7 +295,7 @@
                   :key="schema.id"
                   @click="addAttributeGroup(schema.id)"
                 >
-                  <v-list-item-title>{{ schema.label }}</v-list-item-title>
+                  <v-list-item-title>{{ schema.schemaId }}</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -281,6 +321,7 @@
 <script>
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
+import proofTemplateService from "@/services/proofTemplateService";
 
 export default {
   name: "ProofTemplates",
@@ -293,7 +334,7 @@ export default {
           value: "name",
         },
         {
-          text: "",
+          text: "actions",
           value: "actions",
         },
       ],
@@ -374,6 +415,12 @@ export default {
         ],
       });
     },
+    deleteAttribute(attributeGroupIdx, attribute) {
+      let attributes = this.proofTemplate.attributeGroups[attributeGroupIdx]
+        .attributes;
+      let attributeIdx = attributes.findIndex((a) => a.name === attribute.name);
+      attributes.splice(attributeIdx, 1);
+    },
     addCondition(idx, attributeName) {
       this.proofTemplate.attributeGroups[idx].attributes
         .find((a) => a.name === attributeName)
@@ -406,6 +453,15 @@ export default {
       });
 
       console.log(JSON.stringify(this.proofTemplate));
+
+      proofTemplateService.createProofTemplate(this.proofTemplate).then(() => {
+        EventBus.$emit("success", "Proof Template Created");
+
+        this.$router.push({
+          name: "ProofTemplates",
+          params: {},
+        });
+      });
     },
   },
 };

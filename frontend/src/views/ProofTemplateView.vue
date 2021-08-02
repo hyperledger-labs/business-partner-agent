@@ -77,7 +77,10 @@
                 :key="attributeGroup.schemaId"
               >
                 <v-expansion-panel-header>
-                  {{ attributeGroup.schemaId }}
+                  {{
+                    schemas.find((s) => s.id === attributeGroup.schemaId)
+                      .schemaId
+                  }}
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-container>
@@ -210,10 +213,6 @@ export default {
       type: String,
       required: false,
     },
-    proofTemplate: {
-      type: Object,
-      required: false,
-    },
     attributeGroupHeaders: {
       type: Array,
       default: () => [
@@ -243,7 +242,15 @@ export default {
     this.getProofTemplate();
   },
   data: () => {
-    return {};
+    return {
+      schemas: [],
+    };
+  },
+  mounted() {
+    // load schemas
+    this.schemas = this.$store.getters.getSchemas.filter(
+      (schema) => schema.type === "SCHEMA_BASED"
+    );
   },
   computed: {},
   watch: {},
@@ -260,9 +267,12 @@ export default {
         .then((result) => {
           console.log(result);
           if (result.status === 200) {
-            EventBus.$emit("success", "Proof Template deleted");
-            this.$emit("changed");
-            this.$emit("deleted");
+            EventBus.$emit("success", "Proof Template Deleted");
+
+            this.$router.push({
+              name: "ProofTemplates",
+              params: {},
+            });
           }
         })
         .catch((e) => {

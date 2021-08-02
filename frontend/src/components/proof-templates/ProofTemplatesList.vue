@@ -38,6 +38,7 @@ create new ones
 </template>
 <script>
 import store from "@/store";
+import { EventBus } from "@/main";
 
 export default {
   props: {
@@ -62,6 +63,9 @@ export default {
       proofTemplate: {},
       dirty: false,
     };
+  },
+  created() {
+    this.$store.dispatch("loadProofTemplates");
   },
   computed: {
     proofTemplates: {
@@ -97,6 +101,24 @@ export default {
           id: proofTemplate.id,
         },
       });
+    },
+    deleteProofTemplate(proofTemplate) {
+      console.log(JSON.stringify(proofTemplate));
+
+      this.$axios
+        .delete(`${this.$apiBaseUrl}/proof-templates/${proofTemplate.id}`)
+        .then((result) => {
+          if (result.status === 200) {
+            this.$emit("removedItem", proofTemplate.id);
+          }
+
+          // reload proof templates
+          this.$store.dispatch("loadProofTemplates");
+        })
+        .catch((e) => {
+          console.error(e);
+          EventBus.$emit("error", e);
+        });
     },
   },
   components: {},
