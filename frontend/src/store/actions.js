@@ -150,6 +150,12 @@ export const loadProofTemplates = async ({ commit }) => {
     .getProofTemplates()
     .then((result) => {
       let proofTemplates = result.data;
+
+      // convert date strings to locale specific date formats
+      proofTemplates.forEach((pt) => {
+        pt.createdAt = new Date(pt.createdAt).toLocaleString();
+      });
+
       commit({
         type: "setProofTemplates",
         proofTemplates: proofTemplates,
