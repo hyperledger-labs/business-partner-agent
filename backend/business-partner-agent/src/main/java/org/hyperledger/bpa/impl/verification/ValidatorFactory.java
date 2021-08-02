@@ -40,7 +40,7 @@ public class ValidatorFactory {
     ConstraintValidator<ValidUUID, CharSequence> uuidValidator() {
         return (value, annotationMetadata, context) -> {
             // treat an empty id as valid.
-            if (value == null || StringUtils.isBlank(value)) {
+            if (StringUtils.isBlank(value)) {
                 return true;
             }
             return isUUID(value);
