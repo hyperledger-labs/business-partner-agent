@@ -74,31 +74,58 @@
                       hide-default-footer
                     >
                       <template
-                        v-slot:expanded-item="{ attributeGroupHeaders, item }"
+                        v-slot:expanded-item="{
+                          attributeGroupHeaders,
+                          item: attribute,
+                        }"
                       >
                         <td :colspan="attributeConditionHeaders.length">
                           <v-data-table
                             disable-sort
                             class="sub-table elevation-0"
                             :headers="attributeConditionHeaders"
-                            :items="item.conditions"
+                            :items="attribute.conditions"
                             hide-default-footer
                           >
-                            <template v-slot:item="{ item }">
+                            <template v-slot:item="{ item: condition }">
                               <tr>
                                 <td>
                                   <v-select
                                     :items="operators"
-                                    v-model="item.operator"
+                                    v-model="condition.operator"
                                     dense
-                                    item-text="name"
-                                    item-value="value"
                                   />
                                 </td>
                                 <td>
-                                  <v-text-field v-model="item.value" dense />
+                                  <v-text-field
+                                    v-model="condition.value"
+                                    dense
+                                  />
                                 </td>
-                                <td>{{ JSON.stringify(item) }}</td>
+                                <td>
+                                  <v-btn
+                                    icon
+                                    @click="addCondition(idx, attribute.name)"
+                                  >
+                                    <v-icon color="success"
+                                      >$vuetify.icons.add</v-icon
+                                    >
+                                  </v-btn>
+                                  <v-btn
+                                    icon
+                                    @click="
+                                      deleteCondition(
+                                        idx,
+                                        attribute.name,
+                                        condition.operator
+                                      )
+                                    "
+                                  >
+                                    <v-icon color="error"
+                                      >$vuetify.icons.delete</v-icon
+                                    >
+                                  </v-btn>
+                                </td>
                               </tr>
                             </template>
                           </v-data-table>
@@ -294,24 +321,22 @@ export default {
     EventBus.$emit("title", "Proof Templates");
   },
   mounted() {
+    // load schemas
     this.schemas = this.$store.getters.getSchemas.filter(
       (schema) => schema.type === "SCHEMA_BASED"
     );
-    console.log(JSON.stringify(this.schemas));
+
+    // load condition operators (>, <, ==, etc)
+    this.$axios
+      .get(`${this.$apiBaseUrl}/proof-templates/known-condition-operators`)
+      .then((result) => {
+        this.operators = result.data;
+      });
   },
   data: () => {
     return {
       schemas: [],
-      operators: [
-        {
-          name: ">",
-          value: "GREATER_THAN",
-        },
-        {
-          name: "<",
-          value: "LESS_THAN",
-        },
-      ],
+      operators: [],
       proofTemplate: {
         name: "",
         attributeGroups: [],
@@ -349,7 +374,37 @@ export default {
         ],
       });
     },
+    addCondition(idx, attributeName) {
+      this.proofTemplate.attributeGroups[idx].attributes
+        .find((a) => a.name === attributeName)
+        .conditions.push({
+          operator: "",
+          value: "",
+        });
+    },
+    deleteCondition(idx, attributeName, operator) {
+      let conditions = this.proofTemplate.attributeGroups[idx].attributes.find(
+        (a) => a.name === attributeName
+      ).conditions;
+      let operatorIdx = conditions.findIndex((c) => c.operator === operator);
+
+      if (conditions.length > 1) {
+        conditions.splice(operatorIdx, 1);
+      } else {
+        conditions[0].operator = "";
+        conditions[0].value = "";
+      }
+    },
     createProofTemplate() {
+      // sanitize attribute conditions (remove empty conditions)
+      this.proofTemplate.attributeGroups.forEach((ag) => {
+        ag.attributes.forEach((a) => {
+          a.conditions = a.conditions.filter(
+            (c) => c.operator !== "" && c.value !== ""
+          );
+        });
+      });
+
       console.log(JSON.stringify(this.proofTemplate));
     },
   },
