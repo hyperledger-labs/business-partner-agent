@@ -20,6 +20,7 @@ package org.hyperledger.bpa.impl.verification;
 
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.validation.validator.constraints.ConstraintValidator;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.verification.prooftemplates.*;
@@ -39,7 +40,7 @@ public class ValidatorFactory {
     ConstraintValidator<ValidUUID, CharSequence> uuidValidator() {
         return (value, annotationMetadata, context) -> {
             // treat an empty id as valid.
-            if (value == null) {
+            if (value == null || StringUtils.isBlank(value)) {
                 return true;
             }
             return isUUID(value);
