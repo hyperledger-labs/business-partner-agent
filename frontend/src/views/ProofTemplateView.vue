@@ -21,6 +21,9 @@
     <v-card class="mx-auto">
       <!-- Title -->
       <v-card-title class="bg-light">
+        <v-btn depressed color="secondary" icon @click="$router.go(-1)">
+          <v-icon dark>$vuetify.icons.prev</v-icon>
+        </v-btn>
         <span>{{ proofTemplate.name }}</span>
         <v-layout align-end justify-end>
           <v-btn depressed color="red" icon @click="deleteProofTemplate">
@@ -49,7 +52,8 @@
             dense
             label="Created At"
             :append-icon="'$vuetify.icons.copy'"
-          ></v-text-field>
+            >{{ new Date(proofTemplate.createdAt).toLocaleString() }}
+          </v-text-field>
         </v-list-item>
       </v-container>
       <v-divider></v-divider>
@@ -63,8 +67,8 @@
           <v-list-item-content>
             <v-list-item-title>Attribute Groups</v-list-item-title>
             <v-list-item-subtitle
-              >Description of what attribute groups are...</v-list-item-subtitle
-            >
+              >Description of what attribute groups are...
+            </v-list-item-subtitle>
 
             <v-expansion-panels>
               <v-expansion-panel
@@ -191,14 +195,6 @@
           </v-list-item-content>
         </v-list-item>
       </v-container>
-
-      <!-- Actions -->
-      <v-divider></v-divider>
-      <v-card-actions>
-        <v-layout align-end justify-end>
-          <v-bpa-button color="primary" @click="closed">Close</v-bpa-button>
-        </v-layout>
-      </v-card-actions>
     </v-card>
   </v-container>
 </template>
@@ -206,16 +202,18 @@
 <script>
 import { EventBus } from "@/main";
 import proofTemplateService from "@/services/proofTemplateService";
-import VBpaButton from "@/components/BpaButton";
 
 export default {
-  name: "ProofTemplateView",
+  name: "ProofTemplates",
   props: {
-    dialog: {
-      type: Boolean,
-      default: () => false,
+    id: {
+      type: String,
+      required: false,
     },
-    proofTemplate: Object,
+    proofTemplate: {
+      type: Object,
+      required: false,
+    },
     attributeGroupHeaders: {
       type: Array,
       default: () => [
@@ -238,43 +236,24 @@ export default {
         },
       ],
     },
-    schemaLevelRestrictionsHeaders: {
-      type: Array,
-      default: () => [
-        {
-          text: "Schema ID",
-          value: "schemaId",
-        },
-        {
-          text: "Schema Name",
-          value: "schemaName",
-        },
-        {
-          text: "Schema Version",
-          value: "schemaVersion",
-        },
-        {
-          text: "Schema Issuer DID",
-          value: "schemaIssuerDid",
-        },
-        {
-          text: "Credential Definition ID",
-          value: "credentialDefinitionId",
-        },
-        {
-          text: "Issuer DID",
-          value: "issuerDid",
-        },
-      ],
-    },
   },
-  components: {
-    VBpaButton,
+  components: {},
+  created() {
+    EventBus.$emit("title", "Proof Templates");
+    this.getProofTemplate();
   },
-  watch: {},
-  created() {},
+  data: () => {
+    return {};
+  },
   computed: {},
+  watch: {},
   methods: {
+    getProofTemplate() {
+      this.proofTemplate = this.$store.state.proofTemplates.find(
+        (pt) => pt.id === this.id
+      );
+      console.log("found: {}", JSON.stringify(this.proofTemplate));
+    },
     deleteProofTemplate() {
       proofTemplateService
         .deleteProofTemplate(this.proofTemplate.id)
@@ -290,12 +269,6 @@ export default {
           console.error(e);
           EventBus.$emit("error", e);
         });
-    },
-    onChanged() {
-      this.$emit("changed");
-    },
-    closed() {
-      this.$emit("closed");
     },
   },
 };
