@@ -25,7 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = {})
 public @interface ValidBPASchemaId {
-    String MESSAGE_TEMPLATE = "Schema id invalid: {validatedValue}";
+    String MESSAGE_TEMPLATE = "Schema id invalid: '{validatedValue}' You have to use the schema.id instead of the schema.schemaId";
 
     String message() default MESSAGE_TEMPLATE;
 }

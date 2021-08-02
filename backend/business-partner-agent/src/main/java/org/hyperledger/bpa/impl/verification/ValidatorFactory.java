@@ -42,18 +42,26 @@ public class ValidatorFactory {
             if (value == null) {
                 return true;
             }
-            try {
-                UUID.fromString(String.valueOf(value));
-                return true;
-            } catch (IllegalArgumentException e) {
-                return false;
-            }
+            return isUUID(value);
         };
+    }
+
+    private boolean isUUID(CharSequence value) {
+        try {
+            UUID.fromString(String.valueOf(value));
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
     @Singleton
     ConstraintValidator<ValidBPASchemaId, CharSequence> schemaIdValidator(SchemaService schemaService) {
-        return (value, annotationMetadata, context) -> schemaService.getSchema(UUID.fromString(String.valueOf(value)))
+        return (value, annotationMetadata, context) ->Optional.ofNullable(value)
+                .map(String::valueOf)
+                .filter(this::isUUID)
+                .map(UUID::fromString)
+                .flatMap(schemaService::getSchema)
                 .isPresent();
     }
 
@@ -74,8 +82,11 @@ public class ValidatorFactory {
         return (value, annotationMetadata, context) -> {
             boolean valid = false;
             if (value != null) {
-                Optional<Predicate<String>> attributeInSchema = schemaService
-                        .getSchema(UUID.fromString(value.getSchemaId()))
+                Optional<Predicate<String>> attributeInSchema =Optional.ofNullable(value)
+                        .map(BPAAttributeGroup::getSchemaId)
+                        .filter(this::isUUID)
+                        .map(UUID::fromString)
+                        .flatMap(schemaService::getSchema)
                         .map(SchemaAPI::getSchemaId)
                         .map(schemaId -> schemaService
                                 .getSchemaAttributeNames(schemaId)::contains);
