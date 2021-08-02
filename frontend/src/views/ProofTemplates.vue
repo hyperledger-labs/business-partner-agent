@@ -20,25 +20,62 @@
       <v-card-text>
         <ProofTemplatesList />
       </v-card-text>
+
+      <!-- Proof Templates Actions -->
+      <v-card-actions>
+        <v-layout align-end justify-end>
+          <v-dialog
+            v-model="proofTemplateCreateDialog"
+            persistent
+            max-width="600px"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-bpa-button
+                v-bind="attrs"
+                v-on="on"
+                color="primary"
+                @click="proofTemplateCreate()"
+              >
+                Create Proof Template
+              </v-bpa-button>
+            </template>
+          </v-dialog>
+        </v-layout>
+      </v-card-actions>
     </v-card>
   </v-container>
 </template>
 
 <script>
 import { EventBus } from "@/main";
-import ProofTemplatesList from "@/components/ProofTemplatesList";
+import ProofTemplatesList from "@/components/proof-templates/ProofTemplatesList";
+import VBpaButton from "@/components/BpaButton";
+import store from "@/store";
 
 export default {
   name: "ProofTemplates",
-  components: { ProofTemplatesList },
+  components: { ProofTemplatesList, VBpaButton },
   created() {
     EventBus.$emit("title", "Proof Templates");
   },
   data: () => {
-    return {};
+    return {
+      proofTemplateCreateDialog: false,
+    };
   },
   computed: {},
   watch: {},
-  methods: {},
+  methods: {
+    onProofTemplateCreated() {
+      store.dispatch("loadProofTemplates");
+      this.proofTemplateCreateDialog = false;
+    },
+    proofTemplateCreate() {
+      this.$router.push({
+        name: "ProofTemplateCreate",
+        params: {},
+      });
+    },
+  },
 };
 </script>
