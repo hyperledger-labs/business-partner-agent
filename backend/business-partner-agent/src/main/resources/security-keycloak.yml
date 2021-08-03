@@ -31,3 +31,5 @@ micronaut:
               url: ${BPA_KEYCLOAK_ENDSESSION_URL:}
             authorization:
               response-mode: query
+              url: "garbage"
+              
