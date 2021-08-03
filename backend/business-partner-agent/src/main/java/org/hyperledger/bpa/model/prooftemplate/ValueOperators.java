@@ -48,11 +48,11 @@ public enum ValueOperators {
     LESS_THAN_OR_EQUAL_TO(IndyProofReqPredSpec.PTypeEnum.LESS_THAN_OR_EQUAL_TO,
             "True, if the attributes value is less than or equal given. Do not reveal the value.",
             new ParseableAsInteger()),
-    @JsonProperty("<")
+    @JsonProperty(">")
     GREATER_THAN(IndyProofReqPredSpec.PTypeEnum.GREATER_THAN,
             "True, if the attributes value is greater than given. Do not reveal the value.",
             new ParseableAsInteger()),
-    @JsonProperty("<=")
+    @JsonProperty(">=")
     GREATER_THAN_OR_EQUAL_TO(IndyProofReqPredSpec.PTypeEnum.GREATER_THAN_OR_EQUAL_TO,
             "True, if the attributes value is greater than or equal given. Do not reveal the value.",
             new ParseableAsInteger());
