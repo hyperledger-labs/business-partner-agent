@@ -59,10 +59,7 @@
       <v-divider></v-divider>
 
       <!-- Attribute Groups -->
-      <v-container
-        v-for="attributeGroup in proofTemplate.attributeGroups"
-        :key="attributeGroup.schemaId"
-      >
+      <v-container>
         <v-list-item>
           <v-list-item-content>
             <v-list-item-title>Attribute Groups</v-list-item-title>
