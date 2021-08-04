@@ -17,7 +17,7 @@
  */
 package org.hyperledger.bpa.config;
 
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Singleton
-@NoArgsConstructor
+@Getter
 public class ActivityLogConfig {
     /*
      * For now, we are not sure what to do with this configuration. Will each
@@ -36,64 +36,64 @@ public class ActivityLogConfig {
      * AcaPyConfig, which flags are set to auto respond...
      */
 
-    @Inject
-    AcaPyConfig acaPyConfig;
+    private static List<ConnectionState> CONNECTION_STATES_TASKS = List.of(ConnectionState.REQUEST);
 
-    public List<ConnectionState> getConnectionStatesForActivities() {
-        List<ConnectionState> results = new ArrayList<>(getConnectionStatesCompleted());
-        results.addAll(getConnectionStatesForTasks());
+    private static List<ConnectionState> CONNECTION_STATES_COMPLETED = List.of(ConnectionState.ACTIVE,
+            ConnectionState.RESPONSE,
+            ConnectionState.COMPLETED,
+            ConnectionState.PING_RESPONSE,
+            ConnectionState.PING_NO_RESPONSE);
+
+    private static List<PresentationExchangeState> PRESENTATION_EXCHANGE_STATES_TASKS = List.of(PresentationExchangeState.REQUEST_RECEIVED);
+
+    private static List<PresentationExchangeState> PRESENTATION_EXCHANGE_STATES_COMPLETED = List.of(PresentationExchangeState.VERIFIED,
+            PresentationExchangeState.PRESENTATION_ACKED);
+
+    private List<ConnectionState> connectionStatesForActivities;
+    private List<ConnectionState> connectionStatesForCompleted;
+    private List<ConnectionState> connectionStatesForTasks;
+    private List<PresentationExchangeState> presentationExchangeStatesForActivities;
+    private List<PresentationExchangeState> presentationExchangeStatesForCompleted;
+    private List<PresentationExchangeState> presentationExchangeStatesForTasks;
+
+    private AcaPyConfig acaPyConfig;
+
+    @Inject
+    ActivityLogConfig(AcaPyConfig acaPyConfig) {
+        this.acaPyConfig = acaPyConfig;
+        // 1. set the tasks lists first as they depend on aca py configuration
+        connectionStatesForTasks = this.isConnectionRequestTask() ? CONNECTION_STATES_TASKS : List.of();
+        presentationExchangeStatesForTasks = this.isPresentationExchangeTask() ? PRESENTATION_EXCHANGE_STATES_TASKS : List.of();
+
+        // 2. set the completed state lists
+        connectionStatesForCompleted = CONNECTION_STATES_COMPLETED;
+        presentationExchangeStatesForCompleted = PRESENTATION_EXCHANGE_STATES_COMPLETED;
+
+        // 3. build the activity lists based on task and completed lists
+        connectionStatesForActivities = this.buildConnectionStatesForActivities();
+        presentationExchangeStatesForActivities = this.buildPresentationExchangeStatesForActivities();
+    }
+
+    private List<ConnectionState> buildConnectionStatesForActivities() {
+        List<ConnectionState> results = new ArrayList<>(this.getConnectionStatesForCompleted());
+        results.addAll(this.getConnectionStatesForTasks());
         results.add(ConnectionState.INVITATION);
         return List.copyOf(results);
     }
 
-    public List<ConnectionState> getConnectionStatesForTasks() {
-        if (this.isConnectionRequestTask()) {
-            return connectionStates(ConnectionState.REQUEST);
-        }
-        return List.of();
+    private boolean isConnectionRequestTask() {
+        return !this.acaPyConfig.getAutoAcceptRequests();
     }
 
-    public List<ConnectionState> getConnectionStatesCompleted() {
-        return connectionStates(ConnectionState.ACTIVE,
-                ConnectionState.RESPONSE,
-                ConnectionState.COMPLETED,
-                ConnectionState.PING_RESPONSE,
-                ConnectionState.PING_NO_RESPONSE);
-    }
-
-    public boolean isConnectionRequestTask() {
-        return !acaPyConfig.getAutoAcceptRequests();
-    }
-
-    public List<PresentationExchangeState> getPresentationExchangeStatesForActivities() {
-        List<PresentationExchangeState> results = new ArrayList<>(getPresentationExchangeStatesCompleted());
-        results.addAll(getPresentationExchangeStatesForTasks());
+    public List<PresentationExchangeState> buildPresentationExchangeStatesForActivities() {
+        List<PresentationExchangeState> results = new ArrayList<>(this.getPresentationExchangeStatesForCompleted());
+        results.addAll(this.getPresentationExchangeStatesForTasks());
         results.add(PresentationExchangeState.REQUEST_SENT);
         return List.copyOf(results);
     }
 
-    public List<PresentationExchangeState> getPresentationExchangeStatesForTasks() {
-        if (this.isPresentationExchangeTask()) {
-            return presentationExchangeStates(PresentationExchangeState.REQUEST_RECEIVED);
-        }
-        return List.of();
-    }
-
-    public List<PresentationExchangeState> getPresentationExchangeStatesCompleted() {
-        return presentationExchangeStates(PresentationExchangeState.VERIFIED,
-                PresentationExchangeState.PRESENTATION_ACKED);
-    }
-
-    public boolean isPresentationExchangeTask() {
-        return !acaPyConfig.getAutoRespondPresentationRequest();
-    }
-
-    private List<ConnectionState> connectionStates(ConnectionState... states) {
-        return List.of(states);
-    }
-
-    private List<PresentationExchangeState> presentationExchangeStates(PresentationExchangeState... states) {
-        return List.of(states);
+    private boolean isPresentationExchangeTask() {
+        return !this.acaPyConfig.getAutoRespondPresentationRequest();
     }
 
 }
