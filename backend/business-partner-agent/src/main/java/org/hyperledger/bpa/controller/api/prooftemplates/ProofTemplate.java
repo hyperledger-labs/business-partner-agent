@@ -17,6 +17,9 @@
  */
 package org.hyperledger.bpa.controller.api.prooftemplates;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.Nullable;
 import lombok.*;
@@ -37,6 +40,7 @@ public class ProofTemplate {
     @ValidUUID
     String id;
     @Nullable
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
     private Instant createdAt;
 
     @NotEmpty

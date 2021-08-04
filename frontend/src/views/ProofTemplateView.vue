@@ -195,6 +195,18 @@
           </v-list-item-content>
         </v-list-item>
       </v-container>
+
+      <!-- Proof Templates Actions -->
+      <v-card-actions>
+        <v-layout align-end justify-end>
+          <v-bpa-button color="secondary" @click="$router.go(-1)">
+            Close
+          </v-bpa-button>
+          <v-bpa-button color="primary" disabled>
+            Create Proof Request
+          </v-bpa-button>
+        </v-layout>
+      </v-card-actions>
     </v-card>
   </v-container>
 </template>
@@ -202,6 +214,7 @@
 <script>
 import { EventBus } from "@/main";
 import proofTemplateService from "@/services/proofTemplateService";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   name: "ProofTemplates",
@@ -233,7 +246,9 @@ export default {
       ],
     },
   },
-  components: {},
+  components: {
+    VBpaButton,
+  },
   created() {
     EventBus.$emit("title", "Proof Templates");
     this.getProofTemplate();

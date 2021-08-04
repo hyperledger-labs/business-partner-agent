@@ -56,7 +56,7 @@ public class ProofTemplateController {
     }
 
     @Post
-    public HttpResponse<ProofTemplate> addProofTemplate(@Valid ProofTemplate template) {
+    public HttpResponse<ProofTemplate> addProofTemplate(@Valid @Body ProofTemplate template) {
         if (template.getId() == null) {
             BPAProofTemplate persistedTemplate = proofTemplateManager
                     .addProofTemplate(BPAProofTemplate.fromRepresentation(template));
