@@ -407,7 +407,7 @@
                                     <goal>npm</goal>
                                 </goals>
                                 <configuration>
-                                    <arguments>install</arguments>
+                                    <arguments>install --no-optional</arguments>
                                 </configuration>
                             </execution>
                             <execution>

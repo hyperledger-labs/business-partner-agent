@@ -60,7 +60,7 @@
 
 <script>
 import { EventBus } from "../main";
-import { getPartnerName, getPartnerState } from "../utils/partnerUtils";
+import { getPartnerState } from "../utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import NewMessageIcon from "@/components/NewMessageIcon";
 import { CredentialTypes, PartnerStates } from "../constants";
@@ -168,7 +168,6 @@ export default {
             }
 
             this.data = result.data.map((partner) => {
-              partner.name = getPartnerName(partner);
               partner.address = this.getProfileAddress(partner);
               return partner;
             });

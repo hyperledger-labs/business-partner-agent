@@ -83,7 +83,6 @@
   import {ActivityRoles, ActivityStates, ActivityTypes} from "@/constants";
   import VBpaButton from "@/components/BpaButton";
   import activitiesService from "@/services/activitiesService";
-  import * as partnerUtils from "@/utils/partnerUtils";
   import NewMessageIcon from "@/components/NewMessageIcon";
 
   export default {
@@ -246,7 +245,7 @@
         return o ? o.label : role;
       },
       partnerLabel(partner) {
-        return partner ? partnerUtils.getPartnerName(partner) : "Unknown";
+        return partner ? partner.name : "Unknown";
       }
     },
   };
