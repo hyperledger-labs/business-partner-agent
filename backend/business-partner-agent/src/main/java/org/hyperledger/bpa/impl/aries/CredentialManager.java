@@ -19,6 +19,7 @@ package org.hyperledger.bpa.impl.aries;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
 import lombok.Setter;
@@ -39,11 +40,11 @@ import org.hyperledger.bpa.api.aries.AriesCredential.AriesCredentialBuilder;
 import org.hyperledger.bpa.api.aries.ProfileVC;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
-import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.activity.VPManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.notification.CredentialAddedEvent;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.MyCredential;
@@ -102,6 +103,9 @@ public class CredentialManager {
 
     @Inject
     LabelStrategy labelStrategy;
+
+    @Inject
+    ApplicationEventPublisher eventPublisher;
 
     // request credential from issuer (partner)
     public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId) {
@@ -169,7 +173,11 @@ public class CredentialManager {
                             .setIssuedAt(Instant.now())
                             .setLabel(label);
                     MyCredential updated = credRepo.update(cred);
-                    messageService.sendMessage(WebSocketMessageBody.credentialReceived(buildAriesCredential(updated)));
+                    AriesCredential ariesCredential = buildAriesCredential(updated);
+                    eventPublisher.publishEventAsync(CredentialAddedEvent.builder()
+                            .credential(ariesCredential)
+                            .credentialExchange(credEx)
+                            .build());
 
                 }, () -> log.error("Received credential without matching thread id, credential is not stored."));
     }
@@ -215,7 +223,7 @@ public class CredentialManager {
 
     /**
      * Updates the credentials label
-     * 
+     *
      * @param id    the credential id
      * @param label the credentials label
      * @return the updated credential if found

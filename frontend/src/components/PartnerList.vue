@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 
@@ -22,9 +22,8 @@
     >
       <template v-slot:[`item.name`]="{ item }">
         <new-message-icon
-          v-show="item.new"
-          isPartner
-          :text="item.name"
+            :type="'partner'"
+            :id="item.id"
         ></new-message-icon>
         <PartnerStateIndicator
           v-if="item.state"
@@ -127,12 +126,12 @@ export default {
         return this.data;
       }
     },
-    newPartners() {
-      return this.$store.getters.newPartners;
+    partnerNotifications() {
+      return this.$store.getters.partnerNotifications;
     },
   },
   watch: {
-    newPartners: function (newValue) {
+    partnerNotifications: function (newValue) {
       if (newValue) {
         // TODO: Don't fetch all partners but only add new partner
         this.fetch();
@@ -162,8 +161,6 @@ export default {
           if ({}.hasOwnProperty.call(result, "data")) {
             this.isBusy = false;
 
-            result.data = this.markNew(result.data);
-
             if (this.onlyAries) {
               result.data = result.data.filter((item) => {
                 return item.ariesSupport === true;
@@ -184,20 +181,6 @@ export default {
           console.error(e);
           EventBus.$emit("error", e);
         });
-    },
-    markNew(data) {
-      if (this.indicateNew) {
-        const newPartners = this.$store.getters.newPartners;
-        if (Object.keys(newPartners).length > 0) {
-          data = data.map((partner) => {
-            if ({}.hasOwnProperty.call(newPartners, partner.id)) {
-              partner.new = true;
-            }
-            return partner;
-          });
-        }
-      }
-      return data;
     },
     getProfileAddress(credential) {
       if (credential.credential && credential.credential.length > 0) {

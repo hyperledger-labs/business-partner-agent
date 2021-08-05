@@ -15,26 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.activity;
+package org.hyperledger.bpa.impl.notification;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
+import org.hyperledger.bpa.api.aries.AriesCredential;
 
+@Builder
 @NoArgsConstructor
-public enum ActivityState {
-    @JsonProperty("connection_request_received")
-    CONNECTION_REQUEST_RECEIVED,
-    @JsonProperty("connection_request_sent")
-    CONNECTION_REQUEST_SENT,
-    @JsonProperty("connection_request_accepted")
-    CONNECTION_REQUEST_ACCEPTED,
-    @JsonProperty("presentation_exchange_sent")
-    PRESENTATION_EXCHANGE_SENT,
-    @JsonProperty("presentation_exchange_received")
-    PRESENTATION_EXCHANGE_RECEIVED,
-    @JsonProperty("presentation_exchange_accepted")
-    PRESENTATION_EXCHANGE_ACCEPTED,
-    @JsonProperty("presentation_exchange_declined")
-    PRESENTATION_EXCHANGE_DECLINED,
+@AllArgsConstructor
+@Getter
+public class CredentialAddedEvent {
 
+    private AriesCredential credential;
+    private V1CredentialExchange credentialExchange;
 }

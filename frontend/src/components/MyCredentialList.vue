@@ -22,8 +22,8 @@
     >
       <template v-slot:[`item.label`]="{ item }">
         <new-message-icon
-          v-show="item.new"
-          :text="item.label"
+          :type="'credential'"
+          :id="item.id"
         ></new-message-icon>
         <span v-bind:class="{ 'font-weight-medium': item.new }">
           {{ item.label }}
@@ -102,12 +102,12 @@ export default {
     };
   },
   computed: {
-    newCredentials() {
-      return this.$store.getters.newCredentials;
+    credentialNotifications() {
+      return this.$store.getters.credentialNotifications;
     },
   },
   watch: {
-    newCredentials: function (newValue) {
+    credentialNotifications: function (newValue) {
       if (newValue && this.type === "credential") {
         // TODO: Don't fetch all partners but only add new credential data
         this.fetch(this.type);
@@ -126,8 +126,6 @@ export default {
               this.data = result.data.filter((item) => {
                 return item.issuer;
               });
-
-              this.data = this.markNew(this.data);
             } else {
               this.data = result.data;
             }
@@ -162,20 +160,6 @@ export default {
           },
         });
       }
-    },
-    markNew(data) {
-      if (this.indicateNew) {
-        const newCredentials = this.$store.getters.newCredentials;
-        if (this.$store.getters.newCredentialsCount > 0) {
-          data = data.map((cred) => {
-            if ({}.hasOwnProperty.call(newCredentials, cred.id)) {
-              cred.new = true;
-            }
-            return cred;
-          });
-        }
-      }
-      return data;
     },
   },
 };
