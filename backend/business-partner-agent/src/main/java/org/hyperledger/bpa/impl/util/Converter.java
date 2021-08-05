@@ -40,11 +40,14 @@ import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.PartnerAPI.PartnerCredential;
+import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.model.Partner;
 
 import io.micronaut.core.annotation.Nullable;
+import org.hyperledger.bpa.model.PartnerProof;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
@@ -191,6 +194,15 @@ public class Converter {
             log.error("Could not serialise to string: {}", value, e);
         }
         return Optional.empty();
+    }
+
+    public AriesProofExchange toAPIObject(@NonNull PartnerProof p) {
+        AriesProofExchange proof = AriesProofExchange.from(p,
+                p.getProof() != null ? this.fromMap(p.getProof(), JsonNode.class) : null);
+        if (io.micronaut.core.util.StringUtils.isNotEmpty(p.getSchemaId())) {
+            proof.setTypeLabel(schemaService.getSchemaLabel(p.getSchemaId()));
+        }
+        return proof;
     }
 
     private String resolveTypeLabel(@NonNull CredentialType type, @Nullable String schemaId) {

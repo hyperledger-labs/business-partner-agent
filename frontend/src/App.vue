@@ -67,8 +67,8 @@
             <v-badge
                 overlap
                 bordered
-                :content="notificationsCount"
-                :value="notificationsCount"
+                :content="taskNotificationsCount"
+                :value="taskNotificationsCount"
                 color="red"
                 offset-x="10"
                 offset-y="10"
@@ -93,8 +93,8 @@
             <v-badge
               overlap
               bordered
-              :content="newCredentialsCount"
-              :value="newCredentialsCount"
+              :content="credentialNotificationsCount"
+              :value="credentialNotificationsCount"
               color="red"
               offset-x="10"
               offset-y="10"
@@ -118,7 +118,17 @@
         </v-list-item>
         <v-list-item link :to="{ name: 'Partners' }">
           <v-list-item-action>
-            <v-icon>$vuetify.icons.partners</v-icon>
+            <v-badge
+                overlap
+                bordered
+                :content="partnerNotificationsCount"
+                :value="partnerNotificationsCount"
+                color="red"
+                offset-x="10"
+                offset-y="10"
+            >
+              <v-icon>$vuetify.icons.partners</v-icon>
+            </v-badge>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>{{ $t("nav.partners") }}</v-list-item-title>
@@ -223,8 +233,8 @@
           <v-badge v-else
               overlap
               bordered
-              :content="incomingMessageCount"
-              :value="incomingMessageCount"
+              :content="messagesReceivedCount"
+              :value="messagesReceivedCount"
               color="red"
               offset-x="10"
               offset-y="10"
@@ -381,14 +391,17 @@ export default {
     privacyPolicyUrl() {
       return this.$store.state.settings.dataPrivacyPolicy;
     },
-    newCredentialsCount() {
-      return this.$store.getters.newCredentialsCount;
+    messagesReceivedCount() {
+      return this.$store.getters.messagesReceivedCount;
     },
-    notificationsCount() {
-      return this.$store.getters.notificationsCount;
+    credentialNotificationsCount() {
+      return this.$store.getters.credentialNotificationsCount;
     },
-    incomingMessageCount() {
-      return this.$store.getters.incomingMessageCount;
+    partnerNotificationsCount() {
+      return this.$store.getters.partnerNotificationsCount;
+    },
+    taskNotificationsCount() {
+      return this.$store.getters.taskNotificationsCount;
     },
     getAgentName() {
       let bpaName = "Business Partner Agent";
@@ -476,7 +489,7 @@ export default {
     },
     showChatWindow() {
       // for now, reset the count if we open (we will look for new messages) or close (we already saw messages)
-      this.$store.commit("incomingMessagesSeen");
+      this.$store.commit("messagesReceivedSeen");
       // now, open of close it
       this.chatWindow = !this.chatWindow;
     }

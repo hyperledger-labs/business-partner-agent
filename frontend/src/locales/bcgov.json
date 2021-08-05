@@ -27,6 +27,7 @@
     "activityStates": {
       "presentationExchange": {
         "accepted": "Proof accepted",
+        "declined": "Request for proof has been declined",
         "received": "A Proof has been requested",
         "sent": "Request for Proof sent"
       }

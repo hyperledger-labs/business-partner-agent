@@ -21,6 +21,12 @@
     single-select
     @click:row="openPresentation"
   >
+    <template v-slot:[`item.indicator`]="{item}">
+      <new-message-icon
+          :type="'presentation'"
+          :id="item.id"
+      ></new-message-icon>
+    </template>
     <template v-slot:[`item.type`]="{ item }">
       <div v-if="item.type === CredentialTypes.UNKNOWN.type">
         {{ item.credentialDefinitionId | credentialTag | capitalize }}
@@ -79,7 +85,7 @@ import Credential from "@/components/Credential";
 import { EventBus } from "../main";
 import { CredentialTypes } from "../constants";
 import { presentationListHeaders } from "@/components/tableHeaders/PresentationListHeaders";
-
+import NewMessageIcon from "@/components/NewMessageIcon";
 export default {
   props: {
     credentials: Array,
@@ -162,6 +168,7 @@ export default {
   },
   components: {
     Credential,
+    NewMessageIcon
   },
 };
 </script>

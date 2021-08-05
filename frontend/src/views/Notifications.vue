@@ -49,7 +49,8 @@ export default {
   components: {ActivityList},
   created() {
     EventBus.$emit("title", this.$t("view.notifications.title"));
-    this.$store.commit("notificationsSeen");
+    // do we want to clear all the notifications?
+    //this.$store.commit("taskNotificationsClear");
   },
   data: () => {
     return {

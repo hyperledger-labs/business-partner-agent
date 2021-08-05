@@ -67,6 +67,7 @@ export default {
   created() {
     EventBus.$emit("title", "Presentation");
     this.getPresentation();
+    this.$store.commit("presentationNotificationSeen", {id: this.presentationId});
   },
   data: () => {
     return {

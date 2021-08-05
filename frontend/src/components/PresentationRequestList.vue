@@ -20,6 +20,12 @@
     single-select
     @click:row="openPresentation"
   >
+    <template v-slot:[`item.indicator`]="{item}">
+      <new-message-icon
+          :type="'presentation'"
+          :id="item.id"
+      ></new-message-icon>
+    </template>
     <template v-slot:[`item.createdAt`]="{ item }">
       {{ item.createdAt | formatDateLong }}
     </template>
@@ -45,8 +51,10 @@
 import { EventBus } from "../main";
 import { CredentialTypes } from "../constants";
 import { presentationListHeaders } from "@/components/tableHeaders/PresentationListHeaders";
+import NewMessageIcon from "@/components/NewMessageIcon";
 
 export default {
+  components: {NewMessageIcon},
   props: {
     presentationRequests: Array,
     selectable: {
