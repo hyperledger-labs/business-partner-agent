@@ -153,4 +153,18 @@ public class IssuerController {
         return HttpResponse.ok(im.listCredentialExchanges(role, partnerId != null ? UUID.fromString(partnerId) : null));
     }
 
+    /**
+     * Revoke an issued credential
+     * @param id credential exchange id
+     * @return {@link HttpResponse}
+     */
+    @Post("/exchanges/{id}/revoke")
+    public HttpResponse<CredEx> revokeCredential(@PathVariable UUID id) {
+        Optional<CredEx> credEx = im.revokeCredentialExchange(id);
+        if (credEx.isPresent()) {
+            return HttpResponse.ok(credEx.get());
+        }
+        return HttpResponse.notFound();
+    }
+
 }

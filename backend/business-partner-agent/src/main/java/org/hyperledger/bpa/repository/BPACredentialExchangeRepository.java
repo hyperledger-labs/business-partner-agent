@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.repository;
 
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
@@ -56,6 +57,5 @@ public interface BPACredentialExchangeRepository extends CrudRepository<BPACrede
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     List<BPACredentialExchange> listOrderByUpdatedAtDesc();
 
-    Iterable<BPACredentialExchange> findByStateIn(List<CredentialExchangeState> states);
-
+    int updateRevoked(@Id UUID id, Boolean revoked);
 }

@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl;
 
-import com.google.gson.Gson;
 import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -29,15 +28,16 @@ import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.credentials.CredentialPreview;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialProposalRequest;
+import org.hyperledger.aries.api.revocation.RevokeRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.IssuerException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.issuer.CredDef;
 import org.hyperledger.bpa.controller.api.issuer.CredEx;
@@ -86,6 +86,9 @@ public class IssuerManager {
 
     @Inject
     RuntimeConfig config;
+
+    @Inject
+    BPAMessageSource.DefaultMessageSource msg;
 
     public SchemaAPI createSchema(@NonNull String schemaName, @NonNull String schemaVersion,
             @NonNull List<String> attributes, @NonNull String schemaLabel, String defaultAttributeName) {
@@ -150,7 +153,7 @@ public class IssuerManager {
             }
         } catch (IOException e) {
             log.error("aca-py not reachable", e);
-            throw new NetworkException("No aries connection", e);
+            throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
         }
         return result;
     }
@@ -196,7 +199,7 @@ public class IssuerManager {
                             .credentialDefinitionId(dbCredDef.get().getCredentialDefinitionId())
                             .build());
         } catch (IOException e) {
-            throw new NetworkException("No aries connection", e);
+            throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
         }
     }
 
@@ -221,16 +224,15 @@ public class IssuerManager {
                     // cred def id)
                     // instead of what is stored (only the attrs)
                     if (CredentialExchangeRole.ISSUER.equals(o.getRole())) {
-                        Credential c = this.buildFromProposal(o);
-                        o.setCredential(conv.toMap(c));
+                        buildFromProposal(o).ifPresent(c -> o.setCredential(conv.toMap(c)));
                     }
                     return CredEx.from(o);
                 })
                 .collect(Collectors.toList());
     }
 
-    private Credential buildFromProposal(@NonNull BPACredentialExchange exchange) {
-        Credential result = null;
+    private Optional<Credential> buildFromProposal(@NonNull BPACredentialExchange exchange) {
+        Optional<Credential> result = Optional.empty();
         // TODO this is creative but not how it is supposed to work ;)
         LinkedHashMap credentialProposal = (LinkedHashMap) exchange.getCredentialProposal().get("credential_proposal");
         if (credentialProposal != null) {
@@ -241,21 +243,38 @@ public class IssuerManager {
                         .collect(Collectors.toMap(s -> (String) s.get("name"),
                                 s -> (String) s.get("value")));
 
-                result = new Credential();
-                result.setSchemaId(exchange.getSchema().getSchemaId());
-                result.setCredentialDefinitionId(exchange.getCredDef().getCredentialDefinitionId());
-                result.setAttrs(attrs);
+                Credential credential = new Credential();
+                credential.setSchemaId(exchange.getSchema().getSchemaId());
+                credential.setCredentialDefinitionId(exchange.getCredDef().getCredentialDefinitionId());
+                credential.setAttrs(attrs);
+                result = Optional.of(credential);
             }
         }
         return result;
     }
 
-    private BPACredentialExchange createCredentialExchange(@NonNull V1CredentialExchange exchange) {
+    public void handleCredentialExchange(@NonNull V1CredentialExchange exchange) {
+        switch (exchange.getState()) {
+            case OFFER_SENT:
+                // create a record...
+                createCredentialExchange(exchange);
+                break;
+            case REQUEST_RECEIVED:
+            case CREDENTIAL_ISSUED:
+            case CREDENTIAL_ACKED:
+                updateCredentialExchange(exchange);
+                break;
+            default:
+                log.debug(String.format("Unhandled credential exchange: role = %s, state = %s", exchange.getRole(),
+                        exchange.getState()));
+                break;
+        }
+    }
 
-        HashMap<String, Object> cp = new Gson().fromJson(exchange.getCredentialProposalDict(),
-                HashMap.class);
-        HashMap<String, Object> co = new Gson().fromJson(exchange.getCredentialOfferDict(),
-                HashMap.class);
+    private void createCredentialExchange(@NonNull V1CredentialExchange exchange) {
+
+        Map<String, Object> cp = conv.toMap(exchange.getCredentialProposalDict());
+        Map<String, Object> co = conv.toMap(exchange.getCredentialOfferDict());
         // these should exist as we used them to issue the credential...
         Optional<BPACredentialDefinition> dbCredDef = credDefRepo
                 .findByCredentialDefinitionId(exchange.getCredentialDefinitionId());
@@ -275,55 +294,56 @@ public class IssuerManager {
                     .updatedAt(TimeUtil.parseZonedTimestamp(exchange.getUpdatedAt()))
                     .build();
 
-            return credExRepo.save(cex);
+            credExRepo.save(cex);
         } else {
-            throw new IssuerException(String.format(
+            log.error(String.format(
                     "Could not create credential exchange record. Cred. Def ID (%s) or Partner/Connection id (%s) not found",
                     exchange.getCredentialDefinitionId(), exchange.getConnectionId()));
         }
     }
 
-    private void updateCredentialExchange(@NonNull String credentialExchangeId,
-            @NonNull CredentialExchangeState state,
-            @NonNull String updatedAt,
-            Credential credential) {
-        Optional<BPACredentialExchange> cex = credExRepo.findByCredentialExchangeId(credentialExchangeId);
-        if (cex.isPresent()) {
-            if (credential != null) {
-                cex.get().setCredential(conv.toMap(credential));
+    private void updateCredentialExchange(@NonNull V1CredentialExchange ex) {
+        credExRepo.findByCredentialExchangeId(ex.getCredentialExchangeId()).ifPresent(bpaEx -> {
+            if (ex.getCredential() != null) {
+                Credential credential = ex.getCredential();
+                bpaEx.setCredential(conv.toMap(credential));
                 // label, try to get the value of the schema's default attribute
                 if (credential.getAttrs() != null) {
-                    cex.get().setLabel(labelStrategy.apply(credential));
+                    bpaEx.setLabel(labelStrategy.apply(credential));
                 } else {
                     // grab it from the proposal...
-                    Credential c = this.buildFromProposal(cex.get());
-                    if (c != null) {
-                        cex.get().setLabel(labelStrategy.apply(c));
-                    }
+                    buildFromProposal(bpaEx).ifPresent(c -> bpaEx.setLabel(labelStrategy.apply(c)));
                 }
             }
-            cex.get().setState(state);
-            cex.get().setUpdatedAt(TimeUtil.parseZonedTimestamp(updatedAt));
-            credExRepo.update(cex.get());
-        }
+            bpaEx.setState(ex.getState());
+            bpaEx.setUpdatedAt(TimeUtil.parseZonedTimestamp(ex.getUpdatedAt()));
+            bpaEx.setRevRegId(ex.getRevocRegId());
+            bpaEx.setCredRevId(ex.getRevocationId());
+            credExRepo.update(bpaEx);
+        });
     }
 
-    public void handleCredentialExchange(@NonNull V1CredentialExchange exchange) {
-        switch (exchange.getState()) {
-        case OFFER_SENT:
-            // create a record...
-            createCredentialExchange(exchange);
-            break;
-        case REQUEST_RECEIVED:
-        case CREDENTIAL_ISSUED:
-        case CREDENTIAL_ACKED:
-            updateCredentialExchange(exchange.getCredentialExchangeId(), exchange.getState(),
-                    exchange.getUpdatedAt(), exchange.getCredential());
-            break;
-        default:
-            log.debug(String.format("Unhandled credential exchange: role = %s, state = %s", exchange.getRole(),
-                    exchange.getState()));
-            break;
+    public Optional<CredEx> revokeCredentialExchange(@NonNull UUID id) {
+        Optional<CredEx> result = Optional.empty();
+        if (!config.getTailsServerConfigured()) {
+            throw new IssuerException(msg.getMessage("api.issuer.no.tails.server"));
         }
+        Optional<BPACredentialExchange> credEx = credExRepo.findById(id);
+        if (credEx.isPresent()) {
+            try {
+                ac.revocationRevoke(RevokeRequest
+                        .builder()
+                        .credRevId(credEx.get().getCredRevId())
+                        .revRegId(credEx.get().getRevRegId())
+                        .publish(Boolean.TRUE)
+                        .build());
+                credExRepo.updateRevoked(credEx.get().getId(), Boolean.TRUE);
+                credEx.get().setRevoked(Boolean.TRUE);
+                result = Optional.of(CredEx.from(credEx.get()));
+            } catch (IOException e) {
+                throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
+            }
+        }
+        return result;
     }
 }

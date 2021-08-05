@@ -55,6 +55,7 @@ public class CredEx {
     private String threadId;
     private String credentialExchangeId;
     private String displayText;
+    private Boolean revoked;
 
     public static CredEx from(BPACredentialExchange db) {
         SchemaAPI schemaAPI = SchemaAPI.from(db.getSchema());
@@ -78,6 +79,7 @@ public class CredEx {
                 .threadId(db.getThreadId())
                 .credentialExchangeId(db.getCredentialExchangeId())
                 .displayText(displayText)
+                .revoked(db.getRevoked())
                 .build();
     }
 }
