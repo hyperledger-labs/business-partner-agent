@@ -26,7 +26,7 @@ micronaut:
           client-secret: ${BPA_KEYCLOAK_CLIENT_SECRET:}
           scopes: ${BPA_KEYCLOAK_SCOPES:openid}
           vcauthn:
-            pres_req_conf_id: bpa-wallet-access-dev
+            pres_req_conf_id:  ${BPA_KEYCLOAK_VCAUTHN_PRES_REQ_CONF_ID:}
           openid:
             issuer: ${BPA_KEYCLOAK_ISSUER:}
             end-session:
