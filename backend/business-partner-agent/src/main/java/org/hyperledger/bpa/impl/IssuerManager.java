@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.impl;
 
+import com.google.gson.Gson;
 import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -273,8 +274,8 @@ public class IssuerManager {
 
     private void createCredentialExchange(@NonNull V1CredentialExchange exchange) {
 
-        Map<String, Object> cp = conv.toMap(exchange.getCredentialProposalDict());
-        Map<String, Object> co = conv.toMap(exchange.getCredentialOfferDict());
+        HashMap<String, Object> cp = new Gson().fromJson(exchange.getCredentialProposalDict(), HashMap.class);
+        HashMap<String, Object> co = new Gson().fromJson(exchange.getCredentialOfferDict(), HashMap.class);
         // these should exist as we used them to issue the credential...
         Optional<BPACredentialDefinition> dbCredDef = credDefRepo
                 .findByCredentialDefinitionId(exchange.getCredentialDefinitionId());
@@ -330,6 +331,9 @@ public class IssuerManager {
         }
         Optional<BPACredentialExchange> credEx = credExRepo.findById(id);
         if (credEx.isPresent()) {
+            if (StringUtils.isEmpty(credEx.get().getRevRegId())) {
+                throw new IssuerException(msg.getMessage("api.issuer.credential.missing.revocation.info"));
+            }
             try {
                 ac.revocationRevoke(RevokeRequest
                         .builder()
