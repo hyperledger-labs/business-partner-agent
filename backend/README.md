@@ -32,7 +32,7 @@ https://docs.micronaut.io/latest/guide/index.html#ideSetup
 
 1. CLI: Build the UI
 
-```s
+```
 mvn clean package -Pbuild-frontend
 ```
 
@@ -41,7 +41,9 @@ mvn clean package -Pbuild-frontend
 Depending on the docker version the .env file either needs to reside in the root directory (older versions) or in the script's directory (newer versions)
 
 [See .env file set up](https://github.com/hyperledger-labs/business-partner-agent/blob/master/scripts/README.md) 
-
+```
+scripts/.env-example -> scripts/.env
+```
 3. Start dependent services
 ```s
 # e.g. run from the root directory
@@ -74,6 +76,15 @@ If you want to run in web only mode you also have to set:
 
 Swagger UI: http://localhost:8080/swagger-ui   
 Frontend: http://localhost:8080
+
+##FAQ
+I get a "Micronaut - Error starting Micronaut server: Switching from web only mode to aries is not supported" error?
+The schema for web and aries mode differ and the database has to be reset.
+`
+docker-compose -f scripts/docker-compose.yml down &&
+docker volume rm scripts_bpa-wallet-db1 &&
+docker-compose -f scripts/docker-compose.yml up bpa-agent1 bpa-wallet-db1
+`
 
 # Websocket Events
 
