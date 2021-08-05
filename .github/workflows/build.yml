@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: '14'
           check-latest: true
-      - run: npm --prefix frontend install
+      - run: npm --prefix frontend install --no-optional
 
       - name: Setup Java
         uses: actions/setup-java@v2

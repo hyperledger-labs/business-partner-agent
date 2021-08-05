@@ -17,27 +17,9 @@
  */
 package org.hyperledger.bpa.controller.api.partner;
 
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class PartnerCredentialType {
-    /** The credential definition id */
-    private String credentialDefinitionId;
-    /** The credential definitions tag */
-    private String type;
-    /** The schemas TRX id */
-    private String seqno;
-
-    public static PartnerCredentialType fromCredDefId(String credDefId) {
-        return new PartnerCredentialType(
-                credDefId,
-                AriesStringUtil.getLastSegment(credDefId),
-                AriesStringUtil.credDefIdGetSequenceNo(credDefId));
-    }
+public class SendMessageRequest {
+    private String content;
 }

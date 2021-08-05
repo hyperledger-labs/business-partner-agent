@@ -46,8 +46,8 @@ scripts/.env-example -> scripts/.env
 ```
 3. Start dependent services
 ```s
-# e.g. run from the root directory
-docker-compose -f scripts/docker-compose.yml up bpa-agent1 bpa-wallet-db1
+# e.g. run from the scripts directory
+docker-compose up bpa-agent1 bpa-wallet-db1
 ```
 
 4. Set VM Options
@@ -85,12 +85,3 @@ docker-compose -f scripts/docker-compose.yml down &&
 docker volume rm scripts_bpa-wallet-db1 &&
 docker-compose -f scripts/docker-compose.yml up bpa-agent1 bpa-wallet-db1
 `
-
-# Websocket Events
-
-see: WebSocketMessageBody.java
-
-1. Connection Request (no auto flags)
-2. Partner Received (with auto flags)
-3. Credential Received
-4. Proof Received

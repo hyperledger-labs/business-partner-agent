@@ -222,6 +222,28 @@
       <router-view
         v-if="!sessionDialog && !$store.getters.taaRequired"
       ></router-view>
+        <v-btn
+            color="primary"
+            fab
+            dark
+            bottom
+            right
+            fixed
+            @click="showChatWindow"
+        >
+          <v-icon v-if="chatWindow">$vuetify.icons.close</v-icon>
+          <v-badge v-else
+              overlap
+              bordered
+              :content="incomingMessageCount"
+              :value="incomingMessageCount"
+              color="red"
+              offset-x="10"
+              offset-y="10"
+          >
+            <v-icon>$vuetify.icons.chat</v-icon>
+          </v-badge>
+        </v-btn>
     </v-main>
 
     <v-snackbar
@@ -262,6 +284,10 @@
       </v-card>
     </v-dialog>
 
+    <div class="chat-window" :class="{opened: chatWindow, closed: !chatWindow}">
+     <BasicMessages />
+    </div>
+
     <v-footer v-if="showFooter" app>
       <v-col cols="12" class="text-center">
         <span v-if="imprintUrl" class="mr-4 subtitle-2"
@@ -282,9 +308,11 @@
 <script>
 import { EventBus } from "./main";
 import Taa from "./components/taa/TransactionAuthorAgreement";
+import BasicMessages from "@/components/messages/BasicMessages";
 
 export default {
   components: {
+    BasicMessages,
     "app-taa": Taa,
   },
   props: {
@@ -301,6 +329,8 @@ export default {
     snackbarMsg: "",
 
     sessionDialog: false,
+
+    chatWindow: false,
     // These are defaults, if no ux configuration passed in via $config.ux...
     ux: {
       header: {
@@ -368,6 +398,9 @@ export default {
     },
     notificationsCount() {
       return this.$store.getters.notificationsCount;
+    },
+    incomingMessageCount() {
+      return this.$store.getters.incomingMessageCount;
     },
     getAgentName() {
       let bpaName = "Business Partner Agent";
@@ -453,6 +486,12 @@ export default {
       // logout must have get-allowed, get the browser to do all the logout redirects...
       location.href = `${this.$apiBaseUrl}/logout`;
     },
+    showChatWindow() {
+      // for now, reset the count if we open (we will look for new messages) or close (we already saw messages)
+      this.$store.commit("incomingMessagesSeen");
+      // now, open of close it
+      this.chatWindow = !this.chatWindow;
+    }
   },
 };
 </script>
