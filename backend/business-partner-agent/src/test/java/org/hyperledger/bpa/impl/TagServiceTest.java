@@ -44,6 +44,9 @@ public class TagServiceTest {
         TagAPI t1 = tagService.addTag("tag1");
         TagAPI t2 = tagService.addTag("tag2");
 
+        Assertions.assertNotNull(t1);
+        Assertions.assertNotNull(t2);
+
         Partner p = partnerRepo.save(Partner
                 .builder()
                 .ariesSupport(Boolean.TRUE)

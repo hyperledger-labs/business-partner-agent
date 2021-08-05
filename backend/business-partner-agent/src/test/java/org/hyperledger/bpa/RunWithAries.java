@@ -18,7 +18,6 @@
 package org.hyperledger.bpa;
 
 import io.micronaut.context.annotation.Value;
-import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +31,6 @@ import java.net.URL;
 
 @Slf4j
 @Testcontainers
-@MicronautTest
 public abstract class RunWithAries extends BaseTest {
 
     private static final String ARIES_VERSION = "bcgovimages/aries-cloudagent:py36-1.16-1_0.7.0";
