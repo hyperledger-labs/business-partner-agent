@@ -74,7 +74,7 @@ public class ProofTemplateController {
         return HttpResponse.ok(proofTemplateManager.getKnownConditionOperators());
     }
 
-    @Put("/{id}/ProofRequest/{partnerId}")
+    @Put("/{id}/proof-request/{partnerId}")
     public HttpResponse<Void> invokeProofRequestByTemplate(
             @PathVariable @ValidUUID @NotNull String id,
             @PathVariable @ValidUUID @NotNull String partnerId) {
