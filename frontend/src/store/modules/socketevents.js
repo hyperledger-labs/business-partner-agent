@@ -1,15 +1,6 @@
 import Vue from "vue";
-import { CHAT_CURRENT_USERID } from "@/constants";
 
 const state = {
-  newPartners: {},
-  newCredentials: {},
-  newPresentationRequests: {},
-  newPresentations: {},
-  notifications: 0,
-  messages: [],
-  incomingMessageCount: 0,
-
   socket: {
     isConnected: false,
     message: "",
@@ -18,36 +9,6 @@ const state = {
 };
 
 const getters = {
-  newPartnersCount: (state) => {
-    return Object.keys(state.newPartners).length;
-  },
-  newPartners: (state) => {
-    return state.newPartners;
-  },
-  newCredentialsCount: () => {
-    return Object.keys(state.newCredentials).length;
-  },
-  newCredentials: (state) => {
-    return state.newCredentials;
-  },
-  newPresentationRequests: (state) => {
-    return state.newPresentationRequests;
-  },
-  newPresentations: (state) => {
-    return state.newPresentations;
-  },
-  notificationsCount: () => {
-    return state.notifications;
-  },
-  getPartnerMessages: (state) => {
-    return state.messages;
-  },
-  messagesCount: (state) => {
-    return state.messages.length;
-  },
-  incomingMessageCount: (state) => {
-    return state.incomingMessageCount;
-  }
 };
 
 const mutations = {
@@ -75,79 +36,6 @@ const mutations = {
   SOCKET_RECONNECT_ERROR(state) {
     state.socket.reconnectError = true;
   },
-  newPartner(state, payload) {
-    let id = payload.message.linkId;
-    state.newPartners = { ...state.newPartners, [id]: payload };
-  },
-  newCredential(state, payload) {
-    let id = payload.message.linkId;
-    state.newCredentials = { ...state.newCredentials, [id]: payload };
-  },
-  newPresentationRequest(state, payload) {
-    let id = payload.message.linkId;
-    state.newPresentationRequests = {
-      ...state.newPresentationRequests,
-      [id]: payload,
-    };
-  },
-  newPresentation(state, payload) {
-    let id = payload.message.linkId;
-    state.newPresentations = { ...state.newPresentations, [id]: payload };
-  },
-  notification(state, payload) {
-    // check the payload... are we adding one, or has it been handled and we are removing one?
-    const count = payload.message.state === "NEW" ? 1 : -1;
-    state.notifications = Math.max(state.notifications + count, 0) ;
-  },
-  message(state, payload) {
-    let basicMsg = payload.message.info;
-    let msgs = state.messages ? state.messages : [];
-    basicMsg.time = new Date().getTime(); // use for sorting
-    msgs.push(basicMsg);
-    state.messages = msgs;
-    if (basicMsg.partnerId !== CHAT_CURRENT_USERID) {
-      state.incomingMessageCount = state.incomingMessageCount + 1;
-    }
-  },
-  partnerSeen(state, payload) {
-    let id = payload.id;
-    if ({}.hasOwnProperty.call(state.newPartners, id)) {
-      const tmpPartners = { ...state.newPartners };
-      delete tmpPartners[id];
-      state.newPartners = tmpPartners;
-    }
-  },
-  credentialSeen(state, payload) {
-    let id = payload.id;
-    if ({}.hasOwnProperty.call(state.newCredentials, id)) {
-      const tmpCredentials = { ...state.newCredentials };
-      delete tmpCredentials[id];
-      state.newCredentials = tmpCredentials;
-    }
-  },
-  presentationRequestSeen(state, payload) {
-    let id = payload.id;
-    if ({}.hasOwnProperty.call(state.newPresentationRequests, id)) {
-      const tmpPresentationRequests = { ...state.newPresentationRequests };
-      delete tmpPresentationRequests[id];
-      state.newPresentationRequests = tmpPresentationRequests;
-    }
-  },
-  presentationSeen(state, payload) {
-    let id = payload.id;
-    if ({}.hasOwnProperty.call(state.newPresentations, id)) {
-      const tmpProofs = { ...state.newPresentations };
-      delete tmpProofs[id];
-      state.newPresentations = tmpProofs;
-    }
-  },
-  notificationsSeen() {
-    // once they go to the notification screen, they see them all...
-    state.notifications = 0;
-  },
-  incomingMessagesSeen() {
-    state.incomingMessageCount = 0;
-  }
 };
 
 const actions = {};

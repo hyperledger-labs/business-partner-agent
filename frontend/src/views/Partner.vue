@@ -275,7 +275,6 @@ import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import { CredentialTypes, PartnerStates } from "../constants";
 import {
   getPartnerProfile,
-  getPartnerName,
   getPartnerState,
 } from "@/utils/partnerUtils";
 import { EventBus } from "../main";
@@ -309,7 +308,7 @@ export default {
     this.getPartner();
     this.getPresentationRecords();
     this.getIssuedCredentials(this.id);
-    this.$store.commit("partnerSeen", { id: this.id });
+    this.$store.commit("partnerNotificationSeen", {id: this.id});
   },
   data: () => {
     return {
@@ -350,6 +349,12 @@ export default {
       ],
       issueCredentialDialog: false,
       headersPresentationRequest: [
+        {
+          text: '',
+          value: 'indicator',
+          sortable: false,
+          filterable: false
+        },
         {
           text: "Received at",
           value: "sentAt", //miss labelled.
@@ -457,17 +462,20 @@ export default {
       this.presentationsReceived = this.presentationsReceived.filter((item) => {
         return item.id !== id;
       });
+      this.$store.commit("presentationNotificationSeen", {id: id});
     },
     removePresentationSent(id) {
       this.presentationsSent = this.presentationsSent.filter((item) => {
         return item.id !== id;
       });
+      this.$store.commit("presentationNotificationSeen", {id: id});
     },
     removePresentationRequest(id) {
       let objIndex = this.presentationRequests.findIndex((item) => {
         return item.id === id;
       });
       this.presentationRequests[objIndex].state = "presentation_rejected"; //not an aries state
+      this.$store.commit("presentationNotificationSeen", {id: id});
     },
 
     presentationRequestSuccess(id) {
@@ -516,9 +524,6 @@ export default {
 
             this.partner.bpa_state = getPartnerState(this.partner);
 
-            // Hacky way to define a partner name
-            // Todo: Make this consistent. Probably in backend
-            this.partner.name = getPartnerName(this.partner);
             this.alias = this.partner.name;
             this.did = this.partner.did;
             this.isReady = true;
@@ -589,9 +594,6 @@ export default {
                 });
               }
 
-              // Hacky way to define a partner name
-              // Todo: Make this consistent. Probably in backend
-              this.partner.name = getPartnerName(this.partner);
               this.partner.bpa_state = getPartnerState(this.partner);
               this.alias = this.partner.name;
               this.did = this.partner.did;

@@ -22,6 +22,7 @@ import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
+import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.message.ProblemReport;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
@@ -113,6 +114,11 @@ public class AriesEventHandler extends EventHandler {
         // problem reports can happen on several levels, currently we assume that all
         // reports are proof related
         proofMgmt.handleProblemReport(report.getThread().getThid(), report.getDescription());
+    }
+
+    @Override
+    public void handleBasicMessage(BasicMessage message) {
+        conMgmt.receiveMessage(message);
     }
 
     @Override

@@ -20,6 +20,7 @@ package org.hyperledger.bpa.impl.aries;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
@@ -32,15 +33,16 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.*;
 import org.hyperledger.aries.api.did_exchange.DidExchangeCreateRequestFilter;
 import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
-import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
+import org.hyperledger.bpa.impl.notification.*;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
@@ -91,6 +93,9 @@ public class ConnectionManager {
 
     @Inject
     BPAMessageSource.DefaultMessageSource messageSource;
+
+    @Inject
+    ApplicationEventPublisher eventPublisher;
 
     /**
      * Creates a connection invitation to be used within a barcode
@@ -172,6 +177,12 @@ public class ConnectionManager {
                     } else {
                         partnerRepo.updateState(dbP.getId(), record.getState());
                     }
+                    if (ConnectionState.REQUEST.equals(record.getState())) {
+                        eventPublisher.publishEventAsync(PartnerAddedEvent.builder().partner(dbP).build());
+                    } else if (ConnectionState.RESPONSE.equals(record.getState()) ||
+                            ConnectionState.COMPLETED.equals(record.getState())) {
+                        eventPublisher.publishEventAsync(PartnerAcceptedEvent.builder().partner(dbP).build());
+                    }
                 });
     }
 
@@ -226,7 +237,11 @@ public class ConnectionManager {
         // only incoming connections in state request
         if (ConnectionState.REQUEST.equals(record.getState())) {
             didResolver.lookupIncoming(p);
-            messageService.sendMessage(WebSocketMessageBody.partnerReceived(conv.toAPIObject(p)));
+            if (record.isIncomingConnection()) {
+                eventPublisher.publishEventAsync(PartnerRequestReceivedEvent.builder().partner(p).build());
+            }
+        } else if (ConnectionState.COMPLETED.equals(record.getState()) && record.isIncomingConnection()) {
+            eventPublisher.publishEventAsync(PartnerRequestCompletedEvent.builder().partner(p).build());
         }
     }
 
@@ -239,7 +254,8 @@ public class ConnectionManager {
                 log.warn("Could not delete aries connection.", e);
             }
 
-            partnerRepo.findByConnectionId(connectionId).ifPresent(p -> {
+            Optional<Partner> partner = partnerRepo.findByConnectionId(connectionId);
+            partner.ifPresent(p -> {
                 final List<PartnerProof> proofs = partnerProofRepo.findByPartnerId(p.getId());
                 if (CollectionUtils.isNotEmpty(proofs)) {
                     partnerProofRepo.deleteAll(proofs);
@@ -263,7 +279,9 @@ public class ConnectionManager {
                     });
 
             myCredRepo.updateByConnectionId(connectionId, null);
-
+            if (partner.isPresent()) {
+                eventPublisher.publishEventAsync(PartnerRemovedEvent.builder().partner(partner.get()).build());
+            }
         } catch (IOException e) {
             log.error("Could not delete connection: {}", connectionId, e);
         }
@@ -278,6 +296,10 @@ public class ConnectionManager {
                 log.error("Could not send message to connection: {}", connectionId, e);
             }
         }
+    }
+
+    public void receiveMessage(BasicMessage message) {
+        eventPublisher.publishEventAsync(BasicMessageReceivedEvent.builder().message(message).build());
     }
 
     private InvitationRecord createOOBInvitation(@Nullable String alias) throws IOException {

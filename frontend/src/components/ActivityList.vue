@@ -49,6 +49,12 @@
         :sort-desc="[true]"
         @click:row="openItem"
     >
+      <template v-slot:[`item.indicator`]="{item}">
+        <new-message-icon
+            :type="'task'"
+            :id="item.id"
+        ></new-message-icon>
+      </template>
       <template v-slot:[`item.partner`]="{ item }">
         {{ partnerLabel(item.partner) }}
       </template>
@@ -77,11 +83,11 @@
   import {ActivityRoles, ActivityStates, ActivityTypes} from "@/constants";
   import VBpaButton from "@/components/BpaButton";
   import activitiesService from "@/services/activitiesService";
-  import * as partnerUtils from "@/utils/partnerUtils";
+  import NewMessageIcon from "@/components/NewMessageIcon";
 
   export default {
     name: "ActivityList",
-    components: { VBpaButton },
+    components: { VBpaButton, NewMessageIcon },
     props: {
       activities: {
         type: Boolean,
@@ -94,6 +100,12 @@
       headers: {
         type: Array,
         default: () => [
+          {
+            text: '',
+            value: 'indicator',
+            sortable: false,
+            filterable: false
+          },
           {
             text: "Type",
             value: "type",
@@ -165,6 +177,9 @@
           });
       },
       openItem(item) {
+        // if we click on it, mark it seen...
+        this.$store.commit("taskNotificationSeen", {id: item.id});
+
         if (item.type === ActivityTypes.CONNECTION_REQUEST.value) {
           this.$router.push({
             name: "Partner",
@@ -172,15 +187,48 @@
               id: item.linkId,
             },
           });
-        }
-        // TODO: change this to go to the Proof/Presentation details screen when it exists...
-        if (item.type === ActivityTypes.PRESENTATION_EXCHANGE.value) {
-          this.$router.push({
+        } else if (item.type === ActivityTypes.PRESENTATION_EXCHANGE.value) {
+          // by default, just go to the partner screen...
+          let route = {
             name: "Partner",
             params: {
-              id: item.linkId,
+              id: item.partner.id,
             },
-          });
+          };
+          if (item.role === ActivityRoles.PRESENTATION_EXCHANGE_PROVER.value) {
+            // if role prover and received -> presentation-request/6a693ed0-8978-4ff7-a15a-343be7b4cdb4/details
+            // if prover and accepted -> partners/a0ebe43f-8fdd-4ab0-a3d5-07d4d8ca42f9/presentation/6a693ed0-8978-4ff7-a15a-343be7b4cdb4
+            if (item.state === ActivityStates.PRESENTATION_EXCHANGE_RECEIVED.value) {
+              route = {
+                name: "PresentationRequestDetails",
+                params: {
+                  id: item.linkId,
+                },
+              };
+            } else if (item.state === ActivityStates.PRESENTATION_EXCHANGE_ACCEPTED.value) {
+              route = {
+                name: "Presentation",
+                params: {
+                  id: item.partner.id,
+                  presentationId: item.linkId,
+                },
+              };
+            }
+          } else if (item.role === ActivityRoles.PRESENTATION_EXCHANGE_VERIFIER.value) {
+            // if verifier and sent -> nothing go to partner
+            // if verifier and declined -> nothing go to partner
+            // if verifier and accepted -> partners/a0ebe43f-8fdd-4ab0-a3d5-07d4d8ca42f9/presentation/80311f0c-2738-4cb4-9d0c-3cc4d81742aa
+            if (item.state === ActivityStates.PRESENTATION_EXCHANGE_ACCEPTED.value) {
+              route = {
+                name: "Presentation",
+                params: {
+                  id: item.partner.id,
+                  presentationId: item.linkId,
+                },
+              };
+            }
+          }
+          this.$router.push(route);
         }
 
       },
@@ -197,7 +245,7 @@
         return o ? o.label : role;
       },
       partnerLabel(partner) {
-        return partner ? partnerUtils.getPartnerName(partner) : "Unknown";
+        return partner ? partner.name : "Unknown";
       }
     },
   };

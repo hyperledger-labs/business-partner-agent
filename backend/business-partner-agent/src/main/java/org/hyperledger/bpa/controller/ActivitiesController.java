@@ -28,7 +28,7 @@ import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hyperledger.bpa.controller.api.activity.ActivityItem;
 import org.hyperledger.bpa.controller.api.activity.ActivitySearchParameters;
-import org.hyperledger.bpa.impl.ActivitiesManager;
+import org.hyperledger.bpa.impl.ActivityManager;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -41,7 +41,7 @@ import java.util.List;
 public class ActivitiesController {
 
     @Inject
-    ActivitiesManager activitiesManager;
+    ActivityManager activityManager;
 
     /**
      * List Items, if no filters return all
@@ -51,7 +51,7 @@ public class ActivitiesController {
      */
     @Get
     public HttpResponse<List<ActivityItem>> listActivities(@RequestBean @Valid ActivitySearchParameters parameters) {
-        return HttpResponse.ok(activitiesManager.getItems(parameters));
+        return HttpResponse.ok(activityManager.getItems(parameters));
     }
 
 }

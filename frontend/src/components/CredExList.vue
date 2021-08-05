@@ -18,6 +18,12 @@
       single-select
       @click:row="openItem"
     >
+      <template v-slot:[`item.indicator`]="{item}">
+        <new-message-icon
+            :type="'credential'"
+            :id="item.id"
+        ></new-message-icon>
+      </template>
       <template v-slot:[`item.state`]="{ item }">
         <v-icon v-if="isItemActive(item)" color="green"
           >$vuetify.icons.check</v-icon
@@ -54,6 +60,7 @@
 <script>
 import Cred from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
+import NewMessageIcon from "@/components/NewMessageIcon";
 
 export default {
   props: {
@@ -61,6 +68,12 @@ export default {
     headers: {
       type: Array,
       default: () => [
+        {
+          text: '',
+          value: 'indicator',
+          sortable: false,
+          filterable: false
+        },
         {
           text: "Type",
           value: "displayText",
@@ -116,6 +129,7 @@ export default {
   components: {
     VBpaButton,
     Cred,
+    NewMessageIcon
   },
 };
 </script>
