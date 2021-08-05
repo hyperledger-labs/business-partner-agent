@@ -84,6 +84,14 @@ class ProofTemplateControllerTest {
         Assertions.assertEquals(HttpStatus.CREATED, addedTemplate.getStatus());
         Assertions.assertTrue(addedTemplate.getBody().isPresent());
         Assertions.assertTrue(addedTemplate.getBody().map(ProofTemplate::getId).isPresent());
+        Assertions.assertTrue(addedTemplate.getBody()
+                .flatMap(p -> p.getAttributeGroups().stream().
+                        findAny())
+                .flatMap(ag -> ag.getAttributes().stream()
+                        .map(Attribute::getName)
+                        .filter("myAttribute"::equals)
+                        .findAny())
+                .isPresent());
         Assertions.assertEquals(1, repository.count());
     }
 
