@@ -28,7 +28,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.*;
 import java.util.stream.Stream;
 
-public class ProofTemplateElementVisitor {
+/**
+ * This class constructs a {@link PresentProofRequest.ProofRequest} from a
+ * {@link BPAProofTemplate} by visiting the template's parts
+ * {@link BPAAttributeGroup}s and {@link BPAAttribute}s. The visit methods
+ * accept the different parts and store them in a context conserving way, to
+ * build the {@link PresentProofRequest.ProofRequest} with {@link #getResult()}.
+ * <p>
+ * The call order of the visit methods does not matter. These methods are not
+ * thread safe. Use one instance per {@link BPAProofTemplate}
+ */
+class ProofTemplateElementVisitor {
 
     private Function<String, Optional<String>> resolveLedgerSchemaId;
     private final RevocationTimeStampProvider revocationTimeStampProvider;
@@ -67,18 +77,32 @@ public class ProofTemplateElementVisitor {
         return sameSchemaCounters.computeIfAbsent(schemaAndAttributesBuilder.getLeft(), s -> new AtomicInteger(0));
     }
 
-    public ProofTemplateElementVisitor(
+    ProofTemplateElementVisitor(
             Function<String, Optional<String>> resolveLedgerSchemaId,
             RevocationTimeStampProvider revocationTimeStampProvider) {
         this.resolveLedgerSchemaId = resolveLedgerSchemaId;
         this.revocationTimeStampProvider = revocationTimeStampProvider;
     }
 
-    public void visit(BPAProofTemplate bpaProofTemplate) {
+    /**
+     * Collects general information of the given {@link BPAProofTemplate}, e.g. the
+     * template's name.
+     * 
+     * @param bpaProofTemplate contains general information to create a
+     *                         {@link PresentProofRequest.ProofRequest}.
+     */
+    void visit(BPAProofTemplate bpaProofTemplate) {
         templateName = bpaProofTemplate.getName();
     }
 
-    public void visit(BPAAttributeGroup bpaAttributeGroup) {
+    /**
+     * Collects the information of the given {@link BPAAttributeGroup}
+     * 
+     * @param bpaAttributeGroup contains all information for a
+     *                          {@link PresentProofRequest.ProofRequest} related to
+     *                          a certain schema.
+     */
+    void visit(BPAAttributeGroup bpaAttributeGroup) {
         resolveLedgerSchemaId.apply(bpaAttributeGroup.getSchemaId()).ifPresent(ledgerSchemaId -> {
             nonRevocationApplicatorMap.put(ledgerSchemaId, NonRevocationApplicator.builder()
                     .applyNonRevocation(bpaAttributeGroup.getNonRevoked())
@@ -88,7 +112,15 @@ public class ProofTemplateElementVisitor {
         });
     }
 
-    public void visit(Pair<String, BPAAttribute> schemaIdAndBpaAttribute) {
+    /**
+     * Collects the information of the given {@link BPAAttribute} in context of its
+     * {@link BPAAttributeGroup}'s <code>schemaId</code>
+     * 
+     * @param schemaIdAndBpaAttribute is the <code>schemaId</code> of the
+     *                                {@link BPAAttributeGroup} containing
+     *                                {@link BPAAttribute}
+     */
+    void visit(Pair<String, BPAAttribute> schemaIdAndBpaAttribute) {
         String schemaId = schemaIdAndBpaAttribute.getLeft();
         BPAAttribute attribute = schemaIdAndBpaAttribute.getRight();
         if (shouldAddAsAttribute(attribute)) {
@@ -99,42 +131,109 @@ public class ProofTemplateElementVisitor {
         }
     }
 
+    /**
+     * Adds one attribute for the passed {@link BPAAttribute} to the given
+     * <code>attributesBuilder</code>.
+     *
+     * @param attribute part of a {@link BPAProofTemplate}'s
+     *                  {@link BPAAttributeGroup}, representing a field in a
+     *                  verifiable credential.
+     * @return The lambda for {@link Map#compute(Object, BiFunction)}.
+     * @see ProofTemplateElementVisitor#addAttribute(String,
+     *      Attributes.AttributesBuilder, BPAAttribute)
+     */
     private BiFunction<String, Attributes.AttributesBuilder, Attributes.AttributesBuilder> addAttribute(
             BPAAttribute attribute) {
-        return (schemaId, builder) -> {
-            Optional<String> equalsValue = attribute.getConditions().stream()
-                    .map(Pair.with(BPACondition::getValue, BPACondition::getOperator))
-                    .filter(Pair.filterRight(ValueOperators.EQUALS::equals))
-                    .findAny()
-                    .map(Pair::getLeft);
-
-            Attributes.AttributesBuilder result = Optional.ofNullable(builder).orElseGet(Attributes::builder)
-                    .schemaId(schemaId)
-                    .name(attribute.getName());
-            equalsValue.ifPresent(value -> result.equal(attribute.getName(), value));
-            return result;
-        };
+        return (schemaId, attributesBuilder) -> addAttribute(schemaId, attributesBuilder, attribute);
     }
 
+    /**
+     * Adds one attribute for the passed {@link BPAAttribute} to the given
+     * <code>attributesBuilder</code>.
+     *
+     * @param schemaId          of the {@link BPAAttributeGroup} the given
+     *                          {@link BPAAttribute} is contained in.
+     * @param attributesBuilder is the builder containing already processed
+     *                          {@link BPAAttribute}s for a
+     *                          {@link BPAAttributeGroup}.
+     * @param attribute         is part of a {@link BPAProofTemplate}'s
+     *                          {@link BPAAttributeGroup}, representing a field in a
+     *                          verifiable credential.
+     * @return the <code>attributesBuilder</code> extended with the
+     *         {@link BPAAttribute} processed during this invocation.
+     */
+    private Attributes.AttributesBuilder addAttribute(String schemaId,
+            Attributes.AttributesBuilder attributesBuilder,
+            BPAAttribute attribute) {
+        Optional<String> equalsValue = attribute.getConditions().stream()
+                .map(Pair.with(BPACondition::getValue, BPACondition::getOperator))
+                .filter(Pair.filterRight(ValueOperators.EQUALS::equals))
+                .findAny()
+                .map(Pair::getLeft);
+
+        Attributes.AttributesBuilder result = Optional.ofNullable(attributesBuilder).orElseGet(Attributes::builder)
+                .schemaId(schemaId)
+                .name(attribute.getName());
+        equalsValue.ifPresent(value -> result.equal(attribute.getName(), value));
+        return result;
+    }
+
+    /**
+     * Adds one predicate for each predicate constraint at the passed
+     * {@link BPAAttribute} to the given <code>predicateBuilderList</code>.
+     *
+     * @param attribute part of a {@link BPAProofTemplate}'s
+     *                  {@link BPAAttributeGroup}, representing a field in a
+     *                  verifiable credential.
+     * @return The lambda for {@link Map#compute(Object, BiFunction)}.
+     * @see ProofTemplateElementVisitor#addPredicates(String, List, BPAAttribute)
+     */
     private BiFunction<String, List<Predicate.PredicateBuilder>, List<Predicate.PredicateBuilder>> addPredicates(
             BPAAttribute attribute) {
-        return (schemaId, predicateBuilderList) -> {
-            List<Predicate.PredicateBuilder> buildersList = Optional.ofNullable(predicateBuilderList)
-                    .orElseGet(ArrayList::new);
-            attribute.getConditions().stream()
-                    .map(Pair.with(BPACondition::getValue, BPACondition::getOperator))
-                    .flatMap(Pair.streamMapRight(o -> o.getPredicateOperator().stream()))
-                    .flatMap(Pair.streamMapLeft(this::mapValueToInteger))
-                    .map(valueAndOperator -> Predicate.builder()
-                            .schemaId(schemaId)
-                            .name(attribute.getName())
-                            .operator(valueAndOperator.getRight())
-                            .value(valueAndOperator.getLeft()))
-                    .forEach(buildersList::add);
-            return buildersList;
-        };
+        return (schemaId, predicateBuilderList) -> addPredicates(schemaId, predicateBuilderList, attribute);
     }
 
+    /**
+     * Adds one predicate for each predicate constraint at the passed
+     * {@link BPAAttribute} to the given <code>predicateBuilderList</code>.
+     *
+     * @param schemaId             of the {@link BPAAttributeGroup} the given
+     *                             {@link BPAAttribute} is contained in.
+     * @param predicateBuilderList is the list of already created
+     *                             {@link Predicate.PredicateBuilder}s for a
+     *                             {@link BPAAttributeGroup}.
+     * @param attribute            is part of a {@link BPAProofTemplate}'s
+     *                             {@link BPAAttributeGroup}, representing a field
+     *                             in a verifiable credential.
+     * @return the <code>predicateBuilderList</code> extended with the
+     *         {@link Predicate.PredicateBuilder}s created during this invocation.
+     */
+    private List<Predicate.PredicateBuilder> addPredicates(String schemaId,
+            List<Predicate.PredicateBuilder> predicateBuilderList,
+            BPAAttribute attribute) {
+        List<Predicate.PredicateBuilder> buildersList = Optional.ofNullable(predicateBuilderList)
+                .orElseGet(ArrayList::new);
+        attribute.getConditions().stream()
+                .map(Pair.with(BPACondition::getValue, BPACondition::getOperator))
+                .flatMap(Pair.streamMapRight(o -> o.getPredicateOperator().stream()))
+                .flatMap(Pair.streamMapLeft(this::mapValueToInteger))
+                .map(valueAndOperator -> Predicate.builder()
+                        .schemaId(schemaId)
+                        .name(attribute.getName())
+                        .operator(valueAndOperator.getRight())
+                        .value(valueAndOperator.getLeft()))
+                .forEach(buildersList::add);
+        return buildersList;
+    }
+
+    /**
+     * If an attribute is handled as a predicate the value has to be an integer for
+     * comparison.
+     *
+     * @param value to compare the attribute's actual value to.
+     * @return a stream containing the value as an integer or an empty stream, if a
+     *         conversion was not successful.
+     */
     private Stream<Integer> mapValueToInteger(String value) {
         try {
             return Optional.ofNullable(value).map(Integer::parseInt).stream();
@@ -144,11 +243,31 @@ public class ProofTemplateElementVisitor {
         }
     }
 
+    /**
+     * Attribute declaration with no constraint or the {@link ValueOperators#EQUALS}
+     * should be added as attribute.
+     *
+     * @param attribute is part of a {@link BPAProofTemplate}'s
+     *                  {@link BPAAttributeGroup}, representing a field in a
+     *                  verifiable credential.
+     * @return <code>true</code> if there is no constraint or the operator is
+     *         {@link ValueOperators#EQUALS}
+     */
     private boolean shouldAddAsAttribute(BPAAttribute attribute) {
         return attribute.getConditions().isEmpty() || attribute.getConditions().stream()
                 .map(BPACondition::getOperator).anyMatch(ValueOperators.EQUALS::equals);
     }
 
+    /**
+     * Attribute declaration with a relation constraint should be added as
+     * predicate.
+     *
+     * @param attribute is part of a {@link BPAProofTemplate}'s
+     *                  {@link BPAAttributeGroup}, representing a field in a
+     *                  verifiable credential.
+     * @return <code>true</code> if the {@link ValueOperators#handleAsPredicate()}
+     *         returns <code>true</code>
+     */
     private boolean shouldAddAsPredicate(BPAAttribute attribute) {
         return attribute.getConditions()
                 .stream()
@@ -156,7 +275,13 @@ public class ProofTemplateElementVisitor {
                 .anyMatch(ValueOperators::handleAsPredicate);
     }
 
-    public PresentProofRequest.ProofRequest getResult() {
+    /**
+     * Creates a {@link PresentProofRequest.ProofRequest} with the information
+     * collected by the <code>visit</code> methods.
+     * 
+     * @return an applicable {@link PresentProofRequest.ProofRequest}
+     */
+    PresentProofRequest.ProofRequest getResult() {
         PresentProofRequest.ProofRequest.ProofRequestBuilder proofRequestBuilder = PresentProofRequest.ProofRequest
                 .builder()
                 .name(templateName);
@@ -166,7 +291,7 @@ public class ProofTemplateElementVisitor {
         return proofRequestBuilder.build();
     }
 
-    public void addAttributesTo(PresentProofRequest.ProofRequest.ProofRequestBuilder proofRequestBuilder) {
+    private void addAttributesTo(PresentProofRequest.ProofRequest.ProofRequestBuilder proofRequestBuilder) {
         attributesBySchemaId.entrySet().stream()
                 .map(Pair::new)
                 .map(Pair.lookUpAndSetOnRight(this::getRevocationApplicator, builder -> builder::revocationApplicator))
@@ -176,7 +301,7 @@ public class ProofTemplateElementVisitor {
                 .forEach(attributes -> attributes.addToBuilder(proofRequestBuilder::requestedAttribute));
     }
 
-    public void addPredicates(PresentProofRequest.ProofRequest.ProofRequestBuilder proofRequestBuilder) {
+    private void addPredicates(PresentProofRequest.ProofRequest.ProofRequestBuilder proofRequestBuilder) {
         predicatesBySchemaId.entrySet().stream()
                 .map(Pair::new)
                 .flatMap(Pair.streamMapRight(List::stream))
