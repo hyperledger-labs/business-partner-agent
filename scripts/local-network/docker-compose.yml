@@ -14,7 +14,7 @@ services:
       JAVA_OPTS: >
         -Dbpa.acapy.url=http://bpa-agent1:${ACAPY1_ADMIN_PORT}
         -Dbpa.acapy.apiKey=${ACAPY_ADMIN_URL_API_KEY}
-        -Dmicronaut.security.enabled=${BPA_SECURITY_ENABLED}
+        -Dmicronaut.security.enabled=true
         -Dmicronaut.server.port=${BPA1_PORT}
         -Dmicronaut.environments=dev
         -Dmicronaut.config.files=${BPA_CONFIG_FILES}
@@ -23,6 +23,7 @@ services:
         -Dbpa.pg.password=${POSTGRESQL_PASSWORD}
         -Dbpa.host=${BPA_HOST}:${BPA1_PORT}
         -Dbpa.scheme=${BPA_SCHEME}
+        -Dmicronaut.config.files=classpath:application.yml,classpath:security-keycloak.yml
         -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${BPA1_DEBUG_PORT}
       BPA_WEB_MODE: ${BPA_WEB_MODE}
       BPA_LEDGER_BROWSER: ${BPA_LEDGER_BROWSER}
@@ -33,6 +34,13 @@ services:
       BPA_IMPRINT_URL: ${BPA_IMPRINT_URL}
       BPA_PRIVACY_POLICY_URL: ${BPA_PRIVACY_POLICY_URL}
       BPA_CREDDEF_REVOCATION_REGISTRY_SIZE: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE}
+      BPA_IMPRINT_URL: http://google.com
+      BPA_PRIVACY_POLICY_URL: http://bing.com
+      BPA_KEYCLOAK_CLIENT_ID: bbcm-sherman-local
+      BPA_KEYCLOAK_CLIENT_SECRET: c26a612a-6730-4d0d-92a8-1a80ece23c6d
+      BPA_KEYCLOAK_ISSUER: https://dev.oidc.gov.bc.ca/auth/realms/digitaltrust
+      BPA_KEYCLOAK_REDIRECT_URI: http://localhost:8000/logout
+      BPA_KEYCLOAK_ENDSESSION_URL: https://dev.oidc.gov.bc.ca/auth/realms/digitaltrust/protocol/openid-connect/logout
       NODE_ENV: development
     ports:
       - ${BPA1_PORT}:${BPA1_PORT}
