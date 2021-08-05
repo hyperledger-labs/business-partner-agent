@@ -37,7 +37,11 @@ import org.mockito.Mockito;
 
 import javax.inject.Inject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -85,8 +89,7 @@ class ProofTemplateControllerTest {
         Assertions.assertTrue(addedTemplate.getBody().isPresent());
         Assertions.assertTrue(addedTemplate.getBody().map(ProofTemplate::getId).isPresent());
         Assertions.assertTrue(addedTemplate.getBody()
-                .flatMap(p -> p.getAttributeGroups().stream().
-                        findAny())
+                .flatMap(p -> p.getAttributeGroups().stream().findAny())
                 .flatMap(ag -> ag.getAttributes().stream()
                         .map(Attribute::getName)
                         .filter("myAttribute"::equals)
@@ -115,12 +118,23 @@ class ProofTemplateControllerTest {
                 ProofTemplate.class);
         Assertions.assertEquals(1, repository.count());
 
+
+        Consumer<String> assertDateFormat = (dateString) ->
+        {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+            try {
+                Assertions.assertNotNull(sdf.parse(dateString));
+
+            } catch (ParseException e) {
+                Assertions.fail(dateString + " does not match the pattern \"yyyy-MM-dd'T'HH:mm:ss.SSSZ\"");
+            }
+        };
         HttpResponse<String> addedTemplate = client.toBlocking().exchange(HttpRequest.GET(""), String.class);
-        Pattern dataExtractionPattern = Pattern.compile("\"createdAt\"\\s*:\\s*([^,]+),");
+        Pattern dataExtractionPattern = Pattern.compile("\"createdAt\"\\s*:\\s*\"([^,]+)\",");
         addedTemplate.getBody()
                 .map(dataExtractionPattern::matcher)
                 .filter(Matcher::find)
                 .map(m -> m.group(1))
-                .ifPresent(s -> System.out.println(s));
+                .ifPresent(assertDateFormat);
     }
 }

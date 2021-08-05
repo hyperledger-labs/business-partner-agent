@@ -58,7 +58,7 @@ public class ValidatorFactory {
 
     @Singleton
     ConstraintValidator<ValidBPASchemaId, CharSequence> schemaIdValidator(SchemaService schemaService) {
-        return (value, annotationMetadata, context) ->Optional.ofNullable(value)
+        return (value, annotationMetadata, context) -> Optional.ofNullable(value)
                 .map(String::valueOf)
                 .filter(this::isUUID)
                 .map(UUID::fromString)
@@ -83,7 +83,7 @@ public class ValidatorFactory {
         return (value, annotationMetadata, context) -> {
             boolean valid = false;
             if (value != null) {
-                Optional<Predicate<String>> attributeInSchema =Optional.ofNullable(value)
+                Optional<Predicate<String>> attributeInSchema = Optional.ofNullable(value)
                         .map(BPAAttributeGroup::getSchemaId)
                         .filter(this::isUUID)
                         .map(UUID::fromString)
