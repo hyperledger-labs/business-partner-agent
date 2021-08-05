@@ -21,6 +21,7 @@ package org.hyperledger.bpa.impl.prooftemplates;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.model.*;
 import org.hyperledger.bpa.model.prooftemplate.*;
+import org.hyperledger.bpa.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;

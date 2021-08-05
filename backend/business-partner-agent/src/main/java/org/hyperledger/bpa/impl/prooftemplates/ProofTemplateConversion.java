@@ -28,6 +28,7 @@ import org.hyperledger.bpa.model.*;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;

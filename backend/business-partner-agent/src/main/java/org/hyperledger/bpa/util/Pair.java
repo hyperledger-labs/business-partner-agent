@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.model;
+package org.hyperledger.bpa.util;
 
 import lombok.Builder;
 import lombok.Data;

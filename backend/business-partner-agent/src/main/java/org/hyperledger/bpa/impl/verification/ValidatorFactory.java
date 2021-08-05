@@ -27,7 +27,7 @@ import org.hyperledger.bpa.impl.verification.prooftemplates.*;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.model.prooftemplate.BPACondition;
-import org.hyperledger.bpa.model.Pair;
+import org.hyperledger.bpa.util.Pair;
 
 import javax.inject.Singleton;
 import java.util.*;
