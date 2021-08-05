@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.Nullable;
 import lombok.*;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidUUID;
+import org.hyperledger.bpa.impl.verification.ValidUUID;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;

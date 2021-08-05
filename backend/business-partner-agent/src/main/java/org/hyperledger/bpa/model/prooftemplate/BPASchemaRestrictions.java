@@ -25,7 +25,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.controller.api.prooftemplates.SchemaRestrictions;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidUUID;
+import org.hyperledger.bpa.impl.verification.ValidUUID;
 
 import java.util.Optional;
 

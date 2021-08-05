@@ -23,7 +23,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidUUID;
+import org.hyperledger.bpa.impl.verification.ValidUUID;
 
 @Data
 @NoArgsConstructor

@@ -28,7 +28,7 @@ import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.impl.ProofTemplateManager;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidUUID;
+import org.hyperledger.bpa.impl.verification.ValidUUID;
 import org.hyperledger.bpa.model.BPAProofTemplate;
 
 import javax.inject.Inject;

@@ -20,7 +20,7 @@ package org.hyperledger.bpa.controller.api.prooftemplates;
 
 import io.micronaut.core.annotation.Introspected;
 import lombok.*;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidUUID;
+import org.hyperledger.bpa.impl.verification.ValidUUID;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

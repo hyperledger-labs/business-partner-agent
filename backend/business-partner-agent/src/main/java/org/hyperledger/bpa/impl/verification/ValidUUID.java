@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.hyperledger.bpa.impl.verification.prooftemplates;
+package org.hyperledger.bpa.impl.verification;
 
 import javax.validation.Constraint;
 import java.lang.annotation.Retention;
