@@ -22,13 +22,11 @@ import io.micronaut.context.annotation.Value;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.security.oauth2.endpoint.authorization.request.AuthorizationRequest;
 import io.micronaut.security.oauth2.endpoint.authorization.request.DefaultAuthorizationRedirectHandler;
-import io.micronaut.security.oauth2.endpoint.authorization.request.OpenIdAuthorizationRequest;
 import org.hyperledger.bpa.security.oauth2.client.RequiresKeycloak;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
-import java.util.HashMap;
 import java.util.Map;
 
 @Singleton
