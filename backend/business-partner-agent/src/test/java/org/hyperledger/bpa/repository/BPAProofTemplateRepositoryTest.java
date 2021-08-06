@@ -78,7 +78,6 @@ class BPAProofTemplateRepositoryTest {
                 .createdAt(savedProofTemplate.get().getCreatedAt())
                 .build();
         assertEquals(expectedProofTemplate, savedProofTemplate.get());
-        assertEquals(0, repo.count());
     }
 
     @Test
@@ -166,7 +165,7 @@ class BPAProofTemplateRepositoryTest {
         assertTrue(proofRepository.findById(proof.getId()).isEmpty());
         assertTrue(repo.findById(proofTemplateToSave.getId()).isPresent());
         repo.deleteById(savedTemplate.getId());
-
+        assertEquals(0, repo.count());
     }
 
     private BPAProofTemplate.BPAProofTemplateBuilder getBpaProofTemplateBuilder() {
