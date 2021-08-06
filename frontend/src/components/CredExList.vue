@@ -19,8 +19,11 @@
       @click:row="openItem"
     >
       <template v-slot:[`item.state`]="{ item }">
-        <v-icon v-if="isItemActive(item)" color="green"
+        <v-icon v-if="isItemActive(item) && !item.revoked" color="green" title="credential issued"
           >$vuetify.icons.check</v-icon
+        >
+        <v-icon v-else-if="isItemActive(item) && item.revoked" title="credential revoked"
+        >$vuetify.icons.check</v-icon
         >
         <span v-else>
           {{ item.state.replace("_", " ") }}
@@ -31,6 +34,16 @@
       </template>
       <template v-slot:[`item.createdAt`]="{ item }">
         {{ item.createdAt | formatDateLong }}
+      </template>
+      <template v-slot:[`item.revocable`]="{ item }">
+        <v-icon v-if="item.revocable && item.revoked" title="credential revoked"
+        >$vuetify.icons.revoked</v-icon
+        >
+        <v-icon v-else-if="item.revocable" color="green" title="revoke credential" @click.stop="revokeCredential(item.id)"
+        >$vuetify.icons.revoke</v-icon
+        >
+        <span v-else>
+        </span>
       </template>
     </v-data-table>
     <v-dialog v-model="dialog" max-width="600px">
@@ -52,6 +65,8 @@
   </v-container>
 </template>
 <script>
+
+import { issuerService } from "@/services";
 import Cred from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
 
@@ -76,6 +91,10 @@ export default {
         {
           text: "State",
           value: "state",
+        },
+        {
+          text: "Revocation",
+          value: "revocable",
         },
       ],
     },
@@ -112,6 +131,9 @@ export default {
     isItemActive(item) {
       return this.isActiveFn(item);
     },
+    revokeCredential(id) {
+      issuerService.revokeCredential(id);
+    }
   },
   components: {
     VBpaButton,
