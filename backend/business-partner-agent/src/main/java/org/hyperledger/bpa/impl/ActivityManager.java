@@ -114,23 +114,23 @@ public class ActivityManager {
         activityRepository.findByLinkIdAndTypeAndRole(partner.getId(),
                 ActivityType.CONNECTION_REQUEST,
                 ActivityRole.CONNECTION_REQUEST_RECIPIENT).ifPresentOrElse(activity -> {
-            // set to completed and mark accepted
-            activity.setState(ActivityState.CONNECTION_REQUEST_ACCEPTED);
-            activity.setCompleted(true);
-            activityRepository.update(activity);
-            eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
-        }, () -> {
-            // add in a completed activity
-            Activity a = Activity.builder()
-                    .linkId(partner.getId())
-                    .partner(partner)
-                    .type(ActivityType.CONNECTION_REQUEST)
-                    .role(ActivityRole.CONNECTION_REQUEST_RECIPIENT)
-                    .state(ActivityState.CONNECTION_REQUEST_ACCEPTED)
-                    .completed(true)
-                    .build();
-            activityRepository.save(a);
-        });
+                    // set to completed and mark accepted
+                    activity.setState(ActivityState.CONNECTION_REQUEST_ACCEPTED);
+                    activity.setCompleted(true);
+                    activityRepository.update(activity);
+                    eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
+                }, () -> {
+                    // add in a completed activity
+                    Activity a = Activity.builder()
+                            .linkId(partner.getId())
+                            .partner(partner)
+                            .type(ActivityType.CONNECTION_REQUEST)
+                            .role(ActivityRole.CONNECTION_REQUEST_RECIPIENT)
+                            .state(ActivityState.CONNECTION_REQUEST_ACCEPTED)
+                            .completed(true)
+                            .build();
+                    activityRepository.save(a);
+                });
     }
 
     public void deletePartnerActivities(@NonNull Partner partner) {
@@ -158,21 +158,21 @@ public class ActivityManager {
         activityRepository.findByLinkIdAndTypeAndRole(partner.getId(),
                 ActivityType.CONNECTION_REQUEST,
                 ActivityRole.CONNECTION_REQUEST_SENDER).ifPresentOrElse(activity -> {
-            activity.setState(ActivityState.CONNECTION_REQUEST_ACCEPTED);
-            activity.setCompleted(true);
-            activityRepository.update(activity);
-        }, () -> {
-            // add in a completed activity
-            Activity a = Activity.builder()
-                    .linkId(partner.getId())
-                    .partner(partner)
-                    .type(ActivityType.CONNECTION_REQUEST)
-                    .role(ActivityRole.CONNECTION_REQUEST_SENDER)
-                    .state(ActivityState.CONNECTION_REQUEST_ACCEPTED)
-                    .completed(true)
-                    .build();
-            activityRepository.save(a);
-        });
+                    activity.setState(ActivityState.CONNECTION_REQUEST_ACCEPTED);
+                    activity.setCompleted(true);
+                    activityRepository.update(activity);
+                }, () -> {
+                    // add in a completed activity
+                    Activity a = Activity.builder()
+                            .linkId(partner.getId())
+                            .partner(partner)
+                            .type(ActivityType.CONNECTION_REQUEST)
+                            .role(ActivityRole.CONNECTION_REQUEST_SENDER)
+                            .state(ActivityState.CONNECTION_REQUEST_ACCEPTED)
+                            .completed(true)
+                            .build();
+                    activityRepository.save(a);
+                });
     }
 
     public void addPresentationExchangeTask(@NonNull PartnerProof partnerProof) {
@@ -213,24 +213,24 @@ public class ActivityManager {
             activityRepository.findByLinkIdAndTypeAndRole(partnerProof.getId(),
                     ActivityType.PRESENTATION_EXCHANGE,
                     role).ifPresentOrElse(activity -> {
-                // set to completed and mark accepted
-                activity.setState(state);
-                activity.setCompleted(true);
-                activityRepository.update(activity);
+                        // set to completed and mark accepted
+                        activity.setState(state);
+                        activity.setCompleted(true);
+                        activityRepository.update(activity);
 
-                eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
-            }, () -> {
-                // add in a completed activity
-                Activity a = Activity.builder()
-                        .linkId(partnerProof.getId())
-                        .partner(partner)
-                        .type(ActivityType.PRESENTATION_EXCHANGE)
-                        .role(role)
-                        .state(state)
-                        .completed(true)
-                        .build();
-                activityRepository.save(a);
-            });
+                        eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
+                    }, () -> {
+                        // add in a completed activity
+                        Activity a = Activity.builder()
+                                .linkId(partnerProof.getId())
+                                .partner(partner)
+                                .type(ActivityType.PRESENTATION_EXCHANGE)
+                                .role(role)
+                                .state(state)
+                                .completed(true)
+                                .build();
+                        activityRepository.save(a);
+                    });
         });
     }
 
@@ -242,11 +242,11 @@ public class ActivityManager {
             activityRepository.findByLinkIdAndTypeAndRole(partnerProof.getId(),
                     ActivityType.PRESENTATION_EXCHANGE,
                     role).ifPresent(activity -> {
-                activity.setState(ActivityState.PRESENTATION_EXCHANGE_DECLINED);
-                activity.setCompleted(true);
-                activityRepository.update(activity);
-                eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
-            });
+                        activity.setState(ActivityState.PRESENTATION_EXCHANGE_DECLINED);
+                        activity.setCompleted(true);
+                        activityRepository.update(activity);
+                        eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
+                    });
         });
     }
 
@@ -255,9 +255,9 @@ public class ActivityManager {
         activityRepository.findByLinkIdAndTypeAndRole(partnerProof.getId(),
                 ActivityType.PRESENTATION_EXCHANGE,
                 role).ifPresent(activity -> {
-            activityRepository.delete(activity);
-            eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
-        });
+                    activityRepository.delete(activity);
+                    eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
+                });
     }
 
     private ActivityItem convert(Activity activity) {
@@ -275,23 +275,23 @@ public class ActivityManager {
 
     private ActivityState getPresentationExchangeState(PartnerProof partnerProof) {
         switch (partnerProof.getState()) {
-            case VERIFIED:
-            case PRESENTATION_ACKED:
-                return ActivityState.PRESENTATION_EXCHANGE_ACCEPTED;
-            case REQUEST_SENT:
-            case PRESENTATIONS_SENT:
-                return ActivityState.PRESENTATION_EXCHANGE_SENT;
-            case REQUEST_RECEIVED:
-            case PRESENTATION_RECEIVED:
+        case VERIFIED:
+        case PRESENTATION_ACKED:
+            return ActivityState.PRESENTATION_EXCHANGE_ACCEPTED;
+        case REQUEST_SENT:
+        case PRESENTATIONS_SENT:
+            return ActivityState.PRESENTATION_EXCHANGE_SENT;
+        case REQUEST_RECEIVED:
+        case PRESENTATION_RECEIVED:
+            return ActivityState.PRESENTATION_EXCHANGE_RECEIVED;
+        default:
+            switch (partnerProof.getRole()) {
+            case VERIFIER:
                 return ActivityState.PRESENTATION_EXCHANGE_RECEIVED;
+            case PROVER:
             default:
-                switch (partnerProof.getRole()) {
-                    case VERIFIER:
-                        return ActivityState.PRESENTATION_EXCHANGE_RECEIVED;
-                    case PROVER:
-                    default:
-                        return ActivityState.PRESENTATION_EXCHANGE_SENT;
-                }
+                return ActivityState.PRESENTATION_EXCHANGE_SENT;
+            }
         }
     }
 

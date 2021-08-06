@@ -10,6 +10,18 @@
             pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE,RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE" />
     </Match>
 
+    <!-- Ignore warnings for Lombok builder classes working with @Singular on maps and lists -->
+    <Match>
+        <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/>
+        <And>
+            <Or>
+                <Method  name="~clear.+" />
+                <Method  name="build" />
+            </Or>
+            <Class name="~.+Builder.*"/>
+        </And>
+    </Match>
+
     <!-- Micronaut -->
     <Match>
         <Bug

@@ -38,8 +38,9 @@ import java.util.UUID;
 public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     @Override
+    @NonNull
     @Join(value = "tags", type = Join.Type.LEFT_FETCH)
-    Optional<Partner> findById(UUID id);
+    Optional<Partner> findById(@NonNull UUID id);
 
     @Override
     @NonNull
