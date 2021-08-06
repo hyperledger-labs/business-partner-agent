@@ -46,7 +46,7 @@
         >$vuetify.icons.revoked</v-icon
         >
         <v-icon v-else-if="item.revocable" color="green" title="revoke credential" @click.stop="revokeCredential(item.id)"
-        >$vuetify.icons.revoke</v-icon
+        >$vuetify.icons.revoked</v-icon
         >
         <span v-else>
         </span>
