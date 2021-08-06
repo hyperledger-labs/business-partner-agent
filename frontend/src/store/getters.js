@@ -97,3 +97,7 @@ export const getSettingByKey = (state) => (key) => {
 export const getSettings = (state) => {
   return state.settings;
 };
+
+export const getProofTemplates = (state) => {
+  return state.proofTemplates;
+};
