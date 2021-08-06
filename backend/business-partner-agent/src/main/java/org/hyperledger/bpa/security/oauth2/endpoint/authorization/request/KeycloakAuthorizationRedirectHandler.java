@@ -36,8 +36,7 @@ import java.util.Map;
 @Replaces(DefaultAuthorizationRedirectHandler.class)
 public class KeycloakAuthorizationRedirectHandler extends DefaultAuthorizationRedirectHandler {
     private static final Logger LOG = LoggerFactory.getLogger(KeycloakAuthorizationRedirectHandler.class);
-    
-    
+
     @Value("${micronaut.security.oauth2.clients.keycloak.vcauthn.pres_req_conf_id}")
     String presentationRequestConfigurationId;
 
@@ -48,15 +47,16 @@ public class KeycloakAuthorizationRedirectHandler extends DefaultAuthorizationRe
      * @param authorizationRequest Authentication Request
      * @param response             Authorization Redirect Response
      * @return A parameter map which contains the URL variables used to construct
-     * the authorization redirect url.
+     *         the authorization redirect url.
      */
     @Override
     protected Map<String, Object> instantiateParameters(AuthorizationRequest authorizationRequest,
-                                                        MutableHttpResponse response) {
+            MutableHttpResponse response) {
         Map<String, Object> parameters = super.instantiateParameters(authorizationRequest, response);
 
-        parameters.put("pres_req_conf_id",this.presentationRequestConfigurationId);
-        KeycloakAuthorizationRedirectHandler.LOG.info("keycloak vcauthn pres_req_conf_id = " + this.presentationRequestConfigurationId);
+        parameters.put("pres_req_conf_id", this.presentationRequestConfigurationId);
+        KeycloakAuthorizationRedirectHandler.LOG
+                .info("keycloak vcauthn pres_req_conf_id = " + this.presentationRequestConfigurationId);
 
         return parameters;
     }
