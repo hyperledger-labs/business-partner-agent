@@ -44,9 +44,11 @@ public class ActivityLogConfig {
             ConnectionState.PING_RESPONSE,
             ConnectionState.PING_NO_RESPONSE);
 
-    private static List<PresentationExchangeState> PRESENTATION_EXCHANGE_STATES_TASKS = List.of(PresentationExchangeState.REQUEST_RECEIVED);
+    private static List<PresentationExchangeState> PRESENTATION_EXCHANGE_STATES_TASKS = List
+            .of(PresentationExchangeState.REQUEST_RECEIVED);
 
-    private static List<PresentationExchangeState> PRESENTATION_EXCHANGE_STATES_COMPLETED = List.of(PresentationExchangeState.VERIFIED,
+    private static List<PresentationExchangeState> PRESENTATION_EXCHANGE_STATES_COMPLETED = List.of(
+            PresentationExchangeState.VERIFIED,
             PresentationExchangeState.PRESENTATION_ACKED);
 
     private List<ConnectionState> connectionStatesForActivities;
@@ -63,7 +65,8 @@ public class ActivityLogConfig {
         this.acaPyConfig = acaPyConfig;
         // 1. set the tasks lists first as they depend on aca py configuration
         connectionStatesForTasks = this.isConnectionRequestTask() ? CONNECTION_STATES_TASKS : List.of();
-        presentationExchangeStatesForTasks = this.isPresentationExchangeTask() ? PRESENTATION_EXCHANGE_STATES_TASKS : List.of();
+        presentationExchangeStatesForTasks = this.isPresentationExchangeTask() ? PRESENTATION_EXCHANGE_STATES_TASKS
+                : List.of();
 
         // 2. set the completed state lists
         connectionStatesForCompleted = CONNECTION_STATES_COMPLETED;

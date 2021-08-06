@@ -57,7 +57,6 @@ import javax.inject.Singleton;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -102,7 +101,7 @@ public class ProofManager {
 
     @Inject
     ProofTemplateConversion proofTemplateConversion;
-    
+
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
         try {
             PresentProofRequest proofRequest = proofTemplateConversion.proofRequestViaVisitorFrom(partnerId,
@@ -117,7 +116,7 @@ public class ProofManager {
             throw new NetworkException(ACA_PY_ERROR_MSG, e);
         }
     }
-    
+
     // request proof from partner
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {
         try {
@@ -146,7 +145,7 @@ public class ProofManager {
     }
 
     private Consumer<PresentationExchangeRecord> persistProof(@NonNull UUID partnerId, @Nullable String issuerId,
-                                                              @Nullable String schemaId, @Nullable BPAProofTemplate proofTemplate) {
+            @Nullable String schemaId, @Nullable BPAProofTemplate proofTemplate) {
         return exchange -> {
             final PartnerProof pp = PartnerProof
                     .builder()

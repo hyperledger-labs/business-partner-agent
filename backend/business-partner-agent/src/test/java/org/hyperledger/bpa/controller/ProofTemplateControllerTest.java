@@ -41,7 +41,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -118,9 +117,7 @@ class ProofTemplateControllerTest {
                 ProofTemplate.class);
         Assertions.assertEquals(1, repository.count());
 
-
-        Consumer<String> assertDateFormat = (dateString) ->
-        {
+        Consumer<String> assertDateFormat = (dateString) -> {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
             try {
                 Assertions.assertNotNull(sdf.parse(dateString));
