@@ -53,24 +53,7 @@ public class KeycloakAuthorizationRedirectHandler extends DefaultAuthorizationRe
     @Override
     protected Map<String, Object> instantiateParameters(AuthorizationRequest authorizationRequest,
                                                         MutableHttpResponse response) {
-        Map<String, Object> parameters = new HashMap<>();
-        populateScope(authorizationRequest, parameters);
-        populateResponseType(authorizationRequest, parameters);
-        populateClientId(authorizationRequest, parameters);
-        populateRedirectUri(authorizationRequest, parameters);
-        populateState(authorizationRequest, parameters, response);
-        if (authorizationRequest instanceof OpenIdAuthorizationRequest) {
-            OpenIdAuthorizationRequest openIdAuthorizationRequest = (OpenIdAuthorizationRequest) authorizationRequest;
-            populateResponseMode(openIdAuthorizationRequest, parameters);
-            populateNonce(openIdAuthorizationRequest, parameters, response);
-            populateDisplay(openIdAuthorizationRequest, parameters);
-            populatePrompt(openIdAuthorizationRequest, parameters);
-            populateMaxAge(openIdAuthorizationRequest, parameters);
-            populateUiLocales(openIdAuthorizationRequest, parameters);
-            populateIdTokenHint(openIdAuthorizationRequest, parameters);
-            populateLoginHint(openIdAuthorizationRequest, parameters);
-            populateAcrValues(openIdAuthorizationRequest, parameters);
-        }
+        Map<String, Object> parameters = super.instantiateParameters(authorizationRequest, response);
 
         parameters.put("pres_req_conf_id",this.presentationRequestConfigurationId);
         KeycloakAuthorizationRedirectHandler.LOG.info("keycloak vcauthn pres_req_conf_id = " + this.presentationRequestConfigurationId);
