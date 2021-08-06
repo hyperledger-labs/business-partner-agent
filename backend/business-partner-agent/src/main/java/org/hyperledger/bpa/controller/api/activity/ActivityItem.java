@@ -29,11 +29,12 @@ import org.hyperledger.bpa.api.PartnerAPI;
 @Builder
 public class ActivityItem {
 
+    private String id;
     private ActivityRole role;
     private ActivityState state;
     private ActivityType type;
     private Long updatedAt;
     private String linkId;
     private PartnerAPI partner;
-    private Boolean task;
+    private Boolean completed;
 }

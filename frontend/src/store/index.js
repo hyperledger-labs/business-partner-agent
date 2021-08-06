@@ -12,6 +12,8 @@ import taa from "./modules/taa";
 import socketEvents from "./modules/socketevents";
 import * as actions from "./actions";
 import * as getters from "./getters";
+import messages from "@/store/modules/messages";
+import notifications from "@/store/modules/notifications";
 
 Vue.use(Vuex);
 
@@ -22,6 +24,7 @@ const store = new Vuex.Store({
     documents: [],
     credentials: [],
     schemas: [],
+    proofTemplates: [],
     tags: [],
     busyStack: 0,
     expertMode: false,
@@ -54,11 +57,16 @@ const store = new Vuex.Store({
     setSettings(state, payload) {
       state.settings = payload.settings;
     },
+    setProofTemplates(state, payload) {
+      state.proofTemplates = payload.proofTemplates;
+    },
   },
 
   modules: {
     taa,
     socketEvents,
+    messages,
+    notifications,
   },
 });
 

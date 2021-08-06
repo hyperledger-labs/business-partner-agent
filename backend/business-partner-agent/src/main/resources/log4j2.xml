@@ -6,7 +6,7 @@
     <Appenders>
         <Console name="ConsolePatternAppender" target="SYSTEM_OUT">
             <PatternLayout pattern="${PATTERN}"/>
-        </Console>   
+        </Console>
     </Appenders>
     <Loggers>
         <Logger name="io.micronaut.context" level="info"/>
