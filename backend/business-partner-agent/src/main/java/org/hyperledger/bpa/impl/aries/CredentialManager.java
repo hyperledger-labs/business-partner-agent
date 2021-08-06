@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.scheduling.annotation.Scheduled;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -293,5 +294,24 @@ public class CredentialManager {
             }
         }
         return issuer;
+    }
+
+    @Scheduled(fixedRate = "1m", initialDelay = "1m")
+    public void checkRevocationStatus() {
+        log.trace("Running revocation checks");
+        credRepo.findByRevokedIsNullOrRevoked(Boolean.FALSE).forEach(cred -> {
+            try {
+                log.trace("Running revocation check for credential exchange: {}", cred.getReferent());
+                // TODO more checks
+                ac.credentialRevoked(cred.getReferent()).ifPresent(isRevoked -> {
+                    if (isRevoked.getRevoked() != null && isRevoked.getRevoked()) {
+                        credRepo.updateRevoked(cred.getId(), Boolean.TRUE);
+                        log.debug("Credential with referent id: {} has been revoked", cred.getReferent());
+                    }
+                });
+            } catch (IOException e) {
+                log.error("aca-py is not available");
+            }
+        });
     }
 }

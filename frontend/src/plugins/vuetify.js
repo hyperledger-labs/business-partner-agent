@@ -32,6 +32,7 @@ import {
   mdiClockTimeThreeOutline,
   mdiContentSave,
   mdiMessageText,
+  mdiBook,
   mdiBookRemove
 } from "@mdi/js";
 
@@ -82,6 +83,7 @@ export default new Vuetify({
       cancel: "fas fa-times-circle",
       save: mdiContentSave,
       chat: mdiMessageText,
+      revoke: mdiBook,
       revoked: mdiBookRemove
     },
   },

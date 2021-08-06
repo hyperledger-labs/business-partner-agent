@@ -55,4 +55,8 @@ public interface MyCredentialRepository extends CrudRepository<MyCredential, UUI
 
     Long countByStateEquals(CredentialExchangeState state);
 
+    List<MyCredential> findByRevokedIsNullOrRevoked(Boolean revoked);
+
+    Number updateRevoked(@Id UUID id, Boolean revoked);
+
 }

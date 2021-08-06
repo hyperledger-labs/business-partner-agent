@@ -33,6 +33,7 @@ public class AriesCredential {
     private Long issuedAt;
     private CredentialExchangeState state;
     private Boolean isPublic;
+    private Boolean revoked;
 
     private String issuer;
     private String schemaId;
@@ -55,6 +56,7 @@ public class AriesCredential {
                 .isPublic(c.getIsPublic())
                 .issuer(c.getIssuer())
                 .connectionId(c.getConnectionId())
+                .revoked(c.getRevoked())
                 .label(c.getLabel());
     }
 }
