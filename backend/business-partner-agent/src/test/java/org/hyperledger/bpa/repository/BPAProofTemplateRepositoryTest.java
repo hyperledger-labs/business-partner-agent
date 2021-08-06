@@ -78,6 +78,7 @@ class BPAProofTemplateRepositoryTest {
                 .createdAt(savedProofTemplate.get().getCreatedAt())
                 .build();
         assertEquals(expectedProofTemplate, savedProofTemplate.get());
+        assertEquals(0, repo.count());
     }
 
     @Test
