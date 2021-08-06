@@ -256,19 +256,19 @@ public class IssuerManager {
 
     public void handleCredentialExchange(@NonNull V1CredentialExchange exchange) {
         switch (exchange.getState()) {
-            case OFFER_SENT:
-                // create a record...
-                createCredentialExchange(exchange);
-                break;
-            case REQUEST_RECEIVED:
-            case CREDENTIAL_ISSUED:
-            case CREDENTIAL_ACKED:
-                updateCredentialExchange(exchange);
-                break;
-            default:
-                log.debug(String.format("Unhandled credential exchange: role = %s, state = %s", exchange.getRole(),
-                        exchange.getState()));
-                break;
+        case OFFER_SENT:
+            // create a record...
+            createCredentialExchange(exchange);
+            break;
+        case REQUEST_RECEIVED:
+        case CREDENTIAL_ISSUED:
+        case CREDENTIAL_ACKED:
+            updateCredentialExchange(exchange);
+            break;
+        default:
+            log.debug(String.format("Unhandled credential exchange: role = %s, state = %s", exchange.getRole(),
+                    exchange.getState()));
+            break;
         }
     }
 

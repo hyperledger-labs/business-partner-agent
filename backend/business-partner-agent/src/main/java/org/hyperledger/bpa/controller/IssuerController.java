@@ -155,6 +155,7 @@ public class IssuerController {
 
     /**
      * Revoke an issued credential
+     * 
      * @param id credential exchange id
      * @return {@link HttpResponse}
      */
