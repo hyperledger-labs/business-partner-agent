@@ -19,8 +19,8 @@ package org.hyperledger.bpa.controller.api;
 
 import io.micronaut.core.annotation.Nullable;
 import lombok.*;
-import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.bpa.api.PartnerAPI;
+import org.hyperledger.bpa.model.ChatMessage;
 
 /**
  * Websocket events
@@ -66,12 +66,12 @@ public class WebSocketMessageBody {
         TASK_COMPLETED
     }
 
-    public static WebSocketMessageBody message(PartnerAPI partner, BasicMessage message) {
+    public static WebSocketMessageBody message(PartnerAPI partner, ChatMessage message) {
         return notificationEvent(WebSocketMessageType.ON_MESSAGE_RECEIVED,
                 partner.getId(),
                 PartnerMessage.builder()
                         .partnerId(partner.getId())
-                        .messageId(message.getMessageId())
+                        .messageId(message.getId().toString())
                         .content(message.getContent())
                         .build(),
                 partner);

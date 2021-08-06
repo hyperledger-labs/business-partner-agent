@@ -27,6 +27,7 @@ import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.message.ProblemReport;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
+import org.hyperledger.bpa.impl.ChatMessageEventHandler;
 import org.hyperledger.bpa.impl.IssuerManager;
 
 import javax.inject.Inject;
@@ -47,18 +48,22 @@ public class AriesEventHandler extends EventHandler {
 
     private final IssuerManager issuerMgr;
 
+    private final ChatMessageEventHandler chatMessageEventHandler;
+
     @Inject
     public AriesEventHandler(
             ConnectionManager conMgmt,
             Optional<PingManager> pingMgmt,
             CredentialManager credMgmt,
             ProofEventHandler proofMgmt,
-            IssuerManager issuerMgr) {
+            IssuerManager issuerMgr,
+            ChatMessageEventHandler chatMessageEventHandler) {
         this.conMgmt = conMgmt;
         this.pingMgmt = pingMgmt;
         this.credMgmt = credMgmt;
         this.proofMgmt = proofMgmt;
         this.issuerMgr = issuerMgr;
+        this.chatMessageEventHandler = chatMessageEventHandler;
     }
 
     @Override
@@ -118,7 +123,7 @@ public class AriesEventHandler extends EventHandler {
 
     @Override
     public void handleBasicMessage(BasicMessage message) {
-        conMgmt.receiveMessage(message);
+        chatMessageEventHandler.handleIncomingMessage(message);
     }
 
     @Override

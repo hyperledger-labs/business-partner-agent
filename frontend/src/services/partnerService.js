@@ -21,6 +21,9 @@ export default {
     return appAxios().put(`${ApiRoutes.PARTNERS}/${id}`, data);
   },
   sendMessage(id, content) {
-    return appAxios().post(`${ApiRoutes.PARTNERS}/${id}/message`, {content: content});
+    return appAxios().post(`${ApiRoutes.PARTNERS}/${id}/messages`, {content: content});
+  },
+  getMessages(id) {
+    return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/messages`);
   },
 };

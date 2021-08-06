@@ -204,18 +204,6 @@ public class NotificationEventListener {
 
     @EventListener
     @Async
-    public void onBasicMessageReceivedEvent(BasicMessageReceivedEvent event) {
-        log.debug("onBasicMessageReceivedEvent");
-        // refactor once we have persistence of messages...
-        PartnerAPI partner = partnerManager.getPartnerByConnectionId(event.getMessage().getConnectionId());
-        if (partner != null) {
-            WebSocketMessageBody message = WebSocketMessageBody.message(partner, event.getMessage());
-            messageService.sendMessage(message);
-        }
-    }
-
-    @EventListener
-    @Async
     public void onTaskAddedEvent(TaskAddedEvent event) {
         log.debug("onTaskAddedEvent");
         WebSocketMessageBody task = WebSocketMessageBody.notificationEvent(

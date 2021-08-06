@@ -228,9 +228,9 @@
             right
             fixed
             @click="showChatWindow"
+            style="text-decoration: none;"
         >
-          <v-icon v-if="chatWindow">$vuetify.icons.close</v-icon>
-          <v-badge v-else
+          <v-badge
               overlap
               bordered
               :content="messagesReceivedCount"
@@ -239,7 +239,8 @@
               offset-x="10"
               offset-y="10"
           >
-            <v-icon>$vuetify.icons.chat</v-icon>
+            <v-icon v-if="chatWindow">$vuetify.icons.close</v-icon>
+            <v-icon v-else>$vuetify.icons.chat</v-icon>
           </v-badge>
         </v-btn>
     </v-main>
@@ -392,7 +393,7 @@ export default {
       return this.$store.state.settings.dataPrivacyPolicy;
     },
     messagesReceivedCount() {
-      return this.$store.getters.messagesReceivedCount;
+      return this.$store.getters.messagesCount;
     },
     credentialNotificationsCount() {
       return this.$store.getters.credentialNotificationsCount;
@@ -489,7 +490,7 @@ export default {
     },
     showChatWindow() {
       // for now, reset the count if we open (we will look for new messages) or close (we already saw messages)
-      this.$store.commit("messagesReceivedSeen");
+      //this.$store.commit("messagesReceivedSeen");
       // now, open of close it
       this.chatWindow = !this.chatWindow;
     }
