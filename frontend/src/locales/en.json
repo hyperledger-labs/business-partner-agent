@@ -119,6 +119,7 @@
       },
       "presentationExchange": {
         "accepted": "Proof Presentation accepted",
+        "declined": "A Presentation of Proof has been declined",
         "received": "A Presentation of Proof has been requested",
         "sent": "Request for Presentation of Proof sent"
       }

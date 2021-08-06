@@ -58,27 +58,11 @@ Vue.use(VueNativeSock, socketApi, {
         msg = JSON.parse(event.data);
         // method = 'dispatch';
         switch (msg.message.type) {
-          case "CONNECTION_REQUEST":
-            target = "newPartner";
+          case "ON_MESSAGE_RECEIVED":
+            target = "onMessageReceived";
             break;
-          case "PARTNER":
-            target = "newPartner";
-            break;
-          case "CREDENTIAL":
-            target = "newCredential";
-            break;
-          case "PROOF":
-            target = "newPresentation";
-            break;
-          case "PROOFREQUEST":
-            target = "newPresentationRequest";
-            break;
-          case "NOTIFICATION":
-            target = "notification";
-            break;
-          case "MESSAGE":
-            target = "message";
-            break;
+          default:
+            target = "onNotification";
         }
       }
     }

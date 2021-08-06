@@ -17,8 +17,8 @@
  */
 package org.hyperledger.bpa.impl.aries;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
@@ -35,11 +35,12 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.api.exception.PresentationConstructionException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
-import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.notification.PresentationRequestDeletedEvent;
+import org.hyperledger.bpa.impl.notification.PresentationRequestSentEvent;
 import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
@@ -61,6 +62,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
@@ -96,8 +98,11 @@ public class ProofManager {
     MessageService messageService;
 
     @Inject
-    ProofTemplateConversion proofTemplateConversion;
+    ApplicationEventPublisher eventPublisher;
 
+    @Inject
+    ProofTemplateConversion proofTemplateConversion;
+    
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
         try {
             PresentProofRequest proofRequest = proofTemplateConversion.proofRequestViaVisitorFrom(partnerId,
@@ -112,7 +117,7 @@ public class ProofManager {
             throw new NetworkException(ACA_PY_ERROR_MSG, e);
         }
     }
-
+    
     // request proof from partner
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {
         try {
@@ -141,7 +146,7 @@ public class ProofManager {
     }
 
     private Consumer<PresentationExchangeRecord> persistProof(@NonNull UUID partnerId, @Nullable String issuerId,
-            @Nullable String schemaId, @Nullable BPAProofTemplate proofTemplate) {
+                                                              @Nullable String schemaId, @Nullable BPAProofTemplate proofTemplate) {
         return exchange -> {
             final PartnerProof pp = PartnerProof
                     .builder()
@@ -155,6 +160,9 @@ public class ProofManager {
                     .issuer(issuerId)
                     .build();
             pProofRepo.save(pp);
+            eventPublisher.publishEventAsync(PresentationRequestSentEvent.builder()
+                    .partnerProof(pp)
+                    .build());
         };
     }
 
@@ -163,6 +171,8 @@ public class ProofManager {
             try {
                 sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString);
                 deletePartnerProof(proofEx.getId());
+                eventPublisher
+                        .publishEventAsync(PresentationRequestDeletedEvent.builder().partnerProof(proofEx).build());
             } catch (IOException e) {
                 throw new NetworkException(ACA_PY_ERROR_MSG, e);
             } catch (AriesException e) {
@@ -255,6 +265,10 @@ public class ProofManager {
                             .issuer(resolveIssuer(cred.getCredentialDefinitionId()))
                             .build();
                     pProofRepo.save(pp);
+
+                    eventPublisher.publishEventAsync(PresentationRequestSentEvent.builder()
+                            .partnerProof(pp)
+                            .build());
                 });
 
             } catch (IOException e) {
@@ -264,18 +278,13 @@ public class ProofManager {
     }
 
     public List<AriesProofExchange> listPartnerProofs(@NonNull UUID partnerId) {
-        List<AriesProofExchange> result = new ArrayList<>();
-        pProofRepo.findByPartnerIdOrderByRole(partnerId).forEach(p -> result.add(toApiProof(p)));
-        return result;
+        return pProofRepo.findByPartnerIdOrderByRole(partnerId).stream()
+                .map(conv::toAPIObject)
+                .collect(Collectors.toList());
     }
 
     public Optional<AriesProofExchange> getPartnerProofById(@NonNull UUID id) {
-        Optional<AriesProofExchange> result = Optional.empty();
-        final Optional<PartnerProof> proof = pProofRepo.findById(id);
-        if (proof.isPresent()) {
-            result = Optional.of(toApiProof(proof.get()));
-        }
-        return result;
+        return pProofRepo.findById(id).map(conv::toAPIObject);
     }
 
     public void deletePartnerProof(@NonNull UUID id) {
@@ -295,28 +304,12 @@ public class ProofManager {
         });
     }
 
-    void sendMessage(
-            @NonNull WebSocketMessageBody.WebSocketMessageState state,
-            @NonNull WebSocketMessageBody.WebSocketMessageType type,
-            @NonNull PartnerProof pp) {
-        messageService.sendMessage(WebSocketMessageBody.proof(state, type, toApiProof(pp)));
-    }
-
     private @Nullable String resolveIssuer(String credDefId) {
         String issuer = null;
         if (StringUtils.isNotEmpty(credDefId)) {
             issuer = didPrefix + AriesStringUtil.credDefIdGetDid(credDefId);
         }
         return issuer;
-    }
-
-    private AriesProofExchange toApiProof(@NonNull PartnerProof p) {
-        AriesProofExchange proof = AriesProofExchange.from(p,
-                p.getProof() != null ? conv.fromMap(p.getProof(), JsonNode.class) : null);
-        if (StringUtils.isNotEmpty(p.getSchemaId())) {
-            proof.setTypeLabel(schemaService.getSchemaLabel(p.getSchemaId()));
-        }
-        return proof;
     }
 
     private void sendPresentProofProblemReport(@NonNull String PresentationExchangeId, @NonNull String problemString)

@@ -106,10 +106,6 @@ export const ActivityTypes = Object.freeze({
     value: "connection_request",
     label: i18n.t("constants.activityTypes.connectionRequest"),
   },
-  CREDENTIAL_OFFER: {
-    value: "credential_offer",
-    label: i18n.t("constants.activityTypes.credentialOffer"),
-  },
   PRESENTATION_EXCHANGE: {
     value: "presentation_exchange",
     label: i18n.t("constants.activityTypes.presentationExchange"),
@@ -132,6 +128,10 @@ export const ActivityStates = Object.freeze({
   PRESENTATION_EXCHANGE_ACCEPTED: {
     value: "presentation_exchange_accepted",
     label: i18n.t("constants.activityStates.presentationExchange.accepted"),
+  },
+  PRESENTATION_EXCHANGE_DECLINED: {
+    value: "presentation_exchange_declined",
+    label: i18n.t("constants.activityStates.presentationExchange.declined"),
   },
   PRESENTATION_EXCHANGE_RECEIVED: {
     value: "presentation_exchange_received",
