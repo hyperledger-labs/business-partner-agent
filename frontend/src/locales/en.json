@@ -28,7 +28,8 @@
     "settings": "Settings",
     "notifications": "Notifications",
     "about": "About",
-    "signout": "Sign out"
+    "signout": "Sign out",
+    "proofTemplates": "Proof Templates"
   },
   "button" : {
     "save": "Save",

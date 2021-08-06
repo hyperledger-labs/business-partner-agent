@@ -32,6 +32,9 @@ import About from "../views/About.vue";
 import CredentialManagement from "@/views/issuer/CredentialManagement.vue";
 import Notifications from "@/views/Notifications.vue";
 import PresentationRequestDetails from "@/views/PresentationRequestDetails.vue";
+import ProofTemplates from "@/views/ProofTemplates";
+import ProofTemplateCreate from "@/views/ProofTemplateCreate";
+import ProofTemplateView from "@/views/ProofTemplateView";
 
 Vue.use(VueRouter);
 
@@ -172,6 +175,23 @@ const routes = [
     path: "/app/notifications",
     name: "Notifications",
     component: Notifications,
+  },
+  {
+    path: "/app/proofTemplates",
+    name: "ProofTemplates",
+    component: ProofTemplates,
+  },
+  {
+    path: "/app/proofTemplate",
+    name: "ProofTemplateCreate",
+    component: ProofTemplateCreate,
+    props: true,
+  },
+  {
+    path: "/app/proofTemplate/:id",
+    name: "ProofTemplateView",
+    component: ProofTemplateView,
+    props: true,
   },
 ];
 

@@ -45,7 +45,6 @@ class DidDocClientTest {
     }
 
     @Test
-    @Disabled
     void testGetMasterdata() {
         String url = "https://ipfs.test.evan.network/ipfs/QmQGGjnY88gwvD6xSKXKbxz6n1Vdk9Q5WAMtar3WdEXmun";
         // String url2 = "https://acme.iil.network/md.json";
