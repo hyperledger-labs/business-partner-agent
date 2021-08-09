@@ -30,10 +30,10 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @MicronautTest
-class URClientTest {
+class DidDocClientTest {
 
     @Inject
-    private URClient c;
+    private DidDocClient c;
 
     @Test
     @Disabled
@@ -45,7 +45,6 @@ class URClientTest {
     }
 
     @Test
-    @Disabled
     void testGetMasterdata() {
         String url = "https://ipfs.test.evan.network/ipfs/QmQGGjnY88gwvD6xSKXKbxz6n1Vdk9Q5WAMtar3WdEXmun";
         // String url2 = "https://acme.iil.network/md.json";

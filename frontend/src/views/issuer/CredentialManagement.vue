@@ -224,7 +224,7 @@ export default {
       const presp = await partnerService.listPartners();
       if (presp.status === 200) {
         this.partners = presp.data.map((p) => {
-          return { value: p.id, text: p.alias, ...p };
+          return { value: p.id, text: p.name, ...p };
         });
       }
 

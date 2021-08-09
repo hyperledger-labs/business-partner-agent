@@ -18,7 +18,14 @@
     :sort-by="['createdAt']"
     :sort-desc="[false]"
     single-select
+    @click:row="openPresentation"
   >
+    <template v-slot:[`item.indicator`]="{item}">
+      <new-message-icon
+          :type="'presentation'"
+          :id="item.id"
+      ></new-message-icon>
+    </template>
     <template v-slot:[`item.createdAt`]="{ item }">
       {{ item.createdAt | formatDateLong }}
     </template>
@@ -35,22 +42,7 @@
       </span>
     </template>
     <template v-slot:[`item.actions`]="{ item }">
-      <div v-if="item.state === 'request_received'">
-        <v-icon small @click.stop="rejectPresentationRequest(item)">
-          $vuetify.icons.close
-        </v-icon>
-        <v-icon small @click.stop="respondToPresentationRequest(item)">
-          $vuetify.icons.check
-        </v-icon>
-        <v-tooltip v-if="item.problemReport" top>
-          <template v-slot:activator="{ on, attrs }">
-            <v-icon color="error" small v-bind="attrs" v-on="on">
-              $vuetify.icons.connectionAlert
-            </v-icon>
-          </template>
-          <span>{{ item.problemReport }}</span>
-        </v-tooltip>
-      </div>
+      <div v-if="item.state === 'request_received'">Details</div>
     </template>
   </v-data-table>
 </template>
@@ -59,8 +51,10 @@
 import { EventBus } from "../main";
 import { CredentialTypes } from "../constants";
 import { presentationListHeaders } from "@/components/tableHeaders/PresentationListHeaders";
+import NewMessageIcon from "@/components/NewMessageIcon";
 
 export default {
+  components: {NewMessageIcon},
   props: {
     presentationRequests: Array,
     selectable: {
@@ -85,40 +79,23 @@ export default {
     };
   },
   methods: {
-    rejectPresentationRequest(presentationRequest) {
-      let partnerId = this.$route.params.id;
-      this.$axios
-        .post(
-          `${this.$apiBaseUrl}/partners/${partnerId}/proof-exchanges/${presentationRequest.id}/reject`
-        )
-        .then((result) => {
-          if (result.status === 200) {
-            this.$emit("removedItem", presentationRequest.id);
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
-        });
-    },
-    respondToPresentationRequest(presentationRequest) {
-      let partnerId = this.$route.params.id;
-      this.$axios
-        .post(
-          `${this.$apiBaseUrl}/partners/${partnerId}/proof-exchanges/${presentationRequest.id}/prove`
-        )
-        .then((result) => {
-          if (result.status === 200) {
-            this.$emit("responseSuccess", presentationRequest.id);
-          }
-        })
-        .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
-        });
-    },
     isItemActive(item) {
       return this.isActiveFn(item);
+    },
+    openPresentation(item) {
+      console.log("open details");
+      console.log(item);
+      if (item.id) {
+        this.$router.push({
+          path: `/app/presentation-request/${item.id}/details`,
+          append: true,
+        });
+      } else {
+        EventBus.$emit(
+          "error",
+          "No details view available for presentations in public profile."
+        );
+      }
     },
   },
 };

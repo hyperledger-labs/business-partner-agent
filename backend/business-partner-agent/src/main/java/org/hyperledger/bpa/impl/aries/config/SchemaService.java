@@ -24,8 +24,6 @@ import io.micronaut.data.exceptions.DataAccessException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.acy_py.generated.model.SchemaSendResult;
-import org.hyperledger.acy_py.generated.model.TxnOrSchemaSendResult;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.schema.SchemaSendRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
@@ -85,10 +83,10 @@ public class SchemaService {
                     .schemaVersion(schemaVersion)
                     .attributes(attributes)
                     .build();
-            Optional<TxnOrSchemaSendResult> response = ac.schemas(request);
+            Optional<SchemaSendResponse> response = ac.schemas(request);
             if (response.isPresent()) {
                 // save it to the db...
-                SchemaSendResult ssr = response.get().getSent();
+                SchemaSendResponse ssr = response.get();
                 result = this.addSchema(ssr.getSchemaId(), schemaLabel, defaultAttributeName, null);
             } else {
                 log.error("Schema not created.");
@@ -131,7 +129,7 @@ public class SchemaService {
             if (ariesSchema.isPresent()) {
                 BPASchema dbS = BPASchema.builder()
                         .label(label)
-                        .schemaId(sId)
+                        .schemaId(ariesSchema.get().getId())
                         .schemaAttributeNames(new LinkedHashSet<>(ariesSchema.get().getAttrNames()))
                         .defaultAttributeName(defaultAttributeName)
                         .seqNo(ariesSchema.get().getSeqNo())

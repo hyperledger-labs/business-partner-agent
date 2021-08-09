@@ -17,19 +17,32 @@
  */
 package org.hyperledger.bpa.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.context.event.ApplicationEventListener;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.aries.AriesClient;
+import org.hyperledger.bpa.impl.StartupTasks;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.IOException;
 import java.util.Map;
 
 @Getter
 @Singleton
 @NoArgsConstructor
-public class RuntimeConfig {
+@Slf4j
+public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaPyReady> {
+    @JsonIgnore
+    @Inject
+    AriesClient ac;
+
+    Boolean tailsServerConfigured;
 
     @Value("${bpa.host}")
     String host;
@@ -72,5 +85,17 @@ public class RuntimeConfig {
 
     public String getAgentName() {
         return DidResolver.splitDidFrom(agentName).getLabel();
+    }
+
+    @Override
+    public void onApplicationEvent(StartupTasks.AcaPyReady event) {
+        try {
+            this.tailsServerConfigured = ac
+                    .statusConfig()
+                    .flatMap(c -> c.getAs("tails_server_base_url", String.class))
+                    .isPresent();
+        } catch (IOException e) {
+            log.warn("aca-py is not reachable");
+        }
     }
 }

@@ -10,7 +10,7 @@
       "no": "No"
     },
     "footer": {
-      "imprintUrlText": {
+      "imprintUrl": {
         "text": "Corporate Information"
       },
       "privacyPolicyUrl": {
@@ -26,8 +26,10 @@
     "credentialManagement": "Credential Management",
     "partners": "Business Partners",
     "settings": "Settings",
+    "notifications": "Notifications",
     "about": "About",
-    "signout": "Sign out"
+    "signout": "Sign out",
+    "proofTemplates": "Proof Templates"
   },
   "button" : {
     "save": "Save",
@@ -37,6 +39,15 @@
     "no": "No"
   },
   "view": {
+    "notifications": {
+      "title": "Notifications",
+      "activities": {
+        "title": "Activity Log"
+      },
+      "tasks" : {
+        "title": "Tasks"
+      }
+    },
     "partner": {
       "title": "Partner",
       "refreshProfile": "Refresh profile from source",
@@ -75,7 +86,54 @@
     "sendPresentation": {
       "title": "Send Presentation",
       "selectCredential": "Select a credential to send"
+    },
+    "presentationRequestDetails": {
+      "header": "Presentation Request Details"
+    },
+    "addPartner": {
+      "title": "Add new Business Partner",
+      "setName": "Set a name",
+      "setTags": "Set tags",
+      "trustPing": "Trust Ping",
+      "lookupPartnerBtnLabel": "Lookup Partner",
+      "addPartnerBtnLabel": "Add Partner"
+    },
+    "addPartnerbyURL": {
+      "title": "Invite new Business Partner",
+      "createInvitation": "Generate Invitation (QR Code)",
+      "invitationURL": "Invitation URL",
+      "useOOB": "Use Out of Band"
     }
+  },
+  "constants": {
+    "activityTypes": {
+      "connectionRequest": "Connection Request",
+      "credentialOffer": "Credential Offer",
+      "presentationExchange": "Presentation of Proof"
+    },
+    "activityStates": {
+      "connectionRequest": {
+        "accepted": "Connection Request accepted",
+        "received": "Connection Request received",
+        "sent": "Connection Request sent"
+      },
+      "presentationExchange": {
+        "accepted": "Proof Presentation accepted",
+        "declined": "A Presentation of Proof has been declined",
+        "received": "A Presentation of Proof has been requested",
+        "sent": "Request for Presentation of Proof sent"
+      }
+    },
+    "activityRoles": {
+      "connectionRequest": {
+        "sender": "Sender",
+        "recipient": "Recipient"
+      },
+      "presentationExchange": {
+        "prover": "Prover",
+        "verifier": "Verifier"
+      }
+   }
   },
   "showRawData": "Show raw data"
 }

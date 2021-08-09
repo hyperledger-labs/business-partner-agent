@@ -21,10 +21,7 @@ import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
 import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import io.micronaut.core.annotation.Nullable;
 import javax.persistence.*;
@@ -53,6 +50,7 @@ public class BPASchema {
     private String schemaId;
 
     @TypeDef(type = DataType.JSON)
+    @Singular
     private Set<String> schemaAttributeNames;
 
     @Nullable

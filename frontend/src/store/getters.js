@@ -19,6 +19,14 @@ export const getOrganizationalProfile = (state) => {
   else return undefined;
 };
 
+export const getPartners = (state) => {
+  return state.partners;
+};
+
+export const partnersCount = (state) => {
+  return state.partners ? state.partners.length : 0;
+};
+
 export const getPartnerByDID = (state) => (did) => {
   return state.partners.find((partner) => {
     return partner.did === did;
@@ -27,6 +35,10 @@ export const getPartnerByDID = (state) => (did) => {
 
 export const getSchemas = (state) => {
   return state.schemas;
+};
+
+export const getCredentials = (state) => {
+  return state.credentials;
 };
 
 export const getSchemaBasedSchemas = (state) => {
@@ -84,4 +96,8 @@ export const getSettingByKey = (state) => (key) => {
 
 export const getSettings = (state) => {
   return state.settings;
+};
+
+export const getProofTemplates = (state) => {
+  return state.proofTemplates;
 };

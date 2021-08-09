@@ -48,26 +48,26 @@ class ConnectionManagerTest extends BaseTest {
         repo.save(Partner
                 .builder()
                 .ariesSupport(Boolean.TRUE)
-                .label("a950b832-59ac-480c-8135-e76ba76f03ba")
+                .connectionId("de0d51e8-4c7f-4dc9-8b7b-a8f57182d8a5")
                 .alias("Alice")
                 .state(ConnectionState.INIT)
                 .did("dummy")
                 .build());
-        final ConnectionRecord invite = gson.fromJson(createInvite, ConnectionRecord.class);
+        final ConnectionRecord invite = gson.fromJson(connInvitationInvite, ConnectionRecord.class);
         eventHandler.handleConnection(invite);
 
         Optional<Partner> p = repo.findByConnectionId(invite.getConnectionId());
         assertTrue(p.isPresent());
-        assertEquals(ConnectionState.INVITATION, p.get().getState());
+        assertEquals(ConnectionState.REQUEST, p.get().getState());
         assertEquals("Alice", p.get().getAlias());
         assertNotNull(p.get().getConnectionId());
 
-        final ConnectionRecord active = gson.fromJson(createActive, ConnectionRecord.class);
+        final ConnectionRecord active = gson.fromJson(connInvitationActive, ConnectionRecord.class);
         eventHandler.handleConnection(active);
 
         p = repo.findByConnectionId(active.getConnectionId());
         assertTrue(p.isPresent());
-        assertEquals(ConnectionState.ACTIVE, p.get().getState());
+        assertEquals(ConnectionState.COMPLETED, p.get().getState());
     }
 
     @Test
@@ -85,7 +85,7 @@ class ConnectionManagerTest extends BaseTest {
 
         p = repo.findByConnectionId(active.getConnectionId());
         assertTrue(p.isPresent());
-        assertEquals(ConnectionState.ACTIVE, p.get().getState());
+        assertEquals(ConnectionState.COMPLETED, p.get().getState());
     }
 
     @Test
@@ -107,72 +107,107 @@ class ConnectionManagerTest extends BaseTest {
         assertEquals("Wallet", p.get().getLabel());
     }
 
-    private final String createInvite = "{\n" +
-            "    \"accept\": \"auto\",\n" +
-            "    \"connection_id\": \"9275a52f-5733-4951-a54f-7ebd7332922c\",\n" +
-            "    \"updated_at\": \"2021-04-28 08:32:03.980218Z\",\n" +
-            "    \"their_label\": \"a950b832-59ac-480c-8135-e76ba76f03ba\",\n" +
-            "    \"alias\": \"Bob AG\",\n" +
-            "    \"routing_state\": \"none\",\n" +
-            "    \"created_at\": \"2021-04-28 08:32:03.980218Z\",\n" +
-            "    \"their_role\": \"inviter\",\n" +
-            "    \"state\": \"invitation\",\n" +
+    @Test
+    void testCreateOOBInvitation() {
+        final ConnectionRecord invite = gson.fromJson(oobInvitationReceive, ConnectionRecord.class);
+        eventHandler.handleConnection(invite);
+
+        // not handled here
+        Optional<Partner> p = repo.findByInvitationMsgId(invite.getInvitationMsgId());
+        assertFalse(p.isPresent());
+
+        repo.save(Partner.builder()
+                .invitationMsgId(invite.getInvitationMsgId())
+                .ariesSupport(Boolean.TRUE)
+                .did(invite.getTheirDid())
+                .build());
+
+        final ConnectionRecord response = gson.fromJson(oobInvitationCompleted, ConnectionRecord.class);
+        eventHandler.handleConnection(response);
+
+        p = repo.findByInvitationMsgId(response.getInvitationMsgId());
+        assertTrue(p.isPresent());
+        assertEquals(ConnectionState.COMPLETED, p.get().getState());
+        assertTrue(p.get().getDid().endsWith("XYQQ6f1VDkDEDzWLRKzMc2"));
+        assertEquals("bob", p.get().getLabel());
+    }
+
+    private final String connInvitationInvite = "{\n" +
             "    \"invitation_mode\": \"once\",\n" +
-            "    \"rfc23_state\": \"invitation-received\"\n" +
+            "    \"their_role\": \"inviter\",\n" +
+            "    \"connection_protocol\": \"didexchange/1.0\",\n" +
+            "    \"rfc23_state\": \"request-sent\",\n" +
+            "    \"accept\": \"manual\",\n" +
+            "    \"routing_state\": \"none\",\n" +
+            "    \"alias\": \"a950b832-59ac-480c-8135-e76ba76f03ba\",\n" +
+            "    \"updated_at\": \"2021-07-05 13:31:09.179622Z\",\n" +
+            "    \"their_did\": \"did:sov:EraYCDJUPsChbkw7S1vV96\",\n" +
+            "    \"their_public_did\": \"did:sov:EraYCDJUPsChbkw7S1vV96\",\n" +
+            "    \"state\": \"request\",\n" +
+            "    \"my_did\": \"F6dB7dMVHUQSC64qemnBi7\",\n" +
+            "    \"request_id\": \"e7b668eb-2a26-4dc0-84e5-73b0f2c0fe05\",\n" +
+            "    \"connection_id\": \"de0d51e8-4c7f-4dc9-8b7b-a8f57182d8a5\",\n" +
+            "    \"created_at\": \"2021-07-05 13:31:09.179622Z\"\n" +
             "}";
 
-    private final String createActive = "{\n" +
-            "    \"accept\": \"auto\",\n" +
-            "    \"connection_id\": \"9275a52f-5733-4951-a54f-7ebd7332922c\",\n" +
-            "    \"updated_at\": \"2021-04-28 08:32:04.910398Z\",\n" +
-            "    \"their_label\": \"a950b832-59ac-480c-8135-e76ba76f03ba\",\n" +
-            "    \"alias\": \"Bob AG\",\n" +
-            "    \"their_did\": \"3BDeZkKRCkLMW812rxkYha\",\n" +
-            "    \"routing_state\": \"none\",\n" +
-            "    \"created_at\": \"2021-04-28 08:32:03.980218Z\",\n" +
-            "    \"their_role\": \"inviter\",\n" +
-            "    \"state\": \"active\",\n" +
-            "    \"my_did\": \"WrZgFxyJm1Ty5z1PTiiKN4\",\n" +
+    private final String connInvitationActive = "{\n" +
             "    \"invitation_mode\": \"once\",\n" +
-            "    \"request_id\": \"18eecaa0-9393-4eeb-adaf-46e63a5fc47f\",\n" +
-            "    \"rfc23_state\": \"completed\"\n" +
+            "    \"their_role\": \"inviter\",\n" +
+            "    \"connection_protocol\": \"didexchange/1.0\",\n" +
+            "    \"rfc23_state\": \"completed\",\n" +
+            "    \"accept\": \"manual\",\n" +
+            "    \"routing_state\": \"none\",\n" +
+            "    \"alias\": \"a950b832-59ac-480c-8135-e76ba76f03ba\",\n" +
+            "    \"updated_at\": \"2021-07-05 13:32:29.689513Z\",\n" +
+            "    \"their_did\": \"8hXCW94BRYSm2PQeFHFcV1\",\n" +
+            "    \"their_public_did\": \"did:sov:EraYCDJUPsChbkw7S1vV96\",\n" +
+            "    \"state\": \"completed\",\n" +
+            "    \"my_did\": \"F6dB7dMVHUQSC64qemnBi7\",\n" +
+            "    \"request_id\": \"e7b668eb-2a26-4dc0-84e5-73b0f2c0fe05\",\n" +
+            "    \"connection_id\": \"de0d51e8-4c7f-4dc9-8b7b-a8f57182d8a5\",\n" +
+            "    \"created_at\": \"2021-07-05 13:31:09.179622Z\"\n" +
             "}";
 
     private final String receiveRequest = "{\n" +
-            "    \"accept\": \"auto\",\n" +
-            "    \"connection_id\": \"c8c7ef29-fd4f-4786-a277-9fd512a47497\",\n" +
-            "    \"updated_at\": \"2021-04-28 08:37:47.412662Z\",\n" +
+            "    \"their_role\": \"invitee\",\n" +
             "    \"their_label\": \"bob\",\n" +
-            "    \"their_did\": \"6u1vB2CRUL1z85wdK3WNV1\",\n" +
-            "    \"routing_state\": \"none\",\n" +
-            "    \"invitation_key\": \"CqDPur9zQWRv3ronzRmSFpRYXtdsPHoMVHhcKFmEHapx\",\n" +
-            "    \"created_at\": \"2021-04-28 08:37:47.412662Z\",\n" +
-            "    \"their_role\": \"inviter\",\n" +
+            "    \"request_id\": \"1c6e7e67-3b34-4fa5-83ff-34b1af853499\",\n" +
+            "    \"my_did\": \"MZMurMqVFiS24oxYBPZ3C7\",\n" +
+            "    \"invitation_key\": \"8gdhRLtvJHzKoJGyuEqgdN1QZGYfai4wMHFGgtfDXg3D\",\n" +
             "    \"state\": \"request\",\n" +
-            "    \"my_did\": \"8Ry1L98XdZazJwiDPoqcVA\",\n" +
+            "    \"accept\": \"auto\",\n" +
             "    \"invitation_mode\": \"once\",\n" +
-            "    \"rfc23_state\": \"request-sent\"\n" +
+            "    \"routing_state\": \"none\",\n" +
+            "    \"created_at\": \"2021-07-05 14:31:59.321382Z\",\n" +
+            "    \"connection_protocol\": \"didexchange/1.0\",\n" +
+            "    \"rfc23_state\": \"request-received\",\n" +
+            "    \"their_did\": \"EraYCDJUPsChbkw7S1vV96\",\n" +
+            "    \"connection_id\": \"b8d4f176-7967-4af7-9686-60a59b35f122\",\n" +
+            "    \"updated_at\": \"2021-07-05 14:31:59.321382Z\"\n" +
             "}";
 
     private final String receiveActive = "{\n" +
-            "    \"accept\": \"auto\",\n" +
-            "    \"connection_id\": \"c8c7ef29-fd4f-4786-a277-9fd512a47497\",\n" +
-            "    \"updated_at\": \"2021-04-28 08:37:47.727279Z\",\n" +
+            "    \"their_role\": \"invitee\",\n" +
             "    \"their_label\": \"bob\",\n" +
-            "    \"their_did\": \"6u1vB2CRUL1z85wdK3WNV1\",\n" +
-            "    \"routing_state\": \"none\",\n" +
-            "    \"invitation_key\": \"CqDPur9zQWRv3ronzRmSFpRYXtdsPHoMVHhcKFmEHapx\",\n" +
-            "    \"created_at\": \"2021-04-28 08:37:47.412662Z\",\n" +
-            "    \"their_role\": \"inviter\",\n" +
-            "    \"state\": \"active\",\n" +
-            "    \"my_did\": \"8Ry1L98XdZazJwiDPoqcVA\",\n" +
+            "    \"request_id\": \"1c6e7e67-3b34-4fa5-83ff-34b1af853499\",\n" +
+            "    \"my_did\": \"MZMurMqVFiS24oxYBPZ3C7\",\n" +
+            "    \"invitation_key\": \"8gdhRLtvJHzKoJGyuEqgdN1QZGYfai4wMHFGgtfDXg3D\",\n" +
+            "    \"state\": \"completed\",\n" +
+            "    \"accept\": \"auto\",\n" +
             "    \"invitation_mode\": \"once\",\n" +
-            "    \"rfc23_state\": \"completed\"\n" +
+            "    \"routing_state\": \"none\",\n" +
+            "    \"created_at\": \"2021-07-05 14:31:59.321382Z\",\n" +
+            "    \"connection_protocol\": \"didexchange/1.0\",\n" +
+            "    \"rfc23_state\": \"completed\",\n" +
+            "    \"their_did\": \"EraYCDJUPsChbkw7S1vV96\",\n" +
+            "    \"connection_id\": \"b8d4f176-7967-4af7-9686-60a59b35f122\",\n" +
+            "    \"updated_at\": \"2021-07-05 14:31:59.735196Z\"\n" +
             "}";
 
     private final String inviteReceive = "{\n" +
             "    \"accept\": \"auto\",\n" +
             "    \"connection_id\": \"5d41c1cb-2856-4026-984e-24d2976a05ba\",\n" +
+            "    \"connection_protocol\": \"connections/1.0\",\n" +
             "    \"updated_at\": \"2021-04-28 08:20:17.034908Z\",\n" +
             "    \"alias\": \"Invitation 1\",\n" +
             "    \"routing_state\": \"none\",\n" +
@@ -199,5 +234,44 @@ class ConnectionManagerTest extends BaseTest {
             "    \"my_did\": \"37FY6gGZWATtKv8ywwJjdi\",\n" +
             "    \"invitation_mode\": \"once\",\n" +
             "    \"rfc23_state\": \"response-sent\"\n" +
+            "}";
+
+    private final String oobInvitationReceive = "{\n" +
+            "    \"alias\": \"sxxx\",\n" +
+            "    \"rfc23_state\": \"request-received\",\n" +
+            "    \"invitation_key\": \"8gdhRLtvJHzKoJGyuEqgdN1QZGYfai4wMHFGgtfDXg3D\",\n" +
+            "    \"connection_protocol\": \"didexchange/1.0\",\n" +
+            "    \"invitation_mode\": \"once\",\n" +
+            "    \"updated_at\": \"2021-07-19 12:16:04.851837Z\",\n" +
+            "    \"their_did\": \"XYQQ6f1VDkDEDzWLRKzMc2\",\n" +
+            "    \"accept\": \"auto\",\n" +
+            "    \"connection_id\": \"3f4da8f3-04e9-49dd-9dd8-fc09183efc83\",\n" +
+            "    \"their_role\": \"invitee\",\n" +
+            "    \"state\": \"request\",\n" +
+            "    \"routing_state\": \"none\",\n" +
+            "    \"invitation_msg_id\": \"2d1f1bd7-5f87-48d6-929e-104297c24173\",\n" +
+            "    \"their_label\": \"bob\",\n" +
+            "    \"created_at\": \"2021-07-19 12:15:48.001375Z\",\n" +
+            "    \"request_id\": \"ab682132-8c45-48aa-ae32-babaae435f6d\"\n" +
+            "}";
+
+    private final String oobInvitationCompleted = "{\n" +
+            "    \"alias\": \"sxxx\",\n" +
+            "    \"rfc23_state\": \"completed\",\n" +
+            "    \"invitation_key\": \"8gdhRLtvJHzKoJGyuEqgdN1QZGYfai4wMHFGgtfDXg3D\",\n" +
+            "    \"connection_protocol\": \"didexchange/1.0\",\n" +
+            "    \"invitation_mode\": \"once\",\n" +
+            "    \"updated_at\": \"2021-07-19 12:16:05.291960Z\",\n" +
+            "    \"their_did\": \"XYQQ6f1VDkDEDzWLRKzMc2\",\n" +
+            "    \"accept\": \"auto\",\n" +
+            "    \"connection_id\": \"3f4da8f3-04e9-49dd-9dd8-fc09183efc83\",\n" +
+            "    \"my_did\": \"SUaF5tYZGHB4cu4iBJ1Aav\",\n" +
+            "    \"their_role\": \"invitee\",\n" +
+            "    \"state\": \"completed\",\n" +
+            "    \"routing_state\": \"none\",\n" +
+            "    \"invitation_msg_id\": \"2d1f1bd7-5f87-48d6-929e-104297c24173\",\n" +
+            "    \"their_label\": \"bob\",\n" +
+            "    \"created_at\": \"2021-07-19 12:15:48.001375Z\",\n" +
+            "    \"request_id\": \"ab682132-8c45-48aa-ae32-babaae435f6d\"\n" +
             "}";
 }

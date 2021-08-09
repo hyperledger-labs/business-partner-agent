@@ -22,39 +22,13 @@
           tag.name
         }}</v-chip>
         <v-layout align-center justify-end>
-          <v-btn icon @click="isUpdatingDid = !isUpdatingDid">
+          <v-btn icon disabled>
             <v-icon small dark>$vuetify.icons.identity</v-icon>
           </v-btn>
           <span
-            v-if="!isUpdatingDid"
-            class="grey--text text--darken-2 font-weight-medium text-caption pl-1 pr-4"
+              class="grey--text text--darken-2 font-weight-medium text-caption pl-1 pr-4"
             >{{ partner.did }}</span
           >
-          <v-text-field
-            class="mt-4 col-lg-6 col-md-6 col-sm-8"
-            v-else
-            label="DID"
-            v-model="did"
-            outlined
-            :rules="[rules.required]"
-            dense
-          >
-            <template v-slot:append>
-              <v-bpa-button
-                color="secondary"
-                class="pb-1"
-                @click="isUpdatingDid = false"
-                >{{ $t("button.cancel") }}</v-bpa-button
-              >
-              <v-bpa-button
-                class="pb-1"
-                color="primary"
-                :loading="isBusy"
-                @click="submitDidUpdate()"
-                >{{ $t("button.save") }}</v-bpa-button
-              >
-            </template>
-          </v-text-field>
           <v-dialog v-model="updatePartnerDialog" max-width="600px">
             <template v-slot:activator="{ on, attrs }">
               <v-btn icon v-bind="attrs" v-on="on" color="primary">
@@ -301,7 +275,6 @@ import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import { CredentialTypes, PartnerStates } from "../constants";
 import {
   getPartnerProfile,
-  getPartnerName,
   getPartnerState,
 } from "@/utils/partnerUtils";
 import { EventBus } from "../main";
@@ -315,6 +288,7 @@ import IssueCredential from "@/components/IssueCredential";
 import PresentationRequestList from "@/components/PresentationRequestList";
 import UpdatePartner from "@/components/UpdatePartner";
 import VBpaButton from "@/components/BpaButton";
+import store from "@/store";
 
 export default {
   name: "Partner",
@@ -334,13 +308,12 @@ export default {
     this.getPartner();
     this.getPresentationRecords();
     this.getIssuedCredentials(this.id);
-    this.$store.commit("partnerSeen", { id: this.id });
+    this.$store.commit("partnerNotificationSeen", {id: this.id});
   },
   data: () => {
     return {
       isReady: false,
       isBusy: false,
-      isUpdatingDid: false,
       isLoading: true,
       attentionPartnerStateDialog: false,
       updatePartnerDialog: false,
@@ -377,9 +350,10 @@ export default {
       issueCredentialDialog: false,
       headersPresentationRequest: [
         {
-          text: "Schema",
-          value:
-            "proofRequest.requestedAttributes.attribute_group_0.restrictions[0].schema_id",
+          text: '',
+          value: 'indicator',
+          sortable: false,
+          filterable: false
         },
         {
           text: "Received at",
@@ -488,17 +462,20 @@ export default {
       this.presentationsReceived = this.presentationsReceived.filter((item) => {
         return item.id !== id;
       });
+      this.$store.commit("presentationNotificationSeen", {id: id});
     },
     removePresentationSent(id) {
       this.presentationsSent = this.presentationsSent.filter((item) => {
         return item.id !== id;
       });
+      this.$store.commit("presentationNotificationSeen", {id: id});
     },
     removePresentationRequest(id) {
       let objIndex = this.presentationRequests.findIndex((item) => {
         return item.id === id;
       });
       this.presentationRequests[objIndex].state = "presentation_rejected"; //not an aries state
+      this.$store.commit("presentationNotificationSeen", {id: id});
     },
 
     presentationRequestSuccess(id) {
@@ -547,9 +524,6 @@ export default {
 
             this.partner.bpa_state = getPartnerState(this.partner);
 
-            // Hacky way to define a partner name
-            // Todo: Make this consistent. Probably in backend
-            this.partner.name = getPartnerName(this.partner);
             this.alias = this.partner.name;
             this.did = this.partner.did;
             this.isReady = true;
@@ -570,6 +544,7 @@ export default {
         .then((result) => {
           console.log(result);
           if (result.status === 200) {
+            store.dispatch("loadPartners");
             EventBus.$emit("success", "Partner deleted");
             this.$router.push({
               name: "Partners",
@@ -588,7 +563,8 @@ export default {
           console.log(result);
           if (result.status === 200) {
             EventBus.$emit("success", "Connection request accepted");
-            this.getPartner();
+            // allow a little time for the partner state to change, so the remove/accept panel will not be displayed
+            setTimeout(() => this.getPartner(), 1000);
           }
         })
         .catch((e) => {
@@ -618,9 +594,6 @@ export default {
                 });
               }
 
-              // Hacky way to define a partner name
-              // Todo: Make this consistent. Probably in backend
-              this.partner.name = getPartnerName(this.partner);
               this.partner.bpa_state = getPartnerState(this.partner);
               this.alias = this.partner.name;
               this.did = this.partner.did;
@@ -639,30 +612,6 @@ export default {
     onUpdatePartner() {
       this.getPartner();
       this.updatePartnerDialog = false;
-    },
-    submitDidUpdate() {
-      this.isBusy = true;
-      if (this.did && this.did !== "") {
-        this.$axios
-          .put(`${this.$apiBaseUrl}/partners/${this.id}/did`, {
-            did: this.did,
-          })
-          .then((result) => {
-            if (result.status === 200) {
-              this.isBusy = false;
-              this.partner.did = this.did;
-              this.isUpdatingDid = false;
-            }
-          })
-          .catch((e) => {
-            this.isBusy = false;
-            this.isUpdatingDid = false;
-            console.error(e);
-            EventBus.$emit("error", e);
-          });
-      } else {
-        this.isBusy = false;
-      }
     },
     onCredentialIssued() {
       this.issueCredentialDialog = false;

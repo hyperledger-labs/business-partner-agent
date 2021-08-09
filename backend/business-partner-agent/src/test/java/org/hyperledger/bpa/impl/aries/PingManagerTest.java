@@ -17,8 +17,8 @@
  */
 package org.hyperledger.bpa.impl.aries;
 
+import lombok.NonNull;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.connection.ConnectionFilter;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.message.PingRequest;
@@ -55,7 +55,11 @@ class PingManagerTest {
     void testHappyFlow() throws Exception {
         ping.checkConnections();
 
-        when(aries.connectionIds(any(ConnectionFilter.class))).thenReturn(List.of("1", "2"));
+        when(repo.findByStateInAndTrustPingTrueAndAriesSupportTrue(PingManager.statesToFilter))
+                .thenReturn(List.of(
+                        createPartner("1"),
+                        createPartner("2")));
+
         when(aries.connectionsSendPing(anyString(), any(PingRequest.class)))
                 .thenReturn(Optional.of(new PingResponse("a")))
                 .thenReturn(Optional.of(new PingResponse("b")))
@@ -69,6 +73,7 @@ class PingManagerTest {
 
         ping.checkConnections();
 
+        verify(repo, times(2)).findByStateInAndTrustPingTrueAndAriesSupportTrue(PingManager.statesToFilter);
         verify(repo, never()).updateStateByConnectionId(anyString(), any(ConnectionState.class));
         verify(repo, never()).updateStateAndLastSeenByConnectionId(any(), any(), any());
 
@@ -77,8 +82,9 @@ class PingManagerTest {
 
         ping.checkConnections();
 
-        verify(repo, times(1)).updateStateByConnectionId("1", ConnectionState.INACTIVE);
-        verify(repo, times(1)).updateStateByConnectionId("2", ConnectionState.INACTIVE);
+        verify(repo, times(3)).findByStateInAndTrustPingTrueAndAriesSupportTrue(PingManager.statesToFilter);
+        verify(repo, times(1)).updateStateByConnectionId("1", ConnectionState.PING_NO_RESPONSE);
+        verify(repo, times(1)).updateStateByConnectionId("2", ConnectionState.PING_NO_RESPONSE);
         verify(repo, never()).updateStateAndLastSeenByConnectionId(any(), any(), any());
 
         assertEquals(2, ping.getSentSize());
@@ -94,19 +100,22 @@ class PingManagerTest {
 
         verify(repo, times(1)).updateStateAndLastSeenByConnectionId(
                 argThat(a -> a.equals("1")),
-                argThat(a -> a.equals(ConnectionState.ACTIVE)),
+                argThat(a -> a.equals(ConnectionState.PING_RESPONSE)),
                 argThat(a -> a.isBefore(Instant.now())));
         verify(repo, times(1)).updateStateAndLastSeenByConnectionId(
                 argThat(a -> a.equals("2")),
-                argThat(a -> a.equals(ConnectionState.ACTIVE)),
+                argThat(a -> a.equals(ConnectionState.PING_RESPONSE)),
                 argThat(a -> a.isBefore(Instant.now())));
 
         assertEquals(2, ping.getSentSize());
     }
 
     @Test
-    void testInitialState() throws Exception {
-        when(aries.connectionIds(any(ConnectionFilter.class))).thenReturn(List.of("1", "2"));
+    void testInitialState() {
+        when(repo.findByStateInAndTrustPingTrueAndAriesSupportTrue(PingManager.statesToFilter))
+                .thenReturn(List.of(
+                        createPartner("1"),
+                        createPartner("2")));
 
         ping.checkConnections();
         verify(repo, never()).updateStateByConnectionId(anyString(), any(ConnectionState.class));
@@ -157,4 +166,9 @@ class PingManagerTest {
         verify(aries, never()).connectionsRemove(anyString());
     }
 
+    private Partner createPartner(@NonNull String connectionId) {
+        return Partner.builder()
+                .connectionId(connectionId)
+                .build();
+    }
 }

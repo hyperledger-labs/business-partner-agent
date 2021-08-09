@@ -27,4 +27,5 @@ public class AddPartnerRequest {
     private String did;
     private String alias;
     private List<Tag> tag;
+    private Boolean trustPing;
 }

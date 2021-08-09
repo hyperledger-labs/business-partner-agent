@@ -31,6 +31,7 @@ import {
   mdiAlertCircleOutline,
   mdiClockTimeThreeOutline,
   mdiContentSave,
+  mdiMessageText,
 } from "@mdi/js";
 
 Vue.use(Vuetify);
@@ -56,6 +57,8 @@ export default new Vuetify({
       about: mdiInformationOutline,
       prev: mdiChevronLeft,
       next: mdiChevronRight,
+      up: "fas fa-chevron-up",
+      down: "fas fa-chevron-down",
       delete: mdiDelete,
       copy: mdiContentCopy,
       add: mdiPlus,
@@ -67,14 +70,17 @@ export default new Vuetify({
       public: mdiEye,
       private: mdiEyeOff,
       partnerState: mdiBrightness1,
+      notificationIndicator: mdiBrightness1,
       newMessage: mdiShapePolygonPlus,
       qrCode: mdiQrcode,
       credentialManagement: "fas fa-file-signature",
+      proofTemplates: "fas fa-clone",
       proofRequests: "fas fa-exchange-alt",
       connectionAlert: mdiAlertCircleOutline,
       connectionWaiting: mdiClockTimeThreeOutline,
       cancel: "fas fa-times-circle",
       save: mdiContentSave,
+      chat: mdiMessageText
     },
   },
   theme: {

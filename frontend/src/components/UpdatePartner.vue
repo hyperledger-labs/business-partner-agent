@@ -30,7 +30,7 @@
             <p class="grey--text text--darken-2 font-weight-medium">Tags</p>
           </v-col>
           <v-col cols="8">
-            <v-combobox
+            <v-autocomplete
               multiple
               v-model="selectedTags"
               label="Tags"
@@ -38,8 +38,18 @@
               chips
               deletable-chips
             >
-            </v-combobox>
+            </v-autocomplete>
           </v-col>
+          <v-list-item>
+            <v-list-item-title
+              class="grey--text text--darken-2 font-weight-medium"
+              >{{ $t("view.addPartner.trustPing") }}</v-list-item-title
+            >
+
+            <v-list-item-action>
+              <v-switch v-model="trustPing"></v-switch>
+            </v-list-item-action>
+          </v-list-item>
         </v-row>
       </v-card-text>
       <v-card-actions>
@@ -82,6 +92,7 @@ export default {
   mounted() {
     this.updatedTags = this.selectedTags;
     this.updatedAlias = this.alias;
+    this.updatedTrustPing = this.trustPing;
   },
   computed: {
     alias: {
@@ -103,6 +114,14 @@ export default {
         this.updatedTags = data;
       },
     },
+    trustPing: {
+      get() {
+        return this.partner.trustPing;
+      },
+      set(data) {
+        this.updatedTrustPing = data;
+      },
+    },
     tags() {
       return this.$store.state.tags
         ? this.$store.state.tags.map((tag) => tag.name)
@@ -119,6 +138,7 @@ export default {
         tag: this.$store.state.tags.filter((tag) => {
           return this.updatedTags.includes(tag.name);
         }),
+        trustPing: this.updatedTrustPing,
       };
 
       partnerService

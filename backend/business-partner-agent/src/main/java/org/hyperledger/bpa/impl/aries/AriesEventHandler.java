@@ -19,17 +19,15 @@ package org.hyperledger.bpa.impl.aries;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
-import org.hyperledger.aries.api.connection.ConnectionState;
-import org.hyperledger.aries.api.connection.ConnectionTheirRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
+import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.message.ProblemReport;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.impl.IssuerManager;
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -67,10 +65,14 @@ public class AriesEventHandler extends EventHandler {
     public void handleConnection(ConnectionRecord connection) {
         log.debug("Connection Event: {}", connection);
         synchronized (conMgmt) {
-            if (!connection.isIncomingConnection() || AriesStringUtil.isUUID(connection.getTheirLabel())) {
+            if (!connection.isIncomingConnection()) {
                 conMgmt.handleOutgoingConnectionEvent(connection);
-            } else if (isNotAnInvitation(connection)) {
-                conMgmt.handleIncomingConnectionEvent(connection);
+            } else {
+                if (connection.isNotConnectionInvitation()) {
+                    conMgmt.handleIncomingConnectionEvent(connection);
+                } else if (connection.isOOBInvitation()) {
+                    conMgmt.handleOOBInvitation(connection);
+                }
             }
         }
     }
@@ -115,18 +117,12 @@ public class AriesEventHandler extends EventHandler {
     }
 
     @Override
-    public void handleRaw(String eventType, String json) {
-        log.trace(json);
+    public void handleBasicMessage(BasicMessage message) {
+        conMgmt.receiveMessage(message);
     }
 
-    /**
-     * Filter invitations by QR code
-     * 
-     * @param conn {@link ConnectionRecord}
-     * @return true if it is not an invitation event
-     */
-    private boolean isNotAnInvitation(ConnectionRecord conn) {
-        return !(ConnectionState.INVITATION.equals(conn.getState())
-                && ConnectionTheirRole.INVITEE.equals(conn.getTheirRole()));
+    @Override
+    public void handleRaw(String eventType, String json) {
+        log.trace(json);
     }
 }

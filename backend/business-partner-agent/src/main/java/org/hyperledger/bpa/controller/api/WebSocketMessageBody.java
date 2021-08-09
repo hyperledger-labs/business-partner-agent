@@ -17,10 +17,10 @@
  */
 package org.hyperledger.bpa.controller.api;
 
+import io.micronaut.core.annotation.Nullable;
 import lombok.*;
+import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.bpa.api.PartnerAPI;
-import org.hyperledger.bpa.api.aries.AriesCredential;
-import org.hyperledger.bpa.api.aries.AriesProofExchange;
 
 /**
  * Websocket events
@@ -43,65 +43,51 @@ public class WebSocketMessageBody {
     @Builder
     public static final class WebSocketMessage {
         private WebSocketMessageType type;
-        private WebSocketMessageState state;
         private String linkId;
         private Object info;
+        private PartnerAPI partner;
     }
 
     public enum WebSocketMessageType {
-        CONNECTION_REQUEST,
-        CREDENTIAL,
-        PARTNER,
-        PROOF,
-        PROOFREQUEST,
+        ON_MESSAGE_RECEIVED,
+        ON_CREDENTIAL_ADDED,
+        ON_PARTNER_REQUEST_COMPLETED,
+        ON_PARTNER_REQUEST_RECEIVED,
+        ON_PARTNER_ADDED,
+        ON_PARTNER_ACCEPTED,
+        ON_PARTNER_REMOVED,
+        ON_PRESENTATION_VERIFIED,
+        ON_PRESENTATION_PROVED,
+        ON_PRESENTATION_REQUEST_DECLINED,
+        ON_PRESENTATION_REQUEST_DELETED,
+        ON_PRESENTATION_REQUEST_RECEIVED,
+        ON_PRESENTATION_REQUEST_SENT,
+        TASK_ADDED,
+        TASK_COMPLETED
     }
 
-    public enum WebSocketMessageState {
-        RECEIVED,
-        UPDATED,
-        SENT
+    public static WebSocketMessageBody message(PartnerAPI partner, BasicMessage message) {
+        return notificationEvent(WebSocketMessageType.ON_MESSAGE_RECEIVED,
+                partner.getId(),
+                PartnerMessage.builder()
+                        .partnerId(partner.getId())
+                        .messageId(message.getMessageId())
+                        .content(message.getContent())
+                        .build(),
+                partner);
     }
 
-    public static WebSocketMessageBody partnerConnectionRequest(PartnerAPI partner) {
-        return WebSocketMessageBody.of(WebSocketMessage
-                .builder()
-                .type(WebSocketMessageType.CONNECTION_REQUEST)
-                .state(WebSocketMessageState.RECEIVED)
-                .linkId(partner.getId())
-                .info(partner)
-                .build());
-    }
-
-    public static WebSocketMessageBody partnerReceived(PartnerAPI partner) {
-        return WebSocketMessageBody.of(WebSocketMessage
-                .builder()
-                .type(WebSocketMessageType.PARTNER)
-                .state(WebSocketMessageState.RECEIVED)
-                .linkId(partner.getId())
-                .info(partner)
-                .build());
-    }
-
-    public static WebSocketMessageBody credentialReceived(AriesCredential credential) {
-        return WebSocketMessageBody.of(WebSocketMessage
-                .builder()
-                .type(WebSocketMessageType.CREDENTIAL)
-                .state(WebSocketMessageState.RECEIVED)
-                .linkId(credential.getId().toString())
-                .info(credential)
-                .build());
-    }
-
-    public static WebSocketMessageBody proof(
-            @NonNull WebSocketMessageState state,
-            @NonNull WebSocketMessageType type,
-            @NonNull AriesProofExchange proof) {
+    public static WebSocketMessageBody notificationEvent(@NonNull WebSocketMessageType type,
+            @Nullable String linkId,
+            @Nullable Object info,
+            @Nullable PartnerAPI partner) {
         return WebSocketMessageBody.of(WebSocketMessage
                 .builder()
                 .type(type)
-                .state(state)
-                .linkId(proof.getId().toString())
-                .info(proof)
+                .info(info)
+                .partner(partner)
+                .linkId(linkId)
                 .build());
     }
+
 }

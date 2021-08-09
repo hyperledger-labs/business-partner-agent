@@ -58,21 +58,11 @@ Vue.use(VueNativeSock, socketApi, {
         msg = JSON.parse(event.data);
         // method = 'dispatch';
         switch (msg.message.type) {
-          case "CONNECTION_REQUEST":
-            target = "newPartner";
+          case "ON_MESSAGE_RECEIVED":
+            target = "onMessageReceived";
             break;
-          case "PARTNER":
-            target = "newPartner";
-            break;
-          case "CREDENTIAL":
-            target = "newCredential";
-            break;
-          case "PROOF":
-            target = "newPresentation";
-            break;
-          case "PROOFREQUEST":
-            target = "newPresentationRequest";
-            break;
+          default:
+            target = "onNotification";
         }
       }
     }
@@ -103,8 +93,8 @@ Vue.prototype.$config = {
     Vue.prototype.$config.ledger = splitted[splitted.length - 2];
     if (result.data.ux) {
       Object.assign(Vue.prototype.$config.ux, result.data.ux);
+      console.log("...Configuration loaded");
     }
-    console.log("...Configuration loaded");
   }
 
   console.log("setting i18n...");
@@ -116,7 +106,9 @@ Vue.prototype.$config = {
 
   store.dispatch("loadSettings");
   store.dispatch("loadSchemas");
+  store.dispatch("loadPartners");
   store.dispatch("loadTags");
+  store.dispatch("loadProofTemplates");
 
   console.log("Create the Vue application");
   new Vue({

@@ -62,6 +62,26 @@
             <v-list-item-title>{{ $t("nav.dashboard") }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item link :to="{ name: 'Notifications' }">
+          <v-list-item-action>
+            <v-badge
+                overlap
+                bordered
+                :content="taskNotificationsCount"
+                :value="taskNotificationsCount"
+                color="red"
+                offset-x="10"
+                offset-y="10"
+            >
+              <v-icon>$vuetify.icons.notifications</v-icon>
+            </v-badge>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>{{
+              $t("nav.notifications")
+              }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
         <v-list-item link :to="{ name: 'PublicProfile' }">
           <v-list-item-action>
             <v-icon>$vuetify.icons.profile</v-icon>
@@ -73,8 +93,8 @@
             <v-badge
               overlap
               bordered
-              :content="newCredentialsCount"
-              :value="newCredentialsCount"
+              :content="credentialNotificationsCount"
+              :value="credentialNotificationsCount"
               color="red"
               offset-x="10"
               offset-y="10"
@@ -96,16 +116,28 @@
             }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+
+        <v-list-item link :to="{ name: 'ProofTemplates' }">
+          <v-list-item-action>
+            <v-icon>$vuetify.icons.proofTemplates</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>{{
+              $t("nav.proofTemplates")
+            }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
         <v-list-item link :to="{ name: 'Partners' }">
           <v-list-item-action>
             <v-badge
-              overlap
-              bordered
-              :content="newPartnerEventsCount"
-              :value="newPartnerEventsCount"
-              color="red"
-              offset-x="10"
-              offset-y="10"
+                overlap
+                bordered
+                :content="partnerNotificationsCount"
+                :value="partnerNotificationsCount"
+                color="red"
+                offset-x="10"
+                offset-y="10"
             >
               <v-icon>$vuetify.icons.partners</v-icon>
             </v-badge>
@@ -200,6 +232,28 @@
       <router-view
         v-if="!sessionDialog && !$store.getters.taaRequired"
       ></router-view>
+        <v-btn
+            color="primary"
+            fab
+            dark
+            bottom
+            right
+            fixed
+            @click="showChatWindow"
+        >
+          <v-icon v-if="chatWindow">$vuetify.icons.close</v-icon>
+          <v-badge v-else
+              overlap
+              bordered
+              :content="messagesReceivedCount"
+              :value="messagesReceivedCount"
+              color="red"
+              offset-x="10"
+              offset-y="10"
+          >
+            <v-icon>$vuetify.icons.chat</v-icon>
+          </v-badge>
+        </v-btn>
     </v-main>
 
     <v-snackbar
@@ -240,6 +294,10 @@
       </v-card>
     </v-dialog>
 
+    <div class="chat-window" :class="{opened: chatWindow, closed: !chatWindow}">
+     <BasicMessages />
+    </div>
+
     <v-footer v-if="showFooter" app>
       <v-col cols="12" class="text-center">
         <span v-if="imprintUrl" class="mr-4 subtitle-2"
@@ -260,9 +318,11 @@
 <script>
 import { EventBus } from "./main";
 import Taa from "./components/taa/TransactionAuthorAgreement";
+import BasicMessages from "@/components/messages/BasicMessages";
 
 export default {
   components: {
+    BasicMessages,
     "app-taa": Taa,
   },
   props: {
@@ -279,6 +339,8 @@ export default {
     snackbarMsg: "",
 
     sessionDialog: false,
+
+    chatWindow: false,
     // These are defaults, if no ux configuration passed in via $config.ux...
     ux: {
       header: {
@@ -341,13 +403,17 @@ export default {
     privacyPolicyUrl() {
       return this.$store.state.settings.dataPrivacyPolicy;
     },
-    newPartnerEventsCount() {
-      console.log("read newPartnerEventsCount");
-      console.log(this.$store.getters.newPartnerEventsCount);
-      return this.$store.getters.newPartnerEventsCount;
+    messagesReceivedCount() {
+      return this.$store.getters.messagesReceivedCount;
     },
-    newCredentialsCount() {
-      return this.$store.getters.newCredentialsCount;
+    credentialNotificationsCount() {
+      return this.$store.getters.credentialNotificationsCount;
+    },
+    partnerNotificationsCount() {
+      return this.$store.getters.partnerNotificationsCount;
+    },
+    taskNotificationsCount() {
+      return this.$store.getters.taskNotificationsCount;
     },
     getAgentName() {
       let bpaName = "Business Partner Agent";
@@ -433,6 +499,12 @@ export default {
       // logout must have get-allowed, get the browser to do all the logout redirects...
       location.href = `${this.$apiBaseUrl}/logout`;
     },
+    showChatWindow() {
+      // for now, reset the count if we open (we will look for new messages) or close (we already saw messages)
+      this.$store.commit("messagesReceivedSeen");
+      // now, open of close it
+      this.chatWindow = !this.chatWindow;
+    }
   },
 };
 </script>

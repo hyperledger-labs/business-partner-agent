@@ -29,9 +29,10 @@ import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.webhook.EventHandler;
+import org.hyperledger.bpa.config.acapy.AcaPyAuthFetcher;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import java.util.List;
 
 /**
  * Handles incoming aca-py webhook events
@@ -40,20 +41,16 @@ import javax.inject.Named;
 @Hidden
 @Tag(name = "Aries Webhook")
 @Controller
-@Secured(SecurityRule.IS_ANONYMOUS)
+@Secured(SecurityRule.IS_AUTHENTICATED)
 @ExecuteOn(TaskExecutors.IO)
 public class AriesWebhookController {
 
     public static final String WEBHOOK_CONTROLLER_PATH = "/log/topic";
 
     @Inject
-    @Named("aries")
-    EventHandler ariesEventHandler;
+    List<EventHandler> handlers;
 
-    @Inject
-    @Named("rules")
-    EventHandler rulesEventHandler;
-
+    @Secured({ AcaPyAuthFetcher.ROLE_ACA_PY })
     @Post(WEBHOOK_CONTROLLER_PATH + "/{eventType}")
     public void logEvent(
             @PathVariable String eventType,
@@ -61,7 +58,6 @@ public class AriesWebhookController {
 
         log.info("Webhook received, type: {}", eventType);
 
-        ariesEventHandler.handleEvent(eventType, eventBody);
-        rulesEventHandler.handleEvent(eventType, eventBody); // rules always run after
+        handlers.forEach(eventHandler -> eventHandler.handleEvent(eventType, eventBody));
     }
 }

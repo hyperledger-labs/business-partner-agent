@@ -128,7 +128,7 @@
         <dependency>
             <groupId>network.idu.acapy</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.7.0-pre.3.1</version>
+            <version>0.7.0</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>
@@ -396,7 +396,7 @@
                                 </goals>
                                 <configuration>
                                     <!-- See https://nodejs.org/en/download/ -->
-                                    <nodeVersion>v14.17.1</nodeVersion>
+                                    <nodeVersion>v14.17.3</nodeVersion>
                                     <npmVersion>6.14.13</npmVersion>
                                 </configuration>
                             </execution>
@@ -407,7 +407,7 @@
                                     <goal>npm</goal>
                                 </goals>
                                 <configuration>
-                                    <arguments>install</arguments>
+                                    <arguments>install --no-optional</arguments>
                                 </configuration>
                             </execution>
                             <execution>

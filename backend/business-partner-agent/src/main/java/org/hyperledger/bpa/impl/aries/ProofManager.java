@@ -17,8 +17,8 @@
  */
 package org.hyperledger.bpa.impl.aries;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
@@ -33,15 +33,19 @@ import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
+import org.hyperledger.bpa.api.exception.PresentationConstructionException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
-import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.notification.PresentationRequestDeletedEvent;
+import org.hyperledger.bpa.impl.notification.PresentationRequestSentEvent;
+import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.TimeUtil;
+import org.hyperledger.bpa.model.BPAProofTemplate;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
@@ -50,12 +54,14 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
@@ -90,64 +96,82 @@ public class ProofManager {
     @Inject
     MessageService messageService;
 
+    @Inject
+    ApplicationEventPublisher eventPublisher;
+
+    @Inject
+    ProofTemplateConversion proofTemplateConversion;
+
+    public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
+        try {
+            PresentProofRequest proofRequest = proofTemplateConversion.proofRequestViaVisitorFrom(partnerId,
+                    proofTemplate);
+            // the proofTemplate does not contain the proof request Non-Revocation value, if
+            // that was not part of the template and set during proof request creation.
+            ac.presentProofSendRequest(proofRequest).ifPresent(
+                    // using null for issuerId and schemaId because the template could have multiple
+                    // of each.
+                    persistProof(partnerId, null, null, proofTemplate));
+        } catch (IOException e) {
+            throw new NetworkException(ACA_PY_ERROR_MSG, e);
+        }
+    }
+
     // request proof from partner
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {
         try {
-            final Optional<Partner> p = partnerRepo.findById(partnerId);
-            if (p.isPresent()) {
-                // only when aries partner
-                if (p.get().hasConnectionId()) {
-                    if (req.isRequestBySchema()) {
-                        final Optional<Schema> schema = ac.schemasGetById(req.getRequestBySchema().getSchemaId());
-                        if (schema.isPresent()) {
-                            PresentProofRequest proofRequest = PresentProofRequestHelper
-                                    .buildForAllAttributes(p.get().getConnectionId(),
-                                            schema.get().getAttrNames(), req.buildRestrictions());
-                            ac.presentProofSendRequest(proofRequest).ifPresent(proof -> {
-                                final PartnerProof pp = PartnerProof
-                                        .builder()
-                                        .partnerId(partnerId)
-                                        .state(proof.getState())
-                                        .presentationExchangeId(proof.getPresentationExchangeId())
-                                        .role(proof.getRole())
-                                        .schemaId(schema.get().getId())
-                                        .threadId(proof.getThreadId())
-                                        .issuer(req.getFirstIssuerDid())
-                                        .build();
-                                pProofRepo.save(pp);
-                            });
-                        } else {
-                            throw new PartnerException("Could not find any schema on the ledger for id: "
-                                    + req.getRequestBySchema().getSchemaId());
-                        }
-                    } else {
-                        ac.presentProofSendRequest(req.getRequestRaw().toString()).ifPresent(exchange -> {
-                            final PartnerProof pp = PartnerProof
-                                    .builder()
-                                    .partnerId(partnerId)
-                                    .state(exchange.getState())
-                                    .presentationExchangeId(exchange.getPresentationExchangeId())
-                                    .role(exchange.getRole())
-                                    .build();
-                            pProofRepo.save(pp);
-                        });
-                    }
-                } else {
-                    throw new PartnerException("Partner has no aca-py connection");
-                }
+            final Partner partner = partnerRepo.findById(partnerId)
+                    .orElseThrow(() -> new PartnerException("Partner not found"));
+            if (!partner.hasConnectionId()) {
+                throw new PartnerException("Partner has no aca-py connection");
+            }
+            if (req.isRequestBySchema()) {
+                String schemaId = req.getRequestBySchema().getSchemaId();
+                final Schema schema = ac.schemasGetById(schemaId)
+                        .orElseThrow(() -> new PartnerException(
+                                "Could not find any schema on the ledger for id: " + schemaId));
+                PresentProofRequest proofRequest = PresentProofRequestHelper
+                        .buildForAllAttributes(partner.getConnectionId(),
+                                schema.getAttrNames(), req.buildRestrictions());
+                ac.presentProofSendRequest(proofRequest).ifPresent(
+                        persistProof(partnerId, req.getFirstIssuerDid(), schema.getId(), null));
             } else {
-                throw new PartnerException("Partner not found");
+                ac.presentProofSendRequest(req.getRequestRaw().toString()).ifPresent(
+                        persistProof(partnerId, null, null, null));
             }
         } catch (IOException e) {
             throw new NetworkException(ACA_PY_ERROR_MSG, e);
         }
     }
 
-    public void rejectPresentProofRequest(@NotNull PartnerProof proofEx, String explainString) {
+    private Consumer<PresentationExchangeRecord> persistProof(@NonNull UUID partnerId, @Nullable String issuerId,
+            @Nullable String schemaId, @Nullable BPAProofTemplate proofTemplate) {
+        return exchange -> {
+            final PartnerProof pp = PartnerProof
+                    .builder()
+                    .partnerId(partnerId)
+                    .state(exchange.getState())
+                    .presentationExchangeId(exchange.getPresentationExchangeId())
+                    .role(exchange.getRole())
+                    .threadId(exchange.getThreadId())
+                    .schemaId(schemaId)
+                    .proofTemplate(proofTemplate)
+                    .issuer(issuerId)
+                    .build();
+            pProofRepo.save(pp);
+            eventPublisher.publishEventAsync(PresentationRequestSentEvent.builder()
+                    .partnerProof(pp)
+                    .build());
+        };
+    }
+
+    public void declinePresentProofRequest(@NotNull PartnerProof proofEx, String explainString) {
         if (PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
             try {
                 sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString);
                 deletePartnerProof(proofEx.getId());
+                eventPublisher
+                        .publishEventAsync(PresentationRequestDeletedEvent.builder().partnerProof(proofEx).build());
             } catch (IOException e) {
                 throw new NetworkException(ACA_PY_ERROR_MSG, e);
             } catch (AriesException e) {
@@ -195,6 +219,7 @@ public class ProofManager {
                                 pProofRepo.findByPresentationExchangeId(
                                         presentationExchangeRecord.getPresentationExchangeId())
                                         .ifPresent(pp -> pProofRepo.updateProblemReport(pp.getId(), msg));
+                                throw new PresentationConstructionException(msg);
                             }
                         }, () -> log.error("Could not load matching credentials from aca-py"));
             } catch (IOException e) {
@@ -239,6 +264,10 @@ public class ProofManager {
                             .issuer(resolveIssuer(cred.getCredentialDefinitionId()))
                             .build();
                     pProofRepo.save(pp);
+
+                    eventPublisher.publishEventAsync(PresentationRequestSentEvent.builder()
+                            .partnerProof(pp)
+                            .build());
                 });
 
             } catch (IOException e) {
@@ -248,18 +277,13 @@ public class ProofManager {
     }
 
     public List<AriesProofExchange> listPartnerProofs(@NonNull UUID partnerId) {
-        List<AriesProofExchange> result = new ArrayList<>();
-        pProofRepo.findByPartnerIdOrderByRole(partnerId).forEach(p -> result.add(toApiProof(p)));
-        return result;
+        return pProofRepo.findByPartnerIdOrderByRole(partnerId).stream()
+                .map(conv::toAPIObject)
+                .collect(Collectors.toList());
     }
 
     public Optional<AriesProofExchange> getPartnerProofById(@NonNull UUID id) {
-        Optional<AriesProofExchange> result = Optional.empty();
-        final Optional<PartnerProof> proof = pProofRepo.findById(id);
-        if (proof.isPresent()) {
-            result = Optional.of(toApiProof(proof.get()));
-        }
-        return result;
+        return pProofRepo.findById(id).map(conv::toAPIObject);
     }
 
     public void deletePartnerProof(@NonNull UUID id) {
@@ -279,28 +303,12 @@ public class ProofManager {
         });
     }
 
-    void sendMessage(
-            @NonNull WebSocketMessageBody.WebSocketMessageState state,
-            @NonNull WebSocketMessageBody.WebSocketMessageType type,
-            @NonNull PartnerProof pp) {
-        messageService.sendMessage(WebSocketMessageBody.proof(state, type, toApiProof(pp)));
-    }
-
     private @Nullable String resolveIssuer(String credDefId) {
         String issuer = null;
         if (StringUtils.isNotEmpty(credDefId)) {
             issuer = didPrefix + AriesStringUtil.credDefIdGetDid(credDefId);
         }
         return issuer;
-    }
-
-    private AriesProofExchange toApiProof(@NonNull PartnerProof p) {
-        AriesProofExchange proof = AriesProofExchange.from(p,
-                p.getProof() != null ? conv.fromMap(p.getProof(), JsonNode.class) : null);
-        if (StringUtils.isNotEmpty(p.getSchemaId())) {
-            proof.setTypeLabel(schemaService.getSchemaLabel(p.getSchemaId()));
-        }
-        return proof;
     }
 
     private void sendPresentProofProblemReport(@NonNull String PresentationExchangeId, @NonNull String problemString)

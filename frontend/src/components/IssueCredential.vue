@@ -41,7 +41,7 @@
               v-for="field in credDef.fields"
               :key="field.type"
               :label="field.label"
-              placeholder
+              placeholder=""
               :rules="[(v) => !!v || 'Item is required']"
               :required="field.required"
               outlined
@@ -133,7 +133,7 @@ export default {
         const presp = await partnerService.listPartners();
         if (presp.status === 200) {
           this.partners = presp.data.map((p) => {
-            return { value: p.id, text: p.alias, ...p };
+            return { value: p.id, text: p.name, ...p };
           });
         }
       } else {

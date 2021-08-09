@@ -9,28 +9,82 @@
   <v-container>
     <v-card max-width="600" class="mx-auto" flat>
       <v-card-title class="grey--text text--darken-2">
-        Add new Business Partner
+        {{ $t("view.addPartnerbyURL.title") }}
       </v-card-title>
       <v-container>
         <v-row v-if="!invitationURL">
           <v-col cols="4">
-            <p class="grey--text text--darken-2 font-weight-medium">Set tags</p>
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title
+                  class="grey--text text--darken-2 font-weight-medium"
+                >
+                  {{ $t("view.addPartner.setName") }}
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
           </v-col>
-          <v-col cols="6">
-            <v-combobox
+          <v-col cols="8">
+            <v-text-field
+              label="Name"
+              placeholder=""
+              v-model="alias"
+              outlined
+              dense
+            >
+            </v-text-field>
+          </v-col>
+          <v-col cols="4">
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title
+                  class="grey--text text--darken-2 font-weight-medium"
+                >
+                  {{ $t("view.addPartner.setTags") }}
+                </v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-col>
+          <v-col cols="8">
+            <v-autocomplete
               multiple
               v-model="selectedTags"
               :items="tags"
               chips
               deletable-chips
             >
-            </v-combobox>
+            </v-autocomplete>
           </v-col>
-
           <v-col cols="12">
-            <v-bpa-button color="primary" @click="createInvitation()"
-              >Generate Invitation (QR Code)</v-bpa-button
-            >
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title
+                  class="grey--text text--darken-2 font-weight-medium"
+                  >{{ $t("view.addPartner.trustPing") }}</v-list-item-title
+                >
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-switch v-model="trustPing"></v-switch>
+              </v-list-item-action>
+            </v-list-item>
+          </v-col>
+          <v-col cols="12">
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title
+                  class="grey--text text--darken-2 font-weight-medium"
+                  >{{ $t("view.addPartnerbyURL.useOOB") }}</v-list-item-title
+                >
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-switch v-model="useOutOfBand"></v-switch>
+              </v-list-item-action>
+            </v-list-item>
+          </v-col>
+          <v-col cols="12">
+            <v-bpa-button color="primary" @click="createInvitation()">{{
+              $t("view.addPartnerbyURL.createInvitation")
+            }}</v-bpa-button>
           </v-col>
         </v-row>
         <v-row class="justify-center" v-else>
@@ -49,7 +103,7 @@
                       <span
                         class="grey--text text--darken-2 font-weight-medium"
                       >
-                        Invitation URL</span
+                        {{ $t("view.addPartnerbyURL.invitationURL") }}</span
                       >
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
@@ -77,6 +131,7 @@
 import { EventBus } from "../main";
 import QrcodeVue from "qrcode.vue";
 import VBpaButton from "@/components/BpaButton";
+import store from "@/store";
 export default {
   name: "AddPartnerbyURL",
   created: () => {},
@@ -94,6 +149,11 @@ export default {
       alias: "",
       partner: {},
       selectedTags: [],
+      // Disable trust ping for invitation to
+      // mobile wallets by default.
+      trustPing: false,
+      // Allow to use Out of Band format for invitation
+      useOutOfBand: false,
     };
   },
   computed: {
@@ -110,6 +170,8 @@ export default {
         tag: this.$store.state.tags.filter((tag) => {
           return this.selectedTags.includes(tag.name);
         }),
+        trustPing: this.trustPing,
+        useOutOfBand: this.useOutOfBand,
       };
       this.$axios
         .post(`${this.$apiBaseUrl}/partners/invitation`, partnerToAdd)
@@ -117,6 +179,7 @@ export default {
           this.invitationURL = result.data.invitationUrl;
 
           if (result.status === 200 || result.status === 201) {
+            store.dispatch("loadPartners");
             EventBus.$emit(
               "success",
               "Partner Invitation created successfully"
