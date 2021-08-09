@@ -25,6 +25,7 @@ import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.MyCredential;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
@@ -100,6 +101,21 @@ class MyCredentialRepositoryTest extends BaseTest {
         repo.save(createDummyCredential("other"));
 
         assertEquals(2, repo.countByStateEquals(CredentialExchangeState.CREDENTIAL_ACKED));
+    }
+
+    @Test
+    void testFindNotRevoked() {
+        String connectionId = UUID.randomUUID().toString();
+        repo.save(createDummyCredential(connectionId));
+        repo.save(createDummyCredential(connectionId).setType(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL));
+        repo.save(createDummyCredential(connectionId).setType(CredentialType.SCHEMA_BASED));
+        repo.save(createDummyCredential(connectionId).setType(CredentialType.SCHEMA_BASED).setRevoked(Boolean.FALSE));
+        repo.save(createDummyCredential(connectionId).setType(CredentialType.SCHEMA_BASED).setRevoked(Boolean.TRUE));
+        repo.save(createDummyCredential(connectionId).setType(CredentialType.SCHEMA_BASED).setReferent("1"));
+        repo.save(createDummyCredential(connectionId).setType(CredentialType.SCHEMA_BASED).setReferent("2")
+                .setRevoked(Boolean.FALSE));
+
+        Assertions.assertEquals(2, repo.findNotRevoked().size());
     }
 
     private static MyCredential createDummyCredential(String connectionId) {

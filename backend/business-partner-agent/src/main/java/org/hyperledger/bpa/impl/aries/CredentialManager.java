@@ -59,10 +59,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Singleton
@@ -296,21 +293,23 @@ public class CredentialManager {
         return issuer;
     }
 
+    /**
+     * Scheduled task that checks the revocation status of all credentials issued to this BPA.
+     */
     @Scheduled(fixedRate = "1m", initialDelay = "1m")
     public void checkRevocationStatus() {
         log.trace("Running revocation checks");
-        credRepo.findByRevokedIsNullOrRevoked(Boolean.FALSE).forEach(cred -> {
+        credRepo.findNotRevoked().forEach(cred -> {
             try {
                 log.trace("Running revocation check for credential exchange: {}", cred.getReferent());
-                // TODO more checks
-                ac.credentialRevoked(cred.getReferent()).ifPresent(isRevoked -> {
+                ac.credentialRevoked(Objects.requireNonNull(cred.getReferent())).ifPresent(isRevoked -> {
                     if (isRevoked.getRevoked() != null && isRevoked.getRevoked()) {
                         credRepo.updateRevoked(cred.getId(), Boolean.TRUE);
                         log.debug("Credential with referent id: {} has been revoked", cred.getReferent());
                     }
                 });
-            } catch (IOException e) {
-                log.error("aca-py is not available");
+            } catch (Exception e) {
+                log.error("Revocation check failed", e);
             }
         });
     }

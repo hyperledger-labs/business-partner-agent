@@ -61,7 +61,7 @@
         <v-icon v-if="item.revoked" title="credential revoked"
         >$vuetify.icons.revoked</v-icon
         >
-        <v-icon v-else color="green" title="not revoked"
+        <v-icon v-else title="credential valid" color="green"
         >$vuetify.icons.revoke</v-icon
         >
       </template>
