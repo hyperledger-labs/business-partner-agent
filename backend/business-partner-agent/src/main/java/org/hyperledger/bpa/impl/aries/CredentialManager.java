@@ -296,7 +296,7 @@ public class CredentialManager {
     /**
      * Scheduled task that checks the revocation status of all credentials issued to this BPA.
      */
-    @Scheduled(fixedRate = "1m", initialDelay = "1m")
+    @Scheduled(fixedRate = "5m", initialDelay = "1m")
     public void checkRevocationStatus() {
         log.trace("Running revocation checks");
         credRepo.findNotRevoked().forEach(cred -> {
