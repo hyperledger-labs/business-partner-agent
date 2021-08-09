@@ -295,8 +295,8 @@
       </v-card>
     </v-dialog>
 
-    <div class="chat-window" :class="{opened: chatWindow, closed: !chatWindow}">
-     <BasicMessages />
+    <div class="chat-window" :class="{opened: chatWindow, closed: !chatWindow}" style="z-index: 100">
+     <BasicMessages ref="basicMessages" />
     </div>
 
     <v-footer v-if="showFooter" app>
@@ -500,10 +500,13 @@ export default {
       // logout must have get-allowed, get the browser to do all the logout redirects...
       location.href = `${this.$apiBaseUrl}/logout`;
     },
-    showChatWindow() {
-      // for now, reset the count if we open (we will look for new messages) or close (we already saw messages)
-      //this.$store.commit("messagesReceivedSeen");
-      // now, open of close it
+    async showChatWindow() {
+      if (!this.chatWindow) {
+        // we are opening it...
+        // load the rooms first (may be new partners we haven't loaded)
+        await this.$refs.basicMessages.loadRooms();
+      }
+      // now, open or close it
       this.chatWindow = !this.chatWindow;
     }
   },

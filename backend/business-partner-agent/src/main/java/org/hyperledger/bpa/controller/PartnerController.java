@@ -33,8 +33,8 @@ import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.partner.*;
-import org.hyperledger.bpa.impl.ChatMessageEventHandler;
 import org.hyperledger.bpa.impl.ChatMessageManager;
+import org.hyperledger.bpa.impl.ChatMessageService;
 import org.hyperledger.bpa.impl.PartnerManager;
 import org.hyperledger.bpa.impl.activity.PartnerLookup;
 import org.hyperledger.bpa.impl.aries.ConnectionManager;
@@ -79,10 +79,10 @@ public class PartnerController {
     PartnerCredDefLookup credLookup;
 
     @Inject
-    ChatMessageEventHandler chatMessageEventHandler;
+    ChatMessageManager chatMessageManager;
 
     @Inject
-    ChatMessageManager chatMessageManager;
+    ChatMessageService chatMessageService;
 
     /**
      * Get known partners
@@ -386,7 +386,7 @@ public class PartnerController {
     public HttpResponse<Void> sendMessage(
             @PathVariable String id,
             @Body SendMessageRequest msg) {
-        chatMessageEventHandler.handleOutgoingMessage(id, msg.getContent());
+        chatMessageManager.sendMessage(id, msg.getContent());
         return HttpResponse.ok();
     }
 
@@ -399,7 +399,7 @@ public class PartnerController {
     @Get("/{id}/messages")
     public HttpResponse<List<ChatMessage>> getMessagesForPartner(
             @PathVariable String id) {
-        return HttpResponse.ok(chatMessageManager.getMessagesForPartner(id));
+        return HttpResponse.ok(chatMessageService.getMessagesForPartner(id));
     }
 
 }

@@ -90,7 +90,7 @@
         console.log("loadRooms()");
         this.roomsLoaded = false;
         this.rooms = [];
-
+        this.currentRoomId = null;
         const _rooms = [];
         const partners = await partnerService.listPartners();
         if (Array.isArray(partners.data)) {
@@ -131,7 +131,6 @@
         console.log(`fetchMessages(room = ${room.roomId}, options = ${options.reset})`);
         // don't set and use the component's roomId property, that fires too many reload room/message events.
         // just track the current room/partner id to auto-refresh if we get a new message while this room is open
-        this.currentRoomId = room.roomId;
         if (options && options.reset) {
           this.messagesLoaded = false;
           this.messages = [];
@@ -164,6 +163,7 @@
           // remove all of this partner/room message ids from the store...
           this.$store.commit("markMessagesSeen", room.roomId);
         }
+        this.currentRoomId = room.roomId;
       },
       // eslint-disable-next-line no-unused-vars
       async sendMessage({ content, roomId, file, replyMessage }) {

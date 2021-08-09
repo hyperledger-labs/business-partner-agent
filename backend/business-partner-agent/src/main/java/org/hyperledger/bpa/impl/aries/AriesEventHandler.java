@@ -27,7 +27,7 @@ import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.message.ProblemReport;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
-import org.hyperledger.bpa.impl.ChatMessageEventHandler;
+import org.hyperledger.bpa.impl.ChatMessageManager;
 import org.hyperledger.bpa.impl.IssuerManager;
 
 import javax.inject.Inject;
@@ -48,7 +48,7 @@ public class AriesEventHandler extends EventHandler {
 
     private final IssuerManager issuerMgr;
 
-    private final ChatMessageEventHandler chatMessageEventHandler;
+    private final ChatMessageManager chatMessageManager;
 
     @Inject
     public AriesEventHandler(
@@ -57,13 +57,13 @@ public class AriesEventHandler extends EventHandler {
             CredentialManager credMgmt,
             ProofEventHandler proofMgmt,
             IssuerManager issuerMgr,
-            ChatMessageEventHandler chatMessageEventHandler) {
+            ChatMessageManager chatMessageManager) {
         this.conMgmt = conMgmt;
         this.pingMgmt = pingMgmt;
         this.credMgmt = credMgmt;
         this.proofMgmt = proofMgmt;
         this.issuerMgr = issuerMgr;
-        this.chatMessageEventHandler = chatMessageEventHandler;
+        this.chatMessageManager = chatMessageManager;
     }
 
     @Override
@@ -123,7 +123,9 @@ public class AriesEventHandler extends EventHandler {
 
     @Override
     public void handleBasicMessage(BasicMessage message) {
-        chatMessageEventHandler.handleIncomingMessage(message);
+        // since basic message handling is so simple (only one way to handle it), let's
+        // the manager handle it.
+        chatMessageManager.handleIncomingMessage(message);
     }
 
     @Override

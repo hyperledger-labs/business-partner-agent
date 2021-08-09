@@ -35,11 +35,14 @@ import java.util.stream.Stream;
  * accept the different parts and store them in a context conserving way, to
  * build the {@link PresentProofRequest.ProofRequest} with {@link #getResult()}.
  * <p>
- * The call order of the visit methods does not matter.<p>
- * These methods are not  thread safe.<p>
+ * The call order of the visit methods does not matter.
+ * <p>
+ * These methods are not thread safe.
+ * <p>
  * Use one instance per {@link BPAProofTemplate}
  *
- * @see ProofTemplateConversion#proofRequestViaVisitorFrom for an example on how to use this class
+ * @see ProofTemplateConversion#proofRequestViaVisitorFrom for an example on how
+ *      to use this class
  */
 class ProofTemplateElementVisitor {
 

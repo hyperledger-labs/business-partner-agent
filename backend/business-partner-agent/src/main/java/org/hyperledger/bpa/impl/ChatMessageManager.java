@@ -20,15 +20,16 @@ package org.hyperledger.bpa.impl;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.aries.api.message.BasicMessage;
+import org.hyperledger.bpa.api.exception.NetworkException;
+import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.impl.aries.ConnectionManager;
 import org.hyperledger.bpa.model.ChatMessage;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.repository.ChatMessageRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -40,21 +41,78 @@ public class ChatMessageManager {
     PartnerRepository partnerRepo;
 
     @Inject
-    ChatMessageRepository chatMsgRepo;
-
-    @Inject
     ConnectionManager cm;
 
-    public List<ChatMessage> getMessagesForPartner(@NonNull String partnerId) {
-        return chatMsgRepo.findByPartnerIdOrderByCreatedAtAsc(UUID.fromString(partnerId));
+    @Inject
+    ChatMessageService chatMessageService;
+
+    @Inject
+    NotificationService notificationService;
+
+    public void handleIncomingMessage(@NonNull BasicMessage basicMessage) {
+        // if this was more complicated (ie many different states and roles), we would
+        // put this in it's own class.
+        // but since this is simple, we will place it with the other basic message/chat
+        // message logic.
+
+        // message coming in from aries...
+        // workflow:
+        // check for content
+        // check for partner
+        // all ok, then save it
+        // if saved, send notification to Frontend for new message
+        if (StringUtils.isNotEmpty(basicMessage.getContent())) {
+            // find the partner...
+            partnerRepo.findByConnectionId(basicMessage.getConnectionId()).ifPresentOrElse(p -> {
+                // great, we have a partner...
+                // save the message
+                try {
+                    ChatMessage chatMessage = chatMessageService.saveIncomingMessage(p, basicMessage.getContent());
+                    notificationService.newIncomingMessage(p, chatMessage);
+                } catch (Exception e) {
+                    log.error(
+                            "Error handling incoming basic message. Chat Message not saved. Partner ID = '%s', Connection ID = '%s', Message ID = '%s'",
+                            p.getId().toString(), basicMessage.getConnectionId(), basicMessage.getMessageId());
+                }
+            },
+                    () -> {
+                        log.error("Error handling incoming basic message. Partner not found for Connection ID = '%s'",
+                                basicMessage.getConnectionId());
+                    });
+        } else {
+            log.debug("Not persisting basic message. Message has no content. Connection ID = '%s', Message ID = '%s'",
+                    basicMessage.getConnectionId(), basicMessage.getMessageId());
+        }
     }
 
-    public ChatMessage saveIncomingMessage(@NonNull Partner partner, @NonNull String content) {
-        return chatMsgRepo.save(ChatMessage.builder().partner(partner).content(content).incoming(true).build());
-    }
+    public void sendMessage(@NonNull String partnerId, @NonNull String content) {
+        // want to send an outgoing message to a partner...
+        // workflow:
+        // get partner, check if we can send (connection id and aries support required)
+        // all ok, then send it via ARIES
+        // if sent, then we need to persist it
 
-    public ChatMessage saveOutgoingMessage(@NonNull Partner partner, @NonNull String content) {
-        return chatMsgRepo.save(ChatMessage.builder().partner(partner).content(content).incoming(false).build());
+        // since we are handling user initiated work, we need to throw exceptions if
+        // something doesn't work
+        // perhaps the user can fix it, but at least they will know what they expected
+        // to happen didn't happen.
+        partnerRepo.findById(UUID.fromString(partnerId)).ifPresentOrElse(p -> {
+            if (StringUtils.isNotEmpty(p.getConnectionId()) && p.getAriesSupport()) {
+                if (cm.sendMessage(p.getConnectionId(), content)) {
+                    chatMessageService.saveOutgoingMessage(p, content);
+                } else {
+                    throw new NetworkException("Could not send message to partner; Aries network issue.");
+                }
+            } else {
+                log.error(
+                        "Error handling outgoing chat message. Partner has no connection id or missing Aries Support. Partner ID = '%s', Connection ID = '%s'",
+                        partnerId, p.getConnectionId());
+                throw new PartnerException("Partner does not accept messages.");
+            }
+        },
+                () -> {
+                    log.error("Error handling outgoing chat message. Partner not found for ID = '%s'", partnerId);
+                    throw new PartnerException(String.format("Partner not found for ID = '%s'", partnerId));
+                });
     }
-
 }
