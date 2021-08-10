@@ -209,6 +209,7 @@ public class CredentialManager {
             myCred
                     .schemaId(ariesCred.getSchemaId())
                     .credentialDefinitionId(ariesCred.getCredentialDefinitionId())
+                    .revocable(StringUtils.isNotEmpty(ariesCred.getRevRegId()))
                     .typeLabel(schemaService.getSchemaLabel(ariesCred.getSchemaId()))
                     .credentialData(ariesCred.getAttrs());
             // TODO only for backwards compatibility, can be removed at some point
