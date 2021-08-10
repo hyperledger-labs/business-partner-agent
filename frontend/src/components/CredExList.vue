@@ -45,7 +45,8 @@
         <v-icon v-if="item.revocable && item.revoked" title="credential revoked"
         >$vuetify.icons.revoked</v-icon
         >
-        <v-icon v-else-if="item.revocable" color="green" title="revoke credential" @click.stop="revokeCredential(item.id)"
+        <v-icon v-else-if="item.revocable" color="green" title="revoke credential"
+                @click.stop="revokeCredential(item.id)" :disabled="revoked.includes(item.id)"
         >$vuetify.icons.revoke</v-icon
         >
         <span v-else>
@@ -122,6 +123,7 @@ export default {
     return {
       dialog: false,
       document: {},
+      revoked: []
     };
   },
   watch: {
@@ -145,6 +147,7 @@ export default {
       return this.isActiveFn(item);
     },
     revokeCredential(id) {
+      this.revoked.push(id);
       issuerService.revokeCredential(id);
     }
   },
