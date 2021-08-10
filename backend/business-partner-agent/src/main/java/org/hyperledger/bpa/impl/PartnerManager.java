@@ -77,9 +77,6 @@ public class PartnerManager {
     @Inject
     WebhookService webhook;
 
-    @Inject
-    ChatMessageService chatMessageService;
-
     public List<PartnerAPI> getPartners() {
         return StreamSupport.stream(repo.findAll().spliterator(), false)
                 .map(converter::toAPIObject)
@@ -104,7 +101,6 @@ public class PartnerManager {
         repo.findById(id).ifPresent(p -> {
             if (p.getConnectionId() != null) {
                 cm.removeConnection(p.getConnectionId());
-                chatMessageService.deletePartnerMessages(p);
             }
         });
         repo.deleteById(id);

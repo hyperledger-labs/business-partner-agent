@@ -57,7 +57,7 @@ public class ChatMessage {
     private Instant createdAt;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    public Long timestamp() {
+    public Long getCreatedAtTs() {
         return this.createdAt.toEpochMilli();
     }
 }

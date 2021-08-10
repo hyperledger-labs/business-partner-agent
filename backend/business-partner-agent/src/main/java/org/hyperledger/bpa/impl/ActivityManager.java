@@ -133,10 +133,6 @@ public class ActivityManager {
                 });
     }
 
-    public void deletePartnerActivities(@NonNull Partner partner) {
-        activityRepository.deleteByPartnerId(partner.getId());
-    }
-
     public void addPartnerAddedActivity(@NonNull Partner partner) {
         Optional<Activity> existing = activityRepository.findByLinkIdAndTypeAndRole(partner.getId(),
                 ActivityType.CONNECTION_REQUEST,

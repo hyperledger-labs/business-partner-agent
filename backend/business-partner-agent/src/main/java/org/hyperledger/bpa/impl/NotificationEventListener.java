@@ -139,8 +139,6 @@ public class NotificationEventListener {
                 null,
                 conv.toAPIObject(event.getPartner()));
         messageService.sendMessage(message);
-
-        activityManager.deletePartnerActivities(event.getPartner());
     }
 
     @EventListener

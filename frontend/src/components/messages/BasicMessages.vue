@@ -150,7 +150,7 @@
                 _id: msg.id,
                 content: msg.content,
                 senderId: msg.incoming ? msg.partner.id : CHAT_CURRENT_USERID,
-                timestamp: formatDateLong(msg.timestamp),
+                timestamp: formatDateLong(msg.createdAtTs),
                 seen: _seen,
               });
             }
