@@ -282,7 +282,7 @@ public class IssuerManager {
         Optional<Partner> dbPartner = partnerRepo.findByConnectionId(exchange.getConnectionId());
         if (dbCredDef.isPresent() && dbPartner.isPresent()) {
             BPACredentialExchange cex = BPACredentialExchange.builder()
-                    .type(CredentialType.SCHEMA_BASED)
+                    .type(CredentialType.INDY)
                     .schema(dbCredDef.get().getSchema())
                     .partner(dbPartner.get())
                     .credDef(dbCredDef.get())

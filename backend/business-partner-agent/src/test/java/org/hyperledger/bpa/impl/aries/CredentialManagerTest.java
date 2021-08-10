@@ -60,7 +60,7 @@ class CredentialManagerTest extends BaseTest {
     void testSaveNewCredential() {
         credRepo.save(MyCredential
                 .builder()
-                .type(CredentialType.SCHEMA_BASED)
+                .type(CredentialType.INDY)
                 .isPublic(Boolean.FALSE)
                 .connectionId("dummy")
                 .state(CredentialExchangeState.CREDENTIAL_ACKED)

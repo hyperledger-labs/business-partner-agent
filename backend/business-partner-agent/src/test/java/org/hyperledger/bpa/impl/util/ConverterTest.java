@@ -71,7 +71,7 @@ class ConverterTest extends BaseTest {
         assertEquals(3, partner.getCredential().size());
 
         PartnerAPI.PartnerCredential c1 = partner.getCredential().get(0);
-        assertEquals(CredentialType.SCHEMA_BASED, c1.getType());
+        assertEquals(CredentialType.INDY, c1.getType());
         assertEquals("did:sov:Ni2hE7fEHJ25xUBc7ZESf6", c1.getIssuer());
         assertFalse(c1.getIndyCredential());
         assertNotNull(c1.getTypeLabel());
@@ -82,7 +82,7 @@ class ConverterTest extends BaseTest {
         assertNotNull(c2.getTypeLabel());
 
         PartnerAPI.PartnerCredential c3 = partner.getCredential().get(2);
-        assertEquals(CredentialType.SCHEMA_BASED, c3.getType());
+        assertEquals(CredentialType.INDY, c3.getType());
         assertEquals("did:sov:M6Mbe3qx7vB4wpZF4sBRjt", c3.getIssuer());
         assertNotNull(c3.getTypeLabel());
         assertTrue(c3.getIndyCredential());

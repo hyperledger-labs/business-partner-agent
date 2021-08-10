@@ -111,7 +111,7 @@ public class CredentialManager {
         if (dbPartner.isPresent()) {
             final Optional<MyDocument> dbDoc = docRepo.findById(myDocId);
             if (dbDoc.isPresent()) {
-                if (!CredentialType.SCHEMA_BASED.equals(dbDoc.get().getType())) {
+                if (!CredentialType.INDY.equals(dbDoc.get().getType())) {
                     throw new PartnerException("Only documents that are based on a " +
                             "schema can be converted into a credential");
                 }
@@ -165,7 +165,7 @@ public class CredentialManager {
                     cred
                             .setReferent(credEx.getCredential().getReferent())
                             .setCredential(conv.toMap(credEx.getCredential()))
-                            .setType(CredentialType.SCHEMA_BASED)
+                            .setType(CredentialType.INDY)
                             .setState(credEx.getState())
                             .setIssuer(resolveIssuer(credEx.getCredential()))
                             .setIssuedAt(Instant.now())
@@ -295,7 +295,8 @@ public class CredentialManager {
     }
 
     /**
-     * Scheduled task that checks the revocation status of all credentials issued to this BPA.
+     * Scheduled task that checks the revocation status of all credentials issued to
+     * this BPA.
      */
     @Scheduled(fixedRate = "5m", initialDelay = "1m")
     public void checkRevocationStatus() {

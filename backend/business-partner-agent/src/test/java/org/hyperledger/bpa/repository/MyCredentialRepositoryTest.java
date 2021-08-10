@@ -54,7 +54,7 @@ class MyCredentialRepositoryTest extends BaseTest {
 
         MyCredential cred = MyCredential
                 .builder()
-                .type(CredentialType.SCHEMA_BASED)
+                .type(CredentialType.INDY)
                 .isPublic(Boolean.TRUE)
                 .connectionId("1")
                 .state(CredentialExchangeState.CREDENTIAL_ACKED)
@@ -108,11 +108,11 @@ class MyCredentialRepositoryTest extends BaseTest {
         String connectionId = UUID.randomUUID().toString();
         repo.save(createDummyCredential(connectionId));
         repo.save(createDummyCredential(connectionId).setType(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL));
-        repo.save(createDummyCredential(connectionId).setType(CredentialType.SCHEMA_BASED));
-        repo.save(createDummyCredential(connectionId).setType(CredentialType.SCHEMA_BASED).setRevoked(Boolean.FALSE));
-        repo.save(createDummyCredential(connectionId).setType(CredentialType.SCHEMA_BASED).setRevoked(Boolean.TRUE));
-        repo.save(createDummyCredential(connectionId).setType(CredentialType.SCHEMA_BASED).setReferent("1"));
-        repo.save(createDummyCredential(connectionId).setType(CredentialType.SCHEMA_BASED).setReferent("2")
+        repo.save(createDummyCredential(connectionId).setType(CredentialType.INDY));
+        repo.save(createDummyCredential(connectionId).setType(CredentialType.INDY).setRevoked(Boolean.FALSE));
+        repo.save(createDummyCredential(connectionId).setType(CredentialType.INDY).setRevoked(Boolean.TRUE));
+        repo.save(createDummyCredential(connectionId).setType(CredentialType.INDY).setReferent("1"));
+        repo.save(createDummyCredential(connectionId).setType(CredentialType.INDY).setReferent("2")
                 .setRevoked(Boolean.FALSE));
 
         Assertions.assertEquals(2, repo.findNotRevoked().size());

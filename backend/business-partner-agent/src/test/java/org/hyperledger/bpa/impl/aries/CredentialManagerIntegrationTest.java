@@ -94,7 +94,7 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
     private V1CredentialExchange createNewCredential() {
         credRepo.save(MyCredential
                 .builder()
-                .type(CredentialType.SCHEMA_BASED)
+                .type(CredentialType.INDY)
                 .isPublic(Boolean.FALSE)
                 .connectionId("dummy")
                 .state(CredentialExchangeState.CREDENTIAL_ISSUED)

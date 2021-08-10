@@ -12,7 +12,7 @@ export const loadSchemas = async ({ commit }) => {
       let schemas = result.data;
       schemas.map((schema) => {
         if ({}.hasOwnProperty.call(schema, "schemaId")) {
-          schema.type = CredentialTypes.SCHEMA_BASED.type;
+          schema.type = CredentialTypes.INDY.type;
         } else if (
           !{}.hasOwnProperty.call(schema, "schemaId") &&
           !{}.hasOwnProperty.call(schema, "type")
