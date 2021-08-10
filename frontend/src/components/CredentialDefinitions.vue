@@ -22,7 +22,7 @@
         <v-checkbox
           class="mt-1"
           label="Revocable"
-          v-model="entry.isSupportRevocation"
+          v-model="entry.supportRevocation"
           :disabled="!isTailsConfigured || !entry.isEdit"
           outlined
           dense
