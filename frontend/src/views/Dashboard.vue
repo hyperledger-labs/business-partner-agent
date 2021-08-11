@@ -125,21 +125,6 @@ export default {
           EventBus.$emit("error", e);
         });
     },
-    copyDid() {
-      let didEl = document.querySelector("#did");
-      didEl.select();
-      let successfull;
-      try {
-        successfull = document.execCommand("copy");
-      } catch (err) {
-        successfull = false;
-      }
-      successfull
-        ? EventBus.$emit("success", "DID copied")
-        : EventBus.$emit("error", "Can't copy DID");
-      didEl.blur();
-      window.getSelection().removeAllRanges();
-    },
   },
 };
 </script>
