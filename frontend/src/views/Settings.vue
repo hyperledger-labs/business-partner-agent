@@ -70,7 +70,7 @@
         <v-list-item-title class="grey--text text--darken-2 font-weight-medium"
           >Wallet DID
         </v-list-item-title>
-        <v-list-item-subtitle align="end" label="DID">
+        <v-list-item-subtitle align="end" id="did">
           {{ this.status.did }}
         </v-list-item-subtitle>
         <v-btn icon x-small @click="copyDid">
@@ -180,17 +180,21 @@ export default {
     },
     copyDid() {
       let didEl = document.querySelector("#did");
-      didEl.select();
-      let successfull;
+      const el = document.createElement("textarea");
+      el.value = didEl.value; //str is your string to copy
+      document.body.appendChild(el);
+      el.select();
+
+      let successful;
       try {
-        successfull = document.execCommand("copy");
+        successful = document.execCommand("copy");
       } catch (err) {
-        successfull = false;
+        successful = false;
       }
-      successfull
+      successful
         ? EventBus.$emit("success", "DID copied")
         : EventBus.$emit("error", "Can't copy DID");
-      didEl.blur();
+      document.body.removeChild(el);
       window.getSelection().removeAllRanges();
     },
   },
