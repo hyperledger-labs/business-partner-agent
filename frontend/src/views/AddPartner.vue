@@ -54,7 +54,7 @@
               label="Name"
               persistent-placeholder
               :placeholder=aliasPlaceholder
-              v-model="alias"
+              v-model.trim="alias"
               outlined
               dense
             >
