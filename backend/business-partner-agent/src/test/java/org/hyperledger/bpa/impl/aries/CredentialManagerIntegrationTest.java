@@ -18,16 +18,13 @@
 package org.hyperledger.bpa.impl.aries;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.RunWithAries;
-import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.client.CachingAriesClient;
 import org.hyperledger.bpa.impl.activity.CryptoManager;
 import org.hyperledger.bpa.impl.activity.Identity;
 import org.hyperledger.bpa.impl.activity.VPManager;
-import org.hyperledger.bpa.model.MyCredential;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

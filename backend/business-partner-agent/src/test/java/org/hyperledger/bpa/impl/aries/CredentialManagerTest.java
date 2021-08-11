@@ -19,15 +19,12 @@ package org.hyperledger.bpa.impl.aries;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.aries.api.credentials.Credential;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.BaseTest;
-import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.MyCredential;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
