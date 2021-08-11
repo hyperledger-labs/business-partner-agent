@@ -31,7 +31,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.controller.api.issuer.*;
-import org.hyperledger.bpa.impl.IssuerManager;
+import org.hyperledger.bpa.impl.IssuerCredentialManager;
 import org.hyperledger.bpa.impl.util.Converter;
 
 import javax.inject.Inject;
@@ -47,7 +47,7 @@ import java.util.UUID;
 public class IssuerController {
 
     @Inject
-    IssuerManager im;
+    IssuerCredentialManager im;
 
     @Inject
     Converter conv;

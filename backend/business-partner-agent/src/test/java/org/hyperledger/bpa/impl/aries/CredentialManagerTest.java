@@ -45,7 +45,7 @@ class CredentialManagerTest extends BaseTest {
     private static final String DID = "did:sov:M6Mbe3qx7vB4wpZF4sBRjt";
 
     @Inject
-    CredentialManager mgmt;
+    HolderCredentialManager mgmt;
 
     @Inject
     MyCredentialRepository credRepo;
@@ -67,7 +67,7 @@ class CredentialManagerTest extends BaseTest {
                 .threadId("cab34089-446c-411d-948e-9ed39ba6777f").build());
         final String ex = loader.load("files/credentialExchange.json");
         final V1CredentialExchange credEx = GsonConfig.defaultConfig().fromJson(ex, V1CredentialExchange.class);
-        mgmt.handleCredentialAcked(credEx);
+        mgmt.handleV1CredentialExchangeAcked(credEx);
         assertEquals(1, credRepo.count());
     }
 

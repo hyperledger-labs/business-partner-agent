@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CredentialManagerIntegrationTest extends RunWithAries {
 
     @Inject
-    CredentialManager mgmt;
+    HolderCredentialManager mgmt;
 
     @Inject
     MyCredentialRepository credRepo;
@@ -71,7 +71,7 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
     void testDeleteCredential() throws Exception {
         // create credential
         final V1CredentialExchange credEx = createNewCredential();
-        mgmt.handleCredentialAcked(credEx);
+        mgmt.handleV1CredentialExchangeAcked(credEx);
         assertEquals(1, credRepo.count());
         assertTrue(vpMgmt.getVerifiablePresentation().isEmpty());
 

@@ -62,7 +62,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
-public class IssuerManager {
+public class IssuerCredentialManager {
 
     @Inject
     AriesClient ac;
@@ -254,7 +254,7 @@ public class IssuerManager {
         return result;
     }
 
-    public void handleCredentialExchange(@NonNull V1CredentialExchange exchange) {
+    public void handleV1CredentialExchange(@NonNull V1CredentialExchange exchange) {
         switch (exchange.getState()) {
         case OFFER_SENT:
             // create a record...

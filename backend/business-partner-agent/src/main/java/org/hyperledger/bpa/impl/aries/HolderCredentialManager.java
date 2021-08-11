@@ -41,7 +41,6 @@ import org.hyperledger.bpa.api.aries.AriesCredential.AriesCredentialBuilder;
 import org.hyperledger.bpa.api.aries.ProfileVC;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
-import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.activity.VPManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
@@ -63,7 +62,7 @@ import java.util.*;
 
 @Slf4j
 @Singleton
-public class CredentialManager {
+public class HolderCredentialManager {
 
     @Value("${bpa.did.prefix}")
     String didPrefix;
@@ -85,9 +84,6 @@ public class CredentialManager {
     VPManager vpMgmt;
 
     @Inject
-    PartnerCredDefLookup credLookup;
-
-    @Inject
     SchemaService schemaService;
 
     @Inject
@@ -95,9 +91,6 @@ public class CredentialManager {
 
     @Inject
     ObjectMapper mapper;
-
-    @Inject
-    MessageService messageService;
 
     @Inject
     LabelStrategy labelStrategy;
@@ -142,42 +135,28 @@ public class CredentialManager {
         }
     }
 
-    // all other state changes that are not store or acked
-    public void handleCredentialEvent(V1CredentialExchange credEx) {
-        credRepo.findByThreadId(credEx.getThreadId())
-                .ifPresentOrElse(cred -> credRepo.updateState(cred.getId(), credEx.getState()), () -> {
-                    MyCredential dbCred = MyCredential
-                            .builder()
-                            .isPublic(Boolean.FALSE)
-                            .connectionId(credEx.getConnectionId())
-                            .state(credEx.getState())
-                            .threadId(credEx.getThreadId())
-                            .build();
-                    credRepo.save(dbCred);
-                });
-    }
-
     // credential, signed and stored in wallet
-    public void handleCredentialAcked(V1CredentialExchange credEx) {
-        credRepo.findByThreadId(credEx.getThreadId())
-                .ifPresentOrElse(cred -> {
-                    String label = labelStrategy.apply(credEx.getCredential());
-                    cred
-                            .setReferent(credEx.getCredential().getReferent())
-                            .setCredential(conv.toMap(credEx.getCredential()))
-                            .setType(CredentialType.INDY)
-                            .setState(credEx.getState())
-                            .setIssuer(resolveIssuer(credEx.getCredential()))
-                            .setIssuedAt(Instant.now())
-                            .setLabel(label);
-                    MyCredential updated = credRepo.update(cred);
-                    AriesCredential ariesCredential = buildAriesCredential(updated);
-                    eventPublisher.publishEventAsync(CredentialAddedEvent.builder()
-                            .credential(ariesCredential)
-                            .credentialExchange(credEx)
-                            .build());
-
-                }, () -> log.error("Received credential without matching thread id, credential is not stored."));
+    public void handleV1CredentialExchangeAcked(V1CredentialExchange credEx) {
+        String label = labelStrategy.apply(credEx.getCredential());
+        MyCredential dbCred = MyCredential
+                .builder()
+                .isPublic(Boolean.FALSE)
+                .connectionId(credEx.getConnectionId())
+                .threadId(credEx.getThreadId())
+                .referent(credEx.getCredential().getReferent())
+                .credential(conv.toMap(credEx.getCredential()))
+                .type(CredentialType.INDY)
+                .state(credEx.getState())
+                .issuer(resolveIssuer(credEx.getCredential()))
+                .issuedAt(Instant.now())
+                .label(label)
+                .build();
+        MyCredential updated = credRepo.save(dbCred);
+        AriesCredential ariesCredential = buildAriesCredential(updated);
+        eventPublisher.publishEventAsync(CredentialAddedEvent.builder()
+                .credential(ariesCredential)
+                .credentialExchange(credEx)
+                .build());
     }
 
     public Optional<MyCredential> toggleVisibility(UUID id) {
