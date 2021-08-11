@@ -181,7 +181,7 @@ export default {
     copyDid() {
       let didEl = document.querySelector("#did");
       const el = document.createElement("textarea");
-      el.value = didEl.value; //str is your string to copy
+      el.value = didEl.innerHTML.trim();
       document.body.appendChild(el);
       el.select();
 
