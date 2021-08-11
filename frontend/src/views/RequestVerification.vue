@@ -71,10 +71,10 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
+import { EventBus } from "@/main";
 import PartnerList from "@/components/PartnerList";
 import VBpaButton from "@/components/BpaButton";
-import { getPartnerState } from "../utils/partnerUtils";
+import { getPartnerState } from "@/utils/partnerUtils";
 import {PartnerStates} from "@/constants";
 
 export default {
@@ -158,7 +158,4 @@ export default {
   background-color: #fafafa;
 }
 
-.bg-light-2 {
-  background-color: #ececec;
-}
 </style>
