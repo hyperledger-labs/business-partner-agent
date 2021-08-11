@@ -52,7 +52,8 @@
           <v-col cols="8">
             <v-text-field
               label="Name"
-              placeholder=""
+              persistent-placeholder
+              :placeholder=aliasPlaceholder
               v-model="alias"
               outlined
               dense
@@ -88,20 +89,23 @@
           </v-list-item>
         </v-row>
 
-        <Profile v-if="partnerLoaded" v-bind:partner="partner" />
+      <Profile v-if="partnerLoaded" v-bind:partner="partner"/>
       </v-container>
       <v-card-actions>
         <v-layout justify-space-between>
           <v-bpa-button color="secondary" to="/app/partners">
-            {{ $t("button.cancel") }}</v-bpa-button
+            {{ $t("button.cancel") }}
+          </v-bpa-button
           >
 
           <v-bpa-button v-if="!partnerLoaded" color="primary" @click="lookup()">
-            {{ $t("view.addPartner.lookupPartnerBtnLabel") }}</v-bpa-button
+            {{ $t("view.addPartner.lookupPartnerBtnLabel") }}
+          </v-bpa-button
           >
           <v-bpa-button v-else color="primary" @click="addPartner()">{{
-            $t("view.addPartner.addPartnerBtnLabel")
-          }}</v-bpa-button>
+              $t("view.addPartner.addPartnerBtnLabel")
+            }}
+          </v-bpa-button>
         </v-layout>
       </v-card-actions>
     </v-card>
@@ -110,9 +114,10 @@
 
 <script>
 import Profile from "@/components/Profile";
-import { EventBus } from "../main";
+import {EventBus} from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
+
 export default {
   name: "AddPartner",
   components: {
@@ -127,6 +132,7 @@ export default {
       msg: "",
       did: "",
       alias: "",
+      aliasPlaceholder: "",
       partner: {},
       search: "",
       selectedTags: [],
@@ -156,7 +162,7 @@ export default {
             let partner = result.data;
             if ({}.hasOwnProperty.call(partner, "credential")) {
               this.partner = partner;
-              this.alias = partner.name;
+              this.aliasPlaceholder = partner.name;
               if ({}.hasOwnProperty.call(partner, "credential"))
                 this.partnerLoaded = true;
             } else if (partner.ariesSupport) {
