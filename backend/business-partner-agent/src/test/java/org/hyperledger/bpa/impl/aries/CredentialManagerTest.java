@@ -58,13 +58,6 @@ class CredentialManagerTest extends BaseTest {
 
     @Test
     void testSaveNewCredential() {
-        credRepo.save(MyCredential
-                .builder()
-                .type(CredentialType.INDY)
-                .isPublic(Boolean.FALSE)
-                .connectionId("dummy")
-                .state(CredentialExchangeState.CREDENTIAL_ACKED)
-                .threadId("cab34089-446c-411d-948e-9ed39ba6777f").build());
         final String ex = loader.load("files/credentialExchange.json");
         final V1CredentialExchange credEx = GsonConfig.defaultConfig().fromJson(ex, V1CredentialExchange.class);
         mgmt.handleV1CredentialExchangeAcked(credEx);

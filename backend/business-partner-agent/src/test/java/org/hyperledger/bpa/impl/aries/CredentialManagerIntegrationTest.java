@@ -92,13 +92,6 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
     }
 
     private V1CredentialExchange createNewCredential() {
-        credRepo.save(MyCredential
-                .builder()
-                .type(CredentialType.INDY)
-                .isPublic(Boolean.FALSE)
-                .connectionId("dummy")
-                .state(CredentialExchangeState.CREDENTIAL_ISSUED)
-                .threadId("cab34089-446c-411d-948e-9ed39ba6777f").build());
         final String ex = loader.load("files/credentialExchange.json");
         return GsonConfig.defaultConfig().fromJson(ex, V1CredentialExchange.class);
     }

@@ -100,7 +100,7 @@ public class AriesEventHandler extends EventHandler {
                     credMgmt.handleV1CredentialExchangeAcked(v1CredEx);
                 }
             }
-        // issuer events
+            // issuer events
         } else if (CredentialExchangeRole.ISSUER.equals(v1CredEx.getRole())) {
             synchronized (issuerMgr) {
                 issuerMgr.handleV1CredentialExchange(v1CredEx);
