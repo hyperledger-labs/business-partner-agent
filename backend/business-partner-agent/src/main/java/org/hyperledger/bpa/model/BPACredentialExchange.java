@@ -89,4 +89,15 @@ public class BPACredentialExchange {
 
     private Instant updatedAt;
 
+    // revocation - link to issued credential
+    /** credential revocation identifier */
+    @Nullable
+    private String credRevId;
+    /** revocation registry identifier */
+    @Nullable
+    private String revRegId;
+    /** if the credential has been revoked */
+    @Nullable
+    private Boolean revoked;
+
 }

@@ -42,7 +42,7 @@
         <v-text-field
           v-if="intDoc.issuedAt"
           label="Issued at"
-          :placeholder="
+          :value="
             $options.filters.moment(intDoc.issuedAt, 'YYYY-MM-DD HH:mm')
           "
           disabled

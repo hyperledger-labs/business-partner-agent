@@ -18,9 +18,6 @@ import Vue from "vue";
 export function appAxios(timeout = 0) {
   const axiosOptions = {
     timeout: timeout,
-    params: {
-      t: new Date().getTime()
-    }
   };
   if (Vue.prototype.$config) {
     // any other options we can set here?

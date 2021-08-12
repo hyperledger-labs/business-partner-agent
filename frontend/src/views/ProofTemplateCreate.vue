@@ -364,7 +364,7 @@ export default {
   mounted() {
     // load schemas
     this.schemas = this.$store.getters.getSchemas.filter(
-      (schema) => schema.type === "SCHEMA_BASED"
+      (schema) => schema.type === "INDY"
     );
 
     // load condition operators (>, <, ==, etc)

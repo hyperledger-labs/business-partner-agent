@@ -36,7 +36,7 @@ import org.hyperledger.bpa.controller.api.partner.*;
 import org.hyperledger.bpa.impl.PartnerManager;
 import org.hyperledger.bpa.impl.activity.PartnerLookup;
 import org.hyperledger.bpa.impl.aries.ConnectionManager;
-import org.hyperledger.bpa.impl.aries.CredentialManager;
+import org.hyperledger.bpa.impl.aries.HolderCredentialManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.ProofManager;
 import org.hyperledger.bpa.model.PartnerProof;
@@ -61,7 +61,7 @@ public class PartnerController {
     PartnerLookup partnerLookup;
 
     @Inject
-    CredentialManager credM;
+    HolderCredentialManager credM;
 
     @Inject
     ProofManager proofM;

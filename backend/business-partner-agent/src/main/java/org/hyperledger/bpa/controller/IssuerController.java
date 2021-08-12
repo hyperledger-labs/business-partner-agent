@@ -31,7 +31,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.controller.api.issuer.*;
-import org.hyperledger.bpa.impl.IssuerManager;
+import org.hyperledger.bpa.impl.IssuerCredentialManager;
 import org.hyperledger.bpa.impl.util.Converter;
 
 import javax.inject.Inject;
@@ -47,7 +47,7 @@ import java.util.UUID;
 public class IssuerController {
 
     @Inject
-    IssuerManager im;
+    IssuerCredentialManager im;
 
     @Inject
     Converter conv;
@@ -151,6 +151,21 @@ public class IssuerController {
             @Parameter(description = "issuer or holder") @Nullable @QueryValue CredentialExchangeRole role,
             @Parameter(description = "partner id") @Nullable @QueryValue String partnerId) {
         return HttpResponse.ok(im.listCredentialExchanges(role, partnerId != null ? UUID.fromString(partnerId) : null));
+    }
+
+    /**
+     * Revoke an issued credential
+     * 
+     * @param id credential exchange id
+     * @return {@link HttpResponse}
+     */
+    @Post("/exchanges/{id}/revoke")
+    public HttpResponse<CredEx> revokeCredential(@PathVariable UUID id) {
+        Optional<CredEx> credEx = im.revokeCredentialExchange(id);
+        if (credEx.isPresent()) {
+            return HttpResponse.ok(credEx.get());
+        }
+        return HttpResponse.notFound();
     }
 
 }

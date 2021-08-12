@@ -38,7 +38,7 @@ public class CredentialTestUtils {
                 .type(credType)
                 .documentData(jsonNode)
                 .isPublic(isPublic)
-                .schemaId(CredentialType.SCHEMA_BASED.equals(credType) ? "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
+                .schemaId(CredentialType.INDY.equals(credType) ? "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
                         : null)
                 .build();
     }

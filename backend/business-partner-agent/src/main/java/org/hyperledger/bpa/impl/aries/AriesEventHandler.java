@@ -27,7 +27,7 @@ import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.message.ProblemReport;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
-import org.hyperledger.bpa.impl.IssuerManager;
+import org.hyperledger.bpa.impl.IssuerCredentialManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -41,19 +41,19 @@ public class AriesEventHandler extends EventHandler {
 
     private final Optional<PingManager> pingMgmt;
 
-    private final CredentialManager credMgmt;
+    private final HolderCredentialManager credMgmt;
 
     private final ProofEventHandler proofMgmt;
 
-    private final IssuerManager issuerMgr;
+    private final IssuerCredentialManager issuerMgr;
 
     @Inject
     public AriesEventHandler(
             ConnectionManager conMgmt,
             Optional<PingManager> pingMgmt,
-            CredentialManager credMgmt,
+            HolderCredentialManager credMgmt,
             ProofEventHandler proofMgmt,
-            IssuerManager issuerMgr) {
+            IssuerCredentialManager issuerMgr) {
         this.conMgmt = conMgmt;
         this.pingMgmt = pingMgmt;
         this.credMgmt = credMgmt;
@@ -91,20 +91,19 @@ public class AriesEventHandler extends EventHandler {
     }
 
     @Override
-    public void handleCredential(V1CredentialExchange credential) {
-        log.debug("Issue Credential Event: {}", credential);
-        // holder events, because I could also be an issuer
-        if (CredentialExchangeRole.HOLDER.equals(credential.getRole())) {
+    public void handleCredential(V1CredentialExchange v1CredEx) {
+        log.debug("Credential Event: {}", v1CredEx);
+        // holder events
+        if (CredentialExchangeRole.HOLDER.equals(v1CredEx.getRole())) {
             synchronized (credMgmt) {
-                if (CredentialExchangeState.CREDENTIAL_ACKED.equals(credential.getState())) {
-                    credMgmt.handleCredentialAcked(credential);
-                } else {
-                    credMgmt.handleCredentialEvent(credential);
+                if (CredentialExchangeState.CREDENTIAL_ACKED.equals(v1CredEx.getState())) {
+                    credMgmt.handleV1CredentialExchangeAcked(v1CredEx);
                 }
             }
-        } else if (CredentialExchangeRole.ISSUER.equals(credential.getRole())) {
+            // issuer events
+        } else if (CredentialExchangeRole.ISSUER.equals(v1CredEx.getRole())) {
             synchronized (issuerMgr) {
-                issuerMgr.handleCredentialExchange(credential);
+                issuerMgr.handleV1CredentialExchange(v1CredEx);
             }
         }
     }

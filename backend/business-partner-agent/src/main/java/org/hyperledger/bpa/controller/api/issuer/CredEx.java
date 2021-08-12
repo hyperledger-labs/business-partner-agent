@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
@@ -55,6 +56,8 @@ public class CredEx {
     private String threadId;
     private String credentialExchangeId;
     private String displayText;
+    private Boolean revoked;
+    private Boolean revocable;
 
     public static CredEx from(BPACredentialExchange db) {
         SchemaAPI schemaAPI = SchemaAPI.from(db.getSchema());
@@ -78,6 +81,8 @@ public class CredEx {
                 .threadId(db.getThreadId())
                 .credentialExchangeId(db.getCredentialExchangeId())
                 .displayText(displayText)
+                .revoked(db.getRevoked())
+                .revocable(StringUtils.isNotEmpty(db.getRevRegId()))
                 .build();
     }
 }
