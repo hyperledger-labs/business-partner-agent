@@ -25,9 +25,12 @@ micronaut:
           client-id: ${BPA_KEYCLOAK_CLIENT_ID:}
           client-secret: ${BPA_KEYCLOAK_CLIENT_SECRET:}
           scopes: ${BPA_KEYCLOAK_SCOPES:openid}
+          vcauthn:
+            pres_req_conf_id:  ${BPA_KEYCLOAK_VCAUTHN_PRES_REQ_CONF_ID:}
           openid:
             issuer: ${BPA_KEYCLOAK_ISSUER:}
             end-session:
               url: ${BPA_KEYCLOAK_ENDSESSION_URL:}
             authorization:
               response-mode: query
+              
