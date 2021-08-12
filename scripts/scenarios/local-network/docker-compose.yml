@@ -6,7 +6,7 @@ services:
   bpa1:
     image: ghcr.io/hyperledger-labs/business-partner-agent:local
     build:
-      context: ../..
+      context: ../../..
       dockerfile: Dockerfile
     depends_on:
       - bpa-agent1
@@ -89,7 +89,7 @@ services:
 #######
   bpa2:
     build:
-      context: ../..
+      context: ../../..
       dockerfile: Dockerfile
     depends_on:
       -  bpa-agent2
