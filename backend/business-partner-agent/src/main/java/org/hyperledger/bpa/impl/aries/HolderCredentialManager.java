@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.scheduling.annotation.Scheduled;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,6 @@ import org.hyperledger.bpa.api.aries.AriesCredential.AriesCredentialBuilder;
 import org.hyperledger.bpa.api.aries.ProfileVC;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
-import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.activity.VPManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
@@ -58,14 +58,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Singleton
-public class CredentialManager {
+public class HolderCredentialManager {
 
     @Value("${bpa.did.prefix}")
     String didPrefix;
@@ -87,9 +84,6 @@ public class CredentialManager {
     VPManager vpMgmt;
 
     @Inject
-    PartnerCredDefLookup credLookup;
-
-    @Inject
     SchemaService schemaService;
 
     @Inject
@@ -97,9 +91,6 @@ public class CredentialManager {
 
     @Inject
     ObjectMapper mapper;
-
-    @Inject
-    MessageService messageService;
 
     @Inject
     LabelStrategy labelStrategy;
@@ -113,7 +104,7 @@ public class CredentialManager {
         if (dbPartner.isPresent()) {
             final Optional<MyDocument> dbDoc = docRepo.findById(myDocId);
             if (dbDoc.isPresent()) {
-                if (!CredentialType.SCHEMA_BASED.equals(dbDoc.get().getType())) {
+                if (!CredentialType.INDY.equals(dbDoc.get().getType())) {
                     throw new PartnerException("Only documents that are based on a " +
                             "schema can be converted into a credential");
                 }
@@ -144,42 +135,28 @@ public class CredentialManager {
         }
     }
 
-    // all other state changes that are not store or acked
-    public void handleCredentialEvent(V1CredentialExchange credEx) {
-        credRepo.findByThreadId(credEx.getThreadId())
-                .ifPresentOrElse(cred -> credRepo.updateState(cred.getId(), credEx.getState()), () -> {
-                    MyCredential dbCred = MyCredential
-                            .builder()
-                            .isPublic(Boolean.FALSE)
-                            .connectionId(credEx.getConnectionId())
-                            .state(credEx.getState())
-                            .threadId(credEx.getThreadId())
-                            .build();
-                    credRepo.save(dbCred);
-                });
-    }
-
     // credential, signed and stored in wallet
-    public void handleCredentialAcked(V1CredentialExchange credEx) {
-        credRepo.findByThreadId(credEx.getThreadId())
-                .ifPresentOrElse(cred -> {
-                    String label = labelStrategy.apply(credEx.getCredential());
-                    cred
-                            .setReferent(credEx.getCredential().getReferent())
-                            .setCredential(conv.toMap(credEx.getCredential()))
-                            .setType(CredentialType.SCHEMA_BASED)
-                            .setState(credEx.getState())
-                            .setIssuer(resolveIssuer(credEx.getCredential()))
-                            .setIssuedAt(Instant.now())
-                            .setLabel(label);
-                    MyCredential updated = credRepo.update(cred);
-                    AriesCredential ariesCredential = buildAriesCredential(updated);
-                    eventPublisher.publishEventAsync(CredentialAddedEvent.builder()
-                            .credential(ariesCredential)
-                            .credentialExchange(credEx)
-                            .build());
-
-                }, () -> log.error("Received credential without matching thread id, credential is not stored."));
+    public void handleV1CredentialExchangeAcked(V1CredentialExchange credEx) {
+        String label = labelStrategy.apply(credEx.getCredential());
+        MyCredential dbCred = MyCredential
+                .builder()
+                .isPublic(Boolean.FALSE)
+                .connectionId(credEx.getConnectionId())
+                .threadId(credEx.getThreadId())
+                .referent(credEx.getCredential().getReferent())
+                .credential(conv.toMap(credEx.getCredential()))
+                .type(CredentialType.INDY)
+                .state(credEx.getState())
+                .issuer(resolveIssuer(credEx.getCredential()))
+                .issuedAt(Instant.now())
+                .label(label)
+                .build();
+        MyCredential updated = credRepo.save(dbCred);
+        AriesCredential ariesCredential = buildAriesCredential(updated);
+        eventPublisher.publishEventAsync(CredentialAddedEvent.builder()
+                .credential(ariesCredential)
+                .credentialExchange(credEx)
+                .build());
     }
 
     public Optional<MyCredential> toggleVisibility(UUID id) {
@@ -211,6 +188,7 @@ public class CredentialManager {
             myCred
                     .schemaId(ariesCred.getSchemaId())
                     .credentialDefinitionId(ariesCred.getCredentialDefinitionId())
+                    .revocable(StringUtils.isNotEmpty(ariesCred.getRevRegId()))
                     .typeLabel(schemaService.getSchemaLabel(ariesCred.getSchemaId()))
                     .credentialData(ariesCred.getAttrs());
             // TODO only for backwards compatibility, can be removed at some point
@@ -293,5 +271,27 @@ public class CredentialManager {
             }
         }
         return issuer;
+    }
+
+    /**
+     * Scheduled task that checks the revocation status of all credentials issued to
+     * this BPA.
+     */
+    @Scheduled(fixedRate = "5m", initialDelay = "1m")
+    public void checkRevocationStatus() {
+        log.trace("Running revocation checks");
+        credRepo.findNotRevoked().forEach(cred -> {
+            try {
+                log.trace("Running revocation check for credential exchange: {}", cred.getReferent());
+                ac.credentialRevoked(Objects.requireNonNull(cred.getReferent())).ifPresent(isRevoked -> {
+                    if (isRevoked.getRevoked() != null && isRevoked.getRevoked()) {
+                        credRepo.updateRevoked(cred.getId(), Boolean.TRUE);
+                        log.debug("Credential with referent id: {} has been revoked", cred.getReferent());
+                    }
+                });
+            } catch (Exception e) {
+                log.error("Revocation check failed", e);
+            }
+        });
     }
 }

@@ -15,16 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.api.aries;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+package org.hyperledger.bpa.impl.verification.prooftemplates;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class BankAccountVC {
-    private String id;
-    private BankAccount bankAccount;
+import javax.validation.Constraint;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = {})
+public @interface ValidBPASchemaId {
+    String MESSAGE_TEMPLATE = "Schema id invalid: '{validatedValue}' You have to use the schema.id instead of the schema.schemaId";
+
+    String message() default MESSAGE_TEMPLATE;
 }

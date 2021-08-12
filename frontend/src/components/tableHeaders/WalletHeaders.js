@@ -24,9 +24,13 @@ export const credHeaders = [
     value: "issuedAt",
   },
   {
+    text: "Revocation",
+    value: "revoked",
+  },
+  {
     text: "Public",
     value: "isPublic",
-  },
+  }
 ];
 
 export const docHeaders = [

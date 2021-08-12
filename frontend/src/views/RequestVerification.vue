@@ -71,10 +71,11 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
+import { EventBus } from "@/main";
 import PartnerList from "@/components/PartnerList";
 import VBpaButton from "@/components/BpaButton";
-// import { CredentialTypes } from "../constants";
+import { getPartnerState } from "@/utils/partnerUtils";
+import {PartnerStates} from "@/constants";
 
 export default {
   name: "RequestVerification",
@@ -100,6 +101,7 @@ export default {
       isReady: false,
       attentionPartnerStateDialog: false,
       partner: {},
+      getPartnerState: getPartnerState
     };
   },
   computed: {},
@@ -108,10 +110,8 @@ export default {
       if (this.$refs.partnerList.selected.length === 1) {
         if (this.$refs.partnerList.selected[0].id) {
           this.partner = this.$refs.partnerList.selected[0];
-
           if (
-            this.partner.state === "response" ||
-            this.partner.state === "active"
+              this.getPartnerState(this.partner) === PartnerStates.ACTIVE_OR_RESPONSE
           ) {
             this.submitRequest();
           } else {
@@ -158,7 +158,4 @@ export default {
   background-color: #fafafa;
 }
 
-.bg-light-2 {
-  background-color: #ececec;
-}
 </style>

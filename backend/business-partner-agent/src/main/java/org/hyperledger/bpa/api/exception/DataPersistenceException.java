@@ -15,18 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.impl.notification;
+package org.hyperledger.bpa.api.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hyperledger.aries.api.message.BasicMessage;
+public class DataPersistenceException extends RuntimeException {
+    public DataPersistenceException() {
+    }
 
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-public class BasicMessageReceivedEvent {
-    private BasicMessage message;
+    public DataPersistenceException(String message) {
+        super(message);
+    }
+
+    public DataPersistenceException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public DataPersistenceException(Throwable cause) {
+        super(cause);
+    }
 }

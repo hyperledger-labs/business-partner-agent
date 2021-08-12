@@ -32,6 +32,8 @@ import {
   mdiClockTimeThreeOutline,
   mdiContentSave,
   mdiMessageText,
+  mdiBook,
+  mdiBookRemove
 } from "@mdi/js";
 
 Vue.use(Vuetify);
@@ -74,12 +76,15 @@ export default new Vuetify({
       newMessage: mdiShapePolygonPlus,
       qrCode: mdiQrcode,
       credentialManagement: "fas fa-file-signature",
+      proofTemplates: "fas fa-clone",
       proofRequests: "fas fa-exchange-alt",
       connectionAlert: mdiAlertCircleOutline,
       connectionWaiting: mdiClockTimeThreeOutline,
       cancel: "fas fa-times-circle",
       save: mdiContentSave,
-      chat: mdiMessageText
+      chat: mdiMessageText,
+      revoke: mdiBook,
+      revoked: mdiBookRemove
     },
   },
   theme: {

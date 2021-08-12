@@ -15,18 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.api.aries;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+package org.hyperledger.bpa.impl.verification.prooftemplates;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class BankAccount {
-    private String iban;
-    private String bic;
+import javax.validation.Constraint;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = {})
+public @interface ValidAttributeCondition {
+    String message() default "{validatedValue} is an unsupported condition operator for proof template attributes or misses a required value.";
+
 }

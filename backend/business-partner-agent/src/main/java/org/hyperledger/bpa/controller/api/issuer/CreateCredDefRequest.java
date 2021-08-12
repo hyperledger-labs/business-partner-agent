@@ -33,9 +33,6 @@ public class CreateCredDefRequest {
 
     private String tag;
 
-    // we will use a runtime configuration to set a default size
-    // private int revocationRegistrySize;
-
     private boolean supportRevocation;
 
 }

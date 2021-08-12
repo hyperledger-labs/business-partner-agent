@@ -87,4 +87,7 @@ public class MyCredential {
     @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> credential;
+
+    @Nullable
+    private Boolean revoked;
 }

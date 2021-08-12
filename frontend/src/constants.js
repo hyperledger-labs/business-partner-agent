@@ -15,8 +15,8 @@ export const CredentialTypes = Object.freeze({
     type: "ORGANIZATIONAL_PROFILE_CREDENTIAL",
     label: "Organizational Profile",
   },
-  SCHEMA_BASED: {
-    type: "SCHEMA_BASED",
+  INDY: {
+    type: "INDY",
   },
   UNKNOWN: {
     type: "UNKNOWN",
@@ -29,6 +29,7 @@ export const ApiRoutes = Object.freeze({
   ADMIN: "/admin",
   ISSUER: "/issuer",
   PARTNERS: "/partners",
+  PROOF_TEMPLATES: "/proof-templates",
   ACTIVITIES: "/activities",
 });
 

@@ -139,8 +139,6 @@ public class NotificationEventListener {
                 null,
                 conv.toAPIObject(event.getPartner()));
         messageService.sendMessage(message);
-
-        activityManager.deletePartnerActivities(event.getPartner());
     }
 
     @EventListener
@@ -200,18 +198,6 @@ public class NotificationEventListener {
         log.debug("onPresentationRequestSentEvent");
         handlePresentationRequestEvent(event.getPartnerProof(),
                 WebSocketMessageBody.WebSocketMessageType.ON_PRESENTATION_REQUEST_SENT);
-    }
-
-    @EventListener
-    @Async
-    public void onBasicMessageReceivedEvent(BasicMessageReceivedEvent event) {
-        log.debug("onBasicMessageReceivedEvent");
-        // refactor once we have persistence of messages...
-        PartnerAPI partner = partnerManager.getPartnerByConnectionId(event.getMessage().getConnectionId());
-        if (partner != null) {
-            WebSocketMessageBody message = WebSocketMessageBody.message(partner, event.getMessage());
-            messageService.sendMessage(message);
-        }
     }
 
     @EventListener

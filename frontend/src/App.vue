@@ -116,6 +116,18 @@
             }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+
+        <v-list-item link :to="{ name: 'ProofTemplates' }">
+          <v-list-item-action>
+            <v-icon>$vuetify.icons.proofTemplates</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>{{
+              $t("nav.proofTemplates")
+            }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
         <v-list-item link :to="{ name: 'Partners' }">
           <v-list-item-action>
             <v-badge
@@ -228,9 +240,9 @@
             right
             fixed
             @click="showChatWindow"
+            style="text-decoration: none;"
         >
-          <v-icon v-if="chatWindow">$vuetify.icons.close</v-icon>
-          <v-badge v-else
+          <v-badge
               overlap
               bordered
               :content="messagesReceivedCount"
@@ -239,7 +251,8 @@
               offset-x="10"
               offset-y="10"
           >
-            <v-icon>$vuetify.icons.chat</v-icon>
+            <v-icon v-if="chatWindow">$vuetify.icons.close</v-icon>
+            <v-icon v-else>$vuetify.icons.chat</v-icon>
           </v-badge>
         </v-btn>
     </v-main>
@@ -282,8 +295,8 @@
       </v-card>
     </v-dialog>
 
-    <div class="chat-window" :class="{opened: chatWindow, closed: !chatWindow}">
-     <BasicMessages />
+    <div class="chat-window" :class="{opened: chatWindow, closed: !chatWindow}" style="z-index: 100">
+     <BasicMessages ref="basicMessages" />
     </div>
 
     <v-footer v-if="showFooter" app>
@@ -392,7 +405,7 @@ export default {
       return this.$store.state.settings.dataPrivacyPolicy;
     },
     messagesReceivedCount() {
-      return this.$store.getters.messagesReceivedCount;
+      return this.$store.getters.messagesCount;
     },
     credentialNotificationsCount() {
       return this.$store.getters.credentialNotificationsCount;
@@ -487,10 +500,13 @@ export default {
       // logout must have get-allowed, get the browser to do all the logout redirects...
       location.href = `${this.$apiBaseUrl}/logout`;
     },
-    showChatWindow() {
-      // for now, reset the count if we open (we will look for new messages) or close (we already saw messages)
-      this.$store.commit("messagesReceivedSeen");
-      // now, open of close it
+    async showChatWindow() {
+      if (!this.chatWindow) {
+        // we are opening it...
+        // load the rooms first (may be new partners we haven't loaded)
+        await this.$refs.basicMessages.loadRooms();
+      }
+      // now, open or close it
       this.chatWindow = !this.chatWindow;
     }
   },
