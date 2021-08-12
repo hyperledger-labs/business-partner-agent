@@ -46,7 +46,7 @@ public enum CredentialType {
      * A document or indy credential that is linked to a schema and uses an ad hoc
      * context
      */
-    SCHEMA_BASED(
+    INDY(
             List.of(ApiConstants.CREDENTIALS_V1),
             List.of("VerifiableCredential"));
 
@@ -67,7 +67,7 @@ public enum CredentialType {
                 return CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL;
             }
         }
-        return CredentialType.SCHEMA_BASED;
+        return CredentialType.INDY;
     }
 
 }

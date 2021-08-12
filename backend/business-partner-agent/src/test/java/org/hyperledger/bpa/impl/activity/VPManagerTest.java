@@ -94,7 +94,7 @@ class VPManagerTest {
         final Map<String, Object> d = createMap(json);
 
         MyDocument doc = buildDefault()
-                .setType(CredentialType.SCHEMA_BASED)
+                .setType(CredentialType.INDY)
                 .setDocument(d);
         String myDid = "xxyyyzzz";
         final VerifiableCredential vp = vpm.buildFromDocument(doc, myDid);
@@ -103,7 +103,7 @@ class VPManagerTest {
         assertEquals("{iban=1234, bic=4321, id=xxyyyzzz}",
                 vp.getCredentialSubject().toString());
         assertEquals(myDid, vp.getIssuer());
-        assertEquals(CredentialType.SCHEMA_BASED.getContext(), vp.getContext());
+        assertEquals(CredentialType.INDY.getContext(), vp.getContext());
     }
 
     @Test
@@ -124,7 +124,7 @@ class VPManagerTest {
         when(identity.getDidPrefix()).thenReturn("did:iil:");
 
         MyDocument doc = buildDefault()
-                .setType(CredentialType.SCHEMA_BASED)
+                .setType(CredentialType.INDY)
                 .setSchemaId("testSchema")
                 .setDocument(d);
 
@@ -149,7 +149,7 @@ class VPManagerTest {
                 .builder()
                 .id(UUID.randomUUID())
                 .credential(c.toMap(credential))
-                .type(CredentialType.SCHEMA_BASED)
+                .type(CredentialType.INDY)
                 .build();
         VerifiableCredential.VerifiableIndyCredential indyCred = vpm.buildFromCredential(myCredential);
         assertNotNull(indyCred.getCredentialSubject());

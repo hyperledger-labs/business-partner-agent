@@ -25,8 +25,11 @@
         ></new-message-icon>
       </template>
       <template v-slot:[`item.state`]="{ item }">
-        <v-icon v-if="isItemActive(item)" color="green"
+        <v-icon v-if="isItemActive(item) && !item.revoked" color="green" title="credential issued"
           >$vuetify.icons.check</v-icon
+        >
+        <v-icon v-else-if="isItemActive(item) && item.revoked" title="credential revoked"
+        >$vuetify.icons.check</v-icon
         >
         <span v-else>
           {{ item.state.replace("_", " ") }}
@@ -37,6 +40,17 @@
       </template>
       <template v-slot:[`item.createdAt`]="{ item }">
         {{ item.createdAt | formatDateLong }}
+      </template>
+      <template v-slot:[`item.revocable`]="{ item }">
+        <v-icon v-if="item.revocable && item.revoked" title="credential revoked"
+        >$vuetify.icons.revoked</v-icon
+        >
+        <v-icon v-else-if="item.revocable" color="green" title="revoke credential"
+                @click.stop="revokeCredential(item.id)" :disabled="revoked.includes(item.id)"
+        >$vuetify.icons.revoke</v-icon
+        >
+        <span v-else>
+        </span>
       </template>
     </v-data-table>
     <v-dialog v-model="dialog" max-width="600px">
@@ -58,6 +72,8 @@
   </v-container>
 </template>
 <script>
+
+import { issuerService } from "@/services";
 import Cred from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
 import NewMessageIcon from "@/components/NewMessageIcon";
@@ -90,6 +106,10 @@ export default {
           text: "State",
           value: "state",
         },
+        {
+          text: "Revocation",
+          value: "revocable",
+        },
       ],
     },
     isActiveFn: {
@@ -103,6 +123,7 @@ export default {
     return {
       dialog: false,
       document: {},
+      revoked: []
     };
   },
   watch: {
@@ -125,6 +146,10 @@ export default {
     isItemActive(item) {
       return this.isActiveFn(item);
     },
+    revokeCredential(id) {
+      this.revoked.push(id);
+      issuerService.revokeCredential(id);
+    }
   },
   components: {
     VBpaButton,

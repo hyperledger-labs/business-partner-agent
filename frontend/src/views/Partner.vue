@@ -346,6 +346,10 @@ export default {
           text: "State",
           value: "state",
         },
+        {
+          text: "Revocation",
+          value: "revocable",
+        }
       ],
       issueCredentialDialog: false,
       headersPresentationRequest: [

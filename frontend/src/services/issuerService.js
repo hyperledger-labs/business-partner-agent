@@ -57,4 +57,7 @@ export default {
       params: { role: CredentialExchangeRoles.HOLDER },
     });
   },
+  revokeCredential(id) {
+    return appAxios().post(`${ApiRoutes.ISSUER}/exchanges/${id}/revoke`);
+  },
 };

@@ -57,6 +57,18 @@
         {{ item.issuedAt | moment("YYYY-MM-DD HH:mm") }}
       </template>
 
+      <template v-slot:[`item.revoked`]="{ item }">
+        <v-icon v-if="item.revocable && item.revoked" title="credential revoked"
+        >$vuetify.icons.revoked</v-icon
+        >
+        <v-icon v-else-if="item.revocable && !item.revoked" color="green" title="credential valid and not revoked"
+        >$vuetify.icons.revoke</v-icon
+        >
+        <v-icon v-else title="credential valid and not revocable" color="green"
+        >$vuetify.icons.check</v-icon
+        >
+      </template>
+
       <template v-slot:[`item.isPublic`]="{ item }">
         <v-icon v-if="item.isPublic" color="green">
           $vuetify.icons.public

@@ -43,7 +43,7 @@ export const getCredentials = (state) => {
 
 export const getSchemaBasedSchemas = (state) => {
   return state.schemas.filter((schema) => {
-    return schema.type === CredentialTypes.SCHEMA_BASED.type;
+    return schema.type === CredentialTypes.INDY.type;
   });
 };
 
