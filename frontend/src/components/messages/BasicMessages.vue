@@ -121,7 +121,7 @@
             }
           }
         }
-        _rooms.sort((a,b) => a.roomName.localeCompare(b.roomName))
+        _rooms.sort((a,b) => a.roomName.localeCompare(b.roomName));
         this.rooms = _rooms;
         this.roomsLoaded = true;
       },

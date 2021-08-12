@@ -30,7 +30,7 @@ import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.controller.api.wallet.WalletCredentialRequest;
 import org.hyperledger.bpa.controller.api.wallet.WalletDocumentRequest;
 import org.hyperledger.bpa.impl.MyDocumentManager;
-import org.hyperledger.bpa.impl.aries.CredentialManager;
+import org.hyperledger.bpa.impl.aries.HolderCredentialManager;
 import org.hyperledger.bpa.model.MyCredential;
 
 import javax.inject.Inject;
@@ -49,7 +49,7 @@ public class WalletController {
     MyDocumentManager docMgmt;
 
     @Inject
-    CredentialManager credMgmt;
+    HolderCredentialManager credMgmt;
 
     // -------------------------------------
     // Document Management

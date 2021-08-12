@@ -19,15 +19,12 @@ package org.hyperledger.bpa.impl.aries;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.aries.api.credentials.Credential;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.BaseTest;
-import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.MyCredential;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
@@ -45,7 +42,7 @@ class CredentialManagerTest extends BaseTest {
     private static final String DID = "did:sov:M6Mbe3qx7vB4wpZF4sBRjt";
 
     @Inject
-    CredentialManager mgmt;
+    HolderCredentialManager mgmt;
 
     @Inject
     MyCredentialRepository credRepo;
@@ -58,16 +55,9 @@ class CredentialManagerTest extends BaseTest {
 
     @Test
     void testSaveNewCredential() {
-        credRepo.save(MyCredential
-                .builder()
-                .type(CredentialType.SCHEMA_BASED)
-                .isPublic(Boolean.FALSE)
-                .connectionId("dummy")
-                .state(CredentialExchangeState.CREDENTIAL_ACKED)
-                .threadId("cab34089-446c-411d-948e-9ed39ba6777f").build());
         final String ex = loader.load("files/credentialExchange.json");
         final V1CredentialExchange credEx = GsonConfig.defaultConfig().fromJson(ex, V1CredentialExchange.class);
-        mgmt.handleCredentialAcked(credEx);
+        mgmt.handleV1CredentialExchangeAcked(credEx);
         assertEquals(1, credRepo.count());
     }
 

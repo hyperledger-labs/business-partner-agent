@@ -111,7 +111,7 @@ class MyDocumentManagerTest extends RunWithAries {
         MyDocumentAPI myCred = createAndSaveDummyCredential();
         assertNotNull(myCred);
         assertNotNull(myCred.getId());
-        assertSame(CredentialType.SCHEMA_BASED, myCred.getType());
+        assertSame(CredentialType.INDY, myCred.getType());
         assertFalse(myCred.getIsPublic());
         assertTrue(Instant.now().isAfter(Instant.ofEpochMilli(myCred.getCreatedDate())));
         assertTrue(Instant.now().minus(5L, ChronoUnit.MINUTES).isBefore(
@@ -135,7 +135,7 @@ class MyDocumentManagerTest extends RunWithAries {
     void testSaveIndyDocumentNoSchemaId() {
         Exception exception = assertThrows(WrongApiUsageException.class, () -> {
             MyDocumentAPI document = new MyDocumentAPI();
-            document.setType(CredentialType.SCHEMA_BASED);
+            document.setType(CredentialType.INDY);
             mgmt.saveNewDocument(document);
         });
 
@@ -148,12 +148,12 @@ class MyDocumentManagerTest extends RunWithAries {
     @Test
     void testUpdateCredential() throws Exception {
         // create, save and verify
-        MyDocumentAPI credential = utils.createDummyCred(CredentialType.SCHEMA_BASED, Boolean.FALSE);
+        MyDocumentAPI credential = utils.createDummyCred(CredentialType.INDY, Boolean.FALSE);
         MyDocumentAPI myCred = mgmt.saveNewDocument(credential);
 
         Optional<MyDocumentAPI> result = mgmt.getMyDocumentById(myCred.getId());
         assertTrue(result.isPresent());
-        assertSame(CredentialType.SCHEMA_BASED, result.get().getType());
+        assertSame(CredentialType.INDY, result.get().getType());
         assertSame(Boolean.FALSE, result.get().getIsPublic());
 
         // update
@@ -163,13 +163,13 @@ class MyDocumentManagerTest extends RunWithAries {
         // verify modification
         result = mgmt.getMyDocumentById(myCred.getId());
         assertTrue(result.isPresent());
-        assertSame(CredentialType.SCHEMA_BASED, result.get().getType());
+        assertSame(CredentialType.INDY, result.get().getType());
         assertSame(Boolean.TRUE, result.get().getIsPublic());
     }
 
     @Test
     void testGetMyCredentialById() throws Exception {
-        MyDocumentAPI credential = utils.createDummyCred(CredentialType.SCHEMA_BASED, Boolean.FALSE);
+        MyDocumentAPI credential = utils.createDummyCred(CredentialType.INDY, Boolean.FALSE);
         MyDocumentAPI myCred = mgmt.saveNewDocument(credential);
         UUID ID = myCred.getId();
 
@@ -192,11 +192,11 @@ class MyDocumentManagerTest extends RunWithAries {
 
     @Test
     void testDeleteMyCredential() throws Exception {
-        MyDocumentAPI credential = utils.createDummyCred(CredentialType.SCHEMA_BASED, Boolean.FALSE);
+        MyDocumentAPI credential = utils.createDummyCred(CredentialType.INDY, Boolean.FALSE);
         MyDocumentAPI myCred = mgmt.saveNewDocument(credential);
         UUID ID = myCred.getId();
 
-        MyDocumentAPI credential2 = utils.createDummyCred(CredentialType.SCHEMA_BASED, Boolean.FALSE);
+        MyDocumentAPI credential2 = utils.createDummyCred(CredentialType.INDY, Boolean.FALSE);
         MyDocumentAPI myCred2 = mgmt.saveNewDocument(credential2);
         UUID ID2 = myCred2.getId();
 
@@ -243,11 +243,11 @@ class MyDocumentManagerTest extends RunWithAries {
     }
 
     private MyDocumentAPI createAndSaveDummyCredential() throws JsonProcessingException {
-        return createAndSaveDummyCredential(CredentialType.SCHEMA_BASED, Boolean.FALSE);
+        return createAndSaveDummyCredential(CredentialType.INDY, Boolean.FALSE);
     }
 
     private MyDocumentAPI createAndSavePublicDummyCredential() throws JsonProcessingException {
-        return createAndSaveDummyCredential(CredentialType.SCHEMA_BASED, Boolean.TRUE);
+        return createAndSaveDummyCredential(CredentialType.INDY, Boolean.TRUE);
     }
 
     private MyDocumentAPI createAndSaveDummyCredential(CredentialType credType, Boolean isPublic)

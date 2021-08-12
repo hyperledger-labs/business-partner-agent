@@ -101,7 +101,7 @@ public class Converter {
                 String schemaId = null;
                 if (indyCredential) {
                     schemaId = c.getSchemaId();
-                } else if (CredentialType.SCHEMA_BASED.equals(type)) {
+                } else if (CredentialType.INDY.equals(type)) {
                     schemaId = getSchemaIdFromContext(c);
                 }
 
@@ -207,7 +207,7 @@ public class Converter {
 
     private String resolveTypeLabel(@NonNull CredentialType type, @Nullable String schemaId) {
         String result = null;
-        if (CredentialType.SCHEMA_BASED.equals(type)
+        if (CredentialType.INDY.equals(type)
                 && StringUtils.isNotEmpty(schemaId)) {
             result = schemaService.getSchemaLabel(schemaId);
         } else if (CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(type)) {

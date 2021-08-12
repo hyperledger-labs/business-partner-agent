@@ -55,4 +55,9 @@ public interface MyCredentialRepository extends CrudRepository<MyCredential, UUI
 
     Long countByStateEquals(CredentialExchangeState state);
 
+    @Query("SELECT * FROM my_credential WHERE type = 'INDY' AND referent IS NOT NULL AND (revoked IS NULL OR revoked = false)")
+    List<MyCredential> findNotRevoked();
+
+    Number updateRevoked(@Id UUID id, Boolean revoked);
+
 }
