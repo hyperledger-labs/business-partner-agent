@@ -28,8 +28,6 @@ create new ones
       :headers="headers"
       :items="proofTemplates"
       single-select
-      :sort-by="['name', 'createdAt']"
-      :sort-desc="[false, true]"
       @click:row="viewProofTemplate"
     >
     </v-data-table>
