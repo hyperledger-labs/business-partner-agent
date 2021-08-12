@@ -83,6 +83,7 @@ charts/**/charts/
 my-values*.yaml
 values-dev.yaml
 manifests*/
-scripts/local-network/von-network/
 scripts/**/*.txn
-
+scripts/local-network/von-network/
+scripts/scenarios/local-network/von-network/
+scripts/scenarios/local-network/resolver/*.txn
