@@ -30,7 +30,6 @@ create new ones
       single-select
       :sort-by="['name', 'createdAt']"
       :sort-desc="[false, true]"
-      multi-sort
       @click:row="viewProofTemplate"
     >
     </v-data-table>
