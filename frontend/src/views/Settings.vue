@@ -9,16 +9,16 @@
   <v-container justify-center>
     <v-card class="mx-auto">
       <v-card-title class="bg-light">Settings</v-card-title>
-      <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title
-            class="grey--text text--darken-2 font-weight-medium"
-            >Expert mode</v-list-item-title
-          >
-        </v-list-item-content>
-        <v-list-item-action>
-          <v-switch v-model="expertMode"></v-switch>
-        </v-list-item-action>
+      <v-list-item v-if="!isLoading">
+        <v-list-item-title class="grey--text text--darken-2 font-weight-medium"
+          >Wallet DID
+        </v-list-item-title>
+        <v-list-item-subtitle align="end" id="did">
+          {{ this.status.did }}
+        </v-list-item-subtitle>
+        <v-btn icon x-small @click="copyDid">
+          <v-icon dark>$vuetify.icons.copy</v-icon>
+        </v-btn>
       </v-list-item>
       <v-list-item>
         <v-list-item-content>
@@ -65,17 +65,16 @@
           </v-btn>
         </v-list-item-action>
       </v-list-item>
-
-      <v-list-item v-if="!isLoading">
-        <v-list-item-title class="grey--text text--darken-2 font-weight-medium"
-          >Wallet DID
-        </v-list-item-title>
-        <v-list-item-subtitle align="end" id="did">
-          {{ this.status.did }}
-        </v-list-item-subtitle>
-        <v-btn icon x-small @click="copyDid">
-          <v-icon dark>$vuetify.icons.copy</v-icon>
-        </v-btn>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title
+            class="grey--text text--darken-2 font-weight-medium"
+            >Expert mode</v-list-item-title
+          >
+        </v-list-item-content>
+        <v-list-item-action>
+          <v-switch v-model="expertMode"></v-switch>
+        </v-list-item-action>
       </v-list-item>
       <v-list-item
         v-show="expertMode"
