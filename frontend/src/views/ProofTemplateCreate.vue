@@ -168,6 +168,12 @@
                               (s) => s.id === attributeGroup.schemaId
                             ).schemaAttributeNames"
                             :key="attributeName"
+                            :disabled="
+                              attributeGroup.attributes.some(
+                                (existingAttribute) =>
+                                  existingAttribute.name === attributeName
+                              )
+                            "
                             @click="addAttribute(idx, attributeName)"
                           >
                             <v-list-item-title>{{
@@ -288,8 +294,8 @@
               </template>
               <v-list>
                 <v-list-item
-                  v-for="schema in schemas"
-                  :key="schema.id"
+                  v-for="(schema, idx) in schemas"
+                  :key="idx"
                   @click="addAttributeGroup(schema.id)"
                 >
                   <v-list-item-title>

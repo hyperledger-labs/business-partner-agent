@@ -70,8 +70,8 @@
             <v-expansion-panels>
               <v-expansion-panel
                 class="my-5"
-                v-for="attributeGroup in proofTemplate.attributeGroups"
-                :key="attributeGroup.schemaId"
+                v-for="(attributeGroup, idx) in proofTemplate.attributeGroups"
+                :key="idx"
               >
                 <v-expansion-panel-header>
                   <span v-html="renderSchemaLabelId(attributeGroup)"></span>
