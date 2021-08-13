@@ -14,9 +14,6 @@
       :headers="headers"
       :items="schemas"
       single-select
-      :sort-by="['canIssue', 'isMine', 'label']"
-      :sort-desc="[true, true, false]"
-      multi-sort
       @click:row="openItem"
     >
       <template v-slot:[`item.trustedIssuer`]="{ item }">

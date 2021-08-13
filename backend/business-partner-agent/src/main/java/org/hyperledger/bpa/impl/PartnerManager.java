@@ -201,16 +201,4 @@ public class PartnerManager {
         cm.acceptConnection(connectionId);
     }
 
-    public void sendMessage(@NonNull UUID id, String content) {
-        // check two things here.
-        // 1. If the connection id is set, as it might be null in some states
-        // 2. If the partner has ariesSupport== true as we have none aries partners in
-        // web mode
-        repo.findById(id).ifPresent(p -> {
-            if (StringUtils.isNotEmpty(p.getConnectionId()) && p.getAriesSupport()) {
-                cm.sendMessage(p.getConnectionId(), content);
-            }
-        });
-    }
-
 }

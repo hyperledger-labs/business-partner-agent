@@ -11,20 +11,21 @@
       :responsive-breakpoint="responsiveBreakpoint"
       :rooms="rooms"
       :rooms-loaded="roomsLoaded"
-      :room-id="roomId"
       :messages="messages"
       :messages-loaded="messagesLoaded"
       :message-actions="messageActions"
+      :show-new-messages-divider="showNewMessageDivider"
       @fetch-messages="fetchMessages"
       @send-message="sendMessage"
+      @toggle-rooms-list="toggleRoomsList"
       :show-add-room="false"
       :show-audio="false"
       :show-files="false"
       :show-emojis="false"
       :show-reaction-emojis="false"
-      :show-new-messages-divider="false"
       :text-formatting="false"
       :text-messages="textMessages"
+      :styles="{room: { backgroundCounterBadge: 'red'}}"
   />
 </template>
 
@@ -40,7 +41,8 @@
     components: {
       ChatWindow
     },
-    created() {
+    mounted() {
+      this.loadRooms();
     },
     data() {
       return {
@@ -48,10 +50,11 @@
         responsiveBreakpoint: 9999,
         rooms: [],
         roomsLoaded: true,
-        roomId: null,
+        currentRoomId: null,
         messages: [],
         messagesLoaded: true,
         messageActions: [],
+        showNewMessageDivider: false,
         textMessages: {
           CONVERSATION_STARTED: ""
         }
@@ -74,8 +77,8 @@
       // eslint-disable-next-line no-unused-vars
       messagesCount(val) {
         console.log(`messagesCount(${val})`);
-        // reload the current room
-        this.fetchMessages({room: { roomId: this.roomId}})
+        // update room message counts..
+        this.updateRoomCounts();
       },
     },
 
@@ -83,93 +86,136 @@
       ...mapMutations([
         'onMessageReceived'
       ]),
-      loadRooms() {
+      async loadRooms() {
         console.log("loadRooms()");
         this.roomsLoaded = false;
         this.rooms = [];
-
+        this.currentRoomId = null;
         const _rooms = [];
-        const partners = this.$store.getters.getPartners;
-        for (let i = 0; i < partners.length; i++) {
-          const p = partners[i];
-          // assume they have a connection id, but check to make sure this partner is ARIES
-          if (p.ariesSupport) {
-            const name = p.name;
-            // each room is for a single partner/connection
-            // so set the room id to the partner id.
-            // add users to represent the partner and us.
-            const room = {
-              roomId: p.id,
-              roomName: name,
-              users: [
-                {
-                  _id: p.id,
-                  username: name
-                },
-                {
-                  _id: CHAT_CURRENT_USERID,
-                  username: "Me"
-                }
-              ]
-            };
-            _rooms.push(room);
+        const partners = await partnerService.listPartners();
+        if (Array.isArray(partners.data)) {
+          for (let i = 0; i < partners.data.length; i++) {
+            const p = partners.data[i];
+            // assume they have a connection id, but check to make sure this partner is ARIES
+            if (p.ariesSupport) {
+              const name = p.name;
+              // each room is for a single partner/connection
+              // so set the room id to the partner id.
+              // add users to represent the partner and us.
+              const room = {
+                roomId: p.id,
+                roomName: name,
+                unreadCount: this.getUnreadCount(p.id),
+                users: [
+                  {
+                    _id: p.id,
+                    username: name
+                  },
+                  {
+                    _id: CHAT_CURRENT_USERID,
+                    username: "Me"
+                  }
+                ]
+              };
+              _rooms.push(room);
+            }
           }
         }
         _rooms.sort((a,b) => a.roomName.localeCompare(b.roomName));
         this.rooms = _rooms;
-        this.roomId = this.roomId === null ? (_rooms.length ? _rooms[0].id : null) : null;
         this.roomsLoaded = true;
       },
       // eslint-disable-next-line no-unused-vars
-      fetchMessages({ room, options = {} }) {
-        console.log(`fetchMessages(room = ${room.roomId})`);
-        this.messagesLoaded = false;
-        this.messages = [];
-        this.roomId = room.roomId;
+      async fetchMessages({ room, options = {} }) {
+        // this event is fired twice, bug in the chat component...
+        console.log(`fetchMessages(room = ${room.roomId}, options = ${options.reset})`);
+        // don't set and use the component's roomId property, that fires too many reload room/message events.
+        // just track the current room/partner id to auto-refresh if we get a new message while this room is open
+        if (options && options.reset) {
+          this.messagesLoaded = false;
+          this.messages = [];
+          this.showNewMessageDivider = false;
+          const _msgs = [];
+          const _pms = await partnerService.getMessages(room.roomId);
 
-        const _msgs = [];
-        const allMessages = this.$store.getters.messages.map((x) => x);
-        const _pms = allMessages.filter(m => m.partnerId === room.roomId || m.roomId === room.roomId);
-        _pms.sort((a, b) => a.time - b.time);
-
-        for (let i = 0; i < _pms.length; i++) {
-          const msg = _pms[i];
-          _msgs.push({
-            _id: msg.messageId,
-            content: msg.content,
-            senderId: msg.partnerId,
-            timestamp: formatDateLong(msg.time),
-          });
-        }
-
-        // need a slight timeout to allow the lists to load properly
-        setTimeout(() => {
-          this.messages = _msgs;
+          let newMessages = false;
+          if (Array.isArray(_pms.data)) {
+            for (let i = 0; i < _pms.data.length; i++) {
+              const msg = _pms.data[i];
+              const _seen = this.markSeen(msg.id);
+              if (!_seen) {
+                newMessages = true;
+              }
+              _msgs.push({
+                _id: msg.id,
+                content: msg.content,
+                senderId: msg.incoming ? msg.partner.id : CHAT_CURRENT_USERID,
+                timestamp: formatDateLong(msg.createdAtTs),
+                seen: _seen,
+              });
+            }
+          }
           console.log(this.messages);
           this.messagesLoaded = true;
-          console.log(this.messagesLoaded);
-        }, 250);
+          this.messages = _msgs;
+          this.showNewMessageDivider = newMessages;
+          console.log(`fetchMessages(room = ${room.roomId}, showNewMessageDivider = ${this.showNewMessageDivider})`);
+          // remove all of this partner/room message ids from the store...
+          this.$store.commit("markMessagesSeen", room.roomId);
+        }
+        this.currentRoomId = room.roomId;
       },
       // eslint-disable-next-line no-unused-vars
       async sendMessage({ content, roomId, file, replyMessage }) {
-        // add our side of the conversation to the message list...
-        // for this, we just use our hardcoded value for partnerId that matches our currentUserId property for the
-        // component. this will put our messages on the right hand side of the conversation.
-        const payload = {
-          message: {
-            info: {
-              messageId: new Date().getTime().toString(),
-              content: content,
-              partnerId: CHAT_CURRENT_USERID,
-              roomId: roomId
+        // we are sending content to currentRoomId (partner)...
+        await partnerService.sendMessage(roomId, content);
+        // reload our messages (will include our persisted message we just sent)
+        await this.fetchMessages({room: {roomId: roomId}, options: {reset: true}});
+      },
+      toggleRoomsList({ opened }) {
+        // if the room list is open, clear out the room id...
+        // we don't want to refresh a room's message list if we are on the partner/room list
+        if (opened) {
+          this.currentRoomId = null;
+        }
+      },
+      markSeen(id) {
+        const _unseen = this.$store.getters.messages;
+        if (Array.isArray(_unseen)) {
+          for (let i = 0; i < _unseen.length; i++) {
+            const _msg = _unseen[i];
+            if (_msg.messageId === id) {
+              return false;
             }
           }
-        };
-        // store with incoming messages...
-        this.onMessageReceived(payload);
+        }
+        return true;
+      },
+      getUnreadCount(id) {
+        const _unread = this.$store.getters.messages;
+        let _count = 0;
+        if (Array.isArray(_unread)) {
+          _count = _unread.filter(m => m.partnerId === id).length;
+        }
+        return _count;
+      },
+      updateRoomCounts() {
+        let reloadCurrentRoom = false;
+        const _rooms = this.rooms;
+        for (let i = 0; i < _rooms.length; i++) {
+          const _room = _rooms[i];
+          _room.unreadCount = this.getUnreadCount(_room.roomId);
+          this.$set(this.rooms, i, _room)
 
-        // we are sending content to roomId (partner)...
-        await partnerService.sendMessage(roomId, content);
+          // if this room is open, and we have a new unread message, refresh the message list...
+          if (_room.roomId === this.currentRoomId && _room.unreadCount > 0) {
+            reloadCurrentRoom = true;
+          }
+        }
+
+        if (reloadCurrentRoom) {
+          this.fetchMessages({room: {roomId: this.currentRoomId}, options: {reset: true}});
+        }
       }
     }
   }

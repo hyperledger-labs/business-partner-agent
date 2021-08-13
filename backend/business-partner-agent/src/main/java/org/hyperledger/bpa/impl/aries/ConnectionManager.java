@@ -33,7 +33,6 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.*;
 import org.hyperledger.aries.api.did_exchange.DidExchangeCreateRequestFilter;
 import org.hyperledger.aries.api.exception.AriesException;
-import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
@@ -287,19 +286,17 @@ public class ConnectionManager {
         }
     }
 
-    public void sendMessage(String connectionId, String content) {
+    public boolean sendMessage(String connectionId, String content) {
         if (StringUtils.isNotEmpty(content)) {
             try {
                 ac.connectionsSendMessage(connectionId,
                         SendMessage.builder().content(content).build());
+                return true;
             } catch (IOException e) {
                 log.error("Could not send message to connection: {}", connectionId, e);
             }
         }
-    }
-
-    public void receiveMessage(BasicMessage message) {
-        eventPublisher.publishEventAsync(BasicMessageReceivedEvent.builder().message(message).build());
+        return false;
     }
 
     private InvitationRecord createOOBInvitation(@Nullable String alias) throws IOException {
