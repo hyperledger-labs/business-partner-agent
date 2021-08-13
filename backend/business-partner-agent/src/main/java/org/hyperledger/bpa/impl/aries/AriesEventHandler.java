@@ -23,6 +23,7 @@ import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
+import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.message.ProblemReport;
@@ -118,7 +119,17 @@ public class AriesEventHandler extends EventHandler {
     public void handleCredentialV2(V20CredExRecord v20Credential) {
         log.debug("Credential V2 Event: {}", v20Credential);
         if(V20CredExRecord.RoleEnum.ISSUER.equals(v20Credential.getRole())) {
-            issuerMgr.handleV2CredentialExchange(v20Credential);
+            synchronized (issuerMgr) {
+                issuerMgr.handleV2CredentialExchange(v20Credential);
+            }
+        }
+    }
+
+    @Override
+    public void handleIssueCredentialV2Indy(V2IssueIndyCredentialEvent revocationInfo) {
+        log.debug("Issue Credential V2 Indy Event: {}", revocationInfo);
+        synchronized (issuerMgr) {
+            issuerMgr.handleIssueCredentialV2Indy(revocationInfo);
         }
     }
 

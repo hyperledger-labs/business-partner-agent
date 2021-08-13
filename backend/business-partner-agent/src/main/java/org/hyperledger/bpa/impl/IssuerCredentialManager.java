@@ -38,6 +38,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialProposalRequest;
 import org.hyperledger.aries.api.issue_credential_v2.V2CredentialSendRequest;
+import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.revocation.RevokeRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
 import org.hyperledger.bpa.api.CredentialType;
@@ -299,6 +300,10 @@ public class IssuerCredentialManager {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Handle issue credential v1 state changes and revocation info
+     * @param ex {@link V1CredentialExchange}
+     */
     public void handleV1CredentialExchange(@NonNull V1CredentialExchange ex) {
         credExRepo.findByCredentialExchangeId(ex.getCredentialExchangeId()).ifPresent(bpaEx -> {
             bpaEx.setState(ex.getState());
@@ -308,12 +313,23 @@ public class IssuerCredentialManager {
         });
     }
 
+    /**
+     * Handle issue credential v2 state changes
+     * @param ex {@link V20CredExRecord}
+     */
     public void handleV2CredentialExchange(@NonNull V20CredExRecord ex) {
-        credExRepo.findByCredentialExchangeId(ex.getCredExId()).ifPresent(bpaEx -> {
-            bpaEx.setState(CredentialExchangeState.fromV2(ex.getState()));
-            // works different here
-            // bpaEx.setRevRegId(ex.getRe);
-            // bpaEx.setCredRevId(ex.getRevocationId());
+        credExRepo.findByCredentialExchangeId(ex.getCredExId())
+                .ifPresent(bpaEx -> credExRepo.updateState(bpaEx.getId(), CredentialExchangeState.fromV2(ex.getState())));
+    }
+
+    /**
+     * Handle issue credential v2 revocation info
+     * @param revocationInfo {@link V2IssueIndyCredentialEvent}
+     */
+    public void handleIssueCredentialV2Indy(V2IssueIndyCredentialEvent revocationInfo) {
+        credExRepo.findByCredentialExchangeId(revocationInfo.getCredExId()).ifPresent(bpaEx -> {
+            bpaEx.setRevRegId(revocationInfo.getRevRegId());
+            bpaEx.setCredRevId(revocationInfo.getCredRevId());
             credExRepo.update(bpaEx);
         });
     }

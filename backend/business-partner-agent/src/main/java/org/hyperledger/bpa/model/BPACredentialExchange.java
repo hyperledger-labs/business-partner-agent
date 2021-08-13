@@ -36,6 +36,11 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Stores issued credentials
+ *
+ * TODO is basically the same as {@link MyCredential} and both can be merged
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
