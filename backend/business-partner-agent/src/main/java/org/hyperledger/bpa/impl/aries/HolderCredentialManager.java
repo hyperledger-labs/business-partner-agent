@@ -26,11 +26,13 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.acy_py.generated.model.V20CredExRecord;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.credentials.CredentialPreview;
 import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialProposalRequest;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
@@ -115,11 +117,12 @@ public class HolderCredentialManager {
                         ac.issueCredentialSendProposal(
                                 V1CredentialProposalRequest
                                         .builder()
-                                        .connectionId(dbPartner.get().getConnectionId())
+                                        .connectionId(Objects.requireNonNull(dbPartner.get().getConnectionId()))
                                         .schemaId(s.get().getSchemaId())
                                         .credentialProposal(
                                                 new CredentialPreview(
-                                                        CredentialAttributes.from(dbDoc.get().getDocument())))
+                                                        CredentialAttributes.from(
+                                                                Objects.requireNonNull(dbDoc.get().getDocument()))))
                                         .build());
                     } else {
                         throw new PartnerException("No configured schema found for id: " + dbDoc.get().getSchemaId());
@@ -136,7 +139,7 @@ public class HolderCredentialManager {
     }
 
     // credential, signed and stored in wallet
-    public void handleV1CredentialExchangeAcked(V1CredentialExchange credEx) {
+    public void handleV1CredentialExchangeAcked(@NonNull V1CredentialExchange credEx) {
         String label = labelStrategy.apply(credEx.getCredential());
         MyCredential dbCred = MyCredential
                 .builder()
@@ -157,6 +160,23 @@ public class HolderCredentialManager {
                 .credential(ariesCredential)
                 .credentialExchange(credEx)
                 .build());
+    }
+
+    public void handleV2CredentialExchangeAcked(@NonNull V20CredExRecord credEx) {
+        //String label = labelStrategy.apply(credEx.getCredential());
+        MyCredential dbCred = MyCredential
+                .builder()
+                .isPublic(Boolean.FALSE)
+                .connectionId(credEx.getConnectionId())
+                .threadId(credEx.getThreadId())
+                //.referent(credEx.getCredential().getReferent())
+                //.credential(conv.toMap(credEx.getCredential()))
+                .type(CredentialType.INDY)
+                .state(CredentialExchangeState.fromV2(credEx.getState()))
+                //.issuer(resolveIssuer(credEx.getCredential()))
+                .issuedAt(Instant.now())
+                .build();
+        credRepo.save(dbCred);
     }
 
     public Optional<MyCredential> toggleVisibility(UUID id) {
@@ -254,7 +274,7 @@ public class HolderCredentialManager {
                     issuer = p.get().getAlias();
                 } else if (p.get().getVerifiablePresentation() != null) {
                     VerifiablePresentation<VerifiableIndyCredential> vp = conv
-                            .fromMap(p.get().getVerifiablePresentation(), Converter.VP_TYPEREF);
+                            .fromMap(Objects.requireNonNull(p.get().getVerifiablePresentation()), Converter.VP_TYPEREF);
                     Optional<VerifiableIndyCredential> profile = vp.getVerifiableCredential()
                             .stream().filter(ic -> ic.getType().contains("OrganizationalProfileCredential")).findAny();
                     if (profile.isPresent() && profile.get().getCredentialSubject() != null) {
@@ -262,7 +282,7 @@ public class HolderCredentialManager {
                         issuer = pVC.getLegalName();
                     }
                 }
-                if (issuer == null && p.get().getIncoming() != null && p.get().getIncoming()) {
+                if (issuer == null && p.get().getIncoming() != null && Boolean.TRUE.equals(p.get().getIncoming())) {
                     issuer = p.get().getLabel();
                 }
             }

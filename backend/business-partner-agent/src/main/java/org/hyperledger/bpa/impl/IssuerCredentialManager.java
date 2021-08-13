@@ -188,12 +188,12 @@ public class IssuerCredentialManager {
 
         ExchangeResult exRes;
         if (request.isV1()) {
-            exRes =  sendV1Credential(connectionId,
+            exRes =  sendV1Credential(Objects.requireNonNull(connectionId),
                     schemaId,
                     credentialDefinitionId,
                     new CredentialPreview(CredentialAttributes.fromMap(document)));
         } else {
-            exRes = sendV2Credential(connectionId,
+            exRes = sendV2Credential(Objects.requireNonNull(connectionId),
                     schemaId,
                     credentialDefinitionId, V2CredentialSendRequest.V2CredentialPreview
                             .builder()

@@ -44,11 +44,11 @@ public class AriesEventHandler extends EventHandler {
 
     private final Optional<PingManager> pingMgmt;
 
-    private final HolderCredentialManager credMgmt;
-
-    private final ProofEventHandler proofMgmt;
+    private final HolderCredentialManager holderMgr;
 
     private final IssuerCredentialManager issuerMgr;
+
+    private final ProofEventHandler proofMgmt;
 
     private final ChatMessageManager chatMessageManager;
 
@@ -56,15 +56,15 @@ public class AriesEventHandler extends EventHandler {
     public AriesEventHandler(
             ConnectionManager conMgmt,
             Optional<PingManager> pingMgmt,
-            HolderCredentialManager credMgmt,
+            HolderCredentialManager holderMgr,
             ProofEventHandler proofMgmt,
             IssuerCredentialManager issuerMgr,
             ChatMessageManager chatMessageManager) {
         this.conMgmt = conMgmt;
         this.pingMgmt = pingMgmt;
-        this.credMgmt = credMgmt;
-        this.proofMgmt = proofMgmt;
+        this.holderMgr = holderMgr;
         this.issuerMgr = issuerMgr;
+        this.proofMgmt = proofMgmt;
         this.chatMessageManager = chatMessageManager;
     }
 
@@ -102,9 +102,9 @@ public class AriesEventHandler extends EventHandler {
         log.debug("Credential Event: {}", v1CredEx);
         // holder events
         if (CredentialExchangeRole.HOLDER.equals(v1CredEx.getRole())) {
-            synchronized (credMgmt) {
+            synchronized (holderMgr) {
                 if (CredentialExchangeState.CREDENTIAL_ACKED.equals(v1CredEx.getState())) {
-                    credMgmt.handleV1CredentialExchangeAcked(v1CredEx);
+                    holderMgr.handleV1CredentialExchangeAcked(v1CredEx);
                 }
             }
             // issuer events
@@ -118,9 +118,14 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleCredentialV2(V20CredExRecord v20Credential) {
         log.debug("Credential V2 Event: {}", v20Credential);
-        if(V20CredExRecord.RoleEnum.ISSUER.equals(v20Credential.getRole())) {
+        if (V20CredExRecord.RoleEnum.ISSUER.equals(v20Credential.getRole())) {
             synchronized (issuerMgr) {
                 issuerMgr.handleV2CredentialExchange(v20Credential);
+            }
+        } else if (V20CredExRecord.RoleEnum.HOLDER.equals(v20Credential.getRole())
+                && V20CredExRecord.StateEnum.DONE.equals(v20Credential.getState())) {
+            synchronized (holderMgr) {
+                holderMgr.handleV2CredentialExchangeAcked(v20Credential);
             }
         }
     }
