@@ -56,10 +56,10 @@ const mutations = {
       case "ON_CREDENTIAL_ADDED":
         state.credentialNotifications = addItem(state.credentialNotifications, id, payload);
         break;
-      case "ON_PARTNER_REQUEST_COMPLETED":
       case "ON_PARTNER_REMOVED":
         state.partnerNotifications = removeItem(state.partnerNotifications, payload.message.partner.id);
         break;
+      case "ON_PARTNER_REQUEST_COMPLETED":
       case "ON_PARTNER_REQUEST_RECEIVED":
       case "ON_PARTNER_ACCEPTED":
       case "ON_PARTNER_ADDED":
