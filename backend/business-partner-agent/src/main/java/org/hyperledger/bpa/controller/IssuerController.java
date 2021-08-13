@@ -28,10 +28,10 @@ import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
-import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.controller.api.issuer.*;
 import org.hyperledger.bpa.impl.IssuerCredentialManager;
+import org.hyperledger.bpa.impl.aries.config.SchemaService;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -49,6 +49,9 @@ public class IssuerController {
     @Inject
     IssuerCredentialManager im;
 
+    @Inject
+    SchemaService schemaService;
+
     /**
      * List configured schemas
      *
@@ -56,7 +59,7 @@ public class IssuerController {
      */
     @Get("/schema")
     public HttpResponse<List<SchemaAPI>> listSchemas() {
-        return HttpResponse.ok(im.listSchemas());
+        return HttpResponse.ok(schemaService.listSchemas());
     }
 
     /**
@@ -67,7 +70,7 @@ public class IssuerController {
      */
     @Post("/schema")
     public HttpResponse<SchemaAPI> createSchema(@Body CreateSchemaRequest req) {
-        return HttpResponse.ok(im.createSchema(req.getSchemaName(), req.getSchemaVersion(),
+        return HttpResponse.ok(schemaService.createSchema(req.getSchemaName(), req.getSchemaVersion(),
                 req.getAttributes(), req.getSchemaLabel(), req.getDefaultAttributeName()));
     }
 
@@ -79,7 +82,7 @@ public class IssuerController {
      */
     @Get("/schema/{id}")
     public HttpResponse<SchemaAPI> readSchema(@PathVariable UUID id) {
-        final Optional<SchemaAPI> schema = im.readSchema(id);
+        final Optional<SchemaAPI> schema = schemaService.getSchema(id);
         if (schema.isPresent()) {
             return HttpResponse.ok(schema.get());
         }
@@ -127,7 +130,7 @@ public class IssuerController {
      */
     @Post("/issue-credential/send")
     public HttpResponse<String> issueCredentialSend(@Valid @Body IssueCredentialSendRequest req) {
-        String exchange = im.issueCredentialSend(
+        String exchange = im.issueCredential(
                 IssuerCredentialManager.IssueCredentialRequest.from(req));
         // just return the id and not the full Aries Object.
         // Event handlers will create the db cred ex records

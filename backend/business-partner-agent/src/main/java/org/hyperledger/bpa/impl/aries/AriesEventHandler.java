@@ -116,7 +116,10 @@ public class AriesEventHandler extends EventHandler {
 
     @Override
     public void handleCredentialV2(V20CredExRecord v20Credential) {
-        log.debug("Issue Credential V2 Event: {}", v20Credential);
+        log.debug("Credential V2 Event: {}", v20Credential);
+        if(V20CredExRecord.RoleEnum.ISSUER.equals(v20Credential.getRole())) {
+            issuerMgr.handleV2CredentialExchange(v20Credential);
+        }
     }
 
     @Override

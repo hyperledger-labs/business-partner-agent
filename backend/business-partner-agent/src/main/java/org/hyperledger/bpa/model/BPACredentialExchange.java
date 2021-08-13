@@ -20,6 +20,7 @@ package org.hyperledger.bpa.model;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
+import io.micronaut.data.annotation.DateUpdated;
 import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
 import lombok.AllArgsConstructor;
@@ -50,6 +51,9 @@ public class BPACredentialExchange {
     @DateCreated
     private Instant createdAt;
 
+    @DateUpdated
+    private Instant updatedAt;
+
     @OneToOne
     private BPASchema schema;
 
@@ -75,10 +79,12 @@ public class BPACredentialExchange {
     @Enumerated(EnumType.STRING)
     private CredentialExchangeState state;
 
+    @Deprecated
     @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> credentialOffer;
 
+    @Deprecated
     @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> credentialProposal;
@@ -86,8 +92,6 @@ public class BPACredentialExchange {
     @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> credential;
-
-    private Instant updatedAt;
 
     // revocation - link to issued credential
     /** credential revocation identifier */

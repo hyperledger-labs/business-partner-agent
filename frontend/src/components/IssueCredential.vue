@@ -55,11 +55,18 @@
         <h4>
           Options
         </h4>
-        <v-row>
-          <v-col>
-            <v-switch v-model="useV2Credential"></v-switch>
-          </v-col>
-        </v-row>
+        <v-col>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
+                Use V2 Protocol
+              </v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-switch v-model="useV2Credential"></v-switch>
+            </v-list-item-action>
+          </v-list-item>
+        </v-col>
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
