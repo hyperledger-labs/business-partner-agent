@@ -1,9 +1,6 @@
-import {CHAT_CURRENT_USERID} from "@/constants";
-
 export default {
   state: {
-    messages: [],
-    messagesReceivedCount: 0,
+    messages: []
   },
   getters: {
     messages: (state) => {
@@ -11,9 +8,6 @@ export default {
     },
     messagesCount: (state) => {
       return state.messages.length;
-    },
-    messagesReceivedCount: (state) => {
-      return state.messagesReceivedCount;
     }
   },
   actions: {
@@ -23,15 +17,14 @@ export default {
     onMessageReceived(state, payload) {
       let basicMsg = payload.message.info;
       let msgs = state.messages ? state.messages : [];
-      basicMsg.time = new Date().getTime(); // use for sorting
       msgs.push(basicMsg);
       state.messages = msgs;
-      if (basicMsg.partnerId !== CHAT_CURRENT_USERID) {
-        state.messagesReceivedCount = state.messagesReceivedCount + 1;
-      }
     },
-    messagesReceivedSeen(state) {
-      state.messagesReceivedCount = 0;
+    markMessagesSeen(state, partnerId) {
+      // seen means we remove them from the store for a given partner/room
+      let msgs = state.messages ? state.messages : [];
+      const unseen = msgs.filter(m => m.partnerId !== partnerId);
+      state.messages = unseen;
     }
   },
 };
