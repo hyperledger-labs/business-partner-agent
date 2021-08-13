@@ -9,16 +9,16 @@
   <v-container justify-center>
     <v-card class="mx-auto">
       <v-card-title class="bg-light">Settings</v-card-title>
-      <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title
-            class="grey--text text--darken-2 font-weight-medium"
-            >Expert mode</v-list-item-title
-          >
-        </v-list-item-content>
-        <v-list-item-action>
-          <v-switch v-model="expertMode"></v-switch>
-        </v-list-item-action>
+      <v-list-item v-if="!isLoading">
+        <v-list-item-title class="grey--text text--darken-2 font-weight-medium"
+          >Wallet DID
+        </v-list-item-title>
+        <v-list-item-subtitle align="end" id="did">
+          {{ this.status.did }}
+        </v-list-item-subtitle>
+        <v-btn icon x-small @click="copyDid">
+          <v-icon dark>$vuetify.icons.copy</v-icon>
+        </v-btn>
       </v-list-item>
       <v-list-item>
         <v-list-item-content>
@@ -65,7 +65,17 @@
           </v-btn>
         </v-list-item-action>
       </v-list-item>
-
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title
+            class="grey--text text--darken-2 font-weight-medium"
+            >Expert mode</v-list-item-title
+          >
+        </v-list-item-content>
+        <v-list-item-action>
+          <v-switch v-model="expertMode"></v-switch>
+        </v-list-item-action>
+      </v-list-item>
       <v-list-item
         v-show="expertMode"
         v-for="setting in settings"
@@ -92,9 +102,11 @@ export default {
   name: "Settings",
   created() {
     EventBus.$emit("title", "Settings");
+    this.getStatus();
   },
   data: () => {
     return {
+      isLoading: true,
       settingsHeader: [
         {
           text: "BPA Name",
@@ -148,6 +160,41 @@ export default {
       this.$vuetify.theme.themes.light.primary = c;
       localStorage.setItem("uiColor", c);
       this.isEditingColor = false;
+    },
+    getStatus() {
+      console.log("Getting status...");
+      this.$axios
+        .get(`${this.$apiBaseUrl}/status`)
+        .then((result) => {
+          console.log(result);
+          this.isWelcome = !result.data.profile;
+          this.status = result.data;
+          this.isLoading = false;
+        })
+        .catch((e) => {
+          console.error(e);
+          this.isLoading = false;
+          EventBus.$emit("error", e);
+        });
+    },
+    copyDid() {
+      let didEl = document.querySelector("#did");
+      const el = document.createElement("textarea");
+      el.value = didEl.innerHTML.trim();
+      document.body.appendChild(el);
+      el.select();
+
+      let successful;
+      try {
+        successful = document.execCommand("copy");
+      } catch (err) {
+        successful = false;
+      }
+      successful
+        ? EventBus.$emit("success", "DID copied")
+        : EventBus.$emit("error", "Can't copy DID");
+      document.body.removeChild(el);
+      window.getSelection().removeAllRanges();
     },
   },
   components: {

@@ -7,22 +7,6 @@
 -->
 <template>
   <v-container text-center>
-    <v-card flat v v-if="!isLoading" class="mx-auto">
-      <v-row>
-        <v-col class="col-sm-10 offset-sm-1 col-md-8 offset-md-2">
-          <v-text-field
-            id="did"
-            v-model="status.did"
-            readonly
-            outlined
-            dense
-            label="DID"
-            :append-icon="'$vuetify.icons.copy'"
-            @click:append="copyDid"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-    </v-card>
     <div v-if="isWelcome && !isLoading">
       <!-- Image from undraw.co -->
       <v-img
@@ -60,7 +44,10 @@
               <span class="cardTitle">
                 {{ status.credentials }}
               </span>
-              <span class="newHighlight" v-show="credentialNotificationsCount > 0">
+              <span
+                class="newHighlight"
+                v-show="credentialNotificationsCount > 0"
+              >
                 (+{{ credentialNotificationsCount }})
               </span>
             </v-card-title>
@@ -137,21 +124,6 @@ export default {
           this.isLoading = false;
           EventBus.$emit("error", e);
         });
-    },
-    copyDid() {
-      let didEl = document.querySelector("#did");
-      didEl.select();
-      let successfull;
-      try {
-        successfull = document.execCommand("copy");
-      } catch (err) {
-        successfull = false;
-      }
-      successfull
-        ? EventBus.$emit("success", "DID copied")
-        : EventBus.$emit("error", "Can't copy DID");
-      didEl.blur();
-      window.getSelection().removeAllRanges();
     },
   },
 };
