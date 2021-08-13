@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl.aries;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.acy_py.generated.model.V20CredExRecord;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
@@ -106,6 +107,11 @@ public class AriesEventHandler extends EventHandler {
                 issuerMgr.handleV1CredentialExchange(v1CredEx);
             }
         }
+    }
+
+    @Override
+    public void handleCredentialV2(V20CredExRecord v20Credential) {
+        log.debug("Issue Credential V2 Event: {}", v20Credential);
     }
 
     @Override

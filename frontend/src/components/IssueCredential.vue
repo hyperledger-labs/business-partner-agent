@@ -51,6 +51,16 @@
           </v-col>
         </v-row>
       </v-card-text>
+      <v-card-text>
+        <h4>
+          Options
+        </h4>
+        <v-row>
+          <v-col>
+            <v-switch v-model="useV2Credential"></v-switch>
+          </v-col>
+        </v-row>
+      </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
           <v-bpa-button color="secondary" @click="cancel()"
@@ -82,7 +92,7 @@ export default {
     partnerId: String,
     credDefId: String,
     partnerList: Array,
-    credDefList: Array,
+    credDefList: Array
   },
   mounted() {
     this.load();
@@ -98,6 +108,7 @@ export default {
       credential: {},
       credentialFields: {},
       submitDisabled: true,
+      useV2Credential: null
     };
   },
   computed: {},
@@ -174,10 +185,15 @@ export default {
       this.isLoading = false;
     },
     async issueCredential() {
+      let exVersion = null;
+      if (this.useV2Credential) {
+        exVersion = "V2";
+      }
       const data = {
         credDefId: this.credDef.id,
         partnerId: this.partner.id,
         document: this.credentialFields,
+        exchangeVersion: exVersion
       };
       try {
         const resp = await issuerService.issueCredentialSend(data);

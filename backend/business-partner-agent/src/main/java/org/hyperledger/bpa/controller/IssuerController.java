@@ -32,9 +32,9 @@ import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.controller.api.issuer.*;
 import org.hyperledger.bpa.impl.IssuerCredentialManager;
-import org.hyperledger.bpa.impl.util.Converter;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -48,9 +48,6 @@ public class IssuerController {
 
     @Inject
     IssuerCredentialManager im;
-
-    @Inject
-    Converter conv;
 
     /**
      * List configured schemas
@@ -129,16 +126,12 @@ public class IssuerController {
      * @return {@link HttpResponse}
      */
     @Post("/issue-credential/send")
-    public HttpResponse<String> issueCredentialSend(@Body IssueCredentialSendRequest req) {
-        Optional<V1CredentialExchange> exchange = im.issueCredentialSend(UUID.fromString(req.getCredDefId()),
-                UUID.fromString(req.getPartnerId()),
-                conv.toMap(req.getDocument()));
-        if (exchange.isPresent()) {
-            // just return the id and not the full Aries Object.
-            // Event handlers will create the db cred ex records
-            return HttpResponse.ok(exchange.get().getCredentialExchangeId());
-        }
-        return HttpResponse.badRequest();
+    public HttpResponse<String> issueCredentialSend(@Valid @Body IssueCredentialSendRequest req) {
+        String exchange = im.issueCredentialSend(
+                IssuerCredentialManager.IssueCredentialRequest.from(req));
+        // just return the id and not the full Aries Object.
+        // Event handlers will create the db cred ex records
+        return HttpResponse.ok(exchange);
     }
 
     /**

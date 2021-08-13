@@ -17,11 +17,16 @@
  */
 package org.hyperledger.bpa.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.Gson;
 import io.micronaut.core.annotation.Nullable;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.acy_py.generated.model.V20CredFilter;
+import org.hyperledger.acy_py.generated.model.V20CredFilterIndy;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credential_definition.CredentialDefinition;
 import org.hyperledger.aries.api.credential_definition.CredentialDefinition.CredentialDefinitionRequest;
@@ -31,9 +36,11 @@ import org.hyperledger.aries.api.credentials.CredentialPreview;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialProposalRequest;
+import org.hyperledger.aries.api.issue_credential_v2.V2CredentialSendRequest;
 import org.hyperledger.aries.api.revocation.RevokeRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
 import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.api.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.IssuerException;
 import org.hyperledger.bpa.api.exception.NetworkException;
@@ -42,6 +49,7 @@ import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.issuer.CredDef;
 import org.hyperledger.bpa.controller.api.issuer.CredEx;
+import org.hyperledger.bpa.controller.api.issuer.IssueCredentialSendRequest;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.Converter;
@@ -168,15 +176,15 @@ public class IssuerCredentialManager {
         }
     }
 
-    public Optional<V1CredentialExchange> issueCredentialSend(@NonNull UUID credDefId, @NonNull UUID partnerId,
-            @NonNull Map<String, Object> document) {
-        final Optional<Partner> dbPartner = partnerRepo.findById(partnerId);
+    public String issueCredentialSend(@NonNull IssueCredentialRequest request) {
+        Map<String, Object> document = conv.toMap(request.getDocument());
+        final Optional<Partner> dbPartner = partnerRepo.findById(request.getPartnerId());
         if (dbPartner.isEmpty()) {
-            throw new IssuerException(String.format("Could not find partner with id '%s'", partnerId));
+            throw new IssuerException(String.format("Could not find partner with id '%s'", request.getPartnerId()));
         }
-        final Optional<BPACredentialDefinition> dbCredDef = credDefRepo.findById(credDefId);
+        final Optional<BPACredentialDefinition> dbCredDef = credDefRepo.findById(request.getCredDefId());
         if (dbCredDef.isEmpty()) {
-            throw new IssuerException(String.format("Could not find credential definition with id '%s'", credDefId));
+            throw new IssuerException(String.format("Could not find credential definition with id '%s'", request.getCredDefId()));
         }
         // ok, we have partner/connection, we have a cred def/schema
         // let's make sure the document matches up with the schema.
@@ -188,17 +196,57 @@ public class IssuerCredentialManager {
                     documentAttributeNames, schemaAttributeNames));
         }
 
+        String connectionId = dbPartner.get().getConnectionId();
+        String schemaId = dbCredDef.get().getSchema().getSchemaId();
+        String credentialDefinitionId = dbCredDef.get().getCredentialDefinitionId();
+        if (request.isV1()) {
+            return sendV1Credential(connectionId,
+                    schemaId,
+                    credentialDefinitionId,
+                    new CredentialPreview(CredentialAttributes.from(document)));
+        } else {
+            return sendV2Credential(connectionId,
+                    schemaId,
+                    credentialDefinitionId, V2CredentialSendRequest.V2CredentialPreview
+                            .builder()
+                            .attributes(CredentialAttributes.from(document))
+                            .build());
+        }
+    }
+
+    private String sendV1Credential(@NonNull String connectionId, @NonNull String schemaId,
+            @NonNull String credDefId, @NonNull CredentialPreview attributes) {
         try {
             return ac.issueCredentialSend(
                     V1CredentialProposalRequest
                             .builder()
-                            .connectionId(dbPartner.get().getConnectionId())
-                            .schemaId(dbCredDef.get().getSchema().getSchemaId())
-                            .credentialProposal(
-                                    new CredentialPreview(
-                                            CredentialAttributes.from(document)))
-                            .credentialDefinitionId(dbCredDef.get().getCredentialDefinitionId())
-                            .build());
+                            .connectionId(connectionId)
+                            .schemaId(schemaId)
+                            .credentialProposal(attributes)
+                            .credentialDefinitionId(credDefId)
+                            .build())
+                    .orElseThrow().getCredentialExchangeId();
+        } catch (IOException e) {
+            throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
+        }
+    }
+
+    private String sendV2Credential(@NonNull String connectionId, @NonNull String schemaId,
+            @NonNull String credDefId,@NonNull V2CredentialSendRequest.V2CredentialPreview attributes)  {
+        try {
+            return ac.issueCredentialV2Send(V2CredentialSendRequest
+                    .builder()
+                    .connectionId(connectionId)
+                    .credentialPreview(attributes)
+                            .filter(V20CredFilter
+                                    .builder()
+                                    .indy(V20CredFilterIndy
+                                            .builder()
+                                            .schemaId(schemaId)
+                                            .credDefId(credDefId)
+                                            .build())
+                                    .build())
+                    .build()).orElseThrow().getCredExId();
         } catch (IOException e) {
             throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
         }
@@ -271,6 +319,11 @@ public class IssuerCredentialManager {
             break;
         }
     }
+
+    // TODO refactor v1
+    // Merge v1 logic with v2 logic in client
+    // Implement v2 handlers here, probably merge with v1 handler as the data is nearly the same
+    // probably needs a intermediate model
 
     private void createCredentialExchange(@NonNull V1CredentialExchange exchange) {
 
@@ -349,5 +402,31 @@ public class IssuerCredentialManager {
             }
         }
         return result;
+    }
+
+    /**
+     * Internal transfer POJO
+     */
+    @Data
+    @Builder
+    public static final class IssueCredentialRequest {
+        private UUID credDefId;
+        private UUID partnerId;
+        private ExchangeVersion exchangeVersion;
+        private JsonNode document;
+
+        public boolean isV1() {
+            return exchangeVersion == null || ExchangeVersion.V1.equals(exchangeVersion);
+        }
+
+        public static IssueCredentialRequest from(IssueCredentialSendRequest r) {
+            return IssueCredentialRequest
+                    .builder()
+                    .credDefId(UUID.fromString(r.getCredDefId()))
+                    .partnerId(UUID.fromString(r.getPartnerId()))
+                    .exchangeVersion(r.getExchangeVersion())
+                    .document(r.getDocument())
+                    .build();
+        }
     }
 }
