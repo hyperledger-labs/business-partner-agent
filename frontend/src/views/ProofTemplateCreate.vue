@@ -58,12 +58,9 @@
                 v-for="(attributeGroup, idx) in proofTemplate.attributeGroups"
                 :key="idx"
               >
-                <v-expansion-panel-header>
-                  {{
-                    schemas.find((s) => s.id === attributeGroup.schemaId)
-                      .schemaId
-                  }}
-                </v-expansion-panel-header>
+                <v-expansion-panel-header
+                  v-html="renderSchemaLabelId(attributeGroup)"
+                ></v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-container>
                     <v-row>
@@ -295,7 +292,9 @@
                   :key="schema.id"
                   @click="addAttributeGroup(schema.id)"
                 >
-                  <v-list-item-title>{{ schema.schemaId }}</v-list-item-title>
+                  <v-list-item-title>
+                    {{ schema.label }}<i>&nbsp;({{ schema.schemaId }})</i>
+                  </v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -387,6 +386,12 @@ export default {
   computed: {},
   watch: {},
   methods: {
+    renderSchemaLabelId(attributeGroup) {
+      const schema = this.$store.getters.getSchemas.find(
+        (s) => s.id === attributeGroup.schemaId
+      );
+      return `${schema.label}<i>&nbsp;(${schema.schemaId})</i>`;
+    },
     addAttributeGroup(schemaId) {
       // add a blank attribute group template
       this.proofTemplate.attributeGroups.push({
