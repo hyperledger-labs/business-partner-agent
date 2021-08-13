@@ -73,9 +73,9 @@
                 v-for="attributeGroup in proofTemplate.attributeGroups"
                 :key="attributeGroup.schemaId"
               >
-                <v-expansion-panel-header
-                  v-html="renderSchemaLabelId(attributeGroup)"
-                ></v-expansion-panel-header>
+                <v-expansion-panel-header>
+                  <span v-html="renderSchemaLabelId(attributeGroup)"></span>
+                </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-container>
                     <h4>Attributes</h4>
