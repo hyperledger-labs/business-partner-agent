@@ -29,7 +29,6 @@ import org.hyperledger.bpa.api.aries.AriesCredential;
 @AllArgsConstructor
 @Getter
 public class CredentialAddedEvent {
-
     private AriesCredential credential;
     private V1CredentialExchange credentialExchange;
 }

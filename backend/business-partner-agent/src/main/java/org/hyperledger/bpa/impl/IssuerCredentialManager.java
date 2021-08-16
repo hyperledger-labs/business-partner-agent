@@ -41,6 +41,7 @@ import org.hyperledger.aries.api.issue_credential_v2.V2CredentialSendRequest;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.revocation.RevokeRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
+import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
@@ -99,7 +100,6 @@ public class IssuerCredentialManager {
 
     @Inject
     BPAMessageSource.DefaultMessageSource msg;
-
 
     // Credential Definition Management
 
@@ -175,7 +175,7 @@ public class IssuerCredentialManager {
                         request.getPartnerId())));
 
         BPACredentialDefinition dbCredDef = credDefRepo.findById(request.getCredDefId())
-                .orElseThrow( () -> new IssuerException(
+                .orElseThrow(() -> new IssuerException(
                         String.format("Could not find credential definition with id '%s'", request.getCredDefId())));
 
         Map<String, String> document = conv.toStringMap(request.getDocument());
@@ -188,7 +188,7 @@ public class IssuerCredentialManager {
 
         ExchangeResult exRes;
         if (request.isV1()) {
-            exRes =  sendV1Credential(Objects.requireNonNull(connectionId),
+            exRes = sendV1Credential(Objects.requireNonNull(connectionId),
                     schemaId,
                     credentialDefinitionId,
                     new CredentialPreview(CredentialAttributes.fromMap(document)));
@@ -201,7 +201,8 @@ public class IssuerCredentialManager {
                             .build());
         }
 
-        // as I'm the issuer I know what I have issued, no need to get this info from the exchange again
+        // as I'm the issuer I know what I have issued, no need to get this info from
+        // the exchange again
         Credential credential = Credential.builder()
                 .schemaId(schemaId)
                 .credentialDefinitionId(credentialDefinitionId)
@@ -227,7 +228,8 @@ public class IssuerCredentialManager {
 
     /**
      * Check if the supplied attributes match the schema
-     * @param document the credential
+     * 
+     * @param document  the credential
      * @param dbCredDef {@link BPACredentialDefinition}
      */
     private void checkAttributes(Map<String, String> document, BPACredentialDefinition dbCredDef) {
@@ -258,21 +260,22 @@ public class IssuerCredentialManager {
     }
 
     private ExchangeResult sendV2Credential(@NonNull String connectionId, @NonNull String schemaId,
-            @NonNull String credDefId,@NonNull V2CredentialSendRequest.V2CredentialPreview attributes)  {
+            @NonNull String credDefId, @NonNull V2CredentialSendRequest.V2CredentialPreview attributes) {
         try {
-            return ac.issueCredentialV2Send(V2CredentialSendRequest
+            V2CredentialSendRequest v2SendRequest = V2CredentialSendRequest
                     .builder()
                     .connectionId(connectionId)
                     .credentialPreview(attributes)
-                            .filter(V20CredFilter
+                    .filter(V20CredFilter
+                            .builder()
+                            .indy(V20CredFilterIndy
                                     .builder()
-                                    .indy(V20CredFilterIndy
-                                            .builder()
-                                            .schemaId(schemaId)
-                                            .credDefId(credDefId)
-                                            .build())
+                                    .schemaId(schemaId)
+                                    .credDefId(credDefId)
                                     .build())
-                    .build())
+                            .build())
+                    .build();
+            return ac.issueCredentialV2Send(v2SendRequest)
                     .map(ExchangeResult::fromV2)
                     .orElseThrow();
         } catch (IOException e) {
@@ -302,6 +305,7 @@ public class IssuerCredentialManager {
 
     /**
      * Handle issue credential v1 state changes and revocation info
+     * 
      * @param ex {@link V1CredentialExchange}
      */
     public void handleV1CredentialExchange(@NonNull V1CredentialExchange ex) {
@@ -315,15 +319,18 @@ public class IssuerCredentialManager {
 
     /**
      * Handle issue credential v2 state changes
+     * 
      * @param ex {@link V20CredExRecord}
      */
     public void handleV2CredentialExchange(@NonNull V20CredExRecord ex) {
         credExRepo.findByCredentialExchangeId(ex.getCredExId())
-                .ifPresent(bpaEx -> credExRepo.updateState(bpaEx.getId(), CredentialExchangeState.fromV2(ex.getState())));
+                .ifPresent(
+                        bpaEx -> credExRepo.updateState(bpaEx.getId(), CredentialExchangeState.fromV2(ex.getState())));
     }
 
     /**
      * Handle issue credential v2 revocation info
+     * 
      * @param revocationInfo {@link V2IssueIndyCredentialEvent}
      */
     public void handleIssueCredentialV2Indy(V2IssueIndyCredentialEvent revocationInfo) {
@@ -387,7 +394,8 @@ public class IssuerCredentialManager {
         }
     }
 
-    @Data @Builder
+    @Data
+    @Builder
     private static final class ExchangeResult {
         private String credentialExchangeId;
         private String threadId;

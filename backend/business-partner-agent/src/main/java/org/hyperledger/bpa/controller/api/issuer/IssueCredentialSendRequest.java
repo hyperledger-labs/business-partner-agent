@@ -20,7 +20,6 @@ package org.hyperledger.bpa.controller.api.issuer;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.core.annotation.Introspected;
-import io.micronaut.core.annotation.NonNull;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,6 +50,5 @@ public class IssueCredentialSendRequest {
     /** credential body key value pairs */
     @JsonRawValue
     @Schema(example = "{}")
-    @NonNull
     private JsonNode document;
 }

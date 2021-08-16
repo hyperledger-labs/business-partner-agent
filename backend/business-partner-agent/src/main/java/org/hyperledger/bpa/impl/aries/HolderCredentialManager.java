@@ -35,6 +35,8 @@ import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialProposalRequest;
+import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
+import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.api.CredentialType;
@@ -138,47 +140,7 @@ public class HolderCredentialManager {
         }
     }
 
-    // credential, signed and stored in wallet
-    public void handleV1CredentialExchangeAcked(@NonNull V1CredentialExchange credEx) {
-        String label = labelStrategy.apply(credEx.getCredential());
-        MyCredential dbCred = MyCredential
-                .builder()
-                .isPublic(Boolean.FALSE)
-                .connectionId(credEx.getConnectionId())
-                .threadId(credEx.getThreadId())
-                .referent(credEx.getCredential().getReferent())
-                .credential(conv.toMap(credEx.getCredential()))
-                .type(CredentialType.INDY)
-                .state(credEx.getState())
-                .issuer(resolveIssuer(credEx.getCredential()))
-                .issuedAt(Instant.now())
-                .label(label)
-                .build();
-        MyCredential updated = credRepo.save(dbCred);
-        AriesCredential ariesCredential = buildAriesCredential(updated);
-        eventPublisher.publishEventAsync(CredentialAddedEvent.builder()
-                .credential(ariesCredential)
-                .credentialExchange(credEx)
-                .build());
-    }
-
-    public void handleV2CredentialExchangeAcked(@NonNull V20CredExRecord credEx) {
-        //String label = labelStrategy.apply(credEx.getCredential());
-        MyCredential dbCred = MyCredential
-                .builder()
-                .isPublic(Boolean.FALSE)
-                .connectionId(credEx.getConnectionId())
-                .threadId(credEx.getThreadId())
-                //.referent(credEx.getCredential().getReferent())
-                //.credential(conv.toMap(credEx.getCredential()))
-                .type(CredentialType.INDY)
-                .state(CredentialExchangeState.fromV2(credEx.getState()))
-                //.issuer(resolveIssuer(credEx.getCredential()))
-                .issuedAt(Instant.now())
-                .build();
-        credRepo.save(dbCred);
-    }
-
+    // credential visible in public profile
     public Optional<MyCredential> toggleVisibility(UUID id) {
         final Optional<MyCredential> cred = credRepo.findById(id);
         if (cred.isPresent()) {
@@ -211,10 +173,6 @@ public class HolderCredentialManager {
                     .revocable(StringUtils.isNotEmpty(ariesCred.getRevRegId()))
                     .typeLabel(schemaService.getSchemaLabel(ariesCred.getSchemaId()))
                     .credentialData(ariesCred.getAttrs());
-            // TODO only for backwards compatibility, can be removed at some point
-            if (dbCred.getIssuer() == null) {
-                myCred.issuer(resolveIssuer(ariesCred));
-            }
         }
         return myCred.build();
     }
@@ -244,7 +202,7 @@ public class HolderCredentialManager {
                     ac.credentialRemove(c.getReferent());
                 }
             } catch (AriesException | IOException e) {
-                // if we fail here its not good, but also no deal breaker, so log and continue
+                // if we fail here it's not good, but also no deal-breaker, so log and continue
                 log.error("Could not delete aca-py credential for referent: {}", c.getReferent(), e);
             }
             credRepo.deleteById(id);
@@ -255,7 +213,7 @@ public class HolderCredentialManager {
     }
 
     /**
-     * Tries to resolve the issuers DID into a human readable name. Resolution order
+     * Tries to resolve the issuers DID into a human-readable name. Resolution order
      * is: 1. Partner alias the user gave 2. Legal name from the partners public
      * profile 3. ACA-PY Label 4. DID
      *
@@ -313,5 +271,73 @@ public class HolderCredentialManager {
                 log.error("Revocation check failed", e);
             }
         });
+    }
+
+    // credential, signed and stored in wallet
+    public void handleV1CredentialExchangeAcked(@NonNull V1CredentialExchange credEx) {
+        String label = labelStrategy.apply(credEx.getCredential());
+        MyCredential dbCred = defaultCredentialBuilder()
+                .connectionId(credEx.getConnectionId())
+                .threadId(credEx.getThreadId())
+                .credentialExchangeId(credEx.getCredentialExchangeId())
+                .referent(credEx.getCredential().getReferent())
+                .state(credEx.getState())
+                .credential(conv.toMap(credEx.getCredential()))
+                .label(label)
+                .issuer(resolveIssuer(credEx.getCredential()))
+                .build();
+        MyCredential dbCredential = credRepo.save(dbCred);
+        fireCredentialReceivedEvent(credEx, dbCredential);
+    }
+
+    public void handleV2CredentialExchangeReceived(@NonNull V20CredExRecord credEx) {
+        V2ToV1IndyCredentialConverter.INSTANCE().toV1(credEx).ifPresent(c -> {
+            MyCredential dbCred = defaultCredentialBuilder()
+                    .connectionId(credEx.getConnectionId())
+                    .threadId(credEx.getThreadId())
+                    .credentialExchangeId(credEx.getCredExId())
+                    .referent(credEx.getCredExId())
+                    .state(CredentialExchangeState.fromV2(credEx.getState()))
+                    .build();
+            credRepo.save(dbCred);
+        });
+    }
+
+    public void handleV2CredentialExchangeDone(@NonNull V20CredExRecord credEx) {
+        credRepo.findByCredentialExchangeId(credEx.getCredExId()).ifPresent(
+                dbCred -> V2ToV1IndyCredentialConverter.INSTANCE().toV1(credEx)
+                        .ifPresent(c -> {
+                            String label = labelStrategy.apply(c);
+                            dbCred
+                                    .setState(CredentialExchangeState.fromV2(credEx.getState()))
+                                    .setCredential(conv.toMap(c))
+                                    .setLabel(label)
+                                    .setIssuer(resolveIssuer(c));
+                            MyCredential dbCredential = credRepo.update(dbCred);
+                            fireCredentialReceivedEvent(null, dbCredential);
+                        }));
+    }
+
+    public void handleIssueCredentialV2Indy(V2IssueIndyCredentialEvent credentialEvent) {
+        credRepo.findByCredentialExchangeId(credentialEvent.getCredExId()).ifPresent(bpaEx -> {
+            bpaEx.setReferent(credentialEvent.getCredIdStored());
+            credRepo.update(bpaEx);
+        });
+    }
+
+    private void fireCredentialReceivedEvent(V1CredentialExchange credEx, MyCredential updated) {
+        AriesCredential ariesCredential = buildAriesCredential(updated);
+        eventPublisher.publishEventAsync(CredentialAddedEvent.builder()
+                .credential(ariesCredential)
+                .credentialExchange(credEx)
+                .build());
+    }
+
+    private MyCredential.MyCredentialBuilder defaultCredentialBuilder() {
+        return MyCredential
+                .builder()
+                .isPublic(Boolean.FALSE)
+                .type(CredentialType.INDY)
+                .issuedAt(Instant.now());
     }
 }

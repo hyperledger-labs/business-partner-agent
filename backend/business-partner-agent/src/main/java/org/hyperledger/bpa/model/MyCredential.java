@@ -67,8 +67,15 @@ public class MyCredential {
 
     private Boolean isPublic;
 
+    /**
+     * aca-py credential identifier
+     */
     @Nullable
     private String referent;
+
+    /** temporary credential exchange identifier */
+    @Nullable
+    private String credentialExchangeId;
 
     @Nullable
     private String connectionId;

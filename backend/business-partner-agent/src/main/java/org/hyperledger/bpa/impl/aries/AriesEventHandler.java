@@ -122,10 +122,13 @@ public class AriesEventHandler extends EventHandler {
             synchronized (issuerMgr) {
                 issuerMgr.handleV2CredentialExchange(v20Credential);
             }
-        } else if (V20CredExRecord.RoleEnum.HOLDER.equals(v20Credential.getRole())
-                && V20CredExRecord.StateEnum.DONE.equals(v20Credential.getState())) {
+        } else if (V20CredExRecord.RoleEnum.HOLDER.equals(v20Credential.getRole())) {
             synchronized (holderMgr) {
-                holderMgr.handleV2CredentialExchangeAcked(v20Credential);
+                if (V20CredExRecord.StateEnum.CREDENTIAL_RECEIVED.equals(v20Credential.getState())) {
+                    holderMgr.handleV2CredentialExchangeReceived(v20Credential);
+                } else if (V20CredExRecord.StateEnum.DONE.equals(v20Credential.getState())) {
+                    holderMgr.handleV2CredentialExchangeDone(v20Credential);
+                }
             }
         }
     }
@@ -135,6 +138,9 @@ public class AriesEventHandler extends EventHandler {
         log.debug("Issue Credential V2 Indy Event: {}", revocationInfo);
         synchronized (issuerMgr) {
             issuerMgr.handleIssueCredentialV2Indy(revocationInfo);
+        }
+        synchronized (holderMgr) {
+            holderMgr.handleIssueCredentialV2Indy(revocationInfo);
         }
     }
 
