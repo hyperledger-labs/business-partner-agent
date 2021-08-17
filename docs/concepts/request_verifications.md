@@ -2,7 +2,7 @@
 
 BPA supports two mechanisms to receive Indy credentials in its wallet. 
 
-1. An issuer can trigger the usual [issue credential flow](https://github.com/hyperledger/aries-rfcs/tree/master/features/0036-issue-credential) and the credential shows up in the wallet, because ACA-Py is configured with the following auto flags.
+1. An issuer can trigger the usual [issue credential flow](https://github.com/hyperledger/aries-rfcs/tree/main/features/0036-issue-credential) and the credential shows up in the wallet, because ACA-Py is configured with the following auto flags.
    - auto-respond-credential-offer: true
    - auto-store-credential: true 
 2. A user can request a verification for a document in the wallet.
@@ -32,9 +32,9 @@ We assume that the issuer is able to identify the holder already in the process 
 
 ## Possible Improvements
 
-- In practice, the verification process might trigger a workflow that includes one or more proof requests from the issuer. This could be implemented using [Coprotocols](https://github.com/hyperledger/aries-rfcs/blob/master/concepts/0478-coprotocols/README.md)
+- In practice, the verification process might trigger a workflow that includes one or more proof requests from the issuer. This could be implemented using [Coprotocols](https://github.com/hyperledger/aries-rfcs/blob/main/concepts/0478-coprotocols/README.md)
 - Show all possible issuers for a document in the UI based on ledger data. If an issuer is not already a business partner provide a link to add it. 
 
 ## Used Aries protocols
 
-[0036: Issue Credential Protocol 1.0](https://github.com/hyperledger/aries-rfcs/blob/master/features/0036-issue-credential/README.md)
+[0036: Issue Credential Protocol 1.0](https://github.com/hyperledger/aries-rfcs/blob/main/features/0036-issue-credential/README.md)
