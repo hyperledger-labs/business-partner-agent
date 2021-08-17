@@ -251,36 +251,32 @@ export default {
   },
   created() {
     EventBus.$emit("title", "Proof Templates");
-    this.getProofTemplate();
   },
   data: () => {
     return {
-      schemas: [],
+      proofTemplate: {},
     };
   },
   mounted() {
-    // load schemas
-    this.schemas = this.$store.getters.getSchemas.filter(
-      (schema) => schema.type === "INDY"
-    );
+    proofTemplateService.getProofTemplate(this.id).then((result) => {
+      this.proofTemplate = result.data;
+    });
   },
-  computed: {},
+  computed: {
+    schemas() {
+      return this.$store.getters.getSchemas.filter(
+        (schema) => schema.type === "INDY"
+      );
+    },
+  },
   watch: {},
   methods: {
-    getProofTemplate() {
-      this.proofTemplate = this.$store.state.proofTemplates.find(
-        (pt) => pt.id === this.id
-      );
-      console.log("found: {}", JSON.stringify(this.proofTemplate));
-    },
     deleteProofTemplate() {
       proofTemplateService
         .deleteProofTemplate(this.proofTemplate.id)
         .then((result) => {
-          console.log(result);
           if (result.status === 200) {
             EventBus.$emit("success", "Proof Template Deleted");
-
             this.$router.push({
               name: "ProofTemplates",
               params: {},

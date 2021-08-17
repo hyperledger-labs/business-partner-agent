@@ -362,21 +362,13 @@ export default {
     EventBus.$emit("title", "Proof Templates");
   },
   mounted() {
-    // load schemas
-    this.schemas = this.$store.getters.getSchemas.filter(
-      (schema) => schema.type === "INDY"
-    );
-
     // load condition operators (>, <, ==, etc)
-    this.$axios
-      .get(`${this.$apiBaseUrl}/proof-templates/known-condition-operators`)
-      .then((result) => {
-        this.operators = result.data;
-      });
+    proofTemplateService.getKnownConditionOperators().then((result) => {
+      this.operators = result.data;
+    });
   },
   data: () => {
     return {
-      schemas: [],
       operators: [],
       proofTemplate: {
         name: "",
@@ -384,7 +376,13 @@ export default {
       },
     };
   },
-  computed: {},
+  computed: {
+    schemas() {
+      return this.$store.getters.getSchemas.filter(
+        (schema) => schema.type === "INDY"
+      );
+    },
+  },
   watch: {},
   methods: {
     addAttributeGroup(schemaId) {

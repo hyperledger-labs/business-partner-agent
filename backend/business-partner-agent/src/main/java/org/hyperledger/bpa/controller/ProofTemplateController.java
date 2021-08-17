@@ -55,6 +55,16 @@ public class ProofTemplateController {
                         .collect(Collectors.toList()));
     }
 
+    @Get("/{id}")
+    public HttpResponse<ProofTemplate> getProofTemplateForId(@PathVariable @ValidUUID @NotNull String id) {
+        Optional<BPAProofTemplate> proofTemplate = proofTemplateManager.getProofTemplate(UUID.fromString(id));
+        if(proofTemplate.isPresent()){
+            return HttpResponse.ok(proofTemplate.get().toRepresentation());
+        } else {
+            return HttpResponse.notFound();
+        }
+    }
+
     @Post
     public HttpResponse<ProofTemplate> addProofTemplate(@Valid @Body ProofTemplate template) {
         if (template.getId() == null) {
