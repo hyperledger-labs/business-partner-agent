@@ -2,7 +2,7 @@ name: Cleanup old branches
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   housekeeping:
     name: Cleanup old branches

@@ -40,7 +40,7 @@ mvn clean package -Pbuild-frontend
 
 Depending on the docker version the .env file either needs to reside in the root directory (older versions) or in the script's directory (newer versions)
 
-[See .env file set up](https://github.com/hyperledger-labs/business-partner-agent/blob/master/scripts/README.md) 
+[See .env file set up](https://github.com/hyperledger-labs/business-partner-agent/blob/main/scripts/README.md) 
 ```
 scripts/.env-example -> scripts/.env
 ```

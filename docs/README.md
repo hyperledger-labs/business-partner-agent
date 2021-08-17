@@ -14,7 +14,7 @@
 
 ## Tutorials
 
-- [Setup a business partner agent with Docker Compose](https://github.com/hyperledger-labs/business-partner-agent/tree/master/scripts/README.md)
+- [Setup a business partner agent with Docker Compose](https://github.com/hyperledger-labs/business-partner-agent/tree/main/scripts/README.md)
 - [Setup a business partner agent with Kubernetes and Helm](https://github.com/hyperledger-labs/business-partner-agent-chart)
 - [Get a verified bank account](tutorials/demo.md)
 

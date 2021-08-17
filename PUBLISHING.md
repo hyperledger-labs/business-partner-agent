@@ -25,7 +25,7 @@ Example release history:
 
 ## Publish docker image
 
-The code to be published should be in the `master` branch.
+The code to be published should be in the `main` branch.
 A docker image will be created and pushed to our github registry automatically by a [github workflow](.github/workflows/build.yml) - tagged with the sha.
 
 For defined versions (e.g. `0.2.0`), create a git tag in the format `<new version>` to trigger the workflow.
