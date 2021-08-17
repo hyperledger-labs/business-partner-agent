@@ -63,7 +63,7 @@ jobs:
         run: npm --prefix frontend run license
       
       - name: Backend attribution
-        run: mvn -f backend/pom.xml generate-resources -Pbackend-license
+        run: mvn -f backend/pom.xml compile -Pbackend-license
 
       # Build Phase
  
