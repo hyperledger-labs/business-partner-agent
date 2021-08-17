@@ -51,7 +51,7 @@
           </v-col>
         </v-row>
       </v-card-text>
-      <v-card-text>
+      <v-card-text v-if="expertMode">
         <h4>
           Options
         </h4>
@@ -118,7 +118,11 @@ export default {
       useV2Credential: null
     };
   },
-  computed: {},
+  computed: {
+    expertMode() {
+      return this.$store.state.expertMode;
+    }
+  },
   watch: {
     partnerId(val) {
       if (val) {
