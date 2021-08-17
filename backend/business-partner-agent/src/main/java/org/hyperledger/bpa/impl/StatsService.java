@@ -91,8 +91,6 @@ public class StatsService {
                 .did(identity.getMyDid())
                 .profile(docRepo
                         .existsByTypeEqualsAndIsPublicTrue(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL))
-                .partners(partnerRepo.count())
-                .credentials(credRepo.countByStateEquals(CredentialExchangeState.CREDENTIAL_ACKED))
                 .totals(totals)
                 .periodTotals(periodTotals)
                 .build();
