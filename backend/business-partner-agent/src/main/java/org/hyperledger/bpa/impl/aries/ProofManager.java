@@ -58,6 +58,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -248,7 +249,8 @@ public class ProofManager {
 
     public void sendProofProposal(@NonNull UUID partnerId, @NonNull UUID myCredentialId) {
         partnerRepo.findById(partnerId).ifPresent(p -> credRepo.findById(myCredentialId).ifPresent(c -> {
-            Credential cred = conv.fromMap(c.getCredential(), Credential.class);
+            Credential cred = conv.fromMap(
+                    Objects.requireNonNull(c.getCredential()), Credential.class);
             final PresentProofProposal req = PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred);
             try {
                 ac.presentProofSendProposal(req).ifPresent(proof -> {

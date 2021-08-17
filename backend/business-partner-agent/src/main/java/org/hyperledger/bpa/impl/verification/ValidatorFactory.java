@@ -83,7 +83,7 @@ public class ValidatorFactory {
         return (value, annotationMetadata, context) -> {
             boolean valid = false;
             if (value != null) {
-                Optional<Predicate<String>> attributeInSchema = Optional.ofNullable(value)
+                Optional<Predicate<String>> attributeInSchema = Optional.of(value)
                         .map(BPAAttributeGroup::getSchemaId)
                         .filter(this::isUUID)
                         .map(UUID::fromString)

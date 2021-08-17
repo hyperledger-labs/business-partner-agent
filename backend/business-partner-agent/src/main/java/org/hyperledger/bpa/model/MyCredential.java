@@ -97,4 +97,12 @@ public class MyCredential {
 
     @Nullable
     private Boolean revoked;
+
+    public static MyCredential.MyCredentialBuilder defaultCredentialBuilder() {
+        return MyCredential
+                .builder()
+                .isPublic(Boolean.FALSE)
+                .type(CredentialType.INDY)
+                .issuedAt(Instant.now());
+    }
 }

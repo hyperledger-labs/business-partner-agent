@@ -153,7 +153,7 @@ public class AriesEventHandler extends EventHandler {
 
     @Override
     public void handleBasicMessage(BasicMessage message) {
-        // since basic message handling is so simple (only one way to handle it), let's
+        // since basic message handling is so simple (only one way to handle it), let
         // the manager handle it.
         chatMessageManager.handleIncomingMessage(message);
     }

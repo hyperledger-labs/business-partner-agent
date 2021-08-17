@@ -147,8 +147,8 @@ public class NotificationEventListener {
         log.debug("onPresentationRequestCompletedEvent");
         // we have the partner id, but not the partner, will need to look up partner...
         partnerManager.getPartnerById(event.getPartnerProof().getPartnerId()).ifPresent(p -> {
-            WebSocketMessageBody message = null;
-            if (event.getPartnerProof().getRole().equals(PresentationExchangeRole.PROVER)) {
+            WebSocketMessageBody message;
+            if (PresentationExchangeRole.PROVER.equals(event.getPartnerProof().getRole())) {
                 message = WebSocketMessageBody.notificationEvent(
                         WebSocketMessageBody.WebSocketMessageType.ON_PRESENTATION_PROVED,
                         event.getPartnerProof().getId().toString(),

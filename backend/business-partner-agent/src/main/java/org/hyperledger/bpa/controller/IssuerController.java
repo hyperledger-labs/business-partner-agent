@@ -90,7 +90,7 @@ public class IssuerController {
     }
 
     /**
-     * List cred defs, items that i can issue
+     * List cred defs, items that I can issue
      *
      * @return list of {@link SchemaAPI}
      */

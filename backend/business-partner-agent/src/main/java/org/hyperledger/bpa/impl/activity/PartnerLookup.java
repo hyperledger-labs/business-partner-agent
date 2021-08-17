@@ -97,7 +97,7 @@ public class PartnerLookup {
     }
 
     /**
-     * Tries to find the the public key in the did document that matches the proofs
+     * Tries to find the public key in the did document that matches the proof's
      * verification method
      *
      * @param verificationMethod  the proof verification method

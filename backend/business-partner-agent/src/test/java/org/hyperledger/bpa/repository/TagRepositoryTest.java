@@ -161,7 +161,7 @@ class TagRepositoryTest {
         tagRepo.deletePartnerToTagMapping(dbPartner.get().getId(), tag.getId());
         dbPartner = partnerRepo.findById(partner.getId());
         assertTrue(dbPartner.isPresent());
-        // Tag should removed from partner, but tag should not be removed from tag repo
+        // Tag should be removed from partner, but tag should not be removed from tag repo
         assertEquals(empty, dbPartner.get().getTags());
         Optional<Tag> reloadedTag = tagRepo.findById(tag.getId());
         assertTrue(reloadedTag.isPresent());

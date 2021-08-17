@@ -154,7 +154,7 @@ public class PartnerController {
      * Remove partner
      *
      * @param id {@link UUID} the partner id
-     * @return HTTP status, no body
+     * @return HTTP status, no Body
      */
     @Delete("/{id}")
     public HttpResponse<Void> removePartner(@PathVariable String id) {

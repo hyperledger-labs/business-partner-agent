@@ -61,7 +61,6 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.*;
 
 @Slf4j
@@ -273,10 +272,12 @@ public class HolderCredentialManager {
         });
     }
 
+    // credential event handling
+
     // credential, signed and stored in wallet
     public void handleV1CredentialExchangeAcked(@NonNull V1CredentialExchange credEx) {
         String label = labelStrategy.apply(credEx.getCredential());
-        MyCredential dbCred = defaultCredentialBuilder()
+        MyCredential dbCred = MyCredential.defaultCredentialBuilder()
                 .connectionId(credEx.getConnectionId())
                 .threadId(credEx.getThreadId())
                 .credentialExchangeId(credEx.getCredentialExchangeId())
@@ -287,12 +288,12 @@ public class HolderCredentialManager {
                 .issuer(resolveIssuer(credEx.getCredential()))
                 .build();
         MyCredential dbCredential = credRepo.save(dbCred);
-        fireCredentialReceivedEvent(credEx, dbCredential);
+        fireCredentialAddedEvent(dbCredential);
     }
 
     public void handleV2CredentialExchangeReceived(@NonNull V20CredExRecord credEx) {
         V2ToV1IndyCredentialConverter.INSTANCE().toV1(credEx).ifPresent(c -> {
-            MyCredential dbCred = defaultCredentialBuilder()
+            MyCredential dbCred = MyCredential.defaultCredentialBuilder()
                     .connectionId(credEx.getConnectionId())
                     .threadId(credEx.getThreadId())
                     .credentialExchangeId(credEx.getCredExId())
@@ -314,10 +315,14 @@ public class HolderCredentialManager {
                                     .setLabel(label)
                                     .setIssuer(resolveIssuer(c));
                             MyCredential dbCredential = credRepo.update(dbCred);
-                            fireCredentialReceivedEvent(null, dbCredential);
+                            fireCredentialAddedEvent(dbCredential);
                         }));
     }
 
+    /**
+     * This handler maps the 'stored credential id' from the event to the referent as only this event has this id
+     * @param credentialEvent {@link V2IssueIndyCredentialEvent}
+     */
     public void handleIssueCredentialV2Indy(V2IssueIndyCredentialEvent credentialEvent) {
         credRepo.findByCredentialExchangeId(credentialEvent.getCredExId()).ifPresent(bpaEx -> {
             bpaEx.setReferent(credentialEvent.getCredIdStored());
@@ -325,19 +330,10 @@ public class HolderCredentialManager {
         });
     }
 
-    private void fireCredentialReceivedEvent(V1CredentialExchange credEx, MyCredential updated) {
+    private void fireCredentialAddedEvent(@Nullable MyCredential updated) {
         AriesCredential ariesCredential = buildAriesCredential(updated);
         eventPublisher.publishEventAsync(CredentialAddedEvent.builder()
                 .credential(ariesCredential)
-                .credentialExchange(credEx)
                 .build());
-    }
-
-    private MyCredential.MyCredentialBuilder defaultCredentialBuilder() {
-        return MyCredential
-                .builder()
-                .isPublic(Boolean.FALSE)
-                .type(CredentialType.INDY)
-                .issuedAt(Instant.now());
     }
 }
