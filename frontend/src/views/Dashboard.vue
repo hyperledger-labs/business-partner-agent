@@ -47,8 +47,7 @@
               :title="$t('dashboard.presentationRequestsSent')"
               icon=$vuetify.icons.proofRequests
               :count=this.status.totals.presentationRequestsSent
-              :new-count=this.status.periodTotals.presentationRequestsSent
-              destination="Partners"></dashboard-card>
+              :new-count=this.status.periodTotals.presentationRequestsSent></dashboard-card>
         </v-col>
         <v-col class="col-12 col-sm-6 col-md-4">
           <dashboard-card
@@ -71,8 +70,7 @@
               :title="$t('dashboard.presentationRequestsReceived')"
               icon=$vuetify.icons.proofRequests
               :count=this.status.totals.presentationRequestsReceived
-              :new-count=this.status.periodTotals.presentationRequestsReceived
-              destination="Partners"></dashboard-card>
+              :new-count=this.status.periodTotals.presentationRequestsReceived></dashboard-card>
         </v-col>
         <v-col class="col-12 col-sm-6 col-md-4">
           <dashboard-card

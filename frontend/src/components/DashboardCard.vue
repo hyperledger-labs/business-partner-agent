@@ -28,7 +28,8 @@
       </v-container>
     </v-card-text>
     <v-card-actions class="justify-center">
-      <v-btn icon :to="{ name: this.destination }"><v-icon color="primary">$vuetify.icons.dashboardGo</v-icon></v-btn>
+      <v-btn v-if="this.destination" icon :to="{ name: this.destination }"><v-icon color="primary">$vuetify.icons.dashboardGo</v-icon></v-btn>
+      <v-btn v-else icon disabled><!-- this is only in place to keep the size of the cards consistent --></v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -49,7 +50,7 @@
       },
       destination: {
         type: String,
-        default: () => "Dashboard"
+        default: () => null
       },
       count: {
         type: Number,
