@@ -162,7 +162,7 @@ public class HolderCredentialManager {
         return dbCred.map(this::buildAriesCredential);
     }
 
-    private AriesCredential buildAriesCredential(MyCredential dbCred) {
+    private AriesCredential buildAriesCredential(@NonNull MyCredential dbCred) {
         final AriesCredentialBuilder myCred = AriesCredential.fromMyCredential(dbCred);
         if (dbCred.getCredential() != null) {
             final Credential ariesCred = conv.fromMap(dbCred.getCredential(), Credential.class);
@@ -320,7 +320,9 @@ public class HolderCredentialManager {
     }
 
     /**
-     * This handler maps the 'stored credential id' from the event to the referent as only this event has this id
+     * This handler maps the 'stored credential id' from the event to the referent
+     * as only this event has this id
+     * 
      * @param credentialEvent {@link V2IssueIndyCredentialEvent}
      */
     public void handleIssueCredentialV2Indy(V2IssueIndyCredentialEvent credentialEvent) {
@@ -330,7 +332,7 @@ public class HolderCredentialManager {
         });
     }
 
-    private void fireCredentialAddedEvent(@Nullable MyCredential updated) {
+    private void fireCredentialAddedEvent(@NonNull MyCredential updated) {
         AriesCredential ariesCredential = buildAriesCredential(updated);
         eventPublisher.publishEventAsync(CredentialAddedEvent.builder()
                 .credential(ariesCredential)

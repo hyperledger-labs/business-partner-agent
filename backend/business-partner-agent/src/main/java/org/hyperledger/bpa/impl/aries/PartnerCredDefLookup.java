@@ -110,8 +110,8 @@ public class PartnerCredDefLookup {
     /**
      * If a BCGov ledger explorer is configured, looks up all credential definition
      * ids on the ledger that match a configured schema. If the did in the
-     * credential definition id matches a partner's did, the partner is considered an
-     * issuer of credentials that are based on that schema.
+     * credential definition id matches a partner's did, the partner is considered
+     * an issuer of credentials that are based on that schema.
      */
     @Scheduled(cron = "0 15 2 ? * *")
     public void lookupTypesForAllPartners() {
