@@ -91,4 +91,5 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     Iterable<Partner> findByStateIn(List<ConnectionState> states);
 
+    Long countByCreatedAtAfter(Instant createdAt);
 }

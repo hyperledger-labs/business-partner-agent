@@ -26,6 +26,7 @@ import org.hyperledger.bpa.controller.api.activity.ActivityRole;
 import org.hyperledger.bpa.controller.api.activity.ActivityType;
 import org.hyperledger.bpa.model.Activity;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -70,4 +71,8 @@ public interface ActivityRepository extends CrudRepository<Activity, UUID> {
     List<Activity> findByTypeAndCompletedTrueOrderByUpdatedAtDesc(@NonNull ActivityType type);
 
     void deleteByPartnerId(@NonNull UUID partnerId);
+
+    Long countByCompletedFalse();
+
+    Long countByCompletedFalseAndCreatedAtAfter(Instant createdAt);
 }

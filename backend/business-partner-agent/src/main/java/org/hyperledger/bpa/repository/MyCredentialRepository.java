@@ -26,6 +26,7 @@ import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.model.MyCredential;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -54,6 +55,8 @@ public interface MyCredentialRepository extends CrudRepository<MyCredential, UUI
     List<MyCredential> findBySchemaIdAndCredentialDefinitionId(String schemaId, String credentialDefinitionId);
 
     Long countByStateEquals(CredentialExchangeState state);
+
+    Long countByStateEqualsAndIssuedAtAfter(CredentialExchangeState state, Instant issuedAt);
 
     @Query("SELECT * FROM my_credential WHERE type = 'INDY' AND referent IS NOT NULL AND (revoked IS NULL OR revoked = false)")
     List<MyCredential> findNotRevoked();

@@ -26,16 +26,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BPAStats {
-    /** my DID */
-    private String did;
-    /** If organization profile is already there */
-    private Boolean profile;
-    /** Number of partners */
-    private Long partners;
-    /** Number of credentials */
-    private Long credentials;
+public class DashboardCounts {
 
-    private DashboardCounts totals;
-    private DashboardCounts periodTotals;
+    private Long credentialsSent;
+    private Long credentialsReceived;
+    private Long presentationRequestsSent;
+    private Long presentationRequestsReceived;
+    private Long partners;
+    private Long tasks;
 }
