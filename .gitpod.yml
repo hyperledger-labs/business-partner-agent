@@ -18,11 +18,11 @@ ports:
     onOpen: ignore
   - port: 8040
     onOpen: ignore
-    visibility: public         
+    visibility: public
   - port: 8041
-    onOpen: ignore    
+    onOpen: ignore
   - port: 6080
-    onOpen: ignore    
+    onOpen: ignore
   - port: 5900
     onOpen: ignore
   - port: 5432
@@ -33,7 +33,7 @@ ports:
 github:
   prebuilds:
     # enable for the default branch (defaults to true)
-    master: true
+    main: true
 # enable for all branches in this repo (defaults to false)
     branches: true
 # enable for pull requests coming from this repo (defaults to true)
