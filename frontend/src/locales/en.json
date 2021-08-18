@@ -23,7 +23,7 @@
     "dashboard": "Dashboard",
     "profile": "Public Profile",
     "wallet": "Wallet",
-    "credentialManagement": "Credential Management",
+    "credentialManagement": "Issue Credentials",
     "partners": "Business Partners",
     "settings": "Settings",
     "notifications": "Notifications",
@@ -103,6 +103,20 @@
       "createInvitation": "Generate Invitation (QR Code)",
       "invitationURL": "Invitation URL",
       "useOOB": "Use Out of Band"
+    },
+    "issueCredentials": {
+      "title": "Issue Credentials",
+      "cards": {
+        "action" : {
+          "title": "Issue Credential",
+          "button": "Issue Credential",
+          "partnerLabel": "Select partner...",
+          "credentialLabel": "Select credential..."
+        },
+        "table" : {
+          "title": "Issued Credentials"
+        }
+      }
     }
   },
   "constants": {

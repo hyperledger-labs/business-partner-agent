@@ -69,7 +69,7 @@ public class Partner {
     private String did;
 
     /**
-     * If the partner supports aries, set if the partner has a endpoint that
+     * If the partner supports aries, set if the partner has an endpoint that
      * supports did communication
      */
     private Boolean ariesSupport;

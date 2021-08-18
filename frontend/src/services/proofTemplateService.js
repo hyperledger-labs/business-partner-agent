@@ -13,6 +13,14 @@ export default {
   getProofTemplates() {
     return appAxios().get(`${ApiRoutes.PROOF_TEMPLATES}`);
   },
+  getProofTemplate(id) {
+    return appAxios().get(`${ApiRoutes.PROOF_TEMPLATES}/${id}`);
+  },
+  getKnownConditionOperators() {
+    return appAxios().get(
+      `${ApiRoutes.PROOF_TEMPLATES}/known-condition-operators`
+    );
+  },
   createProofTemplate(data) {
     return appAxios().post(`${ApiRoutes.PROOF_TEMPLATES}`, data);
   },

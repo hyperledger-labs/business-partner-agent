@@ -36,29 +36,29 @@ public class ActivityLogConfig {
      * AcaPyConfig, which flags are set to auto respond...
      */
 
-    private static List<ConnectionState> CONNECTION_STATES_TASKS = List.of(ConnectionState.REQUEST);
+    private static final List<ConnectionState> CONNECTION_STATES_TASKS = List.of(ConnectionState.REQUEST);
 
-    private static List<ConnectionState> CONNECTION_STATES_COMPLETED = List.of(ConnectionState.ACTIVE,
+    private static final List<ConnectionState> CONNECTION_STATES_COMPLETED = List.of(ConnectionState.ACTIVE,
             ConnectionState.RESPONSE,
             ConnectionState.COMPLETED,
             ConnectionState.PING_RESPONSE,
             ConnectionState.PING_NO_RESPONSE);
 
-    private static List<PresentationExchangeState> PRESENTATION_EXCHANGE_STATES_TASKS = List
+    private static final List<PresentationExchangeState> PRESENTATION_EXCHANGE_STATES_TASKS = List
             .of(PresentationExchangeState.REQUEST_RECEIVED);
 
-    private static List<PresentationExchangeState> PRESENTATION_EXCHANGE_STATES_COMPLETED = List.of(
+    private static final List<PresentationExchangeState> PRESENTATION_EXCHANGE_STATES_COMPLETED = List.of(
             PresentationExchangeState.VERIFIED,
             PresentationExchangeState.PRESENTATION_ACKED);
 
-    private List<ConnectionState> connectionStatesForActivities;
-    private List<ConnectionState> connectionStatesForCompleted;
-    private List<ConnectionState> connectionStatesForTasks;
-    private List<PresentationExchangeState> presentationExchangeStatesForActivities;
-    private List<PresentationExchangeState> presentationExchangeStatesForCompleted;
-    private List<PresentationExchangeState> presentationExchangeStatesForTasks;
+    private final List<ConnectionState> connectionStatesForActivities;
+    private final List<ConnectionState> connectionStatesForCompleted;
+    private final List<ConnectionState> connectionStatesForTasks;
+    private final List<PresentationExchangeState> presentationExchangeStatesForActivities;
+    private final List<PresentationExchangeState> presentationExchangeStatesForCompleted;
+    private final List<PresentationExchangeState> presentationExchangeStatesForTasks;
 
-    private AcaPyConfig acaPyConfig;
+    private final AcaPyConfig acaPyConfig;
 
     @Inject
     ActivityLogConfig(AcaPyConfig acaPyConfig) {

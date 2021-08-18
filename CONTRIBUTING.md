@@ -34,7 +34,7 @@ avoid frustration later on.
     7. Follow these [guidelines](https://chris.beams.io/posts/git-commit/)
        on how to write a good **commit** message. If available, include the
        ticket number. And don't forget the [Signed-Off-By](#sign-your-work) line.
-    8. Create a pull request against the master branch.
+    8. Create a pull request against the main branch.
 
 ## Legal stuff
 

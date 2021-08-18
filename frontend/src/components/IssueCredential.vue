@@ -51,6 +51,23 @@
           </v-col>
         </v-row>
       </v-card-text>
+      <v-card-text v-if="expertMode">
+        <h4>Options</h4>
+        <v-col>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title
+                class="grey--text text--darken-2 font-weight-medium"
+              >
+                Use V2 Protocol
+              </v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-switch v-model="useV2Credential"></v-switch>
+            </v-list-item-action>
+          </v-list-item>
+        </v-col>
+      </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
           <v-bpa-button color="secondary" @click="cancel()"
@@ -98,9 +115,14 @@ export default {
       credential: {},
       credentialFields: {},
       submitDisabled: true,
+      useV2Credential: null,
     };
   },
-  computed: {},
+  computed: {
+    expertMode() {
+      return this.$store.state.expertMode;
+    },
+  },
   watch: {
     partnerId(val) {
       if (val) {
@@ -174,10 +196,15 @@ export default {
       this.isLoading = false;
     },
     async issueCredential() {
+      let exVersion = null;
+      if (this.useV2Credential) {
+        exVersion = "V2";
+      }
       const data = {
         credDefId: this.credDef.id,
         partnerId: this.partner.id,
         document: this.credentialFields,
+        exchangeVersion: exVersion,
       };
       try {
         const resp = await issuerService.issueCredentialSend(data);

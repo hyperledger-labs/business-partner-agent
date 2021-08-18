@@ -15,15 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.exception;
+package org.hyperledger.bpa.api;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public final class ErrorMessage {
-    private String message;
+public enum ExchangeVersion {
+    /** credential or proof exchange version 1 */
+    V1,
+    /** credential or proof exchange version 2 */
+    V2
 }
