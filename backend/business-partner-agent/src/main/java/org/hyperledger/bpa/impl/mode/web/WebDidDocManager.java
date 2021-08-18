@@ -94,7 +94,7 @@ public class WebDidDocManager implements DidDocManager {
                 .build();
 
         try {
-            Map<String, Object> didDocDb = mapper.convertValue(didDoc, Converter.MAP_TYPEREF);
+            Map<String, Object> didDocDb = mapper.convertValue(didDoc, Converter.STRING_OBJECT_MAP);
             didRepo.findDidDocSingle().ifPresentOrElse(
                     dd -> didRepo.updateDidDoc(dd.getId(), didDocDb),
                     () -> didRepo.save(DidDocWeb.builder().didDoc(didDocDb).build()));

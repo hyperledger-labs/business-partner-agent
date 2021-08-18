@@ -17,10 +17,7 @@
  */
 package org.hyperledger.bpa.controller.api.issuer;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
@@ -32,6 +29,7 @@ import org.hyperledger.bpa.model.BPACredentialExchange;
 
 import javax.inject.Inject;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Data
@@ -59,21 +57,22 @@ public class CredEx {
     private Boolean revoked;
     private Boolean revocable;
 
-    public static CredEx from(BPACredentialExchange db) {
+    public static CredEx from(@NonNull BPACredentialExchange db, @NonNull Optional<Converter> conv) {
+        CredExBuilder builder = CredEx.builder();
+        conv.ifPresentOrElse(
+                c -> builder.partner(c.toAPIObject(db.getPartner())),
+                () -> builder.partner(PartnerAPI.from(db.getPartner())));
         SchemaAPI schemaAPI = SchemaAPI.from(db.getSchema());
-        PartnerAPI partnerAPI = PartnerAPI.from(db.getPartner());
         CredDef credDef = CredDef.from(db.getCredDef());
         String displayText = String.format("%s (%s) - %s", schemaAPI.getLabel(), schemaAPI.getVersion(),
                 credDef.getTag());
-        return CredEx
-                .builder()
+        return builder
                 .id(db.getId())
                 .createdAt(db.getCreatedAt().toEpochMilli())
                 .updatedAt(db.getUpdatedAt().toEpochMilli())
                 .role(db.getRole())
                 .state(db.getState())
                 .schema(schemaAPI)
-                .partner(partnerAPI)
                 .credDef(credDef)
                 .credential(db.getCredential())
                 .type(db.getType())

@@ -20,21 +20,28 @@ package org.hyperledger.bpa.controller.api.exception;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
-import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.server.exceptions.ExceptionHandler;
+import io.micronaut.http.server.exceptions.response.ErrorContext;
+import io.micronaut.http.server.exceptions.response.ErrorResponseProcessor;
+import lombok.AllArgsConstructor;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 
 import javax.inject.Singleton;
 
 @Produces
 @Singleton
+@AllArgsConstructor
 @Requires(classes = { WrongApiUsageException.class, ExceptionHandler.class })
 public class WrongApiUsageExceptionHandler implements ExceptionHandler<WrongApiUsageException, HttpResponse<?>> {
 
+    private final ErrorResponseProcessor<?> errorResponseProcessor;
+
     @Override
-    public HttpResponse<?> handle(HttpRequest request, WrongApiUsageException exception) {
-        return HttpResponse.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorMessage(exception.getMessage()));
+    public HttpResponse<?> handle(HttpRequest request, WrongApiUsageException e) {
+        return errorResponseProcessor.processResponse(ErrorContext.builder(request)
+                .cause(e)
+                .errorMessage(e.getMessage())
+                .build(), HttpResponse.badRequest());
     }
 }

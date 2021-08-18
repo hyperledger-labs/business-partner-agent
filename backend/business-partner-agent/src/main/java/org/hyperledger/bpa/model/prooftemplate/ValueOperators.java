@@ -60,7 +60,7 @@ public enum ValueOperators {
     private final IndyProofReqPredSpec.PTypeEnum predicateOperator;
     private final String value;
     private final String description;
-    private Predicate<String> conditionValueValidator;
+    private final Predicate<String> conditionValueValidator;
 
     ValueOperators(String value, String description, Predicate<String> conditionValueValidator) {
         this.predicateOperator = null;

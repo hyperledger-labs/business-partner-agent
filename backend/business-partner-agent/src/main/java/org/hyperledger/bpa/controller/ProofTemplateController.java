@@ -58,7 +58,7 @@ public class ProofTemplateController {
     @Get("/{id}")
     public HttpResponse<ProofTemplate> getProofTemplateForId(@PathVariable @ValidUUID @NotNull String id) {
         Optional<BPAProofTemplate> proofTemplate = proofTemplateManager.getProofTemplate(UUID.fromString(id));
-        if(proofTemplate.isPresent()){
+        if (proofTemplate.isPresent()) {
             return HttpResponse.ok(proofTemplate.get().toRepresentation());
         } else {
             return HttpResponse.notFound();

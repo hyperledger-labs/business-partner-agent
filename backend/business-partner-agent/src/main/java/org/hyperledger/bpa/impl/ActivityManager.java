@@ -36,7 +36,6 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -64,7 +63,7 @@ public class ActivityManager {
     ApplicationEventPublisher eventPublisher;
 
     public List<ActivityItem> getItems(ActivitySearchParameters parameters) {
-        List<Activity> activities = new ArrayList<>();
+        List<Activity> activities;
 
         if (parameters.getActivity() && parameters.getTask()) {
             if (parameters.getType() != null) {

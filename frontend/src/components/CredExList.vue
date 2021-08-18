@@ -96,7 +96,7 @@ export default {
         },
         {
           text: "Issued To",
-          value: "partner.alias",
+          value: "partner.name",
         },
         {
           text: "Updated At",
@@ -115,7 +115,7 @@ export default {
     isActiveFn: {
       type: Function,
       default: (item) =>
-        item.state === "credential_issued" || item.state == "credential_acked",
+        item.state === "credential_issued" || item.state == "credential_acked" || item.state == "done",
     },
     isLoading: Boolean,
   },
