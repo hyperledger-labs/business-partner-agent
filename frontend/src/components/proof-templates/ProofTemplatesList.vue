@@ -30,6 +30,7 @@ create new ones
         hide-details
     ></v-text-field>
     <v-data-table
+      v-model="inputValue"
       :loading="isLoading"
       :show-select="showCheckboxes"
       :hide-default-footer="proofTemplates.length < 10"
@@ -66,6 +67,7 @@ export default {
       type: Boolean,
       default: false,
     },
+    value: Array,
   },
   data: () => {
     return {
@@ -84,6 +86,14 @@ export default {
         return this.$store.getters.getProofTemplates;
       },
     },
+    inputValue: {
+      get() {
+        return this.value;
+      },
+      set(val) {
+        this.$emit("input", val);
+      }
+    }
   },
   methods: {
     openItem(proofTemplate) {
