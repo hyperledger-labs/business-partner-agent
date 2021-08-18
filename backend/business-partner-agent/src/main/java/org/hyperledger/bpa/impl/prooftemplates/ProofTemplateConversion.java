@@ -52,6 +52,13 @@ public class ProofTemplateConversion {
     @Inject
     SchemaService schemaService;
 
+    public BPAProofTemplate foo(@NonNull UUID partnerId, @NonNull PresentProofRequest proofRequest) {
+
+        // TODO checks
+
+        return null;
+    }
+
     @NonNull
     public PresentProofRequest proofRequestViaVisitorFrom(@NonNull UUID partnerId,
             @NonNull @Valid BPAProofTemplate proofTemplate) {

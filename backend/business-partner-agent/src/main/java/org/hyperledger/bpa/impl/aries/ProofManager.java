@@ -30,6 +30,7 @@ import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.present_proof.*;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
+import org.hyperledger.bpa.api.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
@@ -158,6 +159,7 @@ public class ProofManager {
                     .schemaId(schemaId)
                     .proofTemplate(proofTemplate)
                     .issuer(issuerId)
+                    .exchangeVersion(ExchangeVersion.V1)
                     .build();
             pProofRepo.save(pp);
             eventPublisher.publishEventAsync(PresentationRequestSentEvent.builder()
@@ -167,6 +169,9 @@ public class ProofManager {
     }
 
     public void declinePresentProofRequest(@NotNull PartnerProof proofEx, String explainString) {
+
+        // TODO store action declined/approved
+
         if (PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
             try {
                 sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString);
@@ -241,7 +246,7 @@ public class ProofManager {
                 .setSchemaId(schemaId)
                 .setCredentialDefinitionId(credDefId)
                 .setIssuer(issuer)
-                .setProof(proof.from(schemaService.getSchemaAttributeNames(schemaId)));
+                .setProof(proof.from(schemaService.getSchemaAttributeNames(schemaId))); // TODO not needed?
         final PartnerProof savedProof = pProofRepo.update(pp);
         didRes.resolveDid(savedProof);
         return savedProof;
@@ -264,6 +269,7 @@ public class ProofManager {
                             .credentialDefinitionId(cred.getCredentialDefinitionId())
                             .schemaId(cred.getSchemaId())
                             .issuer(resolveIssuer(cred.getCredentialDefinitionId()))
+                            .exchangeVersion(ExchangeVersion.V1)
                             .build();
                     pProofRepo.save(pp);
 

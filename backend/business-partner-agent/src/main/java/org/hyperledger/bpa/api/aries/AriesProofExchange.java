@@ -23,11 +23,15 @@ import lombok.*;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
+import org.hyperledger.bpa.api.ExchangeVersion;
 import org.hyperledger.bpa.model.PartnerProof;
 
 import io.micronaut.core.annotation.Nullable;
 import java.util.UUID;
 
+/**
+ * Requested or received Proof Requests
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -51,6 +55,8 @@ public class AriesProofExchange {
     private String credentialDefinitionId;
     private String problemReport;
     private PresentationExchangeRole role;
+
+    private ExchangeVersion exchangeVersion;
     private JsonNode proofData;
     private PresentProofRequest.ProofRequest proofRequest;
 
@@ -74,6 +80,7 @@ public class AriesProofExchange {
                 .proofRequest(p.getProofRequest())
                 .role(p.getRole())
                 .problemReport(p.getProblemReport())
+                .exchangeVersion(p.getExchangeVersion())
                 .build();
     }
 }
