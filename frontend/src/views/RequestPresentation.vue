@@ -35,7 +35,7 @@
                   color="primary"
                   @click="submitRequest()"
               >
-                Send Request (TODO)
+                Send Request
               </v-bpa-button>
             </v-layout>
           </v-card-actions>
@@ -49,6 +49,7 @@
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import ProofTemplatesList from "@/components/proof-templates/ProofTemplatesList";
+import proofTemplateService from "@/services/proofTemplateService";
 
 export default {
   name: "RequestPresentation",
@@ -81,28 +82,18 @@ export default {
         },
       });
     },
-    submitRequest() {
+    async submitRequest() {
       this.isBusy = true;
 
-      let request = {
-        requestBySchema: {
-          schemaId: this.selectedSchema[0].schemaId,
-          issuerDid: this.selectedIssuer.map((entry) => entry.issuerDid),
-        },
-      };
+      proofTemplateService.sendProofTemplate(this.selectedProofTemplate[0].id, this.id).then(() => {
+        EventBus.$emit("success", "Presentation request sent");
+        this.$router.go(-1);
+      }).catch((e) => {
+        console.error(e);
+        EventBus.$emit("error", e);
+      });
 
-      this.$axios
-        .post(`${this.$apiBaseUrl}/partners/${this.id}/proof-request`, request)
-        .then(() => {
-          this.isBusy = false;
-          EventBus.$emit("success", "Presentation request sent");
-          this.$router.go(-1);
-        })
-        .catch((e) => {
-          this.isBusy = false;
-          console.error(e);
-          EventBus.$emit("error", e);
-        });
+      this.isBusy = false;
     },
     cancel() {
       this.$router.go(-1);
