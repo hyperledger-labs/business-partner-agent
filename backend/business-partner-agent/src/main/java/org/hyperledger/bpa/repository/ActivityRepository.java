@@ -34,23 +34,9 @@ import java.util.UUID;
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface ActivityRepository extends CrudRepository<Activity, UUID> {
 
-    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
-    List<Activity> findByPartnerId(@NonNull UUID partnerId);
-
-    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
-    List<Activity> findByLinkId(@NonNull UUID linkId);
-
     Optional<Activity> findByLinkIdAndTypeAndRole(@NonNull UUID linkId,
             @NonNull ActivityType type,
             @NonNull ActivityRole role);
-
-    void updateByLinkIdAndTypeAndRole(@NonNull UUID linkId,
-            @NonNull ActivityType type,
-            @NonNull ActivityRole role,
-            boolean completed);
-
-    void deleteByLinkIdAndType(@NonNull UUID linkId,
-            @NonNull ActivityType type);
 
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     List<Activity> listOrderByUpdatedAtDesc();
@@ -75,4 +61,5 @@ public interface ActivityRepository extends CrudRepository<Activity, UUID> {
     Long countByCompletedFalse();
 
     Long countByCompletedFalseAndCreatedAtAfter(Instant createdAt);
+
 }

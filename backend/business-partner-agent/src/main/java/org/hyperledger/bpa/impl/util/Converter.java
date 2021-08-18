@@ -60,7 +60,10 @@ import java.util.*;
 // TODO this is more a conversion service
 public class Converter {
 
-    public static final TypeReference<Map<String, Object>> MAP_TYPEREF = new TypeReference<>() {
+    public static final TypeReference<Map<String, Object>> STRING_OBJECT_MAP = new TypeReference<>() {
+    };
+
+    public static final TypeReference<Map<String, String>> STRING_STRING_MAP = new TypeReference<>() {
     };
 
     public static final TypeReference<VerifiablePresentation<VerifiableIndyCredential>> VP_TYPEREF = new TypeReference<>() {
@@ -176,7 +179,11 @@ public class Converter {
     }
 
     public Map<String, Object> toMap(@NonNull Object fromValue) {
-        return mapper.convertValue(fromValue, MAP_TYPEREF);
+        return mapper.convertValue(fromValue, STRING_OBJECT_MAP);
+    }
+
+    public Map<String, String> toStringMap(@NonNull Object fromValue) {
+        return mapper.convertValue(fromValue, STRING_STRING_MAP);
     }
 
     public <T> T fromMap(@NonNull Map<String, Object> fromValue, @NotNull Class<T> type) {

@@ -15,7 +15,7 @@ Schemas can be registered either during configuration or during runtime.
 
 
 ## Static configuration 
-Example of the configuration of a bank acount schema in the [`application.yml`](https://github.com/hyperledger-labs/business-partner-agent/blob/master/backend/business-partner-agent/src/main/resources/application.yml).
+Example of the configuration of a bank acount schema in the [`application.yml`](https://github.com/hyperledger-labs/business-partner-agent/blob/main/backend/business-partner-agent/src/main/resources/application.yml).
 
 ```
 schemas:

@@ -64,7 +64,8 @@ public class AcaPyAuthFetcher implements AuthenticationFetcher {
                     && request.getPath().startsWith(AriesWebhookController.WEBHOOK_CONTROLLER_PATH)) {
                 String apiKeyHeader = request.getHeaders().get(X_API_KEY);
                 log.trace("Handling aca-py webhook authentication");
-                if (StringUtils.isNotBlank(apiKeyHeader) && apiKeyHeader.equals(apiKey)) {
+                if (StringUtils.isEmpty(apiKey)
+                        || StringUtils.isNotBlank(apiKeyHeader) && apiKeyHeader.equals(apiKey)) {
                     emitter.onSuccess(new AcaPyAuthentication());
                     log.trace("aca-py webhook authentication success");
                     return;

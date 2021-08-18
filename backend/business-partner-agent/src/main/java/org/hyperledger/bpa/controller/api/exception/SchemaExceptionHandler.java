@@ -23,19 +23,26 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.server.exceptions.ExceptionHandler;
+import io.micronaut.http.server.exceptions.response.ErrorContext;
+import io.micronaut.http.server.exceptions.response.ErrorResponseProcessor;
+import lombok.AllArgsConstructor;
 import org.hyperledger.bpa.api.exception.SchemaException;
 
 import javax.inject.Singleton;
 
 @Produces
 @Singleton
+@AllArgsConstructor
 @Requires(classes = { SchemaException.class, ExceptionHandler.class })
 public class SchemaExceptionHandler implements ExceptionHandler<SchemaException, HttpResponse<?>> {
 
-    @Override
-    public HttpResponse<?> handle(HttpRequest request, SchemaException exception) {
-        return HttpResponse.status(HttpStatus.PRECONDITION_FAILED)
-                .body(new ErrorMessage(exception.getMessage()));
-    }
+    private final ErrorResponseProcessor<?> errorResponseProcessor;
 
+    @Override
+    public HttpResponse<?> handle(HttpRequest request, SchemaException e) {
+        return errorResponseProcessor.processResponse(ErrorContext.builder(request)
+                .cause(e)
+                .errorMessage(e.getMessage())
+                .build(), HttpResponse.status(HttpStatus.PRECONDITION_FAILED));
+    }
 }

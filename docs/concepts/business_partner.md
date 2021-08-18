@@ -4,7 +4,7 @@ In principle a business partner can be any entity with a DID. Currently, we focu
 
 At the moment BPA supports ony adding a business partner by public DID. We resolve DIDs with a remote instance of an universal resolver.
 The universal resolver instance can be configured by setting the `BPA_RESOLVER_URL` environment variable. Thereby, we can support multiple DID methods.
-If the DID document contains a service endpoint of type `profile`, the BPA retrieves the VP and verifies it. If the DID document contains a DIDcomm endpoint it initiates the [connection protocol](https://github.com/hyperledger/aries-rfcs/blob/master/features/0160-connection-protocol/README.md).
+If the DID document contains a service endpoint of type `profile`, the BPA retrieves the VP and verifies it. If the DID document contains a DIDcomm endpoint it initiates the [connection protocol](https://github.com/hyperledger/aries-rfcs/blob/main/features/0160-connection-protocol/README.md).
 
 BPA currenty uses an ACA-PY with auto flags concerning connections enabled, i.e. a BPA will automatically accept a connection request. Also the ACA-Py is set to support public invitations, such that connection requests based on public DIDs work.
 
@@ -14,4 +14,4 @@ We manually approach this issue currently by issuing `identity credentials` to t
 
 ## Used Aries protocols
 
-[0160: Connection Protocol](https://github.com/hyperledger/aries-rfcs/blob/master/features/0160-connection-protocol/README.md)
+[0160: Connection Protocol](https://github.com/hyperledger/aries-rfcs/blob/main/features/0160-connection-protocol/README.md)

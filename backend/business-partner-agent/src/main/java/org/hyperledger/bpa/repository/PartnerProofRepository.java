@@ -74,4 +74,5 @@ public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUI
     Long countByStateEquals(PresentationExchangeState state);
 
     Long countByStateEqualsAndCreatedAtAfter(PresentationExchangeState state, Instant createdAt);
+
 }

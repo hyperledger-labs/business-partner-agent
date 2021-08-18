@@ -18,18 +18,11 @@
 package org.hyperledger.bpa.api.exception;
 
 public class DataPersistenceException extends RuntimeException {
-    public DataPersistenceException() {
-    }
+
+    private static final long serialVersionUID = -7942841480983510201L;
 
     public DataPersistenceException(String message) {
         super(message);
     }
 
-    public DataPersistenceException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public DataPersistenceException(Throwable cause) {
-        super(cause);
-    }
 }

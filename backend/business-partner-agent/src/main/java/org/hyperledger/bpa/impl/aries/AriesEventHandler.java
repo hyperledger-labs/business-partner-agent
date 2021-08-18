@@ -18,10 +18,12 @@
 package org.hyperledger.bpa.impl.aries;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.acy_py.generated.model.V20CredExRecord;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
+import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.message.ProblemReport;
@@ -42,11 +44,11 @@ public class AriesEventHandler extends EventHandler {
 
     private final Optional<PingManager> pingMgmt;
 
-    private final HolderCredentialManager credMgmt;
-
-    private final ProofEventHandler proofMgmt;
+    private final HolderCredentialManager holderMgr;
 
     private final IssuerCredentialManager issuerMgr;
+
+    private final ProofEventHandler proofMgmt;
 
     private final ChatMessageManager chatMessageManager;
 
@@ -54,15 +56,15 @@ public class AriesEventHandler extends EventHandler {
     public AriesEventHandler(
             ConnectionManager conMgmt,
             Optional<PingManager> pingMgmt,
-            HolderCredentialManager credMgmt,
+            HolderCredentialManager holderMgr,
             ProofEventHandler proofMgmt,
             IssuerCredentialManager issuerMgr,
             ChatMessageManager chatMessageManager) {
         this.conMgmt = conMgmt;
         this.pingMgmt = pingMgmt;
-        this.credMgmt = credMgmt;
-        this.proofMgmt = proofMgmt;
+        this.holderMgr = holderMgr;
         this.issuerMgr = issuerMgr;
+        this.proofMgmt = proofMgmt;
         this.chatMessageManager = chatMessageManager;
     }
 
@@ -100,9 +102,9 @@ public class AriesEventHandler extends EventHandler {
         log.debug("Credential Event: {}", v1CredEx);
         // holder events
         if (CredentialExchangeRole.HOLDER.equals(v1CredEx.getRole())) {
-            synchronized (credMgmt) {
+            synchronized (holderMgr) {
                 if (CredentialExchangeState.CREDENTIAL_ACKED.equals(v1CredEx.getState())) {
-                    credMgmt.handleV1CredentialExchangeAcked(v1CredEx);
+                    holderMgr.handleV1CredentialExchangeAcked(v1CredEx);
                 }
             }
             // issuer events
@@ -110,6 +112,35 @@ public class AriesEventHandler extends EventHandler {
             synchronized (issuerMgr) {
                 issuerMgr.handleV1CredentialExchange(v1CredEx);
             }
+        }
+    }
+
+    @Override
+    public void handleCredentialV2(V20CredExRecord v20Credential) {
+        log.debug("Credential V2 Event: {}", v20Credential);
+        if (V20CredExRecord.RoleEnum.ISSUER.equals(v20Credential.getRole())) {
+            synchronized (issuerMgr) {
+                issuerMgr.handleV2CredentialExchange(v20Credential);
+            }
+        } else if (V20CredExRecord.RoleEnum.HOLDER.equals(v20Credential.getRole())) {
+            synchronized (holderMgr) {
+                if (V20CredExRecord.StateEnum.CREDENTIAL_RECEIVED.equals(v20Credential.getState())) {
+                    holderMgr.handleV2CredentialExchangeReceived(v20Credential);
+                } else if (V20CredExRecord.StateEnum.DONE.equals(v20Credential.getState())) {
+                    holderMgr.handleV2CredentialExchangeDone(v20Credential);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void handleIssueCredentialV2Indy(V2IssueIndyCredentialEvent revocationInfo) {
+        log.debug("Issue Credential V2 Indy Event: {}", revocationInfo);
+        synchronized (issuerMgr) {
+            issuerMgr.handleIssueCredentialV2Indy(revocationInfo);
+        }
+        synchronized (holderMgr) {
+            holderMgr.handleIssueCredentialV2Indy(revocationInfo);
         }
     }
 
@@ -122,7 +153,7 @@ public class AriesEventHandler extends EventHandler {
 
     @Override
     public void handleBasicMessage(BasicMessage message) {
-        // since basic message handling is so simple (only one way to handle it), let's
+        // since basic message handling is so simple (only one way to handle it), let
         // the manager handle it.
         chatMessageManager.handleIncomingMessage(message);
     }

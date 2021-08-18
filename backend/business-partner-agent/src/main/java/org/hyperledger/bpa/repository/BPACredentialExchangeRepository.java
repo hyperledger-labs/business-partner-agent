@@ -64,4 +64,6 @@ public interface BPACredentialExchangeRepository extends CrudRepository<BPACrede
 
     Long countByStateEqualsAndCreatedAtAfter(CredentialExchangeState state, Instant createdAt);
 
+    Number updateState(@Id UUID id, CredentialExchangeState state);
+
 }

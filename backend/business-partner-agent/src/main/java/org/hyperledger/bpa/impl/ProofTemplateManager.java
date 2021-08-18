@@ -52,6 +52,10 @@ public class ProofTemplateManager {
         proofTemplate.orElseThrow(() -> new ProofTemplateException("No proof template found for: " + id));
     }
 
+    public Optional<BPAProofTemplate> getProofTemplate(UUID id) {
+        return repo.findById(id);
+    }
+
     public BPAProofTemplate addProofTemplate(BPAProofTemplate template) {
         return repo.save(template);
     }

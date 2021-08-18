@@ -59,10 +59,7 @@
                 :key="idx"
               >
                 <v-expansion-panel-header>
-                  {{
-                    schemas.find((s) => s.id === attributeGroup.schemaId)
-                      .schemaId
-                  }}
+                  <span v-html="renderSchemaLabelId(attributeGroup)"></span>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-container>
@@ -171,6 +168,12 @@
                               (s) => s.id === attributeGroup.schemaId
                             ).schemaAttributeNames"
                             :key="attributeName"
+                            :disabled="
+                              attributeGroup.attributes.some(
+                                (existingAttribute) =>
+                                  existingAttribute.name === attributeName
+                              )
+                            "
                             @click="addAttribute(idx, attributeName)"
                           >
                             <v-list-item-title>{{
@@ -291,11 +294,13 @@
               </template>
               <v-list>
                 <v-list-item
-                  v-for="schema in schemas"
-                  :key="schema.id"
+                  v-for="(schema, idx) in schemas"
+                  :key="idx"
                   @click="addAttributeGroup(schema.id)"
                 >
-                  <v-list-item-title>{{ schema.schemaId }}</v-list-item-title>
+                  <v-list-item-title>
+                    {{ schema.label }}<i>&nbsp;({{ schema.schemaId }})</i>
+                  </v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -362,21 +367,13 @@ export default {
     EventBus.$emit("title", "Proof Templates");
   },
   mounted() {
-    // load schemas
-    this.schemas = this.$store.getters.getSchemas.filter(
-      (schema) => schema.type === "INDY"
-    );
-
     // load condition operators (>, <, ==, etc)
-    this.$axios
-      .get(`${this.$apiBaseUrl}/proof-templates/known-condition-operators`)
-      .then((result) => {
-        this.operators = result.data;
-      });
+    proofTemplateService.getKnownConditionOperators().then((result) => {
+      this.operators = result.data;
+    });
   },
   data: () => {
     return {
-      schemas: [],
       operators: [],
       proofTemplate: {
         name: "",
@@ -384,9 +381,21 @@ export default {
       },
     };
   },
-  computed: {},
+  computed: {
+    schemas() {
+      return this.$store.getters.getSchemas.filter(
+        (schema) => schema.type === "INDY"
+      );
+    },
+  },
   watch: {},
   methods: {
+    renderSchemaLabelId(attributeGroup) {
+      const schema = this.$store.getters.getSchemas.find(
+        (s) => s.id === attributeGroup.schemaId
+      );
+      return `${schema.label}<i>&nbsp;(${schema.schemaId})</i>`;
+    },
     addAttributeGroup(schemaId) {
       // add a blank attribute group template
       this.proofTemplate.attributeGroups.push({
