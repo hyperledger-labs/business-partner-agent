@@ -18,25 +18,19 @@
 package org.hyperledger.bpa.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.core.convert.TypeConverter;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroups;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Factory
 public class TypeConverters {
-
-    public static final TypeReference<List<BPAAttributeGroup>> ATTR_REF = new TypeReference<>() {
-    };
 
     @Inject
     ObjectMapper mapper;

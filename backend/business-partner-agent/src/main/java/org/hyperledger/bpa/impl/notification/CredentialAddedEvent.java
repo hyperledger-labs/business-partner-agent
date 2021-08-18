@@ -21,7 +21,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 
 @Builder
@@ -29,7 +28,5 @@ import org.hyperledger.bpa.api.aries.AriesCredential;
 @AllArgsConstructor
 @Getter
 public class CredentialAddedEvent {
-
     private AriesCredential credential;
-    private V1CredentialExchange credentialExchange;
 }

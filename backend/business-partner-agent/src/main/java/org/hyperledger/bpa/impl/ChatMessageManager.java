@@ -50,8 +50,8 @@ public class ChatMessageManager {
     NotificationService notificationService;
 
     public void handleIncomingMessage(@NonNull BasicMessage basicMessage) {
-        // if this was more complicated (ie many different states and roles), we would
-        // put this in it's own class.
+        // if this was more complicated (ie many states and roles), we would
+        // put this in its own class.
         // but since this is simple, we will place it with the other basic message/chat
         // message logic.
 
@@ -71,16 +71,14 @@ public class ChatMessageManager {
                     notificationService.newIncomingMessage(p, chatMessage);
                 } catch (Exception e) {
                     log.error(
-                            "Error handling incoming basic message. Chat Message not saved. Partner ID = '%s', Connection ID = '%s', Message ID = '%s'",
+                            "Error handling incoming basic message. Chat Message not saved. Partner ID = {}, Connection ID = {}, Message ID = {}",
                             p.getId().toString(), basicMessage.getConnectionId(), basicMessage.getMessageId());
                 }
             },
-                    () -> {
-                        log.error("Error handling incoming basic message. Partner not found for Connection ID = '%s'",
-                                basicMessage.getConnectionId());
-                    });
+                    () -> log.error("Error handling incoming basic message. Partner not found for Connection ID = {}",
+                            basicMessage.getConnectionId()));
         } else {
-            log.debug("Not persisting basic message. Message has no content. Connection ID = '%s', Message ID = '%s'",
+            log.debug("Not persisting basic message. Message has no content. Connection ID = {}, Message ID = {}",
                     basicMessage.getConnectionId(), basicMessage.getMessageId());
         }
     }
@@ -105,13 +103,13 @@ public class ChatMessageManager {
                 }
             } else {
                 log.error(
-                        "Error handling outgoing chat message. Partner has no connection id or missing Aries Support. Partner ID = '%s', Connection ID = '%s'",
+                        "Error handling outgoing chat message. Partner has no connection id or missing Aries Support. Partner ID = {}, Connection ID = {}",
                         partnerId, p.getConnectionId());
                 throw new PartnerException("Partner does not accept messages.");
             }
         },
                 () -> {
-                    log.error("Error handling outgoing chat message. Partner not found for ID = '%s'", partnerId);
+                    log.error("Error handling outgoing chat message. Partner not found for ID = {}", partnerId);
                     throw new PartnerException(String.format("Partner not found for ID = '%s'", partnerId));
                 });
     }

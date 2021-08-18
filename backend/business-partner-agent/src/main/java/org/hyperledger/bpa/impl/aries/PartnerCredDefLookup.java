@@ -62,7 +62,7 @@ public class PartnerCredDefLookup {
     Converter conv;
 
     /**
-     * Get/filter partners that can issue credentials that are based on the schemas
+     * Get/filter partners that can issue credentials that are based on the schema's
      * id.
      * 
      * @param schemaId the schema id
@@ -77,7 +77,7 @@ public class PartnerCredDefLookup {
     }
 
     /**
-     * If a ledger explorer is configured. Finds partners that can issue credentials
+     * If a ledger explorer is configured. Find partners that can issue credentials
      * that are based on the schema id.
      * 
      * @param schemaId the schema id
@@ -110,8 +110,8 @@ public class PartnerCredDefLookup {
     /**
      * If a BCGov ledger explorer is configured, looks up all credential definition
      * ids on the ledger that match a configured schema. If the did in the
-     * credential definition id matches a partner's did, the partner is considered a
-     * issuer of credentials that are based on that schema.
+     * credential definition id matches a partner's did, the partner is considered
+     * an issuer of credentials that are based on that schema.
      */
     @Scheduled(cron = "0 15 2 ? * *")
     public void lookupTypesForAllPartners() {
