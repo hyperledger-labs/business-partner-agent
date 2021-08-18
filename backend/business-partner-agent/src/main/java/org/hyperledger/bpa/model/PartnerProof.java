@@ -31,6 +31,7 @@ import io.micronaut.core.annotation.Nullable;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
+import org.hyperledger.bpa.api.ExchangeVersion;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -63,10 +64,10 @@ public class PartnerProof {
     @Nullable
     private Boolean valid;
 
-    private String presentationExchangeId;
-
     @Nullable
     private String threadId;
+
+    private String presentationExchangeId;
 
     @Nullable
     @Enumerated(EnumType.STRING)
@@ -75,6 +76,10 @@ public class PartnerProof {
     @Nullable
     @Enumerated(EnumType.STRING)
     private PresentationExchangeRole role;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    private ExchangeVersion exchangeVersion;
 
     @Nullable
     private String issuer;

@@ -19,6 +19,7 @@ package org.hyperledger.bpa.api.aries;
 
 import lombok.*;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.bpa.api.ExchangeVersion;
 import org.hyperledger.bpa.model.MyCredential;
 
 import java.util.Map;
@@ -40,6 +41,7 @@ public class AriesCredential {
     private String connectionId;
     private Boolean revoked;
     private Boolean revocable;
+    private ExchangeVersion exchangeVersion;
 
     private String label;
     private String typeLabel;
@@ -55,6 +57,8 @@ public class AriesCredential {
                 .issuer(c.getIssuer())
                 .connectionId(c.getConnectionId())
                 .revoked(c.getRevoked())
-                .label(c.getLabel());
+                .label(c.getLabel())
+                .exchangeVersion(c.getExchangeVersion())
+                ;
     }
 }

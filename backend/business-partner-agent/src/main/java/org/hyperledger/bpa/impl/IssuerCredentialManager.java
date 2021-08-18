@@ -185,14 +185,17 @@ public class IssuerCredentialManager {
         String schemaId = dbCredDef.getSchema().getSchemaId();
         String credentialDefinitionId = dbCredDef.getCredentialDefinitionId();
 
-        ExchangeResult exRes;
+        ExchangeResult exResult;
+        ExchangeVersion exVersion;
         if (request.isV1()) {
-            exRes = sendV1Credential(Objects.requireNonNull(connectionId),
+            exVersion = ExchangeVersion.V1;
+            exResult = sendV1Credential(Objects.requireNonNull(connectionId),
                     schemaId,
                     credentialDefinitionId,
                     new CredentialPreview(CredentialAttributes.fromMap(document)));
         } else {
-            exRes = sendV2Credential(Objects.requireNonNull(connectionId),
+            exVersion = ExchangeVersion.V2;
+            exResult = sendV2Credential(Objects.requireNonNull(connectionId),
                     schemaId,
                     credentialDefinitionId, V2CredentialSendRequest.V2CredentialPreview
                             .builder()
@@ -216,13 +219,14 @@ public class IssuerCredentialManager {
                 .role(CredentialExchangeRole.ISSUER)
                 .state(CredentialExchangeState.OFFER_SENT)
                 .credential(conv.toMap(credential))
-                .credentialExchangeId(exRes.getCredentialExchangeId())
-                .threadId(exRes.getThreadId())
+                .credentialExchangeId(exResult.getCredentialExchangeId())
+                .threadId(exResult.getThreadId())
                 .label(labelStrategy.apply(credential))
+                .exchangeVersion(exVersion)
                 .build();
         credExRepo.save(cex);
 
-        return exRes.getCredentialExchangeId();
+        return exResult.getCredentialExchangeId();
     }
 
     /**
