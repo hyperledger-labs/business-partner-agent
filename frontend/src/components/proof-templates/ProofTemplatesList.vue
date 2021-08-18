@@ -22,11 +22,20 @@ create new ones
 -->
 <template>
   <v-container>
+    <v-text-field
+        v-model="search"
+        append-icon="$vuetify.icons.search"
+        label="Search"
+        single-line
+        hide-details
+    ></v-text-field>
     <v-data-table
       :loading="isLoading"
+      :show-select="showCheckboxes"
       :hide-default-footer="proofTemplates.length < 10"
       :headers="headers"
       :items="proofTemplates"
+      :search="search"
       single-select
       @click:row="viewProofTemplate"
     >
@@ -53,9 +62,14 @@ export default {
       ],
     },
     isLoading: Boolean,
+    showCheckboxes: {
+      type: Boolean,
+      default: false,
+    },
   },
   data: () => {
     return {
+      search: "",
       dialog: false,
       proofTemplate: {},
       dirty: false,
