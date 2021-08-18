@@ -26,10 +26,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -57,7 +54,7 @@ public class ChatMessage {
     private Instant createdAt;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    public Long getCreatedAtTs() {
+    public Long createdAtTs() {
         return this.createdAt.toEpochMilli();
     }
 }

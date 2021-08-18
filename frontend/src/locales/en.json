@@ -31,6 +31,14 @@
     "signout": "Sign out",
     "proofTemplates": "Proof Templates"
   },
+  "dashboard": {
+    "credentialsSent": "Credentials Issued",
+    "credentialsReceived": "Credentials in Wallet",
+    "presentationRequestsSent": "Presentation Requests Sent",
+    "presentationRequestsReceived": "Presentation Requests Received",
+    "partners": "Business Partners",
+    "tasks": "Pending Tasks"
+  },
   "button" : {
     "save": "Save",
     "submit": "Submit",

@@ -89,4 +89,8 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
     @Query("UPDATE partner SET state = :newState, last_seen = :lastSeen WHERE connection_id = :connectionId")
     void updateStateAndLastSeenByConnectionId(String connectionId, ConnectionState newState, Instant lastSeen);
 
+    Iterable<Partner> findByStateIn(List<ConnectionState> states);
+
+    Long countByCreatedAtAfter(Instant createdAt);
+
 }

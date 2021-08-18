@@ -84,7 +84,8 @@ export default new Vuetify({
       save: mdiContentSave,
       chat: mdiMessageText,
       revoke: mdiBook,
-      revoked: mdiBookRemove
+      revoked: mdiBookRemove,
+      dashboardGo: "fas fa-arrow-alt-circle-right"
     },
   },
   theme: {
