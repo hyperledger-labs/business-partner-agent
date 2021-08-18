@@ -1,5 +1,5 @@
 <!--
- Copyright (c) 2020 - for information on the respective copyright owner
+ Copyright (c) 2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
 
@@ -21,23 +21,24 @@
         >
         </proof-templates-list>
         <template>
-                <v-card-actions>
-                  <v-layout align-end justify-end>
-                    <v-bpa-button color="secondary" @click="cancel()"
-                      >Cancel</v-bpa-button
-                    >
-                    <v-bpa-button color="primary" @click="openCreateProofTemplate()">
-                      Create Proof Template (TODO)
-                    </v-bpa-button>
-                    <v-bpa-button
-                        :loading="this.isBusy"
-                        :disabled="selectedProofTemplate.length === 0"
-                      color="primary"
-                      @click="submitRequest()"
-                      >Continue (turn into Send Request)
-                    </v-bpa-button>
-                  </v-layout>
-                </v-card-actions>
+          <v-card-actions>
+            <v-layout align-end justify-end>
+              <v-bpa-button color="secondary" @click="cancel()"
+              >Cancel</v-bpa-button
+              >
+              <v-bpa-button color="primary" @click="openCreateProofTemplate()">
+                Create Proof Template
+              </v-bpa-button>
+              <v-bpa-button
+                  :loading="this.isBusy"
+                  :disabled="selectedProofTemplate.length === 0"
+                  color="primary"
+                  @click="submitRequest()"
+              >
+                Send Request (TODO)
+              </v-bpa-button>
+            </v-layout>
+          </v-card-actions>
         </template>
       </v-card-text>
     </v-card>
@@ -73,8 +74,12 @@ export default {
   },
   methods: {
     openCreateProofTemplate() {
-      // TODO
-      console.log("Not implemented yet");
+      this.$router.push({
+        name: "RequestPresentationCreateProofTemplate",
+        params: {
+          id: this.id,
+        },
+      });
     },
     submitRequest() {
       this.isBusy = true;
