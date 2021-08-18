@@ -70,14 +70,11 @@
             <v-expansion-panels>
               <v-expansion-panel
                 class="my-5"
-                v-for="attributeGroup in proofTemplate.attributeGroups"
-                :key="attributeGroup.schemaId"
+                v-for="(attributeGroup, idx) in proofTemplate.attributeGroups"
+                :key="idx"
               >
                 <v-expansion-panel-header>
-                  {{
-                    schemas.find((s) => s.id === attributeGroup.schemaId)
-                      .schemaId
-                  }}
+                  <span v-html="renderSchemaLabelId(attributeGroup)"></span>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-container>
@@ -271,6 +268,12 @@ export default {
   },
   watch: {},
   methods: {
+    renderSchemaLabelId(attributeGroup) {
+      const schema = this.$store.getters.getSchemas.find(
+        (s) => s.id === attributeGroup.schemaId
+      );
+      return `${schema.label}<i>&nbsp;(${schema.schemaId})</i>`;
+    },
     deleteProofTemplate() {
       proofTemplateService
         .deleteProofTemplate(this.proofTemplate.id)
