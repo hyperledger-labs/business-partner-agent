@@ -57,24 +57,16 @@
       "acceptPartner": "Accept",
       "requestSent": "Connection request sent",
       "requestSentSubtitle": "Waiting for response...",
-      "receivedPresentations": {
-        "title": "Received Presentations",
-        "text": "The presentations you received from your partner",
-        "button": "Request Presentation"
+      "presentationExchanges": {
+        "title": "Presentation Exchanges",
+        "button": {
+          "send": "Send Presentation",
+          "request": "Request Presentation"
+        }
       },
-      "sentPresentations": {
-        "title": "Sent Presentations",
-        "text": "The presentations you sent to your partner",
-        "button": "Send Presentation"
-      },
-      "issuedCredentials": {
-        "title": "Issued Credentials",
-        "text": "The credentials you issued to your partner",
+      "credentialExchanges": {
+        "title": "Credential Exchanges",
         "button": "Issue Credential"
-      },
-      "presentationRequests": {
-        "title": "Presentation Requests",
-        "text": "The proofs requested from this partner"
       },
       "stateDialog": {
         "title": "Connection State {state}",

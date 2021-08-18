@@ -48,6 +48,9 @@ formatter-maven-cache.properties
 .idea/
 *.iml
 
+# VSCode
+.vscode/
+
 # Build
 **/target/**
 

@@ -21,9 +21,34 @@ export default {
     return appAxios().put(`${ApiRoutes.PARTNERS}/${id}`, data);
   },
   sendMessage(id, content) {
-    return appAxios().post(`${ApiRoutes.PARTNERS}/${id}/messages`, {content: content});
+    return appAxios().post(`${ApiRoutes.PARTNERS}/${id}/messages`, {
+      content: content,
+    });
   },
   getMessages(id) {
     return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/messages`);
+  },
+  getPresentationExRecords(id) {
+    return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/proof-exchanges`);
+  },
+  declinePresentationRequest({ partnerId, proofId }) {
+    return appAxios().post(
+      `${ApiRoutes.PARTNERS}/${partnerId}/proof-exchanges/${proofId}/decline`
+    );
+  },
+  approvePresentationRequest({ partnerId, proofId }) {
+    return appAxios().post(
+      `${ApiRoutes.PARTNERS}/${partnerId}/proof-exchanges/${proofId}/prove`
+    );
+  },
+  getPresentationExRecord({ partnerId, proofId }) {
+    return appAxios().post(
+      `${ApiRoutes.PARTNERS}/${partnerId}/proof/${proofId}`
+    );
+  },
+  deletePresentationExRecord({ partnerId, proofId }) {
+    return appAxios().delete(
+      `${ApiRoutes.PARTNERS}/${partnerId}/proof/${proofId}`
+    );
   },
 };

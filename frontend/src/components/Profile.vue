@@ -53,6 +53,15 @@
       </v-row>
       <v-divider v-if="index < credentials.length - 1"></v-divider>
     </v-container>
+    <v-card v-if="!profile && credentials.length === 0" height="100px" flat>
+      <v-container fill-height fluid text-center>
+        <v-row align="center" justify="center">
+          <v-col>
+            <h4 class="grey--text">Partner does not share a public profile</h4>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-card>
   </div>
 </template>
 
