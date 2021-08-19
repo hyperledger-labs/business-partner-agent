@@ -1,4 +1,12 @@
 {
+  "dashboard": {
+    "credentialsSent": "Credentials You Issued",
+    "credentialsReceived": "Credentials You Hold",
+    "presentationRequestsSent": "Sent Proof Requests",
+    "presentationRequestsReceived": "Received Proof Requests",
+    "partners": "Business Partners",
+    "tasks": "Pending Tasks"
+  },
   "view": {
     "partner": {
       "receivedPresentations": {
