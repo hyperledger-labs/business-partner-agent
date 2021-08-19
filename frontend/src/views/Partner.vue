@@ -135,7 +135,11 @@
       <v-card-title class="bg-light">{{
         $t("view.partner.presentationExchanges.title")
       }}</v-card-title>
-      <PresentationExList v-if="isReady" v-bind:items="presentationExRecords" />
+      <PresentationExList
+        v-if="isReady"
+        v-bind:partnerId="id"
+        v-bind:items="presentationExRecords"
+      />
       <v-card-actions>
         <v-bpa-button small color="secondary" @click="sendPresentation">{{
           $t("view.partner.presentationExchanges.button.send")

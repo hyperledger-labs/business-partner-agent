@@ -35,6 +35,7 @@
         <span>
           {{ item.state.replace("_", " ") }}
         </span>
+        <v-icon v-if="isComplete(item)" color="green">mdi-check</v-icon>
         <v-tooltip v-if="item.problemReport" top>
           <template v-slot:activator="{ on, attrs }">
             <v-icon
@@ -71,9 +72,20 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-bpa-button color="primary" @click="closeItem(record)"
+          <v-bpa-button color="secondary" @click="closeItem(record)"
             >Close</v-bpa-button
           >
+          <span v-if="record.state === 'request_received'">
+            <v-bpa-button color="secondary" @click="decline"
+              >Decline</v-bpa-button
+            >
+            <v-bpa-button
+              :loading="this.isBusy"
+              color="primary"
+              @click="approve"
+              >Accept</v-bpa-button
+            >
+          </span>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -90,18 +102,15 @@ import PresentationRecord from "@/components/PresentationRecord";
 import VBpaButton from "@/components/BpaButton";
 export default {
   props: {
+    partnerId: String,
     items: Array,
-    isActiveFn: {
-      type: Function,
-      default: (item) =>
-        item.state === "verified" || item.state == "presentation_acked",
-    },
   },
   data: () => {
     return {
       selected: [],
       record: {},
       dialog: false,
+      isBusy: false,
       isLoading: false,
       headers: [
         {
@@ -131,6 +140,20 @@ export default {
   },
   computed: {},
   methods: {
+    approve() {
+      partnerService.approvePresentationRequest({
+        partnerId: this.partnerId,
+        proofId: this.record.id,
+      });
+      this.dialog = false;
+    },
+    decline() {
+      partnerService.declinePresentationRequest({
+        partnerId: this.partnerId,
+        proofId: this.record.id,
+      });
+      this.dialog = false;
+    },
     openItem(item) {
       this.record = item;
       this.dialog = true;
@@ -143,8 +166,10 @@ export default {
       // TODO: Proof Exchanges should have RD. Should not happen over partner API
       partnerService.deletePresentationExRecord();
     },
-    isItemActive(item) {
-      return this.isActiveFn(item);
+    isComplete(item) {
+      // TOD: implement
+      item;
+      return false;
     },
   },
   components: {
