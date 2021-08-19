@@ -469,6 +469,13 @@ export default {
         });
       });
 
+      // sanitize restrictions (remove empty restrictions)
+      this.proofTemplate.attributeGroups.forEach((ag) => {
+        ag.schemaLevelRestrictions = Object.fromEntries(
+          Object.entries(ag.schemaLevelRestrictions).filter(([, v]) => v !== "")
+        );
+      });
+
       console.log(JSON.stringify(this.proofTemplate));
 
       proofTemplateService
