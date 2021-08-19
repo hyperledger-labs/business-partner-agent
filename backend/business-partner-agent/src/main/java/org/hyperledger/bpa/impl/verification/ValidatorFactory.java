@@ -43,6 +43,7 @@ public class ValidatorFactory {
             if (StringUtils.isBlank(value)) {
                 return true;
             }
+            context.messageTemplate("{validatedValue} is not a valid UUID");
             return isUUID(value);
         };
     }

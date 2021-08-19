@@ -23,6 +23,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.impl.verification.ValidUUID;
 
 @Data
@@ -32,7 +33,7 @@ import org.hyperledger.bpa.impl.verification.ValidUUID;
 public class SchemaRestrictions {
 
     @Nullable
-    @ValidUUID
+    @ValidUUID // this is confusing
     private String schemaId;
     @Nullable
     private String schemaName;
@@ -44,4 +45,16 @@ public class SchemaRestrictions {
     private String credentialDefinitionId;
     @Nullable
     private String issuerDid;
+
+    public static SchemaRestrictions fromProofRestrictions(PresentProofRequest.ProofRequest.ProofRestrictions r) {
+        return SchemaRestrictions
+                .builder()
+                .schemaId(r.getSchemaId())
+                .schemaName(r.getSchemaName())
+                .schemaVersion(r.getSchemaVersion())
+                .schemaIssuerDid(r.getSchemaIssuerDid())
+                .credentialDefinitionId(r.getCredentialDefinitionId())
+                .issuerDid(r.getIssuerDid())
+                .build();
+    }
 }

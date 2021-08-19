@@ -58,7 +58,6 @@ public class AriesCredential {
                 .connectionId(c.getConnectionId())
                 .revoked(c.getRevoked())
                 .label(c.getLabel())
-                .exchangeVersion(c.getExchangeVersion())
-                ;
+                .exchangeVersion(c.getExchangeVersion());
     }
 }

@@ -229,27 +229,14 @@ public class PartnerController {
     }
 
     /**
-     * Get partner by id
-     *
-     * @param id {@link UUID} the partner id
-     * @return partner
-     */
-    @Get("/proof-exchanges/{id}")
-    public HttpResponse<AriesProofExchange> getProofExchangebyId(@PathVariable String id) {
-        Optional<AriesProofExchange> pProof = proofM.getPartnerProofById(UUID.fromString(id));
-        if (pProof.isPresent()) {
-            return HttpResponse.ok(pProof.get());
-        }
-        return HttpResponse.notFound();
-    }
-
-    /**
      * Aries: Make the presentation that was requested
      *
+     * @deprecated use proof exchange controller
      * @param id      {@link UUID} the partner id
      * @param proofId {@link UUID} the presentationExchangeId
      * @return HTTP status
      */
+    @Deprecated
     @Post("/{id}/proof-exchanges/{proofId}/prove")
     public HttpResponse<Void> responseToProofRequest(
             @SuppressWarnings("unused ") @PathVariable String id,
@@ -264,12 +251,14 @@ public class PartnerController {
     }
 
     /**
-     * Aries: Reject ProofRequest received from from a partner
+     * Aries: Reject ProofRequest received from a partner
      *
+     * @deprecated use proof exchange controller
      * @param id      {@link UUID} the partner id
      * @param proofId {@link UUID} the presentationExchangeId
      * @return HTTP status
      */
+    @Deprecated
     @Post("/{id}/proof-exchanges/{proofId}/decline")
     public HttpResponse<Void> declinePresentProofRequest(
             @SuppressWarnings("unused ") @PathVariable String id,
@@ -285,11 +274,13 @@ public class PartnerController {
     /**
      * Aries: Request proof from partner
      *
+     * @deprecated use proof exchange controller
      * @param id  {@link UUID} the partner id
      * @param req {@link RequestProofRequest}
      * @return HTTP status
      */
     @Post("/{id}/proof-request")
+    @Deprecated
     public HttpResponse<Void> requestProof(
             @PathVariable String id,
             @RequestBody(description = "One of requestBySchema or requestRaw") @Body RequestProofRequest req) {
@@ -306,11 +297,13 @@ public class PartnerController {
     /**
      * Aries: Send proof to partner
      *
+     * @deprecated use proof exchange controller
      * @param id  {@link UUID} the partner id
      * @param req {@link SendProofRequest}
      * @return HTTP status
      */
     @Post("/{id}/proof-send")
+    @Deprecated
     public HttpResponse<Void> sendProof(
             @PathVariable String id,
             @Body SendProofRequest req) {
@@ -337,7 +330,8 @@ public class PartnerController {
      * @param proofId the proof id
      * @return HTTP status
      */
-    @Get("/{id}/proof/{proofId}")
+    @Deprecated
+    @Get("/{id}/proof-exchanges/{proofId}")
     public HttpResponse<AriesProofExchange> getPartnerProofById(
             @SuppressWarnings("unused ") @PathVariable String id,
             @PathVariable String proofId) {
@@ -349,13 +343,31 @@ public class PartnerController {
     }
 
     /**
+     * Get partner by id
+     *
+     * @param id {@link UUID} the partner id
+     * @return partner
+     */
+    @Deprecated
+    @Get("/proof-exchanges/{id}")
+    public HttpResponse<AriesProofExchange> getProofExchangeById(@PathVariable String id) {
+        Optional<AriesProofExchange> pProof = proofM.getPartnerProofById(UUID.fromString(id));
+        if (pProof.isPresent()) {
+            return HttpResponse.ok(pProof.get());
+        }
+        return HttpResponse.notFound();
+    }
+
+    /**
      * Aries: Deletes a partners proof by id
      *
+     * @deprecated use proof exchange controller instead
      * @param id      {@link UUID} the partner id
      * @param proofId the proof id
      * @return HTTP status
      */
-    @Delete("/{id}/proof/{proofId}")
+    @Deprecated
+    @Delete("/{id}/proof-exchanges/{proofId}")
     public HttpResponse<Void> deletePartnerProofById(
             @SuppressWarnings("unused ") @PathVariable String id,
             @PathVariable String proofId) {

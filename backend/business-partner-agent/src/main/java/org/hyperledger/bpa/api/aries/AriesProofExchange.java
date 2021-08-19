@@ -24,6 +24,7 @@ import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.api.ExchangeVersion;
+import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.model.PartnerProof;
 
 import io.micronaut.core.annotation.Nullable;
@@ -41,6 +42,7 @@ public class AriesProofExchange {
     private UUID id;
     private UUID partnerId;
 
+    // TODO replace by Map<Role, Map<State, Timestamp>>
     // depends on the role
     private Long receivedAt;
     private Long sentAt;
@@ -49,16 +51,23 @@ public class AriesProofExchange {
 
     private String typeLabel;
     private PresentationExchangeState state;
-
-    private String issuer;
-    private String schemaId;
-    private String credentialDefinitionId;
-    private String problemReport;
     private PresentationExchangeRole role;
+    private String problemReport;
+
+    @Deprecated
+    private String issuer;
+    @Deprecated
+    private String schemaId;
+    @Deprecated
+    private String credentialDefinitionId;
 
     private ExchangeVersion exchangeVersion;
     private JsonNode proofData;
     private PresentProofRequest.ProofRequest proofRequest;
+    // if prover
+    private ProofTemplate proofTemplate;
+    // if verifier
+    private UUID proofTemplateId;
 
     public static AriesProofExchange from(@NonNull PartnerProof p, @Nullable JsonNode proofData) {
         final AriesProofExchangeBuilder b = AriesProofExchange.builder();

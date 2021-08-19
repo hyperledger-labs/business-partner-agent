@@ -19,6 +19,7 @@
 package org.hyperledger.bpa.model.prooftemplate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.NonNull;
 import org.hyperledger.acy_py.generated.model.IndyProofReqPredSpec;
 
 import java.util.Optional;
@@ -101,6 +102,21 @@ public enum ValueOperators {
     @Override
     public String toString() {
         return value + " - " + description;
+    }
+
+    public static ValueOperators fromPType(@NonNull IndyProofReqPredSpec.PTypeEnum pType) {
+        switch (pType) {
+        case GREATER_THAN:
+            return GREATER_THAN;
+        case GREATER_THAN_OR_EQUAL_TO:
+            return GREATER_THAN_OR_EQUAL_TO;
+        case LESS_THAN:
+            return LESS_THAN;
+        case LESS_THAN_OR_EQUAL_TO:
+            return LESS_THAN_OR_EQUAL_TO;
+        default:
+            return null;
+        }
     }
 
 }

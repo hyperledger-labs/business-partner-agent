@@ -34,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.api.CredentialType;
@@ -42,6 +43,7 @@ import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.PartnerAPI.PartnerCredential;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.model.Partner;
 
@@ -78,6 +80,9 @@ public class Converter {
 
     @Inject
     SchemaService schemaService;
+
+    @Inject
+    ProofTemplateConversion templateConversion;
 
     public PartnerAPI toAPIObject(@NonNull Partner p) {
         PartnerAPI result = PartnerAPI.from(p);
@@ -206,8 +211,11 @@ public class Converter {
     public AriesProofExchange toAPIObject(@NonNull PartnerProof p) {
         AriesProofExchange proof = AriesProofExchange.from(p,
                 p.getProof() != null ? this.fromMap(p.getProof(), JsonNode.class) : null);
-        if (io.micronaut.core.util.StringUtils.isNotEmpty(p.getSchemaId())) {
+        if (StringUtils.isNotEmpty(p.getSchemaId())) {
             proof.setTypeLabel(schemaService.getSchemaLabel(p.getSchemaId()));
+        }
+        if (PresentationExchangeRole.PROVER.equals(p.getRole())) {
+            proof.setProofTemplate(templateConversion.requestToTemplate(p.getProofRequest()));
         }
         return proof;
     }

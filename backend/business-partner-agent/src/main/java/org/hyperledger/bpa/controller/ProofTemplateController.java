@@ -84,6 +84,7 @@ public class ProofTemplateController {
         return HttpResponse.ok(proofTemplateManager.getKnownConditionOperators());
     }
 
+    @Deprecated // moved to partner
     @Put("/{id}/proof-request/{partnerId}")
     public HttpResponse<Void> invokeProofRequestByTemplate(
             @PathVariable @ValidUUID @NotNull String id,
