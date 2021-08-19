@@ -415,14 +415,7 @@ export default {
         schemaId: schemaId,
         nonRevoked: true,
         attributes: [],
-        schemaLevelRestrictions: {
-          schemaId: "",
-          schemaName: "",
-          schemaVersion: "",
-          schemaIssuerDid: "",
-          credentialDefinitionId: "",
-          issuerDid: "",
-        },
+        schemaLevelRestrictions: {},
       });
     },
     addAttribute(idx, attributeName) {

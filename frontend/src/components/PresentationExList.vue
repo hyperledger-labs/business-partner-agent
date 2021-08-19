@@ -32,20 +32,23 @@
         }}
       </template>
       <template v-slot:[`item.state`]="{ item }">
-        <v-icon
-          v-if="isItemActive(item) && !item.revoked"
-          color="green"
-          title="credential issued"
-          >$vuetify.icons.check</v-icon
-        >
-        <v-icon
-          v-else-if="isItemActive(item) && item.revoked"
-          title="credential revoked"
-          >$vuetify.icons.check</v-icon
-        >
-        <span v-else>
+        <span>
           {{ item.state.replace("_", " ") }}
         </span>
+        <v-tooltip v-if="item.problemReport" top>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon
+              color="error"
+              small
+              v-bind="attrs"
+              v-on="on"
+              style="margin-bottom: 11px; margin-right: 15px"
+            >
+              $vuetify.icons.connectionAlert
+            </v-icon>
+          </template>
+          <span>{{ item.problemReport }}</span>
+        </v-tooltip>
       </template>
       <template v-slot:[`item.updatedAt`]="{ item }">
         {{
