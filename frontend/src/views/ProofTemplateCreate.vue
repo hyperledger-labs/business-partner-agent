@@ -314,8 +314,12 @@
           <v-bpa-button color="secondary" @click="$router.go(-1)">
             Cancel
           </v-bpa-button>
-          <v-bpa-button color="primary" @click="createProofTemplate">
-            Create
+          <v-bpa-button
+            :loading="this.isBusy"
+            color="primary"
+            @click="createProofTemplate"
+          >
+            {{ createButtonLabel }}
           </v-bpa-button>
         </v-layout>
       </v-card-actions>
@@ -361,6 +365,14 @@ export default {
         },
       ],
     },
+    createButtonLabel: {
+      type: String,
+      default: "Create",
+    },
+    disableRouteBack: {
+      type: Boolean,
+      default: false,
+    },
   },
   components: { VBpaButton },
   created() {
@@ -374,6 +386,7 @@ export default {
   },
   data: () => {
     return {
+      isBusy: false,
       operators: [],
       proofTemplate: {
         name: "",
@@ -451,7 +464,9 @@ export default {
         conditions[0].value = "";
       }
     },
-    createProofTemplate() {
+    async createProofTemplate() {
+      this.isBusy = true;
+
       // sanitize attribute conditions (remove empty conditions)
       this.proofTemplate.attributeGroups.forEach((ag) => {
         ag.attributes.forEach((a) => {
@@ -463,14 +478,26 @@ export default {
 
       console.log(JSON.stringify(this.proofTemplate));
 
-      proofTemplateService.createProofTemplate(this.proofTemplate).then(() => {
-        EventBus.$emit("success", "Proof Template Created");
+      proofTemplateService
+        .createProofTemplate(this.proofTemplate)
+        .then((res) => {
+          this.$emit("received-proof-template-id", res.data.id);
+          EventBus.$emit("success", "Proof Template Created");
 
-        this.$router.push({
-          name: "ProofTemplates",
-          params: {},
+          if (!this.disableRouteBack) {
+            this.$router.push({
+              name: "ProofTemplates",
+              params: {},
+            });
+          }
+
+          this.isBusy = false;
+        })
+        .catch((e) => {
+          console.error(e);
+          EventBus.$emit("error", e);
+          this.isBusy = false;
         });
-      });
     },
   },
 };
