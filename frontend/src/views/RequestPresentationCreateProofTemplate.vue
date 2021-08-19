@@ -29,8 +29,6 @@ export default {
   computed: {},
   methods: {
     async submitRequest(proofTemplateId) {
-      console.log("partnerId:", this.id, "proofTemplateId:", proofTemplateId);
-
       proofTemplateService.sendProofTemplate(proofTemplateId, this.id).then(() => {
         EventBus.$emit("success", "Presentation request sent");
         this.$router.go(-2);

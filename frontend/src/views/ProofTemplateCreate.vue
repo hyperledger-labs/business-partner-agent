@@ -314,7 +314,7 @@
           <v-bpa-button color="secondary" @click="$router.go(-1)">
             Cancel
           </v-bpa-button>
-          <v-bpa-button color="primary" @click="createProofTemplate">
+          <v-bpa-button :loading="this.isBusy" color="primary" @click="createProofTemplate">
             {{createButtonLabel}}
           </v-bpa-button>
         </v-layout>
@@ -382,6 +382,7 @@ export default {
   },
   data: () => {
     return {
+      isBusy: false,
       operators: [],
       proofTemplate: {
         name: "",
@@ -459,7 +460,9 @@ export default {
         conditions[0].value = "";
       }
     },
-    createProofTemplate() {
+    async createProofTemplate() {
+      this.isBusy = true;
+
       // sanitize attribute conditions (remove empty conditions)
       this.proofTemplate.attributeGroups.forEach((ag) => {
         ag.attributes.forEach((a) => {
@@ -482,9 +485,12 @@ export default {
                 params: {},
               });
             }
+
+            this.isBusy = false;
           }).catch(e => {
             console.error(e)
             EventBus.$emit("error", e);
+            this.isBusy = false;
           });
     },
   },

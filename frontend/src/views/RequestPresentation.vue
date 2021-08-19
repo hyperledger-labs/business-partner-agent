@@ -87,13 +87,13 @@ export default {
 
       proofTemplateService.sendProofTemplate(this.selectedProofTemplate[0].id, this.id).then(() => {
         EventBus.$emit("success", "Presentation request sent");
+        this.isBusy = false;
         this.$router.go(-1);
       }).catch((e) => {
         console.error(e);
         EventBus.$emit("error", e);
+        this.isBusy = false;
       });
-
-      this.isBusy = false;
     },
     cancel() {
       this.$router.go(-1);
