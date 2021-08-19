@@ -6,26 +6,17 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
-  <div>
-    <proof-template-create></proof-template-create>
-    <v-card-actions>
-      <v-layout align-end justify-end>
-        <v-bpa-button color="primary" @click="createAndSendProofTemplate()">
-          Create and send (TODO)
-        </v-bpa-button>
-      </v-layout>
-    </v-card-actions>
-  </div>
+    <proof-template-create disable-route-back create-button-label="Create and Send" v-on:received-proof-template-id="submitRequest($event)"></proof-template-create>
 </template>
 
 <script>
 import { EventBus } from "@/main";
-import VBpaButton from "@/components/BpaButton";
 import ProofTemplateCreate from "@/views/ProofTemplateCreate";
+import proofTemplateService from "@/services/proofTemplateService";
 
 export default {
   name: "RequestPresentation",
-  components: {ProofTemplateCreate, VBpaButton },
+  components: { ProofTemplateCreate },
   props: {
     id: String, // partner ID
   },
@@ -37,9 +28,16 @@ export default {
   },
   computed: {},
   methods: {
-    createAndSendProofTemplate() {
-      // TODO: Inject button functionality and label into ProofTemplateCreate component
-      console.log("Not implemented yet", this.id);
+    async submitRequest(proofTemplateId) {
+      console.log("partnerId:", this.id, "proofTemplateId:", proofTemplateId);
+
+      proofTemplateService.sendProofTemplate(proofTemplateId, this.id).then(() => {
+        EventBus.$emit("success", "Presentation request sent");
+        this.$router.go(-2);
+      }).catch((e) => {
+        console.error(e);
+        EventBus.$emit("error", e);
+      });
     },
   },
 };

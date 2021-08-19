@@ -315,7 +315,7 @@
             Cancel
           </v-bpa-button>
           <v-bpa-button color="primary" @click="createProofTemplate">
-            Create
+            {{createButtonLabel}}
           </v-bpa-button>
         </v-layout>
       </v-card-actions>
@@ -361,6 +361,14 @@ export default {
         },
       ],
     },
+    createButtonLabel: {
+      type: String,
+      default: "Create",
+    },
+    disableRouteBack: {
+      type: Boolean,
+      default: false,
+    }
   },
   components: { VBpaButton },
   created() {
@@ -463,14 +471,21 @@ export default {
 
       console.log(JSON.stringify(this.proofTemplate));
 
-      proofTemplateService.createProofTemplate(this.proofTemplate).then(() => {
-        EventBus.$emit("success", "Proof Template Created");
+      proofTemplateService.createProofTemplate(this.proofTemplate)
+          .then((res) => {
+            this.$emit("received-proof-template-id", res.data.id);
+            EventBus.$emit("success", "Proof Template Created");
 
-        this.$router.push({
-          name: "ProofTemplates",
-          params: {},
-        });
-      });
+            if (!this.disableRouteBack) {
+              this.$router.push({
+                name: "ProofTemplates",
+                params: {},
+              });
+            }
+          }).catch(e => {
+            console.error(e)
+            EventBus.$emit("error", e);
+          });
     },
   },
 };
