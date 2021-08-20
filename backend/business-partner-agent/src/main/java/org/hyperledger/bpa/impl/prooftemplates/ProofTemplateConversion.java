@@ -58,8 +58,10 @@ public class ProofTemplateConversion {
     @Inject
     SchemaService schemaService;
 
-    public AriesProofExchange.ProofTemplateInfo requestToTemplate(
-            @NonNull PresentProofRequest.ProofRequest proofRequest) {
+    public AriesProofExchange.ProofTemplateInfo requestToTemplate(PresentProofRequest.ProofRequest proofRequest) {
+        if (proofRequest == null) {
+            return null;
+        }
         // TODO If not able to convert return JSON (advanced case)
         List<AttributeGroup> attributeGroup = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(proofRequest.getRequestedAttributes())) {
