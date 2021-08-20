@@ -278,9 +278,8 @@ public class ConnectionManager {
                     });
 
             myCredRepo.updateByConnectionId(connectionId, null);
-            if (partner.isPresent()) {
-                eventPublisher.publishEventAsync(PartnerRemovedEvent.builder().partner(partner.get()).build());
-            }
+            partner.ifPresent(value -> eventPublisher
+                    .publishEventAsync(PartnerRemovedEvent.builder().partner(value).build()));
         } catch (IOException e) {
             log.error("Could not delete connection: {}", connectionId, e);
         }

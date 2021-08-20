@@ -15,18 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.impl;
+package org.hyperledger.bpa.api;
 
-import org.hyperledger.aries.api.resolver.DIDDocument;
-
-import java.util.Optional;
-
-/**
- * DID Document resolution is different in web/aries modes. Hence,
- * implementation needs to be mode specific.
- *
- */
-public interface DidDocManager {
-
-    Optional<DIDDocument> getDidDocument();
+public enum ExchangeVersion {
+    /** credential or proof exchange version 1 */
+    V1,
+    /** credential or proof exchange version 2 */
+    V2
 }

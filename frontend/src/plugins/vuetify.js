@@ -87,6 +87,7 @@ export default new Vuetify({
       revoke: mdiBook,
       revoked: mdiBookRemove,
       search: mdiMagnify,
+      dashboardGo: "fas fa-arrow-alt-circle-right",
     },
   },
   theme: {

@@ -125,7 +125,7 @@ public class AdminController {
 
     /**
      * Removes a schema configuration. Doing so means the BPA will not process
-     * requests containing this schema id any more.
+     * requests containing this schema id anymore.
      *
      * @param id {@link UUID} the schema id
      * @return {@link HttpResponse}

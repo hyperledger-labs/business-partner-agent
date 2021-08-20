@@ -167,7 +167,7 @@ public class WalletController {
     }
 
     /**
-     * Aries: Delete a aries wallet credential by id
+     * Aries: Delete an aries wallet credential by id
      *
      * @param id the credential id
      * @return HTTP status

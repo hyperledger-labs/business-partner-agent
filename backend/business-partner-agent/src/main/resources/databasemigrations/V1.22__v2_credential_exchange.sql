@@ -1,0 +1,1 @@
+ALTER TABLE my_credential ADD COLUMN credential_exchange_id character varying(255);

@@ -15,15 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.exception;
+package org.hyperledger.bpa.controller.api.stats;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public final class ErrorMessage {
-    private String message;
+@Builder
+public class DashboardCounts {
+
+    private Long credentialsSent;
+    private Long credentialsReceived;
+    private Long presentationRequestsSent;
+    private Long presentationRequestsReceived;
+    private Long partners;
+    private Long tasks;
 }

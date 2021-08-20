@@ -27,12 +27,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class BPAStats {
-    /** my DID */
+    /**
+     * my DID
+     */
     private String did;
-    /** If organization profile is already there */
+    /**
+     * If organization profile is already there
+     */
     private Boolean profile;
-    /** Number of partners */
-    private Long partners;
-    /** Number of credentials */
-    private Long credentials;
+
+    private DashboardCounts totals;
+    private DashboardCounts periodTotals;
 }

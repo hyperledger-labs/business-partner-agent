@@ -40,7 +40,7 @@ import java.util.UUID;
 /**
  * MyCredential is a credential that is received via aries. It is NOT to be
  * confused with the verifiable credential (VC) that is part of the public
- * profile. When a aries credential is made public it will become a VC as part
+ * profile. When an aries credential is made public it will become a VC as part
  * of the public profile.
  *
  */
@@ -67,8 +67,15 @@ public class MyCredential {
 
     private Boolean isPublic;
 
+    /**
+     * aca-py credential identifier
+     */
     @Nullable
     private String referent;
+
+    /** temporary credential exchange identifier */
+    @Nullable
+    private String credentialExchangeId;
 
     @Nullable
     private String connectionId;
@@ -90,4 +97,12 @@ public class MyCredential {
 
     @Nullable
     private Boolean revoked;
+
+    public static MyCredential.MyCredentialBuilder defaultCredentialBuilder() {
+        return MyCredential
+                .builder()
+                .isPublic(Boolean.FALSE)
+                .type(CredentialType.INDY)
+                .issuedAt(Instant.now());
+    }
 }
