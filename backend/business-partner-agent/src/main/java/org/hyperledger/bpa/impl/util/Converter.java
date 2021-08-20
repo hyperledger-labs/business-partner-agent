@@ -215,7 +215,12 @@ public class Converter {
             proof.setTypeLabel(schemaService.getSchemaLabel(p.getSchemaId()));
         }
         if (PresentationExchangeRole.PROVER.equals(p.getRole())) {
-            proof.setProofTemplate(templateConversion.requestToTemplate(p.getProofRequest()));
+            proof.setProofTemplateInfo(templateConversion.requestToTemplate(p.getProofRequest()));
+        } else {
+            proof.setProofTemplateInfo(AriesProofExchange.ProofTemplateInfo
+                    .builder()
+                    .proofTemplateId(p.getProofTemplate() != null ? p.getProofTemplate().getId() : null)
+                    .build());
         }
         return proof;
     }

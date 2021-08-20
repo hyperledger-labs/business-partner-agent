@@ -54,28 +54,7 @@ public class AriesProofExchange {
 
     /** if verifier, revealed attributes from the other agent */
     private JsonNode proofData;
-    private ProofTemplateInfo proofTemplate;
-
-    // TODO delete all deprecated
-    // depends on the role
-    @Deprecated
-    private Long receivedAt;
-    @Deprecated
-    private Long sentAt;
-    // probably not available
-    @Deprecated
-    private Long issuedAt;
-
-    @Deprecated
-    private String issuer;
-    @Deprecated
-    private String schemaId;
-    @Deprecated
-    private String credentialDefinitionId;
-
-    /** aca-py proof request object*/
-    @Deprecated
-    private PresentProofRequest.ProofRequest proofRequest;
+    private ProofTemplateInfo proofTemplateInfo;
 
     @Data
     @NoArgsConstructor
@@ -84,7 +63,10 @@ public class AriesProofExchange {
     public static class ProofTemplateInfo {
         /** if prover, proof request converted into template */
         private ProofTemplate proofTemplate;
-        /** if prover, raw aca-py proof request object, fallback if the conversion into a template failed */
+        /**
+         * if prover, raw aca-py proof request object, fallback if the conversion into a
+         * template failed
+         */
         private PresentProofRequest.ProofRequest proofRequest;
 
         /** if verifier, reference to the used template */
@@ -118,4 +100,25 @@ public class AriesProofExchange {
                 .exchangeVersion(p.getExchangeVersion())
                 .build();
     }
+
+    // TODO delete all deprecated
+    // depends on the role
+    @Deprecated
+    private Long receivedAt;
+    @Deprecated
+    private Long sentAt;
+    // probably not available
+    @Deprecated
+    private Long issuedAt;
+
+    @Deprecated
+    private String issuer;
+    @Deprecated
+    private String schemaId;
+    @Deprecated
+    private String credentialDefinitionId;
+
+    /** aca-py proof request object */
+    @Deprecated
+    private PresentProofRequest.ProofRequest proofRequest;
 }
