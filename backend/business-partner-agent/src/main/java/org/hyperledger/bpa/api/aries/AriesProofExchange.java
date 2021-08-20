@@ -23,11 +23,12 @@ import lombok.*;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
-import org.hyperledger.bpa.api.ExchangeVersion;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.model.PartnerProof;
 
 import io.micronaut.core.annotation.Nullable;
+
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -42,17 +43,28 @@ public class AriesProofExchange {
     private UUID id;
     private UUID partnerId;
 
-    // TODO replace by Map<Role, Map<State, Timestamp>>
-    // depends on the role
-    private Long receivedAt;
-    private Long sentAt;
-    // probably not available
-    private Long issuedAt;
-
-    private String typeLabel;
+    private ExchangeVersion exchangeVersion;
     private PresentationExchangeState state;
     private PresentationExchangeRole role;
+
+    public Map<PresentationExchangeState, Long> stateToTimestamp;
+
+    private String typeLabel;
     private String problemReport;
+
+    /** if verifier, revealed attributes from the other agent */
+    private JsonNode proofData;
+    private ProofTemplateInfo proofTemplate;
+
+    // TODO delete all deprecated
+    // depends on the role
+    @Deprecated
+    private Long receivedAt;
+    @Deprecated
+    private Long sentAt;
+    // probably not available
+    @Deprecated
+    private Long issuedAt;
 
     @Deprecated
     private String issuer;
@@ -61,13 +73,27 @@ public class AriesProofExchange {
     @Deprecated
     private String credentialDefinitionId;
 
-    private ExchangeVersion exchangeVersion;
-    private JsonNode proofData;
+    /** aca-py proof request object*/
+    @Deprecated
     private PresentProofRequest.ProofRequest proofRequest;
-    // if prover
-    private ProofTemplate proofTemplate;
-    // if verifier
-    private UUID proofTemplateId;
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ProofTemplateInfo {
+        /** if prover, proof request converted into template */
+        private ProofTemplate proofTemplate;
+        /** if prover, raw aca-py proof request object, fallback if the conversion into a template failed */
+        private PresentProofRequest.ProofRequest proofRequest;
+
+        /** if verifier, reference to the used template */
+        private UUID proofTemplateId;
+
+        public boolean getHasTemplate() {
+            return proofTemplate != null;
+        }
+    }
 
     public static AriesProofExchange from(@NonNull PartnerProof p, @Nullable JsonNode proofData) {
         final AriesProofExchangeBuilder b = AriesProofExchange.builder();

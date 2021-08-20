@@ -25,7 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.api.ExchangeVersion;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.impl.verification.ValidUUID;
 
 import javax.validation.constraints.NotBlank;

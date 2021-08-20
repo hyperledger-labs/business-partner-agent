@@ -42,7 +42,7 @@ import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.revocation.RevokeRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
 import org.hyperledger.bpa.api.CredentialType;
-import org.hyperledger.bpa.api.ExchangeVersion;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.IssuerException;
 import org.hyperledger.bpa.api.exception.NetworkException;

@@ -29,7 +29,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
 
 import io.micronaut.core.annotation.Nullable;
-import org.hyperledger.bpa.api.ExchangeVersion;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
