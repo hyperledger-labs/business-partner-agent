@@ -211,17 +211,20 @@ public class Converter {
     public AriesProofExchange toAPIObject(@NonNull PartnerProof p) {
         AriesProofExchange proof = AriesProofExchange.from(p,
                 p.getProof() != null ? this.fromMap(p.getProof(), JsonNode.class) : null);
-        if (StringUtils.isNotEmpty(p.getSchemaId())) {
-            proof.setTypeLabel(schemaService.getSchemaLabel(p.getSchemaId()));
-        }
+        AriesProofExchange.ProofTemplateInfo template;
         if (PresentationExchangeRole.PROVER.equals(p.getRole())) {
-            proof.setProofTemplateInfo(templateConversion.requestToTemplate(p.getProofRequest()));
+            template = templateConversion.requestToTemplate(p.getProofRequest());
         } else {
-            proof.setProofTemplateInfo(AriesProofExchange.ProofTemplateInfo
+            template = AriesProofExchange.ProofTemplateInfo
                     .builder()
-                    .proofTemplateId(p.getProofTemplate() != null ? p.getProofTemplate().getId() : null)
-                    .build());
+                    .proofTemplate(p.getProofTemplate() != null ? p.getProofTemplate().toRepresentation() : null)
+                    .proofRequest(p.getProofRequest())
+                    .build();
         }
+        if (template != null && template.getProofTemplate() != null) {
+            proof.setTypeLabel(template.getProofTemplate().getName());
+        }
+        proof.setProofTemplateInfo(template);
         return proof;
     }
 
