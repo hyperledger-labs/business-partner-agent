@@ -53,7 +53,7 @@
             <v-text-field
               label="Name"
               persistent-placeholder
-              :placeholder=aliasPlaceholder
+              :placeholder="aliasPlaceholder"
               v-model.trim="alias"
               outlined
               dense
@@ -89,22 +89,19 @@
           </v-list-item>
         </v-row>
 
-      <Profile v-if="partnerLoaded" v-bind:partner="partner"/>
+        <Profile v-if="partnerLoaded" v-bind:partner="partner" />
       </v-container>
       <v-card-actions>
         <v-layout justify-space-between>
           <v-bpa-button color="secondary" to="/app/partners">
             {{ $t("button.cancel") }}
-          </v-bpa-button
-          >
+          </v-bpa-button>
 
           <v-bpa-button v-if="!partnerLoaded" color="primary" @click="lookup()">
             {{ $t("view.addPartner.lookupPartnerBtnLabel") }}
-          </v-bpa-button
-          >
-          <v-bpa-button v-else color="primary" @click="addPartner()">{{
-              $t("view.addPartner.addPartnerBtnLabel")
-            }}
+          </v-bpa-button>
+          <v-bpa-button v-else color="primary" @click="addPartner()"
+            >{{ $t("view.addPartner.addPartnerBtnLabel") }}
           </v-bpa-button>
         </v-layout>
       </v-card-actions>
@@ -114,7 +111,7 @@
 
 <script>
 import Profile from "@/components/Profile";
-import {EventBus} from "@/main";
+import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
 

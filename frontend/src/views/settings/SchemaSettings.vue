@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
+import { EventBus } from "@/main";
 import SchemaList from "@/components/SchemaList";
 import AddSchema from "@/components/AddSchema";
 import CreateSchema from "@/components/CreateSchema";

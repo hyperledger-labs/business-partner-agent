@@ -232,9 +232,9 @@
 <script>
 import Profile from "@/components/Profile";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
-import { CredentialTypes, PartnerStates } from "../constants";
+import { CredentialTypes, PartnerStates } from "@/constants";
 import { getPartnerProfile, getPartnerState } from "@/utils/partnerUtils";
-import { EventBus } from "../main";
+import { EventBus } from "@/main";
 import { issuerService, partnerService } from "@/services";
 import CredExList from "@/components/CredExList";
 import PresentationExList from "@/components/PresentationExList";
