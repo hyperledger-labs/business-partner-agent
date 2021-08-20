@@ -35,6 +35,7 @@ import PresentationRequestDetails from "@/views/PresentationRequestDetails.vue";
 import ProofTemplates from "@/views/ProofTemplates";
 import ProofTemplateCreate from "@/views/ProofTemplateCreate";
 import ProofTemplateView from "@/views/ProofTemplateView";
+import RequestPresentationCreateProofTemplate from "@/views/RequestPresentationCreateProofTemplate";
 
 Vue.use(VueRouter);
 
@@ -115,6 +116,12 @@ const routes = [
     path: "/app/partners/:id/request",
     name: "RequestPresentation",
     component: RequestPresentation,
+    props: true,
+  },
+  {
+    path: "/app/partners/:id/request/create-proof-template",
+    name: "RequestPresentationCreateProofTemplate",
+    component: RequestPresentationCreateProofTemplate,
     props: true,
   },
   {
