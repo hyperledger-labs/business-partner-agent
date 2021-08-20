@@ -132,14 +132,19 @@
     </v-card>
 
     <v-card v-if="partner.ariesSupport" class="mb-4">
-      <v-card-title class="bg-light">{{
-        $t("view.partner.presentationExchanges.title")
-      }}</v-card-title>
-      <PresentationExList
-        v-if="isReady"
-        v-bind:items="presentationExRecords"
-        @proofExRecordDeleted="removeProofExRecord"
-      />
+      <v-card-title class="bg-light">
+        {{ $t("view.partner.presentationExchanges.title") }}
+        <v-layout justify-end>
+          <v-bpa-button
+            color="primary"
+            icon
+            @click="refreshPresentationRecords"
+          >
+            <v-icon dark>$vuetify.icons.refresh</v-icon>
+          </v-bpa-button>
+        </v-layout>
+      </v-card-title>
+      <PresentationExList v-if="isReady" v-bind:items="presentationExRecords" />
       <v-card-actions>
         <v-bpa-button small color="secondary" @click="sendPresentation">{{
           $t("view.partner.presentationExchanges.button.send")
@@ -162,9 +167,18 @@
     </v-card>
 
     <v-card v-if="partner.ariesSupport" class="mb-4">
-      <v-card-title class="bg-light">{{
-        $t("view.partner.credentialExchanges.title")
-      }}</v-card-title>
+      <v-card-title class="bg-light"
+        >{{ $t("view.partner.credentialExchanges.title") }}
+        <v-layout justify-end>
+          <v-bpa-button
+            color="primary"
+            icon
+            @click="refreshIssuedCredentialRecords"
+          >
+            <v-icon dark>$vuetify.icons.refresh</v-icon>
+          </v-bpa-button>
+        </v-layout>
+      </v-card-title>
       <CredExList
         v-if="isReady"
         v-bind:items="issuedCredentials"
@@ -338,6 +352,9 @@ export default {
         };
       }
     },
+    refreshPresentationRecords() {
+      this.getPresentationRecords();
+    },
     getPresentationRecords() {
       console.log("Getting presentation records...");
       partnerService
@@ -353,19 +370,6 @@ export default {
           console.error(e);
           // EventBus.$emit("error", e);
         });
-      console.log(this.presentationsRequests);
-    },
-
-    presentationRequestSuccess(id) {
-      let objIndex = this.presentationRequests.findIndex((item) => {
-        return item.id === id;
-      });
-      this.presentationRequests[objIndex].state = "presentation_sent";
-      this.presentationsSent.push(this.presentationRequests[objIndex]);
-
-      this.presentationRequests = this.presentationRequests.filter((item) => {
-        return item.id !== id;
-      });
     },
 
     // Issue Credentials
@@ -383,6 +387,9 @@ export default {
           console.error(e);
           // EventBus.$emit("error", e);
         });
+    },
+    refreshIssuedCredentialRecords() {
+      this.getIssuedCredentials(this.id);
     },
     getPartner() {
       console.log("Getting partner...");
