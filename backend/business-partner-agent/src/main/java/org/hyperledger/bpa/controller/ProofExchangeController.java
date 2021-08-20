@@ -26,6 +26,7 @@ import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
@@ -40,6 +41,7 @@ import javax.validation.Valid;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Controller("/api/proof-exchanges")
 @Tag(name = "Proof Exchange Management")
 @Validated
@@ -54,12 +56,25 @@ public class ProofExchangeController {
     ProofManager proofM;
 
     /**
-     * Aries: Make the presentation that was requested
+     * Manual proof exchange flow. Get matching wallet credentials before sending or
+     * declining the proof request.
+     * 
+     * @return HTTP status
+     */
+    @Get("/{id}/matching-credentials")
+    public HttpResponse<?> getMatchingCredentials(@PathVariable String id) {
+        log.debug("{}", id);
+        return HttpResponse.ok();
+    }
+
+    /**
+     * Manual proof exchange flow. Answer ProofRequest with matching attributes
      *
      * @param id {@link UUID} the presentationExchangeId
      * @return HTTP status
      */
     @Post("/{id}/prove")
+    // TODO Body with accepted attributes same as aca-py (probably same object)
     public HttpResponse<Void> responseToProofRequest(
             @PathVariable String id) {
         final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(id));
@@ -72,7 +87,7 @@ public class ProofExchangeController {
     }
 
     /**
-     * Aries: Reject ProofRequest received from a partner
+     * Manual proof exchange flow. Reject ProofRequest received from a partner
      *
      * @param id {@link UUID} the presentationExchangeId
      * @return HTTP status
@@ -89,7 +104,7 @@ public class ProofExchangeController {
     }
 
     /**
-     * Aries: Request proof from partner
+     * Request proof from partner
      *
      * @param req {@link RequestProofRequest}
      * @return HTTP status
@@ -108,7 +123,7 @@ public class ProofExchangeController {
     }
 
     /**
-     * Aries: Send proof to partner
+     * Send proof to partner
      *
      * @param req {@link SendProofRequest}
      * @return HTTP status
@@ -124,7 +139,7 @@ public class ProofExchangeController {
      * Get proof exchange by id
      *
      * @param id {@link UUID} presentation exchange id
-     * @return partner
+     * @return {@link AriesProofExchange}
      */
     @Get("/{id}")
     public HttpResponse<AriesProofExchange> getProofExchangeById(@PathVariable String id) {

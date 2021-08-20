@@ -19,7 +19,6 @@ package org.hyperledger.bpa.api.aries;
 
 import lombok.*;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
-import org.hyperledger.bpa.api.ExchangeVersion;
 import org.hyperledger.bpa.model.MyCredential;
 
 import java.util.Map;

@@ -40,7 +40,7 @@ import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConvert
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.api.CredentialType;
-import org.hyperledger.bpa.api.ExchangeVersion;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.api.aries.AriesCredential.AriesCredentialBuilder;
 import org.hyperledger.bpa.api.aries.ProfileVC;
