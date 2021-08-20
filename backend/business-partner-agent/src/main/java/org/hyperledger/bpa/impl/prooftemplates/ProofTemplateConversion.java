@@ -23,6 +23,7 @@ import io.micronaut.core.util.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
+import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.controller.api.prooftemplates.*;
@@ -57,7 +58,8 @@ public class ProofTemplateConversion {
     @Inject
     SchemaService schemaService;
 
-    public ProofTemplate requestToTemplate(@NonNull PresentProofRequest.ProofRequest proofRequest) {
+    public AriesProofExchange.ProofTemplateInfo requestToTemplate(
+            @NonNull PresentProofRequest.ProofRequest proofRequest) {
         // TODO If not able to convert return JSON (advanced case)
         List<AttributeGroup> attributeGroup = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(proofRequest.getRequestedAttributes())) {
@@ -93,9 +95,12 @@ public class ProofTemplateConversion {
                 attributeGroup.add(gb.build());
             });
         }
-        return ProofTemplate.builder()
-                .name(proofRequest.getName())
-                .attributeGroups(attributeGroup)
+        return AriesProofExchange.ProofTemplateInfo
+                .builder()
+                .proofTemplate(ProofTemplate.builder()
+                        .name(proofRequest.getName())
+                        .attributeGroups(attributeGroup)
+                        .build())
                 .build();
     }
 
