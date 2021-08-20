@@ -58,6 +58,7 @@ import javax.inject.Singleton;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -160,6 +161,7 @@ public class ProofManager {
                     .proofTemplate(proofTemplate)
                     .issuer(issuerId)
                     .exchangeVersion(ExchangeVersion.V1)
+                    .pushStateChange(exchange.getState(), Instant.now())
                     .build();
             pProofRepo.save(pp);
             eventPublisher.publishEventAsync(PresentationRequestSentEvent.builder()
@@ -246,6 +248,7 @@ public class ProofManager {
                 .setSchemaId(schemaId)
                 .setCredentialDefinitionId(credDefId)
                 .setIssuer(issuer)
+                .pushStateChange(proof.getState(), Instant.now())
                 .setProof(proof.from(schemaService.getSchemaAttributeNames(schemaId))); // TODO not needed?
         final PartnerProof savedProof = pProofRepo.update(pp);
         didRes.resolveDid(savedProof);
@@ -270,6 +273,7 @@ public class ProofManager {
                             .schemaId(cred.getSchemaId())
                             .issuer(resolveIssuer(cred.getCredentialDefinitionId()))
                             .exchangeVersion(ExchangeVersion.V1)
+                            .pushStateChange(proof.getState(), Instant.now())
                             .build();
                     pProofRepo.save(pp);
 

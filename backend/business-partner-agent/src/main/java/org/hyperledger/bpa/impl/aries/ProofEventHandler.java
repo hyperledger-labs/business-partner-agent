@@ -36,6 +36,7 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.time.Instant;
 import java.util.UUID;
 
 @Slf4j
@@ -84,7 +85,9 @@ public class ProofEventHandler {
                         p -> pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId()).ifPresentOrElse(
                                 pp -> {
                                     if (proof.getState() != null) {
-                                        pProofRepo.updateState(pp.getId(), proof.getState());
+                                        pp.setState(proof.getState());
+                                        pp.pushStateChange(proof.getState(), Instant.now());
+                                        pProofRepo.update(pp);
                                     }
                                     if (proof.getErrorMsg() != null) {
                                         pProofRepo.updateProblemReport(pp.getId(), proof.getErrorMsg());
@@ -132,7 +135,9 @@ public class ProofEventHandler {
                                 log.info(
                                         "Present_Proof: state=request_received on PresentationExchange where " +
                                                 "initator=self, responding immediately");
-                                pProofRepo.updateState(pProof.getId(), proof.getState());
+                                pProof.setState(proof.getState());
+                                pProof.pushStateChange(proof.getState(), Instant.now());
+                                pProofRepo.update(pProof);
                                 if (proof.getAutoPresent() == null || !proof.getAutoPresent()) {
                                     proofManager.presentProof(proof);
                                 }
@@ -175,6 +180,7 @@ public class ProofEventHandler {
                 .presentationExchangeId(proof.getPresentationExchangeId())
                 .threadId(proof.getThreadId())
                 .role(proof.getRole())
+                .pushStateChange(proof.getState(), Instant.now())
                 .build();
     }
 }

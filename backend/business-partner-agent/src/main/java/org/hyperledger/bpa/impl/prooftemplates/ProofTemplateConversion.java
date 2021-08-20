@@ -86,7 +86,7 @@ public class ProofTemplateConversion {
                 }
                 gb.nonRevoked(attributes.getNonRevoked() != null && attributes.getNonRevoked().isSet());
                 if (CollectionUtils.isNotEmpty(attributes.getRestrictions())) {
-                    if (attributes.getRestrictions().size() > 0) {
+                    if (attributes.getRestrictions().size() > 1) {
                         // TODO json fallback
                         log.debug("should return json");
                     }
@@ -99,6 +99,7 @@ public class ProofTemplateConversion {
         }
         return AriesProofExchange.ProofTemplateInfo
                 .builder()
+                .proofRequest(proofRequest)
                 .proofTemplate(ProofTemplate.builder()
                         .name(proofRequest.getName())
                         .attributeGroups(attributeGroup)

@@ -20,6 +20,7 @@ package org.hyperledger.bpa.api.aries;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.*;
 
+import lombok.experimental.Accessors;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
@@ -53,6 +54,8 @@ public class AriesProofExchange {
     private String problemReport;
 
     /** if verifier, revealed attributes from the other agent */
+    // TODO this should always be set, but it isn't
+    // TODO now use attribute groups as well, at the moment we always use the first
     private JsonNode proofData;
     private ProofTemplateInfo proofTemplateInfo;
 
@@ -60,32 +63,24 @@ public class AriesProofExchange {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    @Accessors(chain = true)
     public static class ProofTemplateInfo {
-        /** if prover, proof request converted into template */
         private ProofTemplate proofTemplate;
-        /**
-         * if prover, raw aca-py proof request object, fallback if the conversion into a
-         * template failed
-         */
         private PresentProofRequest.ProofRequest proofRequest;
-
-        /** if verifier, reference to the used template */
-        private UUID proofTemplateId;
-
-        public boolean getHasTemplate() {
-            return proofTemplate != null;
-        }
     }
 
     public static AriesProofExchange from(@NonNull PartnerProof p, @Nullable JsonNode proofData) {
         final AriesProofExchangeBuilder b = AriesProofExchange.builder();
         final Long created = p.getCreatedAt().toEpochMilli();
+
+        // deprecated use state to timestamp
         // TODO: Handle sent AND received date for in Transit ProofExchanges
         if (PresentationExchangeRole.PROVER.equals(p.getRole())) {
             b.sentAt(created);
         } else {
             b.receivedAt(created);
         }
+
         return b
                 .id(p.getId())
                 .partnerId(p.getPartnerId())
@@ -98,6 +93,7 @@ public class AriesProofExchange {
                 .role(p.getRole())
                 .problemReport(p.getProblemReport())
                 .exchangeVersion(p.getExchangeVersion())
+                .stateToTimestamp(p.getStateToTimestamp() != null ? p.getStateToTimestamp().toApi() : null)
                 .build();
     }
 
