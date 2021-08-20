@@ -29,6 +29,7 @@ export const ApiRoutes = Object.freeze({
   ADMIN: "/admin",
   ISSUER: "/issuer",
   PARTNERS: "/partners",
+  PROOF_EXCHANGES: "/proof-exchanges",
   PROOF_TEMPLATES: "/proof-templates",
   ACTIVITIES: "/activities",
 });

@@ -137,8 +137,8 @@
       }}</v-card-title>
       <PresentationExList
         v-if="isReady"
-        v-bind:partnerId="id"
         v-bind:items="presentationExRecords"
+        @proofExRecordDeleted="removeProofExRecord"
       />
       <v-card-actions>
         <v-bpa-button small color="secondary" @click="sendPresentation">{{
@@ -221,10 +221,6 @@ import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import { CredentialTypes, PartnerStates } from "../constants";
 import { getPartnerProfile, getPartnerState } from "@/utils/partnerUtils";
 import { EventBus } from "../main";
-import {
-  sentHeaders,
-  receivedHeaders,
-} from "@/components/tableHeaders/PartnerHeaders";
 import { issuerService, partnerService } from "@/services";
 import CredExList from "@/components/CredExList";
 import PresentationExList from "@/components/PresentationExList";
@@ -266,15 +262,10 @@ export default {
       rawData: {},
       credentials: [],
       presentationExRecords: [],
-      presentationsSent: [],
-      presentationsReceived: [],
       issuedCredentials: [],
-      presentationRequests: [],
       rules: {
         required: (value) => !!value || "Can't be empty",
       },
-      headersSent: sentHeaders,
-      headersReceived: receivedHeaders,
       PartnerStates: PartnerStates,
       headersIssued: [
         {
@@ -295,26 +286,6 @@ export default {
         },
       ],
       issueCredentialDialog: false,
-      headersPresentationRequest: [
-        {
-          text: "",
-          value: "indicator",
-          sortable: false,
-          filterable: false,
-        },
-        {
-          text: "Received at",
-          value: "sentAt", //miss labelled.
-        },
-        {
-          text: "State",
-          value: "state",
-        },
-        {
-          text: "",
-          value: "actions",
-        },
-      ],
     };
   },
   computed: {
@@ -376,28 +347,6 @@ export default {
             let data = result.data;
             console.log(data);
             this.presentationExRecords = data;
-            this.presentationsSent = data.filter((item) => {
-              console.log("PresentationSent");
-              return (
-                item.role === "prover" &&
-                [
-                  "presentation_sent",
-                  "presentation_acked",
-                  "proposal_sent",
-                ].includes(item.state)
-              );
-            });
-            this.presentationRequests = data.filter((item) => {
-              console.log("PresentationRequest");
-              return (
-                item.role === "prover" && item.state === "request_received"
-              );
-            });
-            this.presentationsReceived = data.filter((item) => {
-              console.log("PresentationReceived");
-              return item.role === "verifier";
-            });
-            console.log(this.presentationRequests);
           }
         })
         .catch((e) => {
@@ -405,25 +354,6 @@ export default {
           // EventBus.$emit("error", e);
         });
       console.log(this.presentationsRequests);
-    },
-    removePresentationReceived(id) {
-      this.presentationsReceived = this.presentationsReceived.filter((item) => {
-        return item.id !== id;
-      });
-      this.$store.commit("presentationNotificationSeen", { id: id });
-    },
-    removePresentationSent(id) {
-      this.presentationsSent = this.presentationsSent.filter((item) => {
-        return item.id !== id;
-      });
-      this.$store.commit("presentationNotificationSeen", { id: id });
-    },
-    removePresentationRequest(id) {
-      let objIndex = this.presentationRequests.findIndex((item) => {
-        return item.id === id;
-      });
-      this.presentationRequests[objIndex].state = "presentation_rejected"; //not an aries state
-      this.$store.commit("presentationNotificationSeen", { id: id });
     },
 
     presentationRequestSuccess(id) {

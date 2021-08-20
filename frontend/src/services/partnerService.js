@@ -31,24 +31,4 @@ export default {
   getPresentationExRecords(id) {
     return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/proof-exchanges`);
   },
-  declinePresentationRequest({ partnerId, proofId }) {
-    return appAxios().post(
-      `${ApiRoutes.PARTNERS}/${partnerId}/proof-exchanges/${proofId}/decline`
-    );
-  },
-  approvePresentationRequest({ partnerId, proofId }) {
-    return appAxios().post(
-      `${ApiRoutes.PARTNERS}/${partnerId}/proof-exchanges/${proofId}/prove`
-    );
-  },
-  getPresentationExRecord({ partnerId, proofId }) {
-    return appAxios().post(
-      `${ApiRoutes.PARTNERS}/${partnerId}/proof/${proofId}`
-    );
-  },
-  deletePresentationExRecord({ partnerId, proofId }) {
-    return appAxios().delete(
-      `${ApiRoutes.PARTNERS}/${partnerId}/proof/${proofId}`
-    );
-  },
 };

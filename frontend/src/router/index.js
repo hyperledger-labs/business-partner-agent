@@ -18,7 +18,6 @@ import RequestVerification from "../views/RequestVerification.vue";
 import RequestPresentation from "../views/RequestPresentation.vue";
 import SendPresentation from "../views/SendPresentation.vue";
 import Credential from "../views/Credential.vue";
-import Presentation from "../views/Presentation.vue";
 import Partners from "../views/Partners.vue";
 import Partner from "../views/Partner.vue";
 import AddPartner from "../views/AddPartner.vue";
@@ -31,7 +30,6 @@ import AddSchema from "../views/AddSchema.vue";
 import About from "../views/About.vue";
 import CredentialManagement from "@/views/issuer/CredentialManagement.vue";
 import Notifications from "@/views/Notifications.vue";
-import PresentationRequestDetails from "@/views/PresentationRequestDetails.vue";
 import ProofTemplates from "@/views/ProofTemplates";
 import ProofTemplateCreate from "@/views/ProofTemplateCreate";
 import ProofTemplateView from "@/views/ProofTemplateView";
@@ -125,21 +123,9 @@ const routes = [
     props: true,
   },
   {
-    path: "/app/presentation-request/:id/details",
-    name: "PresentationRequestDetails",
-    component: PresentationRequestDetails,
-    props: true,
-  },
-  {
     path: "/app/partners/:id/send",
     name: "SendPresentation",
     component: SendPresentation,
-    props: true,
-  },
-  {
-    path: "/app/partners/:id/presentation/:presentationId",
-    name: "Presentation",
-    component: Presentation,
     props: true,
   },
   {

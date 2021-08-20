@@ -33,7 +33,7 @@
       </template>
       <template v-slot:[`item.state`]="{ item }">
         <span>
-          {{ item.state.replace("_", " ") }}
+          {{ item.state ? item.state.replace("_", " ") : "" }}
         </span>
         <v-icon v-if="isComplete(item)" color="green">mdi-check</v-icon>
         <v-tooltip v-if="item.problemReport" top>
@@ -62,7 +62,7 @@
         <v-card-title class="bg-light">
           <span class="headline">Presentation Exchange</span>
           <v-layout justify-end>
-            <v-btn depressed color="red" icon @click="deleteItem()">
+            <v-btn depressed color="red" icon @click="deleteItem">
               <v-icon dark>$vuetify.icons.delete</v-icon>
             </v-btn>
           </v-layout>
@@ -93,16 +93,13 @@
 </template>
 
 <script>
-import { partnerService } from "@/services";
+import { proofExService } from "@/services";
 // import { EventBus } from "../main";
-// import { CredentialTypes } from "../constants";
 import NewMessageIcon from "@/components/NewMessageIcon";
 import PresentationRecord from "@/components/PresentationRecord";
-// import { presentationListHeaders } from "@/components/tableHeaders/PresentationListHeaders";
 import VBpaButton from "@/components/BpaButton";
 export default {
   props: {
-    partnerId: String,
     items: Array,
   },
   data: () => {
@@ -141,17 +138,11 @@ export default {
   computed: {},
   methods: {
     approve() {
-      partnerService.approvePresentationRequest({
-        partnerId: this.partnerId,
-        proofId: this.record.id,
-      });
+      proofExService.approveProofRequest(this.record.id);
       this.dialog = false;
     },
     decline() {
-      partnerService.declinePresentationRequest({
-        partnerId: this.partnerId,
-        proofId: this.record.id,
-      });
+      proofExService.declineProofRequest(this.record.id);
       this.dialog = false;
     },
     openItem(item) {
@@ -162,9 +153,13 @@ export default {
     closeItem() {
       this.dialog = false;
     },
-    deleteItem() {
-      // TODO: Proof Exchanges should have RD. Should not happen over partner API
-      partnerService.deletePresentationExRecord();
+    async deleteItem() {
+      const resp = await proofExService.deleteProofExRecord(this.record.id);
+      if (resp.status === 200) {
+        const idx = this.items.findIndex((item) => item.id === this.record.id);
+        this.items.splice(idx, 1);
+      }
+      this.dialog = false;
     },
     isComplete(item) {
       // TOD: implement
