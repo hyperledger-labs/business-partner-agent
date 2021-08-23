@@ -355,7 +355,7 @@ public class PartnerController {
             @PathVariable String proofId) {
         final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(proofId));
         if (proof.isPresent()) {
-            proofM.presentProof(proof.get());
+            proofM.presentProof(proof.get(), null);
             return HttpResponse.ok();
         } else {
             return HttpResponse.notFound();

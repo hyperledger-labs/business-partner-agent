@@ -170,6 +170,18 @@ public class ProofManager {
         };
     }
 
+    public Optional<List<PresentationRequestCredentials>> getMatchingCredentials(@NonNull UUID partnerProofId) {
+        Optional<PartnerProof> partnerProof = pProofRepo.findById(partnerProofId);
+        if (partnerProof.isPresent()) {
+            try {
+                return ac.presentProofRecordsCredentials(partnerProof.get().getPresentationExchangeId());
+            } catch (IOException e) {
+                throw new NetworkException(ACA_PY_ERROR_MSG, e);
+            }
+        }
+        return Optional.empty();
+    }
+
     public void declinePresentProofRequest(@NotNull PartnerProof proofEx, String explainString) {
 
         // TODO store action declined/approved
@@ -190,11 +202,16 @@ public class ProofManager {
         }
     }
 
-    public void presentProof(@NotNull PartnerProof proofEx) {
+    public void presentProof(@NotNull PartnerProof proofEx, @Nullable PresentationRequest req) {
         if (PresentationExchangeRole.PROVER.equals(proofEx.getRole())
                 && PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
             try {
-                ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId()).ifPresent(this::presentProof);
+                if (req == null) {
+                    ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId())
+                            .ifPresent(this::presentProofAcceptAll);
+                } else {
+                    ac.presentProofRecordsSendPresentation(proofEx.getPresentationExchangeId(), req);
+                }
             } catch (IOException e) {
                 log.error(ACA_PY_ERROR_MSG, e);
             }
@@ -204,7 +221,7 @@ public class ProofManager {
         }
     }
 
-    void presentProof(@NonNull PresentationExchangeRecord presentationExchangeRecord) {
+    void presentProofAcceptAll(@NonNull PresentationExchangeRecord presentationExchangeRecord) {
         if (PresentationExchangeState.REQUEST_RECEIVED.equals(presentationExchangeRecord.getState())) {
             try {
                 ac.presentProofRecordsCredentials(presentationExchangeRecord.getPresentationExchangeId())
@@ -237,7 +254,7 @@ public class ProofManager {
     }
 
     PartnerProof handleAckedOrVerifiedProofEvent(@NonNull PresentationExchangeRecord proof, @NonNull PartnerProof pp) {
-        // TODO first schema id for now as the UI can not handle more
+        // TODO get all revealed attributes or attribute groups
         String schemaId = proof.getIdentifiers().get(0).getSchemaId();
         String credDefId = proof.getIdentifiers().get(0).getCredentialDefinitionId();
         String issuer = resolveIssuer(credDefId);

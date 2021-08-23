@@ -60,13 +60,15 @@ public class BPAAttributeGroup {
     BPASchemaRestrictions schemaLevelRestrictions = BPASchemaRestrictions.builder().build();
 
     public AttributeGroup toRepresentation() {
-        return new AttributeGroup(
-                schemaId,
-                attributes.stream()
+        return AttributeGroup
+                .builder()
+                .schemaId(schemaId)
+                .attributes(attributes.stream()
                         .map(BPAAttribute::toRepresentation)
-                        .collect(Collectors.toList()),
-                nonRevoked,
-                schemaLevelRestrictions.toRepresentation());
+                        .collect(Collectors.toList()))
+                .nonRevoked(nonRevoked)
+                .schemaLevelRestrictions(schemaLevelRestrictions.toRepresentation())
+                .build();
     }
 
     public static BPAAttributeGroup fromRepresentation(AttributeGroup attributeGroup) {

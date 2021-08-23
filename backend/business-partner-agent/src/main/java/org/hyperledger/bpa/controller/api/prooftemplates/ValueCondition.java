@@ -31,7 +31,7 @@ import javax.validation.constraints.NotNull;
 @Introspected
 public class ValueCondition {
     @NotNull
-    ValueOperators operator;
+    private ValueOperators operator;
     @NonNull
-    String value;
+    private String value;
 }

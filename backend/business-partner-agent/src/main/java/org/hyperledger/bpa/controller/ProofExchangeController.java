@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.controller;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
@@ -28,6 +29,8 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.aries.api.present_proof.PresentationRequest;
+import org.hyperledger.aries.api.present_proof.PresentationRequestCredentials;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
@@ -38,6 +41,7 @@ import org.hyperledger.bpa.repository.PartnerProofRepository;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -58,28 +62,31 @@ public class ProofExchangeController {
     /**
      * Manual proof exchange flow. Get matching wallet credentials before sending or
      * declining the proof request.
-     * 
-     * @return HTTP status
+     *
+     * @param id {@link UUID} the presentationExchangeId
+     * @return list of {@link PresentationRequestCredentials}
      */
     @Get("/{id}/matching-credentials")
-    public HttpResponse<?> getMatchingCredentials(@PathVariable String id) {
-        log.debug("{}", id);
-        return HttpResponse.ok();
+    public HttpResponse<List<PresentationRequestCredentials>> getMatchingCredentials(@PathVariable String id) {
+        Optional<List<PresentationRequestCredentials>> mc = proofM.getMatchingCredentials(UUID.fromString(id));
+        if (mc.isPresent()) {
+            return HttpResponse.ok(mc.get());
+        }
+        return HttpResponse.notFound();
     }
 
     /**
      * Manual proof exchange flow. Answer ProofRequest with matching attributes
      *
-     * @param id {@link UUID} the presentationExchangeId
+     * @param id  {@link UUID} the presentationExchangeId
+     * @param req {@link PresentationRequest}
      * @return HTTP status
      */
     @Post("/{id}/prove")
-    // TODO Body with accepted attributes same as aca-py (probably same object)
-    public HttpResponse<Void> responseToProofRequest(
-            @PathVariable String id) {
+    public HttpResponse<Void> responseToProofRequest(@PathVariable String id, @Body @Nullable PresentationRequest req) {
         final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(id));
         if (proof.isPresent()) {
-            proofM.presentProof(proof.get());
+            proofM.presentProof(proof.get(), req);
             return HttpResponse.ok();
         } else {
             return HttpResponse.notFound();

@@ -67,6 +67,7 @@ public class ProofTemplateConversion {
         if (CollectionUtils.isNotEmpty(proofRequest.getRequestedAttributes())) {
             proofRequest.getRequestedAttributes().forEach((groupName, attributes) -> {
                 AttributeGroup.AttributeGroupBuilder gb = AttributeGroup.builder();
+                gb.attributeGroupName(groupName);
                 if (StringUtils.isNotEmpty(attributes.getName())) {
                     Attribute.AttributeBuilder ab = Attribute.builder();
                     ab.name(attributes.getName());
