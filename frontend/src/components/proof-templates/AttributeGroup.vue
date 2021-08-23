@@ -29,7 +29,7 @@
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-container>
-            <h4>Data fields</h4>
+            <h4 class="mb-4">Data fields</h4>
             <v-data-table
               disable-sort
               :headers="attributeGroupHeaders"
@@ -53,8 +53,12 @@
             </v-data-table>
           </v-container>
 
-          <v-container>
-            <h4>Restrictions</h4>
+          <v-container
+            v-if="
+              Object.keys(attributeGroup.schemaLevelRestrictions).Length > 0
+            "
+          >
+            <h4 class="mb-4">Restrictions</h4>
             <v-simple-table>
               <tbody>
                 <tr v-if="attributeGroup.schemaLevelRestrictions.schemaId">
@@ -106,6 +110,21 @@
               </tbody>
             </v-simple-table>
           </v-container>
+
+          <!-- Select matching credential -->
+
+          <v-container v-if="attributeGroup.matchingCredentials">
+            <h4 class="mb-4">Select data for presentation</h4>
+            <v-select
+              label="Matching Credentials"
+              return-object
+              :items="attributeGroup.matchingCredentials"
+              item-text="credentialInfo.referent"
+              outlined
+              @change="selectedCredential(idx, $event)"
+              dense
+            ></v-select>
+          </v-container>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -123,6 +142,7 @@ export default {
           text: "name",
           value: "name",
         },
+        { text: "value", value: "value" },
       ],
       attributeConditionHeaders: [
         {
@@ -137,6 +157,11 @@ export default {
     };
   },
   methods: {
+    selectedCredential(idx, credential) {
+      this.requestData[idx].attributes.map((attr) => {
+        attr.value = credential.credentialInfo.attrs[attr.name];
+      });
+    },
     renderSchemaLabelId(attributeGroup) {
       // FIXME: This needs refactoring
       // This tries to show a schema and label but will show the attribute group if

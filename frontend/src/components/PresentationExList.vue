@@ -57,7 +57,7 @@
         }}
       </template>
     </v-data-table>
-    <v-dialog v-model="dialog" max-width="800px">
+    <v-dialog v-model="dialog" max-width="1000px">
       <v-card>
         <v-card-title class="bg-light">
           <span class="headline">Presentation Exchange</span>
@@ -68,7 +68,14 @@
           </v-layout>
         </v-card-title>
         <v-card-text>
-          <PresentationRecord :record="record"></PresentationRecord>
+          <v-skeleton-loader
+            v-if="isWaitingForMatchingCreds"
+            type="list-item-three-line"
+          />
+          <PresentationRecord
+            v-else
+            v-bind:record="record"
+          ></PresentationRecord>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -94,7 +101,7 @@
 
 <script>
 import { proofExService } from "@/services";
-// import { EventBus } from "../main";
+// import { EventBus } from "@/main";
 import NewMessageIcon from "@/components/NewMessageIcon";
 import PresentationRecord from "@/components/PresentationRecord";
 import VBpaButton from "@/components/BpaButton";
@@ -109,6 +116,7 @@ export default {
       dialog: false,
       isBusy: false,
       isLoading: false,
+      isWaitingForMatchingCreds: false,
       headers: [
         {
           text: "",
@@ -165,6 +173,38 @@ export default {
       // TOD: implement
       item;
       return false;
+    },
+    matchingCredentialsPerAttrGroup() {
+      console.log("to be implemented");
+    },
+    getMatchingCredentials() {
+      this.isWaitingForMatchingCreds = true;
+      proofExService.getMatchingCredentials(this.record.id).then((result) => {
+        this.record.proofTemplateInfo.proofTemplate.attributeGroups.map(
+          (attributeGroup) => {
+            attributeGroup.matchingCredentials = result.data.filter((cred) => {
+              return (
+                cred.presentationReferents.indexOf(
+                  attributeGroup.attributeGroupName
+                ) > -1
+              );
+            });
+          }
+        );
+        this.isWaitingForMatchingCreds = false;
+      });
+    },
+  },
+  watch: {
+    dialog(visible) {
+      if (visible) {
+        this.$store.commit("presentationNotificationSeen", {
+          id: this.record.id,
+        });
+        if (this.record.state === "request_received") {
+          this.getMatchingCredentials();
+        }
+      }
     },
   },
   components: {
