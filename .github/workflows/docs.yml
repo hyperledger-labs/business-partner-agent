@@ -1,0 +1,39 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Docs
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+      - name: Generate Documentation
+        run: |
+          make docs
+          cp -r docs/build/html/* ./docs
+          touch docs/.nojekyll
+      - name: Commit files
+        run: |
+          git add --all
+          git config --local user.email "business-partner-agent[bot]@noreply.github.com"
+          git config --local user.name "business-partner-agent[bot]"
+          git commit -m "[bot] docs generation" -a
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: docs
+          force: true

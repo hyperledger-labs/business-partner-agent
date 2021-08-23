@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
+import { EventBus } from "@/main";
 import TextFieldColorPicker from "@/components/helper/TextFieldColorPicker";
 
 export default {

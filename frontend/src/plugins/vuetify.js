@@ -86,8 +86,8 @@ export default new Vuetify({
       chat: mdiMessageText,
       revoke: mdiBook,
       revoked: mdiBookRemove,
-      dashboardGo: "fas fa-arrow-alt-circle-right",
       search: mdiMagnify,
+      dashboardGo: "fas fa-arrow-alt-circle-right",
     },
   },
   theme: {

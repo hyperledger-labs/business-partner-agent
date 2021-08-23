@@ -18,18 +18,20 @@
       single-select
       @click:row="openItem"
     >
-      <template v-slot:[`item.indicator`]="{item}">
-        <new-message-icon
-            :type="'credential'"
-            :id="item.id"
-        ></new-message-icon>
+      <template v-slot:[`item.indicator`]="{ item }">
+        <new-message-icon :type="'credential'" :id="item.id"></new-message-icon>
       </template>
       <template v-slot:[`item.state`]="{ item }">
-        <v-icon v-if="isItemActive(item) && !item.revoked" color="green" title="credential issued"
+        <v-icon
+          v-if="isItemActive(item) && !item.revoked"
+          color="green"
+          title="credential issued"
           >$vuetify.icons.check</v-icon
         >
-        <v-icon v-else-if="isItemActive(item) && item.revoked" title="credential revoked"
-        >$vuetify.icons.check</v-icon
+        <v-icon
+          v-else-if="isItemActive(item) && item.revoked"
+          title="credential revoked"
+          >$vuetify.icons.check</v-icon
         >
         <span v-else>
           {{ item.state.replace("_", " ") }}
@@ -43,14 +45,17 @@
       </template>
       <template v-slot:[`item.revocable`]="{ item }">
         <v-icon v-if="item.revocable && item.revoked" title="credential revoked"
-        >$vuetify.icons.revoked</v-icon
+          >$vuetify.icons.revoked</v-icon
         >
-        <v-icon v-else-if="item.revocable" color="green" title="revoke credential"
-                @click.stop="revokeCredential(item.id)" :disabled="revoked.includes(item.id)"
-        >$vuetify.icons.revoke</v-icon
+        <v-icon
+          v-else-if="item.revocable"
+          color="green"
+          title="revoke credential"
+          @click.stop="revokeCredential(item.id)"
+          :disabled="revoked.includes(item.id)"
+          >$vuetify.icons.revoke</v-icon
         >
-        <span v-else>
-        </span>
+        <span v-else> </span>
       </template>
     </v-data-table>
     <v-dialog v-model="dialog" max-width="600px">
@@ -72,7 +77,6 @@
   </v-container>
 </template>
 <script>
-
 import { issuerService } from "@/services";
 import Cred from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
@@ -85,10 +89,10 @@ export default {
       type: Array,
       default: () => [
         {
-          text: '',
-          value: 'indicator',
+          text: "",
+          value: "indicator",
           sortable: false,
-          filterable: false
+          filterable: false,
         },
         {
           text: "Type",
@@ -115,7 +119,9 @@ export default {
     isActiveFn: {
       type: Function,
       default: (item) =>
-        item.state === "credential_issued" || item.state == "credential_acked" || item.state == "done",
+        item.state === "credential_issued" ||
+        item.state == "credential_acked" ||
+        item.state == "done",
     },
     isLoading: Boolean,
   },
@@ -123,7 +129,7 @@ export default {
     return {
       dialog: false,
       document: {},
-      revoked: []
+      revoked: [],
     };
   },
   watch: {
@@ -149,12 +155,12 @@ export default {
     revokeCredential(id) {
       this.revoked.push(id);
       issuerService.revokeCredential(id);
-    }
+    },
   },
   components: {
     VBpaButton,
     Cred,
-    NewMessageIcon
+    NewMessageIcon,
   },
 };
 </script>

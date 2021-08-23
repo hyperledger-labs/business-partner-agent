@@ -128,7 +128,7 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
+import { EventBus } from "@/main";
 import QrcodeVue from "qrcode.vue";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
