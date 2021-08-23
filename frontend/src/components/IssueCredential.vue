@@ -52,13 +52,13 @@
         </v-row>
       </v-card-text>
       <v-card-text v-if="expertMode">
-        <h4>
-          Options
-        </h4>
+        <h4>Options</h4>
         <v-col>
           <v-list-item>
             <v-list-item-content>
-              <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
+              <v-list-item-title
+                class="grey--text text--darken-2 font-weight-medium"
+              >
                 Use V2 Protocol
               </v-list-item-title>
             </v-list-item-content>
@@ -99,7 +99,7 @@ export default {
     partnerId: String,
     credDefId: String,
     partnerList: Array,
-    credDefList: Array
+    credDefList: Array,
   },
   mounted() {
     this.load();
@@ -115,13 +115,13 @@ export default {
       credential: {},
       credentialFields: {},
       submitDisabled: true,
-      useV2Credential: null
+      useV2Credential: null,
     };
   },
   computed: {
     expertMode() {
       return this.$store.state.expertMode;
-    }
+    },
   },
   watch: {
     partnerId(val) {
@@ -204,7 +204,7 @@ export default {
         credDefId: this.credDef.id,
         partnerId: this.partner.id,
         document: this.credentialFields,
-        exchangeVersion: exVersion
+        exchangeVersion: exVersion,
       };
       try {
         const resp = await issuerService.issueCredentialSend(data);

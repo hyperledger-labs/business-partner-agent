@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+
+  docs:
+    image: nginx:stable-alpine
+    profiles: [ "docs" ]
+    volumes:
+      - ./docs/build/html:/usr/share/nginx/html
+    ports:
+      - "5000:80"
