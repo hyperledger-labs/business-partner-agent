@@ -74,10 +74,10 @@ public class RestrictionsManagerTest {
 
     @Test
     void testAddRestrictionSuccess() throws Exception {
-        DidVerkeyResponse verkey = new DidVerkeyResponse();
-        verkey.setVerkey("dummy");
+        DidVerkeyResponse verKey = new DidVerkeyResponse();
+        verKey.setVerkey("dummy");
         Mockito.when(ac.ledgerDidVerkey(Mockito.anyString()))
-                .thenReturn(Optional.of(verkey));
+                .thenReturn(Optional.of(verKey));
         BPASchema dbSchema = schemaRepo.save(BPASchema.builder()
                 .schemaId("1234")
                 .seqNo(571)
@@ -86,9 +86,30 @@ public class RestrictionsManagerTest {
                 .addRestriction(dbSchema.getId(), "5mwQSWnRePrZ3oF67C4KqD", null);
         Assertions.assertTrue(credDefId.isPresent());
 
-        Optional<BPASchema> schemaReloded = schemaRepo.findById(dbSchema.getId());
-        Assertions.assertTrue(schemaReloded.isPresent());
-        Assertions.assertNotNull(schemaReloded.get().getRestrictions());
-        Assertions.assertEquals(1, schemaReloded.get().getRestrictions().size());
+        Optional<BPASchema> schemaReloaded = schemaRepo.findById(dbSchema.getId());
+        Assertions.assertTrue(schemaReloaded.isPresent());
+        Assertions.assertNotNull(schemaReloaded.get().getRestrictions());
+        Assertions.assertEquals(1, schemaReloaded.get().getRestrictions().size());
+    }
+
+    @Test
+    void testGetIssuerLabelByDid() throws Exception {
+        DidVerkeyResponse verKey = new DidVerkeyResponse();
+        verKey.setVerkey("dummy");
+        Mockito.when(ac.ledgerDidVerkey(Mockito.anyString()))
+                .thenReturn(Optional.of(verKey));
+        BPASchema dbSchema = schemaRepo.save(BPASchema.builder()
+                .schemaId("1234")
+                .seqNo(571)
+                .build());
+        String label = "myLabel123";
+        String issuerDid = "5mwQSWnRePrZ3oF67C4KqD";
+        mgmt.addRestriction(dbSchema.getId(), issuerDid, label);
+
+        Assertions.assertNull(mgmt.findIssuerLabelByDid(null));
+        Assertions.assertNull(mgmt.findIssuerLabelByDid("something"));
+        Assertions.assertEquals(label, mgmt.findIssuerLabelByDid(issuerDid));
+        Assertions.assertEquals(label, mgmt.findIssuerLabelByDid("did:sov:" + issuerDid));
+        Assertions.assertEquals(label, mgmt.findIssuerLabelByDid(issuerDid + ":3:CL:571:bank"));
     }
 }

@@ -28,6 +28,7 @@ import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.model.BPARestrictions;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPARestrictionsRepository;
@@ -134,6 +135,27 @@ public class RestrictionsManager {
 
     private String prefixIssuerDid(@NonNull String issuerDid) {
         return issuerDid.startsWith("did:") ? issuerDid : didPrefix + issuerDid;
+    }
+
+    /**
+     * Resolve the label of the trusted issuer either by did or credDefId
+     * @param expression either did (qualified or unqualified) or credential definition id
+     * @return label of the trusted issuer if set
+     */
+    public @Nullable String findIssuerLabelByDid(@Nullable String expression) {
+        String did = null;
+        if (AriesStringUtil.isCredDef(expression)) {
+            did = didPrefix + AriesStringUtil.credDefIdGetDid(expression);
+        } else if (StringUtils.isNotEmpty(expression)) {
+            did = prefixIssuerDid(expression);
+        }
+        if (did != null) {
+            Optional<BPARestrictions> restriction = repo.findByIssuerDid(did);
+            if (restriction.isPresent()) {
+                return restriction.get().getLabel();
+            }
+        }
+        return null;
     }
 
     @Data
