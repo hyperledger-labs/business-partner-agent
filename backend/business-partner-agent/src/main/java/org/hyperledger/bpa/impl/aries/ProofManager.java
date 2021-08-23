@@ -249,6 +249,7 @@ public class ProofManager {
                 .setCredentialDefinitionId(credDefId)
                 .setIssuer(issuer)
                 .pushStateChange(proof.getState(), Instant.now())
+                .setProofRequest(proof.getPresentationRequest())
                 .setProof(proof.from(schemaService.getSchemaAttributeNames(schemaId))); // TODO not needed?
         final PartnerProof savedProof = pProofRepo.update(pp);
         didRes.resolveDid(savedProof);

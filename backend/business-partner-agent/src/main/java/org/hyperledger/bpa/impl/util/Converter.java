@@ -34,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.api.CredentialType;
@@ -212,7 +211,7 @@ public class Converter {
         AriesProofExchange proof = AriesProofExchange.from(p,
                 p.getProof() != null ? this.fromMap(p.getProof(), JsonNode.class) : null);
         AriesProofExchange.ProofTemplateInfo template;
-        if (PresentationExchangeRole.PROVER.equals(p.getRole())) {
+        if (p.getProofTemplate() == null) {
             template = templateConversion.requestToTemplate(p.getProofRequest());
         } else {
             template = AriesProofExchange.ProofTemplateInfo
