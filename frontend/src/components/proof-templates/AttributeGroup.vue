@@ -21,7 +21,7 @@
     <v-expansion-panels>
       <v-expansion-panel
         class="my-5"
-        v-for="(attributeGroup, idx) in data"
+        v-for="(attributeGroup, idx) in requestData"
         :key="idx"
       >
         <v-expansion-panel-header>
@@ -29,7 +29,7 @@
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-container>
-            <h4>Attributes</h4>
+            <h4>Data fields</h4>
             <v-data-table
               disable-sort
               :headers="attributeGroupHeaders"
@@ -114,7 +114,7 @@
 <script>
 export default {
   props: {
-    data: Array,
+    requestData: Array,
   },
   data: () => {
     return {

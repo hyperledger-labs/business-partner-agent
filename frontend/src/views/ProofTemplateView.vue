@@ -61,10 +61,8 @@
       <!-- Attribute Groups -->
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>Attribute Groups</v-list-item-title>
-          <v-list-item-subtitle
-            >Description of what attribute groups are...
-          </v-list-item-subtitle>
+          <v-list-item-title>Data to be requested</v-list-item-title>
+          <v-list-item-subtitle>Grouped by Schema </v-list-item-subtitle>
           <attribute-group
             v-bind:data="proofTemplate.attributeGroups"
           ></attribute-group>
