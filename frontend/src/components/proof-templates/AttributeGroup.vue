@@ -138,10 +138,37 @@ export default {
   },
   methods: {
     renderSchemaLabelId(attributeGroup) {
-      const schema = this.$store.getters.getSchemas.find(
-        (s) => s.id === attributeGroup.schemaId
-      );
-      return `${schema.label}<i>&nbsp;(${schema.schemaId})</i>`;
+      // FIXME: This needs refactoring
+      // This tries to show a schema and label but will show the attribute group if
+      let schemaId = null;
+      let internalSchemaId = null;
+      if (attributeGroup.schemaId) {
+        internalSchemaId = attributeGroup.schemaId;
+      } else if (
+        attributeGroup.schemaLevelRestrictions &&
+        attributeGroup.schemaLevelRestrictions.schemaId
+      ) {
+        schemaId = attributeGroup.schemaLevelRestrictions.schemaId;
+      }
+
+      let schema = null;
+      if (schemaId) {
+        schema = this.$store.getters.getSchemas.find(
+          (s) => s.schemaId === schemaId
+        );
+      } else if (internalSchemaId) {
+        schema = this.$store.getters.getSchemas.find(
+          (s) => s.id === internalSchemaId
+        );
+      }
+
+      if (schema) {
+        return `${schema.label}<i>&nbsp;(${schema.schemaId})</i>`;
+      } else if (schemaId) {
+        return schemaId;
+      } else {
+        return attributeGroup.attributeGroupName;
+      }
     },
   },
 };
