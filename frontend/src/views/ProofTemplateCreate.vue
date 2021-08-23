@@ -46,9 +46,9 @@
       <!-- Attribute Groups -->
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>Attribute Groups</v-list-item-title>
+          <v-list-item-title>Data to be requested</v-list-item-title>
           <v-list-item-subtitle
-            >Description of what attribute groups are...</v-list-item-subtitle
+            >Add data to be requested by Schema</v-list-item-subtitle
           >
 
           <v-container>
@@ -65,7 +65,7 @@
                   <v-container>
                     <v-row>
                       <v-col cols="4" class="pb-10">
-                        <h4 class="pb-5">Attributes</h4>
+                        <h4 class="pb-5">Data fields</h4>
                       </v-col>
                     </v-row>
                     <v-data-table

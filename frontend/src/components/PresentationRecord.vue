@@ -8,27 +8,99 @@
 
 <template>
   <v-container>
-    Requested Information: {{ record.proofTemplateInfo.proofTemplate.name }}
+    <h4 class="mb-4">
+      Requested Information: {{ record.proofTemplateInfo.proofTemplate.name }}
+    </h4>
+
+    <!-- Timeline  -->
+    <v-expansion-panels accordion flat>
+      <v-expansion-panel>
+        <v-expansion-panel-header
+          class="grey--text text--darken-2 font-weight-medium bg-light"
+          >Timeline</v-expansion-panel-header
+        >
+        <v-expansion-panel-content class="bg-light">
+          <v-timeline dense>
+            <v-timeline-item
+              fill-dot
+              small
+              v-for="item in Object.entries(record.stateToTimestamp)"
+              :key="item.key"
+            >
+              <v-row class="pt-1">
+                <v-col cols="3">
+                  {{ item[1] | formatDateLong }}
+                </v-col>
+                <v-col>
+                  <div class="text-caption">
+                    <strong> {{ item[0].replace("_", " ") }} </strong>
+                  </div>
+                </v-col>
+              </v-row>
+            </v-timeline-item>
+          </v-timeline>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
+
+    <!-- Content based on template data -->
+
     <attribute-group
       v-if="record.proofTemplateInfo && record.proofTemplateInfo.proofTemplate"
-      v-bind:data="record.proofTemplateInfo.proofTemplate.attributeGroups"
+      v-bind:requestData="
+        record.proofTemplateInfo.proofTemplate.attributeGroups
+      "
     >
     </attribute-group>
+
+    <!-- Raw content if no template -->
+    <v-container v-else>
+      <v-alert type="warning" border="left">
+        Presentation Request could not be parsed into template
+      </v-alert>
+      <v-expansion-panels accordion flat>
+        <v-expansion-panel>
+          <v-expansion-panel-header
+            class="grey--text text--darken-2 font-weight-medium bg-light"
+            >Show raw request</v-expansion-panel-header
+          >
+          <v-expansion-panel-content class="bg-light">
+            <vue-json-pretty :data="record.proofRequest"></vue-json-pretty>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
+    </v-container>
   </v-container>
 </template>
 
 <script>
 import AttributeGroup from "@/components/proof-templates/AttributeGroup";
+import { proofExService } from "@/services";
 
 export default {
   name: "PresentationRecord",
   props: {
     record: Object,
   },
-  mounted() {},
-  methods: {},
+  mounted() {
+    if (this.record.state === "request_received") {
+      this.getMatchingCredentials();
+    }
+  },
+  methods: {
+    matchingCredentialsPerAttrGroup() {
+      console.log("to be implemented");
+    },
+    getMatchingCredentials() {
+      proofExService.getMatchingCredentials(this.record.id).then((result) => {
+        this.matchingCredentials = result.data;
+      });
+    },
+  },
   data: () => {
-    return {};
+    return {
+      matchingCredentials: null,
+    };
   },
   components: {
     AttributeGroup,
