@@ -33,7 +33,8 @@ import {
   mdiContentSave,
   mdiMessageText,
   mdiBook,
-  mdiBookRemove
+  mdiBookRemove,
+  mdiMagnify
 } from "@mdi/js";
 
 Vue.use(Vuetify);
@@ -85,7 +86,8 @@ export default new Vuetify({
       chat: mdiMessageText,
       revoke: mdiBook,
       revoked: mdiBookRemove,
-      dashboardGo: "fas fa-arrow-alt-circle-right"
+      search: mdiMagnify,
+      dashboardGo: "fas fa-arrow-alt-circle-right",
     },
   },
   theme: {
