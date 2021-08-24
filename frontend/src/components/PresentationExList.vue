@@ -115,7 +115,7 @@
 
 <script>
 import { proofExService } from "@/services";
-// import { EventBus } from "@/main";
+import { EventBus } from "@/main";
 import NewMessageIcon from "@/components/NewMessageIcon";
 import PresentationRecord from "@/components/PresentationRecord";
 import VBpaButton from "@/components/BpaButton";
@@ -173,39 +173,73 @@ export default {
   methods: {
     async approve() {
       const payload = this.prepareApprovePayload();
-      const resp = await proofExService.approveProofRequest(
-        this.record.id,
-        payload
-      );
-      console.log(resp.data);
-      this.dialog = false;
+      try {
+        await proofExService.approveProofRequest(this.record.id, payload);
+        EventBus.$emit("success", "Presentation request accepted");
+        this.dialog = false;
+      } catch (e) {
+        EventBus.$emit("error", e);
+      }
     },
-    decline() {
-      proofExService.declineProofRequest(this.record.id);
-      this.dialog = false;
+    async decline() {
+      try {
+        await proofExService.declineProofRequest(this.record.id);
+        EventBus.$emit("success", "Presentation request declined");
+        this.dialog = false;
+      } catch (e) {
+        EventBus.$emit("error", e);
+      }
     },
     openItem(item) {
       this.record = item;
       this.dialog = true;
+      this.addProofValues();
       this.$emit("openItem", item);
     },
     closeItem() {
       this.dialog = false;
     },
     async deleteItem() {
-      const resp = await proofExService.deleteProofExRecord(this.record.id);
-      if (resp.status === 200) {
-        const idx = this.items.findIndex((item) => item.id === this.record.id);
-        this.items.splice(idx, 1);
+      try {
+        const resp = await proofExService.deleteProofExRecord(this.record.id);
+        if (resp.status === 200) {
+          const idx = this.items.findIndex(
+            (item) => item.id === this.record.id
+          );
+          this.items.splice(idx, 1);
+          EventBus.$emit("success", "Presentation record deleted");
+          this.dialog = false;
+        }
+      } catch (e) {
+        EventBus.$emit("error", e);
       }
-      this.dialog = false;
     },
     isComplete(item) {
       // TOD: implement
       item;
       return false;
     },
+    addProofValues() {
+      // FIXME: Works only with template not with raw proof request
+      if (this.record.proofValues && this.record.proofTemplate) {
+        this.record.proofTemplate.attributeGroups.map((attrGroup) => {
+          if (
+            Object.hasOwnProperty.call(
+              this.record.proofValues,
+              attrGroup.attributeGroupName
+            )
+          ) {
+            attrGroup.attributes.map((attr) => {
+              attr.value = this.record.proofValues[
+                attrGroup.attributeGroupName
+              ][attr.name];
+            });
+          }
+        });
+      }
+    },
     prepareApprovePayload() {
+      // FIXME: Works only with template not with raw proof request
       // based on ACA-Py structure https://github.com/hyperledger/aries-cloudagent-python/blob/a304568fc3238fe447eacca17d3dd6eb71545904/aries_cloudagent/protocols/present_proof/v1_0/manager.py#L244
       const payload = {
         requested_attributes: {},
