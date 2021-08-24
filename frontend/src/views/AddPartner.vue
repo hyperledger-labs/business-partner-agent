@@ -11,17 +11,24 @@
       <v-card-title class="grey--text text--darken-2">
         {{ $t("view.addPartner.title") }}
       </v-card-title>
-      <v-container>
+      <v-container fluid>
+        <v-radio-group v-model="radios" row>
+          <v-radio value="did" label="By DID" />
+          <v-radio value="url" label="By Invitation" />
+        </v-radio-group>
+      </v-container>
+
+      <v-container v-if="radios==='did'">
         <v-row>
           <v-col cols="12">
             <v-text-field
-              prepend-icon="$vuetify.icons.identity"
-              label="Decentralized Identifier (DID)"
-              placeholder=""
-              v-model="did"
-              @change="partnerLoaded = false"
-              outlined
-              dense
+                prepend-icon="$vuetify.icons.identity"
+                label="Decentralized Identifier (DID)"
+                placeholder=""
+                v-model="did"
+                @change="partnerLoaded = false"
+                outlined
+                dense
             >
             </v-text-field>
           </v-col>
@@ -29,9 +36,9 @@
         <v-row>
           <v-layout justify-center>
             <v-progress-circular
-              v-if="partnerLoading"
-              indeterminate
-              color="primary"
+                v-if="partnerLoading"
+                indeterminate
+                color="primary"
             ></v-progress-circular>
           </v-layout>
         </v-row>
@@ -44,43 +51,43 @@
         <v-row v-if="partnerLoaded">
           <v-col cols="4">
             <v-list-item-title
-              class="grey--text text--darken-2 font-weight-medium"
+                class="grey--text text--darken-2 font-weight-medium"
             >
               {{ $t("view.addPartner.setName") }}
             </v-list-item-title>
           </v-col>
           <v-col cols="8">
             <v-text-field
-              label="Name"
-              persistent-placeholder
-              :placeholder=aliasPlaceholder
-              v-model.trim="alias"
-              outlined
-              dense
+                label="Name"
+                persistent-placeholder
+                :placeholder=aliasPlaceholder
+                v-model.trim="alias"
+                outlined
+                dense
             >
             </v-text-field>
           </v-col>
           <v-col cols="4">
             <v-list-item-title
-              class="grey--text text--darken-2 font-weight-medium"
+                class="grey--text text--darken-2 font-weight-medium"
             >
               {{ $t("view.addPartner.setTags") }}
             </v-list-item-title>
           </v-col>
           <v-col cols="8">
             <v-autocomplete
-              multiple
-              v-model="selectedTags"
-              :items="tags"
-              chips
-              deletable-chips
+                multiple
+                v-model="selectedTags"
+                :items="tags"
+                chips
+                deletable-chips
             >
             </v-autocomplete>
           </v-col>
           <v-list-item>
             <v-list-item-title
-              class="grey--text text--darken-2 font-weight-medium"
-              >{{ $t("view.addPartner.trustPing") }}</v-list-item-title
+                class="grey--text text--darken-2 font-weight-medium"
+            >{{ $t("view.addPartner.trustPing") }}</v-list-item-title
             >
 
             <v-list-item-action>
@@ -89,9 +96,9 @@
           </v-list-item>
         </v-row>
 
-      <Profile v-if="partnerLoaded" v-bind:partner="partner"/>
+        <Profile v-if="partnerLoaded" v-bind:partner="partner"/>
       </v-container>
-      <v-card-actions>
+      <v-card-actions v-if="radios==='did'">
         <v-layout justify-space-between>
           <v-bpa-button color="secondary" to="/app/partners">
             {{ $t("button.cancel") }}
@@ -103,29 +110,52 @@
           </v-bpa-button
           >
           <v-bpa-button v-else color="primary" @click="addPartner()">{{
-              $t("view.addPartner.addPartnerBtnLabel")
+            $t("view.addPartner.addPartnerBtnLabel")
             }}
           </v-bpa-button>
         </v-layout>
       </v-card-actions>
+
+      <v-container v-if="radios==='url'">
+        <v-row>
+          <v-col cols="12">
+            <v-text-field
+                prepend-icon="$vuetify.icons.invitation"
+                label="Invitation URL"
+                placeholder=""
+                v-model="invitationUrl"
+                @change="invitationUrlLoaded = false"
+                outlined
+                dense
+            >
+            </v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-layout justify-center>
+            <v-progress-circular
+                v-if="invitationUrlLoading"
+                indeterminate
+                color="primary"
+            ></v-progress-circular>
+          </v-layout>
+        </v-row>
+        <v-row v-if="invitationUrlLoaded">
+          <v-layout justify-center>
+            <div class="font-weight-medium"><p>This invitation is from <strong>{{ this.receivedInvitation.label }}</strong>.<br>Click Accept Invitation to connect with this Partner.</p></div>
+          </v-layout>
+        </v-row>
+      </v-container>
+      <v-card-actions v-if="radios==='url'">
+        <v-layout justify-space-between>
+          <v-bpa-button color="secondary" to="/app/partners">
+            {{ $t("button.cancel") }}
+          </v-bpa-button>
+          <v-bpa-button v-if="!invitationUrlLoaded" color="primary" @click="checkInvitation()" :disabled="invitationUrl===''">Check Invitation</v-bpa-button>
+          <v-bpa-button v-else color="primary" @click="acceptInvitation()">Accept Invitation</v-bpa-button>
+        </v-layout>
+      </v-card-actions>
     </v-card>
-    <v-card max-width="600" class="mx-auto" flat>
-      <v-text-field
-          prepend-icon="$vuetify.icons.invitation"
-          label="Invitation URL"
-          placeholder=""
-          v-model="invitationUrl"
-          outlined
-          dense
-      >
-      </v-text-field>
-      <v-bpa-button color="primary" @click="checkInvitation()">
-        Check Invitation
-      </v-bpa-button>
-      <v-bpa-button color="primary" @click="acceptInvitation()" :disabled="!receivedInvitation.invitationBlock">
-        Accept Invitation
-      </v-bpa-button>
-   </v-card>
   </v-container>
 </template>
 
@@ -155,7 +185,10 @@ export default {
       selectedTags: [],
       trustPing: true,
       invitationUrl: "",
-      receivedInvitation: {}
+      invitationUrlLoaded: false,
+      invitationUrlLoading: false,
+      receivedInvitation: {},
+      radios: "did"
     };
   },
   computed: {
@@ -235,8 +268,11 @@ export default {
         });
     },
     checkInvitation() {
+      this.msg = "";
       this.receivedInvitation = {};
+      this.invitationUrlLoaded = false;
       if (this.invitationUrl) {
+        this.invitationUrlLoading = true;
         let request = {
           invitationUrl: encodeURIComponent(this.invitationUrl)
         };
@@ -244,33 +280,43 @@ export default {
         this.$axios
           .post(`${this.$apiBaseUrl}/invitations/check`, request)
           .then((result) => {
-            console.log(result);
+            this.invitationUrlLoading = false;
             this.receivedInvitation = Object.assign({}, result.data);
+            this.invitationUrlLoaded = this.receivedInvitation.invitationBlock != null;
           })
         .catch((e) => {
           console.error(e);
+          this.invitationUrlLoading = false;
+          EventBus.$emit("error", e);
         });
-
       }
     },
     acceptInvitation() {
-      if (this.receivedInvitation && this.receivedInvitation.invitationBlock) {
+      if (this.invitationUrlLoaded) {
+        this.invitationUrlLoading = true;
         let request = {
           invitationBlock: this.receivedInvitation.invitationBlock
         };
 
         this.$axios
           .post(`${this.$apiBaseUrl}/invitations/accept`, request)
-          .then((result) => {
-            console.log(result);
+          .then(() => {
+            store.dispatch("loadPartners");
+            this.invitationUrlLoading = false;
             this.receivedInvitation = {};
+            this.invitationUrlLoaded = false;
+            EventBus.$emit("success", "Partner added successfully");
+            this.$router.push({
+              name: "Partners",
+            });
           })
           .catch((e) => {
             console.error(e);
+            this.invitationUrlLoading = false;
+            EventBus.$emit("error", e);
           });
-
       }
-    }
+    },
   },
 };
 </script>

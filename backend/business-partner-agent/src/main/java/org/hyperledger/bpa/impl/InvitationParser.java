@@ -74,6 +74,9 @@ public class InvitationParser {
             if (StringUtils.isEmpty(invitationBlock)) {
                 invitationBlock = parseInvitationBlockFromRedirect(url);
             }
+            if (StringUtils.isEmpty(invitationBlock)) {
+                throw new InvitationException("Invitation Url does not contain a known or valid invitation.");
+            }
 
             Invitation invite = parseInvitation(invitationBlock);
 
@@ -91,13 +94,12 @@ public class InvitationParser {
                 }
             }
         } else {
-            throw new InvitationException(String.format(
-                    "Invitation Url could not be decoded. Cannot determine invitation details.", invitationUrl));
+            throw new InvitationException("Invitation Url could not be decoded. Cannot determine invitation details.");
         }
         return null;
     }
 
-    public Invitation parseInvitation(@NonNull String invitationBlock) {
+    public Invitation parseInvitation(String invitationBlock) {
         Invitation invitation = new Invitation();
         if (StringUtils.isNotEmpty(invitationBlock)) {
 
@@ -121,6 +123,7 @@ public class InvitationParser {
                             .equals(o.get("@type"))) {
                         invitation.setOob(true);
                         // not supporting this until we can parse and send to aries client successfully
+                        // coming very soon with next update of Aries Client Jar!!!
                         String msg = "Out of band Invitations are currently not supported";
                         invitation.setError(msg);
                         log.error(msg);
