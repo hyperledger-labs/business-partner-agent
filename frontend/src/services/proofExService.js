@@ -17,8 +17,8 @@ export default {
   declineProofRequest(id) {
     return appAxios().post(`${ApiRoutes.PROOF_EXCHANGES}/${id}/decline`);
   },
-  approveProofRequest(id) {
-    return appAxios().post(`${ApiRoutes.PROOF_EXCHANGES}/${id}/prove`, {});
+  approveProofRequest(id, payload) {
+    return appAxios().post(`${ApiRoutes.PROOF_EXCHANGES}/${id}/prove`, payload);
   },
   getMatchingCredentials(id) {
     return appAxios().get(

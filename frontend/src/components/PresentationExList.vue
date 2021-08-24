@@ -171,8 +171,13 @@ export default {
     },
   },
   methods: {
-    approve() {
-      proofExService.approveProofRequest(this.record.id);
+    async approve() {
+      const payload = this.prepareApprovePayload();
+      const resp = await proofExService.approveProofRequest(
+        this.record.id,
+        payload
+      );
+      console.log(resp.data);
       this.dialog = false;
     },
     decline() {
@@ -199,6 +204,31 @@ export default {
       // TOD: implement
       item;
       return false;
+    },
+    prepareApprovePayload() {
+      const payload = {
+        requested_attributes: {},
+        requested_predicates: {},
+      };
+      const attrs = this.record.proofRequest.requestedAttributes;
+      const preds = this.record.proofRequest.requestedPredicates;
+      this.record.proofTemplateInfo.proofTemplate.attributeGroups.forEach(
+        (attrGroup) => {
+          if (Object.hasOwnProperty.call(attrs, attrGroup.attributeGroupName)) {
+            payload.requested_attributes[attrGroup.attributeGroupName] = {
+              cred_id: attrGroup.selectedCredential.credentialInfo.referent,
+              revealed: true,
+            };
+          } else if (
+            Object.hasOwnProperty.call(preds, attrGroup.attributeGroupName)
+          ) {
+            payload.requested_predicates[attrGroup.attributeGroupName] = {
+              cred_id: attrGroup.selectedCredential.credentialInfo.referent,
+            };
+          }
+        }
+      );
+      return payload;
     },
     // Checks if proof request can be fullfilled
     canBeFullfilled() {
