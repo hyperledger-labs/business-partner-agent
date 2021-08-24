@@ -41,15 +41,11 @@
 
     <!-- Content based on template data -->
 
-    <h4 class="mt-4">
-      Requested Information: {{ record.proofTemplateInfo.proofTemplate.name }}
-    </h4>
+    <h4 class="mt-4">Requested Information: {{ record.proofTemplate.name }}</h4>
 
     <attribute-group
-      v-if="record.proofTemplateInfo && record.proofTemplateInfo.proofTemplate"
-      v-bind:requestData="
-        record.proofTemplateInfo.proofTemplate.attributeGroups
-      "
+      v-if="record.proofTemplate"
+      v-bind:requestData="record.proofTemplate.attributeGroups"
     >
     </attribute-group>
 
