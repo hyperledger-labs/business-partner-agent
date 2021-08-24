@@ -29,7 +29,7 @@
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-container>
-            <h4>Data fields</h4>
+            <h4 class="mb-4">Data fields</h4>
             <v-data-table
               disable-sort
               :headers="attributeGroupHeaders"
@@ -53,8 +53,12 @@
             </v-data-table>
           </v-container>
 
-          <v-container>
-            <h4>Restrictions</h4>
+          <v-container
+            v-if="
+              Object.keys(attributeGroup.schemaLevelRestrictions).Length > 0
+            "
+          >
+            <h4 class="mb-4">Restrictions</h4>
             <v-simple-table>
               <tbody>
                 <tr v-if="attributeGroup.schemaLevelRestrictions.schemaId">
@@ -106,12 +110,29 @@
               </tbody>
             </v-simple-table>
           </v-container>
+
+          <!-- Select matching credential -->
+
+          <v-container v-if="attributeGroup.matchingCredentials">
+            <h4 class="mb-4">Select data for presentation</h4>
+            <v-select
+              label="Matching Credentials"
+              return-object
+              :items="attributeGroup.matchingCredentials"
+              item-text="credentialInfo.referent"
+              v-model="attributeGroup.selectedCredential"
+              outlined
+              @change="selectedCredential(idx, $event)"
+              dense
+            ></v-select>
+          </v-container>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
   </v-container>
 </template>
 <script>
+import Vue from "vue";
 export default {
   props: {
     requestData: Array,
@@ -123,6 +144,7 @@ export default {
           text: "name",
           value: "name",
         },
+        { text: "value", value: "value" },
       ],
       attributeConditionHeaders: [
         {
@@ -137,11 +159,45 @@ export default {
     };
   },
   methods: {
+    selectedCredential(idx, credential) {
+      const newValue = this.requestData[idx].attributes.map((attr) => {
+        return { ...attr, value: credential.credentialInfo.attrs[attr.name] };
+      });
+
+      Vue.set(this.requestData[idx], "attributes", newValue);
+    },
     renderSchemaLabelId(attributeGroup) {
-      const schema = this.$store.getters.getSchemas.find(
-        (s) => s.id === attributeGroup.schemaId
-      );
-      return `${schema.label}<i>&nbsp;(${schema.schemaId})</i>`;
+      // FIXME: This needs refactoring
+      // This tries to show a schema and label but will show the attribute group if
+      let schemaId = null;
+      let internalSchemaId = null;
+      if (attributeGroup.schemaId) {
+        internalSchemaId = attributeGroup.schemaId;
+      } else if (
+        attributeGroup.schemaLevelRestrictions &&
+        attributeGroup.schemaLevelRestrictions.schemaId
+      ) {
+        schemaId = attributeGroup.schemaLevelRestrictions.schemaId;
+      }
+
+      let schema = null;
+      if (schemaId) {
+        schema = this.$store.getters.getSchemas.find(
+          (s) => s.schemaId === schemaId
+        );
+      } else if (internalSchemaId) {
+        schema = this.$store.getters.getSchemas.find(
+          (s) => s.id === internalSchemaId
+        );
+      }
+
+      if (schema) {
+        return `${schema.label}<i>&nbsp;(${schema.schemaId})</i>`;
+      } else if (schemaId) {
+        return schemaId;
+      } else {
+        return attributeGroup.attributeGroupName;
+      }
     },
   },
 };

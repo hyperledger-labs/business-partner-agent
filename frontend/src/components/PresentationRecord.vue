@@ -8,10 +8,6 @@
 
 <template>
   <v-container>
-    <h4 class="mb-4">
-      Requested Information: {{ record.proofTemplateInfo.proofTemplate.name }}
-    </h4>
-
     <!-- Timeline  -->
     <v-expansion-panels accordion flat>
       <v-expansion-panel>
@@ -45,6 +41,10 @@
 
     <!-- Content based on template data -->
 
+    <h4 class="mt-4">
+      Requested Information: {{ record.proofTemplateInfo.proofTemplate.name }}
+    </h4>
+
     <attribute-group
       v-if="record.proofTemplateInfo && record.proofTemplateInfo.proofTemplate"
       v-bind:requestData="
@@ -70,33 +70,34 @@
         </v-expansion-panel>
       </v-expansion-panels>
     </v-container>
+    <v-expansion-panels v-if="expertMode" accordion flat>
+      <v-expansion-panel>
+        <v-expansion-panel-header
+          class="grey--text text--darken-2 font-weight-medium bg-light"
+          >{{ $t("showRawData") }}</v-expansion-panel-header
+        >
+        <v-expansion-panel-content class="bg-light">
+          <vue-json-pretty :data="record"></vue-json-pretty>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
   </v-container>
 </template>
 
 <script>
 import AttributeGroup from "@/components/proof-templates/AttributeGroup";
-import { proofExService } from "@/services";
 
 export default {
   name: "PresentationRecord",
   props: {
     record: Object,
   },
-  mounted() {
-    if (this.record.state === "request_received") {
-      this.getMatchingCredentials();
-    }
-  },
-  methods: {
-    matchingCredentialsPerAttrGroup() {
-      console.log("to be implemented");
-    },
-    getMatchingCredentials() {
-      proofExService.getMatchingCredentials(this.record.id).then((result) => {
-        this.matchingCredentials = result.data;
-      });
+  computed: {
+    expertMode() {
+      return this.$store.state.expertMode;
     },
   },
+  methods: {},
   data: () => {
     return {
       matchingCredentials: null,

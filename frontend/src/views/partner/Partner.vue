@@ -131,6 +131,8 @@
       </v-expansion-panels>
     </v-card>
 
+    <!-- Presentation Exchanges -->
+
     <v-card v-if="partner.ariesSupport" class="mb-4">
       <v-card-title class="bg-light">
         {{ $t("view.partner.presentationExchanges.title") }}
@@ -144,6 +146,10 @@
           </v-bpa-button>
         </v-layout>
       </v-card-title>
+      <v-progress-linear
+        v-if="isLoadingPresExRecords"
+        indeterminate
+      ></v-progress-linear>
       <PresentationExList v-if="isReady" v-bind:items="presentationExRecords" />
       <v-card-actions>
         <v-bpa-button small color="secondary" @click="sendPresentation">{{
@@ -166,6 +172,8 @@
       </v-expansion-panels>
     </v-card>
 
+    <!-- Credential Exchanges -->
+
     <v-card v-if="partner.ariesSupport" class="mb-4">
       <v-card-title class="bg-light"
         >{{ $t("view.partner.credentialExchanges.title") }}
@@ -179,6 +187,10 @@
           </v-bpa-button>
         </v-layout>
       </v-card-title>
+      <v-progress-linear
+        v-if="isLoadingCredExRecords"
+        indeterminate
+      ></v-progress-linear>
       <CredExList
         v-if="isReady"
         v-bind:items="issuedCredentials"
@@ -267,6 +279,8 @@ export default {
       isReady: false,
       isBusy: false,
       isLoading: true,
+      isLoadingCredExRecords: true,
+      isLoadingPresExRecords: true,
       attentionPartnerStateDialog: false,
       updatePartnerDialog: false,
       goTo: {},
@@ -357,9 +371,11 @@ export default {
     },
     getPresentationRecords() {
       console.log("Getting presentation records...");
+      this.isLoadingPresExRecords = true;
       partnerService
         .getPresentationExRecords(this.id)
         .then((result) => {
+          this.isLoadingPresExRecords = false;
           if ({}.hasOwnProperty.call(result, "data")) {
             let data = result.data;
             console.log(data);
@@ -367,6 +383,7 @@ export default {
           }
         })
         .catch((e) => {
+          this.isLoadingPresExRecords = false;
           console.error(e);
           // EventBus.$emit("error", e);
         });
@@ -375,15 +392,18 @@ export default {
     // Issue Credentials
     getIssuedCredentials(id) {
       console.log("Getting issued credential records...");
+      this.isLoadingCredExRecords = true;
       issuerService
         .listCredentialExchangesAsIssuer(id)
         .then((result) => {
+          this.isLoadingCredExRecords = false;
           if ({}.hasOwnProperty.call(result, "data")) {
             let data = result.data;
             this.issuedCredentials = data;
           }
         })
         .catch((e) => {
+          this.isLoadingCredExRecords = false;
           console.error(e);
           // EventBus.$emit("error", e);
         });
