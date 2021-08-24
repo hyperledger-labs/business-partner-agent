@@ -93,22 +93,6 @@ public class PartnerProof {
     @TypeDef(type = DataType.JSON)
     private ExchangeStateToTimestamp stateToTimestamp;
 
-    // TODO delete
-    @Deprecated
-    @Nullable
-    private Instant issuedAt;
-    @Deprecated
-    @Nullable
-    private String issuer;
-    @Deprecated
-    @Nullable
-    private String schemaId;
-    @Deprecated
-    @Nullable
-    private String credentialDefinitionId;
-
-
-
     /**
      * Records the timestamps of the different state changes, important in the
      * manual exchanges as they can take a while to happen.

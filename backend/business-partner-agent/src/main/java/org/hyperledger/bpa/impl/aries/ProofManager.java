@@ -21,7 +21,6 @@ import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
-import io.micronaut.core.util.StringUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.acy_py.generated.model.V10PresentationProblemReportRequest;
@@ -30,22 +29,21 @@ import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.present_proof.*;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
-import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.api.exception.PresentationConstructionException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
+import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentials;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.notification.PresentationRequestDeletedEvent;
 import org.hyperledger.bpa.impl.notification.PresentationRequestSentEvent;
 import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConversion;
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.model.BPAProofTemplate;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
@@ -59,10 +57,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -114,7 +109,7 @@ public class ProofManager {
             ac.presentProofSendRequest(proofRequest).ifPresent(
                     // using null for issuerId and schemaId because the template could have multiple
                     // of each.
-                    persistProof(partnerId, null, null, proofTemplate));
+                    persistProof(partnerId, proofTemplate));
         } catch (IOException e) {
             throw new NetworkException(ACA_PY_ERROR_MSG, e);
         }
@@ -137,18 +132,18 @@ public class ProofManager {
                         .buildForAllAttributes(partner.getConnectionId(),
                                 schema.getAttrNames(), req.buildRestrictions());
                 ac.presentProofSendRequest(proofRequest).ifPresent(
-                        persistProof(partnerId, req.getFirstIssuerDid(), schema.getId(), null));
+                        persistProof(partnerId, null));
             } else {
                 ac.presentProofSendRequest(req.getRequestRaw().toString()).ifPresent(
-                        persistProof(partnerId, null, null, null));
+                        persistProof(partnerId, null));
             }
         } catch (IOException e) {
             throw new NetworkException(ACA_PY_ERROR_MSG, e);
         }
     }
 
-    private Consumer<PresentationExchangeRecord> persistProof(@NonNull UUID partnerId, @Nullable String issuerId,
-            @Nullable String schemaId, @Nullable BPAProofTemplate proofTemplate) {
+    private Consumer<PresentationExchangeRecord> persistProof(
+            @NonNull UUID partnerId, @Nullable BPAProofTemplate proofTemplate) {
         return exchange -> {
             final PartnerProof pp = PartnerProof
                     .builder()
@@ -157,9 +152,7 @@ public class ProofManager {
                     .presentationExchangeId(exchange.getPresentationExchangeId())
                     .role(exchange.getRole())
                     .threadId(exchange.getThreadId())
-                    .schemaId(schemaId)
                     .proofTemplate(proofTemplate)
-                    .issuer(issuerId)
                     .exchangeVersion(ExchangeVersion.V1)
                     .pushStateChange(exchange.getState(), Instant.now())
                     .build();
@@ -174,7 +167,11 @@ public class ProofManager {
         Optional<PartnerProof> partnerProof = pProofRepo.findById(partnerProofId);
         if (partnerProof.isPresent()) {
             try {
-                return ac.presentProofRecordsCredentials(partnerProof.get().getPresentationExchangeId());
+                return ac.presentProofRecordsCredentials(partnerProof.get().getPresentationExchangeId())
+                        .map(pres -> pres.stream()
+                                .map(rec -> PresentationRequestCredentials
+                                        .from(rec, PresentationRequestCredentials.BPACredentialInfo.builder().build()))
+                                .collect(Collectors.toList()));
             } catch (IOException e) {
                 throw new NetworkException(ACA_PY_ERROR_MSG, e);
             }
@@ -254,22 +251,17 @@ public class ProofManager {
     }
 
     PartnerProof handleAckedOrVerifiedProofEvent(@NonNull PresentationExchangeRecord proof, @NonNull PartnerProof pp) {
-        // TODO get all revealed attributes or attribute groups
-        String schemaId = proof.getIdentifiers().get(0).getSchemaId();
-        String credDefId = proof.getIdentifiers().get(0).getCredentialDefinitionId();
-        String issuer = resolveIssuer(credDefId);
+        Map<String, Map<String, Object>> revealedAttributeGroups = proof.findRevealedAttributeGroups();
         pp
-                .setIssuedAt(TimeUtil.parseZonedTimestamp(proof.getCreatedAt()))
                 .setValid(proof.isVerified())
                 .setState(proof.getState())
-                .setSchemaId(schemaId)
-                .setCredentialDefinitionId(credDefId)
-                .setIssuer(issuer)
                 .pushStateChange(proof.getState(), Instant.now())
                 .setProofRequest(proof.getPresentationRequest())
-                .setProof(proof.from(schemaService.getSchemaAttributeNames(schemaId))); // TODO not needed?
+                .setProof(CollectionUtils.isNotEmpty(revealedAttributeGroups)
+                        ? conv.toMap(proof.findRevealedAttributeGroups())
+                        : proof.findRevealedAttributes());
         final PartnerProof savedProof = pProofRepo.update(pp);
-        didRes.resolveDid(savedProof);
+        didRes.resolveDid(savedProof, proof.getIdentifiers());
         return savedProof;
     }
 
@@ -287,9 +279,6 @@ public class ProofManager {
                             .presentationExchangeId(proof.getPresentationExchangeId())
                             .role(proof.getRole())
                             .threadId(proof.getThreadId())
-                            .credentialDefinitionId(cred.getCredentialDefinitionId())
-                            .schemaId(cred.getSchemaId())
-                            .issuer(resolveIssuer(cred.getCredentialDefinitionId()))
                             .exchangeVersion(ExchangeVersion.V1)
                             .pushStateChange(proof.getState(), Instant.now())
                             .build();
@@ -331,14 +320,6 @@ public class ProofManager {
             }
             pProofRepo.deleteById(id);
         });
-    }
-
-    private @Nullable String resolveIssuer(String credDefId) {
-        String issuer = null;
-        if (StringUtils.isNotEmpty(credDefId)) {
-            issuer = didPrefix + AriesStringUtil.credDefIdGetDid(credDefId);
-        }
-        return issuer;
     }
 
     private void sendPresentProofProblemReport(@NonNull String PresentationExchangeId, @NonNull String problemString)
