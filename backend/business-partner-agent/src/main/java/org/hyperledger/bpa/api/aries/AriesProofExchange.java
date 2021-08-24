@@ -55,7 +55,7 @@ public class AriesProofExchange {
 
     /** if verifier, revealed attributes from the other agent */
     // TODO this should always be set, but it isn't
-    // TODO now use attribute groups as well, at the moment we always use the first
+    // TODO resolve issuer, cred def
     private JsonNode proofData;
     private ProofTemplateInfo proofTemplateInfo;
 
@@ -71,50 +71,15 @@ public class AriesProofExchange {
 
     public static AriesProofExchange from(@NonNull PartnerProof p, @Nullable JsonNode proofData) {
         final AriesProofExchangeBuilder b = AriesProofExchange.builder();
-        final Long created = p.getCreatedAt().toEpochMilli();
-
-        // deprecated use state to timestamp
-        // TODO: Handle sent AND received date for in Transit ProofExchanges
-        if (PresentationExchangeRole.PROVER.equals(p.getRole())) {
-            b.sentAt(created);
-        } else {
-            b.receivedAt(created);
-        }
-
         return b
                 .id(p.getId())
                 .partnerId(p.getPartnerId())
                 .state(p.getState())
-                .issuer(p.getIssuer())
-                .schemaId(p.getSchemaId())
-                .credentialDefinitionId(p.getCredentialDefinitionId())
                 .proofData(proofData)
-                .proofRequest(p.getProofRequest())
                 .role(p.getRole())
                 .problemReport(p.getProblemReport())
                 .exchangeVersion(p.getExchangeVersion())
                 .stateToTimestamp(p.getStateToTimestamp() != null ? p.getStateToTimestamp().toApi() : null)
                 .build();
     }
-
-    // TODO delete all deprecated
-    // depends on the role
-    @Deprecated
-    private Long receivedAt;
-    @Deprecated
-    private Long sentAt;
-    // probably not available
-    @Deprecated
-    private Long issuedAt;
-
-    @Deprecated
-    private String issuer;
-    @Deprecated
-    private String schemaId;
-    @Deprecated
-    private String credentialDefinitionId;
-
-    /** aca-py proof request object */
-    @Deprecated
-    private PresentProofRequest.ProofRequest proofRequest;
 }

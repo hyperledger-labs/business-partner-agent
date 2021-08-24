@@ -26,6 +26,7 @@ import org.hyperledger.bpa.model.BPARestrictions;
 import org.hyperledger.bpa.model.BPASchema;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
@@ -36,4 +37,6 @@ public interface BPARestrictionsRepository extends CrudRepository<BPARestriction
     boolean existsByIssuerDid(String issuerDid);
 
     List<BPARestrictions> findBySchema(BPASchema schema);
+
+    Optional<BPARestrictions> findByIssuerDid(String issuerDid);
 }

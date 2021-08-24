@@ -81,9 +81,11 @@ class AriesEventHandlerTest extends BaseTest {
         assertEquals(Boolean.TRUE, dbProof.get().getValid());
         assertNotNull(dbProof.get().getProof());
         assertEquals(PresentationExchangeState.VERIFIED, dbProof.get().getState());
-        assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0", dbProof.get().getSchemaId());
-        assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc",
-                dbProof.get().getCredentialDefinitionId());
+
+        // assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
+        // dbProof.get().getSchemaId());
+        // assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc",
+        // dbProof.get().getCredentialDefinitionId());
     }
 
     @Test
@@ -125,9 +127,11 @@ class AriesEventHandlerTest extends BaseTest {
         assertEquals(Boolean.FALSE, dbProof.get().getValid());
         assertEquals(PresentationExchangeState.PRESENTATION_ACKED, dbProof.get().getState());
         assertNotNull(dbProof.get().getProof());
-        assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0", dbProof.get().getSchemaId());
-        assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc",
-                dbProof.get().getCredentialDefinitionId());
+
+        // assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
+        // dbProof.get().getSchemaId());
+        // assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc",
+        // dbProof.get().getCredentialDefinitionId());
     }
 
     @Test
@@ -161,9 +165,11 @@ class AriesEventHandlerTest extends BaseTest {
         assertEquals(Boolean.FALSE, dbProof.get().getValid());
         assertEquals(PresentationExchangeState.PRESENTATION_ACKED, dbProof.get().getState());
         assertNotNull(dbProof.get().getProof());
-        assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0", dbProof.get().getSchemaId());
-        assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:Bank Account V2",
-                dbProof.get().getCredentialDefinitionId());
+
+        // assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0",
+        // dbProof.get().getSchemaId());
+        // assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:Bank Account V2",
+        // dbProof.get().getCredentialDefinitionId());
     }
 
     @Test
