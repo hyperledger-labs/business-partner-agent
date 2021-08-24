@@ -66,6 +66,21 @@
         </v-expansion-panel>
       </v-expansion-panels>
     </v-container>
+
+    <!-- Valid/Invalid info for role verifier -->
+
+    <v-container v-if="isStateVerified">
+      <v-alert v-if="record.valid" dense border="left" type="success">
+        Presentation is valid
+      </v-alert>
+
+      <v-alert v-else dense border="left" type="error">
+        Presentation is not valid
+      </v-alert>
+    </v-container>
+
+    <!-- ExpertMode: Raw data -->
+
     <v-expansion-panels v-if="expertMode" accordion flat>
       <v-expansion-panel>
         <v-expansion-panel-header
@@ -91,6 +106,9 @@ export default {
   computed: {
     expertMode() {
       return this.$store.state.expertMode;
+    },
+    isStateVerified() {
+      return this.record.state === "verified";
     },
   },
   methods: {},

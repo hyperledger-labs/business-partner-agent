@@ -193,7 +193,7 @@ export default {
     openItem(item) {
       this.record = item;
       this.dialog = true;
-      this.addProofValues();
+      this.addProofData();
       this.$emit("openItem", item);
     },
     closeItem() {
@@ -219,20 +219,20 @@ export default {
       item;
       return false;
     },
-    addProofValues() {
+    addProofData() {
       // FIXME: Works only with template not with raw proof request
-      if (this.record.proofValues && this.record.proofTemplate) {
+      if (this.record.proofData && this.record.proofTemplate) {
         this.record.proofTemplate.attributeGroups.map((attrGroup) => {
           if (
             Object.hasOwnProperty.call(
-              this.record.proofValues,
+              this.record.proofData,
               attrGroup.attributeGroupName
             )
           ) {
             attrGroup.attributes.map((attr) => {
-              attr.value = this.record.proofValues[
-                attrGroup.attributeGroupName
-              ][attr.name];
+              attr.value = this.record.proofData[attrGroup.attributeGroupName][
+                attr.name
+              ];
             });
           }
         });
