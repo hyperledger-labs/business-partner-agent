@@ -18,16 +18,13 @@
 package org.hyperledger.bpa.api.aries;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.micronaut.core.annotation.Nullable;
 import lombok.*;
-
-import lombok.experimental.Accessors;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.model.PartnerProof;
-
-import io.micronaut.core.annotation.Nullable;
 
 import java.util.Map;
 import java.util.UUID;
@@ -57,17 +54,8 @@ public class AriesProofExchange {
     // TODO this should always be set, but it isn't
     // TODO resolve issuer, cred def
     private JsonNode proofData;
-    private ProofTemplateInfo proofTemplateInfo;
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    @Accessors(chain = true)
-    public static class ProofTemplateInfo {
-        private ProofTemplate proofTemplate;
-        private PresentProofRequest.ProofRequest proofRequest;
-    }
+    private ProofTemplate proofTemplate;
+    private PresentProofRequest.ProofRequest proofRequest;
 
     public static AriesProofExchange from(@NonNull PartnerProof p, @Nullable JsonNode proofData) {
         final AriesProofExchangeBuilder b = AriesProofExchange.builder();
@@ -76,6 +64,7 @@ public class AriesProofExchange {
                 .partnerId(p.getPartnerId())
                 .state(p.getState())
                 .proofData(proofData)
+                .proofRequest(p.getProofRequest())
                 .role(p.getRole())
                 .problemReport(p.getProblemReport())
                 .exchangeVersion(p.getExchangeVersion())

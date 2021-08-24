@@ -46,6 +46,8 @@ public interface MyCredentialRepository extends CrudRepository<MyCredential, UUI
 
     Optional<MyCredential> findByCredentialExchangeId(String credentialExchangeId);
 
+    Optional<MyCredential> findByReferent(String referent);
+
     List<MyCredential> findByConnectionId(String connectionId);
 
     List<MyCredential> findByIsPublicTrue();

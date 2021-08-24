@@ -100,6 +100,9 @@ public class ProofManager {
     @Inject
     ProofTemplateConversion proofTemplateConversion;
 
+    @Inject
+    CredentialInfoResolver credentialInfoResolver;
+
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
         try {
             PresentProofRequest proofRequest = proofTemplateConversion.proofRequestViaVisitorFrom(partnerId,
@@ -168,9 +171,8 @@ public class ProofManager {
         if (partnerProof.isPresent()) {
             try {
                 return ac.presentProofRecordsCredentials(partnerProof.get().getPresentationExchangeId())
-                        .map(pres -> pres.stream()
-                                .map(rec -> PresentationRequestCredentials
-                                        .from(rec, PresentationRequestCredentials.BPACredentialInfo.builder().build()))
+                        .map(pres -> pres.stream().map(rec -> PresentationRequestCredentials
+                                .from(rec, credentialInfoResolver.populateCredentialInfo(rec.getCredentialInfo())))
                                 .collect(Collectors.toList()));
             } catch (IOException e) {
                 throw new NetworkException(ACA_PY_ERROR_MSG, e);

@@ -41,6 +41,7 @@ import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.PartnerAPI.PartnerCredential;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
+import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.model.MyDocument;
@@ -210,20 +211,16 @@ public class Converter {
     public AriesProofExchange toAPIObject(@NonNull PartnerProof p) {
         AriesProofExchange proof = AriesProofExchange.from(p,
                 p.getProof() != null ? this.fromMap(p.getProof(), JsonNode.class) : null);
-        AriesProofExchange.ProofTemplateInfo template;
+        ProofTemplate template;
         if (p.getProofTemplate() == null) {
             template = templateConversion.requestToTemplate(p.getProofRequest());
         } else {
-            template = AriesProofExchange.ProofTemplateInfo
-                    .builder()
-                    .proofTemplate(p.getProofTemplate() != null ? p.getProofTemplate().toRepresentation() : null)
-                    .proofRequest(p.getProofRequest())
-                    .build();
+            template = p.getProofTemplate() != null ? p.getProofTemplate().toRepresentation() : null;
         }
-        if (template != null && template.getProofTemplate() != null) {
-            proof.setTypeLabel(template.getProofTemplate().getName());
+        if (template != null) {
+            proof.setTypeLabel(template.getName());
         }
-        proof.setProofTemplateInfo(template);
+        proof.setProofTemplate(template);
         return proof;
     }
 
