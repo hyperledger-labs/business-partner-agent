@@ -36,9 +36,12 @@ import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.bpa.api.exception.InvitationException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.controller.api.invitation.CheckInvitationResponse;
 import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
+import org.hyperledger.bpa.impl.InvitationParser;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.notification.*;
@@ -162,6 +165,50 @@ public class ConnectionManager {
             String msg = messageSource.getMessage("acapy.unavailable");
             log.error(msg, e);
             throw new NetworkException(msg);
+        }
+    }
+
+    @Inject
+    InvitationParser invitationParser;
+
+    public CheckInvitationResponse checkReceivedInvitation(@NonNull String invitationUrl) {
+        return invitationParser.checkInvitation(invitationUrl);
+    }
+
+    public void receiveInvitation(@NonNull String encodedInvitation) {
+        InvitationParser.Invitation invitation = invitationParser.parseInvitation(encodedInvitation);
+        if (invitation.isParsed()) {
+            if (invitation.getInvitationRequest() != null) {
+                try {
+                    ac.connectionsReceiveInvitation(invitation.getInvitationRequest(),
+                            ConnectionReceiveInvitationFilter.builder()
+                                    .alias(invitation.getInvitationRequest().getLabel())
+                                    .autoAccept(true)
+                                    .build())
+                            .ifPresent(record -> {
+                                partnerRepo.save(Partner
+                                        .builder()
+                                        .ariesSupport(Boolean.TRUE)
+                                        .alias(StringUtils.trimToNull(record.getTheirLabel()))
+                                        .connectionId(record.getConnectionId())
+                                        .invitationMsgId(record.getInvitationMsgId())
+                                        .did(didPrefix + UNKNOWN_DID)
+                                        .state(ConnectionState.INVITATION)
+                                        .incoming(Boolean.TRUE)
+                                        .tags(null)
+                                        .trustPing(Boolean.FALSE)
+                                        .build());
+                            });
+
+                } catch (IOException e) {
+                    String msg = messageSource.getMessage("acapy.unavailable");
+                    log.error(msg, e);
+                    throw new NetworkException(msg);
+                }
+            }
+            // no other options right now...
+        } else {
+            throw new InvitationException(invitation.getError());
         }
     }
 

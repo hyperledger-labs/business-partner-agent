@@ -109,6 +109,23 @@
         </v-layout>
       </v-card-actions>
     </v-card>
+    <v-card max-width="600" class="mx-auto" flat>
+      <v-text-field
+          prepend-icon="$vuetify.icons.invitation"
+          label="Invitation URL"
+          placeholder=""
+          v-model="invitationUrl"
+          outlined
+          dense
+      >
+      </v-text-field>
+      <v-bpa-button color="primary" @click="checkInvitation()">
+        Check Invitation
+      </v-bpa-button>
+      <v-bpa-button color="primary" @click="acceptInvitation()" :disabled="!receivedInvitation.invitationBlock">
+        Accept Invitation
+      </v-bpa-button>
+   </v-card>
   </v-container>
 </template>
 
@@ -137,6 +154,8 @@ export default {
       search: "",
       selectedTags: [],
       trustPing: true,
+      invitationUrl: "",
+      receivedInvitation: {}
     };
   },
   computed: {
@@ -215,6 +234,43 @@ export default {
           }
         });
     },
+    checkInvitation() {
+      this.receivedInvitation = {};
+      if (this.invitationUrl) {
+        let request = {
+          invitationUrl: encodeURIComponent(this.invitationUrl)
+        };
+
+        this.$axios
+          .post(`${this.$apiBaseUrl}/invitations/check`, request)
+          .then((result) => {
+            console.log(result);
+            this.receivedInvitation = Object.assign({}, result.data);
+          })
+        .catch((e) => {
+          console.error(e);
+        });
+
+      }
+    },
+    acceptInvitation() {
+      if (this.receivedInvitation && this.receivedInvitation.invitationBlock) {
+        let request = {
+          invitationBlock: this.receivedInvitation.invitationBlock
+        };
+
+        this.$axios
+          .post(`${this.$apiBaseUrl}/invitations/accept`, request)
+          .then((result) => {
+            console.log(result);
+            this.receivedInvitation = {};
+          })
+          .catch((e) => {
+            console.error(e);
+          });
+
+      }
+    }
   },
 };
 </script>
