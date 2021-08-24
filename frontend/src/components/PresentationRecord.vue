@@ -8,10 +8,6 @@
 
 <template>
   <v-container>
-    <h4 class="mb-4">
-      Requested Information: {{ record.proofTemplateInfo.proofTemplate.name }}
-    </h4>
-
     <!-- Timeline  -->
     <v-expansion-panels accordion flat>
       <v-expansion-panel>
@@ -44,6 +40,10 @@
     </v-expansion-panels>
 
     <!-- Content based on template data -->
+
+    <h4 class="mt-4">
+      Requested Information: {{ record.proofTemplateInfo.proofTemplate.name }}
+    </h4>
 
     <attribute-group
       v-if="record.proofTemplateInfo && record.proofTemplateInfo.proofTemplate"

@@ -120,6 +120,7 @@
               return-object
               :items="attributeGroup.matchingCredentials"
               item-text="credentialInfo.referent"
+              v-model="attributeGroup.selectedCredential"
               outlined
               @change="selectedCredential(idx, $event)"
               dense
@@ -131,6 +132,7 @@
   </v-container>
 </template>
 <script>
+import Vue from "vue";
 export default {
   props: {
     requestData: Array,
@@ -158,9 +160,11 @@ export default {
   },
   methods: {
     selectedCredential(idx, credential) {
-      this.requestData[idx].attributes.map((attr) => {
-        attr.value = credential.credentialInfo.attrs[attr.name];
+      const newValue = this.requestData[idx].attributes.map((attr) => {
+        return { ...attr, value: credential.credentialInfo.attrs[attr.name] };
       });
+
+      Vue.set(this.requestData[idx], "attributes", newValue);
     },
     renderSchemaLabelId(attributeGroup) {
       // FIXME: This needs refactoring

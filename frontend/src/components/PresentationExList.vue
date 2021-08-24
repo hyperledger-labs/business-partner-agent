@@ -76,19 +76,33 @@
             v-else
             v-bind:record="record"
           ></PresentationRecord>
+
+          <v-alert
+            v-if="
+              !isWaitingForMatchingCreds &&
+              isStateRequestReceived &&
+              !record.canBeFullfilled
+            "
+            dense
+            border="left"
+            type="warning"
+          >
+            Request can't be fullfilled with credentials in wallet
+          </v-alert>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-bpa-button color="secondary" @click="closeItem(record)"
             >Close</v-bpa-button
           >
-          <span v-if="record.state === 'request_received'">
+          <span v-if="isStateRequestReceived">
             <v-bpa-button color="secondary" @click="decline"
               >Decline</v-bpa-button
             >
             <v-bpa-button
-              :loading="this.isBusy"
+              :loading="isBusy"
               color="primary"
+              :disabled="!isReadyToApprove"
               @click="approve"
               >Accept</v-bpa-button
             >
@@ -143,7 +157,19 @@ export default {
       ],
     };
   },
-  computed: {},
+  computed: {
+    isStateRequestReceived() {
+      return this.record.state === "request_received";
+    },
+    isReadyToApprove() {
+      // FIXME: Works only with template not with raw proof request
+      return this.record.proofTemplateInfo.proofTemplate.attributeGroups
+        .map((attrGroup) => {
+          return attrGroup.selectedCredential;
+        })
+        .reduce((x, y) => x && y);
+    },
+  },
   methods: {
     approve() {
       proofExService.approveProofRequest(this.record.id);
@@ -174,23 +200,96 @@ export default {
       item;
       return false;
     },
-    matchingCredentialsPerAttrGroup() {
-      console.log("to be implemented");
+    // Checks if proof request can be fullfilled
+    canBeFullfilled() {
+      const canAttrsFullfilled = Object.values(
+        this.record.proofRequest.requestedAttributes
+      )
+        .map((attrGroup) => {
+          return (
+            Object.hasOwnProperty.call(attrGroup, "matchingCredentials") &&
+            attrGroup.matchingCredentials.length > 0
+          );
+        })
+        .reduce((x, y) => {
+          return x && y;
+        }, true);
+
+      const canPredicatesFullfilled = Object.values(
+        this.record.proofRequest.requestedPredicates
+      )
+        .map((attrGroup) => {
+          return attrGroup.matchingCredentials;
+        })
+        .reduce((x, y) => {
+          return x && y;
+        }, true);
+
+      return canAttrsFullfilled && canPredicatesFullfilled;
     },
     getMatchingCredentials() {
       this.isWaitingForMatchingCreds = true;
       proofExService.getMatchingCredentials(this.record.id).then((result) => {
-        this.record.proofTemplateInfo.proofTemplate.attributeGroups.map(
-          (attributeGroup) => {
-            attributeGroup.matchingCredentials = result.data.filter((cred) => {
-              return (
-                cred.presentationReferents.indexOf(
-                  attributeGroup.attributeGroupName
-                ) > -1
+        const matchingCreds = result.data;
+
+        // Match to template
+        if (
+          this.record.proofTemplateInfo &&
+          this.record.proofTemplateInfo.proofTemplate
+        ) {
+          this.record.proofTemplateInfo.proofTemplate.attributeGroups.map(
+            (attributeGroup) => {
+              attributeGroup.matchingCredentials = matchingCreds.filter(
+                (cred) => {
+                  return (
+                    cred.presentationReferents.indexOf(
+                      attributeGroup.attributeGroupName
+                    ) > -1
+                  );
+                }
               );
-            });
-          }
-        );
+            }
+          );
+        }
+
+        // Match to request
+        this.record.proofRequest.requestedAttributes;
+
+        matchingCreds.forEach((cred) => {
+          cred.presentationReferents.forEach((c) => {
+            const attr = this.record.proofRequest.requestedAttributes[c];
+            const pred = this.record.proofRequest.requestedPredicates[c];
+            if (attr) {
+              if (!Object.hasOwnProperty.call(attr, "matchingCredentials")) {
+                attr.matchingCredentials = [];
+              }
+              const hasMatchingCred = attr.matchingCredentials.some((item) => {
+                return (
+                  item.credentialInfo.referent === cred.credentialInfo.referent
+                );
+              });
+              if (!hasMatchingCred) {
+                attr.matchingCredentials.push(cred);
+              }
+            } else if (pred) {
+              if (!Object.hasOwnProperty.call(pred, "matchingCredentials")) {
+                pred.matchingCredentials = [];
+              }
+
+              const hasMatchingPred = pred.matchingCredentials.some((item) => {
+                return (
+                  item.credentialInfo.referent === cred.credentialInfo.referent
+                );
+              });
+              if (!hasMatchingPred) {
+                pred.matchingCredentials.push(cred);
+              }
+            }
+          });
+        });
+
+        this.record.canBeFullfilled = this.canBeFullfilled();
+
         this.isWaitingForMatchingCreds = false;
       });
     },
