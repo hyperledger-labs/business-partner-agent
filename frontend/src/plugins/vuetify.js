@@ -34,6 +34,7 @@ import {
   mdiMessageText,
   mdiBook,
   mdiBookRemove,
+  mdiMagnify,
   mdiTicketConfirmationOutline
 } from "@mdi/js";
 
@@ -86,8 +87,9 @@ export default new Vuetify({
       chat: mdiMessageText,
       revoke: mdiBook,
       revoked: mdiBookRemove,
+      search: mdiMagnify,
       dashboardGo: "fas fa-arrow-alt-circle-right",
-      invitation: mdiTicketConfirmationOutline
+      invitation: mdiTicketConfirmationOutline,
     },
   },
   theme: {
