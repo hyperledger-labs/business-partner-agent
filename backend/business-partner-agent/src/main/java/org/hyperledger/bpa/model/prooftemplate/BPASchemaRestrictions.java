@@ -24,6 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.controller.api.prooftemplates.SchemaRestrictions;
 import org.hyperledger.bpa.impl.verification.ValidUUID;
 
@@ -62,15 +63,14 @@ public class BPASchemaRestrictions {
     }
 
     public static BPASchemaRestrictions fromRepresentation(SchemaRestrictions schemaRestrictions) {
-
         return Optional.ofNullable(schemaRestrictions)
                 .map(other -> BPASchemaRestrictions.builder()
-                        .schemaId(other.getSchemaId())
-                        .schemaName(other.getSchemaName())
-                        .schemaVersion(other.getSchemaVersion())
-                        .schemaIssuerDid(other.getSchemaIssuerDid())
-                        .credentialDefinitionId(other.getCredentialDefinitionId())
-                        .issuerDid(other.getIssuerDid())
+                        .schemaId(StringUtils.trimToNull(other.getSchemaId()))
+                        .schemaName(StringUtils.trimToNull(other.getSchemaName()))
+                        .schemaVersion(StringUtils.trimToNull(other.getSchemaVersion()))
+                        .schemaIssuerDid(StringUtils.trimToNull(other.getSchemaIssuerDid()))
+                        .credentialDefinitionId(StringUtils.trimToNull(other.getCredentialDefinitionId()))
+                        .issuerDid(StringUtils.trimToNull(other.getIssuerDid()))
                         .build())
                 .orElse(null);
     }
