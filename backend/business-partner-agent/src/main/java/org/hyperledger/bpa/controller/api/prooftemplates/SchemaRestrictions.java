@@ -33,7 +33,7 @@ import org.hyperledger.bpa.impl.verification.ValidUUID;
 public class SchemaRestrictions {
 
     @Nullable
-    @ValidUUID // this is confusing
+    @ValidUUID // this is confusing, because it should be the top level schema id
     private String schemaId;
     @Nullable
     private String schemaName;

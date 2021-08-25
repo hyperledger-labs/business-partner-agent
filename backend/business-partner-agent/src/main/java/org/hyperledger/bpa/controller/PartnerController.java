@@ -26,12 +26,10 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
-import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.partner.*;
 import org.hyperledger.bpa.impl.ChatMessageManager;
 import org.hyperledger.bpa.impl.ChatMessageService;
@@ -42,8 +40,6 @@ import org.hyperledger.bpa.impl.aries.HolderCredentialManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.ProofManager;
 import org.hyperledger.bpa.model.ChatMessage;
-import org.hyperledger.bpa.model.PartnerProof;
-import org.hyperledger.bpa.repository.PartnerProofRepository;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -68,10 +64,6 @@ public class PartnerController {
 
     @Inject
     ProofManager proofM;
-
-    // TODO delete
-    @Inject
-    PartnerProofRepository ppRepo;
 
     @Inject
     ConnectionManager cm;
@@ -224,8 +216,7 @@ public class PartnerController {
      * @return HTTP status
      */
     @Get("/{id}/proof-exchanges")
-    public HttpResponse<List<AriesProofExchange>> getPartnerProofs(
-            @PathVariable String id) {
+    public HttpResponse<List<AriesProofExchange>> getPartnerProofs(@PathVariable String id) {
         return HttpResponse.ok(proofM.listPartnerProofs(UUID.fromString(id)));
     }
 
@@ -233,7 +224,7 @@ public class PartnerController {
      * Manual connection flow. Accept partner connection request
      *
      * @param id {@link UUID} the partner id
-     * @return HTTP status, no body
+     * @return HTTP status, no Body
      */
     @Put("/{id}/accept")
     public HttpResponse<Void> acceptPartnerRequest(@PathVariable String id) {
@@ -280,149 +271,4 @@ public class PartnerController {
         return HttpResponse.ok(chatMessageService.getMessagesForPartner(id));
     }
 
-    // TODO delete all of the below
-
-    /**
-     * Get partner by id
-     *
-     * @deprecated use proof exchange controller
-     *             {@link ProofExchangeController#getProofExchangeById}
-     * @param id {@link UUID} the partner id
-     * @return partner
-     */
-    @Deprecated
-    @Get("/proof-exchanges/{id}")
-    public HttpResponse<AriesProofExchange> getProofExchangeById(@PathVariable String id) {
-        Optional<AriesProofExchange> pProof = proofM.getPartnerProofById(UUID.fromString(id));
-        if (pProof.isPresent()) {
-            return HttpResponse.ok(pProof.get());
-        }
-        return HttpResponse.notFound();
-    }
-
-    /**
-     * Aries: Deletes a partners proof by id
-     *
-     * @deprecated use proof exchange controller instead
-     *             {@link ProofExchangeController#deleteProofExchangeById}
-     * @param id      {@link UUID} the partner id
-     * @param proofId the proof id
-     * @return HTTP status
-     */
-    @Deprecated
-    @Delete("/{id}/proof-exchanges/{proofId}")
-    public HttpResponse<Void> deletePartnerProofById(
-            @SuppressWarnings("unused ") @PathVariable String id,
-            @PathVariable String proofId) {
-        proofM.deletePartnerProof(UUID.fromString(proofId));
-        return HttpResponse.ok();
-    }
-
-    /**
-     * Aries: Get a proof exchange by id
-     *
-     * @deprecated use proof exchange controller
-     *             {@link ProofExchangeController#getProofExchangeById}
-     * @param id      {@link UUID} the partner id
-     * @param proofId the proof id
-     * @return HTTP status
-     */
-    @Deprecated
-    @Get("/{id}/proof-exchanges/{proofId}")
-    public HttpResponse<AriesProofExchange> getPartnerProofById(
-            @SuppressWarnings("unused ") @PathVariable String id,
-            @PathVariable String proofId) {
-        final Optional<AriesProofExchange> proof = proofM.getPartnerProofById(UUID.fromString(proofId));
-        if (proof.isPresent()) {
-            return HttpResponse.ok(proof.get());
-        }
-        return HttpResponse.notFound();
-    }
-
-    /**
-     * Aries: Make the presentation that was requested
-     *
-     * @deprecated use proof exchange controller
-     *             {@link ProofExchangeController#responseToProofRequest}
-     * @param id      {@link UUID} the partner id
-     * @param proofId {@link UUID} the presentationExchangeId
-     * @return HTTP status
-     */
-    @Deprecated
-    @Post("/{id}/proof-exchanges/{proofId}/prove")
-    public HttpResponse<Void> responseToProofRequest(
-            @SuppressWarnings("unused ") @PathVariable String id,
-            @PathVariable String proofId) {
-        final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(proofId));
-        if (proof.isPresent()) {
-            proofM.presentProof(proof.get(), null);
-            return HttpResponse.ok();
-        } else {
-            return HttpResponse.notFound();
-        }
-    }
-
-    /**
-     * Aries: Reject ProofRequest received from a partner
-     *
-     * @deprecated use proof exchange controller
-     *             {@link ProofExchangeController#declinePresentProofRequest}
-     * @param id      {@link UUID} the partner id
-     * @param proofId {@link UUID} the presentationExchangeId
-     * @return HTTP status
-     */
-    @Deprecated
-    @Post("/{id}/proof-exchanges/{proofId}/decline")
-    public HttpResponse<Void> declinePresentProofRequest(
-            @SuppressWarnings("unused ") @PathVariable String id,
-            @PathVariable String proofId) {
-        final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(proofId));
-        if (proof.isPresent()) {
-            proofM.declinePresentProofRequest(proof.get(), "User Declined Proof Request: No reason provided");
-            return HttpResponse.ok();
-        }
-        return HttpResponse.notFound();
-    }
-
-    /**
-     * Aries: Request proof from partner
-     *
-     * @deprecated use proof exchange controller
-     *             {@link ProofExchangeController#requestProof}
-     * @param id  {@link UUID} the partner id
-     * @param req {@link RequestProofRequest}
-     * @return HTTP status
-     */
-    @Post("/{id}/proof-request")
-    @Deprecated
-    public HttpResponse<Void> requestProof(
-            @PathVariable String id,
-            @RequestBody(description = "One of requestBySchema or requestRaw") @Body RequestProofRequest req) {
-        if (req.getRequestBySchema() != null && req.getRequestRaw() != null) {
-            throw new WrongApiUsageException("One of requestBySchema or requestRaw must be set.");
-        }
-        if (req.isRequestBySchema() && StringUtils.isEmpty(req.getRequestBySchema().getSchemaId())) {
-            throw new WrongApiUsageException("Schema id must not be empty");
-        }
-        proofM.sendPresentProofRequest(UUID.fromString(id), req);
-        return HttpResponse.ok();
-    }
-
-    /**
-     * Aries: Send proof to partner
-     *
-     * @deprecated use proof exchange controller
-     *             {@link ProofExchangeController#sendProof}
-     * @param id  {@link UUID} the partner id
-     * @param req {@link SendProofRequest}
-     * @return HTTP status
-     */
-    @Post("/{id}/proof-send")
-    @Deprecated
-    public HttpResponse<Void> sendProof(
-            @PathVariable String id,
-            @Body SendProofRequest req) {
-        proofM.sendProofProposal(UUID.fromString(id), req.getMyCredentialId());
-        return HttpResponse.ok();
-    }
 }

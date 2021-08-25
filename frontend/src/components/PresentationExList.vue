@@ -53,7 +53,7 @@
       </template>
       <template v-slot:[`item.updatedAt`]="{ item }">
         {{
-          (item.updatedAt || item.sentAt || item.receivedAt) | formatDateLong
+          item.updatedAt | formatDateLong
         }}
       </template>
     </v-data-table>

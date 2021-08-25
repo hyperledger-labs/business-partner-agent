@@ -20,6 +20,7 @@ package org.hyperledger.bpa.model;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
+import io.micronaut.data.annotation.DateUpdated;
 import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
 import lombok.*;
@@ -55,6 +56,9 @@ public class PartnerProof {
 
     @DateCreated
     private Instant createdAt;
+
+    @DateUpdated
+    private Instant updatedAt;
 
     @Nullable
     private Boolean valid;

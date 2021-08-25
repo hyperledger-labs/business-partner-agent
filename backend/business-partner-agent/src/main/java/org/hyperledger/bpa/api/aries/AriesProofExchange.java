@@ -45,17 +45,17 @@ public class AriesProofExchange {
     private PresentationExchangeState state;
     private PresentationExchangeRole role;
 
+    private Long updatedAt;
     public Map<PresentationExchangeState, Long> stateToTimestamp;
 
     private String typeLabel;
-    private String problemReport;
 
     /** if verifier, revealed attributes from the other agent */
-    // TODO this should always be set, but it isn't
-    // TODO resolve issuer, cred def
     private JsonNode proofData;
     private ProofTemplate proofTemplate;
     private PresentProofRequest.ProofRequest proofRequest;
+    private String problemReport;
+    private Boolean valid;
 
     public static AriesProofExchange from(@NonNull PartnerProof p, @Nullable JsonNode proofData) {
         final AriesProofExchangeBuilder b = AriesProofExchange.builder();
@@ -69,6 +69,8 @@ public class AriesProofExchange {
                 .problemReport(p.getProblemReport())
                 .exchangeVersion(p.getExchangeVersion())
                 .stateToTimestamp(p.getStateToTimestamp() != null ? p.getStateToTimestamp().toApi() : null)
+                .valid(p.getValid())
+                .updatedAt(p.getUpdatedAt().toEpochMilli())
                 .build();
     }
 }
