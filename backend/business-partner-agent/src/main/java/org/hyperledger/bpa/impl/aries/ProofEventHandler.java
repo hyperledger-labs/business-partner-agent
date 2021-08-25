@@ -67,7 +67,7 @@ public class ProofEventHandler {
             handleProofRequest(proof);
         } else {
             // if not handled in the manager e.g. when sending the request
-            if (!proof.roleIsProverAndPresentationSent() && !proof.roleIsVerifierAndRequestSent()) {
+            if (!proof.roleIsProverAndPresentationSent() || !proof.roleIsVerifierAndRequestSent()) {
                 handleAll(proof);
             }
         }
