@@ -40,7 +40,7 @@ import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentials;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
-import org.hyperledger.bpa.impl.notification.PresentationRequestDeletedEvent;
+import org.hyperledger.bpa.impl.notification.PresentationRequestDeclinedEvent;
 import org.hyperledger.bpa.impl.notification.PresentationRequestSentEvent;
 import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.impl.util.Converter;
@@ -152,7 +152,7 @@ public class ProofManager {
             Credential cred = conv.fromMap(Objects.requireNonNull(c.getCredential()), Credential.class);
             final PresentProofProposal req = PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred);
             try {
-                ac.presentProofSendProposal(req).ifPresent(proof -> persistProof(partnerId, null));
+                ac.presentProofSendProposal(req).ifPresent(persistProof(partnerId, null));
             } catch (IOException e) {
                 throw new NetworkException(ACA_PY_ERROR_MSG, e);
             }
@@ -198,19 +198,16 @@ public class ProofManager {
 
     // manual proof request flow
     public void declinePresentProofRequest(@NotNull PartnerProof proofEx, String explainString) {
-
-        // TODO store action declined/approved
-
         if (PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
             try {
+                proofEx.pushStateChange(PresentationExchangeState.DECLINED, Instant.now());
+                proofEx.setState(PresentationExchangeState.DECLINED);
+                pProofRepo.update(proofEx);
                 sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString);
-                deletePartnerProof(proofEx.getId());
                 eventPublisher
-                        .publishEventAsync(PresentationRequestDeletedEvent.builder().partnerProof(proofEx).build());
+                        .publishEventAsync(PresentationRequestDeclinedEvent.builder().partnerProof(proofEx).build());
             } catch (IOException e) {
                 throw new NetworkException(ACA_PY_ERROR_MSG, e);
-            } catch (AriesException e) {
-                log.error("aca-py wallet item not found, attempting BPA delete");
             }
         } else {
             throw new WrongApiUsageException("PresentationExchangeState != 'request-received'");
@@ -229,7 +226,7 @@ public class ProofManager {
                     ac.presentProofRecordsSendPresentation(proofEx.getPresentationExchangeId(), req);
                 }
             } catch (IOException e) {
-                log.error(ACA_PY_ERROR_MSG, e);
+                throw new NetworkException(ACA_PY_ERROR_MSG, e);
             }
         } else {
             throw new WrongApiUsageException(
@@ -237,8 +234,7 @@ public class ProofManager {
         }
     }
 
-    // manual proof request flow
-    @Deprecated
+    // manual proof request flow, internal accept all
     void presentProofAcceptAll(@NonNull PresentationExchangeRecord presentationExchangeRecord) {
         if (PresentationExchangeState.REQUEST_RECEIVED.equals(presentationExchangeRecord.getState())) {
             try {
@@ -266,7 +262,7 @@ public class ProofManager {
                             }
                         }, () -> log.error("Could not load matching credentials from aca-py"));
             } catch (IOException e) {
-                log.error(ACA_PY_ERROR_MSG, e);
+                throw new NetworkException(ACA_PY_ERROR_MSG, e);
             }
         }
     }

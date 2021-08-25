@@ -89,7 +89,8 @@ public class ProofEventHandler {
                                         pp.pushStateChange(proof.getState(), Instant.now());
                                         pProofRepo.update(pp);
                                     }
-                                    if (proof.getErrorMsg() != null) {
+                                    if (proof.getErrorMsg() != null
+                                            && PresentationExchangeState.DECLINED.equals(proof.getState())) {
                                         pProofRepo.updateProblemReport(pp.getId(), proof.getErrorMsg());
                                         eventPublisher.publishEventAsync(
                                                 PresentationRequestDeclinedEvent.builder().partnerProof(pp).build());
