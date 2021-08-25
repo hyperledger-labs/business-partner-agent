@@ -20,6 +20,7 @@ package org.hyperledger.bpa.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -83,14 +84,21 @@ public class InvitationParser {
             if (StringUtils.isNotEmpty(invite.getError())) {
                 throw new InvitationException(invite.getError());
             } else {
-                // right now there is only one option for a success
-                if (invite.isParsed() && invite.getInvitationRequest() != null) {
-                    ReceiveInvitationRequest r = invite.getInvitationRequest();
-                    return CheckInvitationResponse.builder()
-                            .label(r.getLabel())
-                            .invitation(invite.getInvitation())
-                            .invitationBlock(invite.getInvitationBlock())
-                            .build();
+                if (invite.isParsed()) {
+                    if (invite.getInvitationRequest() != null) {
+                        ReceiveInvitationRequest r = invite.getInvitationRequest();
+                        return CheckInvitationResponse.builder()
+                                .label(r.getLabel())
+                                .invitation(invite.getInvitation())
+                                .invitationBlock(invite.getInvitationBlock())
+                                .build();
+                    } else if (invite.getInvitationMessage() != null) {
+                        return CheckInvitationResponse.builder()
+                                .label(invite.getInvitationMessage().getLabel())
+                                .invitation(invite.getInvitation())
+                                .invitationBlock(invite.getInvitationBlock())
+                                .build();
+                    }
                 }
             }
         } else {
@@ -115,18 +123,46 @@ public class InvitationParser {
 
                     if ("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/invitation".equals(o.get("@type"))) {
                         // Invitation
-                        Gson gson = new Gson();
-                        ReceiveInvitationRequest r = gson.fromJson(decodedBlock, ReceiveInvitationRequest.class);
-                        invitation.setInvitationRequest(r);
+                        try {
+                            Gson gson = new Gson();
+                            ReceiveInvitationRequest r = gson.fromJson(decodedBlock, ReceiveInvitationRequest.class);
+                            invitation.setInvitationRequest(r);
+                        } catch (Exception e) {
+                            String msg = "Expecting a valid Connections 1.0 invitation; could not parse data.";
+                            invitation.setError(msg);
+                            log.error(msg);
+                        }
 
                     } else if ("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/out-of-band/1.0/invitation"
                             .equals(o.get("@type"))) {
                         invitation.setOob(true);
-                        // not supporting this until we can parse and send to aries client successfully
-                        // coming very soon with next update of Aries Client Jar!!!
-                        String msg = "Out of band Invitations are currently not supported";
-                        invitation.setError(msg);
-                        log.error(msg);
+
+                        Gson gson = new Gson();
+                        try {
+                            InvitationMessage<InvitationMessage.InvitationMessageService> im = gson
+                                    .fromJson(decodedBlock, InvitationMessage.RFC0067_TYPE);
+                            // update aries client invitation message to use
+                            // @SerializedName("handshake_protocols")
+                            if (im.getHandshakeProtocols() == null || im.getHandshakeProtocols().size() == 0) {
+                                im.setHandshakeProtocols((List<String>) o.get("handshake_protocols"));
+                            }
+                            invitation.setInvitationMessage(im);
+                        } catch (JsonSyntaxException e) {
+                            try {
+                                InvitationMessage<String> im = gson.fromJson(decodedBlock,
+                                        InvitationMessage.STRING_TYPE);
+                                // update aries client invitation message to use
+                                // @SerializedName("handshake_protocols")
+                                if (im.getHandshakeProtocols() == null || im.getHandshakeProtocols().size() == 0) {
+                                    im.setHandshakeProtocols((List<String>) o.get("handshake_protocols"));
+                                }
+                                invitation.setInvitationMessage(im);
+                            } catch (JsonSyntaxException ex) {
+                                String msg = "Expecting a valid Out Of Band 1.0 invitation; could not parse data.";
+                                invitation.setError(msg);
+                                log.error(msg);
+                            }
+                        }
                     } else {
                         String msg = String.format("Unknown or unsupported Invitation type. @type = '%s'",
                                 o.get("@type"));

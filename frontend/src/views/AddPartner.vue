@@ -141,9 +141,51 @@
           </v-layout>
         </v-row>
         <v-row v-if="invitationUrlLoaded">
-          <v-layout justify-center>
-            <div class="font-weight-medium"><p>This invitation is from <strong>{{ this.receivedInvitation.label }}</strong>.<br>Click Accept Invitation to connect with this Partner.</p></div>
-          </v-layout>
+          <v-col cols="4">
+            <v-list-item-title
+                class="grey--text text--darken-2 font-weight-medium"
+            >
+              {{ $t("view.addPartner.setName") }}
+            </v-list-item-title>
+          </v-col>
+          <v-col cols="8">
+            <v-text-field
+                label="Name"
+                persistent-placeholder
+                :placeholder=aliasPlaceholder
+                v-model.trim="alias"
+                outlined
+                dense
+            >
+            </v-text-field>
+          </v-col>
+          <v-col cols="4">
+            <v-list-item-title
+                class="grey--text text--darken-2 font-weight-medium"
+            >
+              {{ $t("view.addPartner.setTags") }}
+            </v-list-item-title>
+          </v-col>
+          <v-col cols="8">
+            <v-autocomplete
+                multiple
+                v-model="selectedTags"
+                :items="tags"
+                chips
+                deletable-chips
+            >
+            </v-autocomplete>
+          </v-col>
+          <v-list-item>
+            <v-list-item-title
+                class="grey--text text--darken-2 font-weight-medium"
+            >{{ $t("view.addPartner.trustPing") }}</v-list-item-title
+            >
+
+            <v-list-item-action>
+              <v-switch v-model="trustPing"></v-switch>
+            </v-list-item-action>
+          </v-list-item>
         </v-row>
       </v-container>
       <v-card-actions v-if="radios==='url'">
@@ -269,6 +311,7 @@ export default {
     },
     checkInvitation() {
       this.msg = "";
+      this.alias = "";
       this.receivedInvitation = {};
       this.invitationUrlLoaded = false;
       if (this.invitationUrl) {
@@ -283,6 +326,9 @@ export default {
             this.invitationUrlLoading = false;
             this.receivedInvitation = Object.assign({}, result.data);
             this.invitationUrlLoaded = this.receivedInvitation.invitationBlock != null;
+            // add in their label as the default alias for adding
+            this.aliasPlaceholder = this.receivedInvitation.label;
+            //this.alias = this.receivedInvitation.label;
           })
         .catch((e) => {
           console.error(e);
@@ -293,16 +339,25 @@ export default {
     },
     acceptInvitation() {
       if (this.invitationUrlLoaded) {
-        this.invitationUrlLoading = true;
+        // build up our accept request using the invitation block from check and user entered data...
         let request = {
           invitationBlock: this.receivedInvitation.invitationBlock
         };
+        if (this.alias && this.alias !== "") {
+          request.alias = this.alias;
+        } else if (this.aliasPlaceholder && this.aliasPlaceholder !== "") {
+          request.alias = this.aliasPlaceholder;
+        }
+        request.tag = this.$store.state.tags.filter((tag) => {
+          return this.selectedTags.includes(tag.name);
+        });
+        request.trustPing = this.trustPing;
 
+        // send if off and add a new partner
         this.$axios
           .post(`${this.$apiBaseUrl}/invitations/accept`, request)
           .then(() => {
             store.dispatch("loadPartners");
-            this.invitationUrlLoading = false;
             this.receivedInvitation = {};
             this.invitationUrlLoaded = false;
             EventBus.$emit("success", "Partner added successfully");
@@ -312,7 +367,6 @@ export default {
           })
           .catch((e) => {
             console.error(e);
-            this.invitationUrlLoading = false;
             EventBus.$emit("error", e);
           });
       }

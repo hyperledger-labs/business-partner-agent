@@ -21,6 +21,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.model.Tag;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -28,4 +31,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AcceptInvitationRequest {
     private String invitationBlock;
+    private String alias;
+    private List<Tag> tag;
+    private Boolean trustPing;
 }

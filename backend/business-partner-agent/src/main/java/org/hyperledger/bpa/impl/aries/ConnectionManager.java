@@ -34,6 +34,7 @@ import org.hyperledger.aries.api.connection.*;
 import org.hyperledger.aries.api.did_exchange.DidExchangeCreateRequestFilter;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
+import org.hyperledger.aries.api.out_of_band.ReceiveInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.bpa.api.exception.InvitationException;
@@ -48,6 +49,7 @@ import org.hyperledger.bpa.impl.notification.*;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
+import org.hyperledger.bpa.model.Tag;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
@@ -175,7 +177,7 @@ public class ConnectionManager {
         return invitationParser.checkInvitation(invitationUrl);
     }
 
-    public void receiveInvitation(@NonNull String encodedInvitation) {
+    public void receiveInvitation(@NonNull String encodedInvitation, String alias, List<Tag> tags, Boolean trustPing) {
         InvitationParser.Invitation invitation = invitationParser.parseInvitation(encodedInvitation);
         if (invitation.isParsed()) {
             if (invitation.getInvitationRequest() != null) {
@@ -189,14 +191,14 @@ public class ConnectionManager {
                                 partnerRepo.save(Partner
                                         .builder()
                                         .ariesSupport(Boolean.TRUE)
-                                        .alias(StringUtils.trimToNull(record.getTheirLabel()))
+                                        .alias(StringUtils.trimToNull(alias))
                                         .connectionId(record.getConnectionId())
                                         .invitationMsgId(record.getInvitationMsgId())
                                         .did(didPrefix + UNKNOWN_DID)
                                         .state(ConnectionState.INVITATION)
                                         .incoming(Boolean.TRUE)
-                                        .tags(null)
-                                        .trustPing(Boolean.FALSE)
+                                        .tags(tags != null ? new HashSet<>(tags) : null)
+                                        .trustPing(trustPing != null ? trustPing : Boolean.TRUE)
                                         .build());
                             });
 
@@ -205,8 +207,34 @@ public class ConnectionManager {
                     log.error(msg, e);
                     throw new NetworkException(msg);
                 }
+            } else if (invitation.getInvitationMessage() != null) {
+                try {
+                    ac.outOfBandReceiveInvitation(invitation.getInvitationMessage(),
+                            ReceiveInvitationFilter.builder()
+                                    .alias(invitation.getInvitationMessage().getLabel())
+                                    .autoAccept(true)
+                                    .build())
+                            .ifPresent(o -> {
+                                ConnectionRecord record = (ConnectionRecord) o;
+                                partnerRepo.save(Partner
+                                        .builder()
+                                        .ariesSupport(Boolean.TRUE)
+                                        .alias(StringUtils.trimToNull(alias))
+                                        .connectionId(record.getConnectionId())
+                                        .invitationMsgId(record.getInvitationMsgId())
+                                        .did(didPrefix + UNKNOWN_DID)
+                                        .state(ConnectionState.INVITATION)
+                                        .incoming(Boolean.TRUE)
+                                        .tags(tags != null ? new HashSet<>(tags) : null)
+                                        .trustPing(trustPing != null ? trustPing : Boolean.TRUE)
+                                        .build());
+                            });
+                } catch (IOException e) {
+                    String msg = messageSource.getMessage("acapy.unavailable");
+                    log.error(msg, e);
+                    throw new NetworkException(msg);
+                }
             }
-            // no other options right now...
         } else {
             throw new InvitationException(invitation.getError());
         }
