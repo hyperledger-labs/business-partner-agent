@@ -23,7 +23,6 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeInitiator;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.notification.PresentationRequestCompletedEvent;
@@ -62,15 +61,15 @@ public class ProofEventHandler {
     ApplicationEventPublisher eventPublisher;
 
     void dispatch(PresentationExchangeRecord proof) {
-        if (proof.isVerified() && PresentationExchangeRole.VERIFIER.equals(proof.getRole())
-                || PresentationExchangeState.PRESENTATION_ACKED.equals(proof.getState())
-                        && PresentationExchangeRole.PROVER.equals(proof.getRole())) {
+        if (proof.isVerified() && proof.roleIsVerifier() || proof.roleIsProverAndPresentationAcked()) {
             handleAckedOrVerified(proof);
-        } else if (PresentationExchangeState.REQUEST_RECEIVED.equals(proof.getState())
-                && PresentationExchangeRole.PROVER.equals(proof.getRole())) {
+        } else if (proof.roleIsProverAndRequestReceived()) {
             handleProofRequest(proof);
         } else {
-            handleAll(proof);
+            // if not handled in the manager e.g. when sending the request
+            if (!proof.roleIsProverAndPresentationSent() && !proof.roleIsVerifierAndRequestSent()) {
+                handleAll(proof);
+            }
         }
     }
 

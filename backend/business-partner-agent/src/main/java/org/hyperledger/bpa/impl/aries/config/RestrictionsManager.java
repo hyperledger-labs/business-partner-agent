@@ -17,6 +17,8 @@
  */
 package org.hyperledger.bpa.impl.aries.config;
 
+import io.micronaut.cache.annotation.CacheInvalidate;
+import io.micronaut.cache.annotation.Cacheable;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
@@ -121,10 +123,12 @@ public class RestrictionsManager {
         return Optional.ofNullable(result.getConfig());
     }
 
+    @CacheInvalidate("issuer-label-cache")
     public void deleteById(@NonNull UUID id) {
         repo.deleteById(id);
     }
 
+    @CacheInvalidate("issuer-label-cache")
     public void updateLabel(@NonNull UUID id, String label) {
         repo.updateLabel(id, label);
     }
@@ -144,6 +148,7 @@ public class RestrictionsManager {
      *                   definition id
      * @return label of the trusted issuer if set
      */
+    @Cacheable("issuer-label-cache")
     public @Nullable String findIssuerLabelByDid(@Nullable String expression) {
         String did = null;
         if (AriesStringUtil.isCredDef(expression)) {

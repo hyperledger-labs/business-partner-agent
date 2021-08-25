@@ -50,12 +50,12 @@ public class AriesProofExchange {
 
     private String typeLabel;
 
-    /** if verifier, revealed attributes from the other agent */
+    /** revealed attributes by group */
     private JsonNode proofData;
+    private Boolean valid;
     private ProofTemplate proofTemplate;
     private PresentProofRequest.ProofRequest proofRequest;
     private String problemReport;
-    private Boolean valid;
 
     public static AriesProofExchange from(@NonNull PartnerProof p, @Nullable JsonNode proofData) {
         final AriesProofExchangeBuilder b = AriesProofExchange.builder();
