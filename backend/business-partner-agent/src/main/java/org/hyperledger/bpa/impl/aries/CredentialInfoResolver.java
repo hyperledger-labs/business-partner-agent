@@ -51,7 +51,10 @@ public class CredentialInfoResolver {
             builder.issuerLabel(restrictionsManager.findIssuerLabelByDid(ci.getCredentialDefinitionId()));
         }
         if (StringUtils.isNotEmpty(ci.getReferent())) {
-            credentialRepository.findByReferent(ci.getReferent()).ifPresent(cred -> builder.credentialId(cred.getId()));
+            credentialRepository.findByReferent(ci.getReferent()).ifPresent(cred -> {
+                builder.credentialId(cred.getId());
+                builder.credentialLabel(cred.getLabel());
+            });
         }
         return builder.build();
     }

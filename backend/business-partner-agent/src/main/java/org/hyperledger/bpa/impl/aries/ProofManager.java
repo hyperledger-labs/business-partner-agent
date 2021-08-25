@@ -103,6 +103,7 @@ public class ProofManager {
     @Inject
     CredentialInfoResolver credentialInfoResolver;
 
+    // request proof from partner via proof template
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
         try {
             PresentProofRequest proofRequest = proofTemplateConversion.proofRequestViaVisitorFrom(partnerId,
@@ -145,6 +146,19 @@ public class ProofManager {
         }
     }
 
+    // send presentation offer to partner based on a wallet credential
+    public void sendProofProposal(@NonNull UUID partnerId, @NonNull UUID myCredentialId) {
+        partnerRepo.findById(partnerId).ifPresent(p -> credRepo.findById(myCredentialId).ifPresent(c -> {
+            Credential cred = conv.fromMap(Objects.requireNonNull(c.getCredential()), Credential.class);
+            final PresentProofProposal req = PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred);
+            try {
+                ac.presentProofSendProposal(req).ifPresent(proof -> persistProof(partnerId, null));
+            } catch (IOException e) {
+                throw new NetworkException(ACA_PY_ERROR_MSG, e);
+            }
+        }));
+    }
+
     private Consumer<PresentationExchangeRecord> persistProof(
             @NonNull UUID partnerId, @Nullable BPAProofTemplate proofTemplate) {
         return exchange -> {
@@ -166,6 +180,7 @@ public class ProofManager {
         };
     }
 
+    // manual proof request flow
     public Optional<List<PresentationRequestCredentials>> getMatchingCredentials(@NonNull UUID partnerProofId) {
         Optional<PartnerProof> partnerProof = pProofRepo.findById(partnerProofId);
         if (partnerProof.isPresent()) {
@@ -181,6 +196,7 @@ public class ProofManager {
         return Optional.empty();
     }
 
+    // manual proof request flow
     public void declinePresentProofRequest(@NotNull PartnerProof proofEx, String explainString) {
 
         // TODO store action declined/approved
@@ -201,6 +217,7 @@ public class ProofManager {
         }
     }
 
+    // manual proof request flow
     public void presentProof(@NotNull PartnerProof proofEx, @Nullable PresentationRequest req) {
         if (PresentationExchangeRole.PROVER.equals(proofEx.getRole())
                 && PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
@@ -220,6 +237,8 @@ public class ProofManager {
         }
     }
 
+    // manual proof request flow
+    @Deprecated
     void presentProofAcceptAll(@NonNull PresentationExchangeRecord presentationExchangeRecord) {
         if (PresentationExchangeState.REQUEST_RECEIVED.equals(presentationExchangeRecord.getState())) {
             try {
@@ -267,35 +286,15 @@ public class ProofManager {
         return savedProof;
     }
 
-    public void sendProofProposal(@NonNull UUID partnerId, @NonNull UUID myCredentialId) {
-        partnerRepo.findById(partnerId).ifPresent(p -> credRepo.findById(myCredentialId).ifPresent(c -> {
-            Credential cred = conv.fromMap(
-                    Objects.requireNonNull(c.getCredential()), Credential.class);
-            final PresentProofProposal req = PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred);
-            try {
-                ac.presentProofSendProposal(req).ifPresent(proof -> {
-                    final PartnerProof pp = PartnerProof
-                            .builder()
-                            .partnerId(partnerId)
-                            .state(proof.getState())
-                            .presentationExchangeId(proof.getPresentationExchangeId())
-                            .role(proof.getRole())
-                            .threadId(proof.getThreadId())
-                            .exchangeVersion(ExchangeVersion.V1)
-                            .pushStateChange(proof.getState(), Instant.now())
-                            .build();
-                    pProofRepo.save(pp);
-
-                    eventPublisher.publishEventAsync(PresentationRequestSentEvent.builder()
-                            .partnerProof(pp)
-                            .build());
-                });
-
-            } catch (IOException e) {
-                log.error("aca-py not reachable.", e);
-            }
-        }));
+    private void sendPresentProofProblemReport(@NonNull String PresentationExchangeId, @NonNull String problemString)
+            throws IOException {
+        V10PresentationProblemReportRequest request = V10PresentationProblemReportRequest.builder()
+                .description(problemString)
+                .build();
+        ac.presentProofRecordsProblemReport(PresentationExchangeId, request);
     }
+
+    // CRUD methods
 
     public List<AriesProofExchange> listPartnerProofs(@NonNull UUID partnerId) {
         return pProofRepo.findByPartnerIdOrderByRole(partnerId).stream()
@@ -322,13 +321,5 @@ public class ProofManager {
             }
             pProofRepo.deleteById(id);
         });
-    }
-
-    private void sendPresentProofProblemReport(@NonNull String PresentationExchangeId, @NonNull String problemString)
-            throws IOException {
-        V10PresentationProblemReportRequest request = V10PresentationProblemReportRequest.builder()
-                .description(problemString)
-                .build();
-        ac.presentProofRecordsProblemReport(PresentationExchangeId, request);
     }
 }
