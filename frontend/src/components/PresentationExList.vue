@@ -230,7 +230,7 @@ export default {
             )
           ) {
             attrGroup.attributes.map((attr) => {
-              attr.value = this.record.proofData[attrGroup.attributeGroupName][
+              attr.value = this.record.proofData[attrGroup.attributeGroupName].revealedAttributes[
                 attr.name
               ];
             });

@@ -59,4 +59,15 @@ public class AriesCredential {
                 .label(c.getLabel())
                 .exchangeVersion(c.getExchangeVersion());
     }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static final class BPACredentialInfo {
+        private UUID credentialId;
+        private String schemaLabel;
+        private String issuerLabel;
+        private String credentialLabel;
+    }
 }

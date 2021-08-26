@@ -18,7 +18,6 @@
 package org.hyperledger.bpa.api.aries;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.micronaut.core.annotation.Nullable;
 import lombok.*;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
@@ -57,13 +56,12 @@ public class AriesProofExchange {
     private PresentProofRequest.ProofRequest proofRequest;
     private String problemReport;
 
-    public static AriesProofExchange from(@NonNull PartnerProof p, @Nullable JsonNode proofData) {
+    public static AriesProofExchange from(@NonNull PartnerProof p) {
         final AriesProofExchangeBuilder b = AriesProofExchange.builder();
         return b
                 .id(p.getId())
                 .partnerId(p.getPartnerId())
                 .state(p.getState())
-                .proofData(proofData)
                 .proofRequest(p.getProofRequest())
                 .role(p.getRole())
                 .problemReport(p.getProblemReport())
@@ -72,5 +70,26 @@ public class AriesProofExchange {
                 .valid(p.getValid())
                 .updatedAt(p.getUpdatedAt().toEpochMilli())
                 .build();
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Identifier {
+        private String schemaId;
+        private String schemaLabel;
+        private String credentialDefinitionId;
+        private String issuerLabel;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RevealedAttributeGroup {
+        @Singular
+        private Map<String, String> revealedAttributes;
+        private Identifier identifier;
     }
 }

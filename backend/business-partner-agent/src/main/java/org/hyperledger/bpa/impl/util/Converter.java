@@ -34,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.api.CredentialType;
@@ -42,6 +43,7 @@ import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.PartnerAPI.PartnerCredential;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
+import org.hyperledger.bpa.impl.aries.CredentialInfoResolver;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.model.MyDocument;
@@ -54,6 +56,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
@@ -71,6 +74,9 @@ public class Converter {
     public static final TypeReference<VerifiablePresentation<VerifiableIndyCredential>> VP_TYPEREF = new TypeReference<>() {
     };
 
+    public static final TypeReference<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>> IDENTIFIER_TYPE = new TypeReference<>() {
+    };
+
     @Value("${bpa.did.prefix}")
     private String ledgerPrefix;
 
@@ -83,6 +89,9 @@ public class Converter {
 
     @Inject
     ProofTemplateConversion templateConversion;
+
+    @Inject
+    CredentialInfoResolver credentialInfoResolver;
 
     public PartnerAPI toAPIObject(@NonNull Partner p) {
         PartnerAPI result = PartnerAPI.from(p);
@@ -209,17 +218,39 @@ public class Converter {
     }
 
     public AriesProofExchange toAPIObject(@NonNull PartnerProof p) {
-        AriesProofExchange proof = AriesProofExchange.from(p,
-                p.getProof() != null ? this.fromMap(p.getProof(), JsonNode.class) : null);
-        ProofTemplate template;
-        if (p.getProofTemplate() == null) {
-            template = templateConversion.requestToTemplate(p.getProofRequest());
-        } else {
-            template = p.getProofTemplate() != null ? p.getProofTemplate().toRepresentation() : null;
-        }
+        AriesProofExchange proof = AriesProofExchange.from(p);
+        ProofTemplate template = ProofTemplateConversion.requestToTemplate(p.getProofRequest());
+        // TODO always doing reverse conversion as the proof template does not have the
+        // group name set, as this is generated on the fly and never persisted we have
+        // to change the whole flow to get it. Once this is refactored we can consider
+        // using the code below
+//        ProofTemplate template;
+//        if (p.getProofTemplate() == null) {
+//            template = templateConversion.requestToTemplate(p.getProofRequest());
+//        } else {
+//            template = p.getProofTemplate() != null ? p.getProofTemplate().toRepresentation() : null;
+//        }
         if (template != null) {
             proof.setTypeLabel(template.getName());
         }
+        JsonNode proofData = null;
+        try {
+            if (p.getProof() != null) {
+                Map<String, PresentationExchangeRecord.RevealedAttributeGroup> groups = fromMap(p.getProof(),
+                        IDENTIFIER_TYPE);
+                Map<String, AriesProofExchange.RevealedAttributeGroup> collect = groups.entrySet().stream()
+                        .collect(Collectors.toMap(Map.Entry::getKey, e -> AriesProofExchange.RevealedAttributeGroup
+                                .builder()
+                                .revealedAttributes(e.getValue().getRevealedAttributes())
+                                .identifier(credentialInfoResolver.populateIdentifier(e.getValue().getIdentifier()))
+                                .build()));
+                proofData = mapper.convertValue(collect, JsonNode.class);
+            }
+        } catch (IllegalArgumentException e) {
+            log.warn("Not an attribute group");
+            proofData = fromMap(p.getProof(), JsonNode.class);
+        }
+        proof.setProofData(proofData);
         proof.setProofTemplate(template);
         return proof;
     }
