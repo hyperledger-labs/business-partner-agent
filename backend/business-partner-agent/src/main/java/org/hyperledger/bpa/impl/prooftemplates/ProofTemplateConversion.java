@@ -57,7 +57,7 @@ public class ProofTemplateConversion {
     @Inject
     SchemaService schemaService;
 
-    public ProofTemplate requestToTemplate(PresentProofRequest.ProofRequest proofRequest) {
+    public static ProofTemplate requestToTemplate(PresentProofRequest.ProofRequest proofRequest) {
         if (proofRequest == null) {
             return null;
         }
@@ -103,7 +103,7 @@ public class ProofTemplateConversion {
                 .build();
     }
 
-    private Optional<List<ValueCondition>> findMatchingPredicates(@NonNull String name,
+    private static Optional<List<ValueCondition>> findMatchingPredicates(@NonNull String name,
             Map<String, PresentProofRequest.ProofRequest.ProofRequestedPredicates> requestedPredicates) {
         if (CollectionUtils.isNotEmpty(requestedPredicates)) {
             return Optional.of(requestedPredicates.values().stream()

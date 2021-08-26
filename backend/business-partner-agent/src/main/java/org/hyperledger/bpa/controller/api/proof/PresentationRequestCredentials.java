@@ -41,7 +41,10 @@ public class PresentationRequestCredentials {
     @Builder
     public static final class CredentialInfo {
 
-        /** internal credentialId {@link org.hyperledger.bpa.model.MyCredential} - matched via referent */
+        /**
+         * internal credentialId {@link org.hyperledger.bpa.model.MyCredential} -
+         * matched via referent
+         */
         private UUID credentialId;
         private String credentialLabel;
 

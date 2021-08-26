@@ -211,12 +211,18 @@ public class Converter {
     public AriesProofExchange toAPIObject(@NonNull PartnerProof p) {
         AriesProofExchange proof = AriesProofExchange.from(p,
                 p.getProof() != null ? this.fromMap(p.getProof(), JsonNode.class) : null);
-        ProofTemplate template;
-        if (p.getProofTemplate() == null) {
-            template = templateConversion.requestToTemplate(p.getProofRequest());
-        } else {
-            template = p.getProofTemplate() != null ? p.getProofTemplate().toRepresentation() : null;
-        }
+        ProofTemplate template = ProofTemplateConversion.requestToTemplate(p.getProofRequest());
+        // TODO always doing reverse conversion as the proof template does not have the
+        // group name set
+        // as this is generated on the fly and never persisted we have to change the
+        // whole flow
+        // to get it. Once this is refactored we can consider useing the code below
+//        ProofTemplate template;
+//        if (p.getProofTemplate() == null) {
+//            template = templateConversion.requestToTemplate(p.getProofRequest());
+//        } else {
+//            template = p.getProofTemplate() != null ? p.getProofTemplate().toRepresentation() : null;
+//        }
         if (template != null) {
             proof.setTypeLabel(template.getName());
         }

@@ -69,7 +69,8 @@ public class ProofEventHandler {
     }
 
     /**
-     * Default presentation exchange event handler that either stores or updates partner proofs
+     * Default presentation exchange event handler that either stores or updates
+     * partner proofs
      *
      * @param exchange {@link PresentationExchangeRecord}
      */
@@ -164,7 +165,7 @@ public class ProofEventHandler {
      * Build db proof representation with all mandatory fields that are required
      *
      * @param partnerId the partner id
-     * @param proof {@link PresentationExchangeRecord}
+     * @param proof     {@link PresentationExchangeRecord}
      * @return {@link PartnerProof}
      */
     private PartnerProof defaultProof(@NonNull UUID partnerId, @NonNull PresentationExchangeRecord proof) {

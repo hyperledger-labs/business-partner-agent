@@ -164,16 +164,17 @@ class AriesEventHandlerTest extends BaseTest {
         String reqSent = loader.load("files/self-request-proof/01-verifier-request-sent.json");
         String probReport = loader.load("files/self-request-proof/04-problem-report.json");
         PresentationExchangeRecord exReqSent = ep.parsePresentProof(reqSent).orElseThrow();
-        PresentationExchangeRecord exProblem = GsonConfig.defaultConfig().fromJson(probReport, PresentationExchangeRecord.class);
+        PresentationExchangeRecord exProblem = GsonConfig.defaultConfig().fromJson(probReport,
+                PresentationExchangeRecord.class);
 
         Partner p = createDefaultPartner(exReqSent);
         proofRepo.save(PartnerProof
                 .builder()
-                    .partnerId(p.getId())
-                    .presentationExchangeId(exReqSent.getPresentationExchangeId())
-                    .threadId(exReqSent.getThreadId())
-                    .proofRequest(exReqSent.getPresentationRequest())
-                    .pushStateChange(PresentationExchangeState.REQUEST_SENT, Instant.now())
+                .partnerId(p.getId())
+                .presentationExchangeId(exReqSent.getPresentationExchangeId())
+                .threadId(exReqSent.getThreadId())
+                .proofRequest(exReqSent.getPresentationRequest())
+                .pushStateChange(PresentationExchangeState.REQUEST_SENT, Instant.now())
                 .build());
 
         aeh.handleProof(exReqSent);
