@@ -51,7 +51,7 @@
           ></Credential>
         </v-col>
       </v-row>
-      <v-divider v-if="index < credentials.length - 1"></v-divider>
+      <v-divider v-if="index < credentials.length - 1" class="my-4"></v-divider>
     </v-container>
     <v-card v-if="!profile && credentials.length === 0" height="100px" flat>
       <v-container fill-height fluid text-center>

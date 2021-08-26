@@ -119,7 +119,7 @@
               label="Matching Credentials"
               return-object
               :items="attributeGroup.matchingCredentials"
-              item-text="credentialInfo.referent"
+              item-text="credentialInfo.credentialLabel"
               v-model="attributeGroup.selectedCredential"
               outlined
               @change="selectedCredential(idx, $event)"
