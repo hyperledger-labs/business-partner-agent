@@ -169,6 +169,7 @@ public class ProofManager {
                     .presentationExchangeId(exchange.getPresentationExchangeId())
                     .role(exchange.getRole())
                     .threadId(exchange.getThreadId())
+                    .proofRequest(exchange.getPresentationRequest())
                     .proofTemplate(proofTemplate)
                     .exchangeVersion(ExchangeVersion.V1)
                     .pushStateChange(exchange.getState(), Instant.now())
@@ -268,7 +269,8 @@ public class ProofManager {
     }
 
     PartnerProof handleAckedOrVerifiedProofEvent(@NonNull PresentationExchangeRecord proof, @NonNull PartnerProof pp) {
-        Map<String, Map<String, Object>> revealedAttributeGroups = proof.findRevealedAttributeGroups();
+        Map<String, PresentationExchangeRecord.RevealedAttributeGroup> revealedAttributeGroups = proof
+                .findRevealedAttributeGroups();
         pp
                 .setValid(proof.isVerified())
                 .setState(proof.getState())

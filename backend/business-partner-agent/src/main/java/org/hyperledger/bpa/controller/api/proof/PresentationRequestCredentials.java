@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.controller.api.proof;
 
 import lombok.*;
+import org.hyperledger.bpa.api.aries.AriesCredential;
 
 import java.util.List;
 import java.util.Map;
@@ -60,7 +61,7 @@ public class PresentationRequestCredentials {
 
         static CredentialInfo mergeInfo(
                 @NonNull org.hyperledger.aries.api.present_proof.PresentationRequestCredentials.CredentialInfo aca,
-                @NonNull BPACredentialInfo bpa) {
+                @NonNull AriesCredential.BPACredentialInfo bpa) {
             return CredentialInfo
                     .builder()
                     .credentialId(bpa.getCredentialId())
@@ -77,23 +78,12 @@ public class PresentationRequestCredentials {
 
     public static PresentationRequestCredentials from(
             @NonNull org.hyperledger.aries.api.present_proof.PresentationRequestCredentials aca,
-            @NonNull BPACredentialInfo bpa) {
+            @NonNull AriesCredential.BPACredentialInfo bpa) {
         return PresentationRequestCredentials
                 .builder()
                 .credentialInfo(CredentialInfo.mergeInfo(aca.getCredentialInfo(), bpa))
                 .interval(aca.getInterval())
                 .presentationReferents(aca.getPresentationReferents())
                 .build();
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static final class BPACredentialInfo {
-        private UUID credentialId;
-        private String schemaLabel;
-        private String issuerLabel;
-        private String credentialLabel;
     }
 }

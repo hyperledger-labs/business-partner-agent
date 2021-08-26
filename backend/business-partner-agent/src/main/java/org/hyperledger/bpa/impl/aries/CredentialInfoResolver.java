@@ -19,7 +19,9 @@ package org.hyperledger.bpa.impl.aries;
 
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentials;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.bpa.api.aries.AriesCredential;
+import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.impl.aries.config.RestrictionsManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
@@ -39,10 +41,10 @@ public class CredentialInfoResolver {
     @Inject
     MyCredentialRepository credentialRepository;
 
-    public PresentationRequestCredentials.BPACredentialInfo populateCredentialInfo(
+    public AriesCredential.BPACredentialInfo populateCredentialInfo(
             @NonNull org.hyperledger.aries.api.present_proof.PresentationRequestCredentials.CredentialInfo ci) {
 
-        PresentationRequestCredentials.BPACredentialInfo.BPACredentialInfoBuilder builder = PresentationRequestCredentials.BPACredentialInfo
+        AriesCredential.BPACredentialInfo.BPACredentialInfoBuilder builder = AriesCredential.BPACredentialInfo
                 .builder();
         if (StringUtils.isNotEmpty(ci.getSchemaId())) {
             builder.schemaLabel(schemaService.getSchemaLabel(ci.getSchemaId()));
@@ -55,6 +57,19 @@ public class CredentialInfoResolver {
                 builder.credentialId(cred.getId());
                 builder.credentialLabel(cred.getLabel());
             });
+        }
+        return builder.build();
+    }
+
+    public AriesProofExchange.Identifier populateIdentifier(@NonNull PresentationExchangeRecord.Identifier identifier) {
+        AriesProofExchange.Identifier.IdentifierBuilder builder = AriesProofExchange.Identifier.builder();
+        if (StringUtils.isNotEmpty(identifier.getSchemaId())) {
+            builder.schemaId(identifier.getSchemaId());
+            builder.schemaLabel(schemaService.getSchemaLabel(identifier.getSchemaId()));
+        }
+        if (StringUtils.isNotEmpty(identifier.getCredentialDefinitionId())) {
+            builder.credentialDefinitionId(identifier.getCredentialDefinitionId());
+            builder.issuerLabel(restrictionsManager.findIssuerLabelByDid(identifier.getCredentialDefinitionId()));
         }
         return builder.build();
     }
