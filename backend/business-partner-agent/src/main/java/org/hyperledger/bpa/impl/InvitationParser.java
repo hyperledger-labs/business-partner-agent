@@ -32,6 +32,7 @@ import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.connection.ReceiveInvitationRequest;
 import org.hyperledger.aries.api.out_of_band.InvitationMessage;
+import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.exception.InvitationException;
 import org.hyperledger.bpa.controller.api.invitation.CheckInvitationResponse;
 
@@ -124,7 +125,7 @@ public class InvitationParser {
                     if ("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/invitation".equals(o.get("@type"))) {
                         // Invitation
                         try {
-                            Gson gson = new Gson();
+                            Gson gson = GsonConfig.defaultConfig();
                             ReceiveInvitationRequest r = gson.fromJson(decodedBlock, ReceiveInvitationRequest.class);
                             invitation.setInvitationRequest(r);
                         } catch (Exception e) {
@@ -137,25 +138,15 @@ public class InvitationParser {
                             .equals(o.get("@type"))) {
                         invitation.setOob(true);
 
-                        Gson gson = new Gson();
+                        Gson gson = GsonConfig.defaultConfig();
                         try {
                             InvitationMessage<InvitationMessage.InvitationMessageService> im = gson
                                     .fromJson(decodedBlock, InvitationMessage.RFC0067_TYPE);
-                            // update aries client invitation message to use
-                            // @SerializedName("handshake_protocols")
-                            if (im.getHandshakeProtocols() == null || im.getHandshakeProtocols().size() == 0) {
-                                im.setHandshakeProtocols((List<String>) o.get("handshake_protocols"));
-                            }
                             invitation.setInvitationMessage(im);
                         } catch (JsonSyntaxException e) {
                             try {
                                 InvitationMessage<String> im = gson.fromJson(decodedBlock,
                                         InvitationMessage.STRING_TYPE);
-                                // update aries client invitation message to use
-                                // @SerializedName("handshake_protocols")
-                                if (im.getHandshakeProtocols() == null || im.getHandshakeProtocols().size() == 0) {
-                                    im.setHandshakeProtocols((List<String>) o.get("handshake_protocols"));
-                                }
                                 invitation.setInvitationMessage(im);
                             } catch (JsonSyntaxException ex) {
                                 String msg = "Expecting a valid Out Of Band 1.0 invitation; could not parse data.";
