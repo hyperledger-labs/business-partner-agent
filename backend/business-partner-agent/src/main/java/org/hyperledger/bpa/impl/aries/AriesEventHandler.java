@@ -26,7 +26,6 @@ import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.message.PingEvent;
-import org.hyperledger.aries.api.message.ProblemReport;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.impl.ChatMessageManager;
@@ -142,13 +141,6 @@ public class AriesEventHandler extends EventHandler {
         synchronized (holderMgr) {
             holderMgr.handleIssueCredentialV2Indy(revocationInfo);
         }
-    }
-
-    @Override
-    public void handleProblemReport(ProblemReport report) {
-        // problem reports can happen on several levels, currently we assume that all
-        // reports are proof related
-        proofMgmt.handleProblemReport(report.getThread().getThid(), report.getDescription());
     }
 
     @Override

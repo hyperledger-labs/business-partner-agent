@@ -19,7 +19,6 @@ package org.hyperledger.bpa.impl.aries;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import lombok.NonNull;
-import org.hyperledger.aries.api.message.ProblemReport;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.config.GsonConfig;
@@ -32,6 +31,7 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
+import java.time.Instant;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -65,8 +65,8 @@ class AriesEventHandlerTest extends BaseTest {
         aeh.handleProof(exReqSent);
 
         Optional<PartnerProof> dbProof = proofRepo.findByPresentationExchangeId(presentationExchangeId);
-        assertTrue(dbProof.isPresent());
-        assertEquals(PresentationExchangeState.REQUEST_SENT, dbProof.get().getState());
+        // event is ignored
+        assertFalse(dbProof.isPresent());
 
         aeh.handleProof(exPresRec);
 
@@ -113,7 +113,8 @@ class AriesEventHandlerTest extends BaseTest {
 
         dbProof = proofRepo.findByPresentationExchangeId(presentationExchangeId);
         assertTrue(dbProof.isPresent());
-        assertEquals(PresentationExchangeState.PRESENTATIONS_SENT, dbProof.get().getState());
+        // event is ignored
+        assertEquals(PresentationExchangeState.REQUEST_RECEIVED, dbProof.get().getState());
 
         aeh.handleProof(exPresAcked);
 
@@ -146,7 +147,8 @@ class AriesEventHandlerTest extends BaseTest {
 
         dbProof = proofRepo.findByPresentationExchangeId(presentationExchangeId);
         assertTrue(dbProof.isPresent());
-        assertEquals(PresentationExchangeState.PRESENTATIONS_SENT, dbProof.get().getState());
+        // event ignored
+        assertEquals(PresentationExchangeState.REQUEST_RECEIVED, dbProof.get().getState());
 
         aeh.handleProof(exPresAcked);
 
@@ -162,27 +164,35 @@ class AriesEventHandlerTest extends BaseTest {
         String reqSent = loader.load("files/self-request-proof/01-verifier-request-sent.json");
         String probReport = loader.load("files/self-request-proof/04-problem-report.json");
         PresentationExchangeRecord exReqSent = ep.parsePresentProof(reqSent).orElseThrow();
-        ProblemReport exProblem = GsonConfig.defaultConfig().fromJson(probReport, ProblemReport.class);
+        PresentationExchangeRecord exProblem = GsonConfig.defaultConfig().fromJson(probReport, PresentationExchangeRecord.class);
 
-        createDefaultPartner(exReqSent);
+        Partner p = createDefaultPartner(exReqSent);
+        proofRepo.save(PartnerProof
+                .builder()
+                    .partnerId(p.getId())
+                    .presentationExchangeId(exReqSent.getPresentationExchangeId())
+                    .threadId(exReqSent.getThreadId())
+                    .proofRequest(exReqSent.getPresentationRequest())
+                    .pushStateChange(PresentationExchangeState.REQUEST_SENT, Instant.now())
+                .build());
 
         aeh.handleProof(exReqSent);
-        aeh.handleProblemReport(exProblem);
+        aeh.handleProof(exProblem);
 
-        Optional<PartnerProof> dbProof = proofRepo.findByThreadId(exProblem.getThread().getThid());
+        Optional<PartnerProof> dbProof = proofRepo.findByThreadId(exProblem.getThreadId());
         assertTrue(dbProof.isPresent());
-        assertEquals(PresentationExchangeState.REQUEST_SENT, dbProof.get().getState());
+        assertEquals(PresentationExchangeState.DECLINED, dbProof.get().getState());
         assertNotNull(dbProof.get().getProblemReport());
         assertTrue(dbProof.get().getProblemReport().startsWith("no matching"));
 
     }
 
-    private void createDefaultPartner(@NonNull PresentationExchangeRecord exReqSent) {
+    private Partner createDefaultPartner(@NonNull PresentationExchangeRecord exReqSent) {
         Partner p = Partner.builder()
                 .connectionId(exReqSent.getConnectionId())
                 .did("did:sov:dummy")
                 .ariesSupport(Boolean.TRUE)
                 .build();
-        partnerRepo.save(p);
+        return partnerRepo.save(p);
     }
 }
