@@ -22,7 +22,7 @@
         State
       </v-list-item-title>
       <v-list-item-subtitle align="">
-        {{ record.state.replace("_", " ") }}
+        {{ record.state ? record.state.replace("_", " ") : "" }}
       </v-list-item-subtitle>
     </v-list-item>
 
@@ -31,7 +31,7 @@
         Request Name
       </v-list-item-title>
       <v-list-item-subtitle align="">
-        {{ record.proofTemplate.name }}
+        {{ record.proofTemplate ? record.proofTemplate.name : "" }}
       </v-list-item-subtitle>
     </v-list-item>
     <!-- Timeline  -->

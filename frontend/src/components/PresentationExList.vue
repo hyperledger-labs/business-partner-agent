@@ -36,7 +36,11 @@
           {{ item.state ? item.state.replace("_", " ") : "" }}
         </span>
         <v-icon v-if="item.valid" color="green">$vuetify.icons.check</v-icon>
-        <v-icon v-if="isStateVerified(item) && !item.valid && !item.problemReport" color="error" small>
+        <v-icon
+          v-if="isStateVerified(item) && !item.valid && !item.problemReport"
+          color="error"
+          small
+        >
           $vuetify.icons.connectionAlert
         </v-icon>
         <v-tooltip v-if="item.problemReport" top>
@@ -52,7 +56,7 @@
         {{ item.updatedAt | formatDateLong }}
       </template>
     </v-data-table>
-    <v-dialog v-model="dialog" max-width="1000px">
+    <v-dialog v-if="dialog" v-model="dialog" max-width="1000px">
       <v-card>
         <v-card-title class="bg-light">
           <span class="headline">Presentation Exchange</span>
@@ -176,11 +180,16 @@ export default {
     },
     isReadyToApprove() {
       // FIXME: Works only with template not with raw proof request
-      return this.record.proofTemplate.attributeGroups
-        .map((attrGroup) => {
-          return attrGroup.selectedCredential;
-        })
-        .reduce((x, y) => x && y);
+      const array = this.record.proofTemplate.attributeGroups.map(
+        (attrGroup) => {
+          return Object.hasOwnProperty.call(attrGroup, "selectedCredential");
+        }
+      );
+      if (array.length > 0) {
+        return array.reduce((x, y) => x && y);
+      } else {
+        return false;
+      }
     },
   },
   methods: {
@@ -213,7 +222,7 @@ export default {
     },
     closeItem() {
       this.dialog = false;
-      this.record = null;
+      this.record = {};
     },
     isStateVerified(item) {
       return item && item.state === "verified";
