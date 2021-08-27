@@ -26,6 +26,7 @@ import org.hyperledger.bpa.impl.aries.config.RestrictionsManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -51,7 +52,7 @@ public class CredentialInfoResolver {
             builder.schemaLabel(schemaService.getSchemaLabel(ci.getSchemaId()));
         }
         if (StringUtils.isNotEmpty(ci.getCredentialDefinitionId())) {
-            builder.issuerLabel(restrictionsManager.findIssuerLabelByDid(ci.getCredentialDefinitionId()));
+            builder.issuerLabel(generateIssuerLabel(ci.getCredentialDefinitionId()));
         }
         if (StringUtils.isNotEmpty(ci.getReferent())) {
             credentialRepository.findByReferent(ci.getReferent()).ifPresent(cred -> {
@@ -70,13 +71,17 @@ public class CredentialInfoResolver {
         }
         if (StringUtils.isNotEmpty(identifier.getCredentialDefinitionId())) {
             builder.credentialDefinitionId(identifier.getCredentialDefinitionId());
-            String issuerLabel = restrictionsManager.findIssuerLabelByDid(identifier.getCredentialDefinitionId());
-            if (issuerLabel == null) {
-                issuerLabel = restrictionsManager
-                        .prefixIssuerDid(AriesStringUtil.credDefIdGetDid(identifier.getCredentialDefinitionId()));
-            }
-            builder.issuerLabel(issuerLabel);
+            builder.issuerLabel(generateIssuerLabel(identifier.getCredentialDefinitionId()));
         }
         return builder.build();
+    }
+
+    private String generateIssuerLabel(@NonNull String credentialDefinitionId) {
+        String issuerLabel = restrictionsManager.findIssuerLabelByDid(credentialDefinitionId);
+        if (issuerLabel == null) {
+            issuerLabel = restrictionsManager
+                    .prefixIssuerDid(AriesStringUtil.credDefIdGetDid(credentialDefinitionId));
+        }
+        return issuerLabel;
     }
 }
