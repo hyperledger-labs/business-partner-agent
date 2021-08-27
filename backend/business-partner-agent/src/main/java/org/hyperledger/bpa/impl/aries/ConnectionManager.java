@@ -140,16 +140,16 @@ public class ConnectionManager {
     }
 
     public void receiveInvitation(@NonNull String encodedInvitation, @Nullable String alias,
-                                  @Nullable List<Tag> tags, @Nullable Boolean trustPing) {
+            @Nullable List<Tag> tags, @Nullable Boolean trustPing) {
         InvitationParser.Invitation invitation = invitationParser.parseInvitation(encodedInvitation);
         if (invitation.isParsed()) {
             if (invitation.getInvitationRequest() != null) {
                 try {
                     ac.connectionsReceiveInvitation(invitation.getInvitationRequest(),
-                                    ConnectionReceiveInvitationFilter.builder()
-                                            .alias(invitation.getInvitationRequest().getLabel())
-                                            .autoAccept(true)
-                                            .build())
+                            ConnectionReceiveInvitationFilter.builder()
+                                    .alias(invitation.getInvitationRequest().getLabel())
+                                    .autoAccept(true)
+                                    .build())
                             .ifPresent(persistPartner(alias, tags, trustPing));
                 } catch (IOException e) {
                     String msg = messageSource.getMessage("acapy.unavailable");
@@ -159,10 +159,10 @@ public class ConnectionManager {
             } else if (invitation.getInvitationMessage() != null) {
                 try {
                     ac.outOfBandReceiveInvitation(invitation.getInvitationMessage(),
-                                    ReceiveInvitationFilter.builder()
-                                            .alias(invitation.getInvitationMessage().getLabel())
-                                            .autoAccept(true)
-                                            .build())
+                            ReceiveInvitationFilter.builder()
+                                    .alias(invitation.getInvitationMessage().getLabel())
+                                    .autoAccept(true)
+                                    .build())
                             .ifPresent(persistPartner(alias, tags, trustPing));
                 } catch (IOException e) {
                     String msg = messageSource.getMessage("acapy.unavailable");

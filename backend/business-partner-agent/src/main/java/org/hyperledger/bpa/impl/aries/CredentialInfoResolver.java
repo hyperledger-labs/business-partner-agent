@@ -26,7 +26,6 @@ import org.hyperledger.bpa.impl.aries.config.RestrictionsManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
-import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

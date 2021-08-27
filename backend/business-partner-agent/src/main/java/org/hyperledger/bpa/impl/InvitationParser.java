@@ -64,8 +64,8 @@ public class InvitationParser {
         private Map<String, Object> invitation;
     }
 
-    // take an url, determine if it is an invitation, and if so, what type and can it
-    // be handled?
+    // take an url, determine if it is an invitation, and if so, what type and can
+    // it be handled?
     public CheckInvitationResponse checkInvitation(@NonNull String invitationUrl) {
         HttpUrl url = HttpUrl.parse(URLDecoder.decode(invitationUrl, StandardCharsets.UTF_8));
         String invitationBlock;
@@ -115,9 +115,9 @@ public class InvitationParser {
             String decodedBlock = decodeInvitationBlock(invitationBlock);
             if (StringUtils.isNotEmpty(decodedBlock)) {
                 Map<String, Object> o;
-                    o = conv.toMap(decodedBlock);
-                    invitation.setInvitation(o);
-                    invitation.setParsed(true);
+                o = conv.toMap(decodedBlock);
+                invitation.setInvitation(o);
+                invitation.setParsed(true);
 
                 if ("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/invitation".equals(o.get("@type"))) {
                     // Invitation

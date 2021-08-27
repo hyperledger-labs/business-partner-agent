@@ -137,7 +137,7 @@ public class RestrictionsManager {
         return repo.findById(id);
     }
 
-    private String prefixIssuerDid(@NonNull String issuerDid) {
+    public String prefixIssuerDid(@NonNull String issuerDid) {
         return issuerDid.startsWith("did:") ? issuerDid : didPrefix + issuerDid;
     }
 
