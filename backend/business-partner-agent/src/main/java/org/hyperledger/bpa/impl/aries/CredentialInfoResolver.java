@@ -24,6 +24,7 @@ import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.impl.aries.config.RestrictionsManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 
 import javax.inject.Inject;
@@ -69,7 +70,12 @@ public class CredentialInfoResolver {
         }
         if (StringUtils.isNotEmpty(identifier.getCredentialDefinitionId())) {
             builder.credentialDefinitionId(identifier.getCredentialDefinitionId());
-            builder.issuerLabel(restrictionsManager.findIssuerLabelByDid(identifier.getCredentialDefinitionId()));
+            String issuerLabel = restrictionsManager.findIssuerLabelByDid(identifier.getCredentialDefinitionId());
+            if (issuerLabel == null) {
+                issuerLabel = restrictionsManager
+                        .prefixIssuerDid(AriesStringUtil.credDefIdGetDid(identifier.getCredentialDefinitionId()));
+            }
+            builder.issuerLabel(issuerLabel);
         }
         return builder.build();
     }
