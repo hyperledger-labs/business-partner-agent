@@ -35,10 +35,10 @@
         <span>
           {{ item.state ? item.state.replace("_", " ") : "" }}
         </span>
-        <v-icon v-if="item.valid" color="green">mdi-check</v-icon>
-        <v-icon v-if="isStateVerified && !item.valid" color="error"
-          >$vuetify.icons.connectionAlert</v-icon
-        >
+        <v-icon v-if="item.valid" color="green">$vuetify.icons.check</v-icon>
+        <v-icon v-if="!item.valid && !item.problemReport" color="error">
+          $vuetify.icons.connectionAlert
+        </v-icon>
         <v-tooltip v-if="item.problemReport" top>
           <template v-slot:activator="{ on, attrs }">
             <v-icon color="error" small v-bind="attrs" v-on="on">
