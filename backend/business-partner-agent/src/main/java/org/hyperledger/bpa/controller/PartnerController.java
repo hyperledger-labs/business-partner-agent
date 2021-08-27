@@ -243,18 +243,6 @@ public class PartnerController {
     }
 
     /**
-     * Aries: Create a connection-invitation
-     *
-     * @param req {@link CreatePartnerInvitationRequest}
-     * @return {@link PartnerAPI}
-     */
-    @Post("/invitation")
-    public HttpResponse<?> requestConnectionInvitation(
-            @Body CreatePartnerInvitationRequest req) {
-        return HttpResponse.ok(cm.createConnectionInvitation(req));
-    }
-
-    /**
      * Send chat message to partner
      *
      * @param id  {@link UUID} the partner id

@@ -135,37 +135,6 @@ public class ConnectionManager {
         return mapper.valueToTree(invitation);
     }
 
-    /**
-     * Create a connection based on a did, e.g. did:web or did:indy.
-     *
-     * @param did the fully qualified did like did:indy:123
-     * @return {@link ConnectionRecord}
-     */
-    public Optional<ConnectionRecord> createConnection(@NonNull String did) {
-        try {
-            return ac.didExchangeCreateRequest(
-                    DidExchangeCreateRequestFilter
-                            .builder()
-                            .theirPublicDid(did)
-                            .usePublicDid(Boolean.TRUE)
-                            .build());
-        } catch (IOException e) {
-            String msg = messageSource.getMessage("acapy.unavailable");
-            log.error(msg, e);
-            throw new NetworkException(msg);
-        }
-    }
-
-    public void acceptConnection(@NonNull String connectionId) {
-        try {
-            ac.didExchangeAcceptRequest(connectionId, null);
-        } catch (IOException e) {
-            String msg = messageSource.getMessage("acapy.unavailable");
-            log.error(msg, e);
-            throw new NetworkException(msg);
-        }
-    }
-
     public CheckInvitationResponse checkReceivedInvitation(@NonNull String invitationUrl) {
         return invitationParser.checkInvitation(invitationUrl);
     }
@@ -203,6 +172,38 @@ public class ConnectionManager {
             }
         } else {
             throw new InvitationException(invitation.getError());
+        }
+    }
+
+    /**
+     * Create a connection based on a did, e.g. did:web or did:indy.
+     *
+     * @param did the fully qualified did like did:indy:123
+     * @return {@link ConnectionRecord}
+     */
+    public Optional<ConnectionRecord> createConnection(@NonNull String did) {
+        try {
+            return ac.didExchangeCreateRequest(
+                    DidExchangeCreateRequestFilter
+                            .builder()
+                            .theirPublicDid(did)
+                            .usePublicDid(Boolean.TRUE)
+                            .build());
+        } catch (IOException e) {
+            String msg = messageSource.getMessage("acapy.unavailable");
+            log.error(msg, e);
+            throw new NetworkException(msg);
+        }
+    }
+
+    // manual connection flow
+    public void acceptConnection(@NonNull String connectionId) {
+        try {
+            ac.didExchangeAcceptRequest(connectionId, null);
+        } catch (IOException e) {
+            String msg = messageSource.getMessage("acapy.unavailable");
+            log.error(msg, e);
+            throw new NetworkException(msg);
         }
     }
 
