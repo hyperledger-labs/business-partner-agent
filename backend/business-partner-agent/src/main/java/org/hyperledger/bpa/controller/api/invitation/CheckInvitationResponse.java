@@ -15,27 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.stats;
+package org.hyperledger.bpa.controller.api.invitation;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BPAStats {
-    /**
-     * my DID
-     */
-    private String did;
-    /**
-     * If organization profile is already there
-     */
-    private Boolean profile;
-
-    private DashboardCounts totals;
-    private DashboardCounts periodTotals;
+public class CheckInvitationResponse {
+    private String label;
+    private String invitationBlock;
+    private Map<String, Object> invitation;
 }

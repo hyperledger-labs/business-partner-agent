@@ -15,27 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.stats;
+package org.hyperledger.bpa.api.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public class InvitationException extends RuntimeException {
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class BPAStats {
-    /**
-     * my DID
-     */
-    private String did;
-    /**
-     * If organization profile is already there
-     */
-    private Boolean profile;
+    private static final long serialVersionUID = -7932841480983510201L;
 
-    private DashboardCounts totals;
-    private DashboardCounts periodTotals;
+    public InvitationException(String message) {
+        super(message);
+    }
+
 }
