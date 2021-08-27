@@ -89,16 +89,6 @@ public class BPACredentialExchange {
     @Enumerated(EnumType.STRING)
     private ExchangeVersion exchangeVersion;
 
-    @Deprecated
-    @Nullable
-    @TypeDef(type = DataType.JSON)
-    private Map<String, Object> credentialOffer;
-
-    @Deprecated
-    @Nullable
-    @TypeDef(type = DataType.JSON)
-    private Map<String, Object> credentialProposal;
-
     @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> credential;

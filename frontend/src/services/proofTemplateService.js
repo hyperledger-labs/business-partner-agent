@@ -29,7 +29,7 @@ export default {
   },
   sendProofTemplate(id, partnerId) {
     return appAxios().put(
-      `${ApiRoutes.PROOF_TEMPLATES}/${id}/proof-request/${partnerId}`
+      `${ApiRoutes.PARTNERS}/${partnerId}/proof-request/${id}`
     );
   },
 };

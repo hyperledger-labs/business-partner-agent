@@ -9,3 +9,6 @@ ALTER TABLE partner_proof DROP COLUMN credential_definition_id;
 ALTER TABLE partner_proof DROP COLUMN issued_at;
 ALTER TABLE partner_proof DROP COLUMN issuer;
 DELETE FROM partner_proof;
+
+ALTER TABLE bpa_credential_exchange DROP COLUMN credential_offer;
+ALTER TABLE bpa_credential_exchange DROP COLUMN credential_proposal;

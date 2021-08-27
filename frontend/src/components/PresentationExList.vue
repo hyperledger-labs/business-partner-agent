@@ -35,10 +35,10 @@
         <span>
           {{ item.state ? item.state.replace("_", " ") : "" }}
         </span>
-        <v-icon v-if="item.valid" color="green">mdi-check</v-icon>
-        <v-icon v-if="isStateVerified && !item.valid" color="error"
-          >$vuetify.icons.connectionAlert</v-icon
-        >
+        <v-icon v-if="item.valid" color="green">$vuetify.icons.check</v-icon>
+        <v-icon v-if="isStateVerified(item) && !item.valid && !item.problemReport" color="error" small>
+          $vuetify.icons.connectionAlert
+        </v-icon>
         <v-tooltip v-if="item.problemReport" top>
           <template v-slot:activator="{ on, attrs }">
             <v-icon color="error" small v-bind="attrs" v-on="on">
@@ -171,9 +171,6 @@ export default {
     };
   },
   computed: {
-    isStateVerified() {
-      return this.record.state === "verified";
-    },
     isStateRequestReceived() {
       return this.record.state && this.record.state === "request_received";
     },
@@ -217,6 +214,9 @@ export default {
     closeItem() {
       this.dialog = false;
       this.record = null;
+    },
+    isStateVerified(item) {
+      return item && item.state === "verified";
     },
     async deleteItem() {
       try {
@@ -336,8 +336,6 @@ export default {
         }
 
         // Match to request
-        this.record.proofRequest.requestedAttributes;
-
         matchingCreds.forEach((cred) => {
           cred.presentationReferents.forEach((c) => {
             const attr = this.record.proofRequest.requestedAttributes[c];
