@@ -35,6 +35,7 @@ import {
   mdiBook,
   mdiBookRemove,
   mdiMagnify,
+  mdiTicketConfirmationOutline
 } from "@mdi/js";
 
 Vue.use(Vuetify);
@@ -88,6 +89,7 @@ export default new Vuetify({
       revoked: mdiBookRemove,
       search: mdiMagnify,
       dashboardGo: "fas fa-arrow-alt-circle-right",
+      invitation: mdiTicketConfirmationOutline,
     },
   },
   theme: {

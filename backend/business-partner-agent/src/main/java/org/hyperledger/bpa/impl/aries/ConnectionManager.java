@@ -34,17 +34,20 @@ import org.hyperledger.aries.api.connection.*;
 import org.hyperledger.aries.api.did_exchange.DidExchangeCreateRequestFilter;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
+import org.hyperledger.aries.api.out_of_band.ReceiveInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.bpa.api.exception.InvitationException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.controller.api.invitation.CheckInvitationResponse;
 import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
-import org.hyperledger.bpa.impl.MessageService;
+import org.hyperledger.bpa.impl.InvitationParser;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.notification.*;
-import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
+import org.hyperledger.bpa.model.Tag;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
@@ -55,6 +58,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -79,12 +83,6 @@ public class ConnectionManager {
     MyCredentialRepository myCredRepo;
 
     @Inject
-    MessageService messageService;
-
-    @Inject
-    Converter conv;
-
-    @Inject
     DidResolver didResolver;
 
     @Inject
@@ -95,6 +93,9 @@ public class ConnectionManager {
 
     @Inject
     ApplicationEventPublisher eventPublisher;
+
+    @Inject
+    InvitationParser invitationParser;
 
     /**
      * Creates a connection invitation to be used within a barcode
@@ -134,6 +135,46 @@ public class ConnectionManager {
         return mapper.valueToTree(invitation);
     }
 
+    public CheckInvitationResponse checkReceivedInvitation(@NonNull String invitationUrl) {
+        return invitationParser.checkInvitation(invitationUrl);
+    }
+
+    public void receiveInvitation(@NonNull String encodedInvitation, @Nullable String alias,
+            @Nullable List<Tag> tags, @Nullable Boolean trustPing) {
+        InvitationParser.Invitation invitation = invitationParser.parseInvitation(encodedInvitation);
+        if (invitation.isParsed()) {
+            if (invitation.getInvitationRequest() != null) {
+                try {
+                    ac.connectionsReceiveInvitation(invitation.getInvitationRequest(),
+                            ConnectionReceiveInvitationFilter.builder()
+                                    .alias(invitation.getInvitationRequest().getLabel())
+                                    .autoAccept(true)
+                                    .build())
+                            .ifPresent(persistPartner(alias, tags, trustPing));
+                } catch (IOException e) {
+                    String msg = messageSource.getMessage("acapy.unavailable");
+                    log.error(msg, e);
+                    throw new NetworkException(msg);
+                }
+            } else if (invitation.getInvitationMessage() != null) {
+                try {
+                    ac.outOfBandReceiveInvitation(invitation.getInvitationMessage(),
+                            ReceiveInvitationFilter.builder()
+                                    .alias(invitation.getInvitationMessage().getLabel())
+                                    .autoAccept(true)
+                                    .build())
+                            .ifPresent(persistPartner(alias, tags, trustPing));
+                } catch (IOException e) {
+                    String msg = messageSource.getMessage("acapy.unavailable");
+                    log.error(msg, e);
+                    throw new NetworkException(msg);
+                }
+            }
+        } else {
+            throw new InvitationException(invitation.getError());
+        }
+    }
+
     /**
      * Create a connection based on a did, e.g. did:web or did:indy.
      *
@@ -155,6 +196,7 @@ public class ConnectionManager {
         }
     }
 
+    // manual connection flow
     public void acceptConnection(@NonNull String connectionId) {
         try {
             ac.didExchangeAcceptRequest(connectionId, null);
@@ -320,5 +362,21 @@ public class ConnectionManager {
                         .autoAccept(Boolean.TRUE)
                         .build())
                 .orElseThrow();
+    }
+
+    private Consumer<ConnectionRecord> persistPartner(
+            @Nullable String alias, @Nullable List<Tag> tags, @Nullable Boolean trustPing) {
+        return connectionRecord -> partnerRepo.save(Partner
+                .builder()
+                .ariesSupport(Boolean.TRUE)
+                .alias(StringUtils.trimToNull(alias))
+                .connectionId(connectionRecord.getConnectionId())
+                .invitationMsgId(connectionRecord.getInvitationMsgId())
+                .did(didPrefix + UNKNOWN_DID)
+                .state(ConnectionState.INVITATION)
+                .incoming(Boolean.TRUE)
+                .tags(tags != null ? new HashSet<>(tags) : null)
+                .trustPing(trustPing != null ? trustPing : Boolean.TRUE)
+                .build());
     }
 }

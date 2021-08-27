@@ -174,7 +174,7 @@ export default {
         useOutOfBand: this.useOutOfBand,
       };
       this.$axios
-        .post(`${this.$apiBaseUrl}/partners/invitation`, partnerToAdd)
+        .post(`${this.$apiBaseUrl}/invitations`, partnerToAdd)
         .then((result) => {
           this.invitationURL = result.data.invitationUrl;
 
