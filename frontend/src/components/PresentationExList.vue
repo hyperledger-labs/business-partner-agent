@@ -36,7 +36,7 @@
           {{ item.state ? item.state.replace("_", " ") : "" }}
         </span>
         <v-icon v-if="item.valid" color="green">$vuetify.icons.check</v-icon>
-        <v-icon v-if="!item.valid && !item.problemReport" color="error" small>
+        <v-icon v-if="isStateVerified(item) && !item.valid && !item.problemReport" color="error" small>
           $vuetify.icons.connectionAlert
         </v-icon>
         <v-tooltip v-if="item.problemReport" top>
@@ -171,9 +171,6 @@ export default {
     };
   },
   computed: {
-    isStateVerified() {
-      return this.record.state === "verified";
-    },
     isStateRequestReceived() {
       return this.record.state && this.record.state === "request_received";
     },
@@ -216,6 +213,9 @@ export default {
     },
     closeItem() {
       this.dialog = false;
+    },
+    isStateVerified(item) {
+      return item && item.state === "verified";
     },
     async deleteItem() {
       try {
