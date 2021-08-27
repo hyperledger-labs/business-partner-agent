@@ -35,16 +35,13 @@
         <span>
           {{ item.state ? item.state.replace("_", " ") : "" }}
         </span>
-        <v-icon v-if="isComplete(item)" color="green">mdi-check</v-icon>
+        <v-icon v-if="item.valid" color="green">mdi-check</v-icon>
+        <v-icon v-if="isStateVerified && !item.valid" color="error"
+          >$vuetify.icons.connectionAlert</v-icon
+        >
         <v-tooltip v-if="item.problemReport" top>
           <template v-slot:activator="{ on, attrs }">
-            <v-icon
-              color="error"
-              small
-              v-bind="attrs"
-              v-on="on"
-              style="margin-bottom: 11px; margin-right: 15px"
-            >
+            <v-icon color="error" small v-bind="attrs" v-on="on">
               $vuetify.icons.connectionAlert
             </v-icon>
           </template>
@@ -52,9 +49,7 @@
         </v-tooltip>
       </template>
       <template v-slot:[`item.updatedAt`]="{ item }">
-        {{
-          item.updatedAt | formatDateLong
-        }}
+        {{ item.updatedAt | formatDateLong }}
       </template>
     </v-data-table>
     <v-dialog v-model="dialog" max-width="1000px">
@@ -122,6 +117,24 @@ import VBpaButton from "@/components/BpaButton";
 export default {
   props: {
     items: Array,
+    openItemById: String,
+  },
+  mounted() {
+    // Open Item directly. Is used for links from notifications/activity
+    if (this.openItemById) {
+      // items observable is typically not resolved yet. Then items is empty
+      const item = this.items.find((item) => item.id === this.openItemById);
+      if (item) {
+        this.openItem(item);
+      } else {
+        // Load record separately if items have not be resolved
+        proofExService.getProofExRecord(this.openItemById).then((resp) => {
+          if (resp.data) {
+            this.openItem(resp.data);
+          }
+        });
+      }
+    }
   },
   data: () => {
     return {
@@ -158,8 +171,11 @@ export default {
     };
   },
   computed: {
+    isStateVerified() {
+      return this.record.state === "verified";
+    },
     isStateRequestReceived() {
-      return this.record.state === "request_received";
+      return this.record.state && this.record.state === "request_received";
     },
     isReadyToApprove() {
       // FIXME: Works only with template not with raw proof request
@@ -177,6 +193,7 @@ export default {
         await proofExService.approveProofRequest(this.record.id, payload);
         EventBus.$emit("success", "Presentation request accepted");
         this.dialog = false;
+        this.$emit("changed");
       } catch (e) {
         EventBus.$emit("error", e);
       }
@@ -186,6 +203,7 @@ export default {
         await proofExService.declineProofRequest(this.record.id);
         EventBus.$emit("success", "Presentation request declined");
         this.dialog = false;
+        this.$emit("changed");
       } catch (e) {
         EventBus.$emit("error", e);
       }
@@ -214,11 +232,6 @@ export default {
         EventBus.$emit("error", e);
       }
     },
-    isComplete(item) {
-      // TOD: implement
-      item;
-      return false;
-    },
     addProofData() {
       // FIXME: Works only with template not with raw proof request
       if (this.record.proofData && this.record.proofTemplate) {
@@ -230,10 +243,21 @@ export default {
             )
           ) {
             attrGroup.attributes.map((attr) => {
-              attr.value = this.record.proofData[attrGroup.attributeGroupName].revealedAttributes[
-                attr.name
-              ];
+              attr.value = this.record.proofData[
+                attrGroup.attributeGroupName
+              ].revealedAttributes[attr.name];
             });
+          }
+          // Add credential definition
+          if (
+            Object.hasOwnProperty.call(
+              this.record.proofData[attrGroup.attributeGroupName],
+              "identifier"
+            )
+          ) {
+            attrGroup.identifier = this.record.proofData[
+              attrGroup.attributeGroupName
+            ].identifier;
           }
         });
       }

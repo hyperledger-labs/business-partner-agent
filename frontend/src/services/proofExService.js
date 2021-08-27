@@ -26,7 +26,7 @@ export default {
     );
   },
   getProofExRecord(id) {
-    return appAxios().post(`${ApiRoutes.PROOF_EXCHANGES}/${id}`);
+    return appAxios().get(`${ApiRoutes.PROOF_EXCHANGES}/${id}`);
   },
   deleteProofExRecord(id) {
     return appAxios().delete(`${ApiRoutes.PROOF_EXCHANGES}/${id}`);

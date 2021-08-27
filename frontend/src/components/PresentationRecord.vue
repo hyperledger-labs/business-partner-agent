@@ -8,6 +8,32 @@
 
 <template>
   <v-container>
+    <v-list-item>
+      <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
+        Role
+      </v-list-item-title>
+      <v-list-item-subtitle align="">
+        {{ record.role }}
+      </v-list-item-subtitle>
+    </v-list-item>
+
+    <v-list-item>
+      <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
+        State
+      </v-list-item-title>
+      <v-list-item-subtitle align="">
+        {{ record.state.replace("_", " ") }}
+      </v-list-item-subtitle>
+    </v-list-item>
+
+    <v-list-item>
+      <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
+        Request Name
+      </v-list-item-title>
+      <v-list-item-subtitle align="">
+        {{ record.proofTemplate.name }}
+      </v-list-item-subtitle>
+    </v-list-item>
     <!-- Timeline  -->
     <v-expansion-panels accordion flat>
       <v-expansion-panel>
@@ -41,7 +67,7 @@
 
     <!-- Content based on template data -->
 
-    <h4 class="mt-4">Requested Information: {{ record.proofTemplate.name }}</h4>
+    <h4 class="mt-4">Request Content:</h4>
 
     <attribute-group
       v-if="record.proofTemplate"

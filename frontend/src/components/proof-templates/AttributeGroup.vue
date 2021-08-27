@@ -29,6 +29,17 @@
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-container>
+            <v-list-item
+              v-if="Object.hasOwnProperty.call(attributeGroup, 'identifier')"
+              class="ml-n4 mb-4"
+            >
+              <v-list-item-title>
+                <strong>Issuer</strong>
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ attributeGroup.identifier.issuerLabel }}
+              </v-list-item-subtitle>
+            </v-list-item>
             <h4 class="mb-4">Data fields</h4>
             <v-data-table
               disable-sort
@@ -192,7 +203,7 @@ export default {
       }
 
       if (schema) {
-        return `${schema.label}<i>&nbsp;(${schema.schemaId})</i>`;
+        return `<strong>${schema.label}</strong><i>&nbsp;(${schema.schemaId})</i>`;
       } else if (schemaId) {
         return schemaId;
       } else {

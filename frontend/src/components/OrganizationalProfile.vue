@@ -184,7 +184,6 @@ export default {
         id: "",
         type: "",
       });
-      console.log(this.documentData.identifier);
     },
     deleteIdentifier(i) {
       this.documentData.identifier.splice(i, 1);

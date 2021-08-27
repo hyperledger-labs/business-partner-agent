@@ -150,11 +150,17 @@
         v-if="isLoadingPresExRecords"
         indeterminate
       ></v-progress-linear>
-      <PresentationExList v-if="isReady" v-bind:items="presentationExRecords" />
+      <PresentationExList
+        v-if="isReady"
+        v-bind:items="presentationExRecords"
+        v-bind:openItemById="presExId"
+        @changed="refreshPresentationRecords"
+      />
       <v-card-actions>
-        <v-bpa-button small color="secondary" @click="sendPresentation">{{
+        <!-- TODO: Implement based on Proof Template -->
+        <!-- <v-bpa-button small color="secondary" @click="sendPresentation">{{
           $t("view.partner.presentationExchanges.button.send")
-        }}</v-bpa-button>
+        }}</v-bpa-button> -->
         <v-bpa-button small color="primary" @click="requestPresentation">{{
           $t("view.partner.presentationExchanges.button.request")
         }}</v-bpa-button>
@@ -257,7 +263,10 @@ import store from "@/store";
 
 export default {
   name: "Partner",
-  props: ["id"],
+  props: {
+    id: String,
+    presExId: String,
+  },
   components: {
     VBpaButton,
     Profile,
