@@ -36,7 +36,7 @@
           {{ item.state ? item.state.replace("_", " ") : "" }}
         </span>
         <v-icon v-if="item.valid" color="green">$vuetify.icons.check</v-icon>
-        <v-icon v-if="!item.valid && !item.problemReport" color="error">
+        <v-icon v-if="!item.valid && !item.problemReport" color="error" small>
           $vuetify.icons.connectionAlert
         </v-icon>
         <v-tooltip v-if="item.problemReport" top>
