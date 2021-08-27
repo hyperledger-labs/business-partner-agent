@@ -56,9 +56,9 @@
         <lombok.version>1.18.20</lombok.version>
         <micronaut.version>2.5.12</micronaut.version>
         <micronaut.data.version>2.5.0</micronaut.data.version>
-        <micronaut.openapi.version>3.0.0</micronaut.openapi.version>
+        <micronaut.openapi.version>3.0.1</micronaut.openapi.version>
         <micronaut.security.version>2.5.0</micronaut.security.version>
-        <mockito.version>3.11.2</mockito.version>
+        <mockito.version>3.12.4</mockito.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <pmd.version>6.37.0</pmd.version>
         <spotbugs.version>4.2.3</spotbugs.version>

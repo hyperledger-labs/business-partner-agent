@@ -335,8 +335,6 @@ export default {
         }
 
         // Match to request
-        this.record.proofRequest.requestedAttributes;
-
         matchingCreds.forEach((cred) => {
           cred.presentationReferents.forEach((c) => {
             const attr = this.record.proofRequest.requestedAttributes[c];
