@@ -216,6 +216,7 @@ export default {
     },
     closeItem() {
       this.dialog = false;
+      this.record = null;
     },
     async deleteItem() {
       try {
