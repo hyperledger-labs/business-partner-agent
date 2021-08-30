@@ -13,6 +13,8 @@ The Business Partner Agent allows to manage and exchange master data between org
 
 The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Identity Stack, in particular [Hyperledger Indy](https://www.hyperledger.org/use/hyperledger-indy) and [Hyperledger Cloud Agent Python](https://github.com/hyperledger/aries-cloudagent-python).
 
+![](https://i.imgur.com/kz4s0gQ.png)
+
 ## Current Features
 
 - Attach a public organizational profile to your public DID (either did:indy/sov or did:web)
@@ -24,13 +26,7 @@ The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Ide
 
 A first alpha version of Business Partner Agent is available, see
 [Helm Chart](https://github.com/hyperledger-labs/business-partner-agent-chart) and [Docker images](https://github.com/orgs/hyperledger-labs/packages/container/package/business-partner-agent)
-It is not ready for production use.  Releases are in general considered "alpha", which means API may change at any time and we do not have explicit / planned system tests (See also [Publishing](PUBLISHING.md)).
-
-## Milestones
-
-*HEAVILY UNDER CONSTRUCTION* 
-
-See [milestone overview](https://github.com/hyperledger-labs/business-partner-agent/blob/gh-pages/MILESTONES.md) (Generated out of issues which are [labled with `epic`](https://github.com/hyperledger-labs/business-partner-agent/issues?q=is%3Aissue++label%3Aepic+) and attached to a [milestone](https://github.com/hyperledger-labs/business-partner-agent/milestones)).  
+It is not ready for production use.  Releases are in general considered "alpha", which means API may change at any time and we do not have explicit / planned system tests (See also [Publishing](PUBLISHING.md)). 
 
 # Getting Started
 
@@ -55,9 +51,9 @@ See [debugging docu](https://github.com/hyperledger-labs/business-partner-agent/
 
 # Documentation and Tutorials
 
-User documentation see [docs](./docs/README.md).
+User documentation see https://hyperledger-labs.github.io/business-partner-agent
 
-Lear how to contribute in [Contributing](CONTRIBUTING.md). You can also start by filing an issue.
+Learn how to contribute in [Contributing](CONTRIBUTING.md). You can also start by filing an issue.
 
 Regarding release process, we do not follow a strict process yet, nevertheless we follow the guidelines described in [Publishing](PUBLISHING.md).
 
