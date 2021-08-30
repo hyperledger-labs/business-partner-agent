@@ -124,8 +124,8 @@
 </template>
 
 <script>
+import { PresentationExchangeStates } from "@/constants";
 import AttributeGroup from "@/components/proof-templates/AttributeGroup";
-
 export default {
   name: "PresentationRecord",
   props: {
@@ -136,10 +136,10 @@ export default {
       return this.$store.state.expertMode;
     },
     isStateVerified() {
-      return this.record.state === "verified";
+      return this.record.state === PresentationExchangeStates.VERIFIED;
     },
     isStateProposalSent() {
-      return this.record.state === "proposal_sent";
+      return this.record.state === PresentationExchangeStates.PROPOSAL_SENT;
     },
   },
   methods: {},

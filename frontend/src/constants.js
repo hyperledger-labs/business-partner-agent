@@ -51,6 +51,17 @@ export const CredentialExchangeStates = Object.freeze({
   CREDENTIAL_ACKED: "credential_acked",
 });
 
+export const PresentationExchangeStates = Object.freeze({
+  PROPOSAL_SENT: "proposal_sent",
+  PROPOSAL_RECEIVED: "proposal_received",
+  REQUEST_SENT: "request_sent",
+  REQUEST_RECEIVED: "request_received",
+  PRESENTATION_SENT: "presentation_sent",
+  PRESENTATION_RECEIVED: "presentation_received",
+  VERIFIED: "verified",
+  PRESENTATION_ACKED: "presentation_acked",
+});
+
 export const PartnerStates = Object.freeze({
   INVITATION: {
     value: "invitation",

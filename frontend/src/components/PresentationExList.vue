@@ -115,6 +115,7 @@
 <script>
 import { proofExService } from "@/services";
 import { EventBus } from "@/main";
+import { PresentationExchangeStates } from "@/constants";
 import NewMessageIcon from "@/components/NewMessageIcon";
 import PresentationRecord from "@/components/PresentationRecord";
 import VBpaButton from "@/components/BpaButton";
@@ -176,7 +177,10 @@ export default {
   },
   computed: {
     isStateRequestReceived() {
-      return this.record.state && this.record.state === "request_received";
+      return (
+        this.record.state &&
+        this.record.state === PresentationExchangeStates.REQUEST_RECEIVED
+      );
     },
     isReadyToApprove() {
       // FIXME: Works only with template not with raw proof request
@@ -232,7 +236,7 @@ export default {
       this.record = {};
     },
     isStateVerified(item) {
-      return item && item.state === "verified";
+      return item && item.state === PresentationExchangeStates.VERIFIED;
     },
     async deleteItem() {
       try {
