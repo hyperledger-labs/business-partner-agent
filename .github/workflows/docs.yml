@@ -30,7 +30,7 @@ jobs:
           git add --all
           git config --local user.email "business-partner-agent[bot]@noreply.github.com"
           git config --local user.name "business-partner-agent[bot]"
-          git commit -m "[bot] docs generation" -a
+          git commit -m -s "[bot] docs generation" -a
       - name: Push changes
         uses: ad-m/github-push-action@v0.6.0
         with:
