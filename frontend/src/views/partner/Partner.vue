@@ -158,9 +158,9 @@
       />
       <v-card-actions>
         <!-- TODO: Implement based on Proof Template -->
-        <!-- <v-bpa-button small color="secondary" @click="sendPresentation">{{
+        <v-bpa-button small color="secondary" @click="sendPresentation">{{
           $t("view.partner.presentationExchanges.button.send")
-        }}</v-bpa-button> -->
+        }}</v-bpa-button>
         <v-bpa-button small color="primary" @click="requestPresentation">{{
           $t("view.partner.presentationExchanges.button.request")
         }}</v-bpa-button>

@@ -67,30 +67,32 @@
 
     <!-- Content based on template data -->
 
-    <h4 class="mt-4">Request Content:</h4>
+    <v-container v-if="!isStateProposalSent">
+      <h4 class="mt-4">Request Content:</h4>
 
-    <attribute-group
-      v-if="record.proofTemplate"
-      v-bind:requestData="record.proofTemplate.attributeGroups"
-    >
-    </attribute-group>
+      <attribute-group
+        v-if="record.proofTemplate"
+        v-bind:requestData="record.proofTemplate.attributeGroups"
+      >
+      </attribute-group>
 
-    <!-- Raw content if no template -->
-    <v-container v-else>
-      <v-alert type="warning" border="left">
-        Presentation Request could not be parsed into template
-      </v-alert>
-      <v-expansion-panels accordion flat>
-        <v-expansion-panel>
-          <v-expansion-panel-header
-            class="grey--text text--darken-2 font-weight-medium bg-light"
-            >Show raw request</v-expansion-panel-header
-          >
-          <v-expansion-panel-content class="bg-light">
-            <vue-json-pretty :data="record.proofRequest"></vue-json-pretty>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
+      <!-- Raw content if no template -->
+      <v-container v-else>
+        <v-alert type="warning" border="left">
+          Presentation Request could not be parsed into template
+        </v-alert>
+        <v-expansion-panels accordion flat>
+          <v-expansion-panel>
+            <v-expansion-panel-header
+              class="grey--text text--darken-2 font-weight-medium bg-light"
+              >Show raw request</v-expansion-panel-header
+            >
+            <v-expansion-panel-content class="bg-light">
+              <vue-json-pretty :data="record.proofRequest"></vue-json-pretty>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </v-container>
     </v-container>
 
     <!-- Valid/Invalid info for role verifier -->
@@ -135,6 +137,9 @@ export default {
     },
     isStateVerified() {
       return this.record.state === "verified";
+    },
+    isStateProposalSent() {
+      return this.record.state === "proposal_sent";
     },
   },
   methods: {},

@@ -180,13 +180,20 @@ export default {
     },
     isReadyToApprove() {
       // FIXME: Works only with template not with raw proof request
-      const array = this.record.proofTemplate.attributeGroups.map(
-        (attrGroup) => {
-          return Object.hasOwnProperty.call(attrGroup, "selectedCredential");
+      if (
+        Object.hasOwnProperty.call(this.record, "proofTemplate") &&
+        Object.hasOwnProperty.call(this.record.proofTemplate, "attributeGroups")
+      ) {
+        const array = this.record.proofTemplate.attributeGroups.map(
+          (attrGroup) => {
+            return Object.hasOwnProperty.call(attrGroup, "selectedCredential");
+          }
+        );
+        if (array.length > 0) {
+          return array.reduce((x, y) => x && y);
+        } else {
+          return false;
         }
-      );
-      if (array.length > 0) {
-        return array.reduce((x, y) => x && y);
       } else {
         return false;
       }
