@@ -65,34 +65,162 @@
       </v-expansion-panel>
     </v-expansion-panels>
 
-    <!-- Content based on template data -->
+    <!-- Request Content -->
+    <v-container class="mb-4">
+      <h4 class="my-4">Request Content:</h4>
+      <!-- Requested Attributes -->
 
-    <v-container v-if="!isStateProposalSent">
-      <h4 class="mt-4">Request Content:</h4>
-
-      <attribute-group
-        v-if="record.proofTemplate"
-        v-bind:requestData="record.proofTemplate.attributeGroups"
-      >
-      </attribute-group>
-
-      <!-- Raw content if no template -->
-      <v-container v-else>
-        <v-alert type="warning" border="left">
-          Presentation Request could not be parsed into template
-        </v-alert>
-        <v-expansion-panels accordion flat>
-          <v-expansion-panel>
-            <v-expansion-panel-header
-              class="grey--text text--darken-2 font-weight-medium bg-light"
-              >Show raw request</v-expansion-panel-header
+      <v-expansion-panels accordion flat>
+        <v-expansion-panel
+          v-for="([groupKey, group], idx) in Object.entries(
+            record.proofRequest.requestedAttributes
+          )"
+          :key="idx"
+        >
+          <v-expansion-panel-header
+            class="grey--text text--darken-2 font-weight-medium bg-light"
+            >{{ groupKey }}</v-expansion-panel-header
+          >
+          <v-expansion-panel-content class="bg-light">
+            <v-list-item
+              v-if="group.proofData && group.proofData.identifier"
+              class="ml-n4 mb-4"
             >
-            <v-expansion-panel-content class="bg-light">
-              <vue-json-pretty :data="record.proofRequest"></vue-json-pretty>
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-        </v-expansion-panels>
-      </v-container>
+              <v-list-item-title>
+                <strong>Issuer</strong>
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ group.proofData.identifier.issuerLabel }}
+              </v-list-item-subtitle>
+            </v-list-item>
+
+            <h4 class="mb-4">Data fields</h4>
+
+            <v-list-item v-for="name in names(group)" :key="name">
+              <v-list-item-title>
+                {{ name }}
+              </v-list-item-title>
+              <v-list-item-subtitle v-if="group.cvalues">
+                {{ group.cvalues[name] }}
+              </v-list-item-subtitle>
+              <v-list-item-subtitle v-else-if="group.proofData">
+                {{ group.proofData.revealedAttributes[name] }}
+              </v-list-item-subtitle>
+            </v-list-item>
+
+            <!-- Restrictions -->
+
+            <v-expansion-panels accordion flat class="ml-n6">
+              <v-expansion-panel>
+                <v-expansion-panel-header class="bg-light"
+                  ><strong>Restrictions</strong></v-expansion-panel-header
+                >
+
+                <v-expansion-panel-content class="bg-light">
+                  <v-list-item
+                    v-for="(restr, idy) in group.restrictions"
+                    :key="idy"
+                  >
+                    <v-list-item-title>
+                      <vue-json-pretty :data="restr"></vue-json-pretty>
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            </v-expansion-panels>
+
+            <div v-if="group.matchingCredentials">
+              <h4 class="mb-4">Select data for presentation</h4>
+              <v-select
+                label="Matching Credentials"
+                return-object
+                :items="group.matchingCredentials"
+                item-text="credentialInfo.credentialLabel"
+                v-model="group.selectedCredential"
+                outlined
+                @change="selectedCredential(group, $event)"
+                dense
+              ></v-select>
+            </div>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
+
+      <!-- Requested Predicates -->
+
+      <v-expansion-panels accordion flat>
+        <v-expansion-panel
+          v-for="([groupName, group], idx) in Object.entries(
+            record.proofRequest.requestedPredicates
+          )"
+          :key="idx"
+        >
+          <v-expansion-panel-header
+            class="grey--text text--darken-2 font-weight-medium bg-light"
+            >{{ groupName }}</v-expansion-panel-header
+          >
+          <v-expansion-panel-content class="bg-light">
+            <v-list-item
+              v-if="group.proofData && group.proofData.identifier"
+              class="ml-n4 mb-4"
+            >
+              <v-list-item-title>
+                <strong>Issuer</strong>
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ group.proofData.identifier.issuerLabel }}
+              </v-list-item-subtitle>
+            </v-list-item>
+
+            <h4 class="mb-4">Data fields</h4>
+
+            <v-list-item>
+              <v-list-item-title>
+                {{ group.name }} {{ Predicates[group.ptype] }}
+                {{ group.pvalue }}
+              </v-list-item-title>
+              <v-list-item-subtitle v-if="group.cvalues">
+                {{ group.cvalues[group.name] }}
+              </v-list-item-subtitle>
+              <v-list-item-subtitle v-else-if="group.proofData">
+              </v-list-item-subtitle>
+            </v-list-item>
+
+            <v-expansion-panels accordion flat class="ml-n6">
+              <v-expansion-panel>
+                <v-expansion-panel-header class="bg-light"
+                  ><strong>Restrictions</strong></v-expansion-panel-header
+                >
+
+                <v-expansion-panel-content class="bg-light">
+                  <v-list-item
+                    v-for="(restr, idy) in group.restrictions"
+                    :key="idy"
+                  >
+                    <v-list-item-title>
+                      <vue-json-pretty :data="restr"></vue-json-pretty>
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            </v-expansion-panels>
+
+            <div v-if="group.matchingCredentials">
+              <h4 class="mb-4">Select data for presentation</h4>
+              <v-select
+                label="Matching Credentials"
+                return-object
+                :items="group.matchingCredentials"
+                item-text="credentialInfo.credentialLabel"
+                v-model="group.selectedCredential"
+                outlined
+                @change="selectedCredential(group, $event)"
+                dense
+              ></v-select>
+            </div>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
     </v-container>
 
     <!-- Valid/Invalid info for role verifier -->
@@ -124,8 +252,8 @@
 </template>
 
 <script>
-import { PresentationExchangeStates } from "@/constants";
-import AttributeGroup from "@/components/proof-templates/AttributeGroup";
+import { PresentationExchangeStates, Predicates } from "@/constants";
+// import AttributeGroup from "@/components/proof-templates/AttributeGroup";
 export default {
   name: "PresentationRecord",
   props: {
@@ -142,14 +270,25 @@ export default {
       return this.record.state === PresentationExchangeStates.PROPOSAL_SENT;
     },
   },
-  methods: {},
+  methods: {
+    selectedCredential(group, credential) {
+      group.cvalues = {};
+      this.names(group).map((name) => {
+        group.cvalues[name] = credential.credentialInfo.attrs[name];
+      });
+    },
+    names(item) {
+      return item.names ? item.names : [item.name];
+    },
+  },
   data: () => {
     return {
       matchingCredentials: null,
+      Predicates,
     };
   },
   components: {
-    AttributeGroup,
+    // AttributeGroup,
   },
 };
 </script>

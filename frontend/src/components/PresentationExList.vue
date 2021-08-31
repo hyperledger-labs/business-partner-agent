@@ -115,7 +115,7 @@
 <script>
 import { proofExService } from "@/services";
 import { EventBus } from "@/main";
-import { PresentationExchangeStates } from "@/constants";
+import { PresentationExchangeStates, RequestTypes } from "@/constants";
 import NewMessageIcon from "@/components/NewMessageIcon";
 import PresentationRecord from "@/components/PresentationRecord";
 import VBpaButton from "@/components/BpaButton";
@@ -183,21 +183,14 @@ export default {
       );
     },
     isReadyToApprove() {
-      // FIXME: Works only with template not with raw proof request
-      if (
-        Object.hasOwnProperty.call(this.record, "proofTemplate") &&
-        Object.hasOwnProperty.call(this.record.proofTemplate, "attributeGroups")
-      ) {
-        const array = this.record.proofTemplate.attributeGroups.map(
-          (attrGroup) => {
-            return Object.hasOwnProperty.call(attrGroup, "selectedCredential");
-          }
-        );
-        if (array.length > 0) {
-          return array.reduce((x, y) => x && y);
-        } else {
-          return false;
-        }
+      if (Object.hasOwnProperty.call(this.record, "proofRequest")) {
+        const groupsWithCredentials = RequestTypes.map((type) => {
+          return Object.values(this.record.proofRequest[type]).map((group) => {
+            return Object.hasOwnProperty.call(group, "selectedCredential");
+          });
+        });
+        console.log(groupsWithCredentials.flat().reduce((x, y) => x && y));
+        return groupsWithCredentials.flat().reduce((x, y) => x && y);
       } else {
         return false;
       }
@@ -254,58 +247,44 @@ export default {
       }
     },
     addProofData() {
-      // FIXME: Works only with template not with raw proof request
-      if (this.record.proofData && this.record.proofTemplate) {
-        this.record.proofTemplate.attributeGroups.map((attrGroup) => {
-          if (
-            Object.hasOwnProperty.call(
-              this.record.proofData,
-              attrGroup.attributeGroupName
-            )
-          ) {
-            attrGroup.attributes.map((attr) => {
-              attr.value = this.record.proofData[
-                attrGroup.attributeGroupName
-              ].revealedAttributes[attr.name];
-            });
-          }
-          // Add credential definition
-          if (
-            Object.hasOwnProperty.call(
-              this.record.proofData[attrGroup.attributeGroupName],
-              "identifier"
-            )
-          ) {
-            attrGroup.identifier = this.record.proofData[
-              attrGroup.attributeGroupName
-            ].identifier;
-          }
+      if (Object.hasOwnProperty.call(this.record, "proofRequest")) {
+        RequestTypes.map((type) => {
+          Object.entries(this.record.proofRequest[type]).map(
+            ([groupName, group]) => {
+              if (
+                Object.hasOwnProperty.call(this.record.proofData, groupName)
+              ) {
+                group.proofData = this.record.proofData[groupName];
+              }
+            }
+          );
         });
       }
     },
     prepareApprovePayload() {
-      // FIXME: Works only with template not with raw proof request
       // based on ACA-Py structure https://github.com/hyperledger/aries-cloudagent-python/blob/a304568fc3238fe447eacca17d3dd6eb71545904/aries_cloudagent/protocols/present_proof/v1_0/manager.py#L244
       const payload = {
         requested_attributes: {},
         requested_predicates: {},
       };
-      const attrs = this.record.proofRequest.requestedAttributes;
-      const preds = this.record.proofRequest.requestedPredicates;
-      this.record.proofTemplate.attributeGroups.forEach((attrGroup) => {
-        if (Object.hasOwnProperty.call(attrs, attrGroup.attributeGroupName)) {
-          payload.requested_attributes[attrGroup.attributeGroupName] = {
-            cred_id: attrGroup.selectedCredential.credentialInfo.referent,
-            revealed: true,
-          };
-        } else if (
-          Object.hasOwnProperty.call(preds, attrGroup.attributeGroupName)
-        ) {
-          payload.requested_predicates[attrGroup.attributeGroupName] = {
-            cred_id: attrGroup.selectedCredential.credentialInfo.referent,
-          };
-        }
+
+      RequestTypes.map((type) => {
+        Object.entries(this.record.proofRequest[type]).map(
+          ([groupName, group]) => {
+            if (type === "requestedAttributes") {
+              payload.requested_attributes[groupName] = {
+                cred_id: group.selectedCredential.credentialInfo.referent,
+                revealed: true,
+              };
+            } else if (type === "requestedPredicates") {
+              payload.requested_predicates = {
+                cred_id: group.selectedCredential.credentialInfo.referent,
+              };
+            }
+          }
+        );
       });
+
       return payload;
     },
     // Checks if proof request can be fullfilled
@@ -339,22 +318,6 @@ export default {
       this.isWaitingForMatchingCreds = true;
       proofExService.getMatchingCredentials(this.record.id).then((result) => {
         const matchingCreds = result.data;
-
-        // Match to template
-        if (this.record.proofTemplate) {
-          this.record.proofTemplate.attributeGroups.map((attributeGroup) => {
-            attributeGroup.matchingCredentials = matchingCreds.filter(
-              (cred) => {
-                return (
-                  cred.presentationReferents.indexOf(
-                    attributeGroup.attributeGroupName
-                  ) > -1
-                );
-              }
-            );
-          });
-        }
-
         // Match to request
         matchingCreds.forEach((cred) => {
           cred.presentationReferents.forEach((c) => {

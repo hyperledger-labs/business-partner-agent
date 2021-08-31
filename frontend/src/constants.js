@@ -173,3 +173,12 @@ export const ActivityRoles = Object.freeze({
     label: i18n.t("constants.activityRoles.presentationExchange.verifier"),
   },
 });
+
+export const Predicates = Object.freeze({
+  LESS_THAN_OR_EQUAL_TO: "<=",
+  LESS_THAN: "<",
+  GREATER_THAN_OR_EQUAL_TO: ">=",
+  GREATER_THAN: ">",
+});
+
+export const RequestTypes = ["requestedAttributes", "requestedPredicates"];
