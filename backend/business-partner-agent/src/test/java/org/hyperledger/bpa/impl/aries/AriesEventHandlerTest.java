@@ -99,9 +99,9 @@ class AriesEventHandlerTest extends BaseTest {
 
         aeh.handleProof(exPropSent);
 
+        // event is ignored
         Optional<PartnerProof> dbProof = proofRepo.findByPresentationExchangeId(presentationExchangeId);
-        assertTrue(dbProof.isPresent());
-        assertEquals(PresentationExchangeState.PROPOSAL_SENT, dbProof.get().getState());
+        assertFalse(dbProof.isPresent());
 
         aeh.handleProof(exReqRec);
 
@@ -113,8 +113,7 @@ class AriesEventHandlerTest extends BaseTest {
 
         dbProof = proofRepo.findByPresentationExchangeId(presentationExchangeId);
         assertTrue(dbProof.isPresent());
-        // event is ignored
-        assertEquals(PresentationExchangeState.REQUEST_RECEIVED, dbProof.get().getState());
+        assertEquals(PresentationExchangeState.PRESENTATIONS_SENT, dbProof.get().getState());
 
         aeh.handleProof(exPresAcked);
 
@@ -147,8 +146,7 @@ class AriesEventHandlerTest extends BaseTest {
 
         dbProof = proofRepo.findByPresentationExchangeId(presentationExchangeId);
         assertTrue(dbProof.isPresent());
-        // event ignored
-        assertEquals(PresentationExchangeState.REQUEST_RECEIVED, dbProof.get().getState());
+        assertEquals(PresentationExchangeState.PRESENTATIONS_SENT, dbProof.get().getState());
 
         aeh.handleProof(exPresAcked);
 
