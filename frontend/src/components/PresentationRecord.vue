@@ -263,7 +263,7 @@ export default {
       const idx = Object.values(Restrictions).findIndex((restriction) => {
         return restriction.value === restrType;
       });
-      if (idx != -1) {
+      if (idx !== -1) {
         return Object.values(Restrictions)[idx].label;
       } else {
         return restrType;
