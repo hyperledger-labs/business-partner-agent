@@ -68,7 +68,7 @@
     </v-expansion-panels>
 
     <!-- Request Content -->
-    <v-container v-if="!isStateProposalSent" class="mb-4">
+    <template v-if="!isStateProposalSent">
       <h4 class="my-4">Request Content:</h4>
 
       <!-- Requested Attributes -->
@@ -100,21 +100,21 @@
 
               <h4 class="mb-4">Data fields</h4>
 
-              <div v-if="type === 'requestedAttributes'">
+              <template v-if="type === 'requestedAttributes'">
                 <v-list-item v-for="name in names(group)" :key="name">
                   <v-list-item-title>
-                    {{ toName(name) }}
+                    {{ name }}
                   </v-list-item-title>
                   <v-list-item-subtitle v-if="group.cvalues">
-                    {{ toName(group.cvalues[name]) }}
+                    {{ group.cvalues[name] }}
                   </v-list-item-subtitle>
                   <v-list-item-subtitle v-else-if="group.proofData">
                     {{ group.proofData.revealedAttributes[name] }}
                   </v-list-item-subtitle>
                 </v-list-item>
-              </div>
+              </template>
 
-              <div v-if="type === 'requestedPredicates'">
+              <template v-if="type === 'requestedPredicates'">
                 <v-list-item>
                   <v-list-item-title>
                     {{ group.name }} {{ Predicates[group.ptype] }}
@@ -126,7 +126,7 @@
                   <v-list-item-subtitle v-else-if="group.proofData">
                   </v-list-item-subtitle>
                 </v-list-item>
-              </div>
+              </template>
 
               <!-- Restrictions -->
 
@@ -146,15 +146,7 @@
                         :key="restrType"
                       >
                         <v-list-item-title>
-                          {{
-                            Object.values(Restrictions)[
-                              Object.values(Restrictions).findIndex(
-                                (restriction) => {
-                                  return restriction.value === restrType;
-                                }
-                              )
-                            ].label
-                          }}
+                          {{ toRestrictionLabel(restrType) }}
                         </v-list-item-title>
                         <v-list-item-subtitle>{{
                           restrValue
@@ -182,7 +174,7 @@
           </v-expansion-panel>
         </template>
       </v-expansion-panels>
-    </v-container>
+    </template>
 
     <!-- Valid/Invalid info for role verifier -->
 
@@ -198,7 +190,7 @@
 
     <!-- ExpertMode: Raw data -->
 
-    <v-expansion-panels v-if="expertMode" accordion flat>
+    <v-expansion-panels class="mt-4" v-if="expertMode" accordion flat>
       <v-expansion-panel>
         <v-expansion-panel-header
           class="grey--text text--darken-2 font-weight-medium bg-light"
@@ -267,12 +259,14 @@ export default {
     names(item) {
       return item.names ? item.names : [item.name];
     },
-    toName(name) {
-      if (name.startsWith("attr::")) {
-        const end = name.lastIndexOf("::");
-        return name.substring("attr::".length, end);
+    toRestrictionLabel(restrType) {
+      const idx = Object.values(Restrictions).findIndex((restriction) => {
+        return restriction.value === restrType;
+      });
+      if (idx != -1) {
+        return Object.values(Restrictions)[idx].label;
       } else {
-        return name;
+        return restrType;
       }
     },
   },
@@ -284,9 +278,7 @@ export default {
       RequestTypes,
     };
   },
-  components: {
-    // AttributeGroup,
-  },
+  components: {},
 };
 </script>
 
