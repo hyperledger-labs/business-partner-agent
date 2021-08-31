@@ -68,7 +68,7 @@
     </v-expansion-panels>
 
     <!-- Request Content -->
-    <v-container v-if="!isStateProposalSent" class="mb-4">
+    <template v-if="!isStateProposalSent">
       <h4 class="my-4">Request Content:</h4>
 
       <!-- Requested Attributes -->
@@ -100,7 +100,7 @@
 
               <h4 class="mb-4">Data fields</h4>
 
-              <div v-if="type === 'requestedAttributes'">
+              <template v-if="type === 'requestedAttributes'">
                 <v-list-item v-for="name in names(group)" :key="name">
                   <v-list-item-title>
                     {{ toName(name) }}
@@ -112,9 +112,9 @@
                     {{ group.proofData.revealedAttributes[name] }}
                   </v-list-item-subtitle>
                 </v-list-item>
-              </div>
+              </template>
 
-              <div v-if="type === 'requestedPredicates'">
+              <template v-if="type === 'requestedPredicates'">
                 <v-list-item>
                   <v-list-item-title>
                     {{ group.name }} {{ Predicates[group.ptype] }}
@@ -126,7 +126,7 @@
                   <v-list-item-subtitle v-else-if="group.proofData">
                   </v-list-item-subtitle>
                 </v-list-item>
-              </div>
+              </template>
 
               <!-- Restrictions -->
 
@@ -182,7 +182,7 @@
           </v-expansion-panel>
         </template>
       </v-expansion-panels>
-    </v-container>
+    </template>
 
     <!-- Valid/Invalid info for role verifier -->
 
@@ -198,7 +198,7 @@
 
     <!-- ExpertMode: Raw data -->
 
-    <v-expansion-panels v-if="expertMode" accordion flat>
+    <v-expansion-panels class="mt-4" v-if="expertMode" accordion flat>
       <v-expansion-panel>
         <v-expansion-panel-header
           class="grey--text text--darken-2 font-weight-medium bg-light"
@@ -284,9 +284,7 @@ export default {
       RequestTypes,
     };
   },
-  components: {
-    // AttributeGroup,
-  },
+  components: {},
 };
 </script>
 
