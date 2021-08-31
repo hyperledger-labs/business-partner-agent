@@ -22,7 +22,6 @@ import lombok.*;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
-import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.model.PartnerProof;
 
 import java.util.Map;
@@ -52,7 +51,6 @@ public class AriesProofExchange {
     /** revealed attributes by group */
     private JsonNode proofData;
     private Boolean valid;
-    private ProofTemplate proofTemplate;
     private PresentProofRequest.ProofRequest proofRequest;
     private String problemReport;
 

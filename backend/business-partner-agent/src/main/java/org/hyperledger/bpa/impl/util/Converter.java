@@ -25,6 +25,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -42,20 +43,20 @@ import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.PartnerAPI.PartnerCredential;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
-import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.impl.aries.CredentialInfoResolver;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.model.Partner;
-
-import io.micronaut.core.annotation.Nullable;
 import org.hyperledger.bpa.model.PartnerProof;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -183,7 +184,7 @@ public class Converter {
                 .id(myDoc.getId())
                 .createdDate(myDoc.getCreatedAt().toEpochMilli())
                 .updatedDate(myDoc.getUpdatedAt().toEpochMilli())
-                .documentData(fromMap(myDoc.getDocument(), JsonNode.class))
+                .documentData(myDoc.getDocument() != null ? fromMap(myDoc.getDocument(), JsonNode.class) : null)
                 .isPublic(myDoc.getIsPublic())
                 .type(myDoc.getType())
                 .typeLabel(resolveTypeLabel(myDoc.getType(), myDoc.getSchemaId()))
@@ -219,20 +220,9 @@ public class Converter {
 
     public AriesProofExchange toAPIObject(@NonNull PartnerProof p) {
         AriesProofExchange proof = AriesProofExchange.from(p);
-        ProofTemplate template = ProofTemplateConversion.requestToTemplate(p.getProofRequest());
-        // TODO always doing reverse conversion as the proof template does not have the
-        // group name set, as this is generated on the fly and never persisted we have
-        // to change the whole flow to get it. Once this is refactored we can consider
-        // using the code below
-//        ProofTemplate template;
-//        if (p.getProofTemplate() == null) {
-//            template = templateConversion.requestToTemplate(p.getProofRequest());
-//        } else {
-//            template = p.getProofTemplate() != null ? p.getProofTemplate().toRepresentation() : null;
-//        }
-        if (template != null) {
-            proof.setTypeLabel(template.getName());
-        }
+
+        proof.setTypeLabel(p.getProofRequest() != null ? p.getProofRequest().getName() : null);
+
         JsonNode proofData = null;
         try {
             if (p.getProof() != null) {
@@ -248,10 +238,9 @@ public class Converter {
             }
         } catch (IllegalArgumentException e) {
             log.warn("Not an attribute group");
-            proofData = fromMap(p.getProof(), JsonNode.class);
+            proofData = p.getProof() != null ? fromMap(p.getProof(), JsonNode.class) : null;
         }
         proof.setProofData(proofData);
-        proof.setProofTemplate(template);
         return proof;
     }
 

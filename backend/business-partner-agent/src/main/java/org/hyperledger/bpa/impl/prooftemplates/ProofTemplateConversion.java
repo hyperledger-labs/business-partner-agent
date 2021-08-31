@@ -15,23 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.hyperledger.bpa.impl.prooftemplates;
 
 import io.micronaut.core.annotation.NonNull;
-import io.micronaut.core.util.CollectionUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.PartnerException;
-import org.hyperledger.bpa.controller.api.prooftemplates.*;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.BPAProofTemplate;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
-import org.hyperledger.bpa.model.prooftemplate.ValueOperators;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.hyperledger.bpa.util.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -40,8 +35,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.Valid;
 import java.time.Clock;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -56,66 +51,6 @@ public class ProofTemplateConversion {
 
     @Inject
     SchemaService schemaService;
-
-    public static ProofTemplate requestToTemplate(PresentProofRequest.ProofRequest proofRequest) {
-        if (proofRequest == null) {
-            return null;
-        }
-        // TODO If not able to convert return JSON (advanced case)
-        List<AttributeGroup> attributeGroup = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(proofRequest.getRequestedAttributes())) {
-            proofRequest.getRequestedAttributes().forEach((groupName, attributes) -> {
-                AttributeGroup.AttributeGroupBuilder gb = AttributeGroup.builder();
-                gb.attributeGroupName(groupName);
-                if (StringUtils.isNotEmpty(attributes.getName())) {
-                    Attribute.AttributeBuilder ab = Attribute.builder();
-                    ab.name(attributes.getName());
-                    findMatchingPredicates(attributes.getName(), proofRequest.getRequestedPredicates())
-                            .ifPresent(ab::conditions);
-                    gb.attribute(ab.build());
-                } else {
-                    List<Attribute> bpaAttributes = new ArrayList<>();
-                    attributes.getNames().forEach(n -> {
-                        Attribute.AttributeBuilder ab = Attribute.builder();
-                        ab.name(n);
-                        findMatchingPredicates(n, proofRequest.getRequestedPredicates())
-                                .ifPresent(ab::conditions);
-                        bpaAttributes.add(ab.build());
-                    });
-                    gb.attributes(bpaAttributes);
-                }
-                gb.nonRevoked(attributes.getNonRevoked() != null && attributes.getNonRevoked().isSet());
-                if (CollectionUtils.isNotEmpty(attributes.getRestrictions())) {
-                    if (attributes.getRestrictions().size() > 1) {
-                        // TODO json fallback
-                        log.debug("should return json");
-                    }
-                    gb.schemaLevelRestrictions(SchemaRestrictions.fromProofRestrictions(
-                            PresentProofRequest.ProofRequest.ProofRestrictions.fromJsonObject(
-                                    attributes.getRestrictions().get(0))));
-                }
-                attributeGroup.add(gb.build());
-            });
-        }
-        return ProofTemplate.builder()
-                .name(proofRequest.getName())
-                .attributeGroups(attributeGroup)
-                .build();
-    }
-
-    private static Optional<List<ValueCondition>> findMatchingPredicates(@NonNull String name,
-            Map<String, PresentProofRequest.ProofRequest.ProofRequestedPredicates> requestedPredicates) {
-        if (CollectionUtils.isNotEmpty(requestedPredicates)) {
-            return Optional.of(requestedPredicates.values().stream()
-                    .filter(predicate -> name.equals(predicate.getName()))
-                    .map(predicate -> ValueCondition.builder()
-                            .operator(ValueOperators.fromPType(predicate.getPType()))
-                            .value(String.valueOf(predicate.getPValue()))
-                            .build())
-                    .collect(Collectors.toList()));
-        }
-        return Optional.empty();
-    }
 
     @NonNull
     public PresentProofRequest proofRequestViaVisitorFrom(@NonNull UUID partnerId,
@@ -143,7 +78,7 @@ public class ProofTemplateConversion {
                 .build();
     }
 
-    public Optional<String> resolveLedgerSchemaId(String databaseSchemaId) {
+    private Optional<String> resolveLedgerSchemaId(String databaseSchemaId) {
         return schemaService.getSchema(UUID.fromString(databaseSchemaId)).map(SchemaAPI::getSchemaId);
     }
 
