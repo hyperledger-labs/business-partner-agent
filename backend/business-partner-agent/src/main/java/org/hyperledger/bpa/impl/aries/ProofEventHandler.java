@@ -136,8 +136,7 @@ public class ProofEventHandler {
                             }
                         }, () -> {
                             // case: proof request from other BPA
-                            final PartnerProof pp = defaultProof(p.getId(), proof)
-                                    .setProofRequest(proof.getPresentationRequest());
+                            final PartnerProof pp = defaultProof(p.getId(), proof);
                             pProofRepo.save(pp);
                             eventPublisher.publishEventAsync(PresentationRequestReceivedEvent.builder()
                                     .partnerProof(pp)
@@ -178,6 +177,7 @@ public class ProofEventHandler {
                 .presentationExchangeId(proof.getPresentationExchangeId())
                 .threadId(proof.getThreadId())
                 .role(proof.getRole())
+                .proofRequest(proof.getPresentationRequest())
                 .exchangeVersion(ExchangeVersion.V1)
                 .pushStateChange(proof.getState(), Instant.now())
                 .build();
