@@ -13,7 +13,7 @@
         Role
       </v-list-item-title>
       <v-list-item-subtitle align="">
-        {{ record.role }}
+        {{ record.role | capitalize }}
       </v-list-item-subtitle>
     </v-list-item>
 
@@ -22,7 +22,7 @@
         State
       </v-list-item-title>
       <v-list-item-subtitle align="">
-        {{ record.state ? record.state.replace("_", " ") : "" }}
+        {{ (record.state ? record.state.replace("_", " ") : "") | capitalize }}
       </v-list-item-subtitle>
     </v-list-item>
 
@@ -55,7 +55,9 @@
                 </v-col>
                 <v-col>
                   <div class="text-caption">
-                    <strong> {{ item[0].replace("_", " ") }} </strong>
+                    <strong>
+                      {{ item[0].replace("_", " ") | capitalize }}
+                    </strong>
                   </div>
                 </v-col>
               </v-row>
