@@ -103,10 +103,10 @@
               <template v-if="type === 'requestedAttributes'">
                 <v-list-item v-for="name in names(group)" :key="name">
                   <v-list-item-title>
-                    {{ toName(name) }}
+                    {{ name }}
                   </v-list-item-title>
                   <v-list-item-subtitle v-if="group.cvalues">
-                    {{ toName(group.cvalues[name]) }}
+                    {{ group.cvalues[name] }}
                   </v-list-item-subtitle>
                   <v-list-item-subtitle v-else-if="group.proofData">
                     {{ group.proofData.revealedAttributes[name] }}
@@ -146,15 +146,7 @@
                         :key="restrType"
                       >
                         <v-list-item-title>
-                          {{
-                            Object.values(Restrictions)[
-                              Object.values(Restrictions).findIndex(
-                                (restriction) => {
-                                  return restriction.value === restrType;
-                                }
-                              )
-                            ].label
-                          }}
+                          {{ toRestrictionLabel(restrType) }}
                         </v-list-item-title>
                         <v-list-item-subtitle>{{
                           restrValue
@@ -267,12 +259,14 @@ export default {
     names(item) {
       return item.names ? item.names : [item.name];
     },
-    toName(name) {
-      if (name.startsWith("attr::")) {
-        const end = name.lastIndexOf("::");
-        return name.substring("attr::".length, end);
+    toRestrictionLabel(restrType) {
+      const idx = Object.values(Restrictions).findIndex((restriction) => {
+        return restriction.value === restrType;
+      });
+      if (idx != -1) {
+        return Object.values(Restrictions)[idx].label;
       } else {
-        return name;
+        return restrType;
       }
     },
   },
