@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeInitiator;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.impl.notification.PresentationRequestCompletedEvent;
 import org.hyperledger.bpa.impl.notification.PresentationRequestDeclinedEvent;
 import org.hyperledger.bpa.impl.notification.PresentationRequestReceivedEvent;
@@ -62,7 +63,8 @@ public class ProofEventHandler {
             handleProblemReport(proof);
         } else {
             // if not handled in the manager e.g. when sending the request
-            if (!proof.roleIsProverAndPresentationSent() && !proof.roleIsVerifierAndRequestSent()) {
+            if (!(proof.roleIsProver() && PresentationExchangeState.PROPOSAL_SENT.equals(proof.getState()))
+                    && !proof.roleIsVerifierAndRequestSent()) {
                 handleAll(proof);
             }
         }
@@ -176,6 +178,7 @@ public class ProofEventHandler {
                 .presentationExchangeId(proof.getPresentationExchangeId())
                 .threadId(proof.getThreadId())
                 .role(proof.getRole())
+                .exchangeVersion(ExchangeVersion.V1)
                 .pushStateChange(proof.getState(), Instant.now())
                 .build();
     }
