@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
+import { EventBus } from "@/main";
 import PartnerList from "@/components/PartnerList";
 export default {
   name: "Partners",

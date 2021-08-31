@@ -17,6 +17,8 @@
  */
 package org.hyperledger.bpa.impl.aries.config;
 
+import io.micronaut.cache.annotation.CacheInvalidate;
+import io.micronaut.cache.annotation.Cacheable;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
@@ -28,6 +30,7 @@ import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.model.BPARestrictions;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPARestrictionsRepository;
@@ -120,10 +123,12 @@ public class RestrictionsManager {
         return Optional.ofNullable(result.getConfig());
     }
 
+    @CacheInvalidate("issuer-label-cache")
     public void deleteById(@NonNull UUID id) {
         repo.deleteById(id);
     }
 
+    @CacheInvalidate("issuer-label-cache")
     public void updateLabel(@NonNull UUID id, String label) {
         repo.updateLabel(id, label);
     }
@@ -132,8 +137,32 @@ public class RestrictionsManager {
         return repo.findById(id);
     }
 
-    private String prefixIssuerDid(@NonNull String issuerDid) {
+    public String prefixIssuerDid(@NonNull String issuerDid) {
         return issuerDid.startsWith("did:") ? issuerDid : didPrefix + issuerDid;
+    }
+
+    /**
+     * Resolve the label of the trusted issuer either by did or credDefId
+     * 
+     * @param expression either did (qualified or unqualified) or credential
+     *                   definition id
+     * @return label of the trusted issuer if set
+     */
+    @Cacheable("issuer-label-cache")
+    public @Nullable String findIssuerLabelByDid(@Nullable String expression) {
+        String did = null;
+        if (AriesStringUtil.isCredDef(expression)) {
+            did = didPrefix + AriesStringUtil.credDefIdGetDid(expression);
+        } else if (StringUtils.isNotEmpty(expression)) {
+            did = prefixIssuerDid(expression);
+        }
+        if (did != null) {
+            Optional<BPARestrictions> restriction = repo.findByIssuerDid(did);
+            if (restriction.isPresent()) {
+                return restriction.get().getLabel();
+            }
+        }
+        return null;
     }
 
     @Data

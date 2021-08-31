@@ -18,8 +18,11 @@
 
 package org.hyperledger.bpa.impl;
 
+import io.micronaut.data.exceptions.DataAccessException;
 import lombok.AllArgsConstructor;
+import org.hyperledger.bpa.api.exception.DataPersistenceException;
 import org.hyperledger.bpa.api.exception.ProofTemplateException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.ProofManager;
 import org.hyperledger.bpa.model.BPAProofTemplate;
 import org.hyperledger.bpa.model.prooftemplate.ValueOperators;
@@ -41,10 +44,13 @@ import java.util.stream.StreamSupport;
 public class ProofTemplateManager {
 
     @Inject
-    private final BPAProofTemplateRepository repo;
+    BPAProofTemplateRepository repo;
 
     @Inject
-    private final ProofManager proofManager;
+    ProofManager proofManager;
+
+    @Inject
+    BPAMessageSource.DefaultMessageSource ms;
 
     public void invokeProofRequestByTemplate(@NotNull UUID id, @NotNull UUID partnerId) {
         Optional<BPAProofTemplate> proofTemplate = repo.findById(id);
@@ -65,7 +71,11 @@ public class ProofTemplateManager {
     }
 
     public void removeProofTemplate(UUID templateId) {
-        repo.deleteById(templateId);
+        try {
+            repo.deleteById(templateId);
+        } catch (DataAccessException e) {
+            throw new DataPersistenceException(ms.getMessage("api.proof.template.constraint.violation"));
+        }
     }
 
     public Set<String> getKnownConditionOperators() {

@@ -59,139 +59,15 @@
       <v-divider></v-divider>
 
       <!-- Attribute Groups -->
-      <v-container>
-        <v-list-item>
-          <v-list-item-content>
-            <v-list-item-title>Attribute Groups</v-list-item-title>
-            <v-list-item-subtitle
-              >Description of what attribute groups are...
-            </v-list-item-subtitle>
-
-            <v-expansion-panels>
-              <v-expansion-panel
-                class="my-5"
-                v-for="(attributeGroup, idx) in proofTemplate.attributeGroups"
-                :key="idx"
-              >
-                <v-expansion-panel-header>
-                  <span v-html="renderSchemaLabelId(attributeGroup)"></span>
-                </v-expansion-panel-header>
-                <v-expansion-panel-content>
-                  <v-container>
-                    <h4>Attributes</h4>
-                    <v-data-table
-                      disable-sort
-                      :headers="attributeGroupHeaders"
-                      :items="attributeGroup.attributes"
-                      item-key="name"
-                      class="elevation-1"
-                      show-expand
-                      hide-default-footer
-                    >
-                      <template
-                        v-slot:expanded-item="{ attributeGroupHeaders, item }"
-                      >
-                        <td :colspan="attributeConditionHeaders.length">
-                          <v-data-table
-                            disable-sort
-                            class="sub-table elevation-0"
-                            :headers="attributeConditionHeaders"
-                            :items="item.conditions"
-                            hide-default-footer
-                          />
-                        </td>
-                      </template>
-                    </v-data-table>
-                  </v-container>
-
-                  <v-container>
-                    <h4>Restrictions</h4>
-                    <v-simple-table>
-                      <tbody>
-                        <tr
-                          v-if="attributeGroup.schemaLevelRestrictions.schemaId"
-                        >
-                          <td>Schema ID</td>
-                          <td>
-                            {{
-                              attributeGroup.schemaLevelRestrictions.schemaId
-                            }}
-                          </td>
-                        </tr>
-                        <tr
-                          v-if="
-                            attributeGroup.schemaLevelRestrictions.schemaName
-                          "
-                        >
-                          <td>Schema Name</td>
-                          <td>
-                            {{
-                              attributeGroup.schemaLevelRestrictions.schemaName
-                            }}
-                          </td>
-                        </tr>
-                        <tr
-                          v-if="
-                            attributeGroup.schemaLevelRestrictions.schemaVersion
-                          "
-                        >
-                          <td>Schema Version</td>
-                          <td>
-                            {{
-                              attributeGroup.schemaLevelRestrictions
-                                .schemaVersion
-                            }}
-                          </td>
-                        </tr>
-                        <tr
-                          v-if="
-                            attributeGroup.schemaLevelRestrictions
-                              .schemaIssuerDid
-                          "
-                        >
-                          <td>Schema Issuer DID</td>
-                          <td>
-                            {{
-                              attributeGroup.schemaLevelRestrictions
-                                .schemaIssuerDid
-                            }}
-                          </td>
-                        </tr>
-                        <tr
-                          v-if="
-                            attributeGroup.schemaLevelRestrictions
-                              .credentialDefinitionId
-                          "
-                        >
-                          <td>Credential Definition ID</td>
-                          <td>
-                            {{
-                              attributeGroup.schemaLevelRestrictions
-                                .credentialDefinitionId
-                            }}
-                          </td>
-                        </tr>
-                        <tr
-                          v-if="
-                            attributeGroup.schemaLevelRestrictions.issuerDid
-                          "
-                        >
-                          <td>Issuer DID</td>
-                          <td>
-                            {{
-                              attributeGroup.schemaLevelRestrictions.issuerDid
-                            }}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </v-simple-table>
-                  </v-container>
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-            </v-expansion-panels>
-          </v-list-item-content>
-        </v-list-item>
-      </v-container>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title>Data to be requested</v-list-item-title>
+          <v-list-item-subtitle>Grouped by Schema </v-list-item-subtitle>
+          <attribute-group
+            v-bind:data="proofTemplate.attributeGroups"
+          ></attribute-group>
+        </v-list-item-content>
+      </v-list-item>
 
       <!-- Proof Templates Actions -->
       <v-card-actions>
@@ -210,6 +86,7 @@
 
 <script>
 import { EventBus } from "@/main";
+import AttributeGroup from "@/components/proof-templates/AttributeGroup";
 import proofTemplateService from "@/services/proofTemplateService";
 import VBpaButton from "@/components/BpaButton";
 
@@ -220,30 +97,9 @@ export default {
       type: String,
       required: false,
     },
-    attributeGroupHeaders: {
-      type: Array,
-      default: () => [
-        {
-          text: "name",
-          value: "name",
-        },
-      ],
-    },
-    attributeConditionHeaders: {
-      type: Array,
-      default: () => [
-        {
-          text: "operator",
-          value: "operator",
-        },
-        {
-          text: "value",
-          value: "value",
-        },
-      ],
-    },
   },
   components: {
+    AttributeGroup,
     VBpaButton,
   },
   created() {
@@ -268,12 +124,6 @@ export default {
   },
   watch: {},
   methods: {
-    renderSchemaLabelId(attributeGroup) {
-      const schema = this.$store.getters.getSchemas.find(
-        (s) => s.id === attributeGroup.schemaId
-      );
-      return `${schema.label}<i>&nbsp;(${schema.schemaId})</i>`;
-    },
     deleteProofTemplate() {
       proofTemplateService
         .deleteProofTemplate(this.proofTemplate.id)

@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.hyperledger.bpa.impl.prooftemplates;
 
 import io.micronaut.core.annotation.NonNull;
@@ -24,7 +23,8 @@ import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
-import org.hyperledger.bpa.model.*;
+import org.hyperledger.bpa.model.BPAProofTemplate;
+import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.repository.PartnerRepository;
@@ -78,7 +78,7 @@ public class ProofTemplateConversion {
                 .build();
     }
 
-    public Optional<String> resolveLedgerSchemaId(String databaseSchemaId) {
+    private Optional<String> resolveLedgerSchemaId(String databaseSchemaId) {
         return schemaService.getSchema(UUID.fromString(databaseSchemaId)).map(SchemaAPI::getSchemaId);
     }
 

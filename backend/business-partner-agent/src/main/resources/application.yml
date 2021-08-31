@@ -61,6 +61,8 @@ micronaut:
       expire-after-write: 1d
     schema-label-cache:
       expire-after-write: 1d
+    issuer-label-cache:
+      expire-after-write: 1d
   executors:
     io:
       type: fixed

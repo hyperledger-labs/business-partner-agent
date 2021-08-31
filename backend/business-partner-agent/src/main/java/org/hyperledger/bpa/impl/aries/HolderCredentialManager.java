@@ -40,8 +40,8 @@ import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConvert
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.AriesCredential;
-import org.hyperledger.bpa.api.aries.AriesCredential.AriesCredentialBuilder;
 import org.hyperledger.bpa.api.aries.ProfileVC;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
@@ -163,7 +163,7 @@ public class HolderCredentialManager {
     }
 
     private AriesCredential buildAriesCredential(@NonNull MyCredential dbCred) {
-        final AriesCredentialBuilder myCred = AriesCredential.fromMyCredential(dbCred);
+        final AriesCredential.AriesCredentialBuilder myCred = AriesCredential.fromMyCredential(dbCred);
         if (dbCred.getCredential() != null) {
             final Credential ariesCred = conv.fromMap(dbCred.getCredential(), Credential.class);
             myCred
@@ -286,6 +286,7 @@ public class HolderCredentialManager {
                 .credential(conv.toMap(credEx.getCredential()))
                 .label(label)
                 .issuer(resolveIssuer(credEx.getCredential()))
+                .exchangeVersion(ExchangeVersion.V1)
                 .build();
         MyCredential dbCredential = credRepo.save(dbCred);
         fireCredentialAddedEvent(dbCredential);
@@ -299,6 +300,7 @@ public class HolderCredentialManager {
                     .credentialExchangeId(credEx.getCredExId())
                     .referent(credEx.getCredExId())
                     .state(CredentialExchangeState.fromV2(credEx.getState()))
+                    .exchangeVersion(ExchangeVersion.V2)
                     .build();
             credRepo.save(dbCred);
         });

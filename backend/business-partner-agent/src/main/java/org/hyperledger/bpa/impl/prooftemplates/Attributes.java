@@ -46,6 +46,8 @@ class Attributes {
         PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder builder = PresentProofRequest.ProofRequest.ProofRequestedAttributes
                 .builder()
                 .names(names)
+                // TODO only set when restriction is set, but then name has to be set for each
+                // attribute
                 .restriction(restrictionsBuilder.schemaId(schemaId).build().toJsonObject());
 
         builderSink.accept(schemaId, revocationApplicator.applyOn(builder).build());

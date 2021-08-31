@@ -45,8 +45,13 @@ import java.util.stream.Collectors;
 public class ProofTemplateController {
 
     @Inject
-    private ProofTemplateManager proofTemplateManager;
+    ProofTemplateManager proofTemplateManager;
 
+    /**
+     * List configured templates
+     * 
+     * @return list of {@link ProofTemplate}
+     */
     @Get
     public HttpResponse<List<ProofTemplate>> listProofTemplates() {
         return HttpResponse.ok(
@@ -55,6 +60,12 @@ public class ProofTemplateController {
                         .collect(Collectors.toList()));
     }
 
+    /**
+     * Get template by id
+     * 
+     * @param id proof template id
+     * @return {@link ProofTemplate}
+     */
     @Get("/{id}")
     public HttpResponse<ProofTemplate> getProofTemplateForId(@PathVariable @ValidUUID @NotNull String id) {
         Optional<BPAProofTemplate> proofTemplate = proofTemplateManager.getProofTemplate(UUID.fromString(id));
@@ -65,6 +76,12 @@ public class ProofTemplateController {
         }
     }
 
+    /**
+     * Add a new proof template
+     * 
+     * @param template {@link ProofTemplate}
+     * @return {@link ProofTemplate}
+     */
     @Post
     public HttpResponse<ProofTemplate> addProofTemplate(@Valid @Body ProofTemplate template) {
         if (template.getId() == null) {
@@ -79,19 +96,23 @@ public class ProofTemplateController {
     // TODO add possibility to update a template, because we might refer to
     // templates via FK, updates have to create new entities.
 
+    /**
+     * List configured proof condition operators
+     *
+     * @return list of
+     *         {@link org.hyperledger.bpa.model.prooftemplate.ValueOperators}
+     */
     @Get("/known-condition-operators")
     public HttpResponse<Set<String>> listKnownConditionOperators() {
         return HttpResponse.ok(proofTemplateManager.getKnownConditionOperators());
     }
 
-    @Put("/{id}/proof-request/{partnerId}")
-    public HttpResponse<Void> invokeProofRequestByTemplate(
-            @PathVariable @ValidUUID @NotNull String id,
-            @PathVariable @ValidUUID @NotNull String partnerId) {
-        proofTemplateManager.invokeProofRequestByTemplate(UUID.fromString(id), UUID.fromString(partnerId));
-        return HttpResponse.ok();
-    }
-
+    /**
+     * Delete proof template by id
+     * 
+     * @param id proof template id
+     * @return Http Status
+     */
     @Delete("/{id}")
     public HttpResponse<Void> removeProofTemplate(@PathVariable @ValidUUID @NotNull String id) {
         proofTemplateManager.removeProofTemplate(UUID.fromString(id));

@@ -34,18 +34,20 @@ import java.util.List;
 public class AttributeGroup {
     @NotNull
     @ValidUUID
-    String schemaId;
+    private String schemaId;
+
+    private String attributeGroupName;
 
     @Singular
     @Valid
     @NotNull
-    List<Attribute> attributes;
+    private List<Attribute> attributes;
 
     @NotNull
     @Builder.Default
-    Boolean nonRevoked = Boolean.FALSE;
+    private Boolean nonRevoked = Boolean.FALSE;
     @NotNull
     @Builder.Default
     @Valid
-    SchemaRestrictions schemaLevelRestrictions = SchemaRestrictions.builder().build();
+    private SchemaRestrictions schemaLevelRestrictions = SchemaRestrictions.builder().build();
 }

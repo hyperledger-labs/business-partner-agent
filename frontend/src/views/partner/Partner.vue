@@ -8,7 +8,8 @@
 
 <template>
   <v-container>
-    <v-card class="mx-auto">
+    <v-card class="mx-auto mb-4">
+      <!-- Title Bar -->
       <v-card-title class="bg-light">
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>$vuetify.icons.prev</v-icon>
@@ -26,7 +27,7 @@
             <v-icon small dark>$vuetify.icons.identity</v-icon>
           </v-btn>
           <span
-              class="grey--text text--darken-2 font-weight-medium text-caption pl-1 pr-4"
+            class="grey--text text--darken-2 font-weight-medium text-caption pl-1 pr-4"
             >{{ partner.did }}</span
           >
           <v-dialog v-model="updatePartnerDialog" max-width="600px">
@@ -62,6 +63,7 @@
           </v-btn>
         </v-layout>
       </v-card-title>
+      <!-- Title Bar -->
       <v-progress-linear v-if="isLoading" indeterminate></v-progress-linear>
 
       <v-card-text>
@@ -111,132 +113,109 @@
             <v-row>{{ $t("view.partner.requestSentSubtitle") }}</v-row>
           </v-banner>
         </template>
+
         <Profile v-if="isReady" v-bind:partner="partner"></Profile>
-        <v-row v-if="partner.ariesSupport" class="mx-4">
-          <v-col cols="4">
-            <v-row>
-              <p class="grey--text text--darken-2 font-weight-medium">
-                {{ $t("view.partner.receivedPresentations.title") }}
-              </p>
-            </v-row>
-            <v-row>{{ $t("view.partner.receivedPresentations.text") }}</v-row>
-            <v-row class="mt-4">
-              <v-btn small @click="requestPresentation" :disabled="!isActive">{{
-                $t("view.partner.receivedPresentations.button")
-              }}</v-btn>
-            </v-row>
-          </v-col>
-          <v-col cols="8">
-            <v-card flat>
-              <PresentationList
-                v-if="isReady"
-                v-bind:credentials="presentationsReceived"
-                v-bind:headers="headersReceived"
-                v-on:removedItem="removePresentationReceived"
-                :expandable="false"
-              ></PresentationList>
-            </v-card>
-          </v-col>
-        </v-row>
-        <v-row class="mx-4">
-          <v-divider></v-divider>
-        </v-row>
-        <v-row v-if="partner.ariesSupport" class="mx-4">
-          <v-col cols="4">
-            <v-row>
-              <p class="grey--text text--darken-2 font-weight-medium">
-                {{ $t("view.partner.sentPresentations.title") }}
-              </p>
-            </v-row>
-            <v-row>{{ $t("view.partner.sentPresentations.text") }}</v-row>
-            <v-row class="mt-4">
-              <v-btn small @click="sendPresentation" :disabled="!isActive">
-                {{ $t("view.partner.sentPresentations.button") }}</v-btn
-              >
-            </v-row>
-          </v-col>
-          <v-col cols="8">
-            <PresentationList
-              v-if="isReady"
-              v-bind:credentials="presentationsSent"
-              v-bind:headers="headersSent"
-              v-on:removedItem="removePresentationSent"
-              :expandable="false"
-            ></PresentationList>
-          </v-col>
-        </v-row>
-        <v-row class="mx-4">
-          <v-divider></v-divider>
-        </v-row>
-        <v-row v-if="partner.ariesSupport" class="mx-4">
-          <v-col cols="4">
-            <v-row>
-              <p class="grey--text text--darken-2 font-weight-medium">
-                {{ $t("view.partner.issuedCredentials.title") }}
-              </p>
-            </v-row>
-            <v-row>{{ $t("view.partner.issuedCredentials.text") }}</v-row>
-            <v-row class="mt-4">
-              <v-dialog
-                v-model="issueCredentialDialog"
-                persistent
-                max-width="600px"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn small v-bind="attrs" v-on="on">{{
-                    $t("view.partner.issuedCredentials.button")
-                  }}</v-btn>
-                </template>
-                <IssueCredential
-                  :partnerId="id"
-                  @success="onCredentialIssued"
-                  @cancelled="issueCredentialDialog = false"
-                >
-                </IssueCredential>
-              </v-dialog>
-            </v-row>
-          </v-col>
-          <v-col cols="8">
-            <CredExList
-              v-if="isReady"
-              v-bind:items="issuedCredentials"
-              v-bind:headers="headersIssued"
-            ></CredExList>
-          </v-col>
-        </v-row>
-        <v-row v-if="partner.ariesSupport" class="mx-4">
-          <v-col cols="4">
-            <v-row>
-              <p class="grey--text text--darken-2 font-weight-medium">
-                {{ $t("view.partner.presentationRequests.title") }}
-              </p>
-            </v-row>
-            <v-row>{{ $t("view.partner.presentationRequests.text") }}</v-row>
-          </v-col>
-          <v-col cols="8">
-            <PresentationRequestList
-              v-if="isReady"
-              v-bind:presentationRequests="presentationRequests"
-              v-bind:headers="headersPresentationRequest"
-              v-on:removedItem="removePresentationRequest"
-              v-on:responseSuccess="presentationRequestSuccess"
-            ></PresentationRequestList>
-          </v-col>
-        </v-row>
       </v-card-text>
 
+      <v-card-actions> </v-card-actions>
+      <v-expansion-panels v-if="expertMode" accordion flat>
+        <v-expansion-panel>
+          <v-expansion-panel-header
+            class="grey--text text--darken-2 font-weight-medium bg-light"
+            >{{ $t("showRawData") }}</v-expansion-panel-header
+          >
+          <v-expansion-panel-content class="bg-light">
+            <vue-json-pretty :data="rawData"></vue-json-pretty>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
+    </v-card>
+
+    <!-- Presentation Exchanges -->
+
+    <v-card v-if="partner.ariesSupport" class="mb-4">
+      <v-card-title class="bg-light">
+        {{ $t("view.partner.presentationExchanges.title") }}
+        <v-layout justify-end>
+          <v-bpa-button
+            color="primary"
+            icon
+            @click="refreshPresentationRecords"
+          >
+            <v-icon dark>$vuetify.icons.refresh</v-icon>
+          </v-bpa-button>
+        </v-layout>
+      </v-card-title>
+      <v-progress-linear
+        v-if="isLoadingPresExRecords"
+        indeterminate
+      ></v-progress-linear>
+      <PresentationExList
+        v-if="isReady"
+        v-bind:items="presentationExRecords"
+        v-bind:openItemById="presExId"
+        @changed="refreshPresentationRecords"
+      />
       <v-card-actions>
-        <v-expansion-panels v-if="expertMode" accordion flat>
-          <v-expansion-panel>
-            <v-expansion-panel-header
-              class="grey--text text--darken-2 font-weight-medium bg-light"
-              >{{ $t("showRawData") }}</v-expansion-panel-header
-            >
-            <v-expansion-panel-content class="bg-light">
-              <vue-json-pretty :data="rawData"></vue-json-pretty>
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-        </v-expansion-panels>
+        <!-- TODO: Implement based on Proof Template -->
+        <v-bpa-button small color="secondary" @click="sendPresentation">{{
+          $t("view.partner.presentationExchanges.button.send")
+        }}</v-bpa-button>
+        <v-bpa-button small color="primary" @click="requestPresentation">{{
+          $t("view.partner.presentationExchanges.button.request")
+        }}</v-bpa-button>
+      </v-card-actions>
+      <v-expansion-panels v-if="expertMode" accordion flat>
+        <v-expansion-panel>
+          <v-expansion-panel-header
+            class="grey--text text--darken-2 font-weight-medium bg-light"
+            >{{ $t("showRawData") }}</v-expansion-panel-header
+          >
+          <v-expansion-panel-content class="bg-light">
+            <vue-json-pretty :data="presentationExRecords"></vue-json-pretty>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
+    </v-card>
+
+    <!-- Credential Exchanges -->
+
+    <v-card v-if="partner.ariesSupport" class="mb-4">
+      <v-card-title class="bg-light"
+        >{{ $t("view.partner.credentialExchanges.title") }}
+        <v-layout justify-end>
+          <v-bpa-button
+            color="primary"
+            icon
+            @click="refreshIssuedCredentialRecords"
+          >
+            <v-icon dark>$vuetify.icons.refresh</v-icon>
+          </v-bpa-button>
+        </v-layout>
+      </v-card-title>
+      <v-progress-linear
+        v-if="isLoadingCredExRecords"
+        indeterminate
+      ></v-progress-linear>
+      <CredExList
+        v-if="isReady"
+        v-bind:items="issuedCredentials"
+        v-bind:headers="headersIssued"
+      ></CredExList>
+      <v-card-actions>
+        <v-dialog v-model="issueCredentialDialog" persistent max-width="600px">
+          <template v-slot:activator="{ on, attrs }">
+            <v-bpa-button color="primary" small v-bind="attrs" v-on="on">{{
+              $t("view.partner.credentialExchanges.button")
+            }}</v-bpa-button>
+          </template>
+          <IssueCredential
+            :partnerId="id"
+            @success="onCredentialIssued"
+            @cancelled="issueCredentialDialog = false"
+          >
+          </IssueCredential>
+        </v-dialog>
       </v-card-actions>
     </v-card>
 
@@ -270,37 +249,31 @@
 
 <script>
 import Profile from "@/components/Profile";
-import PresentationList from "@/components/PresentationList";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
-import { CredentialTypes, PartnerStates } from "../constants";
-import {
-  getPartnerProfile,
-  getPartnerState,
-} from "@/utils/partnerUtils";
-import { EventBus } from "../main";
-import {
-  sentHeaders,
-  receivedHeaders,
-} from "@/components/tableHeaders/PartnerHeaders";
-import { issuerService } from "@/services";
+import { CredentialTypes, PartnerStates } from "@/constants";
+import { getPartnerProfile, getPartnerState } from "@/utils/partnerUtils";
+import { EventBus } from "@/main";
+import { issuerService, partnerService } from "@/services";
 import CredExList from "@/components/CredExList";
+import PresentationExList from "@/components/PresentationExList";
 import IssueCredential from "@/components/IssueCredential";
-import PresentationRequestList from "@/components/PresentationRequestList";
 import UpdatePartner from "@/components/UpdatePartner";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
 
 export default {
   name: "Partner",
-  props: ["id"],
+  props: {
+    id: String,
+    presExId: String,
+  },
   components: {
     VBpaButton,
     Profile,
-    PresentationList,
+    PresentationExList,
     PartnerStateIndicator,
     CredExList,
     IssueCredential,
-    PresentationRequestList,
     UpdatePartner,
   },
   created() {
@@ -308,13 +281,15 @@ export default {
     this.getPartner();
     this.getPresentationRecords();
     this.getIssuedCredentials(this.id);
-    this.$store.commit("partnerNotificationSeen", {id: this.id});
+    this.$store.commit("partnerNotificationSeen", { id: this.id });
   },
   data: () => {
     return {
       isReady: false,
       isBusy: false,
       isLoading: true,
+      isLoadingCredExRecords: true,
+      isLoadingPresExRecords: true,
       attentionPartnerStateDialog: false,
       updatePartnerDialog: false,
       goTo: {},
@@ -323,15 +298,11 @@ export default {
       partner: {},
       rawData: {},
       credentials: [],
-      presentationsSent: [],
-      presentationsReceived: [],
+      presentationExRecords: [],
       issuedCredentials: [],
-      presentationRequests: [],
       rules: {
         required: (value) => !!value || "Can't be empty",
       },
-      headersSent: sentHeaders,
-      headersReceived: receivedHeaders,
       PartnerStates: PartnerStates,
       headersIssued: [
         {
@@ -349,29 +320,9 @@ export default {
         {
           text: "Revocation",
           value: "revocable",
-        }
+        },
       ],
       issueCredentialDialog: false,
-      headersPresentationRequest: [
-        {
-          text: '',
-          value: 'indicator',
-          sortable: false,
-          filterable: false
-        },
-        {
-          text: "Received at",
-          value: "sentAt", //miss labelled.
-        },
-        {
-          text: "State",
-          value: "state",
-        },
-        {
-          text: "",
-          value: "actions",
-        },
-      ],
     };
   },
   computed: {
@@ -424,91 +375,50 @@ export default {
         };
       }
     },
+    refreshPresentationRecords() {
+      this.getPresentationRecords();
+    },
     getPresentationRecords() {
       console.log("Getting presentation records...");
-      this.$axios
-        .get(`${this.$apiBaseUrl}/partners/${this.id}/proof-exchanges`)
+      this.isLoadingPresExRecords = true;
+      partnerService
+        .getPresentationExRecords(this.id)
         .then((result) => {
+          this.isLoadingPresExRecords = false;
           if ({}.hasOwnProperty.call(result, "data")) {
             let data = result.data;
             console.log(data);
-            this.presentationsSent = data.filter((item) => {
-              console.log("PresentationSent");
-              return (
-                item.role === "prover" &&
-                [
-                  "presentation_sent",
-                  "presentation_acked",
-                  "proposal_sent",
-                ].includes(item.state)
-              );
-            });
-            this.presentationRequests = data.filter((item) => {
-              console.log("PresentationRequest");
-              return (
-                item.role === "prover" && item.state === "request_received"
-              );
-            });
-            this.presentationsReceived = data.filter((item) => {
-              console.log("PresentationReceived");
-              return item.role === "verifier";
-            });
-            console.log(this.presentationRequests);
+            this.presentationExRecords = data;
           }
         })
         .catch((e) => {
+          this.isLoadingPresExRecords = false;
           console.error(e);
           // EventBus.$emit("error", e);
         });
-      console.log(this.presentationsRequests);
-    },
-    removePresentationReceived(id) {
-      this.presentationsReceived = this.presentationsReceived.filter((item) => {
-        return item.id !== id;
-      });
-      this.$store.commit("presentationNotificationSeen", {id: id});
-    },
-    removePresentationSent(id) {
-      this.presentationsSent = this.presentationsSent.filter((item) => {
-        return item.id !== id;
-      });
-      this.$store.commit("presentationNotificationSeen", {id: id});
-    },
-    removePresentationRequest(id) {
-      let objIndex = this.presentationRequests.findIndex((item) => {
-        return item.id === id;
-      });
-      this.presentationRequests[objIndex].state = "presentation_rejected"; //not an aries state
-      this.$store.commit("presentationNotificationSeen", {id: id});
-    },
-
-    presentationRequestSuccess(id) {
-      let objIndex = this.presentationRequests.findIndex((item) => {
-        return item.id === id;
-      });
-      this.presentationRequests[objIndex].state = "presentation_sent";
-      this.presentationsSent.push(this.presentationRequests[objIndex]);
-
-      this.presentationRequests = this.presentationRequests.filter((item) => {
-        return item.id !== id;
-      });
     },
 
     // Issue Credentials
     getIssuedCredentials(id) {
       console.log("Getting issued credential records...");
+      this.isLoadingCredExRecords = true;
       issuerService
         .listCredentialExchangesAsIssuer(id)
         .then((result) => {
+          this.isLoadingCredExRecords = false;
           if ({}.hasOwnProperty.call(result, "data")) {
             let data = result.data;
             this.issuedCredentials = data;
           }
         })
         .catch((e) => {
+          this.isLoadingCredExRecords = false;
           console.error(e);
           // EventBus.$emit("error", e);
         });
+    },
+    refreshIssuedCredentialRecords() {
+      this.getIssuedCredentials(this.id);
     },
     getPartner() {
       console.log("Getting partner...");

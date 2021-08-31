@@ -46,9 +46,9 @@
       <!-- Attribute Groups -->
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>Attribute Groups</v-list-item-title>
+          <v-list-item-title>Data to be requested</v-list-item-title>
           <v-list-item-subtitle
-            >Description of what attribute groups are...</v-list-item-subtitle
+            >Add data to be requested by Schema</v-list-item-subtitle
           >
 
           <v-container>
@@ -65,7 +65,7 @@
                   <v-container>
                     <v-row>
                       <v-col cols="4" class="pb-10">
-                        <h4 class="pb-5">Attributes</h4>
+                        <h4 class="pb-5">Data fields</h4>
                       </v-col>
                     </v-row>
                     <v-data-table
@@ -314,8 +314,12 @@
           <v-bpa-button color="secondary" @click="$router.go(-1)">
             Cancel
           </v-bpa-button>
-          <v-bpa-button :loading="this.isBusy" color="primary" @click="createProofTemplate">
-            {{createButtonLabel}}
+          <v-bpa-button
+            :loading="this.isBusy"
+            color="primary"
+            @click="createProofTemplate"
+          >
+            {{ createButtonLabel }}
           </v-bpa-button>
         </v-layout>
       </v-card-actions>
@@ -368,7 +372,7 @@ export default {
     disableRouteBack: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   components: { VBpaButton },
   created() {
@@ -411,14 +415,7 @@ export default {
         schemaId: schemaId,
         nonRevoked: true,
         attributes: [],
-        schemaLevelRestrictions: {
-          schemaId: "",
-          schemaName: "",
-          schemaVersion: "",
-          schemaIssuerDid: "",
-          credentialDefinitionId: "",
-          issuerDid: "",
-        },
+        schemaLevelRestrictions: {},
       });
     },
     addAttribute(idx, attributeName) {
@@ -472,26 +469,35 @@ export default {
         });
       });
 
+      // sanitize restrictions (remove empty restrictions)
+      this.proofTemplate.attributeGroups.forEach((ag) => {
+        ag.schemaLevelRestrictions = Object.fromEntries(
+          Object.entries(ag.schemaLevelRestrictions).filter(([, v]) => v !== "")
+        );
+      });
+
       console.log(JSON.stringify(this.proofTemplate));
 
-      proofTemplateService.createProofTemplate(this.proofTemplate)
-          .then((res) => {
-            this.$emit("received-proof-template-id", res.data.id);
-            EventBus.$emit("success", "Proof Template Created");
+      proofTemplateService
+        .createProofTemplate(this.proofTemplate)
+        .then((res) => {
+          this.$emit("received-proof-template-id", res.data.id);
+          EventBus.$emit("success", "Proof Template Created");
 
-            if (!this.disableRouteBack) {
-              this.$router.push({
-                name: "ProofTemplates",
-                params: {},
-              });
-            }
+          if (!this.disableRouteBack) {
+            this.$router.push({
+              name: "ProofTemplates",
+              params: {},
+            });
+          }
 
-            this.isBusy = false;
-          }).catch(e => {
-            console.error(e)
-            EventBus.$emit("error", e);
-            this.isBusy = false;
-          });
+          this.isBusy = false;
+        })
+        .catch((e) => {
+          console.error(e);
+          EventBus.$emit("error", e);
+          this.isBusy = false;
+        });
     },
   },
 };

@@ -29,6 +29,7 @@ export const ApiRoutes = Object.freeze({
   ADMIN: "/admin",
   ISSUER: "/issuer",
   PARTNERS: "/partners",
+  PROOF_EXCHANGES: "/proof-exchanges",
   PROOF_TEMPLATES: "/proof-templates",
   ACTIVITIES: "/activities",
 });
@@ -48,6 +49,17 @@ export const CredentialExchangeStates = Object.freeze({
   CREDENTIAL_ISSUED: "credential_issued",
   CREDENTIAL_RECEIVED: "credential_received",
   CREDENTIAL_ACKED: "credential_acked",
+});
+
+export const PresentationExchangeStates = Object.freeze({
+  PROPOSAL_SENT: "proposal_sent",
+  PROPOSAL_RECEIVED: "proposal_received",
+  REQUEST_SENT: "request_sent",
+  REQUEST_RECEIVED: "request_received",
+  PRESENTATION_SENT: "presentation_sent",
+  PRESENTATION_RECEIVED: "presentation_received",
+  VERIFIED: "verified",
+  PRESENTATION_ACKED: "presentation_acked",
 });
 
 export const PartnerStates = Object.freeze({
@@ -161,3 +173,21 @@ export const ActivityRoles = Object.freeze({
     label: i18n.t("constants.activityRoles.presentationExchange.verifier"),
   },
 });
+
+export const Predicates = Object.freeze({
+  LESS_THAN_OR_EQUAL_TO: "<=",
+  LESS_THAN: "<",
+  GREATER_THAN_OR_EQUAL_TO: ">=",
+  GREATER_THAN: ">",
+});
+
+export const Restrictions = Object.freeze({
+  SCHEMA_ID: { value: "schema_id", label: "Schema ID" },
+  SCHEMA_NAME: { value: "schema_name", label: "Schema Name" },
+  SCHEMA_ISSUER_DID: { value: "schema_issuer_did", label: "Schema Issuer DID" },
+  SCHEMA_VERSION: { value: "schema_version", label: "Schema Version" },
+  ISSUER_DID: { value: "issuer_did", label: "Issuer DID" },
+  CRED_DEF_ID: { value: "cred_def_id", label: "Credential Definition ID" },
+});
+
+export const RequestTypes = ["requestedAttributes", "requestedPredicates"];

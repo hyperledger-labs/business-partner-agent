@@ -29,6 +29,8 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
 
 import io.micronaut.core.annotation.Nullable;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -67,9 +69,11 @@ public class MyCredential {
 
     private Boolean isPublic;
 
-    /**
-     * aca-py credential identifier
-     */
+    /** the connection that issued the credential */
+    @Nullable
+    private String connectionId;
+
+    /** aca-py credential identifier */
     @Nullable
     private String referent;
 
@@ -77,11 +81,12 @@ public class MyCredential {
     @Nullable
     private String credentialExchangeId;
 
-    @Nullable
-    private String connectionId;
-
     @Enumerated(EnumType.STRING)
     private CredentialExchangeState state;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    private ExchangeVersion exchangeVersion;
 
     private String threadId;
 

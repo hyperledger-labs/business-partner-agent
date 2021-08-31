@@ -23,11 +23,11 @@ create new ones
 <template>
   <v-container>
     <v-text-field
-        v-model="search"
-        append-icon="$vuetify.icons.search"
-        label="Search"
-        single-line
-        hide-details
+      v-model="search"
+      append-icon="$vuetify.icons.search"
+      label="Search"
+      single-line
+      hide-details
     ></v-text-field>
     <v-data-table
       v-model="inputValue"
@@ -92,8 +92,8 @@ export default {
       },
       set(val) {
         this.$emit("input", val);
-      }
-    }
+      },
+    },
   },
   methods: {
     openItem(proofTemplate) {

@@ -36,7 +36,7 @@ import java.util.List;
 public class ProofTemplate {
     @Nullable
     @ValidUUID
-    String id;
+    private String id;
     @Nullable
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
     private Instant createdAt;
@@ -46,5 +46,5 @@ public class ProofTemplate {
     @NotEmpty
     @Valid
     @Singular
-    List<AttributeGroup> attributeGroups;
+    private List<AttributeGroup> attributeGroups;
 }

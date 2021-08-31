@@ -37,23 +37,23 @@ import org.hyperledger.bpa.controller.api.partner.*;
 import org.hyperledger.bpa.impl.ChatMessageManager;
 import org.hyperledger.bpa.impl.ChatMessageService;
 import org.hyperledger.bpa.impl.PartnerManager;
+import org.hyperledger.bpa.impl.ProofTemplateManager;
 import org.hyperledger.bpa.impl.activity.PartnerLookup;
-import org.hyperledger.bpa.impl.aries.ConnectionManager;
 import org.hyperledger.bpa.impl.aries.HolderCredentialManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.ProofManager;
+import org.hyperledger.bpa.impl.verification.ValidUUID;
 import org.hyperledger.bpa.model.ChatMessage;
-import org.hyperledger.bpa.model.PartnerProof;
-import org.hyperledger.bpa.repository.PartnerProofRepository;
 
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
 @Controller("/api/partners")
-@Tag(name = "Partner (Connection) Management")
+@Tag(name = "Partner Management")
 @Validated
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @ExecuteOn(TaskExecutors.IO)
@@ -72,12 +72,6 @@ public class PartnerController {
     ProofManager proofM;
 
     @Inject
-    PartnerProofRepository ppRepo;
-
-    @Inject
-    ConnectionManager cm;
-
-    @Inject
     PartnerCredDefLookup credLookup;
 
     @Inject
@@ -85,6 +79,9 @@ public class PartnerController {
 
     @Inject
     ChatMessageService chatMessageService;
+
+    @Inject
+    ProofTemplateManager proofTemplateManager;
 
     /**
      * Get known partners
@@ -176,10 +173,10 @@ public class PartnerController {
     }
 
     /**
-     * Accept partner connection request
+     * Manual connection flow. Accept partner connection request
      *
      * @param id {@link UUID} the partner id
-     * @return HTTP status, no body
+     * @return HTTP status, no Body
      */
     @Put("/{id}/accept")
     public HttpResponse<Void> acceptPartnerRequest(@PathVariable String id) {
@@ -214,7 +211,7 @@ public class PartnerController {
     }
 
     /**
-     * Aries: Request credential from partner
+     * Request credential from partner
      *
      * @param id      {@link UUID} the partner id
      * @param credReq {@link RequestCredentialRequest}
@@ -231,67 +228,42 @@ public class PartnerController {
     }
 
     /**
-     * Get partner by id
+     * List proof exchange records
      *
      * @param id {@link UUID} the partner id
-     * @return partner
-     */
-    @Get("/proof-exchanges/{id}")
-    public HttpResponse<AriesProofExchange> getProofExchangebyId(@PathVariable String id) {
-        Optional<AriesProofExchange> pProof = proofM.getPartnerProofById(UUID.fromString(id));
-        if (pProof.isPresent()) {
-            return HttpResponse.ok(pProof.get());
-        }
-        return HttpResponse.notFound();
-    }
-
-    /**
-     * Aries: Make the presentation that was requested
-     *
-     * @param id      {@link UUID} the partner id
-     * @param proofId {@link UUID} the presentationExchangeId
      * @return HTTP status
      */
-    @Post("/{id}/proof-exchanges/{proofId}/prove")
-    public HttpResponse<Void> responseToProofRequest(
-            @SuppressWarnings("unused ") @PathVariable String id,
-            @PathVariable String proofId) {
-        final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(proofId));
-        if (proof.isPresent()) {
-            proofM.presentProof(proof.get());
-            return HttpResponse.ok();
-        } else {
-            return HttpResponse.notFound();
-        }
+    @Get("/{id}/proof-exchanges")
+    public HttpResponse<List<AriesProofExchange>> getPartnerProofs(@PathVariable String id) {
+        return HttpResponse.ok(proofM.listPartnerProofs(UUID.fromString(id)));
     }
 
     /**
-     * Aries: Reject ProofRequest received from from a partner
+     * Request proof from partner by proof template
      *
-     * @param id      {@link UUID} the partner id
-     * @param proofId {@link UUID} the presentationExchangeId
-     * @return HTTP status
+     * @param id         partner id
+     * @param templateId proof template id
+     * @return Http Status
      */
-    @Post("/{id}/proof-exchanges/{proofId}/decline")
-    public HttpResponse<Void> declinePresentProofRequest(
-            @SuppressWarnings("unused ") @PathVariable String id,
-            @PathVariable String proofId) {
-        final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(proofId));
-        if (proof.isPresent()) {
-            proofM.declinePresentProofRequest(proof.get(), "User Declined Proof Request: No reason provided");
-            return HttpResponse.ok();
-        }
-        return HttpResponse.notFound();
+    @Put("/{id}/proof-request/{templateId}")
+    public HttpResponse<Void> invokeProofRequestByTemplate(
+            @PathVariable @ValidUUID @NotNull String id,
+            @PathVariable @ValidUUID @NotNull String templateId) {
+        proofTemplateManager.invokeProofRequestByTemplate(UUID.fromString(templateId), UUID.fromString(id));
+        return HttpResponse.ok();
     }
 
     /**
-     * Aries: Request proof from partner
+     * Request proof from partner
      *
+     * @deprecated use proof exchange controller
+     *             {@link ProofExchangeController#requestProof}
      * @param id  {@link UUID} the partner id
      * @param req {@link RequestProofRequest}
      * @return HTTP status
      */
     @Post("/{id}/proof-request")
+    @Deprecated
     public HttpResponse<Void> requestProof(
             @PathVariable String id,
             @RequestBody(description = "One of requestBySchema or requestRaw") @Body RequestProofRequest req) {
@@ -306,75 +278,21 @@ public class PartnerController {
     }
 
     /**
-     * Aries: Send proof to partner
+     * Send proof to partner
      *
+     * @deprecated use proof exchange controller
+     *             {@link ProofExchangeController#sendProof}
      * @param id  {@link UUID} the partner id
      * @param req {@link SendProofRequest}
      * @return HTTP status
      */
     @Post("/{id}/proof-send")
+    @Deprecated
     public HttpResponse<Void> sendProof(
             @PathVariable String id,
             @Body SendProofRequest req) {
         proofM.sendProofProposal(UUID.fromString(id), req.getMyCredentialId());
         return HttpResponse.ok();
-    }
-
-    /**
-     * Aries: List proof exchange records
-     *
-     * @param id {@link UUID} the partner id
-     * @return HTTP status
-     */
-    @Get("/{id}/proof-exchanges")
-    public HttpResponse<List<AriesProofExchange>> getPartnerProofs(
-            @PathVariable String id) {
-        return HttpResponse.ok(proofM.listPartnerProofs(UUID.fromString(id)));
-    }
-
-    /**
-     * Aries: Get a proof exchange by id
-     *
-     * @param id      {@link UUID} the partner id
-     * @param proofId the proof id
-     * @return HTTP status
-     */
-    @Get("/{id}/proof/{proofId}")
-    public HttpResponse<AriesProofExchange> getPartnerProofById(
-            @SuppressWarnings("unused ") @PathVariable String id,
-            @PathVariable String proofId) {
-        final Optional<AriesProofExchange> proof = proofM.getPartnerProofById(UUID.fromString(proofId));
-        if (proof.isPresent()) {
-            return HttpResponse.ok(proof.get());
-        }
-        return HttpResponse.notFound();
-    }
-
-    /**
-     * Aries: Deletes a partners proof by id
-     *
-     * @param id      {@link UUID} the partner id
-     * @param proofId the proof id
-     * @return HTTP status
-     */
-    @Delete("/{id}/proof/{proofId}")
-    public HttpResponse<Void> deletePartnerProofById(
-            @SuppressWarnings("unused ") @PathVariable String id,
-            @PathVariable String proofId) {
-        proofM.deletePartnerProof(UUID.fromString(proofId));
-        return HttpResponse.ok();
-    }
-
-    /**
-     * Aries: Create a connection-invitation
-     *
-     * @param req {@link CreatePartnerInvitationRequest}
-     * @return {@link PartnerAPI}
-     */
-    @Post("/invitation")
-    public HttpResponse<?> requestConnectionInvitation(
-            @Body CreatePartnerInvitationRequest req) {
-        return HttpResponse.ok(cm.createConnectionInvitation(req));
     }
 
     /**
@@ -403,5 +321,4 @@ public class PartnerController {
             @PathVariable String id) {
         return HttpResponse.ok(chatMessageService.getMessagesForPartner(id));
     }
-
 }

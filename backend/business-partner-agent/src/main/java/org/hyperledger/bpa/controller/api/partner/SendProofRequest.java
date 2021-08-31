@@ -25,5 +25,6 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 public class SendProofRequest {
+    private UUID partnerId;
     private UUID myCredentialId;
 }

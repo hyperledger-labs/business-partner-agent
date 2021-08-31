@@ -71,15 +71,11 @@ export default {
     },
   },
   watch: {
-    schema(val) {
-      console.log("Credential definitions schema refresh");
-      console.log(val);
+    schema() {
       this.isEdit = false;
       this.editingItem = false;
     },
     credentialDefinitions(val) {
-      console.log("Credential definitions list refresh");
-      console.log(val);
       this.items = Array.from(val);
       this.isEdit = false;
       this.editingItem = false;
@@ -146,7 +142,6 @@ export default {
       issuerService
         .createCredDef(data)
         .then((result) => {
-          console.log(result);
           this.isBusy = false;
 
           if (result.status === 200) {
