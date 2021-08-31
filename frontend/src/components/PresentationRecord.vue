@@ -74,7 +74,7 @@
       <!-- Requested Attributes -->
 
       <v-expansion-panels v-model="contentPanels" accordion flat>
-        <div v-for="type in RequestTypes" :key="type">
+        <template v-for="type in RequestTypes">
           <v-expansion-panel
             v-for="([groupName, group], idx) in Object.entries(
               record.proofRequest[type]
@@ -180,7 +180,7 @@
               </div>
             </v-expansion-panel-content>
           </v-expansion-panel>
-        </div>
+        </template>
       </v-expansion-panels>
     </v-container>
 
@@ -281,6 +281,7 @@ export default {
       matchingCredentials: null,
       Predicates,
       Restrictions,
+      RequestTypes,
     };
   },
   components: {
