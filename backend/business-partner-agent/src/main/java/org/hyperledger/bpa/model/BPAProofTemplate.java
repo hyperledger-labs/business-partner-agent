@@ -85,10 +85,10 @@ public class BPAProofTemplate {
         if (proofTemplate.getId() != null) {
             id = UUID.fromString(proofTemplate.getId());
         }
-        return new BPAProofTemplate(
-                id,
-                proofTemplate.getCreatedAt(),
-                proofTemplate.getName(),
-                BPAAttributeGroups.fromRepresentation(proofTemplate.getAttributeGroups()));
+        return BPAProofTemplate.builder()
+                .id(id)
+                .name(proofTemplate.getName())
+                .attributeGroups(BPAAttributeGroups.fromRepresentation(proofTemplate.getAttributeGroups()))
+                .build();
     }
 }

@@ -279,6 +279,8 @@ public class ActivityManager {
         case REQUEST_RECEIVED:
         case PRESENTATION_RECEIVED:
             return ActivityState.PRESENTATION_EXCHANGE_RECEIVED;
+        case DECLINED:
+            return ActivityState.PRESENTATION_EXCHANGE_DECLINED;
         default:
             switch (partnerProof.getRole()) {
             case VERIFIER:

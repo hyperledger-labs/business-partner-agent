@@ -25,6 +25,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.micronaut.context.annotation.Value;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.api.CredentialType;
@@ -41,17 +43,21 @@ import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.PartnerAPI.PartnerCredential;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
+import org.hyperledger.bpa.impl.aries.CredentialInfoResolver;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.model.Partner;
-
-import io.micronaut.core.annotation.Nullable;
 import org.hyperledger.bpa.model.PartnerProof;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
@@ -69,6 +75,9 @@ public class Converter {
     public static final TypeReference<VerifiablePresentation<VerifiableIndyCredential>> VP_TYPEREF = new TypeReference<>() {
     };
 
+    public static final TypeReference<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>> IDENTIFIER_TYPE = new TypeReference<>() {
+    };
+
     @Value("${bpa.did.prefix}")
     private String ledgerPrefix;
 
@@ -78,6 +87,12 @@ public class Converter {
 
     @Inject
     SchemaService schemaService;
+
+    @Inject
+    ProofTemplateConversion templateConversion;
+
+    @Inject
+    CredentialInfoResolver credentialInfoResolver;
 
     public PartnerAPI toAPIObject(@NonNull Partner p) {
         PartnerAPI result = PartnerAPI.from(p);
@@ -169,7 +184,7 @@ public class Converter {
                 .id(myDoc.getId())
                 .createdDate(myDoc.getCreatedAt().toEpochMilli())
                 .updatedDate(myDoc.getUpdatedAt().toEpochMilli())
-                .documentData(fromMap(myDoc.getDocument(), JsonNode.class))
+                .documentData(myDoc.getDocument() != null ? fromMap(myDoc.getDocument(), JsonNode.class) : null)
                 .isPublic(myDoc.getIsPublic())
                 .type(myDoc.getType())
                 .typeLabel(resolveTypeLabel(myDoc.getType(), myDoc.getSchemaId()))
@@ -204,11 +219,28 @@ public class Converter {
     }
 
     public AriesProofExchange toAPIObject(@NonNull PartnerProof p) {
-        AriesProofExchange proof = AriesProofExchange.from(p,
-                p.getProof() != null ? this.fromMap(p.getProof(), JsonNode.class) : null);
-        if (io.micronaut.core.util.StringUtils.isNotEmpty(p.getSchemaId())) {
-            proof.setTypeLabel(schemaService.getSchemaLabel(p.getSchemaId()));
+        AriesProofExchange proof = AriesProofExchange.from(p);
+
+        proof.setTypeLabel(p.getProofRequest() != null ? p.getProofRequest().getName() : null);
+
+        JsonNode proofData = null;
+        try {
+            if (p.getProof() != null) {
+                Map<String, PresentationExchangeRecord.RevealedAttributeGroup> groups = fromMap(p.getProof(),
+                        IDENTIFIER_TYPE);
+                Map<String, AriesProofExchange.RevealedAttributeGroup> collect = groups.entrySet().stream()
+                        .collect(Collectors.toMap(Map.Entry::getKey, e -> AriesProofExchange.RevealedAttributeGroup
+                                .builder()
+                                .revealedAttributes(e.getValue().getRevealedAttributes())
+                                .identifier(credentialInfoResolver.populateIdentifier(e.getValue().getIdentifier()))
+                                .build()));
+                proofData = mapper.convertValue(collect, JsonNode.class);
+            }
+        } catch (IllegalArgumentException e) {
+            log.warn("Not an attribute group");
+            proofData = p.getProof() != null ? fromMap(p.getProof(), JsonNode.class) : null;
         }
+        proof.setProofData(proofData);
         return proof;
     }
 

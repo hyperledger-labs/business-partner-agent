@@ -17,6 +17,8 @@
  */
 package org.hyperledger.bpa.impl.activity;
 
+import lombok.NonNull;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.api.PartnerAPI;
@@ -31,6 +33,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -42,7 +45,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class DidResolverTest extends BaseTest {
 
-    private final String baSchemaId = "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0";
     private final String crSchemaId = "8faozNpSjFfPJXYtgcPtmJ:2:commercialregister:1.2";
 
     @Mock
@@ -62,50 +64,49 @@ class DidResolverTest extends BaseTest {
 
     @Test
     void testIgnoreWrongSchema() {
-        PartnerProof pp = PartnerProof.builder().schemaId(baSchemaId).build();
-        didResolver.resolveDid(pp);
+        PartnerProof pp = PartnerProof.builder().build();
+        String baSchemaId = "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0";
+        didResolver.resolveDid(pp, buildIdentifiers(baSchemaId));
         verify(partnerRepo, never()).findById(any());
     }
 
     @Test
     void testIgnoreOutgoingConnection() {
-        PartnerProof pp = PartnerProof.builder().schemaId(crSchemaId).build();
+        PartnerProof pp = PartnerProof.builder().build();
         when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.FALSE).build()));
-        didResolver.resolveDid(pp);
+        didResolver.resolveDid(pp, buildIdentifiers(crSchemaId));
         verify(ur, never()).getDidDocument(any());
     }
 
     @Test
     void testIgnoreIncomingConnectionWithPublicDid() {
-        PartnerProof pp = PartnerProof.builder().schemaId(crSchemaId).build();
+        PartnerProof pp = PartnerProof.builder().build();
         when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.TRUE).build()));
         when(ur.getDidDocument(any())).thenReturn(Optional.of(new DIDDocument()));
-        didResolver.resolveDid(pp);
+        didResolver.resolveDid(pp, buildIdentifiers(crSchemaId));
         verify(partnerLookup, never()).lookupPartner(any());
     }
 
     @Test
     void testIgnoreMissingDid() {
         PartnerProof pp = PartnerProof.builder()
-                .schemaId(crSchemaId)
                 .proof(Map.of("other", "not-a-did"))
                 .build();
         when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.TRUE).build()));
         when(ur.getDidDocument(any())).thenReturn(Optional.of(new DIDDocument()));
-        didResolver.resolveDid(pp);
+        didResolver.resolveDid(pp, buildIdentifiers(crSchemaId));
         verify(partnerLookup, never()).lookupPartner(any());
     }
 
     @Test
     void testResolveDidAndUpdatePartner() {
         PartnerProof pp = PartnerProof.builder()
-                .schemaId(crSchemaId)
                 .proof(Map.of("did", "did:dummy"))
                 .build();
         when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.TRUE).build()));
         when(ur.getDidDocument(any())).thenReturn(Optional.empty());
         when(partnerLookup.lookupPartner(any())).thenReturn(new PartnerAPI());
-        didResolver.resolveDid(pp);
+        didResolver.resolveDid(pp, buildIdentifiers(crSchemaId));
 
         verify(partnerRepo, times(1)).findById(any());
         verify(partnerRepo, times(1)).update(any());
@@ -128,6 +129,10 @@ class DidResolverTest extends BaseTest {
         cl = DidResolver.splitDidFrom("did:label");
         assertEquals("did:label", cl.getLabel());
         assertTrue(cl.getDid().isEmpty());
+    }
+
+    private List<PresentationExchangeRecord.Identifier> buildIdentifiers(@NonNull String schemaId) {
+        return List.of(PresentationExchangeRecord.Identifier.builder().schemaId(schemaId).build());
     }
 
 }

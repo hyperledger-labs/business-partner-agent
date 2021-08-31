@@ -21,6 +21,7 @@ package org.hyperledger.bpa.impl;
 import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.bpa.api.exception.ProofTemplateException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.ProofManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroups;
@@ -28,6 +29,7 @@ import org.hyperledger.bpa.model.BPAProofTemplate;
 import org.hyperledger.bpa.repository.BPAProofTemplateRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import javax.inject.Inject;
@@ -61,6 +63,9 @@ class ProofTemplateManagerTest {
         return Mockito.mock(SchemaService.class);
     }
 
+    @Mock
+    BPAMessageSource.DefaultMessageSource msg;
+
     @Test
     void testThatProofManagerIsInvokeWithPartnerIdAndProofTemplate() {
         UUID partnerId = UUID.randomUUID();
@@ -76,7 +81,7 @@ class ProofTemplateManagerTest {
         repo.findById(template.getId()).map(BPAProofTemplate::getCreatedAt).ifPresent(template::setCreatedAt);
         doNothing().when(proofManager).sendPresentProofRequest(eq(partnerId), eq(template));
 
-        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager);
+        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, msg);
         sut.invokeProofRequestByTemplate(template.getId(), partnerId);
 
         verify(proofManager, times(1)).sendPresentProofRequest(partnerId, template);
@@ -84,7 +89,7 @@ class ProofTemplateManagerTest {
 
     @Test
     void testThatProofManagerIsNotInvokedIfProofTemplateDoesNotExist() {
-        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager);
+        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, msg);
 
         Assertions.assertThrows(
                 ProofTemplateException.class,
@@ -102,7 +107,7 @@ class ProofTemplateManagerTest {
                                 .build())
                 .build();
 
-        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager);
+        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, msg);
 
         Assertions.assertEquals(0, repo.count(), "There should be no templates initially.");
         BPAProofTemplate expected = sut.addProofTemplate(template);
@@ -122,7 +127,7 @@ class ProofTemplateManagerTest {
 
         Assertions.assertThrows(
                 ConstraintViolationException.class,
-                () -> new ProofTemplateManager(repo, proofManager).addProofTemplate(template),
+                () -> new ProofTemplateManager(repo, proofManager, msg).addProofTemplate(template),
                 "ProofTemplateManager#addProofTemplate should reject invalid templates with a ConstraintViolationException");
         Assertions.assertEquals(0, repo.count(), "There should be no templates persisted.");
     }
@@ -141,7 +146,7 @@ class ProofTemplateManagerTest {
                 .name("mySecondTemplate")
                 .build());
 
-        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager);
+        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, msg);
 
         List<String> allTemplates = sut.listProofTemplates().map(BPAProofTemplate::getName)
                 .collect(Collectors.toList());
@@ -162,7 +167,7 @@ class ProofTemplateManagerTest {
                         .build())
                 .getId();
 
-        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager);
+        ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, msg);
         assertTrue(repo.findById(templateId).isPresent(), "The to-be-removed proof template should exist.");
         sut.removeProofTemplate(templateId);
         assertTrue(repo.findById(templateId).isEmpty(), "The proof template was not removed.");

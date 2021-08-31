@@ -6,7 +6,11 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
-    <proof-template-create disable-route-back create-button-label="Create and Send" v-on:received-proof-template-id="submitRequest($event)"></proof-template-create>
+  <proof-template-create
+    disable-route-back
+    create-button-label="Create and Send"
+    v-on:received-proof-template-id="submitRequest($event)"
+  ></proof-template-create>
 </template>
 
 <script>
@@ -29,13 +33,16 @@ export default {
   computed: {},
   methods: {
     async submitRequest(proofTemplateId) {
-      proofTemplateService.sendProofTemplate(proofTemplateId, this.id).then(() => {
-        EventBus.$emit("success", "Presentation request sent");
-        this.$router.go(-2);
-      }).catch((e) => {
-        console.error(e);
-        EventBus.$emit("error", e);
-      });
+      proofTemplateService
+        .sendProofTemplate(proofTemplateId, this.id)
+        .then(() => {
+          EventBus.$emit("success", "Presentation request sent");
+          this.$router.go(-2);
+        })
+        .catch((e) => {
+          console.error(e);
+          EventBus.$emit("error", e);
+        });
     },
   },
 };

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.JsonNode;
+import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
@@ -32,10 +33,14 @@ import org.hyperledger.bpa.impl.util.AriesStringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
+@Introspected
 public class RequestProofRequest {
+
+    private UUID partnerId;
 
     @JsonAlias("request_by_schema")
     private RequestBySchema requestBySchema;

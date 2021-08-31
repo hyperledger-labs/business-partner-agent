@@ -30,6 +30,7 @@ import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -84,15 +85,9 @@ public class BPACredentialExchange {
     @Enumerated(EnumType.STRING)
     private CredentialExchangeState state;
 
-    @Deprecated
     @Nullable
-    @TypeDef(type = DataType.JSON)
-    private Map<String, Object> credentialOffer;
-
-    @Deprecated
-    @Nullable
-    @TypeDef(type = DataType.JSON)
-    private Map<String, Object> credentialProposal;
+    @Enumerated(EnumType.STRING)
+    private ExchangeVersion exchangeVersion;
 
     @Nullable
     @TypeDef(type = DataType.JSON)

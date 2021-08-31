@@ -1,9 +1,48 @@
 {
-  "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/notification/1.0/problem-report",
-  "@id": "52a28ad0-a803-46c3-a9b0-7bba477ff7c7",
-  "~thread": {
-    "thid": "62f7fa51-2e0f-4fec-9c5e-7b7a48c3ce1b"
+  "updated_at": "2021-08-26 07:57:00.416044Z",
+  "trace": false,
+  "presentation_request": {
+    "nonce": "929779824754905793012293",
+    "name": "Demo Bank",
+    "version": "1.0",
+    "requested_attributes": {
+      "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0": {
+        "restrictions": [
+          {
+            "schema_id": "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0"
+          }
+        ],
+        "non_revoked": {
+          "to": 1629964597,
+          "from": 1629964597
+        },
+        "names": [
+          "iban",
+          "bic"
+        ]
+      }
+    },
+    "requested_predicates": {}
   },
-  "explain-ltxt": "no matching credential found",
-  "description": "no matching credential found"
+  "presentation_request_dict": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/present-proof/1.0/request-presentation",
+    "@id": "62f7fa51-2e0f-4fec-9c5e-7b7a48c3ce1b",
+    "request_presentations~attach": [
+      {
+        "@id": "libindy-request-presentation-0",
+        "mime-type": "application/json",
+        "data": {
+          "base64": "eyJuYW1lIjogIkRlbW8gQmFuayIsICJ2ZXJzaW9uIjogIjEuMCIsICJyZXF1ZXN0ZWRfYXR0cmlidXRlcyI6IHsiTTZNYmUzcXg3dkI0d3BaRjRzQlJqdDoyOmJhbmtfYWNjb3VudDoxLjAiOiB7Im5hbWVzIjogWyJpYmFuIiwgImJpYyJdLCAibm9uX3Jldm9rZWQiOiB7ImZyb20iOiAxNjI5OTY0NTk3LCAidG8iOiAxNjI5OTY0NTk3fSwgInJlc3RyaWN0aW9ucyI6IFt7InNjaGVtYV9pZCI6ICJNNk1iZTNxeDd2QjR3cFpGNHNCUmp0OjI6YmFua19hY2NvdW50OjEuMCJ9XX19LCAicmVxdWVzdGVkX3ByZWRpY2F0ZXMiOiB7fSwgIm5vbmNlIjogIjkyOTc3OTgyNDc1NDkwNTc5MzAxMjI5MyJ9"
+        }
+      }
+    ]
+  },
+  "auto_present": false,
+  "connection_id": "1dbaea02-bd35-4833-af6d-182c2dd28dcb",
+  "thread_id": "62f7fa51-2e0f-4fec-9c5e-7b7a48c3ce1b",
+  "initiator": "self",
+  "presentation_exchange_id": "dc3c553c-5a87-476a-96c6-05e60aad475e",
+  "created_at": "2021-08-26 07:56:37.648268Z",
+  "error_msg": "no matching credential found",
+  "role": "verifier"
 }

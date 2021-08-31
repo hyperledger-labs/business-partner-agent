@@ -20,9 +20,11 @@ package org.hyperledger.bpa.impl.activity;
 import io.micronaut.scheduling.annotation.Async;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.PartnerException;
@@ -37,6 +39,7 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -69,10 +72,13 @@ public class DidResolver {
      * @param pp {@link PartnerProof}
      */
     @Async
-    public void resolveDid(PartnerProof pp) {
+    public void resolveDid(PartnerProof pp, @NonNull List<PresentationExchangeRecord.Identifier> identifiers) {
+        Optional<PresentationExchangeRecord.Identifier> cr = identifiers.stream()
+                .filter(i -> StringUtils.isNotEmpty(i.getSchemaId()))
+                .filter(i -> AriesStringUtil.schemaGetName(i.getSchemaId()).equals("commercialregister"))
+                .findAny();
         try {
-            if (StringUtils.isNotEmpty(pp.getSchemaId())
-                    && AriesStringUtil.schemaGetName(pp.getSchemaId()).equals("commercialregister")) {
+            if (cr.isPresent()) {
                 partnerRepo.findById(pp.getPartnerId()).ifPresent(p -> {
                     if (p.getVerifiablePresentation() == null
                             && p.getIncoming() != null
@@ -85,6 +91,7 @@ public class DidResolver {
                             log.error("{}", e.getMessage());
                         }
                         if (didDocument.isEmpty() && pp.getProof() != null) {
+                            // TODO only works if the did is set in the revealed attributes
                             Object pubDid = pp.getProof().get("did");
                             if (pubDid != null) {
                                 log.debug("Resolved did: {}", pubDid);

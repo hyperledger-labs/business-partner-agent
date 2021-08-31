@@ -15,25 +15,22 @@
         Create a Presentation Request
       </v-card-title>
       <v-card-text>
-        <proof-templates-list
-            show-checkboxes
-            v-model="selectedProofTemplate"
-        >
+        <proof-templates-list show-checkboxes v-model="selectedProofTemplate">
         </proof-templates-list>
         <template>
           <v-card-actions>
             <v-layout align-end justify-end>
               <v-bpa-button color="secondary" @click="cancel()"
-              >Cancel</v-bpa-button
+                >Cancel</v-bpa-button
               >
               <v-bpa-button color="primary" @click="openCreateProofTemplate()">
                 Create Proof Template
               </v-bpa-button>
               <v-bpa-button
-                  :loading="this.isBusy"
-                  :disabled="selectedProofTemplate.length === 0"
-                  color="primary"
-                  @click="submitRequest()"
+                :loading="this.isBusy"
+                :disabled="selectedProofTemplate.length === 0"
+                color="primary"
+                @click="submitRequest()"
               >
                 Send Request
               </v-bpa-button>
@@ -53,7 +50,7 @@ import proofTemplateService from "@/services/proofTemplateService";
 
 export default {
   name: "RequestPresentation",
-  components: {ProofTemplatesList, VBpaButton },
+  components: { ProofTemplatesList, VBpaButton },
   props: {
     id: String, // partner ID
   },
@@ -85,15 +82,18 @@ export default {
     async submitRequest() {
       this.isBusy = true;
 
-      proofTemplateService.sendProofTemplate(this.selectedProofTemplate[0].id, this.id).then(() => {
-        EventBus.$emit("success", "Presentation request sent");
-        this.isBusy = false;
-        this.$router.go(-1);
-      }).catch((e) => {
-        console.error(e);
-        EventBus.$emit("error", e);
-        this.isBusy = false;
-      });
+      proofTemplateService
+        .sendProofTemplate(this.selectedProofTemplate[0].id, this.id)
+        .then(() => {
+          EventBus.$emit("success", "Presentation request sent");
+          this.isBusy = false;
+          this.$router.go(-1);
+        })
+        .catch((e) => {
+          console.error(e);
+          EventBus.$emit("error", e);
+          this.isBusy = false;
+        });
     },
     cancel() {
       this.$router.go(-1);

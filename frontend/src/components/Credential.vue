@@ -9,7 +9,7 @@
 <template>
   <div>
     <v-row>
-      <v-col cols="12" class="pb-0">
+      <v-col cols="12" class="pb-0 mt-4">
         <v-text-field
           v-if="
             (intDoc.label instanceof String ||
@@ -26,9 +26,16 @@
         ></v-text-field>
       </v-col>
     </v-row>
-    <h3 v-if="!showOnlyContent && (intDoc.issuer || intDoc.issuedAt)">
+    <!-- <v-row>
+      <v-col> -->
+    <h3
+      v-if="!showOnlyContent && (intDoc.issuer || intDoc.issuedAt)"
+      class="mb-4"
+    >
       Issuer
     </h3>
+    <!-- </v-col>
+    </v-row> -->
     <v-row v-if="!showOnlyContent">
       <v-col>
         <v-text-field
@@ -42,9 +49,7 @@
         <v-text-field
           v-if="intDoc.issuedAt"
           label="Issued at"
-          :value="
-            $options.filters.moment(intDoc.issuedAt, 'YYYY-MM-DD HH:mm')
-          "
+          :value="$options.filters.moment(intDoc.issuedAt, 'YYYY-MM-DD HH:mm')"
           disabled
           outlined
           dense
@@ -52,7 +57,9 @@
       </v-col>
     </v-row>
 
-    <h3 v-if="intDoc.credentialData && !showOnlyContent">Credential Content</h3>
+    <h3 v-if="intDoc.credentialData && !showOnlyContent" class="mb-4">
+      Credential Content
+    </h3>
     <v-row>
       <v-col>
         <v-text-field

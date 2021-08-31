@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.api;
+package org.hyperledger.bpa.api.aries;
 
 public enum ExchangeVersion {
     /** credential or proof exchange version 1 */

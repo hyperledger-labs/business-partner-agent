@@ -40,6 +40,7 @@ public class AriesCredential {
     private String connectionId;
     private Boolean revoked;
     private Boolean revocable;
+    private ExchangeVersion exchangeVersion;
 
     private String label;
     private String typeLabel;
@@ -55,6 +56,18 @@ public class AriesCredential {
                 .issuer(c.getIssuer())
                 .connectionId(c.getConnectionId())
                 .revoked(c.getRevoked())
-                .label(c.getLabel());
+                .label(c.getLabel())
+                .exchangeVersion(c.getExchangeVersion());
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static final class BPACredentialInfo {
+        private UUID credentialId;
+        private String schemaLabel;
+        private String issuerLabel;
+        private String credentialLabel;
     }
 }

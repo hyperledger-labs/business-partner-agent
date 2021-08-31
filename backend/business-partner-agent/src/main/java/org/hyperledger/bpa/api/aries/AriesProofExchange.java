@@ -19,15 +19,17 @@ package org.hyperledger.bpa.api.aries;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.*;
-
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.model.PartnerProof;
 
-import io.micronaut.core.annotation.Nullable;
+import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Requested or received Proof Requests
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,43 +39,55 @@ public class AriesProofExchange {
     private UUID id;
     private UUID partnerId;
 
-    // depends on the role
-    private Long receivedAt;
-    private Long sentAt;
-    // probably not available
-    private Long issuedAt;
+    private ExchangeVersion exchangeVersion;
+    private PresentationExchangeState state;
+    private PresentationExchangeRole role;
+
+    private Long updatedAt;
+    public Map<PresentationExchangeState, Long> stateToTimestamp;
 
     private String typeLabel;
-    private PresentationExchangeState state;
 
-    private String issuer;
-    private String schemaId;
-    private String credentialDefinitionId;
-    private String problemReport;
-    private PresentationExchangeRole role;
+    /** revealed attributes by group */
     private JsonNode proofData;
+    private Boolean valid;
     private PresentProofRequest.ProofRequest proofRequest;
+    private String problemReport;
 
-    public static AriesProofExchange from(@NonNull PartnerProof p, @Nullable JsonNode proofData) {
+    public static AriesProofExchange from(@NonNull PartnerProof p) {
         final AriesProofExchangeBuilder b = AriesProofExchange.builder();
-        final Long created = p.getCreatedAt().toEpochMilli();
-        // TODO: Handle sent AND received date for in Transit ProofExchanges
-        if (PresentationExchangeRole.PROVER.equals(p.getRole())) {
-            b.sentAt(created);
-        } else {
-            b.receivedAt(created);
-        }
         return b
                 .id(p.getId())
                 .partnerId(p.getPartnerId())
                 .state(p.getState())
-                .issuer(p.getIssuer())
-                .schemaId(p.getSchemaId())
-                .credentialDefinitionId(p.getCredentialDefinitionId())
-                .proofData(proofData)
                 .proofRequest(p.getProofRequest())
                 .role(p.getRole())
                 .problemReport(p.getProblemReport())
+                .exchangeVersion(p.getExchangeVersion())
+                .stateToTimestamp(p.getStateToTimestamp() != null ? p.getStateToTimestamp().toApi() : null)
+                .valid(p.getValid())
+                .updatedAt(p.getUpdatedAt().toEpochMilli())
                 .build();
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Identifier {
+        private String schemaId;
+        private String schemaLabel;
+        private String credentialDefinitionId;
+        private String issuerLabel;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RevealedAttributeGroup {
+        @Singular
+        private Map<String, String> revealedAttributes;
+        private Identifier identifier;
     }
 }

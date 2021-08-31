@@ -34,9 +34,9 @@ import java.util.List;
 public class Attribute {
     @NotNull
     @NotEmpty
-    String name;
+    private String name;
     @Valid
     @Singular
     @NotNull
-    List<ValueCondition> conditions;
+    private List<ValueCondition> conditions;
 }

@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.impl.util;
 
+import io.micronaut.core.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 
 import lombok.NonNull;
@@ -72,6 +73,21 @@ public class AriesStringUtil {
         return parts[4];
     }
 
+    public static boolean isCredDef(@Nullable String expression) {
+        if (StringUtils.isBlank(expression)) {
+            return false;
+        }
+        return expression.split(":").length == 5;
+    }
+
+    private static String[] credDefIdSplit(@NonNull String credDefId) {
+        final String[] parts = credDefId.split(":");
+        if (parts.length != 5) {
+            throw new IllegalArgumentException("Not a credential definition id");
+        }
+        return parts;
+    }
+
     /**
      * Transform value to an acceptable value for schema name or attribute name.
      * Cannot contain whitespace. Leading and trailing removed, other replaced with
@@ -94,14 +110,6 @@ public class AriesStringUtil {
      */
     public static String schemaAttributeFormat(@NonNull String value) {
         return schemaAttributeFormat(value, '_');
-    }
-
-    private static String[] credDefIdSplit(String credDefId) {
-        final String[] parts = credDefId.split(":");
-        if (parts.length != 5) {
-            throw new IllegalArgumentException("Not a credential definition id");
-        }
-        return parts;
     }
 
     public static boolean isUUID(String input) {
