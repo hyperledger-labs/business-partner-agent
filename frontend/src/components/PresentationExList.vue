@@ -247,7 +247,10 @@ export default {
       }
     },
     addProofData() {
-      if (Object.hasOwnProperty.call(this.record, "proofRequest")) {
+      if (
+        Object.hasOwnProperty.call(this.record, "proofRequest") &&
+        Object.hasOwnProperty.call(this.record, "proofData")
+      ) {
         RequestTypes.map((type) => {
           Object.entries(this.record.proofRequest[type]).map(
             ([groupName, group]) => {
