@@ -42,7 +42,6 @@ import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.AriesCredential;
-import org.hyperledger.bpa.api.aries.AriesCredential.AriesCredentialBuilder;
 import org.hyperledger.bpa.api.aries.ProfileVC;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
@@ -164,7 +163,7 @@ public class HolderCredentialManager {
     }
 
     private AriesCredential buildAriesCredential(@NonNull MyCredential dbCred) {
-        final AriesCredentialBuilder myCred = AriesCredential.fromMyCredential(dbCred);
+        final AriesCredential.AriesCredentialBuilder myCred = AriesCredential.fromMyCredential(dbCred);
         if (dbCred.getCredential() != null) {
             final Credential ariesCred = conv.fromMap(dbCred.getCredential(), Credential.class);
             myCred

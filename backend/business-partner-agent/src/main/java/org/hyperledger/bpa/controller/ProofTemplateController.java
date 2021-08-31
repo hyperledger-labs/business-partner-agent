@@ -99,7 +99,8 @@ public class ProofTemplateController {
     /**
      * List configured proof condition operators
      *
-     * @return list of {@link org.hyperledger.bpa.model.prooftemplate.ValueOperators}
+     * @return list of
+     *         {@link org.hyperledger.bpa.model.prooftemplate.ValueOperators}
      */
     @Get("/known-condition-operators")
     public HttpResponse<Set<String>> listKnownConditionOperators() {

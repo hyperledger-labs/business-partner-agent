@@ -52,7 +52,6 @@ public class AriesProofExchange {
     /** revealed attributes by group */
     private JsonNode proofData;
     private Boolean valid;
-    private ProofTemplate proofTemplate;
     private PresentProofRequest.ProofRequest proofRequest;
     private String problemReport;
 
