@@ -121,29 +121,12 @@
               </tbody>
             </v-simple-table>
           </v-container>
-
-          <!-- Select matching credential -->
-
-          <v-container v-if="attributeGroup.matchingCredentials">
-            <h4 class="mb-4">Select data for presentation</h4>
-            <v-select
-              label="Matching Credentials"
-              return-object
-              :items="attributeGroup.matchingCredentials"
-              item-text="credentialInfo.credentialLabel"
-              v-model="attributeGroup.selectedCredential"
-              outlined
-              @change="selectedCredential(idx, $event)"
-              dense
-            ></v-select>
-          </v-container>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
   </v-container>
 </template>
 <script>
-import Vue from "vue";
 export default {
   props: {
     requestData: Array,
@@ -170,13 +153,6 @@ export default {
     };
   },
   methods: {
-    selectedCredential(idx, credential) {
-      const newValue = this.requestData[idx].attributes.map((attr) => {
-        return { ...attr, value: credential.credentialInfo.attrs[attr.name] };
-      });
-
-      Vue.set(this.requestData[idx], "attributes", newValue);
-    },
     renderSchemaLabelId(attributeGroup) {
       // FIXME: This needs refactoring
       // This tries to show a schema and label but will show the attribute group if

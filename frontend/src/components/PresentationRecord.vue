@@ -13,7 +13,7 @@
         Role
       </v-list-item-title>
       <v-list-item-subtitle align="">
-        {{ record.role }}
+        {{ record.role | capitalize }}
       </v-list-item-subtitle>
     </v-list-item>
 
@@ -22,7 +22,7 @@
         State
       </v-list-item-title>
       <v-list-item-subtitle align="">
-        {{ record.state ? record.state.replace("_", " ") : "" }}
+        {{ (record.state ? record.state.replace("_", " ") : "") | capitalize }}
       </v-list-item-subtitle>
     </v-list-item>
 
@@ -55,7 +55,9 @@
                 </v-col>
                 <v-col>
                   <div class="text-caption">
-                    <strong> {{ item[0].replace("_", " ") }} </strong>
+                    <strong>
+                      {{ item[0].replace("_", " ") | capitalize }}
+                    </strong>
                   </div>
                 </v-col>
               </v-row>
@@ -68,9 +70,10 @@
     <!-- Request Content -->
     <v-container class="mb-4">
       <h4 class="my-4">Request Content:</h4>
+
       <!-- Requested Attributes -->
 
-      <v-expansion-panels accordion flat>
+      <v-expansion-panels v-model="contentPanels" accordion flat>
         <v-expansion-panel
           v-for="([groupKey, group], idx) in Object.entries(
             record.proofRequest.requestedAttributes
@@ -98,10 +101,10 @@
 
             <v-list-item v-for="name in names(group)" :key="name">
               <v-list-item-title>
-                {{ name }}
+                {{ toName(name) }}
               </v-list-item-title>
               <v-list-item-subtitle v-if="group.cvalues">
-                {{ group.cvalues[name] }}
+                {{ toName(group.cvalues[name]) }}
               </v-list-item-subtitle>
               <v-list-item-subtitle v-else-if="group.proofData">
                 {{ group.proofData.revealedAttributes[name] }}
@@ -117,14 +120,30 @@
                 >
 
                 <v-expansion-panel-content class="bg-light">
-                  <v-list-item
+                  <v-list-item-group
                     v-for="(restr, idy) in group.restrictions"
                     :key="idy"
                   >
-                    <v-list-item-title>
-                      <vue-json-pretty :data="restr"></vue-json-pretty>
-                    </v-list-item-title>
-                  </v-list-item>
+                    <v-list-item
+                      v-for="[restrType, restrValue] in Object.entries(restr)"
+                      :key="restrType"
+                    >
+                      <v-list-item-title>
+                        {{
+                          Object.values(Restrictions)[
+                            Object.values(Restrictions).findIndex(
+                              (restriction) => {
+                                return restriction.value === restrType;
+                              }
+                            )
+                          ].label
+                        }}
+                      </v-list-item-title>
+                      <v-list-item-subtitle>{{
+                        restrValue
+                      }}</v-list-item-subtitle>
+                    </v-list-item>
+                  </v-list-item-group>
                 </v-expansion-panel-content>
               </v-expansion-panel>
             </v-expansion-panels>
@@ -144,11 +163,9 @@
             </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
-      </v-expansion-panels>
 
-      <!-- Requested Predicates -->
+        <!-- Requested Predicates -->
 
-      <v-expansion-panels accordion flat>
         <v-expansion-panel
           v-for="([groupName, group], idx) in Object.entries(
             record.proofRequest.requestedPredicates
@@ -193,14 +210,30 @@
                 >
 
                 <v-expansion-panel-content class="bg-light">
-                  <v-list-item
+                  <v-list-item-group
                     v-for="(restr, idy) in group.restrictions"
                     :key="idy"
                   >
-                    <v-list-item-title>
-                      <vue-json-pretty :data="restr"></vue-json-pretty>
-                    </v-list-item-title>
-                  </v-list-item>
+                    <v-list-item
+                      v-for="[restrType, restrValue] in Object.entries(restr)"
+                      :key="restrType"
+                    >
+                      <v-list-item-title>
+                        {{
+                          Object.values(Restrictions)[
+                            Object.values(Restrictions).findIndex(
+                              (restriction) => {
+                                return restriction.value === restrType;
+                              }
+                            )
+                          ].label
+                        }}
+                      </v-list-item-title>
+                      <v-list-item-subtitle>{{
+                        restrValue
+                      }}</v-list-item-subtitle>
+                    </v-list-item>
+                  </v-list-item-group>
                 </v-expansion-panel-content>
               </v-expansion-panel>
             </v-expansion-panels>
@@ -252,7 +285,12 @@
 </template>
 
 <script>
-import { PresentationExchangeStates, Predicates } from "@/constants";
+import {
+  PresentationExchangeStates,
+  Predicates,
+  RequestTypes,
+  Restrictions,
+} from "@/constants";
 // import AttributeGroup from "@/components/proof-templates/AttributeGroup";
 export default {
   name: "PresentationRecord",
@@ -269,6 +307,28 @@ export default {
     isStateProposalSent() {
       return this.record.state === PresentationExchangeStates.PROPOSAL_SENT;
     },
+    contentPanels: {
+      get: function () {
+        if (this.record.proofRequest) {
+          const nPanels = RequestTypes.map((type) => {
+            return Object.keys(this.record.proofRequest[type]).length;
+          }).reduce((x, y) => x + y, 0);
+
+          if (
+            this.record.state === PresentationExchangeStates.REQUEST_RECEIVED
+          ) {
+            return nPanels === 1
+              ? 0
+              : [...Array(nPanels).keys()].map((k, i) => i);
+          } else {
+            return [];
+          }
+        } else {
+          return [];
+        }
+      },
+      set: function () {},
+    },
   },
   methods: {
     selectedCredential(group, credential) {
@@ -280,11 +340,20 @@ export default {
     names(item) {
       return item.names ? item.names : [item.name];
     },
+    toName(name) {
+      if (name.startsWith("attr::")) {
+        const end = name.lastIndexOf("::");
+        return name.substring("attr::".length, end);
+      } else {
+        return name;
+      }
+    },
   },
   data: () => {
     return {
       matchingCredentials: null,
       Predicates,
+      Restrictions,
     };
   },
   components: {

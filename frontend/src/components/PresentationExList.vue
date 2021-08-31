@@ -31,9 +31,13 @@
             : item.typeLabel
         }}
       </template>
+
+      <template v-slot:[`item.role`]="{ item }">
+        {{ item.role | capitalize }}
+      </template>
       <template v-slot:[`item.state`]="{ item }">
         <span>
-          {{ item.state ? item.state.replace("_", " ") : "" }}
+          {{ (item.state ? item.state.replace("_", " ") : "") | capitalize }}
         </span>
         <v-icon v-if="item.valid" color="green">$vuetify.icons.check</v-icon>
         <v-icon
@@ -247,7 +251,10 @@ export default {
       }
     },
     addProofData() {
-      if (Object.hasOwnProperty.call(this.record, "proofRequest")) {
+      if (
+        Object.hasOwnProperty.call(this.record, "proofRequest") &&
+        Object.hasOwnProperty.call(this.record, "proofData")
+      ) {
         RequestTypes.map((type) => {
           Object.entries(this.record.proofRequest[type]).map(
             ([groupName, group]) => {

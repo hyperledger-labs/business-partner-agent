@@ -181,4 +181,13 @@ export const Predicates = Object.freeze({
   GREATER_THAN: ">",
 });
 
+export const Restrictions = Object.freeze({
+  SCHEMA_ID: { value: "schema_id", label: "Schema ID" },
+  SCHEMA_NAME: { value: "schema_name", label: "Schema Name" },
+  SCHEMA_ISSUER_DID: { value: "schema_issuer_did", label: "Schema Issuer DID" },
+  SCHEMA_VERSION: { value: "schema_version", label: "Schema Version" },
+  ISSUER_DID: { value: "issuer_did", label: "Issuer DID" },
+  CRED_DEF_ID: { value: "cred_def_id", label: "Credential Definition ID" },
+});
+
 export const RequestTypes = ["requestedAttributes", "requestedPredicates"];
