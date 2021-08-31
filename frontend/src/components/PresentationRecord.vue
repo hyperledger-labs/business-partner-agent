@@ -31,7 +31,7 @@
         Request Name
       </v-list-item-title>
       <v-list-item-subtitle align="">
-        {{ record.proofTemplate ? record.proofTemplate.name : "" }}
+        {{ record.proofRequest ? record.proofRequest.name : "" }}
       </v-list-item-subtitle>
     </v-list-item>
     <!-- Timeline  -->
@@ -68,191 +68,119 @@
     </v-expansion-panels>
 
     <!-- Request Content -->
-    <v-container class="mb-4">
+    <v-container v-if="!isStateProposalSent" class="mb-4">
       <h4 class="my-4">Request Content:</h4>
 
       <!-- Requested Attributes -->
 
       <v-expansion-panels v-model="contentPanels" accordion flat>
-        <v-expansion-panel
-          v-for="([groupKey, group], idx) in Object.entries(
-            record.proofRequest.requestedAttributes
-          )"
-          :key="idx"
-        >
-          <v-expansion-panel-header
-            class="grey--text text--darken-2 font-weight-medium bg-light"
-            >{{ groupKey }}</v-expansion-panel-header
+        <div v-for="type in RequestTypes" :key="type">
+          <v-expansion-panel
+            v-for="([groupName, group], idx) in Object.entries(
+              record.proofRequest[type]
+            )"
+            :key="idx"
           >
-          <v-expansion-panel-content class="bg-light">
-            <v-list-item
-              v-if="group.proofData && group.proofData.identifier"
-              class="ml-n4 mb-4"
+            <v-expansion-panel-header
+              class="grey--text text--darken-2 font-weight-medium bg-light"
+              >{{ groupName }}</v-expansion-panel-header
             >
-              <v-list-item-title>
-                <strong>Issuer</strong>
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ group.proofData.identifier.issuerLabel }}
-              </v-list-item-subtitle>
-            </v-list-item>
+            <v-expansion-panel-content class="bg-light">
+              <v-list-item
+                v-if="group.proofData && group.proofData.identifier"
+                class="ml-n4 mb-4"
+              >
+                <v-list-item-title>
+                  <strong>Issuer</strong>
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  {{ group.proofData.identifier.issuerLabel }}
+                </v-list-item-subtitle>
+              </v-list-item>
 
-            <h4 class="mb-4">Data fields</h4>
+              <h4 class="mb-4">Data fields</h4>
 
-            <v-list-item v-for="name in names(group)" :key="name">
-              <v-list-item-title>
-                {{ toName(name) }}
-              </v-list-item-title>
-              <v-list-item-subtitle v-if="group.cvalues">
-                {{ toName(group.cvalues[name]) }}
-              </v-list-item-subtitle>
-              <v-list-item-subtitle v-else-if="group.proofData">
-                {{ group.proofData.revealedAttributes[name] }}
-              </v-list-item-subtitle>
-            </v-list-item>
+              <div v-if="type === 'requestedAttributes'">
+                <v-list-item v-for="name in names(group)" :key="name">
+                  <v-list-item-title>
+                    {{ toName(name) }}
+                  </v-list-item-title>
+                  <v-list-item-subtitle v-if="group.cvalues">
+                    {{ toName(group.cvalues[name]) }}
+                  </v-list-item-subtitle>
+                  <v-list-item-subtitle v-else-if="group.proofData">
+                    {{ group.proofData.revealedAttributes[name] }}
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </div>
 
-            <!-- Restrictions -->
+              <div v-if="type === 'requestedPredicates'">
+                <v-list-item>
+                  <v-list-item-title>
+                    {{ group.name }} {{ Predicates[group.ptype] }}
+                    {{ group.pvalue }}
+                  </v-list-item-title>
+                  <v-list-item-subtitle v-if="group.cvalues">
+                    {{ group.cvalues[group.name] }}
+                  </v-list-item-subtitle>
+                  <v-list-item-subtitle v-else-if="group.proofData">
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </div>
 
-            <v-expansion-panels accordion flat class="ml-n6">
-              <v-expansion-panel>
-                <v-expansion-panel-header class="bg-light"
-                  ><strong>Restrictions</strong></v-expansion-panel-header
-                >
+              <!-- Restrictions -->
 
-                <v-expansion-panel-content class="bg-light">
-                  <v-list-item-group
-                    v-for="(restr, idy) in group.restrictions"
-                    :key="idy"
+              <v-expansion-panels accordion flat class="ml-n6">
+                <v-expansion-panel>
+                  <v-expansion-panel-header class="bg-light"
+                    ><strong>Restrictions</strong></v-expansion-panel-header
                   >
-                    <v-list-item
-                      v-for="[restrType, restrValue] in Object.entries(restr)"
-                      :key="restrType"
+
+                  <v-expansion-panel-content class="bg-light">
+                    <v-list-item-group
+                      v-for="(restr, idy) in group.restrictions"
+                      :key="idy"
                     >
-                      <v-list-item-title>
-                        {{
-                          Object.values(Restrictions)[
-                            Object.values(Restrictions).findIndex(
-                              (restriction) => {
-                                return restriction.value === restrType;
-                              }
-                            )
-                          ].label
-                        }}
-                      </v-list-item-title>
-                      <v-list-item-subtitle>{{
-                        restrValue
-                      }}</v-list-item-subtitle>
-                    </v-list-item>
-                  </v-list-item-group>
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-            </v-expansion-panels>
+                      <v-list-item
+                        v-for="[restrType, restrValue] in Object.entries(restr)"
+                        :key="restrType"
+                      >
+                        <v-list-item-title>
+                          {{
+                            Object.values(Restrictions)[
+                              Object.values(Restrictions).findIndex(
+                                (restriction) => {
+                                  return restriction.value === restrType;
+                                }
+                              )
+                            ].label
+                          }}
+                        </v-list-item-title>
+                        <v-list-item-subtitle>{{
+                          restrValue
+                        }}</v-list-item-subtitle>
+                      </v-list-item>
+                    </v-list-item-group>
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+              </v-expansion-panels>
 
-            <div v-if="group.matchingCredentials">
-              <h4 class="mb-4">Select data for presentation</h4>
-              <v-select
-                label="Matching Credentials"
-                return-object
-                :items="group.matchingCredentials"
-                item-text="credentialInfo.credentialLabel"
-                v-model="group.selectedCredential"
-                outlined
-                @change="selectedCredential(group, $event)"
-                dense
-              ></v-select>
-            </div>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-
-        <!-- Requested Predicates -->
-
-        <v-expansion-panel
-          v-for="([groupName, group], idx) in Object.entries(
-            record.proofRequest.requestedPredicates
-          )"
-          :key="idx"
-        >
-          <v-expansion-panel-header
-            class="grey--text text--darken-2 font-weight-medium bg-light"
-            >{{ groupName }}</v-expansion-panel-header
-          >
-          <v-expansion-panel-content class="bg-light">
-            <v-list-item
-              v-if="group.proofData && group.proofData.identifier"
-              class="ml-n4 mb-4"
-            >
-              <v-list-item-title>
-                <strong>Issuer</strong>
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ group.proofData.identifier.issuerLabel }}
-              </v-list-item-subtitle>
-            </v-list-item>
-
-            <h4 class="mb-4">Data fields</h4>
-
-            <v-list-item>
-              <v-list-item-title>
-                {{ group.name }} {{ Predicates[group.ptype] }}
-                {{ group.pvalue }}
-              </v-list-item-title>
-              <v-list-item-subtitle v-if="group.cvalues">
-                {{ group.cvalues[group.name] }}
-              </v-list-item-subtitle>
-              <v-list-item-subtitle v-else-if="group.proofData">
-              </v-list-item-subtitle>
-            </v-list-item>
-
-            <v-expansion-panels accordion flat class="ml-n6">
-              <v-expansion-panel>
-                <v-expansion-panel-header class="bg-light"
-                  ><strong>Restrictions</strong></v-expansion-panel-header
-                >
-
-                <v-expansion-panel-content class="bg-light">
-                  <v-list-item-group
-                    v-for="(restr, idy) in group.restrictions"
-                    :key="idy"
-                  >
-                    <v-list-item
-                      v-for="[restrType, restrValue] in Object.entries(restr)"
-                      :key="restrType"
-                    >
-                      <v-list-item-title>
-                        {{
-                          Object.values(Restrictions)[
-                            Object.values(Restrictions).findIndex(
-                              (restriction) => {
-                                return restriction.value === restrType;
-                              }
-                            )
-                          ].label
-                        }}
-                      </v-list-item-title>
-                      <v-list-item-subtitle>{{
-                        restrValue
-                      }}</v-list-item-subtitle>
-                    </v-list-item>
-                  </v-list-item-group>
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-            </v-expansion-panels>
-
-            <div v-if="group.matchingCredentials">
-              <h4 class="mb-4">Select data for presentation</h4>
-              <v-select
-                label="Matching Credentials"
-                return-object
-                :items="group.matchingCredentials"
-                item-text="credentialInfo.credentialLabel"
-                v-model="group.selectedCredential"
-                outlined
-                @change="selectedCredential(group, $event)"
-                dense
-              ></v-select>
-            </div>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
+              <div v-if="group.matchingCredentials">
+                <h4 class="mb-4">Select data for presentation</h4>
+                <v-select
+                  label="Matching Credentials"
+                  return-object
+                  :items="group.matchingCredentials"
+                  item-text="credentialInfo.credentialLabel"
+                  v-model="group.selectedCredential"
+                  outlined
+                  @change="selectedCredential(group, $event)"
+                  dense
+                ></v-select>
+              </div>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </div>
       </v-expansion-panels>
     </v-container>
 
@@ -291,7 +219,6 @@ import {
   RequestTypes,
   Restrictions,
 } from "@/constants";
-// import AttributeGroup from "@/components/proof-templates/AttributeGroup";
 export default {
   name: "PresentationRecord",
   props: {

@@ -131,7 +131,7 @@ export default {
   mounted() {
     // Open Item directly. Is used for links from notifications/activity
     if (this.openItemById) {
-      // items observable is typically not resolved yet. Then items is empty
+      // FIXME: items observable is typically not resolved yet. Then items is empty
       const item = this.items.find((item) => item.id === this.openItemById);
       if (item) {
         this.openItem(item);
