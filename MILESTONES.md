@@ -11,8 +11,8 @@ _This milestone does not have a description._
 
 #### Issues
 
-- [ ] First version of proof templates
-      ([business-partner-agent#530](https://github.com/hyperledger-labs/business-partner-agent/issues/530))
 - [x] Tag Connection/Partner
       ([business-partner-agent#491](https://github.com/hyperledger-labs/business-partner-agent/issues/491)) -
       [@Dominic Wörner](https://github.com/domwoe)
+- [x] First version of proof templates
+      ([business-partner-agent#530](https://github.com/hyperledger-labs/business-partner-agent/issues/530))
