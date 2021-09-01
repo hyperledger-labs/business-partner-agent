@@ -61,7 +61,7 @@
         <mockito.version>3.12.4</mockito.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <pmd.version>6.38.0</pmd.version>
-        <spotbugs.version>4.2.3</spotbugs.version>
+        <spotbugs.version>4.4.0</spotbugs.version>
         <testcontainers.version>1.16.0</testcontainers.version>
         <!-- Plugin Versions -->
         <license-maven-plugin.version>4.1</license-maven-plugin.version>
