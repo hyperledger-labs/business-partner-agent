@@ -73,7 +73,7 @@
 
       <!-- Requested Attributes -->
 
-      <v-expansion-panels v-model="contentPanels" accordion flat>
+      <v-expansion-panels v-model="contentPanels" multiple accordion flat>
         <template v-for="type in RequestTypes">
           <v-expansion-panel
             v-for="([groupName, group], idx) in Object.entries(
@@ -83,8 +83,9 @@
           >
             <v-expansion-panel-header
               class="grey--text text--darken-2 font-weight-medium bg-light"
-              >{{ groupName }}</v-expansion-panel-header
             >
+              <span v-html="renderSchemaLabel(groupName)"></span
+            ></v-expansion-panel-header>
             <v-expansion-panel-content class="bg-light">
               <v-list-item
                 v-if="group.proofData && group.proofData.identifier"
@@ -159,13 +160,15 @@
                 </v-expansion-panel>
               </v-expansion-panels>
 
+              <!-- Select matcing credential -->
+
               <div v-if="group.matchingCredentials">
                 <h4 class="mb-4">Select data for presentation</h4>
                 <v-select
                   label="Matching Credentials"
                   return-object
                   :items="group.matchingCredentials"
-                  item-text="toCredentialLabel"
+                  :item-text="toCredentialLabel"
                   v-model="group.selectedCredential"
                   outlined
                   @change="selectedCredential(group, $event)"
@@ -238,9 +241,7 @@ export default {
           if (
             this.record.state === PresentationExchangeStates.REQUEST_RECEIVED
           ) {
-            return nPanels === 1
-              ? 0
-              : [...Array(nPanels).keys()].map((k, i) => i);
+            return [...Array(nPanels).keys()].map((k, i) => i);
           } else {
             return [];
           }
@@ -288,6 +289,25 @@ export default {
       } else {
         return "No info found";
       }
+    },
+    renderSchemaLabel(attrGroupName) {
+      // If groupName contains schema id, try to render label else show group name
+      const end = attrGroupName.lastIndexOf(".");
+
+      if (end !== -1) {
+        const schemaId = attrGroupName.substring(0, end + 2);
+        const schema = this.$store.getters.getSchemas.find(
+          (s) => s.schemaId === schemaId
+        );
+
+        if (schema && schema.label) {
+          return `<strong>${schema.label}</strong><i>&nbsp;(${schema.schemaId})</i>`;
+        } else {
+          return attrGroupName;
+        }
+      }
+
+      return attrGroupName;
     },
   },
   data: () => {

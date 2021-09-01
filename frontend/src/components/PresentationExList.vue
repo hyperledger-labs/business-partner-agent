@@ -60,7 +60,7 @@
         {{ item.updatedAt | formatDateLong }}
       </template>
     </v-data-table>
-    <v-dialog v-if="dialog" v-model="dialog" max-width="1000px">
+    <v-dialog v-if="dialog" v-model="dialog" scrollable max-width="1000px">
       <v-card>
         <v-card-title class="bg-light">
           <span class="headline">Presentation Exchange</span>
