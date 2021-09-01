@@ -73,18 +73,19 @@
 
       <!-- Requested Attributes -->
 
-      <v-expansion-panels v-model="contentPanels" accordion flat>
+      <v-expansion-panels v-model="contentPanels" multiple accordion flat>
         <template v-for="type in RequestTypes">
           <v-expansion-panel
             v-for="([groupName, group], idx) in Object.entries(
               record.proofRequest[type]
             )"
-            :key="idx"
+            :key="groupName + idx"
           >
             <v-expansion-panel-header
               class="grey--text text--darken-2 font-weight-medium bg-light"
-              >{{ groupName }}</v-expansion-panel-header
             >
+              <span v-html="renderSchemaLabel(groupName)"></span
+            ></v-expansion-panel-header>
             <v-expansion-panel-content class="bg-light">
               <v-list-item
                 v-if="group.proofData && group.proofData.identifier"
@@ -139,11 +140,13 @@
                   <v-expansion-panel-content class="bg-light">
                     <v-list-item-group
                       v-for="(restr, idy) in group.restrictions"
-                      :key="idy"
+                      :key="100 + idy"
                     >
                       <v-list-item
-                        v-for="[restrType, restrValue] in Object.entries(restr)"
-                        :key="restrType"
+                        v-for="([restrType, restrValue], idz) in Object.entries(
+                          restr
+                        )"
+                        :key="restrType + idz"
                       >
                         <v-list-item-title>
                           {{ toRestrictionLabel(restrType) }}
@@ -157,13 +160,15 @@
                 </v-expansion-panel>
               </v-expansion-panels>
 
+              <!-- Select matcing credential -->
+
               <div v-if="group.matchingCredentials">
                 <h4 class="mb-4">Select data for presentation</h4>
                 <v-select
                   label="Matching Credentials"
                   return-object
                   :items="group.matchingCredentials"
-                  item-text="credentialInfo.credentialLabel"
+                  :item-text="toCredentialLabel"
                   v-model="group.selectedCredential"
                   outlined
                   @change="selectedCredential(group, $event)"
@@ -236,9 +241,7 @@ export default {
           if (
             this.record.state === PresentationExchangeStates.REQUEST_RECEIVED
           ) {
-            return nPanels === 1
-              ? 0
-              : [...Array(nPanels).keys()].map((k, i) => i);
+            return [...Array(nPanels).keys()].map((k, i) => i);
           } else {
             return [];
           }
@@ -268,6 +271,43 @@ export default {
       } else {
         return restrType;
       }
+    },
+    toCredentialLabel(matchedCred) {
+      if (matchedCred.credentialInfo) {
+        const credInfo = matchedCred.credentialInfo;
+        if (credInfo.credentialLabel) {
+          return credInfo.credentialLabel;
+        } else if (credInfo.schemaLabel) {
+          if (credInfo.issuerLabel) {
+            return `${credInfo.schemaLabel} (${credInfo.issuerLabel})`;
+          } else {
+            return credInfo.schemaLabel;
+          }
+        } else {
+          return credInfo.credentialId;
+        }
+      } else {
+        return "No info found";
+      }
+    },
+    renderSchemaLabel(attrGroupName) {
+      // If groupName contains schema id, try to render label else show group name
+      const end = attrGroupName.lastIndexOf(".");
+
+      if (end !== -1) {
+        const schemaId = attrGroupName.substring(0, end + 2);
+        const schema = this.$store.getters.getSchemas.find(
+          (s) => s.schemaId === schemaId
+        );
+
+        if (schema && schema.label) {
+          return `<strong>${schema.label}</strong><i>&nbsp;(${schema.schemaId})</i>`;
+        } else {
+          return attrGroupName;
+        }
+      }
+
+      return attrGroupName;
     },
   },
   data: () => {
