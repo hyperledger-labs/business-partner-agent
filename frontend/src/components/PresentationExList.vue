@@ -193,7 +193,6 @@ export default {
             return Object.hasOwnProperty.call(group, "selectedCredential");
           });
         });
-        console.log(groupsWithCredentials.flat().reduce((x, y) => x && y));
         return groupsWithCredentials.flat().reduce((x, y) => x && y);
       } else {
         return false;

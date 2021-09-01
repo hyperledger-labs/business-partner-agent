@@ -52,7 +52,7 @@
           >
 
           <v-container>
-            <v-expansion-panels>
+            <v-expansion-panels focusable>
               <v-expansion-panel
                 class="my-5"
                 v-for="(attributeGroup, idx) in proofTemplate.attributeGroups"
@@ -407,7 +407,7 @@ export default {
       const schema = this.$store.getters.getSchemas.find(
         (s) => s.id === attributeGroup.schemaId
       );
-      return `${schema.label}<i>&nbsp;(${schema.schemaId})</i>`;
+      return `${schema.label}<em>&nbsp;(${schema.schemaId})</em>`;
     },
     addAttributeGroup(schemaId) {
       // add a blank attribute group template
