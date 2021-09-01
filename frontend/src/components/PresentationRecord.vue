@@ -79,7 +79,7 @@
             v-for="([groupName, group], idx) in Object.entries(
               record.proofRequest[type]
             )"
-            :key="idx"
+            :key="groupName + idx"
           >
             <v-expansion-panel-header
               class="grey--text text--darken-2 font-weight-medium bg-light"
@@ -139,11 +139,13 @@
                   <v-expansion-panel-content class="bg-light">
                     <v-list-item-group
                       v-for="(restr, idy) in group.restrictions"
-                      :key="idy"
+                      :key="100 + idy"
                     >
                       <v-list-item
-                        v-for="[restrType, restrValue] in Object.entries(restr)"
-                        :key="restrType"
+                        v-for="([restrType, restrValue], idz) in Object.entries(
+                          restr
+                        )"
+                        :key="restrType + idz"
                       >
                         <v-list-item-title>
                           {{ toRestrictionLabel(restrType) }}
@@ -163,7 +165,7 @@
                   label="Matching Credentials"
                   return-object
                   :items="group.matchingCredentials"
-                  item-text="credentialInfo.credentialLabel"
+                  item-text="toCredentialLabel"
                   v-model="group.selectedCredential"
                   outlined
                   @change="selectedCredential(group, $event)"
@@ -267,6 +269,24 @@ export default {
         return Object.values(Restrictions)[idx].label;
       } else {
         return restrType;
+      }
+    },
+    toCredentialLabel(matchedCred) {
+      if (matchedCred.credentialInfo) {
+        const credInfo = matchedCred.credentialInfo;
+        if (credInfo.credentialLabel) {
+          return credInfo.credentialLabel;
+        } else if (credInfo.schemaLabel) {
+          if (credInfo.issuerLabel) {
+            return `${credInfo.schemaLabel} (${credInfo.issuerLabel})`;
+          } else {
+            return credInfo.schemaLabel;
+          }
+        } else {
+          return credInfo.credentialId;
+        }
+      } else {
+        return "No info found";
       }
     },
   },
