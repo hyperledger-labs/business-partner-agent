@@ -18,7 +18,7 @@
 
 <template>
   <v-container>
-    <v-expansion-panels>
+    <v-expansion-panels focusable>
       <v-expansion-panel
         class="my-5"
         v-for="(attributeGroup, idx) in requestData"
@@ -179,7 +179,7 @@ export default {
       }
 
       if (schema) {
-        return `<strong>${schema.label}</strong><i>&nbsp;(${schema.schemaId})</i>`;
+        return `<strong>${schema.label}</strong><em>&nbsp;(${schema.schemaId})</em>`;
       } else if (schemaId) {
         return schemaId;
       } else {
