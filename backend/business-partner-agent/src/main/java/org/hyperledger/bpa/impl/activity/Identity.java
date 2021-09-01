@@ -19,6 +19,8 @@ package org.hyperledger.bpa.impl.activity;
 
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -34,8 +36,6 @@ import org.hyperledger.bpa.client.CachingAriesClient;
 import org.hyperledger.bpa.client.DidDocClient;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;

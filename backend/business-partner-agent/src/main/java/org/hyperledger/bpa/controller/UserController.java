@@ -33,14 +33,17 @@ import io.micronaut.security.session.SessionLoginHandler;
 import io.micronaut.views.View;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Inject;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.model.BPAUser;
 import org.hyperledger.bpa.repository.BPAUserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.inject.Inject;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Secured(SecurityRule.IS_ANONYMOUS)

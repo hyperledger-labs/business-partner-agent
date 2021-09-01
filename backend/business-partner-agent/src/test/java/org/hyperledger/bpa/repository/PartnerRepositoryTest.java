@@ -28,7 +28,7 @@ import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;

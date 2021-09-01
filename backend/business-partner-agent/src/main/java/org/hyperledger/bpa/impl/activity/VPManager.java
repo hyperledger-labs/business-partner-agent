@@ -20,7 +20,10 @@ package org.hyperledger.bpa.impl.activity;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.scheduling.annotation.Async;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.Setter;
@@ -44,10 +47,10 @@ import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.MyDocumentRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
-import io.micronaut.core.annotation.Nullable;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Singleton
 public class VPManager {

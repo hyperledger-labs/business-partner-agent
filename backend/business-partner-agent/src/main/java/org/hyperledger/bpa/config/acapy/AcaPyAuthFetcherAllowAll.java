@@ -22,11 +22,10 @@ import io.micronaut.http.HttpMethod;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.filters.AuthenticationFetcher;
 import io.reactivex.Maybe;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.controller.AriesWebhookController;
 import org.reactivestreams.Publisher;
-
-import javax.inject.Singleton;
 
 /**
  * Backwards compatible AuthFetcher if security is set to true, but no

@@ -25,7 +25,7 @@ import org.hyperledger.bpa.model.prooftemplate.ValueOperators;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.validation.ConstraintViolation;
 import java.util.Set;
 

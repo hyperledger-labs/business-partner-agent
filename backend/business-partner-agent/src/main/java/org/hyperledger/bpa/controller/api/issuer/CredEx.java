@@ -17,18 +17,18 @@
  */
 package org.hyperledger.bpa.controller.api.issuer;
 
+import jakarta.inject.Inject;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
-import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.PartnerAPI;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 
-import javax.inject.Inject;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;

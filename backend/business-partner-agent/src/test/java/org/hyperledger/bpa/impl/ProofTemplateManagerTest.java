@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Optional;

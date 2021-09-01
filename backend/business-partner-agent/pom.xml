@@ -94,10 +94,10 @@
             <version>2.2.3</version>
             <scope>provided</scope><!-- Prevent shipping -->
         </dependency>
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>1</version>
+        <dependency><!-- Overwrite for jakarta-annotations-api -->
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-annotations-api</artifactId>
+            <version>10.1.0-M4</version>
         </dependency>
 
         <!-- Logging -->

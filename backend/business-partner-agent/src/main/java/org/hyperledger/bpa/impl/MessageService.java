@@ -22,14 +22,14 @@ import io.micronaut.scheduling.annotation.Async;
 import io.micronaut.scheduling.annotation.Scheduled;
 import io.micronaut.websocket.WebSocketBroadcaster;
 import io.micronaut.websocket.WebSocketSession;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.MessageQueue;
 import org.hyperledger.bpa.repository.MessageQueueRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

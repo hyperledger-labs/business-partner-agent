@@ -19,6 +19,8 @@ package org.hyperledger.bpa.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micronaut.context.event.ApplicationEventListener;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -27,8 +29,6 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.server.AdminConfig;
 import org.hyperledger.bpa.impl.StartupTasks;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 
 @Getter

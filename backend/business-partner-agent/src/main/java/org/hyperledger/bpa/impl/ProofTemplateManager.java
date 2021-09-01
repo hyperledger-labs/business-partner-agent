@@ -19,6 +19,8 @@
 package org.hyperledger.bpa.impl;
 
 import io.micronaut.data.exceptions.DataAccessException;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.AllArgsConstructor;
 import org.hyperledger.bpa.api.exception.DataPersistenceException;
 import org.hyperledger.bpa.api.exception.ProofTemplateException;
@@ -28,8 +30,6 @@ import org.hyperledger.bpa.model.BPAProofTemplate;
 import org.hyperledger.bpa.model.prooftemplate.ValueOperators;
 import org.hyperledger.bpa.repository.BPAProofTemplateRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.Optional;

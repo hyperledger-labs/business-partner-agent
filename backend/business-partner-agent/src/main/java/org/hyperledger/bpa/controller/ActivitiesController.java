@@ -26,11 +26,11 @@ import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Inject;
 import org.hyperledger.bpa.controller.api.activity.ActivityItem;
 import org.hyperledger.bpa.controller.api.activity.ActivitySearchParameters;
 import org.hyperledger.bpa.impl.ActivityManager;
 
-import javax.inject.Inject;
 import javax.validation.Valid;
 import java.util.List;
 

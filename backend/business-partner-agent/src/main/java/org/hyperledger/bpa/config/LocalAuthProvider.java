@@ -20,13 +20,13 @@ package org.hyperledger.bpa.config;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.security.authentication.*;
 import io.reactivex.Maybe;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.hyperledger.bpa.model.BPAUser;
 import org.hyperledger.bpa.repository.BPAUserRepository;
 import org.reactivestreams.Publisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;

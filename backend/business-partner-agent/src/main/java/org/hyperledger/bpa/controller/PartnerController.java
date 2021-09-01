@@ -28,6 +28,7 @@ import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.PartnerAPI;
@@ -45,7 +46,6 @@ import org.hyperledger.bpa.impl.aries.ProofManager;
 import org.hyperledger.bpa.impl.verification.ValidUUID;
 import org.hyperledger.bpa.model.ChatMessage;
 
-import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;

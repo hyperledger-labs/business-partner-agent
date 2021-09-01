@@ -18,9 +18,8 @@
 package org.hyperledger.bpa.impl.util;
 
 import io.micronaut.core.annotation.Nullable;
-import org.apache.commons.lang3.StringUtils;
-
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.UUID;
 

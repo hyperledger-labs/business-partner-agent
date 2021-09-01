@@ -27,6 +27,7 @@ import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.present_proof.PresentationRequest;
@@ -39,7 +40,6 @@ import org.hyperledger.bpa.impl.aries.ProofManager;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 
-import javax.inject.Inject;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;

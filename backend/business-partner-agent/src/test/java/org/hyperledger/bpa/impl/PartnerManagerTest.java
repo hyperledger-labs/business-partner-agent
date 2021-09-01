@@ -26,7 +26,7 @@ import org.hyperledger.bpa.repository.TagRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.*;
 import java.util.stream.Collectors;
 

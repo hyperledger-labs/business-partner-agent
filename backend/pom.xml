@@ -103,10 +103,15 @@
                 <groupId>io.micronaut</groupId>
                 <artifactId>micronaut-inject</artifactId>
                 <version>${micronaut.version}</version>
+                <!-- Incompatible licenses! -->
                 <exclusions>
                     <exclusion>
                         <groupId>jakarta.annotation</groupId>
                         <artifactId>jakarta.annotation-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.annotation</groupId>
+                        <artifactId>javax.annotation-api</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>

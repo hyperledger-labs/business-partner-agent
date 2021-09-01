@@ -19,6 +19,8 @@ package org.hyperledger.bpa.impl.mode.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.acy_py.generated.model.DIDEndpointWithType;
 import org.hyperledger.aries.api.resolver.DIDDocument;
@@ -30,8 +32,6 @@ import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.DidDocWeb;
 import org.hyperledger.bpa.repository.DidDocWebRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;

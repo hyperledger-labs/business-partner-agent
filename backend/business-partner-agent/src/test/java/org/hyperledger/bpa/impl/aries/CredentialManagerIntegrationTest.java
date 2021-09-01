@@ -29,7 +29,7 @@ import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -24,7 +24,7 @@ import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;

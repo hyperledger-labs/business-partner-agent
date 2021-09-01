@@ -26,7 +26,7 @@ import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.BPAWebhook;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 

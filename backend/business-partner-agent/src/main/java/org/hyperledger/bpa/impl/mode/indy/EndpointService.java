@@ -18,6 +18,8 @@
 package org.hyperledger.bpa.impl.mode.indy;
 
 import io.micronaut.context.annotation.Value;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.acy_py.generated.model.DID;
@@ -30,8 +32,6 @@ import org.hyperledger.aries.api.ledger.TAAInfo.TAARecord;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.runtime.RequiresIndy;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

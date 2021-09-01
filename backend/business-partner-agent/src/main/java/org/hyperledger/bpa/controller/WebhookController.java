@@ -24,11 +24,11 @@ import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Inject;
 import org.hyperledger.bpa.core.RegisteredWebhook;
 import org.hyperledger.bpa.core.RegisteredWebhook.RegisteredWebhookResponse;
 import org.hyperledger.bpa.impl.WebhookService;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

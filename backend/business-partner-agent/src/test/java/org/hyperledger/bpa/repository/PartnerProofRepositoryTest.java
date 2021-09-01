@@ -22,7 +22,7 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;

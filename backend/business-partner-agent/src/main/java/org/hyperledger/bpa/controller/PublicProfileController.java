@@ -26,13 +26,13 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Inject;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.impl.DidDocManager;
 import org.hyperledger.bpa.impl.activity.VPManager;
 
-import javax.inject.Inject;
 import java.util.Optional;
 
 @Controller

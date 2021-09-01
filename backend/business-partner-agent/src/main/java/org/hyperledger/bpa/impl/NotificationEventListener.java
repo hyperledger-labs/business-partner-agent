@@ -19,6 +19,8 @@ package org.hyperledger.bpa.impl;
 
 import io.micronaut.runtime.event.annotation.EventListener;
 import io.micronaut.scheduling.annotation.Async;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
@@ -29,8 +31,6 @@ import org.hyperledger.bpa.impl.notification.*;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.PartnerProof;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Optional;
 
 @Singleton

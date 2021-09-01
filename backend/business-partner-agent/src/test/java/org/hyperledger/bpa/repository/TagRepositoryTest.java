@@ -23,7 +23,7 @@ import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.Tag;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;

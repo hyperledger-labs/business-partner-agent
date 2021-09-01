@@ -23,6 +23,7 @@ import io.micronaut.http.HttpMethod;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.filters.AuthenticationFetcher;
 import io.reactivex.Maybe;
+import jakarta.inject.Singleton;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,6 @@ import org.hyperledger.bpa.controller.AriesWebhookController;
 import org.jetbrains.annotations.NotNull;
 import org.reactivestreams.Publisher;
 
-import javax.inject.Singleton;
 import java.util.List;
 import java.util.Map;
 

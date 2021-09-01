@@ -19,6 +19,7 @@ package org.hyperledger.bpa.impl.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.BaseTest;
@@ -31,7 +32,6 @@ import org.hyperledger.bpa.model.Partner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
 import java.util.Map;
 import java.util.UUID;
 
@@ -115,5 +115,4 @@ class ConverterTest extends BaseTest {
         assertNull(result.getCreatedAt());
         assertNotEquals(c.getId(), result.getId());
     }
-
 }

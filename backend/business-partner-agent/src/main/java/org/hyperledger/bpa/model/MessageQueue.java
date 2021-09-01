@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.model;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
 import io.micronaut.data.annotation.TypeDef;
@@ -26,7 +27,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import io.micronaut.core.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.time.Instant;

@@ -19,6 +19,8 @@ package org.hyperledger.bpa.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.Setter;
@@ -35,8 +37,6 @@ import org.hyperledger.bpa.config.runtime.RequiresLedgerExplorer;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
