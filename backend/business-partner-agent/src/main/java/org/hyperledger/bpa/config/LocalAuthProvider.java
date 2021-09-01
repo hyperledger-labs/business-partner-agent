@@ -50,7 +50,7 @@ public class LocalAuthProvider implements AuthenticationProvider {
         return Maybe.<AuthenticationResponse>create(emitter -> {
             if (dbUser.isPresent()
                     && enc.matches(String.valueOf(authenticationRequest.getSecret()), dbUser.get().getPassword())) {
-                emitter.onSuccess(new UserDetails(
+                emitter.onSuccess(AuthenticationResponse.success(
                         dbUser.get().getUsername(),
                         Arrays.asList(dbUser.get().getRoles().split(",")),
                         Map.of("userId", dbUser.get().getId())));

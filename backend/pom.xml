@@ -54,13 +54,13 @@
         <!-- Dependency Versions -->
         <log4j2.version>2.14.1</log4j2.version>
         <lombok.version>1.18.20</lombok.version>
-        <micronaut.version>2.5.12</micronaut.version>
-        <micronaut.data.version>2.5.0</micronaut.data.version>
+        <micronaut.version>3.0.0</micronaut.version>
+        <micronaut.data.version>3.0.0</micronaut.data.version>
         <micronaut.openapi.version>3.0.1</micronaut.openapi.version>
-        <micronaut.security.version>2.5.0</micronaut.security.version>
+        <micronaut.security.version>3.0.0</micronaut.security.version>
         <mockito.version>3.12.4</mockito.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
-        <pmd.version>6.37.0</pmd.version>
+        <pmd.version>6.38.0</pmd.version>
         <spotbugs.version>4.2.3</spotbugs.version>
         <testcontainers.version>1.16.0</testcontainers.version>
         <!-- Plugin Versions -->
@@ -98,6 +98,17 @@
                 <version>${micronaut.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.micronaut</groupId>
+                <artifactId>micronaut-inject</artifactId>
+                <version>${micronaut.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>jakarta.annotation</groupId>
+                        <artifactId>jakarta.annotation-api</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <dependency>

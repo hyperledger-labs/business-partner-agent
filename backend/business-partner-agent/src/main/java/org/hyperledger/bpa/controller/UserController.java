@@ -27,7 +27,7 @@ import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
-import io.micronaut.security.authentication.UserDetails;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.security.session.SessionLoginHandler;
 import io.micronaut.views.View;
@@ -111,7 +111,7 @@ public class UserController {
                 .build();
         userRepo.save(dbUser);
 
-        return session.loginSuccess(new UserDetails(
+        return session.loginSuccess(Authentication.build(
                 dbUser.getUsername(),
                 Arrays.asList(dbUser.getRoles().split(",")),
                 Map.of("userId", dbUser.getId())), request);

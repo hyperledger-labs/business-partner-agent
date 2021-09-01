@@ -29,13 +29,6 @@
         <dependency>
             <groupId>io.micronaut</groupId>
             <artifactId>micronaut-inject</artifactId>
-            <exclusions>
-                <exclusion>
-                    <!-- Incompatible license! -->
-                    <groupId>javax.annotation</groupId>
-                    <artifactId>javax.annotation-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.micronaut</groupId>
@@ -101,13 +94,10 @@
             <version>2.2.3</version>
             <scope>provided</scope><!-- Prevent shipping -->
         </dependency>
-        <!-- Micronaut license overwrites -->
-        <!-- Drop in for javax.annotation-api -->
-        <!-- TODO delete once micronaut has removed javax annotations -->
         <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>annotations-api</artifactId>
-            <version>6.0.53</version>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
         </dependency>
 
         <!-- Logging -->
