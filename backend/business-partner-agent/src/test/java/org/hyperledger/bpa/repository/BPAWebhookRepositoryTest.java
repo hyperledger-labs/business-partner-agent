@@ -19,6 +19,7 @@ package org.hyperledger.bpa.repository;
 
 import io.micronaut.data.exceptions.DataAccessException;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hyperledger.bpa.core.RegisteredWebhook;
 import org.hyperledger.bpa.core.RegisteredWebhook.WebhookEventType;
@@ -26,13 +27,10 @@ import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.BPAWebhook;
 import org.junit.jupiter.api.Test;
 
-import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @MicronautTest
 class BPAWebhookRepositoryTest {

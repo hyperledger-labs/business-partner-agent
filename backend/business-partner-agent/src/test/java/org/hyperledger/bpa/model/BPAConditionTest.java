@@ -20,12 +20,12 @@ package org.hyperledger.bpa.model;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.validation.validator.Validator;
+import jakarta.inject.Inject;
 import org.hyperledger.bpa.model.prooftemplate.BPACondition;
 import org.hyperledger.bpa.model.prooftemplate.ValueOperators;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import jakarta.inject.Inject;
 import javax.validation.ConstraintViolation;
 import java.util.Set;
 

@@ -18,11 +18,11 @@
 package org.hyperledger.bpa.config.runtime;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.bpa.client.LedgerExplorerClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import jakarta.inject.Inject;
 import java.util.Optional;
 
 @MicronautTest

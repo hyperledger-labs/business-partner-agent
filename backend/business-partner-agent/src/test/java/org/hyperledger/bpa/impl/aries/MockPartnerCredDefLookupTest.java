@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl.aries;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.bpa.client.LedgerExplorerClient;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.model.BPASchema;
@@ -31,7 +32,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import jakarta.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

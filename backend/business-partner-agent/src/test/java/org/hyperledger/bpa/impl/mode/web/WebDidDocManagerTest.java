@@ -20,12 +20,12 @@ package org.hyperledger.bpa.impl.mode.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.env.Environment;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.RunWithAries;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import jakarta.inject.Inject;
 import java.util.Optional;
 
 @MicronautTest(environments = { Environment.TEST, "test-web" })

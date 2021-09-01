@@ -18,13 +18,13 @@
 package org.hyperledger.bpa.client;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import jakarta.inject.Inject;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;

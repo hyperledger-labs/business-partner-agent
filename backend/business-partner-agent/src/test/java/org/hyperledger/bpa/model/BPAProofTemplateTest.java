@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.validation.validator.Validator;
+import jakarta.inject.Inject;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidBPASchemaId;
@@ -32,7 +33,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import jakarta.inject.Inject;
 import javax.validation.ConstraintViolation;
 import java.util.List;
 import java.util.Set;

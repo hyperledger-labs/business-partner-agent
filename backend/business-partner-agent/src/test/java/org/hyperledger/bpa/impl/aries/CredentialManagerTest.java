@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl.aries;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
@@ -29,8 +30,6 @@ import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
-
-import jakarta.inject.Inject;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;

@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl.aries;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import lombok.NonNull;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
@@ -30,7 +31,6 @@ import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
 
-import jakarta.inject.Inject;
 import java.time.Instant;
 import java.util.Optional;
 

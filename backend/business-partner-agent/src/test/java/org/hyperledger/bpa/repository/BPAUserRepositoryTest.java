@@ -18,10 +18,10 @@
 package org.hyperledger.bpa.repository;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.bpa.model.BPAUser;
 import org.junit.jupiter.api.Test;
 
-import jakarta.inject.Inject;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;

@@ -20,26 +20,27 @@ package org.hyperledger.bpa.impl;
 
 import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.bpa.api.exception.ProofTemplateException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.ProofManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroups;
 import org.hyperledger.bpa.model.BPAProofTemplate;
+import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroups;
 import org.hyperledger.bpa.repository.BPAProofTemplateRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import jakarta.inject.Inject;
 import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @MicronautTest

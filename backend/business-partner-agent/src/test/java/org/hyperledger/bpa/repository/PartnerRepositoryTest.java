@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.repository;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,7 +29,6 @@ import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
 import org.junit.jupiter.api.Test;
 
-import jakarta.inject.Inject;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
