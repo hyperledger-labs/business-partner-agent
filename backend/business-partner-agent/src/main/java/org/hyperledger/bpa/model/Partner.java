@@ -17,7 +17,11 @@
  */
 package org.hyperledger.bpa.model;
 
-import io.micronaut.data.annotation.*;
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.annotation.AutoPopulated;
+import io.micronaut.data.annotation.DateCreated;
+import io.micronaut.data.annotation.DateUpdated;
+import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,13 +33,12 @@ import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 
-import io.micronaut.core.annotation.Nullable;
-
 import javax.persistence.*;
-import javax.persistence.Id;
-import javax.persistence.Transient;
 import java.time.Instant;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Flat representation of a partner. In the web context a partner is just a

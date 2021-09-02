@@ -25,11 +25,10 @@ import io.micronaut.websocket.annotation.OnClose;
 import io.micronaut.websocket.annotation.OnMessage;
 import io.micronaut.websocket.annotation.OnOpen;
 import io.micronaut.websocket.annotation.ServerWebSocket;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.impl.MessageService;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * Handles frontend websocket connections. TODO: does not work when scaled to

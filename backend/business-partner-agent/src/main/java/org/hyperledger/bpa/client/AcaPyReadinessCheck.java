@@ -17,21 +17,19 @@
  */
 package org.hyperledger.bpa.client;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.server.AdminStatusReadiness;
-
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.health.HealthStatus;
 import io.micronaut.management.endpoint.health.HealthEndpoint;
 import io.micronaut.management.health.indicator.AbstractHealthIndicator;
 import io.micronaut.management.health.indicator.annotation.Readiness;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.server.AdminStatusReadiness;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.Optional;
 
 @Singleton
 @Readiness

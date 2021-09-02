@@ -18,8 +18,8 @@
 package org.hyperledger.bpa.config;
 
 import io.micronaut.context.annotation.Factory;
+import jakarta.inject.Singleton;
 
-import javax.inject.Singleton;
 import java.time.Clock;
 
 @Factory

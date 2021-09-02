@@ -20,13 +20,13 @@ package org.hyperledger.bpa.config;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.security.authentication.*;
 import io.reactivex.Maybe;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.hyperledger.bpa.model.BPAUser;
 import org.hyperledger.bpa.repository.BPAUserRepository;
 import org.reactivestreams.Publisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
@@ -35,10 +35,10 @@ import java.util.Optional;
 public class LocalAuthProvider implements AuthenticationProvider {
 
     @Inject
-    private BPAUserRepository userRepo;
+    BPAUserRepository userRepo;
 
     @Inject
-    private BCryptPasswordEncoder enc;
+    BCryptPasswordEncoder enc;
 
     @Override
     public Publisher<AuthenticationResponse> authenticate(
@@ -50,7 +50,7 @@ public class LocalAuthProvider implements AuthenticationProvider {
         return Maybe.<AuthenticationResponse>create(emitter -> {
             if (dbUser.isPresent()
                     && enc.matches(String.valueOf(authenticationRequest.getSecret()), dbUser.get().getPassword())) {
-                emitter.onSuccess(new UserDetails(
+                emitter.onSuccess(AuthenticationResponse.success(
                         dbUser.get().getUsername(),
                         Arrays.asList(dbUser.get().getRoles().split(",")),
                         Map.of("userId", dbUser.get().getId())));

@@ -19,6 +19,8 @@ package org.hyperledger.bpa.impl;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.exceptions.DataAccessException;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.api.TagAPI;
@@ -27,9 +29,10 @@ import org.hyperledger.bpa.config.TagConfig;
 import org.hyperledger.bpa.model.Tag;
 import org.hyperledger.bpa.repository.TagRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Singleton

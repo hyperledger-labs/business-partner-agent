@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl.prooftemplate.aries;
 
 import io.micronaut.test.annotation.MockBean;
+import jakarta.inject.Inject;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.RunWithAries;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
@@ -30,7 +31,6 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;

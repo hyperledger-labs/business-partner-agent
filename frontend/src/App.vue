@@ -299,18 +299,18 @@
      <BasicMessages ref="basicMessages" />
     </div>
 
-    <v-footer v-if="showFooter" app>
+    <v-footer app>
       <v-col cols="12" class="text-center">
-        <span v-if="imprintUrl" class="mr-4 subtitle-2"
+        <span v-if="showFooter && imprintUrl" class="mr-4 subtitle-2"
           ><a :href="imprintUrl">{{
             $t("app.footer.imprintUrl.text")
           }}</a></span
-        >
-        <span v-if="privacyPolicyUrl" class="subtitle-2"
+        ><span v-else class="mr-4 subtitle-2">&nbsp;</span>
+        <span v-if="showFooter && privacyPolicyUrl" class="subtitle-2"
           ><a :href="privacyPolicyUrl">{{
             $t("app.footer.privacyPolicyUrl.text")
           }}</a></span
-        >
+        ><span v-else class="mr-4 subtitle-2">&nbsp;</span>
       </v-col>
     </v-footer>
   </v-app>

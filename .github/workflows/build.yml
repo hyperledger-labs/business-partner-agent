@@ -55,7 +55,7 @@ jobs:
         run: npm --prefix frontend run license-check
 
       - name: Test with Maven 
-        run: mvn -f backend/pom.xml test spotbugs:check pmd:check pmd:cpd-check license:check
+        run: mvn -f backend/pom.xml test spotbugs:check pmd:check pmd:cpd-check license:check dependency-check:check -Ddependency-check.skip=false
 
       # Attribution Phase
 

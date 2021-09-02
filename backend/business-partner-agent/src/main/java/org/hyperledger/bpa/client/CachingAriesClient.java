@@ -18,12 +18,12 @@
 package org.hyperledger.bpa.client;
 
 import io.micronaut.cache.annotation.Cacheable;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.Setter;
 import org.hyperledger.acy_py.generated.model.DID;
 import org.hyperledger.aries.AriesClient;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.Optional;
 

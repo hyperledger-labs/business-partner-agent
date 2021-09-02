@@ -18,10 +18,10 @@
 package org.hyperledger.bpa.repository;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.bpa.model.DidDocWeb;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
 import java.util.Iterator;
 import java.util.Map;
 

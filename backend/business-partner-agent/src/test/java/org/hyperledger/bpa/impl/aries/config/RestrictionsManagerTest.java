@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl.aries.config;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.ledger.DidVerkeyResponse;
@@ -30,7 +31,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.inject.Inject;
 import java.util.Optional;
 import java.util.UUID;
 

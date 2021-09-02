@@ -17,20 +17,20 @@
  */
 package org.hyperledger.bpa.impl;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.Setter;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.impl.activity.DocumentValidator;
-import org.hyperledger.bpa.impl.activity.VPManager;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
+import org.hyperledger.bpa.impl.activity.VPManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.repository.MyDocumentRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.repository;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.config.GsonConfig;
@@ -28,7 +29,6 @@ import org.hyperledger.bpa.model.MyCredential;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.UUID;
 

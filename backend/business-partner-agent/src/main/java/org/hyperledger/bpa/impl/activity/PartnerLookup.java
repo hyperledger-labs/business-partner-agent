@@ -20,6 +20,8 @@ package org.hyperledger.bpa.impl.activity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.cache.annotation.Cacheable;
 import io.micronaut.core.util.CollectionUtils;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -32,8 +34,6 @@ import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.client.DidDocClient;
 import org.hyperledger.bpa.impl.util.Converter;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.List;
 import java.util.Optional;
 

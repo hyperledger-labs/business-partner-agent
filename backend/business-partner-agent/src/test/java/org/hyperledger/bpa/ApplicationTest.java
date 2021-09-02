@@ -17,9 +17,8 @@
  */
 package org.hyperledger.bpa;
 
-import org.junit.jupiter.api.Test;
-
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import org.junit.jupiter.api.Test;
 
 @MicronautTest
 public class ApplicationTest {

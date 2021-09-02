@@ -20,11 +20,10 @@ package org.hyperledger.bpa.impl.mode.web;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.env.Environment;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.config.runtime.RequiresWeb;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 @Slf4j
 @Singleton

@@ -26,15 +26,18 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Inject;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.impl.ProofTemplateManager;
 import org.hyperledger.bpa.impl.verification.ValidUUID;
 import org.hyperledger.bpa.model.BPAProofTemplate;
 
-import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Controller("/api/proof-templates")

@@ -17,6 +17,8 @@
  */
 package org.hyperledger.bpa.impl;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +26,6 @@ import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.ChatMessage;
 import org.hyperledger.bpa.model.Partner;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 @Slf4j
 @NoArgsConstructor

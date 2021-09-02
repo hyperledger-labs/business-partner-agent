@@ -17,6 +17,8 @@
  */
 package org.hyperledger.bpa.impl.aries;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.acy_py.generated.model.V20CredExRecord;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
@@ -31,8 +33,6 @@ import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.impl.ChatMessageManager;
 import org.hyperledger.bpa.impl.IssuerCredentialManager;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Optional;
 
 @Slf4j

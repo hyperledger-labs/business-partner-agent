@@ -19,6 +19,7 @@ package org.hyperledger.bpa.impl.aries;
 
 import com.google.gson.Gson;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.config.GsonConfig;
@@ -27,7 +28,6 @@ import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;

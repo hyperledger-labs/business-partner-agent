@@ -17,6 +17,8 @@
  */
 package org.hyperledger.bpa.impl.aries;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
@@ -26,9 +28,6 @@ import org.hyperledger.bpa.impl.aries.config.RestrictionsManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 @Singleton
 public class CredentialInfoResolver {
