@@ -24,18 +24,12 @@ import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.filters.AuthenticationFetcher;
 import io.reactivex.Maybe;
 import jakarta.inject.Singleton;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.controller.AriesWebhookController;
-import org.jetbrains.annotations.NotNull;
 import org.reactivestreams.Publisher;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Handles aca-py webhook authentication. If the flag --webhook-url is set
