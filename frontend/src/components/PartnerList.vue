@@ -21,10 +21,7 @@
       @click:row="open"
     >
       <template v-slot:[`item.name`]="{ item }">
-        <new-message-icon
-            :type="'partner'"
-            :id="item.id"
-        ></new-message-icon>
+        <new-message-icon :type="'partner'" :id="item.id"></new-message-icon>
         <PartnerStateIndicator
           v-if="item.state"
           v-bind:state="item.state"
@@ -101,6 +98,10 @@ export default {
       type: String,
       default: "",
     },
+    refresh: {
+      type: Boolean,
+      default: false,
+    },
   },
   created() {
     this.fetch();
@@ -131,6 +132,12 @@ export default {
     },
   },
   watch: {
+    refresh: function (newValue) {
+      if (newValue) {
+        this.fetch();
+        this.$emit("refreshed");
+      }
+    },
     partnerNotifications: function (newValue) {
       if (newValue) {
         // TODO: Don't fetch all partners but only add new partner
@@ -171,8 +178,6 @@ export default {
               partner.address = this.getProfileAddress(partner);
               return partner;
             });
-
-            console.log(this.data);
           }
         })
         .catch((e) => {

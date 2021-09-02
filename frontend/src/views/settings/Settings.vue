@@ -7,7 +7,7 @@
 -->
 <template>
   <v-container justify-center>
-    <v-card class="mx-auto">
+    <v-card class="my-4 mx-auto">
       <v-card-title class="bg-light">Settings</v-card-title>
       <v-list-item v-if="!isLoading">
         <v-list-item-title class="grey--text text--darken-2 font-weight-medium"
