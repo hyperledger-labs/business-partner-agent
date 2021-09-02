@@ -279,9 +279,12 @@
                     </v-simple-table>
                   </v-container>
                   <v-layout justify-end>
-                    <v-btn color="error" @click="deleteAttributeGroup(idx)">
+                    <v-btn
+                      color="error"
+                      @click="deleteAttributeGroup(idx, schema)"
+                    >
                       <v-icon left>$vuetify.icons.delete</v-icon>
-                      Delete
+                      Remove
                     </v-btn>
                   </v-layout>
                 </v-expansion-panel-content>
@@ -344,6 +347,16 @@
         </v-layout>
       </v-card-actions>
     </v-card>
+
+    <!-- Notification for deletion of attribute group -->
+    <v-snackbar v-model="snackbarDelete" :timeout="snackbarTimeout">
+      {{ snackbarText }}
+      <template v-slot:action="{ attrs }">
+        <v-btn text v-bind="attrs" @click="snackbarDelete = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -412,6 +425,9 @@ export default {
         name: "",
         attributeGroups: [],
       },
+      snackbarTimeout: 3000,
+      snackbarDelete: false,
+      snackbarText: "",
     };
   },
   computed: {
@@ -439,7 +455,14 @@ export default {
       });
     },
     deleteAttributeGroup(attributeGroupIdx) {
+      const schema = this.$store.getters.getSchemas.find(
+        (s) =>
+          s.id ===
+          this.proofTemplate.attributeGroups[attributeGroupIdx].schemaId
+      );
+      this.snackbarText = `Removed attribute group ${schema.label} (${schema.schemaId})`;
       this.proofTemplate.attributeGroups.splice(attributeGroupIdx, 1);
+      this.snackbarDelete = true;
     },
     addAttribute(idx, attributeName) {
       console.log(`adding attribute ${attributeName} to idx ${idx}`);
