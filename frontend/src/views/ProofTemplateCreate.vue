@@ -59,7 +59,15 @@
                 :key="idx"
               >
                 <v-expansion-panel-header>
-                  <span v-html="renderSchemaLabelId(attributeGroup)"></span>
+                  <div>
+                    <span v-html="renderSchemaLabelId(attributeGroup)"></span>
+                    <v-icon right color="warning"
+                      >$vuetify.icons.validationAlert</v-icon
+                    >
+                    <v-icon right color="error"
+                      >$vuetify.icons.validationAlert</v-icon
+                    >
+                  </div>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-container>
@@ -69,6 +77,7 @@
                       </v-col>
                     </v-row>
                     <v-data-table
+                      show-select
                       disable-sort
                       :headers="attributeGroupHeaders"
                       :items="attributeGroup.attributes"
@@ -269,6 +278,12 @@
                       </tbody>
                     </v-simple-table>
                   </v-container>
+                  <v-layout justify-end>
+                    <v-btn color="error">
+                      <v-icon left>$vuetify.icons.delete</v-icon>
+                      Delete
+                    </v-btn>
+                  </v-layout>
                 </v-expansion-panel-content>
               </v-expansion-panel>
             </v-expansion-panels>
