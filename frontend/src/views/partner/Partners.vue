@@ -6,20 +6,29 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
-  <v-container>
-    <v-card class="mx-auto px-8">
-      <v-row class="d-flex align-end flex-column">
-        <v-switch
-          v-model="showInvitations"
-          inset
-          label="Show Invitations"
-        ></v-switch>
-      </v-row>
+  <v-container justify-center>
+    <v-card class="my-4 mx-auto">
+      <v-card-title class="bg-light">
+        Business Partners
+        <v-layout justify-end>
+          <v-switch
+            class="mr-4"
+            v-model="showInvitations"
+            inset
+            label="Show Invitations"
+          ></v-switch>
+          <v-bpa-button color="primary" icon @click="refresh = true">
+            <v-icon dark>$vuetify.icons.refresh</v-icon>
+          </v-bpa-button>
+        </v-layout>
+      </v-card-title>
 
       <PartnerList
         :headers="headers"
         :indicateNew="true"
         :showInvitations="showInvitations"
+        :refresh="refresh"
+        @refreshed="refresh = false"
       />
       <v-card-actions>
         <v-btn
@@ -54,19 +63,21 @@
 
 <script>
 import { EventBus } from "@/main";
+import VBpaButton from "@/components/BpaButton";
 import PartnerList from "@/components/PartnerList";
 export default {
   name: "Partners",
   components: {
     PartnerList,
+    VBpaButton,
   },
   created() {
     EventBus.$emit("title", "Business Partners");
   },
   data: () => {
     return {
-      isBusy: true,
       search: "",
+      refresh: false,
       showInvitations: false,
       headers: [
         {

@@ -7,7 +7,7 @@
 -->
 <template>
   <v-container justify-center>
-    <v-card class="mx-auto">
+    <v-card class="my-4 mx-auto">
       <v-card-title class="bg-light">
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>$vuetify.icons.prev</v-icon>
