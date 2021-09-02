@@ -20,6 +20,8 @@ package org.hyperledger.bpa.client;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.micronaut.cache.annotation.Cacheable;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -32,8 +34,6 @@ import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.exception.PartnerException;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;

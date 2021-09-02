@@ -20,16 +20,19 @@ package org.hyperledger.bpa.impl.verification;
 
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.validation.validator.constraints.ConstraintValidator;
+import jakarta.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
-import org.hyperledger.bpa.impl.verification.prooftemplates.*;
+import org.hyperledger.bpa.impl.verification.prooftemplates.DistinctAttributeNames;
+import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondition;
+import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
+import org.hyperledger.bpa.impl.verification.prooftemplates.ValidBPASchemaId;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.model.prooftemplate.BPACondition;
 import org.hyperledger.bpa.util.Pair;
 
-import javax.inject.Singleton;
 import java.util.*;
 import java.util.function.Predicate;
 

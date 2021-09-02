@@ -17,6 +17,8 @@
  */
 package org.hyperledger.bpa.impl.activity;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.CredentialType;
@@ -27,8 +29,6 @@ import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.repository.MyDocumentRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Optional;
 import java.util.Set;
 

@@ -29,9 +29,8 @@ import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Hidden;
+import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-
-import javax.inject.Inject;
 
 /**
  * Hack to make page refresh work on the VUE single page app, so that there are

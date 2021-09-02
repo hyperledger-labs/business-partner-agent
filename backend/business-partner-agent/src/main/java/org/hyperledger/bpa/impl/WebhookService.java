@@ -20,6 +20,8 @@ package org.hyperledger.bpa.impl;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.data.exceptions.DataAccessException;
 import io.micronaut.scheduling.annotation.Async;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
@@ -33,8 +35,6 @@ import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.BPAWebhook;
 import org.hyperledger.bpa.repository.BPAWebhookRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;

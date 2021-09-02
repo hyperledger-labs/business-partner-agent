@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.model;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
@@ -27,8 +28,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
-
-import io.micronaut.core.annotation.Nullable;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
 
 import javax.persistence.Entity;

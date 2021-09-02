@@ -18,6 +18,8 @@
 package org.hyperledger.bpa.impl.activity;
 
 import io.micronaut.scheduling.annotation.Async;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
@@ -37,8 +39,6 @@ import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.List;
 import java.util.Optional;
 

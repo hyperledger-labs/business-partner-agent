@@ -21,12 +21,13 @@ package org.hyperledger.bpa.impl.prooftemplate.aries;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.hyperledger.acy_py.generated.model.IndyProofReqPredSpec;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
-import org.hyperledger.bpa.model.*;
+import org.hyperledger.bpa.model.BPAProofTemplate;
 import org.hyperledger.bpa.model.prooftemplate.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
 @MicronautTest
 public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase {

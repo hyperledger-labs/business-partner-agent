@@ -19,6 +19,8 @@ package org.hyperledger.bpa.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -35,8 +37,6 @@ import org.hyperledger.bpa.api.exception.InvitationException;
 import org.hyperledger.bpa.controller.api.invitation.CheckInvitationResponse;
 import org.hyperledger.bpa.impl.util.Converter;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

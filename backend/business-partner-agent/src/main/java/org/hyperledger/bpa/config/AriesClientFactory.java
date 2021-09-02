@@ -21,10 +21,10 @@ import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.env.Environment;
+import jakarta.inject.Singleton;
 import okhttp3.OkHttpClient;
 import org.hyperledger.aries.AriesClient;
 
-import javax.inject.Singleton;
 import java.util.concurrent.TimeUnit;
 
 @Factory

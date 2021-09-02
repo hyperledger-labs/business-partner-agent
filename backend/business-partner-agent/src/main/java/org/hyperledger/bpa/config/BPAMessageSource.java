@@ -20,9 +20,9 @@ package org.hyperledger.bpa.config;
 import io.micronaut.context.MessageSource;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.i18n.ResourceBundleMessageSource;
+import jakarta.inject.Singleton;
 import lombok.NonNull;
 
-import javax.inject.Singleton;
 import java.util.Map;
 
 @Factory

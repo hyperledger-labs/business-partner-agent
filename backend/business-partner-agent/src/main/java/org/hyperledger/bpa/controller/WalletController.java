@@ -25,6 +25,7 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Inject;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.controller.api.wallet.WalletCredentialRequest;
@@ -33,7 +34,6 @@ import org.hyperledger.bpa.impl.MyDocumentManager;
 import org.hyperledger.bpa.impl.aries.HolderCredentialManager;
 import org.hyperledger.bpa.model.MyCredential;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

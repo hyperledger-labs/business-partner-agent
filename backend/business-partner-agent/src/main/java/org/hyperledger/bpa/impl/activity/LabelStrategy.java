@@ -18,6 +18,9 @@
 package org.hyperledger.bpa.impl.activity;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.micronaut.core.annotation.Nullable;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -28,9 +31,6 @@ import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.BPASchema;
 
-import io.micronaut.core.annotation.Nullable;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Map;
 import java.util.Optional;
 

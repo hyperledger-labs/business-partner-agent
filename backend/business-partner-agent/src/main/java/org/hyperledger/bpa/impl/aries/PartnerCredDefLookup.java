@@ -20,6 +20,8 @@ package org.hyperledger.bpa.impl.aries;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.scheduling.annotation.Async;
 import io.micronaut.scheduling.annotation.Scheduled;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.*;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.client.LedgerExplorerClient;
@@ -31,8 +33,6 @@ import org.hyperledger.bpa.repository.BPARestrictionsRepository;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.*;
 import java.util.stream.Collectors;
 

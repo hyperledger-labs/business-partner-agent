@@ -17,6 +17,8 @@
  */
 package org.hyperledger.bpa.impl;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
@@ -26,8 +28,6 @@ import org.hyperledger.bpa.controller.api.stats.DashboardCounts;
 import org.hyperledger.bpa.impl.activity.Identity;
 import org.hyperledger.bpa.repository.*;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 

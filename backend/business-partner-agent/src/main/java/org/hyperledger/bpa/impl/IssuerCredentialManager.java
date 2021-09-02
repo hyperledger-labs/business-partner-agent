@@ -19,6 +19,8 @@ package org.hyperledger.bpa.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.core.annotation.Nullable;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
@@ -63,8 +65,6 @@ import org.hyperledger.bpa.repository.BPACredentialDefinitionRepository;
 import org.hyperledger.bpa.repository.BPACredentialExchangeRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;

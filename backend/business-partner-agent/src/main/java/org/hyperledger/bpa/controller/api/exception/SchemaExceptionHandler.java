@@ -25,10 +25,9 @@ import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.server.exceptions.ExceptionHandler;
 import io.micronaut.http.server.exceptions.response.ErrorContext;
 import io.micronaut.http.server.exceptions.response.ErrorResponseProcessor;
+import jakarta.inject.Singleton;
 import lombok.AllArgsConstructor;
 import org.hyperledger.bpa.api.exception.SchemaException;
-
-import javax.inject.Singleton;
 
 @Produces
 @Singleton
