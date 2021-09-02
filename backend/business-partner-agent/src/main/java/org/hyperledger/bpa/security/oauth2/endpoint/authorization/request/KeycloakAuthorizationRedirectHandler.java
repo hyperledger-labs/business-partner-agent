@@ -23,23 +23,23 @@ import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.security.oauth2.endpoint.authorization.request.AuthorizationRequest;
 import io.micronaut.security.oauth2.endpoint.authorization.request.DefaultAuthorizationRedirectHandler;
 import jakarta.inject.Singleton;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.security.oauth2.client.RequiresKeycloak;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
+@Slf4j
+@NoArgsConstructor
 @Singleton
 @RequiresKeycloak
 @Replaces(DefaultAuthorizationRedirectHandler.class)
 public class KeycloakAuthorizationRedirectHandler extends DefaultAuthorizationRedirectHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(KeycloakAuthorizationRedirectHandler.class);
 
     @Value("${micronaut.security.oauth2.clients.keycloak.vcauthn.pres_req_conf_id}")
     String presentationRequestConfigurationId;
-
-    public KeycloakAuthorizationRedirectHandler() {
-    }
 
     /**
      * @param authorizationRequest Authentication Request
@@ -53,8 +53,7 @@ public class KeycloakAuthorizationRedirectHandler extends DefaultAuthorizationRe
         Map<String, Object> parameters = super.instantiateParameters(authorizationRequest, response);
 
         parameters.put("pres_req_conf_id", this.presentationRequestConfigurationId);
-        KeycloakAuthorizationRedirectHandler.LOG
-                .info("keycloak vcauthn pres_req_conf_id = " + this.presentationRequestConfigurationId);
+        log.info("keycloak vcauthn pres_req_conf_id = " + this.presentationRequestConfigurationId);
 
         return parameters;
     }

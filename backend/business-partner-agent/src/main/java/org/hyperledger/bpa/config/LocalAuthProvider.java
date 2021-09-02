@@ -35,10 +35,10 @@ import java.util.Optional;
 public class LocalAuthProvider implements AuthenticationProvider {
 
     @Inject
-    private BPAUserRepository userRepo;
+    BPAUserRepository userRepo;
 
     @Inject
-    private BCryptPasswordEncoder enc;
+    BCryptPasswordEncoder enc;
 
     @Override
     public Publisher<AuthenticationResponse> authenticate(

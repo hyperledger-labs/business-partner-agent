@@ -32,6 +32,8 @@ import org.hyperledger.bpa.controller.AriesWebhookController;
 import org.jetbrains.annotations.NotNull;
 import org.reactivestreams.Publisher;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -66,7 +68,7 @@ public class AcaPyAuthFetcher implements AuthenticationFetcher {
                 log.trace("Handling aca-py webhook authentication");
                 if (StringUtils.isEmpty(apiKey)
                         || StringUtils.isNotBlank(apiKeyHeader) && apiKeyHeader.equals(apiKey)) {
-                    emitter.onSuccess(new AcaPyAuthentication());
+                    emitter.onSuccess(acaPyAuthentication());
                     log.trace("aca-py webhook authentication success");
                     return;
                 }
@@ -77,21 +79,7 @@ public class AcaPyAuthFetcher implements AuthenticationFetcher {
         }).toFlowable();
     }
 
-    @Data
-    @NoArgsConstructor
-    public static final class AcaPyAuthentication implements Authentication {
-
-        private static final long serialVersionUID = -2423706290718045174L;
-
-        @NotNull
-        @Override
-        public Map<String, Object> getAttributes() {
-            return Map.of("roles", List.of(ROLE_ACA_PY));
-        }
-
-        @Override
-        public String getName() {
-            return "aca-py";
-        }
+    static Authentication acaPyAuthentication() {
+        return Authentication.build("aca-py", List.of(ROLE_ACA_PY));
     }
 }

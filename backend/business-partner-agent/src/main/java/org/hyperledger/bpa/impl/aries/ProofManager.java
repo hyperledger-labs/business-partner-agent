@@ -182,19 +182,22 @@ public class ProofManager {
     }
 
     // manual proof request flow
-    public Optional<List<PresentationRequestCredentials>> getMatchingCredentials(@NonNull UUID partnerProofId) {
+    public List<PresentationRequestCredentials> getMatchingCredentials(@NonNull UUID partnerProofId) {
         Optional<PartnerProof> partnerProof = pProofRepo.findById(partnerProofId);
         if (partnerProof.isPresent()) {
             try {
                 return ac.presentProofRecordsCredentials(partnerProof.get().getPresentationExchangeId())
                         .map(pres -> pres.stream().map(rec -> PresentationRequestCredentials
                                 .from(rec, credentialInfoResolver.populateCredentialInfo(rec.getCredentialInfo())))
-                                .collect(Collectors.toList()));
+                                .collect(Collectors.toList()))
+                        .orElseThrow();
             } catch (IOException e) {
                 throw new NetworkException(ACA_PY_ERROR_MSG, e);
+            } catch (AriesException | NoSuchElementException e) {
+                log.warn("No matching credentials found");
             }
         }
-        return Optional.empty();
+        return List.of();
     }
 
     // manual proof request flow

@@ -68,11 +68,8 @@ public class ProofExchangeController {
      */
     @Get("/{id}/matching-credentials")
     public HttpResponse<List<PresentationRequestCredentials>> getMatchingCredentials(@PathVariable String id) {
-        Optional<List<PresentationRequestCredentials>> mc = proofM.getMatchingCredentials(UUID.fromString(id));
-        if (mc.isPresent()) {
-            return HttpResponse.ok(mc.get());
-        }
-        return HttpResponse.notFound();
+        List<PresentationRequestCredentials> mc = proofM.getMatchingCredentials(UUID.fromString(id));
+        return HttpResponse.ok(mc);
     }
 
     /**

@@ -42,7 +42,7 @@ public class AcaPyAuthFetcherAllowAll implements AuthenticationFetcher {
             if (HttpMethod.POST.equals(request.getMethod())
                     && request.getPath().startsWith(AriesWebhookController.WEBHOOK_CONTROLLER_PATH)) {
                 log.trace("Handling aca-py webhook authentication");
-                emitter.onSuccess(new AcaPyAuthFetcher.AcaPyAuthentication());
+                emitter.onSuccess(AcaPyAuthFetcher.acaPyAuthentication());
                 return;
             }
             emitter.onComplete();
