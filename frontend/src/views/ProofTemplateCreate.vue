@@ -279,7 +279,7 @@
                     </v-simple-table>
                   </v-container>
                   <v-layout justify-end>
-                    <v-btn color="error">
+                    <v-btn color="error" @click="deleteAttributeGroup(idx)">
                       <v-icon left>$vuetify.icons.delete</v-icon>
                       Delete
                     </v-btn>
@@ -313,9 +313,14 @@
                   :key="idx"
                   @click="addAttributeGroup(schema.id)"
                 >
-                  <v-list-item-title>
-                    {{ schema.label }}<i>&nbsp;({{ schema.schemaId }})</i>
-                  </v-list-item-title>
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      {{ schema.label }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{ schema.schemaId }}
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -432,6 +437,9 @@ export default {
         attributes: [],
         schemaLevelRestrictions: {},
       });
+    },
+    deleteAttributeGroup(attributeGroupIdx) {
+      this.proofTemplate.attributeGroups.splice(attributeGroupIdx, 1);
     },
     addAttribute(idx, attributeName) {
       console.log(`adding attribute ${attributeName} to idx ${idx}`);
