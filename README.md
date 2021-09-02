@@ -18,9 +18,20 @@ The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Ide
 ## Current Features
 
 - Attach a public organizational profile to your public DID (either did:indy/sov or did:web)
-- Add business partners by their public DID and view their public profile.
+- Add business partners by their public DIDs or via invitations and view their public profiles
+- Business partnes can be other cloud agents or smartphone wallets
+- Basic chat functionality to interact with business partners
 - Add documents based on Indy schemas and request verifications from business partners
-- Share and request verified documents with/from your business partners
+- Issue verifiable credentials to your business partners
+- Create templates for presentation requests supporting zero knowledge proofs (selective disclose and predicate proofs) 
+- Send and respond to presentation requests
+
+## Upcoming features
+
+- Support additional verifiable credential formats (W3C JSON-LD VCs in addition to Indy Anoncreds)
+- Business rules to automate processes
+- Endorser support (both as endorser and transaction author)
+- Multi-user support
 
 ## Project Status
 
@@ -43,15 +54,13 @@ You can run the agent [via docker-compose](scripts/) (recommended for e.g. devel
 
 ## Run a business partner agent with gitpod
 
-*EXPERIMENTAL! Please provide feedback in our [related discussion](https://github.com/hyperledger-labs/business-partner-agent/discussions/472)*
-
 The easiest way to run two agents, is to work with [gitpod](https://gitpod.io/). 
 Gitpod launches a pre-configured IDE in the browser and the agents being launched in the background.
 See [debugging docu](https://github.com/hyperledger-labs/business-partner-agent/blob/main/docs/DEBUGGING.md#fronend-and-backend-with-gitpod).
 
 # Documentation and Tutorials
 
-User documentation see https://hyperledger-labs.github.io/business-partner-agent
+User documentation is located at https://hyperledger-labs.github.io/business-partner-agent
 
 Learn how to contribute in [Contributing](CONTRIBUTING.md). You can also start by filing an issue.
 
