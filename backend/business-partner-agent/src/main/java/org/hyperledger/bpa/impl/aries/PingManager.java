@@ -22,6 +22,8 @@ import io.micronaut.context.env.Environment;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.scheduling.annotation.Scheduled;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.ConnectionState;
@@ -30,8 +32,6 @@ import org.hyperledger.aries.api.message.PingRequest;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;

@@ -17,13 +17,13 @@
  */
 package org.hyperledger.bpa.model;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
 import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
 import lombok.*;
 
-import io.micronaut.core.annotation.Nullable;
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.List;

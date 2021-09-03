@@ -27,6 +27,8 @@ import com.google.gson.JsonObject;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -50,8 +52,6 @@ import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;

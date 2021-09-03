@@ -22,6 +22,8 @@ import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.scheduling.annotation.Scheduled;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +42,8 @@ import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConvert
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.api.CredentialType;
-import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.AriesCredential;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.ProfileVC;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
@@ -58,8 +60,6 @@ import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.MyDocumentRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.*;
 

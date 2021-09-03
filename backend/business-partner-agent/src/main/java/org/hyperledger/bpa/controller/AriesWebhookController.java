@@ -27,11 +27,11 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.config.acapy.AcaPyAuthFetcher;
 
-import javax.inject.Inject;
 import java.util.List;
 
 /**

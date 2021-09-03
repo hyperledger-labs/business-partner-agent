@@ -26,6 +26,7 @@ import io.micronaut.http.client.annotation.Client;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.http.uri.UriBuilder;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
@@ -41,7 +42,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;

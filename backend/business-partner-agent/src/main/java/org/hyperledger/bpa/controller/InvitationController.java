@@ -28,14 +28,13 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.controller.api.invitation.AcceptInvitationRequest;
 import org.hyperledger.bpa.controller.api.invitation.CheckInvitationRequest;
 import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
 import org.hyperledger.bpa.impl.aries.ConnectionManager;
-
-import javax.inject.Inject;
 
 @Slf4j
 @Controller("/api/invitations")

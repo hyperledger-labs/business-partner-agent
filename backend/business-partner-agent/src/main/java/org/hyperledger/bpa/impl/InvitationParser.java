@@ -17,11 +17,13 @@
  */
 package org.hyperledger.bpa.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -35,8 +37,6 @@ import org.hyperledger.bpa.api.exception.InvitationException;
 import org.hyperledger.bpa.controller.api.invitation.CheckInvitationResponse;
 import org.hyperledger.bpa.impl.util.Converter;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -51,7 +51,8 @@ public class InvitationParser {
     OkHttpClient httpClient = new OkHttpClient.Builder().followRedirects(false).build();
 
     @Inject
-    Converter conv;
+    @Setter(AccessLevel.PACKAGE)
+    ObjectMapper mapper;
 
     @Data
     public static final class Invitation {
@@ -115,47 +116,53 @@ public class InvitationParser {
             String decodedBlock = decodeInvitationBlock(invitationBlock);
             if (StringUtils.isNotEmpty(decodedBlock)) {
                 Map<String, Object> o;
-                o = conv.toMap(decodedBlock);
-                invitation.setInvitation(o);
-                invitation.setParsed(true);
+                try {
+                    o = mapper.readValue(decodedBlock, Converter.STRING_OBJECT_MAP);
+                    invitation.setInvitation(o);
+                    invitation.setParsed(true);
 
-                if ("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/invitation".equals(o.get("@type"))) {
-                    // Invitation
-                    try {
-                        Gson gson = GsonConfig.defaultConfig();
-                        ReceiveInvitationRequest r = gson.fromJson(decodedBlock, ReceiveInvitationRequest.class);
-                        invitation.setInvitationRequest(r);
-                    } catch (Exception e) {
-                        String msg = "Expecting a valid Connections 1.0 invitation; could not parse data.";
-                        invitation.setError(msg);
-                        log.error(msg);
-                    }
-
-                } else if ("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/out-of-band/1.0/invitation"
-                        .equals(o.get("@type"))) {
-                    invitation.setOob(true);
-
-                    Gson gson = GsonConfig.defaultConfig();
-                    try {
-                        InvitationMessage<InvitationMessage.InvitationMessageService> im = gson
-                                .fromJson(decodedBlock, InvitationMessage.RFC0067_TYPE);
-                        invitation.setInvitationMessage(im);
-                    } catch (JsonSyntaxException e) {
+                    if ("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/invitation".equals(o.get("@type"))) {
+                        // Invitation
                         try {
-                            InvitationMessage<String> im = gson.fromJson(decodedBlock,
-                                    InvitationMessage.STRING_TYPE);
-                            invitation.setInvitationMessage(im);
-                        } catch (JsonSyntaxException ex) {
-                            String msg = "Expecting a valid Out Of Band 1.0 invitation; could not parse data.";
+                            Gson gson = GsonConfig.defaultConfig();
+                            ReceiveInvitationRequest r = gson.fromJson(decodedBlock, ReceiveInvitationRequest.class);
+                            invitation.setInvitationRequest(r);
+                        } catch (Exception e) {
+                            String msg = "Expecting a valid Connections 1.0 invitation; could not parse data.";
                             invitation.setError(msg);
                             log.error(msg);
                         }
+
+                    } else if ("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/out-of-band/1.0/invitation"
+                            .equals(o.get("@type"))) {
+                        invitation.setOob(true);
+
+                        Gson gson = GsonConfig.defaultConfig();
+                        try {
+                            InvitationMessage<InvitationMessage.InvitationMessageService> im = gson
+                                    .fromJson(decodedBlock, InvitationMessage.RFC0067_TYPE);
+                            invitation.setInvitationMessage(im);
+                        } catch (JsonSyntaxException e) {
+                            try {
+                                InvitationMessage<String> im = gson.fromJson(decodedBlock,
+                                        InvitationMessage.STRING_TYPE);
+                                invitation.setInvitationMessage(im);
+                            } catch (JsonSyntaxException ex) {
+                                String msg = "Expecting a valid Out Of Band 1.0 invitation; could not parse data.";
+                                invitation.setError(msg);
+                                log.error(msg);
+                            }
+                        }
+                    } else {
+                        String msg = String.format("Unknown or unsupported Invitation type. @type = '%s'",
+                                o.get("@type"));
+                        invitation.setError(msg);
+                        log.error(msg);
                     }
-                } else {
-                    String msg = String.format("Unknown or unsupported Invitation type. @type = '%s'",
-                            o.get("@type"));
+                } catch (JsonProcessingException e) {
+                    String msg = String.format("Error parsing invitation %s", e.getMessage());
                     invitation.setError(msg);
-                    log.error(msg);
+                    log.error(msg, e);
                 }
             } else {
                 String msg = "Invitation could not be decoded; result was empty";

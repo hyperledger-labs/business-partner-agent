@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.bpa.api.TagAPI;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.model.Partner;
@@ -26,7 +27,6 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
 import java.util.Optional;
 import java.util.Set;
 

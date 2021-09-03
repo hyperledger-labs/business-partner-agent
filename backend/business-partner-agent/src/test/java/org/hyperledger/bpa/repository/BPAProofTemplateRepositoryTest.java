@@ -21,6 +21,7 @@ package org.hyperledger.bpa.repository;
 import io.micronaut.data.exceptions.DataAccessException;
 import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.BPAProofTemplate;
 import org.hyperledger.bpa.model.PartnerProof;
@@ -30,7 +31,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.inject.Inject;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;

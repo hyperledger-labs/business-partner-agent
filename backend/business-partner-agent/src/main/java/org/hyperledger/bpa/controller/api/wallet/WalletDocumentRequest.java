@@ -17,13 +17,11 @@
  */
 package org.hyperledger.bpa.controller.api.wallet;
 
-import org.hyperledger.bpa.api.CredentialType;
-
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.JsonNode;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import org.hyperledger.bpa.api.CredentialType;
 
 @Data
 public class WalletDocumentRequest {

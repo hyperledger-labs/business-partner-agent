@@ -17,12 +17,11 @@
  */
 package org.hyperledger.bpa.controller.api.admin;
 
+import io.micronaut.core.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import io.micronaut.core.annotation.Nullable;
 
 import java.util.List;
 

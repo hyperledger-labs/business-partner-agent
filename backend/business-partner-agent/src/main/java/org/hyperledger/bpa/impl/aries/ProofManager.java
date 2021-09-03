@@ -21,6 +21,8 @@ import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.acy_py.generated.model.V10PresentationProblemReportRequest;
@@ -51,8 +53,6 @@ import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -182,19 +182,22 @@ public class ProofManager {
     }
 
     // manual proof request flow
-    public Optional<List<PresentationRequestCredentials>> getMatchingCredentials(@NonNull UUID partnerProofId) {
+    public List<PresentationRequestCredentials> getMatchingCredentials(@NonNull UUID partnerProofId) {
         Optional<PartnerProof> partnerProof = pProofRepo.findById(partnerProofId);
         if (partnerProof.isPresent()) {
             try {
                 return ac.presentProofRecordsCredentials(partnerProof.get().getPresentationExchangeId())
                         .map(pres -> pres.stream().map(rec -> PresentationRequestCredentials
                                 .from(rec, credentialInfoResolver.populateCredentialInfo(rec.getCredentialInfo())))
-                                .collect(Collectors.toList()));
+                                .collect(Collectors.toList()))
+                        .orElseThrow();
             } catch (IOException e) {
                 throw new NetworkException(ACA_PY_ERROR_MSG, e);
+            } catch (AriesException | NoSuchElementException e) {
+                log.warn("No matching credentials found");
             }
         }
-        return Optional.empty();
+        return List.of();
     }
 
     // manual proof request flow

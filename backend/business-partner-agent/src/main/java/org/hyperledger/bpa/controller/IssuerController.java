@@ -27,13 +27,13 @@ import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Inject;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.controller.api.issuer.*;
 import org.hyperledger.bpa.impl.IssuerCredentialManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 
-import javax.inject.Inject;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;

@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.model;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
 import io.micronaut.data.annotation.DateUpdated;
@@ -27,7 +28,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.hyperledger.bpa.api.CredentialType;
 
-import io.micronaut.core.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;

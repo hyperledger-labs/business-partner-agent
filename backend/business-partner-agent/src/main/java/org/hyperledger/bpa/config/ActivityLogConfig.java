@@ -17,12 +17,12 @@
  */
 package org.hyperledger.bpa.config;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.Getter;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 

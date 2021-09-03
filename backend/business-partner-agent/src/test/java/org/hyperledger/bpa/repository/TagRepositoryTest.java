@@ -19,12 +19,15 @@ package org.hyperledger.bpa.repository;
 
 import io.micronaut.data.exceptions.DataAccessException;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.Tag;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -19,13 +19,13 @@ package org.hyperledger.bpa.impl.mode.indy;
 
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.env.Environment;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.TAAInfo;
 import org.hyperledger.bpa.config.runtime.RequiresIndy;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.Optional;
 

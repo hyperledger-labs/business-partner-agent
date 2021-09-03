@@ -23,11 +23,8 @@ import io.micronaut.context.env.Environment;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.context.event.StartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
-import java.time.Duration;
-import java.util.Iterator;
-import java.util.Optional;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
@@ -38,6 +35,10 @@ import org.hyperledger.bpa.impl.mode.indy.IndyStartupTasks;
 import org.hyperledger.bpa.impl.mode.web.WebStartupTasks;
 import org.hyperledger.bpa.model.BPAState;
 import org.hyperledger.bpa.repository.BPAStateRepository;
+
+import java.time.Duration;
+import java.util.Iterator;
+import java.util.Optional;
 
 @Slf4j
 @Singleton

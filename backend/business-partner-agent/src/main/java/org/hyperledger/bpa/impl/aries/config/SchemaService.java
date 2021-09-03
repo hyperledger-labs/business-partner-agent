@@ -21,6 +21,8 @@ import io.micronaut.cache.annotation.Cacheable;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.data.exceptions.DataAccessException;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -40,8 +42,6 @@ import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.*;
 

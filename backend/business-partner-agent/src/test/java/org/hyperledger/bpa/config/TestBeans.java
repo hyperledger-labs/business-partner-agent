@@ -20,11 +20,10 @@ package org.hyperledger.bpa.config;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.env.Environment;
+import jakarta.inject.Singleton;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.bpa.RunWithAries;
 import org.mockito.Mockito;
-
-import javax.inject.Singleton;
 
 @Factory
 @Requires(env = Environment.TEST)

@@ -18,6 +18,8 @@
 package org.hyperledger.bpa.impl.prooftemplates;
 
 import io.micronaut.core.annotation.NonNull;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
@@ -31,8 +33,6 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 import org.hyperledger.bpa.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.validation.Valid;
 import java.time.Clock;
 import java.util.Optional;

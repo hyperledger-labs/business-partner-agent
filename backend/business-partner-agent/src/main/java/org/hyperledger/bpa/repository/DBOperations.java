@@ -23,12 +23,11 @@ import io.micronaut.context.env.Environment;
 import io.micronaut.context.event.StartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
 import io.micronaut.scheduling.annotation.Async;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.model.BPAUser;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
 @Slf4j
 @Singleton

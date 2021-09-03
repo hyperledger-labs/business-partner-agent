@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl.activity;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation.VerifiablePresentationBuilder;
@@ -26,7 +27,6 @@ import org.hyperledger.bpa.client.CachingAriesClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 
