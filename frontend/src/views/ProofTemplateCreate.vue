@@ -281,10 +281,7 @@
                     </v-simple-table>
                   </v-container>
                   <v-layout justify-end>
-                    <v-btn
-                      color="error"
-                      @click="deleteAttributeGroup(idx, schema)"
-                    >
+                    <v-btn color="error" @click="deleteAttributeGroup(idx)">
                       <v-icon left>$vuetify.icons.delete</v-icon>
                       Remove
                     </v-btn>
