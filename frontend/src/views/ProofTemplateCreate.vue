@@ -52,7 +52,7 @@
           >
 
           <v-container>
-            <v-expansion-panels focusable>
+            <v-expansion-panels focusable multiple v-model="panel">
               <v-expansion-panel
                 class="my-5"
                 v-for="(attributeGroup, idx) in proofTemplate.attributeGroups"
@@ -205,7 +205,8 @@
                             <v-text-field
                               id="proofTemplateName"
                               v-model="
-                                attributeGroup.schemaLevelRestrictions.schemaId
+                                attributeGroup.schemaLevelRestrictions[0]
+                                  .schemaId
                               "
                               dense
                             ></v-text-field>
@@ -217,7 +218,7 @@
                             <v-text-field
                               id="proofTemplateName"
                               v-model="
-                                attributeGroup.schemaLevelRestrictions
+                                attributeGroup.schemaLevelRestrictions[0]
                                   .schemaName
                               "
                               dense
@@ -230,7 +231,7 @@
                             <v-text-field
                               id="proofTemplateName"
                               v-model="
-                                attributeGroup.schemaLevelRestrictions
+                                attributeGroup.schemaLevelRestrictions[0]
                                   .schemaVersion
                               "
                               dense
@@ -243,7 +244,7 @@
                             <v-text-field
                               id="proofTemplateName"
                               v-model="
-                                attributeGroup.schemaLevelRestrictions
+                                attributeGroup.schemaLevelRestrictions[0]
                                   .schemaIssuerDid
                               "
                               dense
@@ -256,7 +257,8 @@
                             <v-text-field
                               id="proofTemplateName"
                               v-model="
-                                attributeGroup.schemaLevelRestrictions.issuerDid
+                                attributeGroup.schemaLevelRestrictions[0]
+                                  .issuerDid
                               "
                               dense
                             ></v-text-field>
@@ -268,7 +270,7 @@
                             <v-text-field
                               id="proofTemplateName"
                               v-model="
-                                attributeGroup.schemaLevelRestrictions
+                                attributeGroup.schemaLevelRestrictions[0]
                                   .credentialDefinitionId
                               "
                               dense
@@ -419,6 +421,7 @@ export default {
   },
   data: () => {
     return {
+      panel: [],
       isBusy: false,
       operators: [],
       proofTemplate: {
@@ -439,6 +442,13 @@ export default {
   },
   watch: {},
   methods: {
+    closeOtherPanelsOnOpen() {
+      this.panel.splice(
+        0,
+        this.panel.length,
+        this.proofTemplate.attributeGroups.length - 1
+      );
+    },
     renderSchemaLabelId(attributeGroup) {
       const schema = this.$store.getters.getSchemas.find(
         (s) => s.id === attributeGroup.schemaId
@@ -446,13 +456,26 @@ export default {
       return `${schema.label}<em>&nbsp;(${schema.schemaId})</em>`;
     },
     addAttributeGroup(schemaId) {
+      // TODO: Get and insert a new restriction object per selected trusted issuer DID from schema
+      const schemaLevelRestrictions = [];
+      schemaLevelRestrictions.push({
+        schemaId: "",
+        schemaName: "",
+        schemaVersion: "",
+        schemaIssuerDid: "",
+        issuerDid: "TODO",
+        credentialDefinitionId: "",
+      });
+
       // add a blank attribute group template
       this.proofTemplate.attributeGroups.push({
         schemaId: schemaId,
         nonRevoked: true,
         attributes: [],
-        schemaLevelRestrictions: {},
+        schemaLevelRestrictions,
       });
+
+      this.closeOtherPanelsOnOpen();
     },
     deleteAttributeGroup(attributeGroupIdx) {
       const schema = this.$store.getters.getSchemas.find(
@@ -516,11 +539,17 @@ export default {
       });
 
       // sanitize restrictions (remove empty restrictions)
-      this.proofTemplate.attributeGroups.forEach((ag) => {
-        ag.schemaLevelRestrictions = Object.fromEntries(
-          Object.entries(ag.schemaLevelRestrictions).filter(([, v]) => v !== "")
+      for (const ag of this.proofTemplate.attributeGroups) {
+        ag.schemaLevelRestrictions.forEach(
+          (schemaLevelRestrictionObject, index) => {
+            ag.schemaLevelRestrictions[index] = Object.fromEntries(
+              Object.entries(schemaLevelRestrictionObject).filter(
+                ([, v]) => v !== ""
+              )
+            );
+          }
         );
-      });
+      }
 
       console.log(JSON.stringify(this.proofTemplate));
 
