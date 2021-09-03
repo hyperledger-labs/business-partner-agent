@@ -107,7 +107,7 @@ public class AriesEventHandler extends EventHandler {
             // issuer events
         } else if (v1CredEx.isIssuer()) {
             synchronized (issuerMgr) {
-                if (v1CredEx.isProposalReceived() && !v1CredEx.isAutoOfferEnabled()) {
+                if (v1CredEx.isProposalReceived()) {
                     issuerMgr.handleV1CredentialProposal(v1CredEx);
                 } else {
                     issuerMgr.handleV1CredentialExchange(v1CredEx);

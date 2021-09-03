@@ -60,6 +60,7 @@ public class CredEx {
     private Boolean revoked;
     private Boolean revocable;
     private ExchangeVersion exchangeVersion;
+    private String errorMsg;
 
     public static CredEx from(@NonNull BPACredentialExchange db, @NonNull Optional<Converter> conv) {
         CredExBuilder builder = CredEx.builder();
@@ -91,6 +92,7 @@ public class CredEx {
                 .revoked(db.getRevoked())
                 .revocable(StringUtils.isNotEmpty(db.getRevRegId()))
                 .exchangeVersion(db.getExchangeVersion())
+                .errorMsg(db.getErrorMsg())
                 .build();
     }
 }
