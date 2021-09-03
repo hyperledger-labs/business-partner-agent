@@ -22,8 +22,6 @@ import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.acy_py.generated.model.V20CredExRecord;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.message.BasicMessage;
@@ -100,16 +98,20 @@ public class AriesEventHandler extends EventHandler {
     public void handleCredential(V1CredentialExchange v1CredEx) {
         log.debug("Credential Event: {}", v1CredEx);
         // holder events
-        if (CredentialExchangeRole.HOLDER.equals(v1CredEx.getRole())) {
+        if (v1CredEx.isHolder()) {
             synchronized (holderMgr) {
-                if (CredentialExchangeState.CREDENTIAL_ACKED.equals(v1CredEx.getState())) {
+                if (v1CredEx.isCredentialAcked()) {
                     holderMgr.handleV1CredentialExchangeAcked(v1CredEx);
                 }
             }
             // issuer events
-        } else if (CredentialExchangeRole.ISSUER.equals(v1CredEx.getRole())) {
+        } else if (v1CredEx.isIssuer()) {
             synchronized (issuerMgr) {
-                issuerMgr.handleV1CredentialExchange(v1CredEx);
+                if (v1CredEx.isProposalReceived() && !v1CredEx.isAutoOfferEnabled()) {
+                    issuerMgr.handleV1CredentialProposal(v1CredEx);
+                } else {
+                    issuerMgr.handleV1CredentialExchange(v1CredEx);
+                }
             }
         }
     }

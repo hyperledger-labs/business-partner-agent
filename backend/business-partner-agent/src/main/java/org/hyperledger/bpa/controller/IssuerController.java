@@ -123,7 +123,7 @@ public class IssuerController {
     }
 
     /**
-     * Issue a credential
+     * Auto credential exchange: Issuer sends credential to holder
      *
      * @param req {@link IssueCredentialSendRequest}
      * @return {@link HttpResponse}
@@ -138,9 +138,9 @@ public class IssuerController {
     }
 
     /**
-     * Issue a credential
+     * List credential exchanges
      *
-     * @return {@link HttpResponse}
+     * @return list of {@link CredEx}
      */
     @Get("/exchanges")
     public HttpResponse<List<CredEx>> listCredentialExchanges(
@@ -158,6 +158,23 @@ public class IssuerController {
     @Post("/exchanges/{id}/revoke")
     public HttpResponse<CredEx> revokeCredential(@PathVariable UUID id) {
         Optional<CredEx> credEx = im.revokeCredentialExchange(id);
+        if (credEx.isPresent()) {
+            return HttpResponse.ok(credEx.get());
+        }
+        return HttpResponse.notFound();
+    }
+
+    /**
+     * Manual credential exchange step two: Issuer sends credential counter offer to
+     * holder
+     * 
+     * @param id           credential exchange id
+     * @param counterOffer {@link CredentialOfferRequest}
+     * @return {@link CredEx}
+     */
+    @Post("/exchanges/{id}/send-offer")
+    public HttpResponse<CredEx> sendCredentialOffer(@PathVariable UUID id, @Body CredentialOfferRequest counterOffer) {
+        Optional<CredEx> credEx = im.sendCredentialOffer(id, counterOffer);
         if (credEx.isPresent()) {
             return HttpResponse.ok(credEx.get());
         }

@@ -26,9 +26,7 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.acy_py.generated.model.V20CredExRecord;
-import org.hyperledger.acy_py.generated.model.V20CredFilter;
-import org.hyperledger.acy_py.generated.model.V20CredFilterIndy;
+import org.hyperledger.acy_py.generated.model.*;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credential_definition.CredentialDefinition;
 import org.hyperledger.aries.api.credential_definition.CredentialDefinition.CredentialDefinitionRequest;
@@ -43,7 +41,6 @@ import org.hyperledger.aries.api.issue_credential_v2.V2CredentialSendRequest;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.revocation.RevokeRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
-import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.IssuerException;
@@ -53,6 +50,7 @@ import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.issuer.CredDef;
 import org.hyperledger.bpa.controller.api.issuer.CredEx;
+import org.hyperledger.bpa.controller.api.issuer.CredentialOfferRequest;
 import org.hyperledger.bpa.controller.api.issuer.IssueCredentialSendRequest;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
@@ -212,7 +210,6 @@ public class IssuerCredentialManager {
                 .build();
 
         BPACredentialExchange cex = BPACredentialExchange.builder()
-                .type(CredentialType.INDY)
                 .schema(dbCredDef.getSchema())
                 .partner(dbPartner)
                 .credDef(dbCredDef)
@@ -306,6 +303,27 @@ public class IssuerCredentialManager {
                 .collect(Collectors.toList());
     }
 
+    public void handleV1CredentialProposal(@NonNull V1CredentialExchange ex) {
+        partnerRepo.findByConnectionId(ex.getConnectionId()).ifPresent(partner -> {
+            BPACredentialExchange.BPACredentialExchangeBuilder b = BPACredentialExchange
+                    .builder()
+                    .partner(partner)
+                    .role(CredentialExchangeRole.ISSUER)
+                    .state(ex.getState())
+                    .credentialExchangeId(ex.getCredentialExchangeId())
+                    .threadId(ex.getThreadId())
+                    .credentialProposal(ex.getCredentialProposalDict());
+            credDefRepo.findBySchemaId(ex.getCredentialProposalDict().getSchemaId()).ifPresentOrElse(dbCredDef -> {
+                b.schema(dbCredDef.getSchema()).credDef(dbCredDef);
+                credExRepo.save(b.build());
+            }, () -> {
+                b.errorMsg("Issuer has no operable cred def for proposal spec "
+                        + ex.getCredentialProposalDict().getSchemaId());
+                credExRepo.save(b.build());
+            });
+        });
+    }
+
     /**
      * Handle issue credential v1 state changes and revocation info
      * 
@@ -316,6 +334,7 @@ public class IssuerCredentialManager {
             bpaEx.setState(ex.getState());
             bpaEx.setRevRegId(ex.getRevocRegId());
             bpaEx.setCredRevId(ex.getRevocationId());
+            bpaEx.setErrorMsg(ex.getErrorMsg());
             credExRepo.update(bpaEx);
         });
     }
@@ -369,6 +388,39 @@ public class IssuerCredentialManager {
             }
         }
         return result;
+    }
+
+    public Optional<CredEx> sendCredentialOffer(@NonNull UUID id, @NonNull CredentialOfferRequest counterOffer) {
+        credExRepo.findById(id).ifPresent(credEx -> {
+            try {
+                List<CredAttrSpec> attributes;
+                if (counterOffer.acceptAll()) {
+                    attributes = credEx.getCredentialProposal() != null
+                            ? credEx.getCredentialProposal().getCredentialProposal().getAttributes()
+                            : List.of();
+                } else {
+                    attributes = counterOffer.getAttributes();
+                }
+                ac.issueCredentialRecordsSendOffer(credEx.getCredentialExchangeId(),
+                        V10CredentialBoundOfferRequest
+                                .builder()
+                                .counterProposal(CredentialProposal
+                                        .builder()
+                                        .schemaId(credEx.getSchema() != null ? credEx.getSchema().getSchemaId() : null)
+                                        .credDefId(credEx.getCredDef() != null
+                                                ? credEx.getCredDef().getCredentialDefinitionId()
+                                                : null)
+                                        .credentialProposal(org.hyperledger.acy_py.generated.model.CredentialPreview
+                                                .builder()
+                                                .attributes(attributes)
+                                                .build())
+                                        .build())
+                                .build());
+            } catch (IOException e) {
+                throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
+            }
+        });
+        return Optional.empty();
     }
 
     /**

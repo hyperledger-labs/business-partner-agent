@@ -29,6 +29,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
 
@@ -60,17 +61,20 @@ public class BPACredentialExchange {
     @DateUpdated
     private Instant updatedAt;
 
+    @Nullable
     @OneToOne
     private BPASchema schema;
 
+    @Nullable
     @OneToOne
     private BPACredentialDefinition credDef;
 
     @OneToOne
     private Partner partner;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private CredentialType type;
+    private CredentialType type = CredentialType.INDY;
 
     @Nullable
     private String label;
@@ -86,12 +90,17 @@ public class BPACredentialExchange {
     private CredentialExchangeState state;
 
     @Nullable
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private ExchangeVersion exchangeVersion;
+    private ExchangeVersion exchangeVersion = ExchangeVersion.V1;
 
     @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> credential;
+
+    @Nullable
+    @TypeDef(type = DataType.JSON)
+    private V1CredentialExchange.CredentialProposalDict credentialProposal;
 
     // revocation - link to issued credential
     /** credential revocation identifier */
@@ -103,5 +112,8 @@ public class BPACredentialExchange {
     /** if the credential has been revoked */
     @Nullable
     private Boolean revoked;
+
+    @Nullable
+    private String errorMsg;
 
 }

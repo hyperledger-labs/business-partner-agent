@@ -35,6 +35,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "bpaschema")
 public class BPASchema {
 
     @Id

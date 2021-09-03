@@ -22,6 +22,7 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
@@ -44,10 +45,11 @@ public class CredEx {
     private UUID id;
     private Long createdAt;
     private Long updatedAt;
-    private SchemaAPI schema;
-    private CredDef credDef;
-    private PartnerAPI partner;
+    private SchemaAPI schema; // why?
+    private CredDef credDef; // why?
+    private PartnerAPI partner; // why?
     private Map<String, Object> credential;
+    private V1CredentialExchange.CredentialProposalDict proposal;
     private CredentialExchangeRole role;
     private CredentialExchangeState state;
     private CredentialType type;
@@ -64,10 +66,13 @@ public class CredEx {
         conv.ifPresentOrElse(
                 c -> builder.partner(c.toAPIObject(db.getPartner())),
                 () -> builder.partner(PartnerAPI.from(db.getPartner())));
-        SchemaAPI schemaAPI = SchemaAPI.from(db.getSchema());
-        CredDef credDef = CredDef.from(db.getCredDef());
-        String displayText = String.format("%s (%s) - %s", schemaAPI.getLabel(), schemaAPI.getVersion(),
-                credDef.getTag());
+        SchemaAPI schemaAPI = db.getSchema() != null ? SchemaAPI.from(db.getSchema()) : null;
+        CredDef credDef = db.getCredDef() != null ? CredDef.from(db.getCredDef()) : null;
+        String displayText = null;
+        if (schemaAPI != null && credDef != null) {
+            displayText = String.format("%s (%s) - %s", schemaAPI.getLabel(), schemaAPI.getVersion(),
+                    credDef.getTag());
+        }
         return builder
                 .id(db.getId())
                 .createdAt(db.getCreatedAt().toEpochMilli())
@@ -77,6 +82,7 @@ public class CredEx {
                 .schema(schemaAPI)
                 .credDef(credDef)
                 .credential(db.getCredential())
+                .proposal(db.getCredentialProposal())
                 .type(db.getType())
                 .label(db.getLabel())
                 .threadId(db.getThreadId())

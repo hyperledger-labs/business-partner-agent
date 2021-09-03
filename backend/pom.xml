@@ -55,7 +55,7 @@
         <log4j2.version>2.14.1</log4j2.version>
         <lombok.version>1.18.20</lombok.version>
         <micronaut.version>3.0.0</micronaut.version>
-        <micronaut.data.version>3.0.0</micronaut.data.version>
+        <micronaut.data.version>3.0.1</micronaut.data.version>
         <micronaut.openapi.version>3.0.1</micronaut.openapi.version>
         <micronaut.security.version>3.0.0</micronaut.security.version>
         <mockito.version>3.12.4</mockito.version>
