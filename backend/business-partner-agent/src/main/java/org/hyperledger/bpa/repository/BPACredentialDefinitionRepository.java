@@ -24,7 +24,6 @@ import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.bpa.model.BPACredentialDefinition;
-import org.hyperledger.bpa.model.BPASchema;
 
 import java.util.Optional;
 import java.util.UUID;
