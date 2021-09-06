@@ -61,10 +61,20 @@
                 <v-expansion-panel-header>
                   <div>
                     <span v-html="renderSchemaLabelId(attributeGroup)"></span>
-                    <v-icon right color="warning"
+                    <v-icon
+                      v-show="
+                        attributeGroup.schemaLevelRestrictions.some(
+                          ({ issuerDid }) => issuerDid === ''
+                        )
+                      "
+                      right
+                      color="warning"
                       >$vuetify.icons.validationAlert</v-icon
                     >
-                    <v-icon right color="error"
+                    <v-icon
+                      right
+                      color="error"
+                      v-show="attributeGroup.attributes.length === 0"
                       >$vuetify.icons.validationAlert</v-icon
                     >
                   </div>
@@ -338,6 +348,7 @@
           </v-bpa-button>
           <v-bpa-button
             :loading="this.isBusy"
+            :disabled="proofTemplate.attributeGroups.length === 0"
             color="primary"
             @click="createProofTemplate"
           >
@@ -460,7 +471,7 @@ export default {
         schemaName: "",
         schemaVersion: "",
         schemaIssuerDid: "",
-        issuerDid: "TODO",
+        issuerDid: "",
         credentialDefinitionId: "",
       });
 
