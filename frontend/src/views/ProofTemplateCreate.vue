@@ -37,6 +37,7 @@
             dense
             label="Name"
             :append-icon="'$vuetify.icons.copy'"
+            :rules="[rules.required]"
           ></v-text-field>
         </v-list-item>
       </v-container>
@@ -103,6 +104,7 @@
                       label="Search"
                       single-line
                       hide-details
+                      clearable
                     ></v-text-field>
                     <v-data-table
                       show-select
@@ -429,6 +431,9 @@ export default {
       snackbarDeleteShow: false,
       snackbarText: "",
       searchFields: {},
+      rules: {
+        required: (value) => !!value || "Required",
+      },
     };
   },
   computed: {
@@ -439,8 +444,10 @@ export default {
     },
     overallValidationErrors() {
       // TODO: Add predicate conditions validation
-      return this.proofTemplate.attributeGroups.some(
-        (ag) => ag.ui.selectedAttributes.length === 0
+      return (
+        this.proofTemplate.attributeGroups.some(
+          (ag) => ag.ui.selectedAttributes.length === 0
+        ) || this.proofTemplate.name === ""
       );
     },
   },
