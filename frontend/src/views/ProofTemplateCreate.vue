@@ -348,7 +348,10 @@
           </v-bpa-button>
           <v-bpa-button
             :loading="this.isBusy"
-            :disabled="proofTemplate.attributeGroups.length === 0"
+            :disabled="
+              proofTemplate.attributeGroups.length === 0 ||
+              overallValidationErrors
+            "
             color="primary"
             @click="createProofTemplate"
           >
@@ -445,6 +448,12 @@ export default {
     schemas() {
       return this.$store.getters.getSchemas.filter(
         (schema) => schema.type === "INDY"
+      );
+    },
+    overallValidationErrors() {
+      // TODO: Add predicate conditions validation
+      return this.proofTemplate.attributeGroups.some(
+        ({ attributes }) => attributes.length === 0
       );
     },
   },
