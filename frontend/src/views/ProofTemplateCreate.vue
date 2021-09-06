@@ -56,7 +56,7 @@
               <v-expansion-panel
                 class="my-5"
                 v-for="(attributeGroup, idx) in proofTemplate.attributeGroups"
-                :key="idx"
+                :key="attributeGroup.ui.uniqueIdentifier"
               >
                 <v-expansion-panel-header>
                   <div>
@@ -86,23 +86,27 @@
                         <h4 class="pb-5">Data fields</h4>
                       </v-col>
                     </v-row>
+                    <v-text-field
+                      v-model="searchFields[attributeGroup.ui.uniqueIdentifier]"
+                      append-icon="$vuetify.icons.search"
+                      label="Search"
+                      single-line
+                      hide-details
+                    ></v-text-field>
                     <v-data-table
                       show-select
                       disable-sort
+                      :hide-default-footer="
+                        attributeGroup.attributes.length < 10
+                      "
+                      :search="searchFields[attributeGroup.ui.uniqueIdentifier]"
                       :headers="attributeGroupHeaders"
                       :items="attributeGroup.attributes"
+                      v-model="attributeGroup.ui.selectedAttributes"
                       item-key="name"
                       class="elevation-1"
                       show-expand
-                      hide-default-footer
                     >
-                      <!-- actions on attribute -->
-                      <template v-slot:item.actions="{ item: attribute }">
-                        <v-btn icon @click="deleteAttribute(idx, attribute)">
-                          <v-icon color="error">$vuetify.icons.delete</v-icon>
-                        </v-btn>
-                      </template>
-
                       <!-- expanded section for attribute conditions -->
                       <template
                         v-slot:expanded-item="{
@@ -163,45 +167,6 @@
                         </td>
                       </template>
                     </v-data-table>
-
-                    <!-- add new attribute -->
-                    <v-container>
-                      <v-menu>
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-btn
-                            color="primary"
-                            dark
-                            small
-                            bottom
-                            left
-                            fab
-                            v-bind="attrs"
-                            v-on="on"
-                          >
-                            <v-icon>$vuetify.icons.add</v-icon>
-                          </v-btn>
-                        </template>
-                        <v-list>
-                          <v-list-item
-                            v-for="attributeName in schemas.find(
-                              (s) => s.id === attributeGroup.schemaId
-                            ).schemaAttributeNames"
-                            :key="attributeName"
-                            :disabled="
-                              attributeGroup.attributes.some(
-                                (existingAttribute) =>
-                                  existingAttribute.name === attributeName
-                              )
-                            "
-                            @click="addAttribute(idx, attributeName)"
-                          >
-                            <v-list-item-title>{{
-                              attributeName
-                            }}</v-list-item-title>
-                          </v-list-item>
-                        </v-list>
-                      </v-menu>
-                    </v-container>
                   </v-container>
 
                   <!-- Schema Restrictions -->
@@ -362,10 +327,10 @@
     </v-card>
 
     <!-- Notification for deletion of attribute group -->
-    <v-snackbar v-model="snackbarDelete" :timeout="snackbarTimeout">
+    <v-snackbar v-model="snackbarDeleteShow" :timeout="snackbarTimeout">
       {{ snackbarText }}
       <template v-slot:action="{ attrs }">
-        <v-btn text v-bind="attrs" @click="snackbarDelete = false">
+        <v-btn text v-bind="attrs" @click="snackbarDeleteShow = false">
           Close
         </v-btn>
       </template>
@@ -387,10 +352,6 @@ export default {
         {
           text: "name",
           value: "name",
-        },
-        {
-          text: "actions",
-          value: "actions",
         },
       ],
     },
@@ -440,8 +401,9 @@ export default {
         attributeGroups: [],
       },
       snackbarTimeout: 3000,
-      snackbarDelete: false,
+      snackbarDeleteShow: false,
       snackbarText: "",
+      searchFields: {},
     };
   },
   computed: {
@@ -484,11 +446,33 @@ export default {
         credentialDefinitionId: "",
       });
 
-      // add a blank attribute group template
+      const attributeNames = this.schemas.find((s) => s.id === schemaId)
+        .schemaAttributeNames;
+
+      let attributes = [];
+
+      for (const attributeName of attributeNames) {
+        attributes.push({
+          name: attributeName,
+          conditions: [
+            {
+              operator: "",
+              value: "",
+            },
+          ],
+        });
+      }
+
+      // add a basic attribute group template with all available attributes
+      // and restriction objects for each trusted issuer
       this.proofTemplate.attributeGroups.push({
-        schemaId: schemaId,
+        schemaId,
         nonRevoked: true,
-        attributes: [],
+        attributes,
+        ui: {
+          selectedAttributes: attributes,
+          uniqueIdentifier: Date.now(),
+        },
         schemaLevelRestrictions,
       });
 
@@ -500,27 +484,16 @@ export default {
           s.id ===
           this.proofTemplate.attributeGroups[attributeGroupIdx].schemaId
       );
+
       this.snackbarText = `Removed attribute group ${schema.label} (${schema.schemaId})`;
+
+      delete this.searchFields[
+        this.proofTemplate.attributeGroups[attributeGroupIdx].ui
+          .uniqueIdentifier
+      ];
+
       this.proofTemplate.attributeGroups.splice(attributeGroupIdx, 1);
-      this.snackbarDelete = true;
-    },
-    addAttribute(idx, attributeName) {
-      console.log(`adding attribute ${attributeName} to idx ${idx}`);
-      this.proofTemplate.attributeGroups[idx].attributes.push({
-        name: attributeName,
-        conditions: [
-          {
-            operator: "",
-            value: "",
-          },
-        ],
-      });
-    },
-    deleteAttribute(attributeGroupIdx, attribute) {
-      let attributes = this.proofTemplate.attributeGroups[attributeGroupIdx]
-        .attributes;
-      let attributeIdx = attributes.findIndex((a) => a.name === attribute.name);
-      attributes.splice(attributeIdx, 1);
+      this.snackbarDeleteShow = true;
     },
     addCondition(idx, attributeName) {
       this.proofTemplate.attributeGroups[idx].attributes
@@ -543,20 +516,25 @@ export default {
         conditions[0].value = "";
       }
     },
-    async createProofTemplate() {
-      this.isBusy = true;
+    prepareProofTemplateData() {
+      let sanitizedAttributeGroupObjects = [];
 
-      // sanitize attribute conditions (remove empty conditions)
-      this.proofTemplate.attributeGroups.forEach((ag) => {
-        ag.attributes.forEach((a) => {
+      for (const ag of this.proofTemplate.attributeGroups) {
+        let attributesInGroup = [];
+
+        // sanitize attribute conditions (remove empty conditions)
+        for (const a of ag.attributes) {
           a.conditions = a.conditions.filter(
             (c) => c.operator !== "" && c.value !== ""
           );
-        });
-      });
 
-      // sanitize restrictions (remove empty restrictions)
-      for (const ag of this.proofTemplate.attributeGroups) {
+          // only use selected attributes
+          if (ag.ui.selectedAttributes.includes(a)) {
+            attributesInGroup.push(a);
+          }
+        }
+
+        // sanitize restrictions (remove empty restrictions)
         ag.schemaLevelRestrictions.forEach(
           (schemaLevelRestrictionObject, index) => {
             ag.schemaLevelRestrictions[index] = Object.fromEntries(
@@ -566,12 +544,28 @@ export default {
             );
           }
         );
+
+        // sanitize ui data (remove ui helper values)
+        sanitizedAttributeGroupObjects.push({
+          schemaId: ag.schemaId,
+          nonRevoked: ag.nonRevoked,
+          attributes: attributesInGroup,
+          schemaLevelRestrictions: ag.schemaLevelRestrictions,
+        });
       }
 
-      console.log(JSON.stringify(this.proofTemplate));
+      return {
+        name: this.proofTemplate.name,
+        attributeGroups: sanitizedAttributeGroupObjects,
+      };
+    },
+    async createProofTemplate() {
+      this.isBusy = true;
+
+      const proofTemplate = this.prepareProofTemplateData();
 
       proofTemplateService
-        .createProofTemplate(this.proofTemplate)
+        .createProofTemplate(proofTemplate)
         .then((res) => {
           this.$emit("received-proof-template-id", res.data.id);
           EventBus.$emit("success", "Proof Template Created");
