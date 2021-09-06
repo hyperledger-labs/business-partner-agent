@@ -37,6 +37,7 @@ import {
   mdiMagnify,
   mdiTicketConfirmationOutline,
   mdiAlertCircle,
+  mdiAlert,
 } from "@mdi/js";
 
 Vue.use(Vuetify);
@@ -91,7 +92,8 @@ export default new Vuetify({
       search: mdiMagnify,
       dashboardGo: "fas fa-arrow-alt-circle-right",
       invitation: mdiTicketConfirmationOutline,
-      validationAlert: mdiAlertCircle,
+      validationWarning: mdiAlertCircle,
+      validationError: mdiAlert,
     },
   },
   theme: {

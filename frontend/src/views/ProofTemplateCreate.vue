@@ -62,6 +62,12 @@
                   <div>
                     <span v-html="renderSchemaLabelId(attributeGroup)"></span>
                     <v-icon
+                      right
+                      color="error"
+                      v-show="attributeGroup.ui.selectedAttributes.length === 0"
+                      >$vuetify.icons.validationError</v-icon
+                    >
+                    <v-icon
                       v-show="
                         attributeGroup.schemaLevelRestrictions.some(
                           ({ issuerDid }) => issuerDid === ''
@@ -69,23 +75,28 @@
                       "
                       right
                       color="warning"
-                      >$vuetify.icons.validationAlert</v-icon
-                    >
-                    <v-icon
-                      right
-                      color="error"
-                      v-show="attributeGroup.attributes.length === 0"
-                      >$vuetify.icons.validationAlert</v-icon
+                      >$vuetify.icons.validationWarning</v-icon
                     >
                   </div>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-container>
                     <v-row>
-                      <v-col cols="4" class="pb-10">
-                        <h4 class="pb-5">Data fields</h4>
+                      <v-col class="pb-5">
+                        <h4>Data fields</h4>
                       </v-col>
                     </v-row>
+                    <v-row
+                      v-show="attributeGroup.ui.selectedAttributes.length === 0"
+                    >
+                      <v-col>
+                        <v-alert type="error"
+                          >There must be at least one selected data
+                          field</v-alert
+                        >
+                      </v-col>
+                    </v-row>
+
                     <v-text-field
                       v-model="searchFields[attributeGroup.ui.uniqueIdentifier]"
                       append-icon="$vuetify.icons.search"
@@ -172,6 +183,20 @@
                   <!-- Schema Restrictions -->
                   <v-container>
                     <h4 class="pb-5">Restrictions</h4>
+                    <v-row
+                      v-show="
+                        attributeGroup.schemaLevelRestrictions.some(
+                          ({ issuerDid }) => issuerDid === ''
+                        )
+                      "
+                    >
+                      <v-col>
+                        <v-alert type="warning"
+                          >There is no trusted issuer DID selected or
+                          specified</v-alert
+                        >
+                      </v-col>
+                    </v-row>
                     <v-simple-table>
                       <tbody>
                         <tr>
@@ -415,7 +440,7 @@ export default {
     overallValidationErrors() {
       // TODO: Add predicate conditions validation
       return this.proofTemplate.attributeGroups.some(
-        ({ attributes }) => attributes.length === 0
+        (ag) => ag.ui.selectedAttributes.length === 0
       );
     },
   },
