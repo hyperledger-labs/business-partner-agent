@@ -65,7 +65,10 @@
                     <v-icon
                       right
                       color="error"
-                      v-show="attributeGroup.ui.selectedAttributes.length === 0"
+                      v-show="
+                        attributeGroup.ui.selectedAttributes.length === 0 ||
+                        attributeGroup.ui.predicateConditionsErrorCount > 0
+                      "
                       >$vuetify.icons.validationError</v-icon
                     >
                     <v-icon
@@ -146,7 +149,23 @@
                                 </td>
                                 <td>
                                   <v-text-field
+                                    :type="
+                                      condition.operator !== '=='
+                                        ? 'number'
+                                        : undefined
+                                    "
+                                    :rules="
+                                      condition.operator !== '=='
+                                        ? [rules.onlyInteger]
+                                        : []
+                                    "
                                     v-model="condition.value"
+                                    v-on:update:error="
+                                      setPredicateConditionsErrorCount(
+                                        $event,
+                                        attributeGroup
+                                      )
+                                    "
                                     dense
                                   />
                                 </td>
@@ -340,10 +359,7 @@
           </v-bpa-button>
           <v-bpa-button
             :loading="this.isBusy"
-            :disabled="
-              proofTemplate.attributeGroups.length === 0 ||
-              overallValidationErrors
-            "
+            :disabled="overallValidationErrors"
             color="primary"
             @click="createProofTemplate"
           >
@@ -433,6 +449,8 @@ export default {
       searchFields: {},
       rules: {
         required: (value) => !!value || "Required",
+        onlyInteger: (value) =>
+          Number.isInteger(Number(value)) || "Value is not an integer",
       },
     };
   },
@@ -443,16 +461,32 @@ export default {
       );
     },
     overallValidationErrors() {
-      // TODO: Add predicate conditions validation
+      const proofTemplateNameInvalid = this.proofTemplate.name === "";
+      const noAttributeGroups = this.proofTemplate.attributeGroups.length === 0;
+      const attributeGroupsInvalid = this.proofTemplate.attributeGroups.some(
+        (ag) => ag.ui.selectedAttributes.length === 0
+      );
+      const predicateConditionsInvalid = this.proofTemplate.attributeGroups.some(
+        (ag) => ag.ui.predicateConditionsErrorCount > 0
+      );
+
       return (
-        this.proofTemplate.attributeGroups.some(
-          (ag) => ag.ui.selectedAttributes.length === 0
-        ) || this.proofTemplate.name === ""
+        proofTemplateNameInvalid ||
+        noAttributeGroups ||
+        attributeGroupsInvalid ||
+        predicateConditionsInvalid
       );
     },
   },
   watch: {},
   methods: {
+    setPredicateConditionsErrorCount(event, attributeGroup) {
+      if (event === true) {
+        attributeGroup.ui.predicateConditionsErrorCount += 1;
+      } else if (event === false) {
+        attributeGroup.ui.predicateConditionsErrorCount -= 1;
+      }
+    },
     closeOtherPanelsOnOpen() {
       this.panel.splice(
         0,
@@ -503,6 +537,7 @@ export default {
         attributes,
         ui: {
           selectedAttributes: attributes,
+          predicateConditionsErrorCount: 0,
           uniqueIdentifier: Date.now(),
         },
         schemaLevelRestrictions,
