@@ -6,16 +6,6 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 
-<style scoped>
-.sub-table.theme--light.v-data-table {
-  background: transparent;
-}
-
-.sub-table .v-data-table-header {
-  display: none;
-}
-</style>
-
 <template>
   <v-container justify-center>
     <v-card class="mx-auto">
@@ -121,82 +111,40 @@
                       v-model="attributeGroup.ui.selectedAttributes"
                       item-key="name"
                       class="elevation-1"
-                      show-expand
                     >
-                      <!-- expanded section for attribute conditions -->
-                      <template
-                        v-slot:expanded-item="{
-                          attributeGroupHeaders,
-                          item: attribute,
-                        }"
-                      >
-                        <td :colspan="attributeConditionHeaders.length">
-                          <v-data-table
-                            disable-sort
-                            class="sub-table elevation-0"
-                            :headers="attributeConditionHeaders"
-                            :items="attribute.conditions"
-                            hide-default-footer
-                          >
-                            <template v-slot:item="{ item: condition }">
-                              <tr>
-                                <td>
-                                  <v-select
-                                    :items="operators"
-                                    v-model="condition.operator"
-                                    dense
-                                  />
-                                </td>
-                                <td>
-                                  <v-text-field
-                                    :type="
-                                      condition.operator !== '=='
-                                        ? 'number'
-                                        : undefined
-                                    "
-                                    :rules="
-                                      condition.operator !== '=='
-                                        ? [rules.onlyInteger]
-                                        : []
-                                    "
-                                    v-model="condition.value"
-                                    v-on:update:error="
-                                      setPredicateConditionsErrorCount(
-                                        $event,
-                                        attributeGroup
-                                      )
-                                    "
-                                    dense
-                                  />
-                                </td>
-                                <td>
-                                  <v-btn
-                                    icon
-                                    @click="addCondition(idx, attribute.name)"
-                                  >
-                                    <v-icon color="success"
-                                      >$vuetify.icons.add</v-icon
-                                    >
-                                  </v-btn>
-                                  <v-btn
-                                    icon
-                                    @click="
-                                      deleteCondition(
-                                        idx,
-                                        attribute.name,
-                                        condition.operator
-                                      )
-                                    "
-                                  >
-                                    <v-icon color="error"
-                                      >$vuetify.icons.delete</v-icon
-                                    >
-                                  </v-btn>
-                                </td>
-                              </tr>
-                            </template>
-                          </v-data-table>
-                        </td>
+                      <!-- attribute conditions -->
+                      <template v-slot:item.operator="{ item: condition }">
+                        <v-select
+                          :items="operators"
+                          v-model="condition.operator"
+                          dense
+                        />
+                      </template>
+                      <template v-slot:item.value="{ item }">
+                        <v-text-field
+                          :type="
+                            item.operator !== undefined &&
+                            item.operator !== '' &&
+                            item.operator !== '=='
+                              ? 'number'
+                              : undefined
+                          "
+                          :rules="
+                            item.operator !== undefined &&
+                            item.operator !== '' &&
+                            item.operator !== '=='
+                              ? [rules.onlyInteger]
+                              : []
+                          "
+                          v-model="item.value"
+                          v-on:update:error="
+                            setPredicateConditionsErrorCount(
+                              $event,
+                              attributeGroup
+                            )
+                          "
+                          dense
+                        />
                       </template>
                     </v-data-table>
                   </v-container>
@@ -396,11 +344,6 @@ export default {
           text: "name",
           value: "name",
         },
-      ],
-    },
-    attributeConditionHeaders: {
-      type: Array,
-      default: () => [
         {
           text: "operator",
           value: "operator",
@@ -408,10 +351,6 @@ export default {
         {
           text: "value",
           value: "value",
-        },
-        {
-          text: "actions",
-          value: "actions",
         },
       ],
     },
@@ -431,7 +370,7 @@ export default {
   mounted() {
     // load condition operators (>, <, ==, etc)
     proofTemplateService.getKnownConditionOperators().then((result) => {
-      this.operators = result.data;
+      this.operators.push("", ...result.data);
     });
   },
   data: () => {
@@ -450,7 +389,9 @@ export default {
       rules: {
         required: (value) => !!value || "Required",
         onlyInteger: (value) =>
-          Number.isInteger(Number(value)) || "Value is not an integer",
+          value === undefined
+            ? true
+            : /^\d+$/.test(value) || "Value is not an integer",
       },
     };
   },
@@ -478,12 +419,14 @@ export default {
       );
     },
   },
-  watch: {},
   methods: {
     setPredicateConditionsErrorCount(event, attributeGroup) {
       if (event === true) {
         attributeGroup.ui.predicateConditionsErrorCount += 1;
-      } else if (event === false) {
+      } else if (
+        attributeGroup.ui.predicateConditionsErrorCount > 0 &&
+        event === false
+      ) {
         attributeGroup.ui.predicateConditionsErrorCount -= 1;
       }
     },
@@ -512,12 +455,12 @@ export default {
         credentialDefinitionId: "",
       });
 
-      const attributeNames = this.schemas.find((s) => s.id === schemaId)
-        .schemaAttributeNames;
-
+      const { schemaAttributeNames } = this.schemas.find(
+        (s) => s.id === schemaId
+      );
       let attributes = [];
 
-      for (const attributeName of attributeNames) {
+      for (const attributeName of schemaAttributeNames) {
         attributes.push({
           name: attributeName,
           conditions: [
