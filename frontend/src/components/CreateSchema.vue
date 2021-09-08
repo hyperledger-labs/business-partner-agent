@@ -219,7 +219,7 @@ export default {
         if (error.response && error.response.status === 400) {
           EventBus.$emit("error", "Schema already exists");
         } else {
-          EventBus.$emit("error", error);
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         }
       }
     },
@@ -234,7 +234,7 @@ export default {
         }
       } catch (error) {
         this.isBusy = false;
-        EventBus.$emit("error", error);
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
       }
     },
     cancel() {

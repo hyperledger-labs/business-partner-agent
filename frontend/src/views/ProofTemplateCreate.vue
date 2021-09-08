@@ -494,8 +494,7 @@ export default {
           this.isBusy = false;
         })
         .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
           this.isBusy = false;
         });
     },

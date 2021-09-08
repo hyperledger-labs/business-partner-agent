@@ -182,9 +182,7 @@ export default {
         })
         .catch((e) => {
           this.isBusy = false;
-
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     getProfileAddress(credential) {

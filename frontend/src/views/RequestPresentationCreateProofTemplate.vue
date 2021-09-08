@@ -40,8 +40,7 @@ export default {
           this.$router.go(-2);
         })
         .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
   },
