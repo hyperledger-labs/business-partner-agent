@@ -149,5 +149,8 @@
       }
    }
   },
-  "showRawData": "Show raw data"
+  "showRawData": "Show raw data",
+  "error": {
+    "axios": "Request failed with status {statusText}"
+  }
 }

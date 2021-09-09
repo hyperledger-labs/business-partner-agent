@@ -120,8 +120,7 @@ export default {
             this.$emit("changed");
           })
           .catch((e) => {
-            console.error(e);
-            EventBus.$emit("error", e);
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
           });
       } else {
         this.items.splice(index, 1);
@@ -153,8 +152,7 @@ export default {
         })
         .catch((e) => {
           this.isBusy = false;
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
   },

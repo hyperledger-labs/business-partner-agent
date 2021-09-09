@@ -212,7 +212,7 @@ export default {
           return resp.data;
         }
       } catch (error) {
-        EventBus.$emit("error", error);
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
       }
     },
     async submit() {
@@ -228,7 +228,7 @@ export default {
         }
       } catch (error) {
         this.isBusy = false;
-        EventBus.$emit("error", error);
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
       }
     },
     cancel() {
