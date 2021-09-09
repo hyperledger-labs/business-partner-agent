@@ -168,19 +168,6 @@
                     <v-simple-table>
                       <tbody>
                         <tr>
-                          <td>Schema ID</td>
-                          <td>
-                            <v-text-field
-                              id="proofTemplateName"
-                              v-model="
-                                attributeGroup.schemaLevelRestrictions[0]
-                                  .schemaId
-                              "
-                              dense
-                            ></v-text-field>
-                          </td>
-                        </tr>
-                        <tr>
                           <td>Schema Name</td>
                           <td>
                             <v-text-field
