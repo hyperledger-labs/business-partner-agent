@@ -277,11 +277,17 @@
                   <v-icon>$vuetify.icons.add</v-icon>
                 </v-btn>
               </template>
-              <v-list>
+              <v-list max-height="50vh" class="overflow-y-auto">
                 <v-list-item
                   v-for="(schema, idx) in schemas"
                   :key="idx"
                   @click="addAttributeGroup(schema.id)"
+                  :disabled="
+                    proofTemplate.attributeGroups.some(
+                      (existingAttributeGroup) =>
+                        existingAttributeGroup.schemaId === schema.id
+                    )
+                  "
                 >
                   <v-list-item-content>
                     <v-list-item-title>
