@@ -26,7 +26,6 @@
             v-model="proofTemplate.name"
             dense
             label="Name"
-            :append-icon="'$vuetify.icons.copy'"
             :rules="[rules.required]"
           ></v-text-field>
         </v-list-item>

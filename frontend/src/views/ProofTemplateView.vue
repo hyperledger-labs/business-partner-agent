@@ -41,18 +41,16 @@
             readonly
             dense
             label="Name"
-            :append-icon="'$vuetify.icons.copy'"
           ></v-text-field>
         </v-list-item>
         <v-list-item class="mt-4">
           <v-text-field
             id="proofTemplateCreatedAt"
-            v-model="proofTemplate.createdAt"
+            v-bind:value="proofTemplate.createdAt | formatDateLong"
             readonly
             dense
             label="Created At"
-            :append-icon="'$vuetify.icons.copy'"
-            >{{ new Date(proofTemplate.createdAt).toLocaleString() }}
+          >
           </v-text-field>
         </v-list-item>
       </v-container>
