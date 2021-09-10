@@ -171,8 +171,7 @@ export default {
           if (e.response.status === 404) {
             this.items = [];
           } else {
-            console.error(e);
-            EventBus.$emit("error", e);
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
           }
         });
     },

@@ -266,10 +266,9 @@ export default {
           }
         })
         .catch((e) => {
-          console.error(e);
           this.msg = `Could not resolve ${this.did}.`;
           this.partnerLoading = false;
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     addPartner() {
@@ -301,8 +300,7 @@ export default {
           if (e.response.status === 412) {
             EventBus.$emit("error", "Partner already exists");
           } else {
-            console.error(e);
-            EventBus.$emit("error", e);
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
           }
         });
     },
@@ -328,9 +326,8 @@ export default {
             //this.alias = this.receivedInvitation.label;
           })
         .catch((e) => {
-          console.error(e);
           this.invitationUrlLoading = false;
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
       }
     },
@@ -363,8 +360,7 @@ export default {
             });
           })
           .catch((e) => {
-            console.error(e);
-            EventBus.$emit("error", e);
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
           });
       }
     },
