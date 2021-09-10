@@ -165,75 +165,81 @@
                         >
                       </v-col>
                     </v-row>
-                    <v-simple-table>
-                      <tbody>
-                        <tr>
-                          <td>Schema Name</td>
-                          <td>
-                            <v-text-field
-                              id="proofTemplateName"
-                              v-model="
-                                attributeGroup.schemaLevelRestrictions[0]
-                                  .schemaName
-                              "
-                              dense
-                            ></v-text-field>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Schema Version</td>
-                          <td>
-                            <v-text-field
-                              id="proofTemplateName"
-                              v-model="
-                                attributeGroup.schemaLevelRestrictions[0]
-                                  .schemaVersion
-                              "
-                              dense
-                            ></v-text-field>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Schema Issuer DID</td>
-                          <td>
-                            <v-text-field
-                              id="proofTemplateName"
-                              v-model="
-                                attributeGroup.schemaLevelRestrictions[0]
-                                  .schemaIssuerDid
-                              "
-                              dense
-                            ></v-text-field>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Issuer DID</td>
-                          <td>
-                            <v-text-field
-                              id="proofTemplateName"
-                              v-model="
-                                attributeGroup.schemaLevelRestrictions[0]
-                                  .issuerDid
-                              "
-                              dense
-                            ></v-text-field>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Credential Definition ID</td>
-                          <td>
-                            <v-text-field
-                              id="proofTemplateName"
-                              v-model="
-                                attributeGroup.schemaLevelRestrictions[0]
-                                  .credentialDefinitionId
-                              "
-                              dense
-                            ></v-text-field>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </v-simple-table>
+                    <v-data-table
+                      show-select
+                      disable-sort
+                      :hide-default-footer="
+                        attributeGroup.schemaLevelRestrictions.length < 10
+                      "
+                      :headers="restrictionsHeaders"
+                      :items="attributeGroup.schemaLevelRestrictions"
+                      v-model="
+                        attributeGroup.ui.selectedRestrictionsByTrustedIssuer
+                      "
+                      item-key="issuerDid"
+                      class="elevation-1"
+                      show-expand
+                    >
+                      <template v-slot:expanded-item="{ headers, item }">
+                        <td :colspan="headers.length" style="padding: 0">
+                          <v-simple-table>
+                            <tbody>
+                              <tr>
+                                <td>Schema Name</td>
+                                <td>
+                                  <v-text-field
+                                    id="proofTemplateName"
+                                    v-model="item.schemaName"
+                                    dense
+                                  ></v-text-field>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Schema Version</td>
+                                <td>
+                                  <v-text-field
+                                    id="proofTemplateName"
+                                    v-model="item.schemaVersion"
+                                    dense
+                                  ></v-text-field>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Schema Issuer DID</td>
+                                <td>
+                                  <v-text-field
+                                    id="proofTemplateName"
+                                    v-model="item.schemaIssuerDid"
+                                    dense
+                                  ></v-text-field>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Trusted issuer DID</td>
+                                <td>
+                                  <v-text-field
+                                    disabled
+                                    id="proofTemplateName"
+                                    v-model="item.issuerDid"
+                                    dense
+                                  ></v-text-field>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Credential Definition ID</td>
+                                <td>
+                                  <v-text-field
+                                    id="proofTemplateName"
+                                    v-model="item.credentialDefinitionId"
+                                    dense
+                                  ></v-text-field>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </v-simple-table>
+                        </td>
+                      </template>
+                    </v-data-table>
                   </v-container>
                   <v-layout justify-end>
                     <v-btn color="error" @click="deleteAttributeGroup(idx)">
@@ -333,16 +339,29 @@ export default {
       type: Array,
       default: () => [
         {
-          text: "name",
+          text: "Name",
           value: "name",
         },
         {
-          text: "operator",
+          text: "Operator",
           value: "operator",
         },
         {
-          text: "value",
+          text: "Value",
           value: "value",
+        },
+      ],
+    },
+    restrictionsHeaders: {
+      type: Array,
+      default: () => [
+        {
+          text: "Trusted Issuer",
+          value: "issuerDid",
+        },
+        {
+          text: "",
+          value: "data-table-expand",
         },
       ],
     },
@@ -435,21 +454,30 @@ export default {
       );
       return `${schema.label}<em>&nbsp;(${schema.schemaId})</em>`;
     },
-    addAttributeGroup(schemaId) {
+    addAttributeGroup: function (schemaId) {
       // TODO: Get and insert a new restriction object per selected trusted issuer DID from schema
       const schemaLevelRestrictions = [];
-      schemaLevelRestrictions.push({
-        schemaId: "",
-        schemaName: "",
-        schemaVersion: "",
-        schemaIssuerDid: "",
-        issuerDid: "",
-        credentialDefinitionId: "",
-      });
 
-      const { schemaAttributeNames } = this.schemas.find(
-        (s) => s.id === schemaId
-      );
+      const {
+        schemaAttributeNames,
+        trustedIssuer,
+        version,
+        label,
+      } = this.schemas.find((s) => s.id === schemaId);
+
+      if (trustedIssuer) {
+        for (const issuer of trustedIssuer) {
+          schemaLevelRestrictions.push({
+            schemaId: schemaId,
+            schemaName: label,
+            schemaVersion: version,
+            schemaIssuerDid: "",
+            issuerDid: issuer.issuerDid,
+            credentialDefinitionId: "",
+          });
+        }
+      }
+
       let attributes = [];
 
       for (const attributeName of schemaAttributeNames) {
@@ -472,6 +500,7 @@ export default {
         attributes,
         ui: {
           selectedAttributes: attributes,
+          selectedRestrictionsByTrustedIssuer: schemaLevelRestrictions,
           predicateConditionsErrorCount: 0,
           uniqueIdentifier: Date.now(),
         },
@@ -523,6 +552,7 @@ export default {
 
       for (const ag of this.proofTemplate.attributeGroups) {
         let attributesInGroup = [];
+        let restrictionsInGroup = [];
 
         // sanitize attribute conditions (remove empty conditions)
         for (const a of ag.attributes) {
@@ -544,15 +574,31 @@ export default {
                 ([, v]) => v !== ""
               )
             );
+
+            ag.ui.selectedRestrictionsByTrustedIssuer.map(
+              (selectedRestrictions) => {
+                if (
+                  selectedRestrictions.issuerDid ===
+                  schemaLevelRestrictionObject.issuerDid
+                ) {
+                  restrictionsInGroup.push(schemaLevelRestrictionObject);
+                }
+              }
+            );
           }
         );
+
+        // add empty restrictions object to satisfy backend
+        if (ag.schemaLevelRestrictions.length === 0) {
+          restrictionsInGroup.push({});
+        }
 
         // sanitize ui data (remove ui helper values)
         sanitizedAttributeGroupObjects.push({
           schemaId: ag.schemaId,
           nonRevoked: ag.nonRevoked,
           attributes: attributesInGroup,
-          schemaLevelRestrictions: ag.schemaLevelRestrictions,
+          schemaLevelRestrictions: restrictionsInGroup,
         });
       }
 

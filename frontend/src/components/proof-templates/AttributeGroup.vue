@@ -50,8 +50,8 @@
               show-expand
               hide-default-footer
             >
-              <template v-slot:expanded-item="{ item }">
-                <td :colspan="attributeConditionHeaders.length">
+              <template v-slot:expanded-item="{ headers, item }">
+                <td :colspan="headers.length" style="padding: 0">
                   <v-data-table
                     disable-sort
                     class="sub-table elevation-0"
