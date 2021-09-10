@@ -92,6 +92,10 @@ export default {
         return [];
       },
     },
+    reset: {
+      type: Boolean,
+      default: () => false,
+    },
   },
   watch: {
     schema() {
@@ -102,6 +106,14 @@ export default {
       this.items = Array.from(val);
       this.isEdit = false;
       this.editingTrustedIssuer = null;
+    },
+    reset(newVal, oldVal) {
+      // use this to reset the form, remove any outstanding items that are not saved.
+      if (newVal !== oldVal) {
+        this.items = Array.from(this.trustedIssuers);
+        this.isEdit = false;
+        this.editingTrustedIssuer = null;
+      }
     },
   },
   created() {},
