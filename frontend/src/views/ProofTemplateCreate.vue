@@ -73,11 +73,7 @@
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                   <v-container>
-                    <v-row>
-                      <v-col class="pb-5">
-                        <h4>Data fields</h4>
-                      </v-col>
-                    </v-row>
+                    <h4 class="pb-5">Data fields</h4>
                     <v-row
                       v-show="attributeGroup.ui.selectedAttributes.length === 0"
                     >
@@ -239,12 +235,25 @@
                       </template>
                     </v-data-table>
                   </v-container>
-                  <v-layout justify-end>
-                    <v-btn color="error" @click="deleteAttributeGroup(idx)">
-                      <v-icon left>$vuetify.icons.delete</v-icon>
-                      Remove
+                  <v-bpa-button
+                    color="secondary"
+                    @click="addTrustedIssuerRestrictionObject"
+                    >Add trusted issuer</v-bpa-button
+                  >
+
+                  <v-card-actions>
+                    <v-btn
+                      fab
+                      absolute
+                      small
+                      bottom
+                      right
+                      color="error"
+                      @click="deleteAttributeGroup(idx)"
+                    >
+                      <v-icon>$vuetify.icons.delete</v-icon>
                     </v-btn>
-                  </v-layout>
+                  </v-card-actions>
                 </v-expansion-panel-content>
               </v-expansion-panel>
             </v-expansion-panels>
@@ -254,17 +263,7 @@
           <v-container>
             <v-menu>
               <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  color="primary"
-                  dark
-                  small
-                  absolute
-                  bottom
-                  left
-                  fab
-                  v-bind="attrs"
-                  v-on="on"
-                >
+                <v-btn color="primary" bottom left fab v-bind="attrs" v-on="on">
                   <v-icon>$vuetify.icons.add</v-icon>
                 </v-btn>
               </template>
@@ -429,6 +428,10 @@ export default {
     },
   },
   methods: {
+    addTrustedIssuerRestrictionObject() {
+      // TODO
+      console.log("To be implemented");
+    },
     setPredicateConditionsErrorCount(event, attributeGroup) {
       if (event === true) {
         attributeGroup.ui.predicateConditionsErrorCount += 1;
@@ -453,7 +456,6 @@ export default {
       return `${schema.label}<em>&nbsp;(${schema.schemaId})</em>`;
     },
     addAttributeGroup: function (schemaId) {
-      // TODO: Get and insert a new restriction object per selected trusted issuer DID from schema
       const schemaLevelRestrictions = [];
 
       const {
