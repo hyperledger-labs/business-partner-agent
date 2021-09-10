@@ -62,9 +62,8 @@
                     >
                     <v-icon
                       v-show="
-                        attributeGroup.schemaLevelRestrictions.some(
-                          ({ issuerDid }) => issuerDid === ''
-                        )
+                        attributeGroup.ui.selectedRestrictionsByTrustedIssuer
+                          .length === 0
                       "
                       right
                       color="warning"
@@ -153,9 +152,8 @@
                     <h4 class="pb-5">Restrictions</h4>
                     <v-row
                       v-show="
-                        attributeGroup.schemaLevelRestrictions.some(
-                          ({ issuerDid }) => issuerDid === ''
-                        )
+                        attributeGroup.ui.selectedRestrictionsByTrustedIssuer
+                          .length === 0
                       "
                     >
                       <v-col>
