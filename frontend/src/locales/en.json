@@ -110,13 +110,31 @@
         "action" : {
           "title": "Issue Credential",
           "button": "Issue Credential",
-          "partnerLabel": "Select partner...",
-          "credentialLabel": "Select credential..."
+          "partnerLabel": "Select Partner",
+          "credDefLabel": "Select Credential Definition"
         },
         "table" : {
           "title": "Issued Credentials"
         }
       }
+    },
+    "wallet": {
+      "title": "Wallet",
+      "credentials": {
+        "title": "Verifiable Credentials"
+      },
+      "documents": {
+        "title": "Documents"
+      }
+    }
+  },
+  "component": {
+    "issueCredential": {
+      "title": "Issue Credential",
+      "partnerLabel": "Partner",
+      "credDefLabel": "Credential Definition",
+      "successMessage": "Credential issued",
+      "fieldRequired": "{fieldName} is required"
     }
   },
   "constants": {

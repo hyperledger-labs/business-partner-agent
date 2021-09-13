@@ -8,10 +8,10 @@
 <template>
   <v-container>
     <v-card class="mx-auto">
-      <v-card-title class="bg-light"> Issue Credential </v-card-title>
+      <v-card-title class="bg-light">{{$t("component.issueCredential.title")}}</v-card-title>
       <v-card-text>
         <v-select
-          label="Partner"
+          :label="$t('component.issueCredential.partnerLabel')"
           v-model="partner"
           :items="partners"
           outlined
@@ -21,7 +21,7 @@
       </v-card-text>
       <v-card-text>
         <v-select
-          label="Credential"
+          :label="$t('component.issueCredential.credDefLabel')"
           return-object
           v-model="credDef"
           :items="credDefs"
@@ -41,12 +41,12 @@
               v-for="field in credDef.fields"
               :key="field.type"
               :label="field.label"
+              v-model="credentialFields[field.type]"
               placeholder=""
-              :rules="[(v) => !!v || 'Item is required']"
-              :required="field.required"
               outlined
               dense
-              @change="fieldChanged(field.type, $event)"
+              @blur="enableSubmit"
+              @keyup="enableSubmit"
             ></v-text-field>
           </v-col>
         </v-row>
@@ -188,9 +188,7 @@ export default {
         this.credDefs = Array.from(this.$props.credDefList);
       }
       if (this.$props.credDefId) {
-        this.credDef = this.credDefs.find(
-          (c) => c.value === this.$props.credDefId
-        );
+        this.credDef = this.credDefs.find((c) => c.value === this.$props.credDefId);
       }
 
       this.isLoading = false;
@@ -221,7 +219,7 @@ export default {
         const _credexId = await this.issueCredential();
         this.isBusy = false;
         if (_credexId) {
-          EventBus.$emit("success", "Credential issued.");
+          EventBus.$emit("success", this.$t("component.issueCredential.successMessage"));
           this.credDef = {};
           this.submitDisabled = true;
           this.$emit("success");
@@ -232,27 +230,28 @@ export default {
       }
     },
     cancel() {
+      // clear out selected credential definition, will select (or have pre-populated) when re-open form.
+      this.credDef = {};
+      this.credentialFields = {};
       this.$emit("cancelled");
     },
     credDefSelected() {
       this.credentialFields = {};
       this.credDef.fields.forEach((x) => (this.credentialFields[x.type] = ""));
+      this.credDef.fields.sort((a,b) => a.label.localeCompare(b.label));
       this.submitDisabled = true;
     },
-
-    fieldChanged(propertyName, event) {
-      this.credentialFields[propertyName] = event;
-      // once all fields are populated, then enable the submit button
-      let allPopulated = false;
+    enableSubmit() {
+      let enabled = false;
       if (this.credDef && this.credDef.fields && this.credDef.fields.length) {
         //ok, we have some fields to check.
-        allPopulated = this.credDef.fields.every(
+        enabled = this.credDef.fields.some(
           (x) =>
             this.credentialFields[x.type] &&
             this.credentialFields[x.type].trim().length > 0
         );
       }
-      this.submitDisabled = !allPopulated;
+      this.submitDisabled = !enabled;
     },
   },
 };
