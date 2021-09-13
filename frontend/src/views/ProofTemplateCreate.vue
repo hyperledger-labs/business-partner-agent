@@ -11,9 +11,9 @@
     <v-card class="mx-auto">
       <!-- Title -->
       <v-card-title class="bg-light">
-        <v-btn depressed color="secondary" icon @click="$router.go(-1)">
+        <v-bpa-button depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>$vuetify.icons.prev</v-icon>
-        </v-btn>
+        </v-bpa-button>
         <span>Create Proof Template</span>
       </v-card-title>
 
@@ -40,7 +40,6 @@
           <v-list-item-subtitle
             >Add data to be requested by Schema</v-list-item-subtitle
           >
-
           <v-container>
             <v-expansion-panels focusable multiple v-model="panel">
               <v-expansion-panel
@@ -84,7 +83,6 @@
                         >
                       </v-col>
                     </v-row>
-
                     <v-text-field
                       v-model="searchFields[attributeGroup.ui.uniqueIdentifier]"
                       append-icon="$vuetify.icons.search"
@@ -154,8 +152,7 @@
                     >
                       <v-col>
                         <v-alert type="warning"
-                          >There is no trusted issuer DID selected or
-                          specified</v-alert
+                          >There is no trusted issuer DID selected</v-alert
                         >
                       </v-col>
                     </v-row>
@@ -235,14 +232,54 @@
                       </template>
                     </v-data-table>
                   </v-container>
-                  <v-bpa-button
-                    color="secondary"
-                    @click="addTrustedIssuerRestrictionObject"
-                    >Add trusted issuer</v-bpa-button
+                  <v-dialog
+                    v-model="addTrustedIssuerDialog.visible"
+                    persistent
+                    max-width="600px"
                   >
-
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-bpa-button color="secondary" v-bind="attrs" v-on="on"
+                        >Add trusted issuer</v-bpa-button
+                      >
+                    </template>
+                    <v-card>
+                      <v-card-title class="headline">
+                        Add Trusted Issuer
+                      </v-card-title>
+                      <v-card-text>
+                        <v-container>
+                          <v-text-field
+                            label="DID"
+                            hint="The decentralized ID of a trusted issuer"
+                            v-model="addTrustedIssuerDialog.did"
+                            persistent-hint
+                            outlined
+                          ></v-text-field>
+                        </v-container>
+                      </v-card-text>
+                      <v-card-actions>
+                        <v-layout align-end justify-end>
+                          <v-bpa-button
+                            color="secondary"
+                            @click="addTrustedIssuerCancel"
+                          >
+                            Cancel
+                          </v-bpa-button>
+                          <v-bpa-button
+                            color="primary"
+                            :disabled="addTrustedIssuerDialog.did.length === 0"
+                            @click="
+                              addTrustedIssuerRestrictionObject(attributeGroup)
+                            "
+                          >
+                            Add
+                          </v-bpa-button>
+                        </v-layout>
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
                   <v-card-actions>
-                    <v-btn
+                    <v-bpa-button
                       fab
                       absolute
                       small
@@ -252,7 +289,7 @@
                       @click="deleteAttributeGroup(idx)"
                     >
                       <v-icon>$vuetify.icons.delete</v-icon>
-                    </v-btn>
+                    </v-bpa-button>
                   </v-card-actions>
                 </v-expansion-panel-content>
               </v-expansion-panel>
@@ -263,9 +300,16 @@
           <v-container>
             <v-menu>
               <template v-slot:activator="{ on, attrs }">
-                <v-btn color="primary" bottom left fab v-bind="attrs" v-on="on">
+                <v-bpa-button
+                  color="primary"
+                  bottom
+                  left
+                  fab
+                  v-bind="attrs"
+                  v-on="on"
+                >
                   <v-icon>$vuetify.icons.add</v-icon>
-                </v-btn>
+                </v-bpa-button>
               </template>
               <v-list max-height="50vh" class="overflow-y-auto">
                 <v-list-item
@@ -316,9 +360,9 @@
     <v-snackbar v-model="snackbarDeleteShow" :timeout="snackbarTimeout">
       {{ snackbarText }}
       <template v-slot:action="{ attrs }">
-        <v-btn text v-bind="attrs" @click="snackbarDeleteShow = false">
+        <v-bpa-button text v-bind="attrs" @click="snackbarDeleteShow = false">
           Close
-        </v-btn>
+        </v-bpa-button>
       </template>
     </v-snackbar>
   </v-container>
@@ -383,6 +427,10 @@ export default {
   },
   data: () => {
     return {
+      addTrustedIssuerDialog: {
+        visible: false,
+        did: "",
+      },
       panel: [],
       isBusy: false,
       operators: [],
@@ -428,9 +476,22 @@ export default {
     },
   },
   methods: {
-    addTrustedIssuerRestrictionObject() {
-      // TODO
-      console.log("To be implemented");
+    addTrustedIssuerCancel() {
+      this.addTrustedIssuerDialog.visible = false;
+      this.addTrustedIssuerDialog.did = "";
+    },
+    addTrustedIssuerRestrictionObject(attributeGroup) {
+      attributeGroup.schemaLevelRestrictions.push({
+        schemaId: "",
+        schemaName: "",
+        schemaVersion: "",
+        schemaIssuerDid: "",
+        issuerDid: this.addTrustedIssuerDialog.did,
+        credentialDefinitionId: "",
+      });
+
+      this.addTrustedIssuerDialog.visible = false;
+      this.addTrustedIssuerDialog.did = "";
     },
     setPredicateConditionsErrorCount(event, attributeGroup) {
       if (event === true) {
