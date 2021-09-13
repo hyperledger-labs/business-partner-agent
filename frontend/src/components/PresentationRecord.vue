@@ -275,11 +275,12 @@ export default {
     toCredentialLabel(matchedCred) {
       if (matchedCred.credentialInfo) {
         const credInfo = matchedCred.credentialInfo;
+        const referentHash = credInfo.referent.split("-")[0];
         if (credInfo.credentialLabel) {
           return credInfo.credentialLabel;
         } else if (credInfo.schemaLabel) {
           if (credInfo.issuerLabel) {
-            return `${credInfo.schemaLabel} (${credInfo.issuerLabel})`;
+            return `${credInfo.schemaLabel} (${credInfo.issuerLabel}) - ${referentHash}`;
           } else {
             return credInfo.schemaLabel;
           }

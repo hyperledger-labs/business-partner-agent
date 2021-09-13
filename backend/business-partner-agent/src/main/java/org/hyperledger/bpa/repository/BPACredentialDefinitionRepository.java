@@ -44,4 +44,7 @@ public interface BPACredentialDefinitionRepository extends CrudRepository<BPACre
             "WHERE s.schema_id = :schemaId")
     Optional<BPACredentialDefinition> findBySchemaId(String schemaId);
 
+    @NonNull
+    Optional<BPACredentialDefinition> findByCredentialDefinitionId(@NonNull String credentialDefinitionId);
+
 }

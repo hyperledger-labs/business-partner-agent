@@ -21,10 +21,7 @@
       @click:row="open"
     >
       <template v-slot:[`item.label`]="{ item }">
-        <new-message-icon
-          :type="'credential'"
-          :id="item.id"
-        ></new-message-icon>
+        <new-message-icon :type="'credential'" :id="item.id"></new-message-icon>
         <span v-bind:class="{ 'font-weight-medium': item.new }">
           {{ item.label }}
         </span>
@@ -59,13 +56,16 @@
 
       <template v-slot:[`item.revoked`]="{ item }">
         <v-icon v-if="item.revocable && item.revoked" title="credential revoked"
-        >$vuetify.icons.revoked</v-icon
+          >$vuetify.icons.revoked</v-icon
         >
-        <v-icon v-else-if="item.revocable && !item.revoked" color="green" title="credential valid and not revoked"
-        >$vuetify.icons.revoke</v-icon
+        <v-icon
+          v-else-if="item.revocable && !item.revoked"
+          color="green"
+          title="credential valid and not revoked"
+          >$vuetify.icons.revoke</v-icon
         >
         <v-icon v-else title="credential valid and not revocable" color="green"
-        >$vuetify.icons.check</v-icon
+          >$vuetify.icons.check</v-icon
         >
       </template>
 
@@ -148,8 +148,7 @@ export default {
           if (e.response.status === 404) {
             this.data = [];
           } else {
-            console.error(e);
-            EventBus.$emit("error", e);
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
           }
         });
     },

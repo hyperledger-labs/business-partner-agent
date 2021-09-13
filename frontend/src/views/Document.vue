@@ -211,8 +211,7 @@ export default {
           }
         })
         .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     saveDocument(closeDocument) {
@@ -242,8 +241,7 @@ export default {
           })
           .catch((e) => {
             this.isBusy = false;
-            console.error(e);
-            EventBus.$emit("error", e);
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
           });
 
         // create new document
@@ -267,8 +265,7 @@ export default {
           })
           .catch((e) => {
             this.isBusy = false;
-            console.error(e);
-            EventBus.$emit("error", e);
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
           });
       }
     },
@@ -284,8 +281,7 @@ export default {
           }
         })
         .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     cancel() {

@@ -75,7 +75,7 @@ import { EventBus } from "@/main";
 import PartnerList from "@/components/PartnerList";
 import VBpaButton from "@/components/BpaButton";
 import { getPartnerState } from "@/utils/partnerUtils";
-import {PartnerStates} from "@/constants";
+import { PartnerStates } from "@/constants";
 
 export default {
   name: "RequestVerification",
@@ -101,7 +101,7 @@ export default {
       isReady: false,
       attentionPartnerStateDialog: false,
       partner: {},
-      getPartnerState: getPartnerState
+      getPartnerState: getPartnerState,
     };
   },
   computed: {},
@@ -111,7 +111,8 @@ export default {
         if (this.$refs.partnerList.selected[0].id) {
           this.partner = this.$refs.partnerList.selected[0];
           if (
-              this.getPartnerState(this.partner) === PartnerStates.ACTIVE_OR_RESPONSE
+            this.getPartnerState(this.partner) ===
+            PartnerStates.ACTIVE_OR_RESPONSE
           ) {
             this.submitRequest();
           } else {
@@ -142,8 +143,7 @@ export default {
         })
         .catch((e) => {
           this.isBusy = false;
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     cancel() {
@@ -157,5 +157,4 @@ export default {
 .bg-light {
   background-color: #fafafa;
 }
-
 </style>

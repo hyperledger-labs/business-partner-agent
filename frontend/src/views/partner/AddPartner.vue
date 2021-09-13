@@ -18,17 +18,17 @@
         </v-radio-group>
       </v-container>
 
-      <v-container v-if="radios==='did'">
+      <v-container v-if="radios === 'did'">
         <v-row>
           <v-col cols="12">
             <v-text-field
-                prepend-icon="$vuetify.icons.identity"
-                label="Decentralized Identifier (DID)"
-                placeholder=""
-                v-model="did"
-                @change="partnerLoaded = false"
-                outlined
-                dense
+              prepend-icon="$vuetify.icons.identity"
+              label="Decentralized Identifier (DID)"
+              placeholder=""
+              v-model="did"
+              @change="partnerLoaded = false"
+              outlined
+              dense
             >
             </v-text-field>
           </v-col>
@@ -36,9 +36,9 @@
         <v-row>
           <v-layout justify-center>
             <v-progress-circular
-                v-if="partnerLoading"
-                indeterminate
-                color="primary"
+              v-if="partnerLoading"
+              indeterminate
+              color="primary"
             ></v-progress-circular>
           </v-layout>
         </v-row>
@@ -51,7 +51,7 @@
         <v-row v-if="partnerLoaded">
           <v-col cols="4">
             <v-list-item-title
-                class="grey--text text--darken-2 font-weight-medium"
+              class="grey--text text--darken-2 font-weight-medium"
             >
               {{ $t("view.addPartner.setName") }}
             </v-list-item-title>
@@ -69,25 +69,25 @@
           </v-col>
           <v-col cols="4">
             <v-list-item-title
-                class="grey--text text--darken-2 font-weight-medium"
+              class="grey--text text--darken-2 font-weight-medium"
             >
               {{ $t("view.addPartner.setTags") }}
             </v-list-item-title>
           </v-col>
           <v-col cols="8">
             <v-autocomplete
-                multiple
-                v-model="selectedTags"
-                :items="tags"
-                chips
-                deletable-chips
+              multiple
+              v-model="selectedTags"
+              :items="tags"
+              chips
+              deletable-chips
             >
             </v-autocomplete>
           </v-col>
           <v-list-item>
             <v-list-item-title
-                class="grey--text text--darken-2 font-weight-medium"
-            >{{ $t("view.addPartner.trustPing") }}</v-list-item-title
+              class="grey--text text--darken-2 font-weight-medium"
+              >{{ $t("view.addPartner.trustPing") }}</v-list-item-title
             >
 
             <v-list-item-action>
@@ -98,7 +98,7 @@
 
         <Profile v-if="partnerLoaded" v-bind:partner="partner" />
       </v-container>
-      <v-card-actions v-if="radios==='did'">
+      <v-card-actions v-if="radios === 'did'">
         <v-layout justify-space-between>
           <v-bpa-button color="secondary" to="/app/partners">
             {{ $t("button.cancel") }}
@@ -113,17 +113,17 @@
         </v-layout>
       </v-card-actions>
 
-      <v-container v-if="radios==='url'">
+      <v-container v-if="radios === 'url'">
         <v-row>
           <v-col cols="12">
             <v-text-field
-                prepend-icon="$vuetify.icons.invitation"
-                label="Invitation URL"
-                placeholder=""
-                v-model="invitationUrl"
-                @change="invitationUrlLoaded = false"
-                outlined
-                dense
+              prepend-icon="$vuetify.icons.invitation"
+              label="Invitation URL"
+              placeholder=""
+              v-model="invitationUrl"
+              @change="invitationUrlLoaded = false"
+              outlined
+              dense
             >
             </v-text-field>
           </v-col>
@@ -131,52 +131,52 @@
         <v-row>
           <v-layout justify-center>
             <v-progress-circular
-                v-if="invitationUrlLoading"
-                indeterminate
-                color="primary"
+              v-if="invitationUrlLoading"
+              indeterminate
+              color="primary"
             ></v-progress-circular>
           </v-layout>
         </v-row>
         <v-row v-if="invitationUrlLoaded">
           <v-col cols="4">
             <v-list-item-title
-                class="grey--text text--darken-2 font-weight-medium"
+              class="grey--text text--darken-2 font-weight-medium"
             >
               {{ $t("view.addPartner.setName") }}
             </v-list-item-title>
           </v-col>
           <v-col cols="8">
             <v-text-field
-                label="Name"
-                persistent-placeholder
-                :placeholder=aliasPlaceholder
-                v-model.trim="alias"
-                outlined
-                dense
+              label="Name"
+              persistent-placeholder
+              :placeholder="aliasPlaceholder"
+              v-model.trim="alias"
+              outlined
+              dense
             >
             </v-text-field>
           </v-col>
           <v-col cols="4">
             <v-list-item-title
-                class="grey--text text--darken-2 font-weight-medium"
+              class="grey--text text--darken-2 font-weight-medium"
             >
               {{ $t("view.addPartner.setTags") }}
             </v-list-item-title>
           </v-col>
           <v-col cols="8">
             <v-autocomplete
-                multiple
-                v-model="selectedTags"
-                :items="tags"
-                chips
-                deletable-chips
+              multiple
+              v-model="selectedTags"
+              :items="tags"
+              chips
+              deletable-chips
             >
             </v-autocomplete>
           </v-col>
           <v-list-item>
             <v-list-item-title
-                class="grey--text text--darken-2 font-weight-medium"
-            >{{ $t("view.addPartner.trustPing") }}</v-list-item-title
+              class="grey--text text--darken-2 font-weight-medium"
+              >{{ $t("view.addPartner.trustPing") }}</v-list-item-title
             >
 
             <v-list-item-action>
@@ -185,13 +185,21 @@
           </v-list-item>
         </v-row>
       </v-container>
-      <v-card-actions v-if="radios==='url'">
+      <v-card-actions v-if="radios === 'url'">
         <v-layout justify-space-between>
           <v-bpa-button color="secondary" to="/app/partners">
             {{ $t("button.cancel") }}
           </v-bpa-button>
-          <v-bpa-button v-if="!invitationUrlLoaded" color="primary" @click="checkInvitation()" :disabled="invitationUrl===''">Check Invitation</v-bpa-button>
-          <v-bpa-button v-else color="primary" @click="acceptInvitation()">Accept Invitation</v-bpa-button>
+          <v-bpa-button
+            v-if="!invitationUrlLoaded"
+            color="primary"
+            @click="checkInvitation()"
+            :disabled="invitationUrl === ''"
+            >Check Invitation</v-bpa-button
+          >
+          <v-bpa-button v-else color="primary" @click="acceptInvitation()"
+            >Accept Invitation</v-bpa-button
+          >
         </v-layout>
       </v-card-actions>
     </v-card>
@@ -227,7 +235,7 @@ export default {
       invitationUrlLoaded: false,
       invitationUrlLoading: false,
       receivedInvitation: {},
-      radios: "did"
+      radios: "did",
     };
   },
   computed: {
@@ -266,10 +274,9 @@ export default {
           }
         })
         .catch((e) => {
-          console.error(e);
           this.msg = `Could not resolve ${this.did}.`;
           this.partnerLoading = false;
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     addPartner() {
@@ -301,8 +308,7 @@ export default {
           if (e.response.status === 412) {
             EventBus.$emit("error", "Partner already exists");
           } else {
-            console.error(e);
-            EventBus.$emit("error", e);
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
           }
         });
     },
@@ -314,7 +320,7 @@ export default {
       if (this.invitationUrl) {
         this.invitationUrlLoading = true;
         let request = {
-          invitationUrl: encodeURIComponent(this.invitationUrl)
+          invitationUrl: encodeURIComponent(this.invitationUrl),
         };
 
         this.$axios
@@ -322,23 +328,23 @@ export default {
           .then((result) => {
             this.invitationUrlLoading = false;
             this.receivedInvitation = Object.assign({}, result.data);
-            this.invitationUrlLoaded = this.receivedInvitation.invitationBlock != null;
+            this.invitationUrlLoaded =
+              this.receivedInvitation.invitationBlock != null;
             // add in their label as the default alias for adding
             this.aliasPlaceholder = this.receivedInvitation.label;
             //this.alias = this.receivedInvitation.label;
           })
-        .catch((e) => {
-          console.error(e);
-          this.invitationUrlLoading = false;
-          EventBus.$emit("error", e);
-        });
+          .catch((e) => {
+            this.invitationUrlLoading = false;
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
+          });
       }
     },
     acceptInvitation() {
       if (this.invitationUrlLoaded) {
         // build up our accept request using the invitation block from check and user entered data...
         let request = {
-          invitationBlock: this.receivedInvitation.invitationBlock
+          invitationBlock: this.receivedInvitation.invitationBlock,
         };
         if (this.alias && this.alias !== "") {
           request.alias = this.alias;
@@ -363,8 +369,7 @@ export default {
             });
           })
           .catch((e) => {
-            console.error(e);
-            EventBus.$emit("error", e);
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
           });
       }
     },

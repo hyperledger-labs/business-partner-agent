@@ -208,7 +208,7 @@ export default {
         this.dialog = false;
         this.$emit("changed");
       } catch (e) {
-        EventBus.$emit("error", e);
+        EventBus.$emit("error", this.$axiosErrorMessage(e));
       }
     },
     async decline() {
@@ -218,7 +218,7 @@ export default {
         this.dialog = false;
         this.$emit("changed");
       } catch (e) {
-        EventBus.$emit("error", e);
+        EventBus.$emit("error", this.$axiosErrorMessage(e));
       }
     },
     openItem(item) {
@@ -246,7 +246,7 @@ export default {
           this.dialog = false;
         }
       } catch (e) {
-        EventBus.$emit("error", e);
+        EventBus.$emit("error", this.$axiosErrorMessage(e));
       }
     },
     addProofData() {
