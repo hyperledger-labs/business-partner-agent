@@ -49,7 +49,7 @@
               <v-expansion-panel
                 class="my-5"
                 v-for="(attributeGroup, idx) in proofTemplate.attributeGroups"
-                :key="attributeGroup.ui.uniqueIdentifier"
+                :key="attributeGroup.schemaId"
               >
                 <v-expansion-panel-header>
                   <div>
@@ -88,7 +88,7 @@
                       </v-col>
                     </v-row>
                     <v-text-field
-                      v-model="searchFields[attributeGroup.ui.uniqueIdentifier]"
+                      v-model="attributeGroup.ui.searchField"
                       append-icon="$vuetify.icons.search"
                       label="Search"
                       single-line
@@ -101,7 +101,7 @@
                       :hide-default-footer="
                         attributeGroup.attributes.length < 10
                       "
-                      :search="searchFields[attributeGroup.ui.uniqueIdentifier]"
+                      :search="attributeGroup.ui.searchField"
                       :headers="attributeGroupHeaders"
                       :items="attributeGroup.attributes"
                       v-model="attributeGroup.ui.selectedAttributes"
@@ -238,6 +238,7 @@
                   </v-container>
                   <v-dialog
                     v-model="addTrustedIssuerDialog.visible"
+                    :retain-focus="false"
                     persistent
                     max-width="600px"
                   >
@@ -447,7 +448,6 @@ export default {
         deleteShow: false,
         text: "",
       },
-      searchFields: {},
       rules: {
         required: (value) => !!value || "Required",
         onlyInteger: (value) =>
@@ -569,7 +569,7 @@ export default {
           selectedAttributes: attributes,
           selectedRestrictionsByTrustedIssuer: schemaLevelRestrictions,
           predicateConditionsErrorCount: 0,
-          uniqueIdentifier: Date.now(),
+          searchField: "",
         },
         schemaLevelRestrictions,
       });
@@ -584,12 +584,6 @@ export default {
       );
 
       this.snackbar.text = `Removed attribute group ${schema.label} (${schema.schemaId})`;
-
-      delete this.searchFields[
-        this.proofTemplate.attributeGroups[attributeGroupIdx].ui
-          .uniqueIdentifier
-      ];
-
       this.proofTemplate.attributeGroups.splice(attributeGroupIdx, 1);
       this.snackbar.deleteShow = true;
     },
