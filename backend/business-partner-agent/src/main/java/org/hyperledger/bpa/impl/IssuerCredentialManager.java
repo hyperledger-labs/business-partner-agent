@@ -127,6 +127,7 @@ public class IssuerCredentialManager {
                 bpaSchema = schemaService.getSchemaFor(schema.getSchemaId());
             }
             // send creddef to ledger...
+            // will create if needed, otherwise return existing...
             CredentialDefinitionRequest request = CredentialDefinitionRequest.builder()
                     .schemaId(schemaId)
                     .tag(tag)
@@ -136,16 +137,22 @@ public class IssuerCredentialManager {
             Optional<CredentialDefinition.CredentialDefinitionResponse> response = ac
                     .credentialDefinitionsCreate(request);
             if (response.isPresent()) {
-                // save it to the db...
-                BPACredentialDefinition cdef = BPACredentialDefinition.builder()
-                        .schema(bpaSchema.get())
-                        .credentialDefinitionId(response.get().getCredentialDefinitionId())
-                        .isSupportRevocation(supportRevocation)
-                        .revocationRegistrySize(config.getRevocationRegistrySize())
-                        .tag(tag)
-                        .build();
-                BPACredentialDefinition saved = credDefRepo.save(cdef);
-                result = CredDef.from(saved);
+                // check to see if we have already saved this cred def.
+                if (credDefRepo.findByCredentialDefinitionId(response.get().getCredentialDefinitionId()).isEmpty()) {
+                    // doesn't exist, save it to the db...
+                    BPACredentialDefinition cdef = BPACredentialDefinition.builder()
+                            .schema(bpaSchema.get())
+                            .credentialDefinitionId(response.get().getCredentialDefinitionId())
+                            .isSupportRevocation(supportRevocation)
+                            .revocationRegistrySize(config.getRevocationRegistrySize())
+                            .tag(tag)
+                            .build();
+                    BPACredentialDefinition saved = credDefRepo.save(cdef);
+                    result = CredDef.from(saved);
+                } else {
+                    throw new WrongApiUsageException(
+                            String.format("Schema already as a Credential Definition with tag '%s'", tag));
+                }
             } else {
                 log.error("Credential Definition not created.");
                 throw new IssuerException("Credential Definition not created; could not complete request with ledger");
@@ -231,7 +238,7 @@ public class IssuerCredentialManager {
 
     /**
      * Check if the supplied attributes match the schema
-     * 
+     *
      * @param document  the credential
      * @param dbCredDef {@link BPACredentialDefinition}
      */
@@ -308,7 +315,7 @@ public class IssuerCredentialManager {
 
     /**
      * Handle issue credential v1 state changes and revocation info
-     * 
+     *
      * @param ex {@link V1CredentialExchange}
      */
     public void handleV1CredentialExchange(@NonNull V1CredentialExchange ex) {
@@ -322,7 +329,7 @@ public class IssuerCredentialManager {
 
     /**
      * Handle issue credential v2 state changes
-     * 
+     *
      * @param ex {@link V20CredExRecord}
      */
     public void handleV2CredentialExchange(@NonNull V20CredExRecord ex) {
@@ -333,7 +340,7 @@ public class IssuerCredentialManager {
 
     /**
      * Handle issue credential v2 revocation info
-     * 
+     *
      * @param revocationInfo {@link V2IssueIndyCredentialEvent}
      */
     public void handleIssueCredentialV2Indy(V2IssueIndyCredentialEvent revocationInfo) {

@@ -38,4 +38,7 @@ public interface BPACredentialDefinitionRepository extends CrudRepository<BPACre
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     Optional<BPACredentialDefinition> findById(@NonNull UUID id);
 
+    @NonNull
+    Optional<BPACredentialDefinition> findByCredentialDefinitionId(@NonNull String credentialDefinitionId);
+
 }
