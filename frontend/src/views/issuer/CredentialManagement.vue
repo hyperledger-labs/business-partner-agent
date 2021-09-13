@@ -14,7 +14,7 @@
       <v-card-actions>
         <v-layout align-end justify-end>
           <v-autocomplete
-            label="Select partner"
+            :label="$t('view.issueCredentials.cards.action.partnerLabel')"
             v-model="partner"
             :items="partners"
             return-object
@@ -48,7 +48,7 @@
             </template>
           </v-autocomplete>
           <v-autocomplete
-            label="Select credential"
+            :label="$t('view.issueCredentials.cards.action.credDefLabel')"
             v-model="credDef"
             :items="credDefs"
             return-object

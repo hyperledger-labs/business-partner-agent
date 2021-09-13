@@ -27,7 +27,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.UUID;
 
 @Data
@@ -51,7 +51,7 @@ public class BPASchema {
 
     @TypeDef(type = DataType.JSON)
     @Singular
-    private Set<String> schemaAttributeNames;
+    private SortedSet<String> schemaAttributeNames;
 
     @Nullable
     private String defaultAttributeName;
