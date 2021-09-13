@@ -129,7 +129,6 @@ export default {
 
     filteredSchemaField() {
       let fields = this.schema.fields;
-      fields.sort((a,b) => a.label.localeCompare(b.label));
       if (!this.isReadOnly) {
         return fields;
       } else {

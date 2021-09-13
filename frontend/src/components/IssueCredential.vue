@@ -238,7 +238,6 @@ export default {
     credDefSelected() {
       this.credentialFields = {};
       this.credDef.fields.forEach((x) => (this.credentialFields[x.type] = ""));
-      this.credDef.fields.sort((a,b) => a.label.localeCompare(b.label));
       this.submitDisabled = true;
     },
     enableSubmit() {
