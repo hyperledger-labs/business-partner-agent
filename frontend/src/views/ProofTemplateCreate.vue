@@ -41,7 +41,11 @@
             >Add data to be requested by Schema</v-list-item-subtitle
           >
           <v-container>
-            <v-expansion-panels focusable multiple v-model="panel">
+            <v-expansion-panels
+              focusable
+              multiple
+              v-model="openAttributeGroupPanels"
+            >
               <v-expansion-panel
                 class="my-5"
                 v-for="(attributeGroup, idx) in proofTemplate.attributeGroups"
@@ -345,7 +349,7 @@
             Cancel
           </v-bpa-button>
           <v-bpa-button
-            :loading="this.isBusy"
+            :loading="this.createButtonIsBusy"
             :disabled="overallValidationErrors"
             color="primary"
             @click="createProofTemplate"
@@ -357,10 +361,10 @@
     </v-card>
 
     <!-- Notification for deletion of attribute group -->
-    <v-snackbar v-model="snackbarDeleteShow" :timeout="snackbarTimeout">
-      {{ snackbarText }}
+    <v-snackbar v-model="snackbar.deleteShow" :timeout="snackbar.timeout">
+      {{ snackbar.text }}
       <template v-slot:action="{ attrs }">
-        <v-bpa-button text v-bind="attrs" @click="snackbarDeleteShow = false">
+        <v-bpa-button text v-bind="attrs" @click="snackbar.deleteShow = false">
           Close
         </v-bpa-button>
       </template>
@@ -431,16 +435,18 @@ export default {
         visible: false,
         did: "",
       },
-      panel: [],
-      isBusy: false,
+      openAttributeGroupPanels: [],
+      createButtonIsBusy: false,
       operators: [],
       proofTemplate: {
         name: "",
         attributeGroups: [],
       },
-      snackbarTimeout: 3000,
-      snackbarDeleteShow: false,
-      snackbarText: "",
+      snackbar: {
+        timeout: 3000,
+        deleteShow: false,
+        text: "",
+      },
       searchFields: {},
       rules: {
         required: (value) => !!value || "Required",
@@ -504,9 +510,9 @@ export default {
       }
     },
     closeOtherPanelsOnOpen() {
-      this.panel.splice(
+      this.openAttributeGroupPanels.splice(
         0,
-        this.panel.length,
+        this.openAttributeGroupPanels.length,
         this.proofTemplate.attributeGroups.length - 1
       );
     },
@@ -577,7 +583,7 @@ export default {
           this.proofTemplate.attributeGroups[attributeGroupIdx].schemaId
       );
 
-      this.snackbarText = `Removed attribute group ${schema.label} (${schema.schemaId})`;
+      this.snackbar.text = `Removed attribute group ${schema.label} (${schema.schemaId})`;
 
       delete this.searchFields[
         this.proofTemplate.attributeGroups[attributeGroupIdx].ui
@@ -585,7 +591,7 @@ export default {
       ];
 
       this.proofTemplate.attributeGroups.splice(attributeGroupIdx, 1);
-      this.snackbarDeleteShow = true;
+      this.snackbar.deleteShow = true;
     },
     addCondition(idx, attributeName) {
       this.proofTemplate.attributeGroups[idx].attributes
@@ -669,7 +675,7 @@ export default {
       };
     },
     async createProofTemplate() {
-      this.isBusy = true;
+      this.createButtonIsBusy = true;
 
       const proofTemplate = this.prepareProofTemplateData();
 
@@ -686,11 +692,11 @@ export default {
             });
           }
 
-          this.isBusy = false;
+          this.createButtonIsBusy = false;
         })
         .catch((e) => {
           EventBus.$emit("error", this.$axiosErrorMessage(e));
-          this.isBusy = false;
+          this.createButtonIsBusy = false;
         });
     },
   },
