@@ -44,7 +44,8 @@
     "submit": "Submit",
     "cancel": "Cancel",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "close": "Close"
   },
   "view": {
     "notifications": {
@@ -135,6 +136,14 @@
       "credDefLabel": "Credential Definition",
       "successMessage": "Credential issued",
       "fieldRequired": "{fieldName} is required"
+    },
+    "credExList": {
+      "dialog": {
+        "title": "Credential",
+        "partnerLabel": "Partner",
+        "credDefLabel": "Credential Definition",
+        "attributesTitle": "Attributes"
+      }
     }
   },
   "constants": {
