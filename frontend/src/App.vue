@@ -25,10 +25,15 @@
               <!-- <v-list-item-subtitle></v-list-item-subtitle> -->
             </v-list-item-content>
             <v-list-item-content v-if="!ux.navigation.avatar.agent.default">
-              <v-list-item-title
-                ><v-img :src="ux.navigation.avatar.agent.src"></v-img
+              <v-list-item-title>
+                <v-img
+                  contain
+                  max-height="100"
+                  max-width="228"
+                  :src="ux.navigation.avatar.agent.src"
+                ></v-img
               ></v-list-item-title>
-              <v-list-item-subtitle
+              <v-list-item-subtitle class="text-center"
                 >Business Partner Agent</v-list-item-subtitle
               >
             </v-list-item-content>
@@ -65,21 +70,19 @@
         <v-list-item link :to="{ name: 'Notifications' }">
           <v-list-item-action>
             <v-badge
-                overlap
-                bordered
-                :content="taskNotificationsCount"
-                :value="taskNotificationsCount"
-                color="red"
-                offset-x="10"
-                offset-y="10"
+              overlap
+              bordered
+              :content="taskNotificationsCount"
+              :value="taskNotificationsCount"
+              color="red"
+              offset-x="10"
+              offset-y="10"
             >
               <v-icon>$vuetify.icons.notifications</v-icon>
             </v-badge>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>{{
-              $t("nav.notifications")
-              }}</v-list-item-title>
+            <v-list-item-title>{{ $t("nav.notifications") }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item link :to="{ name: 'PublicProfile' }">
@@ -131,13 +134,13 @@
         <v-list-item link :to="{ name: 'Partners' }">
           <v-list-item-action>
             <v-badge
-                overlap
-                bordered
-                :content="partnerNotificationsCount"
-                :value="partnerNotificationsCount"
-                color="red"
-                offset-x="10"
-                offset-y="10"
+              overlap
+              bordered
+              :content="partnerNotificationsCount"
+              :value="partnerNotificationsCount"
+              color="red"
+              offset-x="10"
+              offset-y="10"
             >
               <v-icon>$vuetify.icons.partners</v-icon>
             </v-badge>
@@ -232,29 +235,29 @@
       <router-view
         v-if="!sessionDialog && !$store.getters.taaRequired"
       ></router-view>
-        <v-btn
-            color="primary"
-            fab
-            dark
-            bottom
-            right
-            fixed
-            @click="showChatWindow"
-            style="text-decoration: none;"
+      <v-btn
+        color="primary"
+        fab
+        dark
+        bottom
+        right
+        fixed
+        @click="showChatWindow"
+        style="text-decoration: none"
+      >
+        <v-badge
+          overlap
+          bordered
+          :content="messagesReceivedCount"
+          :value="messagesReceivedCount"
+          color="red"
+          offset-x="10"
+          offset-y="10"
         >
-          <v-badge
-              overlap
-              bordered
-              :content="messagesReceivedCount"
-              :value="messagesReceivedCount"
-              color="red"
-              offset-x="10"
-              offset-y="10"
-          >
-            <v-icon v-if="chatWindow">$vuetify.icons.close</v-icon>
-            <v-icon v-else>$vuetify.icons.chat</v-icon>
-          </v-badge>
-        </v-btn>
+          <v-icon v-if="chatWindow">$vuetify.icons.close</v-icon>
+          <v-icon v-else>$vuetify.icons.chat</v-icon>
+        </v-badge>
+      </v-btn>
     </v-main>
 
     <v-snackbar
@@ -295,8 +298,12 @@
       </v-card>
     </v-dialog>
 
-    <div class="chat-window" :class="{opened: chatWindow, closed: !chatWindow}" style="z-index: 100">
-     <BasicMessages ref="basicMessages" />
+    <div
+      class="chat-window"
+      :class="{ opened: chatWindow, closed: !chatWindow }"
+      style="z-index: 100"
+    >
+      <BasicMessages ref="basicMessages" />
     </div>
 
     <v-footer app>
@@ -508,7 +515,7 @@ export default {
       }
       // now, open or close it
       this.chatWindow = !this.chatWindow;
-    }
+    },
   },
 };
 </script>
