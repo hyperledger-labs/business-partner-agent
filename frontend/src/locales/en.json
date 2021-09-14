@@ -135,14 +135,27 @@
       "partnerLabel": "Partner",
       "credDefLabel": "Credential Definition",
       "successMessage": "Credential issued",
-      "fieldRequired": "{fieldName} is required"
+      "attributesTitle": "Credential Content",
+      "options": {
+        "title": "Options",
+        "useV2": "Use V2 Protocol"
+      },
+      "expertLoad": {
+        "title": "Load Credential Data",
+        "dataPlaceholder": "Enter, paste, or upload JSON data...",
+        "filePlaceholder": "Upload JSON data...",
+        "buttons": {
+          "load": "Load",
+          "clear": "Clear"
+        }
+      }
     },
     "credExList": {
       "dialog": {
         "title": "Credential",
         "partnerLabel": "Partner",
         "credDefLabel": "Credential Definition",
-        "attributesTitle": "Attributes"
+        "attributesTitle": "Credential Content"
       }
     }
   },
