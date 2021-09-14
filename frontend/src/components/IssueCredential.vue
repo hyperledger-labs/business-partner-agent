@@ -13,7 +13,7 @@
         <v-select
           :label="$t('component.issueCredential.partnerLabel')"
           v-model="partner"
-          :items="partners"
+          :items="partnerList"
           outlined
           :disabled="this.$props.partnerId !== undefined"
           dense
@@ -24,7 +24,7 @@
           :label="$t('component.issueCredential.credDefLabel')"
           return-object
           v-model="credDef"
-          :items="credDefs"
+          :items="credDefList"
           outlined
           :disabled="this.$props.credDefId !== undefined"
           dense
@@ -88,8 +88,7 @@
 
 <script>
 import { EventBus } from "@/main";
-import { issuerService, partnerService } from "@/services";
-import * as textUtils from "@/utils/textUtils";
+import { issuerService } from "@/services";
 import VBpaButton from "@/components/BpaButton";
 
 export default {
@@ -97,9 +96,7 @@ export default {
   components: { VBpaButton },
   props: {
     partnerId: String,
-    credDefId: String,
-    partnerList: Array,
-    credDefList: Array,
+    credDefId: String
   },
   mounted() {
     this.load();
@@ -108,8 +105,6 @@ export default {
     return {
       isLoading: false,
       isBusy: false,
-      partners: [],
-      credDefs: [],
       partner: {},
       credDef: {},
       credential: {},
@@ -122,73 +117,44 @@ export default {
     expertMode() {
       return this.$store.state.expertMode;
     },
+    partnerList: {
+      get() {
+        return this.$store.getters.getPartnerSelectList;
+      },
+    },
+    credDefList: {
+      get() {
+        return this.$store.getters.getCredDefSelectList;
+      }
+    }
   },
   watch: {
     partnerId(val) {
       if (val) {
-        this.partner = this.partners.find((p) => p.value === val);
+        this.partner = this.partnerList.find((p) => p.value === val);
       }
     },
     credDefId(val) {
       if (val) {
-        this.credDef = this.credDefs.find((p) => p.value === val);
+        this.credDef = this.credDefList.find((p) => p.value === val);
         this.credDefSelected();
       }
-    },
-    partnerList(val) {
-      this.partners = Array.from(val);
-    },
-    credDefList(val) {
-      this.credDefs = Array.from(val);
     },
   },
   methods: {
     async load() {
       this.isLoading = true;
-      this.partners = [];
       this.partner = {};
-      this.credDefs = [];
       this.credDef = {};
 
-      // get partner list
-      if (!this.$props.partnerList || this.$props.partnerList.length === 0) {
-        const presp = await partnerService.listPartners();
-        if (presp.status === 200) {
-          this.partners = presp.data.map((p) => {
-            return { value: p.id, text: p.name, ...p };
-          });
-        }
-      } else {
-        this.partners = Array.from(this.$props.partnerList);
-      }
       if (this.$props.partnerId) {
-        this.partner = this.partners.find(
+        this.partner = this.partnerList.find(
           (p) => p.value === this.$props.partnerId
         );
       }
 
-      if (!this.$props.credDefList || this.$props.credDefList.length === 0) {
-        const cresp = await issuerService.listCredDefs();
-        if (cresp.status === 200) {
-          this.credDefs = cresp.data.map((c) => {
-            return {
-              value: c.id,
-              text: c.displayText,
-              fields: c.schema.schemaAttributeNames.map((key) => {
-                return {
-                  type: key,
-                  label: textUtils.schemaAttributeLabel(key),
-                };
-              }),
-              ...c,
-            };
-          });
-        }
-      } else {
-        this.credDefs = Array.from(this.$props.credDefList);
-      }
       if (this.$props.credDefId) {
-        this.credDef = this.credDefs.find((c) => c.value === this.$props.credDefId);
+        this.credDef = this.credDefList.find((c) => c.value === this.$props.credDefId);
       }
 
       this.isLoading = false;

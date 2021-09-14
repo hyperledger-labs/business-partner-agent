@@ -108,6 +108,7 @@ export default {
       this.dialog = false;
       if (this.dirty) {
         store.dispatch("loadSchemas");
+        store.dispatch("loadCredDefSelectList");
         this.$emit("changed");
       }
       this.dirty = false;

@@ -16,7 +16,7 @@
           <v-autocomplete
             :label="$t('view.issueCredentials.cards.action.partnerLabel')"
             v-model="partner"
-            :items="partners"
+            :items="partnerList"
             return-object
             class="mx-4"
             flat
@@ -50,7 +50,7 @@
           <v-autocomplete
             :label="$t('view.issueCredentials.cards.action.credDefLabel')"
             v-model="credDef"
-            :items="credDefs"
+            :items="credDefList"
             return-object
             class="mx-4"
             flat
@@ -79,8 +79,6 @@
             <IssueCredential
               :credDefId="credDefId"
               :partnerId="partnerId"
-              :credDefList="credDefs"
-              :partnerList="partners"
               @success="credentialIssued"
               @cancelled="issueCredentialDialog = false"
             >
@@ -106,10 +104,9 @@
 
 <script>
 import { EventBus } from "@/main";
-import { issuerService, partnerService } from "@/services";
+import { issuerService } from "@/services";
 import CredExList from "@/components/CredExList";
 import IssueCredential from "@/components/IssueCredential";
-import * as textUtils from "@/utils/textUtils";
 import * as partnerUtils from "@/utils/partnerUtils";
 import VBpaButton from "@/components/BpaButton";
 
@@ -128,10 +125,8 @@ export default {
     return {
       isLoadingCredentials: false,
       issuedCredentials: [],
-      partners: [],
       partner: {},
       partnerId: "",
-      credDefs: [],
       credDef: {},
       credDefId: "",
       issueCredentialDisabled: true,
@@ -140,7 +135,18 @@ export default {
       createSchemaDialog: false,
     };
   },
-  computed: {},
+  computed: {
+    partnerList: {
+      get() {
+        return this.$store.getters.getPartnerSelectList;
+      },
+    },
+    credDefList: {
+      get() {
+        return this.$store.getters.getCredDefSelectList;
+      }
+    }
+  },
   watch: {
     partner(val) {
       this.issueCredentialDisabled =
@@ -157,42 +163,11 @@ export default {
     partnerStateColor(p) {
       return partnerUtils.getPartnerStateColor(p.state);
     },
-    async loadCredDefs() {
-      const cresp = await issuerService.listCredDefs();
-      if (cresp.status === 200) {
-        this.credDefs = cresp.data.map((c) => {
-          return {
-            value: c.id,
-            text: c.displayText,
-            fields: c.schema.schemaAttributeNames.map((key) => {
-              return {
-                type: key,
-                label: textUtils.schemaAttributeLabel(key),
-              };
-            }),
-            ...c,
-          };
-        });
-      }
-    },
     async loadCredentials() {
       this.isLoadingCredentials = true;
       this.issuedCredentials = [];
-      this.partners = [];
       this.partner = {};
-      this.credDefs = [];
       this.credDef = {};
-
-      // get partner list
-      const presp = await partnerService.listPartners();
-      if (presp.status === 200) {
-        this.partners = presp.data.map((p) => {
-          return { value: p.id, text: p.name, ...p };
-        });
-      }
-
-      // get list of schema/creddefs
-      await this.loadCredDefs();
 
       const iresp = await issuerService.listCredentialExchangesAsIssuer();
       if (iresp.status === 200) {
@@ -202,6 +177,8 @@ export default {
     },
     credentialIssued() {
       this.issueCredentialDialog = false;
+      this.$store.dispatch("loadPartnerSelectList");
+      this.$store.dispatch("loadCredDefSelectList");
       this.loadCredentials();
     },
   },

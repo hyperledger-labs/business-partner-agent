@@ -101,3 +101,11 @@ export const getSettings = (state) => {
 export const getProofTemplates = (state) => {
   return state.proofTemplates;
 };
+
+export const getPartnerSelectList = (state) => {
+  return state.partnerSelectList;
+};
+
+export const getCredDefSelectList = (state) => {
+  return state.credDefSelectList;
+};

@@ -180,6 +180,7 @@ export default {
 
           if (result.status === 200 || result.status === 201) {
             store.dispatch("loadPartners");
+            store.dispatch("loadPartnerSelectList");
             EventBus.$emit(
               "success",
               "Partner Invitation created successfully"
