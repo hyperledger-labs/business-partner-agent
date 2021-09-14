@@ -75,75 +75,7 @@
                   </div>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                  <v-container>
-                    <h4 class="pb-5">Data fields</h4>
-                    <v-row
-                      v-show="attributeGroup.ui.selectedAttributes.length === 0"
-                    >
-                      <v-col>
-                        <v-alert type="error"
-                          >There must be at least one selected data
-                          field</v-alert
-                        >
-                      </v-col>
-                    </v-row>
-                    <v-text-field
-                      v-model="attributeGroup.ui.searchField"
-                      append-icon="$vuetify.icons.search"
-                      label="Search"
-                      single-line
-                      hide-details
-                      clearable
-                    ></v-text-field>
-                    <v-data-table
-                      show-select
-                      disable-sort
-                      :hide-default-footer="
-                        attributeGroup.attributes.length < 10
-                      "
-                      :search="attributeGroup.ui.searchField"
-                      :headers="attributeGroupHeaders"
-                      :items="attributeGroup.attributes"
-                      v-model="attributeGroup.ui.selectedAttributes"
-                      item-key="name"
-                      class="elevation-1"
-                    >
-                      <!-- attribute conditions -->
-                      <template v-slot:item.operator="{ item: condition }">
-                        <v-select
-                          :items="operators"
-                          v-model="condition.operator"
-                          dense
-                        />
-                      </template>
-                      <template v-slot:item.value="{ item }">
-                        <v-text-field
-                          :type="
-                            item.operator !== undefined &&
-                            item.operator !== '' &&
-                            item.operator !== '=='
-                              ? 'number'
-                              : undefined
-                          "
-                          :rules="
-                            item.operator !== undefined &&
-                            item.operator !== '' &&
-                            item.operator !== '=='
-                              ? [rules.onlyInteger]
-                              : []
-                          "
-                          v-model="item.value"
-                          v-on:update:error="
-                            setPredicateConditionsErrorCount(
-                              $event,
-                              attributeGroup
-                            )
-                          "
-                          dense
-                        />
-                      </template>
-                    </v-data-table>
-                  </v-container>
+                  <AttributeEdit :attribute-group="attributeGroup" />
 
                   <!-- Schema Restrictions -->
                   <v-container>
@@ -377,27 +309,11 @@
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import proofTemplateService from "@/services/proofTemplateService";
+import AttributeEdit from "@/components/proof-templates/AttributeEdit";
 
 export default {
   name: "ProofTemplates",
   props: {
-    attributeGroupHeaders: {
-      type: Array,
-      default: () => [
-        {
-          text: "Name",
-          value: "name",
-        },
-        {
-          text: "Operator",
-          value: "operator",
-        },
-        {
-          text: "Value",
-          value: "value",
-        },
-      ],
-    },
     restrictionsHeaders: {
       type: Array,
       default: () => [
@@ -420,15 +336,9 @@ export default {
       default: false,
     },
   },
-  components: { VBpaButton },
+  components: { AttributeEdit, VBpaButton },
   created() {
     EventBus.$emit("title", "Proof Templates");
-  },
-  mounted() {
-    // load condition operators (>, <, ==, etc)
-    proofTemplateService.getKnownConditionOperators().then((result) => {
-      this.operators.push("", ...result.data);
-    });
   },
   data: () => {
     return {
@@ -438,7 +348,6 @@ export default {
       },
       openAttributeGroupPanels: [],
       createButtonIsBusy: false,
-      operators: [],
       proofTemplate: {
         name: "",
         attributeGroups: [],
@@ -450,10 +359,6 @@ export default {
       },
       rules: {
         required: (value) => !!value || "Required",
-        onlyInteger: (value) =>
-          value === undefined
-            ? true
-            : /^\d+$/.test(value) || "Value is not an integer",
       },
     };
   },
@@ -498,16 +403,6 @@ export default {
 
       this.addTrustedIssuerDialog.visible = false;
       this.addTrustedIssuerDialog.did = "";
-    },
-    setPredicateConditionsErrorCount(event, attributeGroup) {
-      if (event === true) {
-        attributeGroup.ui.predicateConditionsErrorCount += 1;
-      } else if (
-        attributeGroup.ui.predicateConditionsErrorCount > 0 &&
-        event === false
-      ) {
-        attributeGroup.ui.predicateConditionsErrorCount -= 1;
-      }
     },
     closeOtherPanelsOnOpen() {
       this.openAttributeGroupPanels.splice(
@@ -569,7 +464,6 @@ export default {
           selectedAttributes: attributes,
           selectedRestrictionsByTrustedIssuer: schemaLevelRestrictions,
           predicateConditionsErrorCount: 0,
-          searchField: "",
         },
         schemaLevelRestrictions,
       });
