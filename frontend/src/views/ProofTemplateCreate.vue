@@ -175,7 +175,7 @@ import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import proofTemplateService from "@/services/proofTemplateService";
 import AttributeEdit from "@/components/proof-templates/AttributeEdit";
-import RestrictionsEdit from "@/views/RestrictionsEdit";
+import RestrictionsEdit from "@/components/proof-templates/RestrictionsEdit";
 
 export default {
   name: "ProofTemplates",
