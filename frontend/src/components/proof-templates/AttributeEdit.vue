@@ -7,18 +7,18 @@
 -->
 <template>
   <v-container>
-    <h4 class="pb-5">Data fields</h4>
+    <h4 class="pb-5">{{ $t("view.proofTemplate.create.attributes.title") }}</h4>
     <v-row v-show="attributeGroup.ui.selectedAttributes.length === 0">
       <v-col>
         <v-alert type="error"
-          >There must be at least one selected data field
+          >{{ $t("view.proofTemplate.create.attributes.errorNoAttributes") }}
         </v-alert>
       </v-col>
     </v-row>
     <v-text-field
       v-model="searchField"
       append-icon="$vuetify.icons.search"
-      label="Search"
+      :label="$t('app.search')"
       single-line
       hide-details
       clearable
@@ -75,38 +75,11 @@ export default {
   name: "AttributeEdit",
   props: {
     attributeGroup: {},
-    attributeGroupHeaders: {
-      type: Array,
-      default: () => [
-        {
-          text: "Name",
-          value: "name",
-        },
-        {
-          text: "Operator",
-          value: "operator",
-        },
-        {
-          text: "Value",
-          value: "value",
-        },
-      ],
-    },
   },
   data: () => {
     return {
       operators: [],
       searchField: "",
-      rules: {
-        onlyInteger: (value) =>
-          value === undefined
-            ? true
-            : /^-?\d+$/.test(value) || "Value is not an integer",
-        valueMin: (value) =>
-          value >= -2147483648 || "Value must be above -2147483648",
-        valueMax: (value) =>
-          value <= 2147483647 || "Value must not be above 2147483647",
-      },
     };
   },
   mounted() {
@@ -114,6 +87,37 @@ export default {
     proofTemplateService.getKnownConditionOperators().then((result) => {
       this.operators.push("", ...result.data);
     });
+  },
+  computed: {
+    attributeGroupHeaders() {
+      return [
+        {
+          text: this.$t("view.proofTemplate.create.attributes.header.name"),
+          value: "name",
+        },
+        {
+          text: this.$t("view.proofTemplate.create.attributes.header.operator"),
+          value: "operator",
+        },
+        {
+          text: this.$t("view.proofTemplate.create.attributes.header.value"),
+          value: "value",
+        },
+      ];
+    },
+    rules() {
+      return {
+        onlyInteger: (value) =>
+          value === undefined
+            ? true
+            : /^-?\d+$/.test(value) || this.$t("app.rules.onlyInteger"),
+        valueMin: (value) =>
+          value >= -2147483648 ||
+          `${this.$t("app.rules.valueMin")} -2147483648`,
+        valueMax: (value) =>
+          value <= 2147483647 || `${this.$t("app.rules.valueMax")} 2147483647`,
+      };
+    },
   },
   methods: {
     setPredicateConditionsErrorCount(event, attributeGroup) {

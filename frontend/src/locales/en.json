@@ -3,6 +3,13 @@
     "snackBar": {
       "close": "Close"
     },
+    "search": "Search",
+    "rules": {
+      "required": "Required",
+      "onlyInteger": "Value is not an integer",
+      "valueMin": "Value must be above",
+      "valueMax":  "Value must not be above"
+    },
     "sessionDialog": {
       "headline": "Session expired",
       "text": "It seems your session is expired. Do you want log in again?",
@@ -42,6 +49,7 @@
   "button" : {
     "save": "Save",
     "submit": "Submit",
+    "create": "Create",
     "cancel": "Cancel",
     "yes": "Yes",
     "no": "No"
@@ -103,6 +111,42 @@
       "createInvitation": "Generate Invitation (QR Code)",
       "invitationURL": "Invitation URL",
       "useOOB": "Use Out of Band"
+    },
+    "proofTemplate": {
+      "title": "Proof Templates",
+      "create": {
+        "title": "Create Proof Template",
+        "requestedDataTitle": "Data to be requested",
+        "requestedDataSubtitle": "Add data to be requested by Schema",
+        "snackbarContent": "Removed attribute group",
+        "success": "Proof Template Created",
+        "attributes": {
+          "title": "Data fields",
+          "errorNoAttributes": "There must be at least one selected data field",
+          "header": {
+            "name": "Name",
+            "operator": "Operator",
+            "value": "Value"
+          }
+        },
+        "restrictions": {
+          "title": "Restrictions",
+          "errorNoTrustedIssuer": "There is no trusted issuer DID selected",
+          "schemaName": "Schema Name",
+          "schemaVersion": "Schema Version",
+          "schemaIssuerDid": "Schema Issuer DID",
+          "trustedIssuerDid": "Trusted Issuer DID",
+          "credentialDefinitionId": "Credential Definition ID",
+          "header": {
+            "trustedIssuer": "Trusted Issuer"
+          },
+          "dialog": {
+            "addTrustedIssuer": "Add Trusted Issuer",
+            "label": "DID",
+            "hint": "The decentralized ID of a trusted issuer"
+          }
+        }
+      }
     },
     "issueCredentials": {
       "title": "Issue Credentials",

@@ -9,16 +9,13 @@
 <template>
   <v-container justify-center>
     <v-card class="mx-auto">
-      <!-- Title -->
       <v-card-title class="bg-light">
         <v-bpa-button depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-bpa-button>
-        <span>Create Proof Template</span>
+        {{ $t("view.proofTemplate.create.title") }}
       </v-card-title>
 
-      <!-- Proof Templates Table -->
-      <!-- Basic Data -->
       <v-container>
         <v-list-item class="mt-4">
           <v-text-field
@@ -36,10 +33,12 @@
       <!-- Attribute Groups -->
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>Data to be requested</v-list-item-title>
-          <v-list-item-subtitle
-            >Add data to be requested by Schema</v-list-item-subtitle
-          >
+          <v-list-item-title>{{
+            $t("view.proofTemplate.create.requestedDataTitle")
+          }}</v-list-item-title>
+          <v-list-item-subtitle>{{
+            $t("view.proofTemplate.create.requestedDataSubtitle")
+          }}</v-list-item-subtitle>
           <v-container>
             <v-expansion-panels
               focusable
@@ -144,7 +143,7 @@
       <v-card-actions>
         <v-layout align-end justify-end>
           <v-bpa-button color="secondary" @click="$router.go(-1)">
-            Cancel
+            {{ $t("button.cancel") }}
           </v-bpa-button>
           <v-bpa-button
             :loading="this.createButtonIsBusy"
@@ -152,7 +151,7 @@
             color="primary"
             @click="createProofTemplate"
           >
-            {{ createButtonLabel }}
+            {{ $t("button.create") }}
           </v-bpa-button>
         </v-layout>
       </v-card-actions>
@@ -163,7 +162,7 @@
       {{ snackbar.text }}
       <template v-slot:action="{ attrs }">
         <v-bpa-button text v-bind="attrs" @click="snackbar.deleteShow = false">
-          Close
+          {{ $t("app.snackBar.close") }}
         </v-bpa-button>
       </template>
     </v-snackbar>
@@ -180,10 +179,6 @@ import RestrictionsEdit from "@/components/proof-templates/RestrictionsEdit";
 export default {
   name: "ProofTemplates",
   props: {
-    createButtonLabel: {
-      type: String,
-      default: "Create",
-    },
     disableRouteBack: {
       type: Boolean,
       default: false,
@@ -191,7 +186,7 @@ export default {
   },
   components: { RestrictionsEdit, AttributeEdit, VBpaButton },
   created() {
-    EventBus.$emit("title", "Proof Templates");
+    EventBus.$emit("title", this.$t("view.proofTemplate.title"));
   },
   data: () => {
     return {
@@ -206,12 +201,14 @@ export default {
         deleteShow: false,
         text: "",
       },
-      rules: {
-        required: (value) => !!value || "Required",
-      },
     };
   },
   computed: {
+    rules() {
+      return {
+        required: (value) => !!value || this.$t("app.rules.required"),
+      };
+    },
     schemas() {
       return this.$store.getters.getSchemas.filter(
         (schema) => schema.type === "INDY"
@@ -309,7 +306,9 @@ export default {
           this.proofTemplate.attributeGroups[attributeGroupIdx].schemaId
       );
 
-      this.snackbar.text = `Removed attribute group ${schema.label} (${schema.schemaId})`;
+      this.snackbar.text = `${this.$t(
+        "view.proofTemplate.create.snackbarContent"
+      )} ${schema.label} (${schema.schemaId})`;
       this.proofTemplate.attributeGroups.splice(attributeGroupIdx, 1);
       this.snackbar.deleteShow = true;
     },
@@ -384,7 +383,10 @@ export default {
         .createProofTemplate(proofTemplate)
         .then((res) => {
           this.$emit("received-proof-template-id", res.data.id);
-          EventBus.$emit("success", "Proof Template Created");
+          EventBus.$emit(
+            "success",
+            this.$t("view.proofTemplate.create.success")
+          );
 
           if (!this.disableRouteBack) {
             this.$router.push({

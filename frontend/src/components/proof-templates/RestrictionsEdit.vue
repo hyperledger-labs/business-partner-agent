@@ -1,7 +1,16 @@
+<!--
+ Copyright (c) 2021 - for information on the respective copyright owner
+ see the NOTICE file and/or the repository at
+ https://github.com/hyperledger-labs/business-partner-agent
+
+ SPDX-License-Identifier: Apache-2.0
+-->
 <template>
   <div>
     <v-container>
-      <h4 class="pb-5">Restrictions</h4>
+      <h4 class="pb-5">
+        {{ $t("view.proofTemplate.create.restrictions.title") }}
+      </h4>
       <v-row
         v-show="
           attributeGroup.ui.selectedRestrictionsByTrustedIssuer.length === 0
@@ -9,7 +18,9 @@
       >
         <v-col>
           <v-alert type="warning"
-            >There is no trusted issuer DID selected
+            >{{
+              $t("view.proofTemplate.create.restrictions.errorNoTrustedIssuer")
+            }}
           </v-alert>
         </v-col>
       </v-row>
@@ -31,7 +42,11 @@
             <v-simple-table>
               <tbody>
                 <tr>
-                  <td>Schema Name</td>
+                  <td>
+                    {{
+                      $t("view.proofTemplate.create.restrictions.schemaName")
+                    }}
+                  </td>
                   <td>
                     <v-text-field
                       id="proofTemplateName"
@@ -41,7 +56,11 @@
                   </td>
                 </tr>
                 <tr>
-                  <td>Schema Version</td>
+                  <td>
+                    {{
+                      $t("view.proofTemplate.create.restrictions.schemaVersion")
+                    }}
+                  </td>
                   <td>
                     <v-text-field
                       id="proofTemplateName"
@@ -51,7 +70,13 @@
                   </td>
                 </tr>
                 <tr>
-                  <td>Schema Issuer DID</td>
+                  <td>
+                    {{
+                      $t(
+                        "view.proofTemplate.create.restrictions.schemaIssuerDid"
+                      )
+                    }}
+                  </td>
                   <td>
                     <v-text-field
                       id="proofTemplateName"
@@ -61,7 +86,13 @@
                   </td>
                 </tr>
                 <tr>
-                  <td>Trusted issuer DID</td>
+                  <td>
+                    {{
+                      $t(
+                        "view.proofTemplate.create.restrictions.trustedIssuerDid"
+                      )
+                    }}
+                  </td>
                   <td>
                     <v-text-field
                       disabled
@@ -72,7 +103,13 @@
                   </td>
                 </tr>
                 <tr>
-                  <td>Credential Definition ID</td>
+                  <td>
+                    {{
+                      $t(
+                        "view.proofTemplate.create.restrictions.credentialDefinitionId"
+                      )
+                    }}
+                  </td>
                   <td>
                     <v-text-field
                       id="proofTemplateName"
@@ -94,17 +131,19 @@
       max-width="600px"
     >
       <template v-slot:activator="{ on, attrs }">
-        <v-bpa-button color="secondary" v-bind="attrs" v-on="on"
-          >Add trusted issuer</v-bpa-button
-        >
+        <v-bpa-button color="secondary" v-bind="attrs" v-on="on">{{
+          $t("view.proofTemplate.create.restrictions.dialog.addTrustedIssuer")
+        }}</v-bpa-button>
       </template>
       <v-card>
-        <v-card-title class="headline"> Add Trusted Issuer </v-card-title>
+        <v-card-title class="headline">{{
+          $t("view.proofTemplate.create.restrictions.dialog.addTrustedIssuer")
+        }}</v-card-title>
         <v-card-text>
           <v-container>
             <v-text-field
-              label="DID"
-              hint="The decentralized ID of a trusted issuer"
+              :label="$t('view.proofTemplate.create.restrictions.dialog.label')"
+              :hint="$t('view.proofTemplate.create.restrictions.dialog.hint')"
               v-model="addTrustedIssuerDialog.did"
               persistent-hint
               outlined
@@ -114,14 +153,14 @@
         <v-card-actions>
           <v-layout align-end justify-end>
             <v-bpa-button color="secondary" @click="addTrustedIssuerCancel">
-              Cancel
+              {{ $t("button.cancel") }}
             </v-bpa-button>
             <v-bpa-button
               color="primary"
               :disabled="addTrustedIssuerDialog.did.length === 0"
               @click="addTrustedIssuerRestrictionObject(attributeGroup)"
             >
-              Add
+              {{ $t("button.create") }}
             </v-bpa-button>
           </v-layout>
         </v-card-actions>
@@ -137,19 +176,6 @@ export default {
   components: { VBpaButton },
   props: {
     attributeGroup: {},
-    restrictionsHeaders: {
-      type: Array,
-      default: () => [
-        {
-          text: "Trusted Issuer",
-          value: "issuerDid",
-        },
-        {
-          text: "",
-          value: "data-table-expand",
-        },
-      ],
-    },
   },
   data: () => {
     return {
@@ -158,6 +184,22 @@ export default {
         did: "",
       },
     };
+  },
+  computed: {
+    restrictionsHeaders() {
+      return [
+        {
+          text: this.$t(
+            "view.proofTemplate.create.restrictions.header.trustedIssuer"
+          ),
+          value: "issuerDid",
+        },
+        {
+          text: "",
+          value: "data-table-expand",
+        },
+      ];
+    },
   },
   methods: {
     addTrustedIssuerCancel() {
