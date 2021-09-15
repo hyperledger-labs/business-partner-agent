@@ -434,12 +434,8 @@ export default {
       return bpaName;
     },
     getOrganizationName() {
-      console.log("dispatch");
-      this.$store.dispatch("loadDocuments");
       let profile = this.$store.getters.getOrganizationalProfile;
       if (profile) {
-        console.log(profile.label);
-        console.log(profile["label"]);
         return profile["label"];
       }
       return "";
