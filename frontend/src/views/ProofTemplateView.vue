@@ -40,7 +40,7 @@
             v-model="proofTemplate.name"
             readonly
             dense
-            label="Name"
+            :label="$t('view.proofTemplate.view.name')"
           ></v-text-field>
         </v-list-item>
         <v-list-item class="mt-4">
@@ -49,7 +49,7 @@
             v-bind:value="proofTemplate.createdAt | formatDateLong"
             readonly
             dense
-            label="Created At"
+            :label="$t('view.proofTemplate.view.createdAt')"
           >
           </v-text-field>
         </v-list-item>
@@ -59,8 +59,12 @@
       <!-- Attribute Groups -->
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>Data to be requested</v-list-item-title>
-          <v-list-item-subtitle>Grouped by Schema </v-list-item-subtitle>
+          <v-list-item-title>{{
+            $t("view.proofTemplate.view.attributeGroupsTitle")
+          }}</v-list-item-title>
+          <v-list-item-subtitle>{{
+            $t("view.proofTemplate.view.attributeGroupsSubtitle")
+          }}</v-list-item-subtitle>
           <attribute-group
             v-bind:request-data="proofTemplate.attributeGroups"
           ></attribute-group>
@@ -71,10 +75,10 @@
       <v-card-actions>
         <v-layout align-end justify-end>
           <v-bpa-button color="secondary" @click="$router.go(-1)">
-            Close
+            {{ $t("button.close") }}
           </v-bpa-button>
           <v-bpa-button color="primary" disabled>
-            Create Proof Request
+            {{ $t("view.proofTemplate.view.createProofRequest") }}
           </v-bpa-button>
         </v-layout>
       </v-card-actions>
@@ -101,7 +105,7 @@ export default {
     VBpaButton,
   },
   created() {
-    EventBus.$emit("title", "Proof Templates");
+    EventBus.$emit("title", this.$t("nav.proofTemplates"));
   },
   data: () => {
     return {

@@ -9,7 +9,7 @@
   <div>
     <v-container>
       <h4 class="pb-5">
-        {{ $t("view.proofTemplate.create.restrictions.title") }}
+        {{ $t("view.proofTemplate.restrictions.title") }}
       </h4>
       <v-row
         v-show="
@@ -18,9 +18,7 @@
       >
         <v-col>
           <v-alert type="warning"
-            >{{
-              $t("view.proofTemplate.create.restrictions.errorNoTrustedIssuer")
-            }}
+            >{{ $t("view.proofTemplate.restrictions.errorNoTrustedIssuer") }}
           </v-alert>
         </v-col>
       </v-row>
@@ -43,9 +41,7 @@
               <tbody>
                 <tr>
                   <td>
-                    {{
-                      $t("view.proofTemplate.create.restrictions.schemaName")
-                    }}
+                    {{ $t("view.proofTemplate.restrictions.schemaName") }}
                   </td>
                   <td>
                     <v-text-field
@@ -57,9 +53,7 @@
                 </tr>
                 <tr>
                   <td>
-                    {{
-                      $t("view.proofTemplate.create.restrictions.schemaVersion")
-                    }}
+                    {{ $t("view.proofTemplate.restrictions.schemaVersion") }}
                   </td>
                   <td>
                     <v-text-field
@@ -71,11 +65,7 @@
                 </tr>
                 <tr>
                   <td>
-                    {{
-                      $t(
-                        "view.proofTemplate.create.restrictions.schemaIssuerDid"
-                      )
-                    }}
+                    {{ $t("view.proofTemplate.restrictions.schemaIssuerDid") }}
                   </td>
                   <td>
                     <v-text-field
@@ -87,11 +77,7 @@
                 </tr>
                 <tr>
                   <td>
-                    {{
-                      $t(
-                        "view.proofTemplate.create.restrictions.trustedIssuerDid"
-                      )
-                    }}
+                    {{ $t("view.proofTemplate.restrictions.trustedIssuerDid") }}
                   </td>
                   <td>
                     <v-text-field
@@ -106,7 +92,7 @@
                   <td>
                     {{
                       $t(
-                        "view.proofTemplate.create.restrictions.credentialDefinitionId"
+                        "view.proofTemplate.restrictions.credentialDefinitionId"
                       )
                     }}
                   </td>
@@ -132,18 +118,18 @@
     >
       <template v-slot:activator="{ on, attrs }">
         <v-bpa-button color="secondary" v-bind="attrs" v-on="on">{{
-          $t("view.proofTemplate.create.restrictions.dialog.addTrustedIssuer")
+          $t("view.proofTemplate.restrictions.dialog.addTrustedIssuer")
         }}</v-bpa-button>
       </template>
       <v-card>
         <v-card-title class="headline">{{
-          $t("view.proofTemplate.create.restrictions.dialog.addTrustedIssuer")
+          $t("view.proofTemplate.restrictions.dialog.addTrustedIssuer")
         }}</v-card-title>
         <v-card-text>
           <v-container>
             <v-text-field
-              :label="$t('view.proofTemplate.create.restrictions.dialog.label')"
-              :hint="$t('view.proofTemplate.create.restrictions.dialog.hint')"
+              :label="$t('view.proofTemplate.restrictions.dialog.label')"
+              :hint="$t('view.proofTemplate.restrictions.dialog.hint')"
               v-model="addTrustedIssuerDialog.did"
               persistent-hint
               outlined
@@ -189,9 +175,7 @@ export default {
     restrictionsHeaders() {
       return [
         {
-          text: this.$t(
-            "view.proofTemplate.create.restrictions.header.trustedIssuer"
-          ),
+          text: this.$t("view.proofTemplate.restrictions.header.trustedIssuer"),
           value: "issuerDid",
         },
         {

@@ -7,11 +7,11 @@
 -->
 <template>
   <v-container>
-    <h4 class="pb-5">{{ $t("view.proofTemplate.create.attributes.title") }}</h4>
+    <h4 class="pb-5">{{ $t("view.proofTemplate.attributes.title") }}</h4>
     <v-row v-show="attributeGroup.ui.selectedAttributes.length === 0">
       <v-col>
         <v-alert type="error"
-          >{{ $t("view.proofTemplate.create.attributes.errorNoAttributes") }}
+          >{{ $t("view.proofTemplate.attributes.errorNoAttributes") }}
         </v-alert>
       </v-col>
     </v-row>
@@ -92,15 +92,15 @@ export default {
     attributeGroupHeaders() {
       return [
         {
-          text: this.$t("view.proofTemplate.create.attributes.header.name"),
+          text: this.$t("view.proofTemplate.attributes.header.name"),
           value: "name",
         },
         {
-          text: this.$t("view.proofTemplate.create.attributes.header.operator"),
+          text: this.$t("view.proofTemplate.attributes.header.operator"),
           value: "operator",
         },
         {
-          text: this.$t("view.proofTemplate.create.attributes.header.value"),
+          text: this.$t("view.proofTemplate.attributes.header.value"),
           value: "value",
         },
       ];

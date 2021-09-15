@@ -25,7 +25,7 @@ create new ones
     <v-text-field
       v-model="search"
       append-icon="$vuetify.icons.search"
-      label="Search"
+      :label="$t('app.search')"
       single-line
       hide-details
     ></v-text-field>
@@ -52,19 +52,6 @@ import { EventBus } from "@/main";
 
 export default {
   props: {
-    headers: {
-      type: Array,
-      default: () => [
-        {
-          text: "Name",
-          value: "name",
-        },
-        {
-          text: "Created At",
-          value: "createdAt",
-        },
-      ],
-    },
     isLoading: Boolean,
     showCheckboxes: {
       type: Boolean,
@@ -84,6 +71,18 @@ export default {
     this.$store.dispatch("loadProofTemplates");
   },
   computed: {
+    headers() {
+      return [
+        {
+          text: this.$t("view.proofTemplate.list.name"),
+          value: "name",
+        },
+        {
+          text: this.$t("view.proofTemplate.list.createdAt"),
+          value: "createdAt",
+        },
+      ];
+    },
     proofTemplates: {
       get() {
         return this.$store.getters.getProofTemplates;
@@ -144,6 +143,5 @@ export default {
         });
     },
   },
-  components: {},
 };
 </script>

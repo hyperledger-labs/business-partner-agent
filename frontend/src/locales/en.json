@@ -36,7 +36,8 @@
     "notifications": "Notifications",
     "about": "About",
     "signout": "Sign out",
-    "proofTemplates": "Proof Templates"
+    "proofTemplates": "Proof Templates",
+    "requestPresentation": "Request Presentation"
   },
   "dashboard": {
     "credentialsSent": "Credentials Issued",
@@ -50,7 +51,9 @@
     "save": "Save",
     "submit": "Submit",
     "create": "Create",
+    "createAndSend": "Create and Send",
     "cancel": "Cancel",
+    "close": "Close",
     "yes": "Yes",
     "no": "No"
   },
@@ -114,39 +117,61 @@
     },
     "proofTemplate": {
       "title": "Proof Templates",
+      "createProofTemplate": "Create Proof Template",
+      "restrictions": {
+        "title": "Restrictions",
+        "errorNoTrustedIssuer": "There is no trusted issuer DID selected",
+        "schemaId": "Schema ID",
+        "schemaName": "Schema Name",
+        "schemaVersion": "Schema Version",
+        "schemaIssuerDid": "Schema Issuer DID",
+        "trustedIssuerDid": "Trusted Issuer DID",
+        "credentialDefinitionId": "Credential Definition ID",
+        "header": {
+          "trustedIssuer": "Trusted Issuer"
+        },
+        "dialog": {
+          "addTrustedIssuer": "Add Trusted Issuer",
+          "label": "DID",
+          "hint": "The decentralized ID of a trusted issuer"
+        }
+      },
+      "attributes": {
+        "title": "Data fields",
+        "errorNoAttributes": "There must be at least one selected data field",
+        "header": {
+          "name": "Name",
+          "operator": "Operator",
+          "value": "Value"
+        }
+      },
+      "view": {
+        "name": "Name",
+        "createdAt": "Created At",
+        "attributeGroupsTitle": "Data to be requested",
+        "attributeGroupsSubtitle": "Grouped by Schema",
+        "createProofRequest": "Create Proof Request",
+        "attributeGroup": {
+          "issuerTitle": "Issuer",
+          "titleAttributes": "Data fields",
+          "titleRestrictions": "Restrictions"
+        }
+      },
+      "list": {
+        "name": "Name",
+        "createdAt": "Created At"
+      },
       "create": {
         "title": "Create Proof Template",
         "requestedDataTitle": "Data to be requested",
         "requestedDataSubtitle": "Add data to be requested by Schema",
         "snackbarContent": "Removed attribute group",
-        "success": "Proof Template Created",
-        "attributes": {
-          "title": "Data fields",
-          "errorNoAttributes": "There must be at least one selected data field",
-          "header": {
-            "name": "Name",
-            "operator": "Operator",
-            "value": "Value"
-          }
-        },
-        "restrictions": {
-          "title": "Restrictions",
-          "errorNoTrustedIssuer": "There is no trusted issuer DID selected",
-          "schemaName": "Schema Name",
-          "schemaVersion": "Schema Version",
-          "schemaIssuerDid": "Schema Issuer DID",
-          "trustedIssuerDid": "Trusted Issuer DID",
-          "credentialDefinitionId": "Credential Definition ID",
-          "header": {
-            "trustedIssuer": "Trusted Issuer"
-          },
-          "dialog": {
-            "addTrustedIssuer": "Add Trusted Issuer",
-            "label": "DID",
-            "hint": "The decentralized ID of a trusted issuer"
-          }
-        }
+        "success": "Proof Template Created"
       }
+    },
+    "requestPresentation": {
+      "title": "Create a Presentation Request",
+      "sendRequest": "Send Request"
     },
     "issueCredentials": {
       "title": "Issue Credentials",
