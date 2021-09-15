@@ -21,7 +21,9 @@
               <v-img src="@/assets/logo_default.svg"></v-img>
             </v-list-item-avatar>
             <v-list-item-content v-if="ux.navigation.avatar.agent.default">
-              <v-list-item-title>{{ getAgentName }}</v-list-item-title>
+              <v-list-item-title class="text-wrap">{{
+                getOrganizationName | getAgentName
+              }}</v-list-item-title>
               <!-- <v-list-item-subtitle></v-list-item-subtitle> -->
             </v-list-item-content>
             <v-list-item-content v-if="!ux.navigation.avatar.agent.default">
@@ -33,9 +35,9 @@
                   :src="ux.navigation.avatar.agent.src"
                 ></v-img
               ></v-list-item-title>
-              <v-list-item-subtitle
-                >{{ getOrganizationName ? getOrganizationName : getAgentName }}
-              </v-list-item-subtitle>
+              <v-list-item-subtitle class="text-wrap">{{
+                getOrganizationName | getAgentName
+              }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item
@@ -478,6 +480,7 @@ export default {
     }
 
     this.$store.dispatch("validateTaa");
+    this.$store.dispatch("loadDocuments");
 
     // Global Error handling
     // Todo: Put in extra component
