@@ -48,8 +48,8 @@
             <v-list-item-avatar style="width: fit-content">
               <v-icon>$vuetify.icons.domain</v-icon>
             </v-list-item-avatar>
-            <v-list-item-content>
-              <!-- show current user name? -->
+            <v-list-item-content class="text-wrap"
+              >{{ getOrganizationName | getAgentName }}
             </v-list-item-content>
           </v-list-item>
         </router-link>
