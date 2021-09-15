@@ -79,6 +79,7 @@
             <IssueCredential
               :credDefId="credDefId"
               :partnerId="partnerId"
+              :open="issueCredentialDialog"
               @success="credentialIssued"
               @cancelled="issueCredentialDialog = false"
             >

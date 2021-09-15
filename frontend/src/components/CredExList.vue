@@ -81,13 +81,17 @@
               disabled
               dense
           ></v-select>
-          <v-card-subtitle>{{$t('component.credExList.dialog.attributesTitle')}}</v-card-subtitle>
-          <Cred :document="document" isReadOnly showOnlyContent></Cred>
+          <v-card>
+            <v-card-title class="bg-light" style="font-size: small">{{$t('component.credExList.dialog.attributesTitle')}}</v-card-title>
+            <v-card-text>
+              <Cred :document="document" isReadOnly showOnlyContent></Cred>
+            </v-card-text>
+          </v-card>
         </v-card-text>
         <v-card-actions>
-          <v-bpa-button color="primary" @click="dialog = false"
-            >{{$t('button.close')}}</v-bpa-button
-          >
+          <v-layout align-end justify-end>
+            <v-bpa-button color="primary" @click="dialog = false">{{$t('button.close')}}</v-bpa-button>
+          </v-layout>
         </v-card-actions>
       </v-card>
     </v-dialog>
