@@ -33,9 +33,9 @@
                   :src="ux.navigation.avatar.agent.src"
                 ></v-img
               ></v-list-item-title>
-              <v-list-item-subtitle class="text-center"
-                >Business Partner Agent</v-list-item-subtitle
-              >
+              <v-list-item-subtitle
+                >{{ getOrganizationName ? getOrganizationName : getAgentName }}
+              </v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item
@@ -44,7 +44,7 @@
             class="pl-3 mt-n2"
           >
             <v-list-item-avatar style="width: fit-content">
-              <v-icon>$vuetify.icons.user</v-icon>
+              <v-icon>$vuetify.icons.domain</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
               <!-- show current user name? -->
@@ -430,6 +430,17 @@ export default {
         bpaName = nameSettingValue;
       }
       return bpaName;
+    },
+    getOrganizationName() {
+      console.log("dispatch");
+      this.$store.dispatch("loadDocuments");
+      let profile = this.$store.getters.getOrganizationalProfile;
+      if (profile) {
+        console.log(profile.label);
+        console.log(profile["label"]);
+        return profile["label"];
+      }
+      return "";
     },
     getTitle() {
       if (this.ux.header.title.prefix) {
