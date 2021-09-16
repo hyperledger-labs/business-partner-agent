@@ -60,8 +60,8 @@ services:
         --label '${AGENT_NAME}' \
         ${ACAPY_ADMIN_CONFIG} \
         ${ACAPY_READ_ONLY_MODE} \
-        ${ACAPY_TAILS_BASE_URL} \       
-        ${ACAPY_TAILS_UPLOAD_URL} \   
+        ${ACAPY_TAILS_BASE_URL} \
+        ${ACAPY_TAILS_UPLOAD_URL} \
         "
     ]
     volumes:
