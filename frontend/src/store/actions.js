@@ -4,6 +4,9 @@ import { EventBus, axios, apiBaseUrl } from "../main";
 import { getPartnerProfile } from "../utils/partnerUtils";
 import adminService from "@/services/adminService";
 import proofTemplateService from "@/services/proofTemplateService";
+import partnerService from "@/services/partnerService";
+import issuerService from "@/services/issuerService";
+import * as textUtils from "@/utils/textUtils";
 
 export const loadSchemas = async ({ commit }) => {
   adminService
@@ -155,6 +158,57 @@ export const loadProofTemplates = async ({ commit }) => {
         type: "setProofTemplates",
         proofTemplates: proofTemplates,
       });
+    })
+    .catch((e) => {
+      console.error(e);
+      EventBus.$emit("error", e);
+    });
+};
+
+export const loadPartnerSelectList = async ({ commit }) => {
+  partnerService
+    .listPartners()
+    .then((result) => {
+      if (result.status === 200) {
+        let partners = result.data.map((p) => {
+          return { value: p.id, text: p.name, ...p };
+        });
+        commit({
+          type: "setPartnerSelectList",
+          list: partners,
+        });
+      }
+    })
+    .catch((e) => {
+    console.error(e);
+    EventBus.$emit("error", e);
+  });
+};
+
+export const loadCredDefSelectList = async ({ commit }) => {
+  issuerService
+    .listCredDefs()
+    .then((result) => {
+      if (result.status === 200) {
+        let credDefs = result.data.map((c) => {
+          return {
+            value: c.id,
+            text: c.displayText,
+            fields: c.schema.schemaAttributeNames.map((key) => {
+              return {
+                type: key,
+                label: textUtils.schemaAttributeLabel(key),
+              };
+            }),
+            ...c,
+          };
+        });
+
+        commit({
+          type: "setCredDefSelectList",
+          list: credDefs,
+        });
+      }
     })
     .catch((e) => {
       console.error(e);

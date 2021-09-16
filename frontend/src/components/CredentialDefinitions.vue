@@ -165,6 +165,7 @@
               item.isEdit = false;
               EventBus.$emit("success", "New credential definition added");
               this.$emit("changed");
+              this.$store.dispatch("loadCredDefSelectList");
             }
           })
           .catch((e) => {

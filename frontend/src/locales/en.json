@@ -55,7 +55,8 @@
     "cancel": "Cancel",
     "close": "Close",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "close": "Close"
   },
   "view": {
     "notifications": {
@@ -180,12 +181,51 @@
         "action" : {
           "title": "Issue Credential",
           "button": "Issue Credential",
-          "partnerLabel": "Select partner...",
-          "credentialLabel": "Select credential..."
+          "partnerLabel": "Select Partner",
+          "credDefLabel": "Select Credential Definition"
         },
         "table" : {
           "title": "Issued Credentials"
         }
+      }
+    },
+    "wallet": {
+      "title": "Wallet",
+      "credentials": {
+        "title": "Verifiable Credentials"
+      },
+      "documents": {
+        "title": "Documents"
+      }
+    }
+  },
+  "component": {
+    "issueCredential": {
+      "title": "Issue Credential",
+      "partnerLabel": "Partner",
+      "credDefLabel": "Credential Definition",
+      "successMessage": "Credential issued",
+      "attributesTitle": "Credential Content",
+      "options": {
+        "title": "Options",
+        "useV2": "Use V2 Protocol"
+      },
+      "expertLoad": {
+        "title": "Load Credential Data",
+        "dataPlaceholder": "Enter, paste, or upload JSON data...",
+        "filePlaceholder": "Upload JSON data...",
+        "buttons": {
+          "load": "Load",
+          "clear": "Clear"
+        }
+      }
+    },
+    "credExList": {
+      "dialog": {
+        "title": "Credential",
+        "partnerLabel": "Partner",
+        "credDefLabel": "Credential Definition",
+        "attributesTitle": "Credential Content"
       }
     }
   },
