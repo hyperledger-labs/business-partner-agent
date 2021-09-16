@@ -132,6 +132,7 @@
 import { EventBus } from "@/main";
 import { issuerService } from "@/services";
 import VBpaButton from "@/components/BpaButton";
+import * as textUtils from "@/utils/textUtils";
 
 export default {
   name: "CreateSchema",
@@ -152,7 +153,7 @@ export default {
           (value && /^(\d+)\.(\d+)(?:\.\d+)?$/.test(value)) ||
           "Must be follow common version numbering (ex. 1.2 or 1.2.3)",
         schemaText: (value) =>
-          (value && /^[a-zA-Z\d-_]+$/.test(value)) ||
+          textUtils.isValidSchemaAttributeName(value) ||
           "Must be alphanumeric with optional '_' or '-'",
       },
     };
