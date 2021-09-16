@@ -128,7 +128,8 @@
         "trustedIssuerDid": "Trusted Issuer DID",
         "credentialDefinitionId": "Credential Definition ID",
         "header": {
-          "trustedIssuer": "Trusted Issuer"
+          "trustedIssuerLabel": "Trusted Issuer",
+          "trustedIssuerDid": "DID"
         },
         "dialog": {
           "addTrustedIssuer": "Add Trusted Issuer",

@@ -108,6 +108,9 @@
             </v-simple-table>
           </td>
         </template>
+        <template v-slot:item.issuerLabel="{ item }">
+          {{ getIssuerLabel(item) }}
+        </template>
       </v-data-table>
     </v-container>
     <v-dialog
@@ -175,7 +178,15 @@ export default {
     restrictionsHeaders() {
       return [
         {
-          text: this.$t("view.proofTemplate.restrictions.header.trustedIssuer"),
+          text: this.$t(
+            "view.proofTemplate.restrictions.header.trustedIssuerLabel"
+          ),
+          value: "issuerLabel",
+        },
+        {
+          text: this.$t(
+            "view.proofTemplate.restrictions.header.trustedIssuerDid"
+          ),
           value: "issuerDid",
         },
         {
@@ -184,8 +195,35 @@ export default {
         },
       ];
     },
+    schemaTrustedIssuers() {
+      const schemas = this.$store.getters.getSchemas.filter(
+        (schema) => schema.type === "INDY"
+      );
+
+      let trustedIssuerArrays = [];
+
+      for (const schema of schemas) {
+        if (schema.trustedIssuer !== undefined) {
+          for (const trustedIssuerElement of schema.trustedIssuer) {
+            trustedIssuerArrays.push(trustedIssuerElement);
+          }
+        }
+      }
+
+      return trustedIssuerArrays;
+    },
   },
   methods: {
+    getIssuerLabel(restriction) {
+      const filteredIssuers = this.schemaTrustedIssuers.find(
+        (s) => s.issuerDid === restriction.issuerDid
+      );
+
+      return filteredIssuers !== undefined &&
+        Object.prototype.hasOwnProperty.call(filteredIssuers, "label")
+        ? filteredIssuers.label
+        : "";
+    },
     addTrustedIssuerCancel() {
       this.addTrustedIssuerDialog.visible = false;
       this.addTrustedIssuerDialog.did = "";
