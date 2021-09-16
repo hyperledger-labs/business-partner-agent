@@ -217,11 +217,7 @@ export default {
           return resp.data;
         }
       } catch (error) {
-        if (error.response && error.response.status === 400) {
-          EventBus.$emit("error", "Schema already exists");
-        } else {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
-        }
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
       }
     },
     async submit() {
