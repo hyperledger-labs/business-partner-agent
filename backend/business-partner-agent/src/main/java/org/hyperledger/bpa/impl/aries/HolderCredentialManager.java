@@ -102,40 +102,34 @@ public class HolderCredentialManager {
     ApplicationEventPublisher eventPublisher;
 
     // request credential from issuer (partner)
-    public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId) {
-        final Optional<Partner> dbPartner = partnerRepo.findById(partnerId);
-        if (dbPartner.isPresent()) {
-            final Optional<MyDocument> dbDoc = docRepo.findById(myDocId);
-            if (dbDoc.isPresent()) {
-                if (!CredentialType.INDY.equals(dbDoc.get().getType())) {
-                    throw new PartnerException("Only documents that are based on a " +
-                            "schema can be converted into a credential");
-                }
-                try {
-                    final Optional<org.hyperledger.bpa.model.BPASchema> s = schemaService
-                            .getSchemaFor(dbDoc.get().getSchemaId());
-                    if (s.isPresent()) {
-                        ac.issueCredentialSendProposal(
-                                V1CredentialProposalRequest
-                                        .builder()
-                                        .connectionId(Objects.requireNonNull(dbPartner.get().getConnectionId()))
-                                        .schemaId(s.get().getSchemaId())
-                                        .credentialProposal(
-                                                new CredentialPreview(
-                                                        CredentialAttributes.from(
-                                                                Objects.requireNonNull(dbDoc.get().getDocument()))))
-                                        .build());
-                    } else {
-                        throw new PartnerException("No configured schema found for id: " + dbDoc.get().getSchemaId());
-                    }
-                } catch (IOException e) {
-                    throw new NetworkException("No aries connection", e);
-                }
+    public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId, @Nullable ExchangeVersion version) {
+        Partner dbPartner = partnerRepo.findById(partnerId)
+                .orElseThrow(() -> new PartnerException("No partner found for id: " + partnerId));
+        MyDocument dbDoc = docRepo.findById(myDocId)
+                .orElseThrow(() -> new PartnerException("No document found for id: " + myDocId));
+        if (!CredentialType.INDY.equals(dbDoc.getType())) {
+            throw new PartnerException("Only documents that are based on a " +
+                    "schema can be converted into a credential");
+        }
+        try {
+            org.hyperledger.bpa.model.BPASchema s = schemaService.getSchemaFor(dbDoc.getSchemaId())
+                    .orElseThrow(() -> new PartnerException("No configured schema found for id: " + dbDoc.getSchemaId()));
+            V1CredentialProposalRequest v1CredentialProposalRequest = V1CredentialProposalRequest
+                    .builder()
+                    .connectionId(Objects.requireNonNull(dbPartner.getConnectionId()))
+                    .schemaId(s.getSchemaId())
+                    .credentialProposal(
+                            new CredentialPreview(
+                                    CredentialAttributes.from(
+                                            Objects.requireNonNull(dbDoc.getDocument()))))
+                    .build();
+            if (version == null || ExchangeVersion.V1.equals(version)) {
+                ac.issueCredentialSendProposal(v1CredentialProposalRequest);
             } else {
-                throw new PartnerException("No document found for id: " + myDocId);
+                ac.issueCredentialV2SendProposal(v1CredentialProposalRequest);
             }
-        } else {
-            throw new PartnerException("No partner found for id: " + partnerId);
+        } catch (IOException e) {
+            throw new NetworkException("No aries connection", e);
         }
     }
 

@@ -42,6 +42,7 @@ public class CredEx {
     private Long updatedAt;
     private PartnerAPI partner;
     private String schemaId; // TODO UI should use this id instead the one from the credential
+    private String credentialDefinitionId; // TODO UI should use this id instead the one from the credential
     private Map<String, String> proposal;
     private Credential credential; // TODO should also be Map<String, String>
     private CredentialExchangeRole role;
@@ -53,6 +54,10 @@ public class CredEx {
     private Boolean revocable;
     private ExchangeVersion exchangeVersion;
     private String errorMsg;
+
+    // TODO UI should not need these two
+    private SchemaAPI schema;
+    private CredDef credDef;
 
     public static CredEx from(@NonNull BPACredentialExchange db) {
         return from(db, null);
@@ -79,10 +84,12 @@ public class CredEx {
                 .updatedAt(db.getUpdatedAt().toEpochMilli())
                 .partner(partner)
                 .schemaId(db.getSchema().getSchemaId())
+                .credentialDefinitionId(db.getCredDef().getCredentialDefinitionId())
                 .proposal(db.proposalAttributesToMap())
                 .credential(Credential
                         .builder()
                         .schemaId(db.getSchema().getSchemaId())
+                        .credentialDefinitionId(db.getCredDef().getCredentialDefinitionId())
                         .attrs(credentialAttrs)
                         .build())
                 .role(db.getRole())
@@ -94,6 +101,9 @@ public class CredEx {
                 .revocable(StringUtils.isNotEmpty(db.getRevRegId()))
                 .exchangeVersion(db.getExchangeVersion())
                 .errorMsg(db.getErrorMsg())
+
+                .schema(schemaAPI)
+                .credDef(credDef)
                 .build();
     }
 }
