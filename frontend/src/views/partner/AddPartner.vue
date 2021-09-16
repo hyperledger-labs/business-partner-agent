@@ -298,6 +298,7 @@ export default {
         .then((result) => {
           if (result.status === 201) {
             store.dispatch("loadPartners");
+            store.dispatch("loadPartnerSelectList");
             EventBus.$emit("success", "Partner added successfully");
             this.$router.push({
               name: "Partners",

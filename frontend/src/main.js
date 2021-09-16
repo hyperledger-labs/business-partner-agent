@@ -133,6 +133,9 @@ Vue.prototype.$config = {
   store.dispatch("loadPartners");
   store.dispatch("loadTags");
   store.dispatch("loadProofTemplates");
+  // lists for Dropdowns/Selects...
+  store.dispatch("loadPartnerSelectList");
+  store.dispatch("loadCredDefSelectList");
 
   console.log("Create the Vue application");
   new Vue({

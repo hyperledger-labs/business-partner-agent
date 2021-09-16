@@ -8,14 +8,14 @@
 
 <template>
   <div>
-    <v-row>
+    <v-row
+      v-if="
+        (intDoc.label instanceof String || typeof intDoc.label === 'string') &&
+        !showOnlyContent
+      "
+    >
       <v-col cols="12" class="pb-0 mt-4">
         <v-text-field
-          v-if="
-            (intDoc.label instanceof String ||
-              typeof intDoc.label === 'string') &&
-            !showOnlyContent
-          "
           label="Label (Optional)"
           placeholder
           outlined
