@@ -22,7 +22,7 @@
             </v-list-item-avatar>
             <v-list-item-content v-if="ux.navigation.avatar.agent.default">
               <v-list-item-title class="text-wrap">{{
-                getOrganizationName | getAgentName
+                getOrganizationName ? getOrganizationName : getAgentName
               }}</v-list-item-title>
               <!-- <v-list-item-subtitle></v-list-item-subtitle> -->
             </v-list-item-content>
@@ -36,7 +36,7 @@
                 ></v-img
               ></v-list-item-title>
               <v-list-item-subtitle class="text-wrap">{{
-                getOrganizationName | getAgentName
+                getOrganizationName ? getOrganizationName : getAgentName
               }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
@@ -49,7 +49,7 @@
               <v-icon>$vuetify.icons.domain</v-icon>
             </v-list-item-avatar>
             <v-list-item-content class="text-wrap"
-              >{{ getOrganizationName | getAgentName }}
+              >{{ getOrganizationName ? getOrganizationName : getAgentName }}
             </v-list-item-content>
           </v-list-item>
         </router-link>
