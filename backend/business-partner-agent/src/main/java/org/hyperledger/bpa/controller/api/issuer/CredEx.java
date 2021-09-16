@@ -17,21 +17,18 @@
  */
 package org.hyperledger.bpa.controller.api.issuer;
 
-import jakarta.inject.Inject;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
-import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
-import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 @Data
@@ -39,34 +36,30 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CredEx {
-    @Inject
-    Converter converter;
 
     private UUID id;
     private Long createdAt;
     private Long updatedAt;
-    private SchemaAPI schema; // why?
-    private CredDef credDef; // why?
-    private PartnerAPI partner; // why?
-    private Map<String, Object> credential;
-    private V1CredentialExchange.CredentialProposalDict proposal;
+    private PartnerAPI partner;
+    private String schemaId; // TODO UI should use this id instead the one from the credential
+    private Map<String, String> proposal;
+    private Credential credential; // TODO should also be Map<String, String>
     private CredentialExchangeRole role;
     private CredentialExchangeState state;
+    public Map<CredentialExchangeState, Long> stateToTimestamp;
     private CredentialType type;
-    private String label;
-    private String threadId;
-    private String credentialExchangeId;
     private String displayText;
     private Boolean revoked;
     private Boolean revocable;
     private ExchangeVersion exchangeVersion;
     private String errorMsg;
 
-    public static CredEx from(@NonNull BPACredentialExchange db, @NonNull Optional<Converter> conv) {
+    public static CredEx from(@NonNull BPACredentialExchange db) {
+        return from(db, null);
+    }
+
+    public static CredEx from(@NonNull BPACredentialExchange db, PartnerAPI partner) {
         CredExBuilder builder = CredEx.builder();
-        conv.ifPresentOrElse(
-                c -> builder.partner(c.toAPIObject(db.getPartner())),
-                () -> builder.partner(PartnerAPI.from(db.getPartner())));
         SchemaAPI schemaAPI = db.getSchema() != null ? SchemaAPI.from(db.getSchema()) : null;
         CredDef credDef = db.getCredDef() != null ? CredDef.from(db.getCredDef()) : null;
         String displayText = null;
@@ -74,20 +67,28 @@ public class CredEx {
             displayText = String.format("%s (%s) - %s", schemaAPI.getLabel(), schemaAPI.getVersion(),
                     credDef.getTag());
         }
+        Map<String, String> credentialAttrs;
+        if (CredentialExchangeState.PROPOSAL_RECEIVED.equals(db.getState())) {
+            credentialAttrs = db.proposalAttributesToMap(); // TODO UI should use proposal field in this case
+        } else {
+            credentialAttrs = db.credentialAttributesToMap();
+        }
         return builder
                 .id(db.getId())
                 .createdAt(db.getCreatedAt().toEpochMilli())
                 .updatedAt(db.getUpdatedAt().toEpochMilli())
+                .partner(partner)
+                .schemaId(db.getSchema().getSchemaId())
+                .proposal(db.proposalAttributesToMap())
+                .credential(Credential
+                        .builder()
+                        .schemaId(db.getSchema().getSchemaId())
+                        .attrs(credentialAttrs)
+                        .build())
                 .role(db.getRole())
                 .state(db.getState())
-                .schema(schemaAPI)
-                .credDef(credDef)
-                .credential(db.getCredential())
-                .proposal(db.getCredentialProposal())
+                .stateToTimestamp(db.getStateToTimestamp() != null ? db.getStateToTimestamp().toApi() : null)
                 .type(db.getType())
-                .label(db.getLabel())
-                .threadId(db.getThreadId())
-                .credentialExchangeId(db.getCredentialExchangeId())
                 .displayText(displayText)
                 .revoked(db.getRevoked())
                 .revocable(StringUtils.isNotEmpty(db.getRevRegId()))

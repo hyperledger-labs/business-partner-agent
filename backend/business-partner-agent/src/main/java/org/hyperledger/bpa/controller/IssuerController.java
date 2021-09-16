@@ -75,7 +75,7 @@ public class IssuerController {
     }
 
     /**
-     * Get a configured schema
+     * Get a configured schema by id
      *
      * @param id {@link UUID} the schema id
      * @return {@link HttpResponse}
@@ -90,7 +90,7 @@ public class IssuerController {
     }
 
     /**
-     * List cred defs, items that I can issue
+     * List credential definitions, items that I can issue
      *
      * @return list of {@link SchemaAPI}
      */
@@ -111,7 +111,7 @@ public class IssuerController {
     }
 
     /**
-     * Create a new credential definition
+     * Delete a credential definition
      *
      * @param id {@link UUID} the cred def id
      * @return {@link HttpResponse}
@@ -138,7 +138,7 @@ public class IssuerController {
     }
 
     /**
-     * List credential exchanges
+     * List issued credentials
      *
      * @return list of {@link CredEx}
      */
@@ -157,16 +157,12 @@ public class IssuerController {
      */
     @Post("/exchanges/{id}/revoke")
     public HttpResponse<CredEx> revokeCredential(@PathVariable UUID id) {
-        Optional<CredEx> credEx = im.revokeCredentialExchange(id);
-        if (credEx.isPresent()) {
-            return HttpResponse.ok(credEx.get());
-        }
-        return HttpResponse.notFound();
+        return HttpResponse.ok(im.revokeCredentialExchange(id));
     }
 
     /**
      * Manual credential exchange step two: Issuer sends credential counter offer to
-     * holder
+     * holder (in reference to a proposal)
      * 
      * @param id           credential exchange id
      * @param counterOffer {@link CredentialOfferRequest}
@@ -174,11 +170,7 @@ public class IssuerController {
      */
     @Post("/exchanges/{id}/send-offer")
     public HttpResponse<CredEx> sendCredentialOffer(@PathVariable UUID id, @Body CredentialOfferRequest counterOffer) {
-        Optional<CredEx> credEx = im.sendCredentialOffer(id, counterOffer);
-        if (credEx.isPresent()) {
-            return HttpResponse.ok(credEx.get());
-        }
-        return HttpResponse.notFound();
+        return HttpResponse.ok(im.sendCredentialOffer(id, counterOffer));
     }
 
 }
