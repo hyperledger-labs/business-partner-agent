@@ -25,4 +25,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EntityNotFoundException extends RuntimeException {
     private static final long serialVersionUID = 651996777648233564L;
+
+    public EntityNotFoundException(String message) {
+        super(message);
+    }
 }

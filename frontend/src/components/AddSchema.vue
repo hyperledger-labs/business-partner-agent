@@ -110,11 +110,7 @@ export default {
         })
         .catch((e) => {
           this.isBusy = false;
-          if (e.response.status === 400) {
-            EventBus.$emit("error", "Schema already exists");
-          } else {
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
-          }
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     cancel() {
