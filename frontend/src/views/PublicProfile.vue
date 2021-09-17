@@ -9,11 +9,7 @@
   <v-container>
     <div v-if="publicDocumentsAndCredentials.length > 0">
       <v-alert colored-border color="primary" border="left" elevation="2" dense>
-        <span class="text-caption"
-          >You can change the visibility settings of documents and verified
-          credentials in the <strong>wallet</strong> to update your public
-          profile.
-        </span>
+        <span class="text-caption">{{ $t("view.profile.subtitle") }} </span>
       </v-alert>
       <v-card class="mx-auto" flat>
         <Profile
@@ -56,7 +52,7 @@ export default {
   },
   created() {
     EventBus.$emit("title", "Public Profile");
-    console.log("first load credentials");
+    //console.log("first load credentials");
     this.$store.dispatch("loadDocuments");
     this.$store.dispatch("loadCredentials");
   },

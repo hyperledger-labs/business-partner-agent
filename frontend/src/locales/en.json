@@ -21,15 +21,11 @@
   "nav": {
     "identity": "Identity",
     "dashboard": "Dashboard",
-    "profile": "Public Profile",
     "wallet": "Wallet",
     "credentialManagement": "Issue Credentials",
-    "partners": "Business Partners",
     "settings": "Settings",
-    "notifications": "Notifications",
     "about": "About",
     "signout": "Sign out",
-    "proofTemplates": "Proof Templates"
   },
   "dashboard": {
     "credentialsSent": "Credentials Issued",
@@ -39,7 +35,7 @@
     "partners": "Business Partners",
     "tasks": "Pending Tasks"
   },
-  "button" : {
+  "button": {
     "save": "Save",
     "submit": "Submit",
     "cancel": "Cancel",
@@ -53,9 +49,32 @@
       "activities": {
         "title": "Activity Log"
       },
-      "tasks" : {
+      "tasks": {
         "title": "Tasks"
       }
+    },
+    "profile": {
+      "title": "Public Profile",
+      "subtitle": "You can change the visibility settings of documents and verified credentials in the <strong>wallet</strong> to update your public profile."
+    },
+    "wallet": {
+      "title": "Wallet",
+      "credentials": {
+        "title": "Verifiable Credentials"
+      },
+      "documents": {
+        "title": "Documents"
+      },
+      "visibility": {
+        "title": "Public Profile",
+        "subtitle": "Visible in Public Profile"
+      }
+    },
+    "proofTemplates":{
+      "title": "Proof Templates"
+    },
+    "partners": {
+      "title": "Business Partners"
     },
     "partner": {
       "title": "Partner",
@@ -95,7 +114,7 @@
       "title": "Add new Business Partner",
       "setName": "Set a name",
       "setTags": "Set tags",
-      "trustPing": "Trust Ping",
+      "trustPing": "Auto Ping",
       "lookupPartnerBtnLabel": "Lookup Partner",
       "addPartnerBtnLabel": "Add Partner"
     },
@@ -103,33 +122,33 @@
       "title": "Invite new Business Partner",
       "createInvitation": "Generate Invitation (QR Code)",
       "invitationURL": "Invitation URL",
+      "invitationInstructions": "Share this with another secure wallet you wish to connect with",
       "useOOB": "Use Out of Band"
     },
     "issueCredentials": {
       "title": "Issue Credentials",
       "cards": {
-        "action" : {
+        "action": {
           "title": "Issue Credential",
           "button": "Issue Credential",
           "partnerLabel": "Select Partner",
           "credDefLabel": "Select Credential Definition"
         },
-        "table" : {
+        "table": {
           "title": "Issued Credentials"
         }
-      }
-    },
-    "wallet": {
-      "title": "Wallet",
-      "credentials": {
-        "title": "Verifiable Credentials"
-      },
-      "documents": {
-        "title": "Documents"
       }
     }
   },
   "component": {
+    "organizationProfile": {
+      "companyInfo": {
+        "section_title": "Company Information"
+      },
+      "addressInfo": {
+        "section_title": "Address Information"
+      }
+    },
     "issueCredential": {
       "title": "Issue Credential",
       "partnerLabel": "Partner",
@@ -195,7 +214,7 @@
         "prover": "Prover",
         "verifier": "Verifier"
       }
-   }
+    }
   },
   "showRawData": "Show raw data",
   "error": {

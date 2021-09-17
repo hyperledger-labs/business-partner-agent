@@ -8,11 +8,12 @@
 
 <template>
   <div>
-    <v-row v-if="
-            (intDoc.label instanceof String ||
-              typeof intDoc.label === 'string') &&
-            !showOnlyContent
-          ">
+    <v-row
+      v-if="
+        (intDoc.label instanceof String || typeof intDoc.label === 'string') &&
+        !showOnlyContent
+      "
+    >
       <v-col cols="12" class="pb-0 mt-4">
         <v-text-field
           label="Label (Optional)"
@@ -39,7 +40,7 @@
       <v-col>
         <v-text-field
           v-if="intDoc.issuer"
-          label="Issuer"
+          label="Issuer DID"
           v-model="intDoc.issuer"
           disabled
           outlined
@@ -57,7 +58,7 @@
     </v-row>
 
     <h3 v-if="intDoc.credentialData && !showOnlyContent" class="mb-4">
-      Credential Content
+      Credential Details
     </h3>
     <v-row>
       <v-col>

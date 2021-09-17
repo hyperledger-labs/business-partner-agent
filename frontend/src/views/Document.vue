@@ -46,10 +46,12 @@
         <v-divider></v-divider>
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title>Public Profile</v-list-item-title>
-            <v-list-item-subtitle
-              >Visible in Public Profile</v-list-item-subtitle
-            >
+            <v-list-item-title>{{
+              $t("views.wallet.visibility.title")
+            }}</v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t("views.wallet.visibility.subtitle")
+            }}</v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
             <v-switch

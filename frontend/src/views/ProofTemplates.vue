@@ -10,7 +10,7 @@
     <v-card class="my-4 mx-auto">
       <!-- Title -->
       <v-card-title class="bg-light">
-        <span>Proof Templates</span>
+        <span>Proof Request Templates</span>
       </v-card-title>
 
       <!-- Proof Templates Table -->
@@ -33,7 +33,7 @@
                 color="primary"
                 @click="proofTemplateCreate()"
               >
-                Create Proof Template
+                Create Template
               </v-bpa-button>
             </template>
           </v-dialog>

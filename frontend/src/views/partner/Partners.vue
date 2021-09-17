@@ -9,7 +9,7 @@
   <v-container justify-center>
     <v-card class="my-4 mx-auto">
       <v-card-title class="bg-light">
-        Business Partners
+        {{ $t("view.partners.title") }}
         <v-layout justify-end>
           <v-switch
             class="mr-4"
