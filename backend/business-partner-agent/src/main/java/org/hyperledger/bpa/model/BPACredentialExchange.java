@@ -28,6 +28,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 import org.hyperledger.acy_py.generated.model.CredAttrSpec;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
@@ -131,7 +132,7 @@ public class BPACredentialExchange extends ExchangeStateDecorator<BPACredentialE
         }
         return credentialProposal.getAttributes()
                 .stream()
-                .collect(Collectors.toMap(CredAttrSpec::getName, CredAttrSpec::getValue));
+                .collect(Collectors.toMap(CredentialAttributes::getName, CredentialAttributes::getValue));
     }
 
     public Map<String, String> credentialAttributesToMap() {

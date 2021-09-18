@@ -28,15 +28,14 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.acy_py.generated.model.V20CredExRecord;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.credentials.CredentialPreview;
 import org.hyperledger.aries.api.exception.AriesException;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialProposalRequest;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
@@ -286,27 +285,27 @@ public class HolderCredentialManager {
         fireCredentialAddedEvent(dbCredential);
     }
 
-    public void handleV2CredentialExchangeReceived(@NonNull V20CredExRecord credEx) {
+    public void handleV2CredentialReceived(@NonNull V20CredExRecord credEx) {
         V2ToV1IndyCredentialConverter.INSTANCE().toV1(credEx).ifPresent(c -> {
             MyCredential dbCred = MyCredential.defaultCredentialBuilder()
                     .connectionId(credEx.getConnectionId())
                     .threadId(credEx.getThreadId())
                     .credentialExchangeId(credEx.getCredExId())
                     .referent(credEx.getCredExId())
-                    .state(CredentialExchangeState.fromV2(credEx.getState()))
+                    .state(credEx.getState())
                     .exchangeVersion(ExchangeVersion.V2)
                     .build();
             credRepo.save(dbCred);
         });
     }
 
-    public void handleV2CredentialExchangeDone(@NonNull V20CredExRecord credEx) {
+    public void handleV2CredentialDone(@NonNull V20CredExRecord credEx) {
         credRepo.findByCredentialExchangeId(credEx.getCredExId()).ifPresent(
                 dbCred -> V2ToV1IndyCredentialConverter.INSTANCE().toV1(credEx)
                         .ifPresent(c -> {
                             String label = labelStrategy.apply(c);
                             dbCred
-                                    .setState(CredentialExchangeState.fromV2(credEx.getState()))
+                                    .setState(credEx.getState())
                                     .setCredential(conv.toMap(c))
                                     .setLabel(label)
                                     .setIssuer(resolveIssuer(c));

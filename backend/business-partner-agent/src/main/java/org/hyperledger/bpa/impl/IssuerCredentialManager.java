@@ -29,7 +29,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.acy_py.generated.model.CredAttrSpec;
 import org.hyperledger.acy_py.generated.model.CredentialProposal;
 import org.hyperledger.acy_py.generated.model.V10CredentialBoundOfferRequest;
-import org.hyperledger.acy_py.generated.model.V20CredExRecord;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credential_definition.CredentialDefinition;
 import org.hyperledger.aries.api.credential_definition.CredentialDefinition.CredentialDefinitionRequest;
@@ -40,6 +39,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialProposalRequest;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.revocation.RevokeRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
@@ -324,7 +324,7 @@ public class IssuerCredentialManager {
             throw new WrongApiUsageException(msg.getMessage("api.issuer.credential.send.offer.wrong.state",
                     Map.of("state", credEx.getState())));
         }
-        List<CredAttrSpec> attributes;
+        List<CredentialAttributes> attributes;
         if (counterOffer.acceptAll()) {
             attributes = credEx.getCredentialProposal() != null
                     ? credEx.getCredentialProposal().getAttributes()
@@ -342,7 +342,10 @@ public class IssuerCredentialManager {
                                 : null)
                         .credentialProposal(org.hyperledger.acy_py.generated.model.CredentialPreview
                                 .builder()
-                                .attributes(attributes)
+                                .attributes(attributes.stream().map(a -> CredAttrSpec
+                                        .builder()
+                                        .name(a.getName()).value(a.getValue()).mimeType(a.getMimeType())
+                                        .build()).collect(Collectors.toList()))
                                 .build())
                         .build())
                 .build();
@@ -353,7 +356,7 @@ public class IssuerCredentialManager {
                 ac.issueCredentialV2RecordsSendOffer(credEx.getCredentialExchangeId(), v1Offer);
             }
             Credential credential = Credential.builder()
-                    .attrs(attributes.stream().collect(Collectors.toMap(CredAttrSpec::getName, CredAttrSpec::getValue)))
+                    .attrs(attributes.stream().collect(Collectors.toMap(CredentialAttributes::getName, CredentialAttributes::getValue)))
                     .build();
             credEx.setCredential(credential);
             credExRepo.updateCredential(credEx.getId(), credential);
@@ -389,6 +392,31 @@ public class IssuerCredentialManager {
         });
     }
 
+    public void handleV2CredentialProposal(@NonNull V20CredExRecord ex) {
+        partnerRepo.findByConnectionId(ex.getConnectionId()).ifPresent(partner -> {
+            BPACredentialExchange.BPACredentialExchangeBuilder b = BPACredentialExchange
+                    .builder()
+                    .partner(partner)
+                    .role(CredentialExchangeRole.ISSUER)
+                    .state(ex.getState())
+                    .pushStateChange(ex.getState(), Instant.now())
+                    .credentialExchangeId(ex.getCredExId())
+                    .threadId(ex.getThreadId())
+                    .credentialProposal(
+                            V1CredentialExchange.CredentialProposalDict.CredentialProposal
+                                    .builder()
+                                    .attributes(ex.getCredProposal().getCredentialPreview().getAttributes())
+                                    .build());
+            ex.getByFormat().getSchemaIdFromProposal().ifPresent(schemaId -> credDefRepo.findBySchemaId(schemaId).ifPresentOrElse(dbCredDef -> {
+                b.schema(dbCredDef.getSchema()).credDef(dbCredDef);
+                credExRepo.save(b.build());
+            }, () -> {
+                b.errorMsg("Issuer has no operable credential  definition for proposal spec: " + schemaId);
+                credExRepo.save(b.build());
+            }));
+        });
+    }
+
     /**
      * Handle issue credential v1 state changes and revocation info
      *
@@ -411,12 +439,11 @@ public class IssuerCredentialManager {
     public void handleV2CredentialExchange(@NonNull V20CredExRecord ex) {
         credExRepo.findByCredentialExchangeId(ex.getCredExId())
                 .ifPresent(bpaEx -> {
-                    CredentialExchangeState state = CredentialExchangeState.fromV2(ex.getState());
-                    if (state != null) {
-                        bpaEx.pushStateChange(state, Instant.now());
+                    if (ex.getState() != null) {
+                        bpaEx.pushStateChange(ex.getState(), Instant.now());
                     }
                     credExRepo.updateAfterEventNoRevocationInfo(bpaEx.getId(),
-                            state, bpaEx.getStateToTimestamp(), ex.getErrorMsg());
+                            ex.getState(), bpaEx.getStateToTimestamp(), ex.getErrorMsg());
                 });
     }
 

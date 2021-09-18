@@ -19,7 +19,7 @@ package org.hyperledger.bpa.controller.api.issuer;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hyperledger.acy_py.generated.model.CredAttrSpec;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ import java.util.List;
 @NoArgsConstructor
 public class CredentialOfferRequest {
     private Boolean acceptProposal;
-    private List<CredAttrSpec> attributes;
+    private List<CredentialAttributes> attributes;
 
     public boolean acceptAll() {
         return acceptProposal != null && acceptProposal;

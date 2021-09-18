@@ -20,7 +20,7 @@ package org.hyperledger.bpa.impl.aries;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.acy_py.generated.model.V20CredExRecord;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
@@ -119,16 +119,20 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleCredentialV2(V20CredExRecord v20Credential) {
         log.debug("Credential V2 Event: {}", v20Credential);
-        if (V20CredExRecord.RoleEnum.ISSUER.equals(v20Credential.getRole())) {
+        if (v20Credential.isIssuer()) {
             synchronized (issuerMgr) {
-                issuerMgr.handleV2CredentialExchange(v20Credential);
+                if (v20Credential.isProposalReceived()) {
+                    issuerMgr.handleV2CredentialProposal(v20Credential);
+                } else {
+                    issuerMgr.handleV2CredentialExchange(v20Credential);
+                }
             }
-        } else if (V20CredExRecord.RoleEnum.HOLDER.equals(v20Credential.getRole())) {
+        } else if (v20Credential.isHolder()) {
             synchronized (holderMgr) {
-                if (V20CredExRecord.StateEnum.CREDENTIAL_RECEIVED.equals(v20Credential.getState())) {
-                    holderMgr.handleV2CredentialExchangeReceived(v20Credential);
-                } else if (V20CredExRecord.StateEnum.DONE.equals(v20Credential.getState())) {
-                    holderMgr.handleV2CredentialExchangeDone(v20Credential);
+                if (v20Credential.isCredentialReceived()) {
+                    holderMgr.handleV2CredentialReceived(v20Credential);
+                } else if (v20Credential.isDone()) {
+                    holderMgr.handleV2CredentialDone(v20Credential);
                 }
             }
         }
