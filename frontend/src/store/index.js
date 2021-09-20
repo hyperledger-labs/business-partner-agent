@@ -26,6 +26,8 @@ const store = new Vuex.Store({
     schemas: [],
     proofTemplates: [],
     tags: [],
+    partnerSelectList: [],
+    credDefSelectList: [],
     busyStack: 0,
     expertMode: false,
     settings: {},
@@ -60,6 +62,12 @@ const store = new Vuex.Store({
     setProofTemplates(state, payload) {
       state.proofTemplates = payload.proofTemplates;
     },
+    setPartnerSelectList(state, payload) {
+      state.partnerSelectList = payload.list;
+    },
+    setCredDefSelectList(state, payload) {
+      state.credDefSelectList = payload.list;
+    }
   },
 
   modules: {

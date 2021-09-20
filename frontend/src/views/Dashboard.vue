@@ -125,9 +125,8 @@
             this.isLoading = false;
           })
           .catch((e) => {
-            console.error(e);
             this.isLoading = false;
-            EventBus.$emit("error", e);
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
           });
       },
     },

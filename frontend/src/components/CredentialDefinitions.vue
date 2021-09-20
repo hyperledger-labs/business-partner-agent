@@ -11,152 +11,174 @@
     <v-row v-for="(entry, index) in items" v-bind:key="index">
       <v-col cols="4" class="py-0">
         <v-text-field
-          label="Tag"
-          :disabled="!entry.isEdit"
-          v-model="entry.tag"
-          outlined
-          dense
+            label="Tag (required)"
+            :disabled="!entry.isEdit"
+            v-model="entry.tag"
+            :rules="[(v) => !!v || 'Tag is required']"
+            outlined
+            dense
         ></v-text-field>
       </v-col>
       <v-col class="py-0">
         <v-checkbox
-          class="mt-1"
-          label="Revocable"
-          v-model="entry.supportRevocation"
-          :disabled="!isTailsConfigured || !entry.isEdit"
-          outlined
-          dense
+            class="mt-1"
+            label="Revocable"
+            v-model="entry.supportRevocation"
+            :disabled="!isTailsConfigured || !entry.isEdit"
+            outlined
+            dense
         >
         </v-checkbox>
       </v-col>
       <v-col cols="3" class="py-0">
         <v-btn
-          v-if="!entry.id && entry.isEdit"
-          :loading="isBusy"
-          icon
-          @click="saveItem(entry)"
+            v-if="!entry.id && entry.isEdit"
+            :loading="isBusy"
+            :disabled="entry.tag && entry.tag.trim().length === 0"
+            icon
+            @click="saveItem(entry)"
         >
           <v-icon color="primary">$vuetify.icons.save</v-icon>
         </v-btn>
         <v-btn icon v-if="!entry.isEdit" @click="deleteItem(index)">
           <v-icon color="error">$vuetify.icons.delete</v-icon>
         </v-btn>
+        <v-btn icon v-if="!entry.id && entry.isEdit" @click="cancelSaveItem(index)">
+          <v-icon color="error">$vuetify.icons.cancel</v-icon>
+        </v-btn>
       </v-col>
     </v-row>
     <v-row>
       <v-bpa-button :disabled="isEdit" color="secondary" @click="addItem"
-        >Add Credential Definition</v-bpa-button
+      >Add Credential Definition</v-bpa-button
       >
     </v-row>
   </v-container>
 </template>
 
 <script>
-import { EventBus } from "@/main";
-import issuerService from "@/services/issuerService";
-import VBpaButton from "@/components/BpaButton";
+  import { EventBus } from "@/main";
+  import issuerService from "@/services/issuerService";
+  import VBpaButton from "@/components/BpaButton";
 
-export default {
-  components: { VBpaButton },
-  props: {
-    schema: {
-      type: Object,
-      default: () => {},
+  export default {
+    components: { VBpaButton },
+    props: {
+      schema: {
+        type: Object,
+        default: () => {},
+      },
+      credentialDefinitions: {
+        type: Array,
+        default: function () {
+          return [];
+        },
+      },
+      reset: {
+        type: Boolean,
+        default: () => false,
+      }
     },
-    credentialDefinitions: {
-      type: Array,
-      default: function () {
-        return [];
+    watch: {
+      schema() {
+        this.isEdit = false;
+        this.editingItem = false;
+      },
+      credentialDefinitions(val) {
+        this.items = Array.from(val);
+        this.isEdit = false;
+        this.editingItem = false;
+      },
+      reset(newVal, oldVal) {
+        // use this to reset the form, remove any outstanding items that are not saved.
+        if (newVal !== oldVal) {
+          this.items = Array.from(this.credentialDefinitions);
+          this.isEdit = false;
+          this.editingItem = false;
+        }
+      }
+    },
+    created() {},
+    mounted() {
+      this.items = Array.from(this.credentialDefinitions);
+    },
+    data: () => {
+      return {
+        items: [],
+        isEdit: false,
+        editingItem: null,
+        isBusy: false,
+      };
+    },
+    computed: {
+      isTailsConfigured() {
+        return this.$config.tailsServerConfigured;
       },
     },
-  },
-  watch: {
-    schema() {
-      this.isEdit = false;
-      this.editingItem = false;
-    },
-    credentialDefinitions(val) {
-      this.items = Array.from(val);
-      this.isEdit = false;
-      this.editingItem = false;
-    },
-  },
-  created() {},
-  mounted() {
-    this.items = Array.from(this.credentialDefinitions);
-  },
-  data: () => {
-    return {
-      items: [],
-      isEdit: false,
-      editingItem: null,
-      isBusy: false,
-    };
-  },
-  computed: {
-    isTailsConfigured() {
-      return this.$config.tailsServerConfigured;
-    },
-  },
-  methods: {
-    addItem() {
-      this.isEdit = true;
-      this.items.push({
-        schemaId: this.id,
-        tag: "",
-        supportRevocation: false,
-        isEdit: true,
-      });
-    },
+    methods: {
+      addItem() {
+        this.isEdit = true;
+        this.items.push({
+          schemaId: this.id,
+          tag: "",
+          supportRevocation: false,
+          isEdit: true,
+        });
+      },
 
-    deleteItem(index) {
-      let item = this.items[index];
-      if (item.id) {
+      deleteItem(index) {
+        let item = this.items[index];
+        if (item.id) {
+          issuerService
+            .deleteCredDef(item.id)
+            .then((result) => {
+              console.log(result);
+              this.items.splice(index, 1);
+              this.$emit("changed");
+            })
+            .catch((e) => {
+              EventBus.$emit("error", this.$axiosErrorMessage(e));
+            });
+        } else {
+          this.items.splice(index, 1);
+        }
+      },
+
+      saveItem(item) {
+        this.createNewItem(item);
+      },
+
+      createNewItem(item) {
+        this.isBusy = true;
+        const data = {
+          schemaId: this.schema.schemaId,
+          tag: item.tag,
+          supportRevocation: item.supportRevocation,
+        };
         issuerService
-          .deleteCredDef(item.id)
+          .createCredDef(data)
           .then((result) => {
-            console.log(result);
-            this.items.splice(index, 1);
-            this.$emit("changed");
+            this.isBusy = false;
+
+            if (result.status === 200) {
+              this.isEdit = false;
+              item.isEdit = false;
+              EventBus.$emit("success", "New credential definition added");
+              this.$emit("changed");
+              this.$store.dispatch("loadCredDefSelectList");
+            }
           })
           .catch((e) => {
-            console.error(e);
-            EventBus.$emit("error", e);
+            this.isBusy = false;
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
           });
-      } else {
+      },
+
+      cancelSaveItem(index) {
+        this.isEdit = false;
+        this.editingItem = false;
         this.items.splice(index, 1);
       }
     },
-
-    saveItem(item) {
-      this.createNewItem(item);
-    },
-
-    createNewItem(item) {
-      this.isBusy = true;
-      const data = {
-        schemaId: this.schema.schemaId,
-        tag: item.tag,
-        supportRevocation: item.supportRevocation,
-      };
-      issuerService
-        .createCredDef(data)
-        .then((result) => {
-          this.isBusy = false;
-
-          if (result.status === 200) {
-            this.isEdit = false;
-            item.isEdit = false;
-            EventBus.$emit("success", "New credential definition added");
-            this.$emit("changed");
-          }
-        })
-        .catch((e) => {
-          this.isBusy = false;
-          console.error(e);
-          EventBus.$emit("error", e);
-        });
-    },
-  },
-};
+  };
 </script>

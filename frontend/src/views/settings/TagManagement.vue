@@ -129,8 +129,7 @@ export default {
           }
         })
         .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     deleteTag(tag, hardDelete = false) {
@@ -154,7 +153,7 @@ export default {
             this.deleteErrorMsg = e.response.data.message;
             this.selectedTag = tag;
           } else {
-            EventBus.$emit("error", e);
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
           }
         });
     },

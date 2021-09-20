@@ -12,6 +12,7 @@ import {
   mdiCog,
   mdiChevronLeft,
   mdiDelete,
+  mdiDomain,
   mdiContentCopy,
   mdiPlus,
   mdiPencil,
@@ -35,7 +36,8 @@ import {
   mdiBook,
   mdiBookRemove,
   mdiMagnify,
-  mdiTicketConfirmationOutline
+  mdiTicketConfirmationOutline,
+  mdiAttachment,
 } from "@mdi/js";
 
 Vue.use(Vuetify);
@@ -64,6 +66,7 @@ export default new Vuetify({
       up: "fas fa-chevron-up",
       down: "fas fa-chevron-down",
       delete: mdiDelete,
+      domain: mdiDomain,
       copy: mdiContentCopy,
       add: mdiPlus,
       pencil: mdiPencil,
@@ -90,6 +93,7 @@ export default new Vuetify({
       search: mdiMagnify,
       dashboardGo: "fas fa-arrow-alt-circle-right",
       invitation: mdiTicketConfirmationOutline,
+      attachment: mdiAttachment,
     },
   },
   theme: {

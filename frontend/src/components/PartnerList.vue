@@ -156,6 +156,7 @@ export default {
     },
 
     fetch() {
+      this.$store.dispatch("loadPartnerSelectList");
       // Query only for partners that can issue credentials of specified schema
       let queryParam = "";
       if (this.onlyIssuersForSchema.length > 0) {
@@ -182,9 +183,7 @@ export default {
         })
         .catch((e) => {
           this.isBusy = false;
-
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     getProfileAddress(credential) {

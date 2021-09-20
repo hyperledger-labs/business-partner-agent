@@ -394,7 +394,7 @@ export default {
         .catch((e) => {
           this.isLoadingPresExRecords = false;
           console.error(e);
-          // EventBus.$emit("error", e);
+          // EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
 
@@ -414,7 +414,7 @@ export default {
         .catch((e) => {
           this.isLoadingCredExRecords = false;
           console.error(e);
-          // EventBus.$emit("error", e);
+          // EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     refreshIssuedCredentialRecords() {
@@ -447,9 +447,8 @@ export default {
           }
         })
         .catch((e) => {
-          console.error(e);
           this.isLoading = false;
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     deletePartner() {
@@ -466,8 +465,7 @@ export default {
           }
         })
         .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     acceptPartnerRequest() {
@@ -482,8 +480,7 @@ export default {
           }
         })
         .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     refreshPartner() {
@@ -518,9 +515,8 @@ export default {
           }
         })
         .catch((e) => {
-          console.error(e);
           this.isLoading = false;
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     onUpdatePartner() {

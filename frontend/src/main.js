@@ -104,11 +104,36 @@ Vue.prototype.$config = {
     `i18n.locale = ${i18n.locale}, i18n.fallbackLocale = ${i18n.fallbackLocale}`
   );
 
+  Vue.prototype.$axiosErrorMessage = function (err) {
+    console.error(err);
+    if (!err) return "";
+    // exceptions thrown from micronaut (ex. WrongApiUsageExceptionHandler)
+    // will have the detail message in err.response.data._embedded.errors[N].message
+    // check there first
+    if (Array.isArray(err.response?.data?._embedded?.errors)) {
+      return err.response?.data?._embedded?.errors.map(x => x.message).join(" ");
+    }
+    // what other error message structures will we encounter?
+    // add logic here...
+
+    // controller returning something like HttpResponse.notFound() sets err.message = "Request failed with status code 404"
+    // but in err.response.statusText is a bit more understandable... "Not Found"
+    // do we want to use the status text before the default message?
+    if (err.response) {
+      return i18n.t("error.axios", {statusText: err.response.statusText});
+    }
+    if (err.message) return err.message;
+    return err.toString();
+  };
+
   store.dispatch("loadSettings");
   store.dispatch("loadSchemas");
   store.dispatch("loadPartners");
   store.dispatch("loadTags");
   store.dispatch("loadProofTemplates");
+  // lists for Dropdowns/Selects...
+  store.dispatch("loadPartnerSelectList");
+  store.dispatch("loadCredDefSelectList");
 
   console.log("Create the Vue application");
   new Vue({

@@ -92,6 +92,10 @@ export default {
         return [];
       },
     },
+    reset: {
+      type: Boolean,
+      default: () => false,
+    },
   },
   watch: {
     schema() {
@@ -102,6 +106,14 @@ export default {
       this.items = Array.from(val);
       this.isEdit = false;
       this.editingTrustedIssuer = null;
+    },
+    reset(newVal, oldVal) {
+      // use this to reset the form, remove any outstanding items that are not saved.
+      if (newVal !== oldVal) {
+        this.items = Array.from(this.trustedIssuers);
+        this.isEdit = false;
+        this.editingTrustedIssuer = null;
+      }
     },
   },
   created() {},
@@ -164,8 +176,7 @@ export default {
             this.$emit("changed");
           })
           .catch((e) => {
-            console.error(e);
-            EventBus.$emit("error", e);
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
           });
       } else {
         this.items.splice(index, 1);
@@ -212,8 +223,7 @@ export default {
         })
         .catch((e) => {
           this.isBusy = false;
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
 
@@ -241,8 +251,7 @@ export default {
         .catch((e) => {
           this.isBusy = false;
           trustedIssuer.isEdit = true;
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
   },

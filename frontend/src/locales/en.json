@@ -44,7 +44,8 @@
     "submit": "Submit",
     "cancel": "Cancel",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "close": "Close"
   },
   "view": {
     "notifications": {
@@ -110,12 +111,59 @@
         "action" : {
           "title": "Issue Credential",
           "button": "Issue Credential",
-          "partnerLabel": "Select partner...",
-          "credentialLabel": "Select credential..."
+          "partnerLabel": "Select Partner",
+          "credDefLabel": "Select Credential Definition"
         },
         "table" : {
           "title": "Issued Credentials"
         }
+      }
+    },
+    "wallet": {
+      "title": "Wallet",
+      "credentials": {
+        "title": "Verifiable Credentials"
+      },
+      "documents": {
+        "title": "Documents"
+      }
+    }
+  },
+  "component": {
+    "issueCredential": {
+      "title": "Issue Credential",
+      "partnerLabel": "Partner",
+      "credDefLabel": "Credential Definition",
+      "successMessage": "Credential issued",
+      "attributesTitle": "Credential Content",
+      "options": {
+        "title": "Options",
+        "useV2": "Use V2 Protocol"
+      },
+      "expertLoad": {
+        "title": "Load Credential Data",
+        "dataPlaceholder": "Enter, paste, or upload Credential Content...",
+        "filePlaceholder": "Upload file",
+        "buttons": {
+          "load": "Load",
+          "clear": "Clear"
+        },
+        "errorMessages": {
+          "format": {
+            "json": "Ensure that data is valid JSON format.",
+            "csv": "Ensure that data is valid Comma Separated Value (CSV) format."
+          },
+          "attributes": "Could not find any matching Credential attributes.",
+          "parse": "Could not parse data."
+        }
+      }
+    },
+    "credExList": {
+      "dialog": {
+        "title": "Credential",
+        "partnerLabel": "Partner",
+        "credDefLabel": "Credential Definition",
+        "attributesTitle": "Credential Content"
       }
     }
   },
@@ -149,5 +197,8 @@
       }
    }
   },
-  "showRawData": "Show raw data"
+  "showRawData": "Show raw data",
+  "error": {
+    "axios": "Request failed with status {statusText}"
+  }
 }
