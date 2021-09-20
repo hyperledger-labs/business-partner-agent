@@ -119,7 +119,7 @@
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>{{
-              $t("nav.credentialManagement")
+              $t("view.issueCredentials.title")
             }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -130,7 +130,7 @@
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>{{
-              $t("nav.proofTemplates")
+              $t("view.proofTemplates.title")
             }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>

@@ -2,21 +2,17 @@
   "nav": {
     "identity": "Identity",
     "dashboard": "Dashboard",
-    "__NOTE__": "NAV FOR SECTIONS ARE IN THOSE SECTIONS",
-    "__TODO": "YOUR CREDENTIALS?",
-    "credentialManagement": "Credential Issuance",
     "settings": "Settings",
     "about": "About",
     "signout": "Sign out"
   },
   "dashboard": {
     "credentialsSent": "Credentials Your Organization Issued",
-    "credentialsReceived": "Credentials Your Organization Hold",
+    "credentialsReceived": "Credentials Your Organization Holds",
     "presentationRequestsSent": "Proof Requests Sent",
     "presentationRequestsReceived": "Proof Requests Received",
     "partners": "Secure Connections",
-    "__TODO": "JUST RENAMED THIS TO TASKS",
-    "tasks": "Pending Tasks"
+    "tasks": "Pending Actions"
   },
   "view": {
     "notifications": {
@@ -83,6 +79,7 @@
       "header": "Proof Request Details"
     },
     "issueCredentials": {
+      "title": "Credential Issuance",
       "cards": {
         "action": {
           "partnerLabel": "Select a connection to issue credential to",
@@ -94,8 +91,7 @@
       }
     },
     "settings":{
-      "walletDID": "Your Organization's Decentalized Identifier (DID)",
-      
+      "walletDID": "Your Organization's Decentalized Identifier (DID)"
     }
   },
   "component": {

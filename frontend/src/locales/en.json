@@ -22,10 +22,9 @@
     "identity": "Identity",
     "dashboard": "Dashboard",
     "wallet": "Wallet",
-    "credentialManagement": "Issue Credentials",
     "settings": "Settings",
     "about": "About",
-    "signout": "Sign out",
+    "signout": "Sign out"
   },
   "dashboard": {
     "credentialsSent": "Credentials Issued",

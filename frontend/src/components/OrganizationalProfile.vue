@@ -11,7 +11,7 @@
     <v-row>
       <v-col cols="4" class="pb-0">
         <p class="grey--text text--darken-2 font-weight-medium">
-          {{ $t("components.organizationProfile.companyInfo.section_title") }}
+          {{ $t("component.organizationProfile.companyInfo.section_title") }}
         </p>
       </v-col>
       <v-col cols="8" class="pb-0">
@@ -94,7 +94,7 @@
     <v-row>
       <v-col cols="4" class="pb-0">
         <p class="grey--text text--darken-2 font-weight-medium">
-          {{ $t("components.organizationProfile.addressInfo.section_title") }}
+          {{ $t("component.organizationProfile.addressInfo.section_title") }}
         </p>
       </v-col>
       <v-col cols="8" class="pb-0">
