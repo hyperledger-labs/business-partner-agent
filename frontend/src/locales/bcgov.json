@@ -39,7 +39,7 @@
       "visibility": {
         "title": "Visibility",
         "__TODO": "This is not correct, it's public profile",
-        "subtitle": "Visible to your organization's secure connections"
+        "subtitle": "Visible to other BPA's before they request a connection"
       }
     },
     "proofTemplates":{
