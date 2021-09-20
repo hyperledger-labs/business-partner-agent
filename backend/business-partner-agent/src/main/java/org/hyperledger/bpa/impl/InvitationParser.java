@@ -50,6 +50,9 @@ public class InvitationParser {
 
     OkHttpClient httpClient = new OkHttpClient.Builder().followRedirects(false).build();
 
+    static List<String> CONNECTION_INVITATION_TYPES = List.of("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/invitation","https://didcomm.org/connections/1.0/invitation");
+    static List<String> OOB_INVITATION_TYPES = List.of("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/out-of-band/1.0/invitation","https://didcomm.org/out-of-band/1.0/invitation");
+
     @Inject
     @Setter(AccessLevel.PACKAGE)
     ObjectMapper mapper;
@@ -121,7 +124,7 @@ public class InvitationParser {
                     invitation.setInvitation(o);
                     invitation.setParsed(true);
 
-                    if ("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/invitation".equals(o.get("@type"))) {
+                    if (CONNECTION_INVITATION_TYPES.contains(o.get("@type"))) {
                         // Invitation
                         try {
                             Gson gson = GsonConfig.defaultConfig();
@@ -133,8 +136,7 @@ public class InvitationParser {
                             log.error(msg);
                         }
 
-                    } else if ("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/out-of-band/1.0/invitation"
-                            .equals(o.get("@type"))) {
+                    } else if (OOB_INVITATION_TYPES.contains(o.get("@type"))) {
                         invitation.setOob(true);
 
                         Gson gson = GsonConfig.defaultConfig();
