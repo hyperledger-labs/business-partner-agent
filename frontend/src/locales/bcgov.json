@@ -92,6 +92,10 @@
           "title": "Credentials Your Organization Issued"
         }
       }
+    },
+    "settings":{
+      "walletDID": "Your Organization's Decentalized Identifier (DID)",
+      
     }
   },
   "component": {

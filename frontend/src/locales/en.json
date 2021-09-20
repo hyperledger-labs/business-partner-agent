@@ -138,6 +138,9 @@
           "title": "Issued Credentials"
         }
       }
+    },
+    "settings":{
+      "walletDID": "Wallet DID"
     }
   },
   "component": {
