@@ -47,10 +47,10 @@
         <v-list-item>
           <v-list-item-content>
             <v-list-item-title>{{
-              $t("views.wallet.visibility.title")
+              $t("view.wallet.visibility.title")
             }}</v-list-item-title>
             <v-list-item-subtitle>{{
-              $t("views.wallet.visibility.subtitle")
+              $t("view.wallet.visibility.subtitle")
             }}</v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
