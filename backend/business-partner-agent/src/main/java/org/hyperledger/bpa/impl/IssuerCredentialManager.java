@@ -368,13 +368,14 @@ public class IssuerCredentialManager {
 
     // Credential Management - Called By Event Handler
 
-    public void handleV1CredentialProposal(@NonNull V1CredentialExchange ex) {
+    public void handleCredentialProposal(@NonNull V1CredentialExchange ex, ExchangeVersion exchangeVersion) {
         partnerRepo.findByConnectionId(ex.getConnectionId()).ifPresent(partner -> {
             BPACredentialExchange.BPACredentialExchangeBuilder b = BPACredentialExchange
                     .builder()
                     .partner(partner)
                     .role(CredentialExchangeRole.ISSUER)
                     .state(ex.getState())
+                    .exchangeVersion(exchangeVersion)
                     .pushStateChange(ex.getState(), Instant.now())
                     .credentialExchangeId(ex.getCredentialExchangeId())
                     .threadId(ex.getThreadId())
@@ -389,31 +390,6 @@ public class IssuerCredentialManager {
                         + ex.getCredentialProposalDict().getSchemaId());
                 credExRepo.save(b.build());
             });
-        });
-    }
-
-    public void handleV2CredentialProposal(@NonNull V20CredExRecord ex) {
-        partnerRepo.findByConnectionId(ex.getConnectionId()).ifPresent(partner -> {
-            BPACredentialExchange.BPACredentialExchangeBuilder b = BPACredentialExchange
-                    .builder()
-                    .partner(partner)
-                    .role(CredentialExchangeRole.ISSUER)
-                    .state(ex.getState())
-                    .pushStateChange(ex.getState(), Instant.now())
-                    .credentialExchangeId(ex.getCredExId())
-                    .threadId(ex.getThreadId())
-                    .credentialProposal(
-                            V1CredentialExchange.CredentialProposalDict.CredentialProposal
-                                    .builder()
-                                    .attributes(ex.getCredProposal().getCredentialPreview().getAttributes())
-                                    .build());
-            ex.getByFormat().getSchemaIdFromProposal().ifPresent(schemaId -> credDefRepo.findBySchemaId(schemaId).ifPresentOrElse(dbCredDef -> {
-                b.schema(dbCredDef.getSchema()).credDef(dbCredDef);
-                credExRepo.save(b.build());
-            }, () -> {
-                b.errorMsg("Issuer has no operable credential  definition for proposal spec: " + schemaId);
-                credExRepo.save(b.build());
-            }));
         });
     }
 

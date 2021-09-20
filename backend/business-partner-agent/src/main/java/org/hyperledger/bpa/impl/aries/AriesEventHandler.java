@@ -28,6 +28,7 @@ import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.impl.ChatMessageManager;
 import org.hyperledger.bpa.impl.IssuerCredentialManager;
 
@@ -108,7 +109,7 @@ public class AriesEventHandler extends EventHandler {
         } else if (v1CredEx.isIssuer()) {
             synchronized (issuerMgr) {
                 if (v1CredEx.isProposalReceived()) {
-                    issuerMgr.handleV1CredentialProposal(v1CredEx);
+                    issuerMgr.handleCredentialProposal(v1CredEx, ExchangeVersion.V1);
                 } else {
                     issuerMgr.handleV1CredentialExchange(v1CredEx);
                 }
@@ -122,7 +123,8 @@ public class AriesEventHandler extends EventHandler {
         if (v20Credential.isIssuer()) {
             synchronized (issuerMgr) {
                 if (v20Credential.isProposalReceived()) {
-                    issuerMgr.handleV2CredentialProposal(v20Credential);
+                    issuerMgr.handleCredentialProposal(v20Credential.toV1CredentialExchangeFromProposal(),
+                            ExchangeVersion.V2);
                 } else {
                     issuerMgr.handleV2CredentialExchange(v20Credential);
                 }

@@ -26,6 +26,7 @@ import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 
 import java.util.Map;
@@ -71,6 +72,8 @@ public class CredEx {
         if (schemaAPI != null && credDef != null) {
             displayText = String.format("%s (%s) - %s", schemaAPI.getLabel(), schemaAPI.getVersion(),
                     credDef.getTag());
+        } else if (StringUtils.isNotEmpty(db.getErrorMsg())) {
+            displayText = db.getErrorMsg();
         }
         Map<String, String> credentialAttrs;
         if (CredentialExchangeState.PROPOSAL_RECEIVED.equals(db.getState())) {
@@ -83,13 +86,13 @@ public class CredEx {
                 .createdAt(db.getCreatedAt().toEpochMilli())
                 .updatedAt(db.getUpdatedAt().toEpochMilli())
                 .partner(partner)
-                .schemaId(db.getSchema().getSchemaId())
-                .credentialDefinitionId(db.getCredDef().getCredentialDefinitionId())
+                .schemaId(db.getSchema() != null ? db.getSchema().getSchemaId() : null)
+                .credentialDefinitionId(db.getCredDef() != null ? db.getCredDef().getCredentialDefinitionId() : null)
                 .proposal(db.proposalAttributesToMap())
                 .credential(Credential
                         .builder()
-                        .schemaId(db.getSchema().getSchemaId())
-                        .credentialDefinitionId(db.getCredDef().getCredentialDefinitionId())
+                        .schemaId(db.getSchema() != null ? db.getSchema().getSchemaId() : null)
+                        .credentialDefinitionId(db.getCredDef() != null ? db.getCredDef().getCredentialDefinitionId() : null)
                         .attrs(credentialAttrs)
                         .build())
                 .role(db.getRole())
