@@ -35,22 +35,22 @@
             >{{ $t("component.issueCredential.expertLoad.title") }}
             <v-btn
               icon
-              @click="showExpertLoad = !showExpertLoad"
+              @click="expertLoad.show = !expertLoad.show"
               style="margin-left: auto"
             >
-              <v-icon v-if="showExpertLoad">$vuetify.icons.up</v-icon>
+              <v-icon v-if="expertLoad.show">$vuetify.icons.up</v-icon>
               <v-icon v-else>$vuetify.icons.down</v-icon>
             </v-btn>
           </v-card-title>
           <v-expand-transition>
-            <div v-show="showExpertLoad">
+            <div v-show="expertLoad.show">
               <v-card-text>
                 <v-row>
                   <v-textarea
                     rows="5"
                     outlined
                     dense
-                    v-model="expertLoadData"
+                    v-model="expertLoad.data"
                     :placeholder="
                       $t('component.issueCredential.expertLoad.dataPlaceholder')
                     "
@@ -58,19 +58,29 @@
                 </v-row>
                 <v-row>
                   <v-file-input
-                    v-model="expertLoadFile"
+                    v-model="expertLoad.file"
                     :label="
                       $t('component.issueCredential.expertLoad.filePlaceholder')
                     "
                     outlined
                     dense
                     @change="uploadExpertLoadFile"
-                    accept="text/plain,application/json"
+                    :accept="expertLoad.fileAccept"
                     prepend-icon="$vuetify.icons.attachment"
                   ></v-file-input>
                 </v-row>
               </v-card-text>
               <v-card-actions>
+                <v-layout align-start justify-start>
+                  <v-radio-group
+                    v-model="expertLoad.type"
+                    row
+                    @change="expertLoadTypeChanged"
+                  >
+                    <v-radio label="JSON" value="json"></v-radio>
+                    <v-radio label="CSV" value="csv"></v-radio>
+                  </v-radio-group>
+                </v-layout>
                 <v-layout align-end justify-end>
                   <v-bpa-button
                     color="secondary"
@@ -156,6 +166,8 @@ import Vue from "vue";
 import { EventBus } from "@/main";
 import { issuerService } from "@/services";
 import VBpaButton from "@/components/BpaButton";
+import * as textUtils from "@/utils/textUtils";
+import * as CSV from "csv-string";
 
 export default {
   name: "IssueCredential",
@@ -178,9 +190,13 @@ export default {
       credentialFields: {},
       submitDisabled: true,
       useV2Credential: null,
-      showExpertLoad: false,
-      expertLoadData: "",
-      expertLoadFile: null,
+      expertLoad: {
+        show: false,
+        data: "",
+        file: null,
+        type: "json",
+        fileAccept: "text/plain,application/json",
+      },
     };
   },
   computed: {
@@ -203,7 +219,7 @@ export default {
       },
     },
     expertLoadEnabled() {
-      return this.expertLoadData?.trim().length > 0;
+      return this.expertLoad.data?.trim().length > 0;
     },
   },
   watch: {
@@ -234,6 +250,8 @@ export default {
           );
           this.credDefSelected();
         }
+        this.clearExpertLoad();
+        this.expertLoad.show = false;
       }
     },
   },
@@ -262,10 +280,16 @@ export default {
       if (this.useV2Credential) {
         exVersion = "V2";
       }
+      // create an empty document, all empty strings...
+      let document = {};
+      this.credDef.fields.forEach((x) => (document[x.type] = ""));
+      //fill in whatever populated fields we have...
+      Object.assign(document, this.credentialFields);
+
       const data = {
         credDefId: this.credDef.id,
         partnerId: this.partner.id,
-        document: this.credentialFields,
+        document: document,
         exchangeVersion: exVersion,
       };
       try {
@@ -323,14 +347,21 @@ export default {
       }
       this.submitDisabled = !enabled;
     },
+    expertLoadTypeChanged(val) {
+      if (val === "json") {
+        this.expertLoad.fileAccept = "text/plain,application/json";
+      } else {
+        this.expertLoad.fileAccept = "text/plain,text/csv";
+      }
+    },
     uploadExpertLoadFile(v) {
-      this.expertLoadFile = v;
+      this.expertLoad.file = v;
       if (v) {
         try {
           let reader = new FileReader();
           reader.readAsText(v, "UTF-8");
           reader.onload = (evt) => {
-            this.expertLoadData = evt.target.result;
+            this.expertLoad.data = evt.target.result;
           };
           reader.onerror = (evt) => {
             EventBus.$emit(
@@ -347,41 +378,98 @@ export default {
       }
     },
     clearExpertLoad() {
-      this.expertLoadData = "";
-      this.expertLoadFile = null;
+      this.expertLoad = {
+        show: true,
+        data: "",
+        file: null,
+        type: "json",
+        fileAccept: "text/plain,application/json",
+      };
     },
     parseExpertLoad() {
-      if (this.expertLoadData) {
-        // ok, turn this text into json object...
-        let jsonObject = undefined;
-        try {
-          jsonObject = JSON.parse(this.expertLoadData);
-        } catch (e) {
-          EventBus.$emit("error", `Could not convert to JSON.`);
+      if (this.expertLoad.data) {
+        let obj = undefined;
+        let formatErrMsg = this.$t(
+          "component.issueCredential.expertLoad.errorMessages.format.json"
+        );
+        if (this.expertLoad.type === "json") {
+          obj = this.jsonToObject(this.expertLoad.data);
+        } else {
+          formatErrMsg = this.$t(
+            "component.issueCredential.expertLoad.errorMessages.format.csv"
+          );
+          obj = this.csvToObject(this.expertLoad.data);
         }
 
-        if (jsonObject) {
+        if (obj) {
+          let count = 0;
           // see if we can populate the credential fields...
           this.credDef.fields.forEach((x) => {
             if (
-              jsonObject[x.type] &&
+              obj[x.type] &&
               !(
-                Object.prototype.toString.call(jsonObject[x.type]) ===
+                Object.prototype.toString.call(obj[x.type]) ===
                   "[object Object]" ||
-                Object.prototype.toString.call(jsonObject[x.type]) ===
+                Object.prototype.toString.call(obj[x.type]) ===
                   "[object Function]"
               )
             ) {
-              Vue.set(
-                this.credentialFields,
-                x.type,
-                jsonObject[x.type].toString()
-              );
+              count = count + 1;
+              Vue.set(this.credentialFields, x.type, obj[x.type].toString());
             }
           });
-          this.enableSubmit();
+          if (count) {
+            this.enableSubmit();
+          } else {
+            EventBus.$emit(
+              "error",
+              this.$t(
+                "component.issueCredential.expertLoad.errorMessages.attributes"
+              )
+            );
+          }
+        } else {
+          let errMsg = this.$t(
+            "component.issueCredential.expertLoad.errorMessages.parse"
+          );
+          EventBus.$emit("error", `${errMsg} ${formatErrMsg}`);
         }
       }
+    },
+    jsonToObject(data) {
+      let obj = undefined;
+      if (data && Object.prototype.toString.call(data) === "[object String]") {
+        try {
+          obj = JSON.parse(data);
+        } catch (e) {
+          console.log("Error converting JSON string to Object");
+        }
+      }
+      return obj;
+    },
+    csvToObject(data) {
+      let obj = undefined;
+      if (data && Object.prototype.toString.call(data) === "[object String]") {
+        try {
+          const arr = CSV.parse(data);
+          if (arr?.length > 1) {
+            const names = arr[0];
+            const values = arr[1]; // only grab first row for now...
+            const namesOk = names.every((value) =>
+              textUtils.isValidSchemaAttributeName(value)
+            );
+            if (namesOk) {
+              obj = {};
+              names.forEach((a, i) => {
+                obj[a] = values[i];
+              });
+            }
+          }
+        } catch (e) {
+          console.log("Error converting CSV string to Object");
+        }
+      }
+      return obj;
     },
   },
 };
