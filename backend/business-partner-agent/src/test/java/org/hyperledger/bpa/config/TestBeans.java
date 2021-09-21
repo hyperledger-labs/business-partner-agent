@@ -35,6 +35,7 @@ public class TestBeans {
      * @return {@link AriesClient}
      */
     @Singleton
+    @SuppressWarnings("unused")
     AriesClient getAriesClient() {
         return Mockito.mock(AriesClient.class);
     }

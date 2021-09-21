@@ -7,7 +7,7 @@ COPY frontend .
 RUN npm install && npm run license && npm run build
 
 # Micronaut build
-FROM maven:3-amazoncorretto-16 as MAVEN
+FROM maven:3-amazoncorretto-17 as MAVEN
 
 WORKDIR /home/maven
 
@@ -25,7 +25,7 @@ RUN mvn dependency:go-offline || true
 RUN mvn clean package -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
 
 # Runtime Container
-FROM amazoncorretto:16-alpine
+FROM amazoncorretto:17-alpine
 COPY --from=MAVEN /home/maven/business-partner-agent/target/business-partner-agent*SNAPSHOT.jar business-partner-agent.jar
 
 EXPOSE 8080

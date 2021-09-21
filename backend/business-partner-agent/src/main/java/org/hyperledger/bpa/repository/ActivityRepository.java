@@ -56,8 +56,6 @@ public interface ActivityRepository extends CrudRepository<Activity, UUID> {
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     List<Activity> findByTypeAndCompletedTrueOrderByUpdatedAtDesc(@NonNull ActivityType type);
 
-    void deleteByPartnerId(@NonNull UUID partnerId);
-
     Long countByCompletedFalse();
 
     Long countByCompletedFalseAndCreatedAtAfter(Instant createdAt);

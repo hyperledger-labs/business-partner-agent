@@ -71,25 +71,26 @@ public class PartnerAPITest {
         Assertions.assertEquals("did:sov:123", p.getName());
     }
 
-    private final String credentialData = "{\n" +
-            "    \"id\": \"did:sov:iil:7D2jFxSPJP4zTAP9WAcJWo\",\n" +
-            "    \"type\": \"Legal Entity\",\n" +
-            "    \"altName\": \"\",\n" +
-            "    \"legalName\": \"Customer AG\",\n" +
-            "    \"identifier\": [\n" +
-            "        {\n" +
-            "            \"id\": \"\",\n" +
-            "            \"type\": \"\"\n" +
-            "        }\n" +
-            "    ],\n" +
-            "    \"registeredSite\": {\n" +
-            "        \"address\": {\n" +
-            "            \"city\": \"My City\",\n" +
-            "            \"region\": \"\",\n" +
-            "            \"country\": \"My Country\",\n" +
-            "            \"zipCode\": \"12345\",\n" +
-            "            \"streetAddress\": \"My New Street 456\"\n" +
-            "        }\n" +
-            "    }\n" +
-            "}";
+    private final String credentialData = """
+            {
+                "id": "did:sov:iil:7D2jFxSPJP4zTAP9WAcJWo",
+                "type": "Legal Entity",
+                "altName": "",
+                "legalName": "Customer AG",
+                "identifier": [
+                    {
+                        "id": "",
+                        "type": ""
+                    }
+                ],
+                "registeredSite": {
+                    "address": {
+                        "city": "My City",
+                        "region": "",
+                        "country": "My Country",
+                        "zipCode": "12345",
+                        "streetAddress": "My New Street 456"
+                    }
+                }
+            }""";
 }

@@ -2,10 +2,10 @@
 
 ## Java
 
-Install JDK >= 16 in any openjdk compliant version e.g.
+Install JDK >= 17 in any openjdk compliant version e.g.
 
-https://adoptopenjdk.net/?variant=openjdk16  
-https://docs.aws.amazon.com/corretto/latest/corretto-16-ug/downloads-list.html
+https://adoptopenjdk.net/?variant=openjdk17
+https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html
 
 ## Maven
 

@@ -28,7 +28,6 @@ import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
-import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.TAAInfo.TAARecord;
 import org.hyperledger.bpa.api.TagAPI;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
@@ -66,9 +65,6 @@ public class AdminController {
 
     @Inject
     RuntimeConfig config;
-
-    @Inject
-    AriesClient ac;
 
     /**
      * List configured schemas
