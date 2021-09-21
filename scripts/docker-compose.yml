@@ -44,7 +44,6 @@ services:
         "-c",
         "sleep 15;
         aca-py start \
-        --auto-provision
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY_HTTP_PORT} \
         --webhook-url ${BPA_WEBHOOK_URL}#${BPA_WEBHOOK_KEY} \
@@ -116,7 +115,7 @@ services:
     image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.1
     ports:
       - ${ACAPY2_ADMIN_PORT}:${ACAPY2_ADMIN_PORT}
-      - ${ACAPY2_HTTP_PORT}:${ACAPY2_HTTP_PORT}       
+      - ${ACAPY2_HTTP_PORT}:${ACAPY2_HTTP_PORT}
     depends_on:
       - bpa-wallet-db2
     entrypoint: /bin/bash
@@ -124,7 +123,6 @@ services:
         "-c",
         "sleep 15;
         aca-py start \
-        --auto-provision
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY2_HTTP_PORT} \
         --webhook-url ${BPA2_WEBHOOK_URL}#${BPA_WEBHOOK_KEY} \
@@ -140,7 +138,7 @@ services:
         --label '${AGENT2_NAME}' \
         ${ACAPY_ADMIN_CONFIG} \
         ${ACAPY_READ_ONLY_MODE} \
-        ${ACAPY_TAILS_BASE_URL} \       
+        ${ACAPY_TAILS_BASE_URL} \
         ${ACAPY_TAILS_UPLOAD_URL} \
         "
     ]
