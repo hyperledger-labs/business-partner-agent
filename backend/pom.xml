@@ -53,7 +53,7 @@
         <skip.docker.build>true</skip.docker.build>
         <!-- Dependency Versions -->
         <log4j2.version>2.14.1</log4j2.version>
-        <lombok.version>1.18.20</lombok.version>
+        <lombok.version>edge-SNAPSHOT</lombok.version>
         <micronaut.version>3.0.0</micronaut.version>
         <micronaut.data.version>3.0.0</micronaut.data.version>
         <micronaut.openapi.version>3.0.1</micronaut.openapi.version>
@@ -71,6 +71,13 @@
         <maven.spotbugs.plugin.version>4.3.0</maven.spotbugs.plugin.version>
         <maven.surefire.plugin.version>3.0.0-M5</maven.surefire.plugin.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>projectlombok.org</id>
+            <url>https://projectlombok.org/edge-releases</url>
+        </repository>
+    </repositories>
 
     <pluginRepositories>
         <pluginRepository>
