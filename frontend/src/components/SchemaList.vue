@@ -14,9 +14,6 @@
       :headers="headers"
       :items="schemas"
       single-select
-      :sort-by="['canIssue', 'isMine', 'label']"
-      :sort-desc="[true, true, false]"
-      multi-sort
       @click:row="openItem"
     >
       <template v-slot:[`item.trustedIssuer`]="{ item }">
@@ -111,6 +108,7 @@ export default {
       this.dialog = false;
       if (this.dirty) {
         store.dispatch("loadSchemas");
+        store.dispatch("loadCredDefSelectList");
         this.$emit("changed");
       }
       this.dirty = false;

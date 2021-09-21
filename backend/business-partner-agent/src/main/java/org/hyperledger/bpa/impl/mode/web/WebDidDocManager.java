@@ -19,6 +19,8 @@ package org.hyperledger.bpa.impl.mode.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.acy_py.generated.model.DIDEndpointWithType;
 import org.hyperledger.aries.api.resolver.DIDDocument;
@@ -30,8 +32,6 @@ import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.DidDocWeb;
 import org.hyperledger.bpa.repository.DidDocWebRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -41,6 +41,10 @@ import java.util.Optional;
 @Singleton
 @RequiresWeb
 public class WebDidDocManager implements DidDocManager {
+
+    private static final String TYPE_PROFILE = DIDEndpointWithType.EndpointTypeEnum.PROFILE.getValue()
+            .toLowerCase(Locale.US);
+    private static final String TYPE_DID_COMM = DIDDocument.ENDPOINT_TYPE_DID_COMM;
 
     @Value("${bpa.acapy.endpoint}")
     String acapyEndpoint;
@@ -65,33 +69,32 @@ public class WebDidDocManager implements DidDocManager {
         String myDid = id.getMyDid();
         String myKeyId = id.getMyKeyId(myDid);
 
-        List<DIDDocument.VerificationMethod> verificationMethods = List.of(DIDDocument.VerificationMethod.builder()
-                .id(myKeyId)
-                .type(ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE)
-                .publicKeyBase58(verkey)
-                .build());
-
-        String profile = DIDEndpointWithType.EndpointTypeEnum.PROFILE.getValue().toLowerCase(Locale.US);
-        String endpoint = DIDEndpointWithType.EndpointTypeEnum.ENDPOINT.getValue().toLowerCase(Locale.US);
-
         DIDDocument didDoc = DIDDocument.builder()
                 .id(myDid)
+                .verificationMethod(List.of(DIDDocument.VerificationMethod.builder()
+                        .id(myKeyId)
+                        .type(ApiConstants.DEFAULT_VERIFICATION_KEY_TYPE)
+                        .controller(myDid)
+                        .publicKeyBase58(verkey)
+                        .build()))
+                .authentication(List.of(myKeyId))
+                .assertionMethod(List.of(myKeyId))
                 .service(List.of(
                         DIDDocument.Service.builder()
-                                .serviceEndpoint(scheme + "://" + host + "/profile.jsonld")
-                                .id(myDid + "#" + profile)
-                                .type(profile)
+                                .id(myDid + "#" + TYPE_DID_COMM)
+                                .type(TYPE_DID_COMM)
+                                .serviceEndpoint(acapyEndpoint)
+                                .recipientKeys(List.of(myKeyId))
                                 .build(),
                         DIDDocument.Service.builder()
-                                .serviceEndpoint(acapyEndpoint)
-                                .id(myDid + "#" + endpoint)
-                                .type(endpoint)
+                                .id(myDid + "#" + TYPE_PROFILE)
+                                .type(TYPE_PROFILE)
+                                .serviceEndpoint(scheme + "://" + host + "/profile.jsonld")
                                 .build()))
-                .verificationMethod(verificationMethods)
                 .build();
 
         try {
-            Map<String, Object> didDocDb = mapper.convertValue(didDoc, Converter.MAP_TYPEREF);
+            Map<String, Object> didDocDb = mapper.convertValue(didDoc, Converter.STRING_OBJECT_MAP);
             didRepo.findDidDocSingle().ifPresentOrElse(
                     dd -> didRepo.updateDidDoc(dd.getId(), didDocDb),
                     () -> didRepo.save(DidDocWeb.builder().didDoc(didDocDb).build()));

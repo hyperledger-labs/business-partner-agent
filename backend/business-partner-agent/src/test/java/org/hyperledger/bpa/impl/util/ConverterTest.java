@@ -19,6 +19,7 @@ package org.hyperledger.bpa.impl.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.BaseTest;
@@ -31,7 +32,6 @@ import org.hyperledger.bpa.model.Partner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
 import java.util.Map;
 import java.util.UUID;
 
@@ -71,7 +71,7 @@ class ConverterTest extends BaseTest {
         assertEquals(3, partner.getCredential().size());
 
         PartnerAPI.PartnerCredential c1 = partner.getCredential().get(0);
-        assertEquals(CredentialType.SCHEMA_BASED, c1.getType());
+        assertEquals(CredentialType.INDY, c1.getType());
         assertEquals("did:sov:Ni2hE7fEHJ25xUBc7ZESf6", c1.getIssuer());
         assertFalse(c1.getIndyCredential());
         assertNotNull(c1.getTypeLabel());
@@ -82,7 +82,7 @@ class ConverterTest extends BaseTest {
         assertNotNull(c2.getTypeLabel());
 
         PartnerAPI.PartnerCredential c3 = partner.getCredential().get(2);
-        assertEquals(CredentialType.SCHEMA_BASED, c3.getType());
+        assertEquals(CredentialType.INDY, c3.getType());
         assertEquals("did:sov:M6Mbe3qx7vB4wpZF4sBRjt", c3.getIssuer());
         assertNotNull(c3.getTypeLabel());
         assertTrue(c3.getIndyCredential());
@@ -95,6 +95,7 @@ class ConverterTest extends BaseTest {
         final PartnerAPI partner = conv.toAPIObject(vp);
         final Partner model = conv.toModelObject("did:web:test.foo", partner);
         assertTrue(model.getDid().startsWith("did"));
+        assertNotNull(model.getVerifiablePresentation());
         assertEquals(vp, conv.fromMap(model.getVerifiablePresentation(), Converter.VP_TYPEREF));
     }
 
@@ -102,7 +103,7 @@ class ConverterTest extends BaseTest {
     void testConvertCredentialToModelObject() throws Exception {
         MyDocumentAPI c = utils.createDummyCred(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL, Boolean.TRUE);
         c.setCreatedDate(123L); // should not be used but set by database layer
-        c.setId(UUID.randomUUID()); // should not used but set by database layer
+        c.setId(UUID.randomUUID()); // should not be used but set by database layer
 
         MyDocument result = conv.toModelObject(c);
 
@@ -114,5 +115,4 @@ class ConverterTest extends BaseTest {
         assertNull(result.getCreatedAt());
         assertNotEquals(c.getId(), result.getId());
     }
-
 }

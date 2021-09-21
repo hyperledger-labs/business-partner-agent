@@ -18,8 +18,8 @@
 package org.hyperledger.bpa.impl.aries;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import lombok.NonNull;
-import org.hyperledger.aries.api.message.ProblemReport;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.config.GsonConfig;
@@ -31,7 +31,7 @@ import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
+import java.time.Instant;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,9 +55,9 @@ class AriesEventHandlerTest extends BaseTest {
         String reqSent = loader.load("files/self-request-proof/01-verifier-request-sent.json");
         String presRec = loader.load("files/self-request-proof/02-verifier-presentation-received.json");
         String verified = loader.load("files/self-request-proof/03-verifier-verified.json");
-        PresentationExchangeRecord exReqSent = ep.parsePresentProof(reqSent).get();
-        PresentationExchangeRecord exPresRec = ep.parsePresentProof(presRec).get();
-        PresentationExchangeRecord exVerified = ep.parsePresentProof(verified).get();
+        PresentationExchangeRecord exReqSent = ep.parsePresentProof(reqSent).orElseThrow();
+        PresentationExchangeRecord exPresRec = ep.parsePresentProof(presRec).orElseThrow();
+        PresentationExchangeRecord exVerified = ep.parsePresentProof(verified).orElseThrow();
 
         String presentationExchangeId = exVerified.getPresentationExchangeId();
         createDefaultPartner(exReqSent);
@@ -65,8 +65,8 @@ class AriesEventHandlerTest extends BaseTest {
         aeh.handleProof(exReqSent);
 
         Optional<PartnerProof> dbProof = proofRepo.findByPresentationExchangeId(presentationExchangeId);
-        assertTrue(dbProof.isPresent());
-        assertEquals(PresentationExchangeState.REQUEST_SENT, dbProof.get().getState());
+        // event is ignored
+        assertFalse(dbProof.isPresent());
 
         aeh.handleProof(exPresRec);
 
@@ -81,9 +81,6 @@ class AriesEventHandlerTest extends BaseTest {
         assertEquals(Boolean.TRUE, dbProof.get().getValid());
         assertNotNull(dbProof.get().getProof());
         assertEquals(PresentationExchangeState.VERIFIED, dbProof.get().getState());
-        assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0", dbProof.get().getSchemaId());
-        assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc",
-                dbProof.get().getCredentialDefinitionId());
     }
 
     @Test
@@ -92,19 +89,19 @@ class AriesEventHandlerTest extends BaseTest {
         String reqRec = loader.load("files/self-send-proof/02-prover-request-received.json");
         String presSent = loader.load("files/self-send-proof/03-prover-presentation-sent.json");
         String presAcked = loader.load("files/self-send-proof/04-prover-presentation-acked.json");
-        PresentationExchangeRecord exPropSent = ep.parsePresentProof(propSent).get();
-        PresentationExchangeRecord exReqRec = ep.parsePresentProof(reqRec).get();
-        PresentationExchangeRecord exPresSent = ep.parsePresentProof(presSent).get();
-        PresentationExchangeRecord exPresAcked = ep.parsePresentProof(presAcked).get();
+        PresentationExchangeRecord exPropSent = ep.parsePresentProof(propSent).orElseThrow();
+        PresentationExchangeRecord exReqRec = ep.parsePresentProof(reqRec).orElseThrow();
+        PresentationExchangeRecord exPresSent = ep.parsePresentProof(presSent).orElseThrow();
+        PresentationExchangeRecord exPresAcked = ep.parsePresentProof(presAcked).orElseThrow();
 
         String presentationExchangeId = exPresSent.getPresentationExchangeId();
         createDefaultPartner(exPropSent);
 
         aeh.handleProof(exPropSent);
 
+        // event is ignored
         Optional<PartnerProof> dbProof = proofRepo.findByPresentationExchangeId(presentationExchangeId);
-        assertTrue(dbProof.isPresent());
-        assertEquals(PresentationExchangeState.PROPOSAL_SENT, dbProof.get().getState());
+        assertFalse(dbProof.isPresent());
 
         aeh.handleProof(exReqRec);
 
@@ -125,9 +122,6 @@ class AriesEventHandlerTest extends BaseTest {
         assertEquals(Boolean.FALSE, dbProof.get().getValid());
         assertEquals(PresentationExchangeState.PRESENTATION_ACKED, dbProof.get().getState());
         assertNotNull(dbProof.get().getProof());
-        assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0", dbProof.get().getSchemaId());
-        assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account_no_revoc",
-                dbProof.get().getCredentialDefinitionId());
     }
 
     @Test
@@ -135,9 +129,9 @@ class AriesEventHandlerTest extends BaseTest {
         String reqReceived = loader.load("files/external-request-proof/01-prover-request-received.json");
         String presSent = loader.load("files/external-request-proof/02-prover-presentation-sent.json");
         String acked = loader.load("files/external-request-proof/03-prover-presentation-acked.json");
-        PresentationExchangeRecord exReqReceived = ep.parsePresentProof(reqReceived).get();
-        PresentationExchangeRecord exPresSent = ep.parsePresentProof(presSent).get();
-        PresentationExchangeRecord exPresAcked = ep.parsePresentProof(acked).get();
+        PresentationExchangeRecord exReqReceived = ep.parsePresentProof(reqReceived).orElseThrow();
+        PresentationExchangeRecord exPresSent = ep.parsePresentProof(presSent).orElseThrow();
+        PresentationExchangeRecord exPresAcked = ep.parsePresentProof(acked).orElseThrow();
 
         String presentationExchangeId = exReqReceived.getPresentationExchangeId();
         createDefaultPartner(exReqReceived);
@@ -161,26 +155,33 @@ class AriesEventHandlerTest extends BaseTest {
         assertEquals(Boolean.FALSE, dbProof.get().getValid());
         assertEquals(PresentationExchangeState.PRESENTATION_ACKED, dbProof.get().getState());
         assertNotNull(dbProof.get().getProof());
-        assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0", dbProof.get().getSchemaId());
-        assertEquals("M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:Bank Account V2",
-                dbProof.get().getCredentialDefinitionId());
     }
 
     @Test
     void testHandleProblemReport() {
         String reqSent = loader.load("files/self-request-proof/01-verifier-request-sent.json");
         String probReport = loader.load("files/self-request-proof/04-problem-report.json");
-        PresentationExchangeRecord exReqSent = ep.parsePresentProof(reqSent).get();
-        ProblemReport exProblem = GsonConfig.defaultConfig().fromJson(probReport, ProblemReport.class);
+        PresentationExchangeRecord exReqSent = ep.parsePresentProof(reqSent).orElseThrow();
+        PresentationExchangeRecord exProblem = GsonConfig.defaultConfig().fromJson(probReport,
+                PresentationExchangeRecord.class);
 
-        createDefaultPartner(exReqSent);
+        Partner p = createDefaultPartner(exReqSent);
+        proofRepo.save(PartnerProof
+                .builder()
+                .partnerId(p.getId())
+                .presentationExchangeId(exReqSent.getPresentationExchangeId())
+                .threadId(exReqSent.getThreadId())
+                .proofRequest(exReqSent.getPresentationRequest())
+                .pushStateChange(PresentationExchangeState.REQUEST_SENT, Instant.now())
+                .build());
 
         aeh.handleProof(exReqSent);
-        aeh.handleProblemReport(exProblem);
+        aeh.handleProof(exProblem);
 
-        Optional<PartnerProof> dbProof = proofRepo.findByThreadId(exProblem.getThread().getThid());
+        Optional<PartnerProof> dbProof = proofRepo.findByThreadId(exProblem.getThreadId());
         assertTrue(dbProof.isPresent());
-        assertEquals(PresentationExchangeState.REQUEST_SENT, dbProof.get().getState());
+        assertEquals(PresentationExchangeState.DECLINED, dbProof.get().getState());
+        assertNotNull(dbProof.get().getProblemReport());
         assertTrue(dbProof.get().getProblemReport().startsWith("no matching"));
 
     }

@@ -22,8 +22,8 @@ import org.hyperledger.aries.api.resolver.DIDDocument;
 import java.util.Optional;
 
 /**
- * DID Document resolution is different in web/aries modes. Hence implementation
- * needs to be mode specific.
+ * DID Document resolution is different in web/aries modes. Hence,
+ * implementation needs to be mode specific.
  *
  */
 public interface DidDocManager {

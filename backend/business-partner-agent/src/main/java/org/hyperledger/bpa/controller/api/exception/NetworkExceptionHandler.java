@@ -23,18 +23,25 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.server.exceptions.ExceptionHandler;
+import io.micronaut.http.server.exceptions.response.ErrorContext;
+import io.micronaut.http.server.exceptions.response.ErrorResponseProcessor;
+import jakarta.inject.Singleton;
+import lombok.AllArgsConstructor;
 import org.hyperledger.bpa.api.exception.NetworkException;
-
-import javax.inject.Singleton;
 
 @Produces
 @Singleton
+@AllArgsConstructor
 @Requires(classes = { NetworkException.class, ExceptionHandler.class })
 public class NetworkExceptionHandler implements ExceptionHandler<NetworkException, HttpResponse<?>> {
 
+    private final ErrorResponseProcessor<?> errorResponseProcessor;
+
     @Override
-    public HttpResponse<?> handle(HttpRequest request, NetworkException exception) {
-        return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorMessage(exception.getMessage()));
+    public HttpResponse<?> handle(HttpRequest request, NetworkException e) {
+        return errorResponseProcessor.processResponse(ErrorContext.builder(request)
+                .cause(e)
+                .errorMessage(e.getMessage())
+                .build(), HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR));
     }
 }

@@ -2,7 +2,7 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 
@@ -21,11 +21,7 @@
       @click:row="open"
     >
       <template v-slot:[`item.name`]="{ item }">
-        <new-message-icon
-          v-show="item.new"
-          isPartner
-          :text="item.name"
-        ></new-message-icon>
+        <new-message-icon :type="'partner'" :id="item.id"></new-message-icon>
         <PartnerStateIndicator
           v-if="item.state"
           v-bind:state="item.state"
@@ -33,6 +29,9 @@
         <span v-bind:class="{ 'font-weight-medium': item.new }">
           {{ item.name }}
         </span>
+        <v-chip class="ml-2" v-for="tag in item.tag" :key="tag.id">{{
+          tag.name
+        }}</v-chip>
       </template>
 
       <template v-slot:[`item.address`]="{ item }">
@@ -58,7 +57,7 @@
 
 <script>
 import { EventBus } from "../main";
-import { getPartnerName, getPartnerState } from "../utils/partnerUtils";
+import { getPartnerState } from "../utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import NewMessageIcon from "@/components/NewMessageIcon";
 import { CredentialTypes, PartnerStates } from "../constants";
@@ -99,6 +98,10 @@ export default {
       type: String,
       default: "",
     },
+    refresh: {
+      type: Boolean,
+      default: false,
+    },
   },
   created() {
     this.fetch();
@@ -124,12 +127,18 @@ export default {
         return this.data;
       }
     },
-    newPartners() {
-      return this.$store.getters.newPartners;
+    partnerNotifications() {
+      return this.$store.getters.partnerNotifications;
     },
   },
   watch: {
-    newPartners: function (newValue) {
+    refresh: function (newValue) {
+      if (newValue) {
+        this.fetch();
+        this.$emit("refreshed");
+      }
+    },
+    partnerNotifications: function (newValue) {
       if (newValue) {
         // TODO: Don't fetch all partners but only add new partner
         this.fetch();
@@ -147,6 +156,7 @@ export default {
     },
 
     fetch() {
+      this.$store.dispatch("loadPartnerSelectList");
       // Query only for partners that can issue credentials of specified schema
       let queryParam = "";
       if (this.onlyIssuersForSchema.length > 0) {
@@ -159,8 +169,6 @@ export default {
           if ({}.hasOwnProperty.call(result, "data")) {
             this.isBusy = false;
 
-            result.data = this.markNew(result.data);
-
             if (this.onlyAries) {
               result.data = result.data.filter((item) => {
                 return item.ariesSupport === true;
@@ -168,34 +176,15 @@ export default {
             }
 
             this.data = result.data.map((partner) => {
-              partner.name = getPartnerName(partner);
               partner.address = this.getProfileAddress(partner);
               return partner;
             });
-
-            console.log(this.data);
           }
         })
         .catch((e) => {
           this.isBusy = false;
-
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
-    },
-    markNew(data) {
-      if (this.indicateNew) {
-        const newPartners = this.$store.getters.newPartners;
-        if (Object.keys(newPartners).length > 0) {
-          data = data.map((partner) => {
-            if ({}.hasOwnProperty.call(newPartners, partner.id)) {
-              partner.new = true;
-            }
-            return partner;
-          });
-        }
-      }
-      return data;
     },
     getProfileAddress(credential) {
       if (credential.credential && credential.credential.length > 0) {

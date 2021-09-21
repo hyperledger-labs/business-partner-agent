@@ -48,6 +48,9 @@ formatter-maven-cache.properties
 .idea/
 *.iml
 
+# VSCode
+.vscode/
+
 # Build
 **/target/**
 
@@ -74,6 +77,7 @@ frontend/licenses/**
 **/application-dev-*.yml
 node_modules
 package-lock.json
+**/*.local
 
 # --------------------------------------
 # K8s / helm
@@ -83,6 +87,7 @@ charts/**/charts/
 my-values*.yaml
 values-dev.yaml
 manifests*/
+scripts/**/*.txn
 scripts/local-network/von-network/
-
-scripts/local-network/resolver/*.txn
+scripts/scenarios/local-network/von-network/
+scripts/scenarios/local-network/resolver/*.txn

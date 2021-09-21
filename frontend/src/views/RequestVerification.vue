@@ -28,7 +28,9 @@
 
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-bpa-button color="secondary" @click="cancel()">Cancel</v-bpa-button>
+          <v-bpa-button color="secondary" @click="cancel()"
+            >Cancel</v-bpa-button
+          >
           <v-bpa-button
             :loading="this.isBusy"
             color="primary"
@@ -59,7 +61,9 @@
             >No</v-bpa-button
           >
 
-          <v-bpa-button color="primary" @click="submitRequest">Yes</v-bpa-button>
+          <v-bpa-button color="primary" @click="submitRequest"
+            >Yes</v-bpa-button
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -67,10 +71,11 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
+import { EventBus } from "@/main";
 import PartnerList from "@/components/PartnerList";
 import VBpaButton from "@/components/BpaButton";
-// import { CredentialTypes } from "../constants";
+import { getPartnerState } from "@/utils/partnerUtils";
+import { PartnerStates } from "@/constants";
 
 export default {
   name: "RequestVerification",
@@ -96,6 +101,7 @@ export default {
       isReady: false,
       attentionPartnerStateDialog: false,
       partner: {},
+      getPartnerState: getPartnerState,
     };
   },
   computed: {},
@@ -104,10 +110,9 @@ export default {
       if (this.$refs.partnerList.selected.length === 1) {
         if (this.$refs.partnerList.selected[0].id) {
           this.partner = this.$refs.partnerList.selected[0];
-
           if (
-            this.partner.state === "response" ||
-            this.partner.state === "active"
+            this.getPartnerState(this.partner) ===
+            PartnerStates.ACTIVE_OR_RESPONSE
           ) {
             this.submitRequest();
           } else {
@@ -138,8 +143,7 @@ export default {
         })
         .catch((e) => {
           this.isBusy = false;
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     cancel() {
@@ -152,9 +156,5 @@ export default {
 <style scoped>
 .bg-light {
   background-color: #fafafa;
-}
-
-.bg-light-2 {
-  background-color: #ececec;
 }
 </style>

@@ -17,16 +17,16 @@
  */
 package org.hyperledger.bpa.impl.mode.indy;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.hyperledger.acy_py.generated.model.DID;
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.client.CachingAriesClient;
-import org.hyperledger.bpa.client.URClient;
+import org.hyperledger.bpa.client.DidDocClient;
 import org.hyperledger.bpa.config.runtime.RequiresIndy;
 import org.hyperledger.bpa.impl.DidDocManager;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -38,7 +38,7 @@ public class IndyDidDocManager implements DidDocManager {
     CachingAriesClient ac;
 
     @Inject
-    URClient ur;
+    DidDocClient ur;
 
     /**
      * In this case the did document is always on the ledger, so this method will

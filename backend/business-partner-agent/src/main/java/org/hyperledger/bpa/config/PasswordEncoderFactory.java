@@ -18,9 +18,8 @@
 package org.hyperledger.bpa.config;
 
 import io.micronaut.context.annotation.Factory;
+import jakarta.inject.Singleton;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import javax.inject.Singleton;
 
 @Factory
 public class PasswordEncoderFactory {

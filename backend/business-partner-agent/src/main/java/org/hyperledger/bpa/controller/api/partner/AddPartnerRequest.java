@@ -18,9 +18,14 @@
 package org.hyperledger.bpa.controller.api.partner;
 
 import lombok.Data;
+import org.hyperledger.bpa.model.Tag;
+
+import java.util.List;
 
 @Data
 public class AddPartnerRequest {
     private String did;
     private String alias;
+    private List<Tag> tag;
+    private Boolean trustPing;
 }

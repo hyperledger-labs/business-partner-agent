@@ -94,7 +94,9 @@
       ></v-text-field>
       <v-card-actions>
         <v-layout justify-space-between>
-          <v-bpa-button color="secondary" :to="{ name: 'AddDocument' }">Cancel</v-bpa-button>
+          <v-bpa-button color="secondary" :to="{ name: 'AddDocument' }"
+            >Cancel</v-bpa-button
+          >
           <v-bpa-button
             color="primary"
             :to="{
@@ -114,7 +116,7 @@ import { EventBus } from "../main";
 import VBpaButton from "@/components/BpaButton";
 export default {
   name: "ContactPerson",
-  components: {VBpaButton},
+  components: { VBpaButton },
   props: {
     person: {
       type: Object,

@@ -17,6 +17,8 @@
  */
 package org.hyperledger.bpa.impl.activity;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.CredentialType;
@@ -27,14 +29,12 @@ import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.repository.MyDocumentRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Optional;
 import java.util.Set;
 
 /**
  * Does some validation on incoming {@link MyDocumentAPI} objects. Like this we
- * make sure that the system is in a defined state and we do not have to do
+ * make sure that the system is in a defined state, and we do not have to do
  * validation later.
  */
 @Singleton
@@ -65,7 +65,7 @@ public class DocumentValidator {
     }
 
     private void validateInternal(MyDocumentAPI document) {
-        if (CredentialType.SCHEMA_BASED.equals(document.getType())) {
+        if (CredentialType.INDY.equals(document.getType())) {
             if (StringUtils.isEmpty(document.getSchemaId())) {
                 throw new WrongApiUsageException("A document of type indy_credential must have a schema id set.");
             }

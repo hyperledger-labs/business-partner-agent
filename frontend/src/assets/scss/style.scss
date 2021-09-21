@@ -58,6 +58,73 @@ a {
   background-color: var(--v-bg-light2-base);
 }
 
+.chat-window {
+  width: 370px;
+  height: calc(100% - 120px);
+  max-height: 590px;
+  position: fixed;
+  right: 25px;
+  bottom: 100px;
+  box-sizing: border-box;
+  box-shadow: 0px 7px 40px 2px rgba(148, 149, 150, 0.1);
+  background: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 10px;
+  animation: fadeIn;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-in-out;
+
+  &.closed {
+    opacity: 0;
+    display: none;
+    bottom: 90px;
+  }
+}
+
+.dashboard-card {
+  .card-title {
+    font-size: 1.25rem !important;
+  }
+
+  // applied when using a non-svg icon (from font awesome)
+  .graphic {
+    height: 180px;
+    width: 180px;
+    font-size: 180px !important;
+    color: black !important;
+  }
+
+  // applied when using an svg icon (material design)
+  .v-icon__svg {
+    font-size: 180px;
+    height: 180px;
+    width: 180px;
+    color: black;
+  }
+
+  // font size need to account for 3 number characters (ex 100).
+  .count {
+    height: 120px;
+    line-height: 120px;
+    font-size: 110px;
+    color: black;
+  }
+
+  .new-count {
+    height: 30px;
+    line-height: 30px;
+    font-size: 25px;
+    color: #2ecc71;
+  }
+
+  a {
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
 
 // buttons in v-card
 .v-card__actions > .v-btn {
@@ -83,12 +150,6 @@ nav {
   }
 }
 
-a.dashboard-card {
-  &:hover {
-    text-decoration: none;
-  }
-}
-
 .v-data-table-header th.sortable {
   .v-data-table-header__icon {
     margin-left: 4px;
@@ -101,6 +162,7 @@ div {
       &.justify-end {
         > button {
           margin-right: 4px;
+          margin-bottom: 2px;
         }
       }
     }
@@ -151,5 +213,117 @@ div {
     margin-top: -4px;
     margin-bottom: 4px;
     margin-right: 4px;
+  }
+}
+
+// dashboard text and icon resizing...
+// lg 1264px > < 1904
+// md 960px > < 1264px
+// sm
+@media (min-width: 1360px) and (max-width: 1904px) {
+  .dashboard-card {
+    .card-title {
+      font-size: 1rem !important;
+    }
+    // applied when using a non-svg icon (from font awesome)
+    .graphic {
+      height: 120px;
+      width: 120px;
+      font-size: 120px !important;
+    }
+
+    // applied when using an svg icon (material design)
+    .v-icon__svg {
+      font-size: 120px;
+      height: 120px;
+      width: 120px;
+    }
+
+    .count {
+      height: 100px;
+      line-height: 100px;
+      font-size: 60px;
+    }
+
+    .new-count {
+      height: 20px;
+      line-height: 20px;
+      font-size: 20px;
+    }
+  }
+}
+
+@media (min-width: 1264px) and (max-width: 1360px) {
+  .dashboard-card {
+    .card-title {
+      font-size: 1rem !important;
+    }
+    // applied when using a non-svg icon (from font awesome)
+    .graphic {
+      height: 120px;
+      width: 120px;
+      font-size: 120px !important;
+    }
+
+    // applied when using an svg icon (material design)
+    .v-icon__svg {
+      font-size: 120px;
+      height: 120px;
+      width: 120px;
+    }
+
+    // font size need to account for 3 number characters (ex 100).
+    .count {
+      height: 100px;
+      line-height: 100px;
+      font-size: 50px;
+    }
+
+    .new-count {
+      height: 20px;
+      line-height: 20px;
+      font-size: 20px;
+    }
+  }
+}
+@media (max-width: 1264px) {
+  .dashboard-card {
+    .card-title {
+      font-size: 1rem !important;
+    }
+    // applied when using a non-svg icon (from font awesome)
+    .graphic {
+      height: 120px;
+      width: 120px;
+      font-size: 120px !important;
+    }
+
+    // applied when using an svg icon (material design)
+    .v-icon__svg {
+      font-size: 120px;
+      height: 120px;
+      width: 120px;
+    }
+
+    // font size need to account for 3 number characters (ex 100).
+    .count {
+      height: 100px;
+      line-height: 100px;
+      font-size: 40px;
+    }
+
+    .new-count {
+      height: 20px;
+      line-height: 20px;
+      font-size: 20px;
+    }
+  }
+}
+@media (min-width: 960px) and (max-width: 1264px) {
+  .dashboard-card {
+    // just need it a little smaller until we collapse our columns from 3 to 2.
+    .card-title {
+      font-size: .85rem !important;
+    }
   }
 }

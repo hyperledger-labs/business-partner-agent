@@ -11,9 +11,10 @@
     <v-row v-for="(entry, index) in items" v-bind:key="index">
       <v-col cols="4" class="py-0">
         <v-text-field
-          label="Tag"
+          label="Tag (required)"
           :disabled="!entry.isEdit"
           v-model="entry.tag"
+          :rules="[(v) => !!v || 'Tag is required']"
           outlined
           dense
         ></v-text-field>
@@ -23,7 +24,7 @@
           class="mt-1"
           label="Revocable"
           v-model="entry.supportRevocation"
-          :disabled="!entry.isEdit"
+          :disabled="!isTailsConfigured || !entry.isEdit"
           outlined
           dense
         >
@@ -33,6 +34,7 @@
         <v-btn
           v-if="!entry.id && entry.isEdit"
           :loading="isBusy"
+          :disabled="entry.tag && entry.tag.trim().length === 0"
           icon
           @click="saveItem(entry)"
         >
@@ -40,6 +42,13 @@
         </v-btn>
         <v-btn icon v-if="!entry.isEdit" @click="deleteItem(index)">
           <v-icon color="error">$vuetify.icons.delete</v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          v-if="!entry.id && entry.isEdit"
+          @click="cancelSaveItem(index)"
+        >
+          <v-icon color="error">$vuetify.icons.cancel</v-icon>
         </v-btn>
       </v-col>
     </v-row>
@@ -57,7 +66,7 @@ import issuerService from "@/services/issuerService";
 import VBpaButton from "@/components/BpaButton";
 
 export default {
-  components: {VBpaButton},
+  components: { VBpaButton },
   props: {
     schema: {
       type: Object,
@@ -69,20 +78,28 @@ export default {
         return [];
       },
     },
+    reset: {
+      type: Boolean,
+      default: () => false,
+    },
   },
   watch: {
-    schema(val) {
-      console.log("Credential definitions schema refresh");
-      console.log(val);
+    schema() {
       this.isEdit = false;
       this.editingItem = false;
     },
     credentialDefinitions(val) {
-      console.log("Credential definitions list refresh");
-      console.log(val);
       this.items = Array.from(val);
       this.isEdit = false;
       this.editingItem = false;
+    },
+    reset(newVal, oldVal) {
+      // use this to reset the form, remove any outstanding items that are not saved.
+      if (newVal !== oldVal) {
+        this.items = Array.from(this.credentialDefinitions);
+        this.isEdit = false;
+        this.editingItem = false;
+      }
     },
   },
   created() {},
@@ -97,7 +114,11 @@ export default {
       isBusy: false,
     };
   },
-  computed: {},
+  computed: {
+    isTailsConfigured() {
+      return this.$config.tailsServerConfigured;
+    },
+  },
   methods: {
     addItem() {
       this.isEdit = true;
@@ -120,8 +141,7 @@ export default {
             this.$emit("changed");
           })
           .catch((e) => {
-            console.error(e);
-            EventBus.$emit("error", e);
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
           });
       } else {
         this.items.splice(index, 1);
@@ -142,7 +162,6 @@ export default {
       issuerService
         .createCredDef(data)
         .then((result) => {
-          console.log(result);
           this.isBusy = false;
 
           if (result.status === 200) {
@@ -150,13 +169,19 @@ export default {
             item.isEdit = false;
             EventBus.$emit("success", "New credential definition added");
             this.$emit("changed");
+            this.$store.dispatch("loadCredDefSelectList");
           }
         })
         .catch((e) => {
           this.isBusy = false;
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
+    },
+
+    cancelSaveItem(index) {
+      this.isEdit = false;
+      this.editingItem = false;
+      this.items.splice(index, 1);
     },
   },
 };

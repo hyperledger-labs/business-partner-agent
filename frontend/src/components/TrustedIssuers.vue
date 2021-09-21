@@ -12,10 +12,11 @@
       <v-col cols="4" class="py-0">
         <v-text-field
           label="DID"
-          :disabled="entry.isReadOnly || !entry.isEdit"
+          :disabled="entry.isReadOnly || !isNew(entry)"
           v-model="entry.issuerDid"
           outlined
           dense
+          @change="onDidChanged"
         ></v-text-field>
       </v-col>
       <v-col class="py-0">
@@ -25,6 +26,7 @@
           v-model="entry.label"
           outlined
           dense
+          @change="onNameChanged"
         ></v-text-field>
       </v-col>
       <v-col cols="3" class="py-0">
@@ -64,7 +66,10 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-bpa-button :disabled="isEdit" color="secondary" @click="addTrustedIssuer"
+      <v-bpa-button
+        :disabled="isEdit"
+        color="secondary"
+        @click="addTrustedIssuer"
         >Add trusted issuer</v-bpa-button
       >
     </v-row>
@@ -75,7 +80,7 @@
 import { EventBus } from "../main";
 import VBpaButton from "@/components/BpaButton";
 export default {
-  components: {VBpaButton},
+  components: { VBpaButton },
   props: {
     schema: {
       type: Object,
@@ -86,6 +91,10 @@ export default {
       default: function () {
         return [];
       },
+    },
+    reset: {
+      type: Boolean,
+      default: () => false,
     },
   },
   watch: {
@@ -98,6 +107,14 @@ export default {
       this.isEdit = false;
       this.editingTrustedIssuer = null;
     },
+    reset(newVal, oldVal) {
+      // use this to reset the form, remove any outstanding items that are not saved.
+      if (newVal !== oldVal) {
+        this.items = Array.from(this.trustedIssuers);
+        this.isEdit = false;
+        this.editingTrustedIssuer = null;
+      }
+    },
   },
   created() {},
   mounted() {
@@ -107,12 +124,22 @@ export default {
     return {
       items: [],
       isEdit: false,
+      isDirty: false,
       editingTrustedIssuer: null,
       isBusy: false,
     };
   },
   computed: {},
   methods: {
+    isNew(entry) {
+      return !{}.hasOwnProperty.call(entry, "id");
+    },
+    onDidChanged() {
+      this.isDirty = true;
+    },
+    onNameChanged() {
+      this.isDirty = true;
+    },
     addTrustedIssuer() {
       this.isEdit = true;
       this.items.push({
@@ -149,8 +176,7 @@ export default {
             this.$emit("changed");
           })
           .catch((e) => {
-            console.error(e);
-            EventBus.$emit("error", e);
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
           });
       } else {
         this.items.splice(index, 1);
@@ -158,24 +184,30 @@ export default {
     },
 
     saveTrustedIssuer(trustedIssuer) {
-      if (trustedIssuer.id) {
-        this.updateTrustedIssuer(trustedIssuer);
-      } else if (this.id) {
-        this.createNewTrustedIssuer(trustedIssuer);
+      // update existing trusted issuer
+      if (this.isDirty) {
+        if (trustedIssuer.id) {
+          this.updateTrustedIssuer(trustedIssuer);
+        } else {
+          this.createNewTrustedIssuer(trustedIssuer);
+        }
+
+        this.$emit("changed");
       } else {
+        this.editingTrustedIssuer = null;
         this.isEdit = false;
         trustedIssuer.isEdit = false;
       }
-      this.editingTrustedIssuer = null;
     },
 
     createNewTrustedIssuer(trustedIssuer) {
       this.isBusy = true;
-
+      let data = Object.assign({}, trustedIssuer);
+      delete data.isEdit;
       this.$axios
         .post(
           `${this.$apiBaseUrl}/admin/schema/${this.schema.id}/trustedIssuer`,
-          trustedIssuer
+          data
         )
         .then((result) => {
           console.log(result);
@@ -184,40 +216,42 @@ export default {
           if (result.status === 200) {
             this.isEdit = false;
             trustedIssuer.isEdit = false;
+            this.editingTrustedIssuer = null;
             EventBus.$emit("success", "New trusted issuer added");
             this.$emit("changed");
           }
         })
         .catch((e) => {
           this.isBusy = false;
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
 
     updateTrustedIssuer(trustedIssuer) {
       this.isBusy = true;
+      let data = Object.assign({}, trustedIssuer);
+      delete data.isEdit;
 
       this.$axios
         .put(
           `${this.$apiBaseUrl}/admin/schema/${this.schema.id}/trustedIssuer/${trustedIssuer.id}`,
-          trustedIssuer
+          data
         )
         .then((result) => {
           console.log(result);
           this.isBusy = false;
           trustedIssuer.isEdit = false;
+          this.editingTrustedIssuer = null;
 
-          if (result.status === 201) {
+          if (result.status === 200) {
             EventBus.$emit("success", "Trusted issuer updated");
             this.$emit("changed");
           }
         })
         .catch((e) => {
           this.isBusy = false;
-          trustedIssuer.isEdit = false;
-          console.error(e);
-          EventBus.$emit("error", e);
+          trustedIssuer.isEdit = true;
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
   },

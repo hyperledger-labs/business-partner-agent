@@ -1,0 +1,33 @@
+name: Generate and Publish Milestone Document
+
+on:
+  workflow_dispatch:
+  schedule:
+    # run it every 3 hours to avoid rate limits
+    - cron:  '0 */3 * * *'
+
+jobs:
+  milestone:
+    name: Generate and Publish Milestone Document
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: 'gh-pages'
+          token: ${{ github.token }}
+      - name: Milestone Documentation Generator
+        uses: ory/milestone-action@v0
+        with:
+          GITHUB_TOKEN: ${{ github.token }}
+          onlyLabels: epic
+      - name: Commit Milestone Documentation
+        uses: EndBug/add-and-commit@v7
+        with:
+          message: 'autogen(docs): update milestone document.'
+          signoff: true
+          author_name: ci-build
+          author_email: 'no-reply@github.com'
+          branch: 'gh-pages'
+        env:
+          GITHUB_TOKEN: ${{ secrets.TCR_TOKEN }}

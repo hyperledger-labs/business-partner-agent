@@ -17,11 +17,10 @@
  */
 package org.hyperledger.bpa.controller.api.partner;
 
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
 
 @Data
 @NoArgsConstructor
@@ -38,6 +37,6 @@ public class PartnerCredentialType {
         return new PartnerCredentialType(
                 credDefId,
                 AriesStringUtil.getLastSegment(credDefId),
-                AriesStringUtil.credDefIdGetSquenceNo(credDefId));
+                AriesStringUtil.credDefIdGetSequenceNo(credDefId));
     }
 }

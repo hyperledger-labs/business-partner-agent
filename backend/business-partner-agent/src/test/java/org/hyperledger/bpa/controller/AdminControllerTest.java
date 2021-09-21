@@ -26,14 +26,15 @@ import io.micronaut.http.client.annotation.Client;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.http.uri.UriBuilder;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.DidVerkeyResponse;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
-import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
 import org.hyperledger.bpa.controller.api.admin.AddSchemaRequest;
+import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
 import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
 import org.hyperledger.bpa.controller.api.admin.UpdateTrustedIssuerRequest;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
@@ -41,7 +42,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
@@ -52,6 +52,8 @@ import java.util.UUID;
 @Slf4j
 @MicronautTest
 public class AdminControllerTest {
+
+    private final String schemaId = "NZhb9EqpN9a6gkHge9fTmv:2:a-schema-name:0.0.1";
 
     @Value("${bpa.did.prefix}")
     String didPrefix;
@@ -69,10 +71,9 @@ public class AdminControllerTest {
     @Test
     void testAddSchemaWithRestriction() throws Exception {
         mockGetSchemaAndVerkey();
-        String schemaId = "NZhb9EqpN9a6gkHge9fTmv:2:a-schema-name:0.0.1";
 
         // add schema
-        HttpResponse<SchemaAPI> addedSchema = addSchemaWithRestriction(schemaId);
+        HttpResponse<SchemaAPI> addedSchema = addSchemaWithRestriction();
         Assertions.assertEquals(HttpStatus.OK, addedSchema.getStatus());
         Assertions.assertTrue(addedSchema.getBody().isPresent());
 
@@ -86,19 +87,17 @@ public class AdminControllerTest {
         // add a restriction to the schema
         URI uri = UriBuilder.of("/{id}/trustedIssuer")
                 .expand(Map.of("id", schema.getId().toString()));
-        client.toBlocking()
-                .exchange(HttpRequest.POST(uri,
-                        AddTrustedIssuerRequest.builder()
-                                .issuerDid("issuer2")
-                                .label("Demo Bank")
-                                .build()),
-                        TrustedIssuer.class);
+        addRestriction(uri, "issuer2", "Demo Bank");
 
         // check if the restriction was added
         schema = getSchema(addedSchema.getBody().get().getId());
         Assertions.assertNotNull(schema.getTrustedIssuer());
         Assertions.assertEquals(2, schema.getTrustedIssuer().size());
         Assertions.assertEquals(didPrefix + "issuer2", schema.getTrustedIssuer().get(1).getIssuerDid());
+
+        // try adding the same restriction twice
+        Assertions.assertThrows(HttpClientResponseException.class,
+                () -> addRestriction(uri, "issuer2", null));
 
         // delete the first restriction
         URI delete = UriBuilder.of("/{id}/trustedIssuer/{trustedIssuerId}")
@@ -124,11 +123,28 @@ public class AdminControllerTest {
         schema = getSchema(addedSchema.getBody().get().getId());
         Assertions.assertEquals("Dummy Bank", schema.getTrustedIssuer().get(0).getLabel());
 
-        // delete schema
+        // delete schema should fail because it still has a restriction
         UUID deleteId = schema.getId();
+        Assertions.assertThrows(HttpClientResponseException.class,
+                () -> client.toBlocking().exchange(HttpRequest.DELETE("/" + deleteId)));
+
+        // delete the second restriction
+        delete = UriBuilder.of("/{id}/trustedIssuer/{trustedIssuerId}")
+                .expand(Map.of(
+                        "id", schema.getId().toString(),
+                        "trustedIssuerId", schema.getTrustedIssuer().get(0).getId().toString()));
+        client.toBlocking().exchange(HttpRequest.DELETE(delete.toString()));
+
+        // delete the schema
         client.toBlocking().exchange(HttpRequest.DELETE("/" + deleteId));
         // check if the schema was deleted
         Assertions.assertThrows(HttpClientResponseException.class, () -> getSchema(deleteId));
+    }
+
+    @Test
+    void testAddRestrictionToNonExistingSchema() {
+        URI uri = UriBuilder.of("/{id}/trustedIssuer").expand(Map.of("id", UUID.randomUUID().toString()));
+        Assertions.assertThrows(HttpClientResponseException.class, () -> addRestriction(uri, "something", null));
     }
 
     private SchemaAPI getSchema(@NonNull UUID id) {
@@ -136,7 +152,7 @@ public class AdminControllerTest {
                 .retrieve(HttpRequest.GET("/" + id), SchemaAPI.class);
     }
 
-    private HttpResponse<SchemaAPI> addSchemaWithRestriction(@NonNull String schemaId) {
+    private HttpResponse<SchemaAPI> addSchemaWithRestriction() {
         return client.toBlocking()
                 .exchange(HttpRequest.POST("",
                         AddSchemaRequest.builder()
@@ -152,10 +168,20 @@ public class AdminControllerTest {
                         SchemaAPI.class);
     }
 
+    private void addRestriction(URI uri, String issuerDid, String label) {
+        client.toBlocking()
+                .exchange(HttpRequest.POST(uri,
+                        AddTrustedIssuerRequest.builder()
+                                .issuerDid(issuerDid)
+                                .label(label)
+                                .build()),
+                        TrustedIssuer.class);
+    }
+
     private void mockGetSchemaAndVerkey() throws IOException {
         Mockito.when(ac.schemasGetById(Mockito.anyString())).thenReturn(Optional.of(SchemaSendResponse.Schema
                 .builder()
-                .id("schema1")
+                .id(schemaId)
                 .seqNo(1)
                 .attrNames(List.of("name"))
                 .name("dummy")

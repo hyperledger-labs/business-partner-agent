@@ -10,7 +10,7 @@
       "no": "No"
     },
     "footer": {
-      "imprintUrlText": {
+      "imprintUrl": {
         "text": "Corporate Information"
       },
       "privacyPolicyUrl": {
@@ -23,20 +23,40 @@
     "dashboard": "Dashboard",
     "profile": "Public Profile",
     "wallet": "Wallet",
-    "credentialManagement": "Credential Management",
+    "credentialManagement": "Issue Credentials",
     "partners": "Business Partners",
     "settings": "Settings",
+    "notifications": "Notifications",
     "about": "About",
-    "signout": "Sign out"
+    "signout": "Sign out",
+    "proofTemplates": "Proof Templates"
+  },
+  "dashboard": {
+    "credentialsSent": "Credentials Issued",
+    "credentialsReceived": "Credentials in Wallet",
+    "presentationRequestsSent": "Presentation Requests Sent",
+    "presentationRequestsReceived": "Presentation Requests Received",
+    "partners": "Business Partners",
+    "tasks": "Pending Tasks"
   },
   "button" : {
     "save": "Save",
     "submit": "Submit",
     "cancel": "Cancel",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "close": "Close"
   },
   "view": {
+    "notifications": {
+      "title": "Notifications",
+      "activities": {
+        "title": "Activity Log"
+      },
+      "tasks" : {
+        "title": "Tasks"
+      }
+    },
     "partner": {
       "title": "Partner",
       "refreshProfile": "Refresh profile from source",
@@ -46,24 +66,16 @@
       "acceptPartner": "Accept",
       "requestSent": "Connection request sent",
       "requestSentSubtitle": "Waiting for response...",
-      "receivedPresentations": {
-        "title": "Received Presentations",
-        "text": "The presentations you received from your partner",
-        "button": "Request Presentation"
+      "presentationExchanges": {
+        "title": "Presentation Exchanges",
+        "button": {
+          "send": "Send Presentation",
+          "request": "Request Presentation"
+        }
       },
-      "sentPresentations": {
-        "title": "Sent Presentations",
-        "text": "The presentations you sent to your partner",
-        "button": "Send Presentation"
-      },
-      "issuedCredentials": {
-        "title": "Issued Credentials",
-        "text": "The credentials you issued to your partner",
+      "credentialExchanges": {
+        "title": "Credential Exchanges",
         "button": "Issue Credential"
-      },
-      "presentationRequests": {
-        "title": "Presentation Requests",
-        "text": "The proofs requested from this partner"
       },
       "stateDialog": {
         "title": "Connection State {state}",
@@ -75,7 +87,118 @@
     "sendPresentation": {
       "title": "Send Presentation",
       "selectCredential": "Select a credential to send"
+    },
+    "presentationRequestDetails": {
+      "header": "Presentation Request Details"
+    },
+    "addPartner": {
+      "title": "Add new Business Partner",
+      "setName": "Set a name",
+      "setTags": "Set tags",
+      "trustPing": "Trust Ping",
+      "lookupPartnerBtnLabel": "Lookup Partner",
+      "addPartnerBtnLabel": "Add Partner"
+    },
+    "addPartnerbyURL": {
+      "title": "Invite new Business Partner",
+      "createInvitation": "Generate Invitation (QR Code)",
+      "invitationURL": "Invitation URL",
+      "useOOB": "Use Out of Band"
+    },
+    "issueCredentials": {
+      "title": "Issue Credentials",
+      "cards": {
+        "action" : {
+          "title": "Issue Credential",
+          "button": "Issue Credential",
+          "partnerLabel": "Select Partner",
+          "credDefLabel": "Select Credential Definition"
+        },
+        "table" : {
+          "title": "Issued Credentials"
+        }
+      }
+    },
+    "wallet": {
+      "title": "Wallet",
+      "credentials": {
+        "title": "Verifiable Credentials"
+      },
+      "documents": {
+        "title": "Documents"
+      }
     }
   },
-  "showRawData": "Show raw data"
+  "component": {
+    "issueCredential": {
+      "title": "Issue Credential",
+      "partnerLabel": "Partner",
+      "credDefLabel": "Credential Definition",
+      "successMessage": "Credential issued",
+      "attributesTitle": "Credential Content",
+      "options": {
+        "title": "Options",
+        "useV2": "Use V2 Protocol"
+      },
+      "expertLoad": {
+        "title": "Load Credential Data",
+        "dataPlaceholder": "Enter, paste, or upload Credential Content...",
+        "filePlaceholder": "Upload file",
+        "buttons": {
+          "load": "Load",
+          "clear": "Clear"
+        },
+        "errorMessages": {
+          "format": {
+            "json": "Ensure that data is valid JSON format.",
+            "csv": "Ensure that data is valid Comma Separated Value (CSV) format."
+          },
+          "attributes": "Could not find any matching Credential attributes.",
+          "parse": "Could not parse data."
+        }
+      }
+    },
+    "credExList": {
+      "dialog": {
+        "title": "Credential",
+        "partnerLabel": "Partner",
+        "credDefLabel": "Credential Definition",
+        "attributesTitle": "Credential Content"
+      }
+    }
+  },
+  "constants": {
+    "activityTypes": {
+      "connectionRequest": "Connection Request",
+      "credentialOffer": "Credential Offer",
+      "presentationExchange": "Presentation of Proof"
+    },
+    "activityStates": {
+      "connectionRequest": {
+        "accepted": "Connection Request accepted",
+        "received": "Connection Request received",
+        "sent": "Connection Request sent"
+      },
+      "presentationExchange": {
+        "accepted": "Proof Presentation accepted",
+        "declined": "A Presentation of Proof has been declined",
+        "received": "A Presentation of Proof has been requested",
+        "sent": "Request for Presentation of Proof sent"
+      }
+    },
+    "activityRoles": {
+      "connectionRequest": {
+        "sender": "Sender",
+        "recipient": "Recipient"
+      },
+      "presentationExchange": {
+        "prover": "Prover",
+        "verifier": "Verifier"
+      }
+   }
+  },
+  "showRawData": "Show raw data",
+  "error": {
+    "axios": "Request failed with status {statusText}"
+  }
 }

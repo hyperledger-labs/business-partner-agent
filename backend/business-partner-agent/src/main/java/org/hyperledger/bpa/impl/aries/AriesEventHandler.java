@@ -17,20 +17,22 @@
  */
 package org.hyperledger.bpa.impl.aries;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.acy_py.generated.model.V20CredExRecord;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
+import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
+import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.message.PingEvent;
-import org.hyperledger.aries.api.message.ProblemReport;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.webhook.EventHandler;
-import org.hyperledger.bpa.impl.IssuerManager;
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
+import org.hyperledger.bpa.impl.ChatMessageManager;
+import org.hyperledger.bpa.impl.IssuerCredentialManager;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Optional;
 
 @Slf4j
@@ -41,33 +43,43 @@ public class AriesEventHandler extends EventHandler {
 
     private final Optional<PingManager> pingMgmt;
 
-    private final CredentialManager credMgmt;
+    private final HolderCredentialManager holderMgr;
+
+    private final IssuerCredentialManager issuerMgr;
 
     private final ProofEventHandler proofMgmt;
 
-    private final IssuerManager issuerMgr;
+    private final ChatMessageManager chatMessageManager;
 
     @Inject
     public AriesEventHandler(
             ConnectionManager conMgmt,
             Optional<PingManager> pingMgmt,
-            CredentialManager credMgmt,
+            HolderCredentialManager holderMgr,
             ProofEventHandler proofMgmt,
-            IssuerManager issuerMgr) {
+            IssuerCredentialManager issuerMgr,
+            ChatMessageManager chatMessageManager) {
         this.conMgmt = conMgmt;
         this.pingMgmt = pingMgmt;
-        this.credMgmt = credMgmt;
-        this.proofMgmt = proofMgmt;
+        this.holderMgr = holderMgr;
         this.issuerMgr = issuerMgr;
+        this.proofMgmt = proofMgmt;
+        this.chatMessageManager = chatMessageManager;
     }
 
     @Override
     public void handleConnection(ConnectionRecord connection) {
         log.debug("Connection Event: {}", connection);
-        if (!connection.isIncomingConnection() || AriesStringUtil.isUUID(connection.getTheirLabel())) {
-            conMgmt.handleOutgoingConnectionEvent(connection);
-        } else {
-            conMgmt.handleIncomingConnectionEvent(connection);
+        synchronized (conMgmt) {
+            if (!connection.isIncomingConnection()) {
+                conMgmt.handleOutgoingConnectionEvent(connection);
+            } else {
+                if (connection.isNotConnectionInvitation()) {
+                    conMgmt.handleIncomingConnectionEvent(connection);
+                } else if (connection.isOOBInvitation()) {
+                    conMgmt.handleOOBInvitation(connection);
+                }
+            }
         }
     }
 
@@ -85,29 +97,57 @@ public class AriesEventHandler extends EventHandler {
     }
 
     @Override
-    public void handleCredential(V1CredentialExchange credential) {
-        log.debug("Issue Credential Event: {}", credential);
-        // holder events, because I could also be an issuer
-        if (CredentialExchangeRole.HOLDER.equals(credential.getRole())) {
-            synchronized (credMgmt) {
-                if (CredentialExchangeState.CREDENTIAL_ACKED.equals(credential.getState())) {
-                    credMgmt.handleCredentialAcked(credential);
-                } else {
-                    credMgmt.handleCredentialEvent(credential);
+    public void handleCredential(V1CredentialExchange v1CredEx) {
+        log.debug("Credential Event: {}", v1CredEx);
+        // holder events
+        if (CredentialExchangeRole.HOLDER.equals(v1CredEx.getRole())) {
+            synchronized (holderMgr) {
+                if (CredentialExchangeState.CREDENTIAL_ACKED.equals(v1CredEx.getState())) {
+                    holderMgr.handleV1CredentialExchangeAcked(v1CredEx);
                 }
             }
-        } else if (CredentialExchangeRole.ISSUER.equals(credential.getRole())) {
+            // issuer events
+        } else if (CredentialExchangeRole.ISSUER.equals(v1CredEx.getRole())) {
             synchronized (issuerMgr) {
-                issuerMgr.handleCredentialExchange(credential);
+                issuerMgr.handleV1CredentialExchange(v1CredEx);
             }
         }
     }
 
     @Override
-    public void handleProblemReport(ProblemReport report) {
-        // problem reports can happen on several levels, currently we assume that all
-        // reports are proof related
-        proofMgmt.handleProblemReport(report.getThread().getThid(), report.getDescription());
+    public void handleCredentialV2(V20CredExRecord v20Credential) {
+        log.debug("Credential V2 Event: {}", v20Credential);
+        if (V20CredExRecord.RoleEnum.ISSUER.equals(v20Credential.getRole())) {
+            synchronized (issuerMgr) {
+                issuerMgr.handleV2CredentialExchange(v20Credential);
+            }
+        } else if (V20CredExRecord.RoleEnum.HOLDER.equals(v20Credential.getRole())) {
+            synchronized (holderMgr) {
+                if (V20CredExRecord.StateEnum.CREDENTIAL_RECEIVED.equals(v20Credential.getState())) {
+                    holderMgr.handleV2CredentialExchangeReceived(v20Credential);
+                } else if (V20CredExRecord.StateEnum.DONE.equals(v20Credential.getState())) {
+                    holderMgr.handleV2CredentialExchangeDone(v20Credential);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void handleIssueCredentialV2Indy(V2IssueIndyCredentialEvent revocationInfo) {
+        log.debug("Issue Credential V2 Indy Event: {}", revocationInfo);
+        synchronized (issuerMgr) {
+            issuerMgr.handleIssueCredentialV2Indy(revocationInfo);
+        }
+        synchronized (holderMgr) {
+            holderMgr.handleIssueCredentialV2Indy(revocationInfo);
+        }
+    }
+
+    @Override
+    public void handleBasicMessage(BasicMessage message) {
+        // since basic message handling is so simple (only one way to handle it), let
+        // the manager handle it.
+        chatMessageManager.handleIncomingMessage(message);
     }
 
     @Override

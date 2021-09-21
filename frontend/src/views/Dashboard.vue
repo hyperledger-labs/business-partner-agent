@@ -7,22 +7,6 @@
 -->
 <template>
   <v-container text-center>
-    <v-card flat v v-if="!isLoading" class="mx-auto">
-      <v-row>
-        <v-col class="col-sm-10 offset-sm-1 col-md-8 offset-md-2">
-          <v-text-field
-            id="did"
-            v-model="status.did"
-            readonly
-            outlined
-            dense
-            label="DID"
-            :append-icon="'$vuetify.icons.copy'"
-            @click:append="copyDid"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-    </v-card>
     <div v-if="isWelcome && !isLoading">
       <!-- Image from undraw.co -->
       <v-img
@@ -50,48 +34,57 @@
     </div>
     <div v-if="!isWelcome && !isLoading">
       <v-row>
-        <v-col class="col-sm-5 offset-sm-1 col-md-4 offset-md-2">
-          <v-card class="mx-auto" :to="{ name: 'Wallet' }">
-            <v-img
-              class="align-end"
-              src="@/assets/undraw_certification_aif8.png"
-            ></v-img>
-            <v-card-title class="justify-center">
-              <span class="cardTitle">
-                {{ status.credentials }}
-              </span>
-              <span class="newHighlight" v-show="newCredentialsCount > 0">
-                (+{{ newCredentialsCount }})
-              </span>
-            </v-card-title>
-            <v-card-title class="justify-center"
-              >Verified Credentials</v-card-title
-            >
-          </v-card>
+        <v-col class="col-12 col-sm-6 col-md-4">
+          <dashboard-card
+            :title="$t('dashboard.credentialsReceived')"
+            icon="$vuetify.icons.wallet"
+            :count="this.status.totals.credentialsReceived"
+            :new-count="this.status.periodTotals.credentialsReceived"
+            destination="Wallet"
+          ></dashboard-card>
         </v-col>
-        <v-col class="col-sm-5 col-md-4">
-          <v-card class="mx-auto" :to="{ name: 'Partners' }">
-            <!-- FIXME Used aspect ratio as a hacky way to make the cards the same height -->
-            <v-img
-              class="align-end"
-              aspect-ratio="1.29"
-              src="@/assets/undraw_agreement_aajr.png"
-            ></v-img>
-            <v-card-title class="justify-center">
-              <span class="cardTitle">
-                {{ status.partners }}
-              </span>
-              <span class="newHighlight" v-show="newPartnersCount > 0">
-                (+{{ newPartnersCount }})
-              </span>
-              <span class="newHighlight" v-show="newPartnerEventsCount > 0">
-                (+{{ newPartnerEventsCount }})
-              </span>
-            </v-card-title>
-            <v-card-title class="justify-center"
-              >Business Partners</v-card-title
-            >
-          </v-card>
+        <v-col class="col-12 col-sm-6 col-md-4">
+          <dashboard-card
+            :title="$t('dashboard.presentationRequestsSent')"
+            icon="$vuetify.icons.proofRequests"
+            :count="this.status.totals.presentationRequestsSent"
+            :new-count="this.status.periodTotals.presentationRequestsSent"
+          ></dashboard-card>
+        </v-col>
+        <v-col class="col-12 col-sm-6 col-md-4">
+          <dashboard-card
+            :title="$t('dashboard.partners')"
+            icon="$vuetify.icons.partners"
+            :count="this.status.totals.partners"
+            :new-count="this.status.periodTotals.partners"
+            destination="Partners"
+          ></dashboard-card>
+        </v-col>
+        <v-col class="col-12 col-sm-6 col-md-4">
+          <dashboard-card
+            :title="$t('dashboard.credentialsSent')"
+            icon="$vuetify.icons.credentialManagement"
+            :count="this.status.totals.credentialsSent"
+            :new-count="this.status.periodTotals.credentialsSent"
+            destination="CredentialManagement"
+          ></dashboard-card>
+        </v-col>
+        <v-col class="col-12 col-sm-6 col-md-4">
+          <dashboard-card
+            :title="$t('dashboard.presentationRequestsReceived')"
+            icon="$vuetify.icons.proofRequests"
+            :count="this.status.totals.presentationRequestsReceived"
+            :new-count="this.status.periodTotals.presentationRequestsReceived"
+          ></dashboard-card>
+        </v-col>
+        <v-col class="col-12 col-sm-6 col-md-4">
+          <dashboard-card
+            :title="$t('dashboard.tasks')"
+            icon="$vuetify.icons.notifications"
+            :count="this.status.totals.tasks"
+            :new-count="this.status.periodTotals.tasks"
+            destination="Notifications"
+          ></dashboard-card>
         </v-col>
       </v-row>
     </div>
@@ -102,9 +95,11 @@
 import { EventBus } from "../main";
 import { CredentialTypes } from "../constants";
 import VBpaButton from "@/components/BpaButton";
+import DashboardCard from "@/components/DashboardCard";
+
 export default {
   name: "Dashboard",
-  components: {VBpaButton},
+  components: { DashboardCard, VBpaButton },
   created() {
     EventBus.$emit("title", "Dashboard");
     this.getStatus();
@@ -117,14 +112,11 @@ export default {
     };
   },
   computed: {
-    newPartnerEventsCount() {
-      return this.$store.getters.newPartnerEventsCount;
+    partnerNotificationsCount() {
+      return this.$store.getters.partnerNotificationsCount;
     },
-    newPartnersCount() {
-      return this.$store.getters.newPartnersCount;
-    },
-    newCredentialsCount() {
-      return this.$store.getters.newCredentialsCount;
+    credentialNotificationsCount() {
+      return this.$store.getters.credentialNotificationsCount;
     },
   },
   methods: {
@@ -139,25 +131,9 @@ export default {
           this.isLoading = false;
         })
         .catch((e) => {
-          console.error(e);
           this.isLoading = false;
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
-    },
-    copyDid() {
-      let didEl = document.querySelector("#did");
-      didEl.select();
-      let successfull;
-      try {
-        successfull = document.execCommand("copy");
-      } catch (err) {
-        successfull = false;
-      }
-      successfull
-        ? EventBus.$emit("success", "DID copied")
-        : EventBus.$emit("error", "Can't copy DID");
-      didEl.blur();
-      window.getSelection().removeAllRanges();
     },
   },
 };

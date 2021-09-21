@@ -27,14 +27,14 @@ import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Inject;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
-import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.controller.api.issuer.*;
-import org.hyperledger.bpa.impl.IssuerManager;
-import org.hyperledger.bpa.impl.util.Converter;
+import org.hyperledger.bpa.impl.IssuerCredentialManager;
+import org.hyperledger.bpa.impl.aries.config.SchemaService;
 
-import javax.inject.Inject;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -47,10 +47,10 @@ import java.util.UUID;
 public class IssuerController {
 
     @Inject
-    IssuerManager im;
+    IssuerCredentialManager im;
 
     @Inject
-    Converter conv;
+    SchemaService schemaService;
 
     /**
      * List configured schemas
@@ -59,7 +59,7 @@ public class IssuerController {
      */
     @Get("/schema")
     public HttpResponse<List<SchemaAPI>> listSchemas() {
-        return HttpResponse.ok(im.listSchemas());
+        return HttpResponse.ok(schemaService.listSchemas());
     }
 
     /**
@@ -70,7 +70,7 @@ public class IssuerController {
      */
     @Post("/schema")
     public HttpResponse<SchemaAPI> createSchema(@Body CreateSchemaRequest req) {
-        return HttpResponse.ok(im.createSchema(req.getSchemaName(), req.getSchemaVersion(),
+        return HttpResponse.ok(schemaService.createSchema(req.getSchemaName(), req.getSchemaVersion(),
                 req.getAttributes(), req.getSchemaLabel(), req.getDefaultAttributeName()));
     }
 
@@ -82,7 +82,7 @@ public class IssuerController {
      */
     @Get("/schema/{id}")
     public HttpResponse<SchemaAPI> readSchema(@PathVariable UUID id) {
-        final Optional<SchemaAPI> schema = im.readSchema(id);
+        final Optional<SchemaAPI> schema = schemaService.getSchema(id);
         if (schema.isPresent()) {
             return HttpResponse.ok(schema.get());
         }
@@ -90,7 +90,7 @@ public class IssuerController {
     }
 
     /**
-     * List cred defs, items that i can issue
+     * List cred defs, items that I can issue
      *
      * @return list of {@link SchemaAPI}
      */
@@ -129,16 +129,12 @@ public class IssuerController {
      * @return {@link HttpResponse}
      */
     @Post("/issue-credential/send")
-    public HttpResponse<String> issueCredentialSend(@Body IssueCredentialSendRequest req) {
-        Optional<V1CredentialExchange> exchange = im.issueCredentialSend(UUID.fromString(req.getCredDefId()),
-                UUID.fromString(req.getPartnerId()),
-                conv.toMap(req.getDocument()));
-        if (exchange.isPresent()) {
-            // just return the id and not the full Aries Object.
-            // Event handlers will create the db cred ex records
-            return HttpResponse.ok(exchange.get().getCredentialExchangeId());
-        }
-        return HttpResponse.badRequest();
+    public HttpResponse<String> issueCredentialSend(@Valid @Body IssueCredentialSendRequest req) {
+        String exchange = im.issueCredential(
+                IssuerCredentialManager.IssueCredentialRequest.from(req));
+        // just return the id and not the full Aries Object.
+        // Event handlers will create the db cred ex records
+        return HttpResponse.ok(exchange);
     }
 
     /**
@@ -151,6 +147,21 @@ public class IssuerController {
             @Parameter(description = "issuer or holder") @Nullable @QueryValue CredentialExchangeRole role,
             @Parameter(description = "partner id") @Nullable @QueryValue String partnerId) {
         return HttpResponse.ok(im.listCredentialExchanges(role, partnerId != null ? UUID.fromString(partnerId) : null));
+    }
+
+    /**
+     * Revoke an issued credential
+     * 
+     * @param id credential exchange id
+     * @return {@link HttpResponse}
+     */
+    @Post("/exchanges/{id}/revoke")
+    public HttpResponse<CredEx> revokeCredential(@PathVariable UUID id) {
+        Optional<CredEx> credEx = im.revokeCredentialExchange(id);
+        if (credEx.isPresent()) {
+            return HttpResponse.ok(credEx.get());
+        }
+        return HttpResponse.notFound();
     }
 
 }

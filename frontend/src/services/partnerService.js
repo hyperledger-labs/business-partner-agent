@@ -17,4 +17,18 @@ export default {
   listPartners() {
     return appAxios().get(`${ApiRoutes.PARTNERS}`);
   },
+  updatePartner({ id, data }) {
+    return appAxios().put(`${ApiRoutes.PARTNERS}/${id}`, data);
+  },
+  sendMessage(id, content) {
+    return appAxios().post(`${ApiRoutes.PARTNERS}/${id}/messages`, {
+      content: content,
+    });
+  },
+  getMessages(id) {
+    return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/messages`);
+  },
+  getPresentationExRecords(id) {
+    return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/proof-exchanges`);
+  },
 };

@@ -21,10 +21,7 @@
       @click:row="open"
     >
       <template v-slot:[`item.label`]="{ item }">
-        <new-message-icon
-          v-show="item.new"
-          :text="item.label"
-        ></new-message-icon>
+        <new-message-icon :type="'credential'" :id="item.id"></new-message-icon>
         <span v-bind:class="{ 'font-weight-medium': item.new }">
           {{ item.label }}
         </span>
@@ -55,6 +52,21 @@
 
       <template v-slot:[`item.issuedAt`]="{ item }">
         {{ item.issuedAt | moment("YYYY-MM-DD HH:mm") }}
+      </template>
+
+      <template v-slot:[`item.revoked`]="{ item }">
+        <v-icon v-if="item.revocable && item.revoked" title="credential revoked"
+          >$vuetify.icons.revoked</v-icon
+        >
+        <v-icon
+          v-else-if="item.revocable && !item.revoked"
+          color="green"
+          title="credential valid and not revoked"
+          >$vuetify.icons.revoke</v-icon
+        >
+        <v-icon v-else title="credential valid and not revocable" color="green"
+          >$vuetify.icons.check</v-icon
+        >
       </template>
 
       <template v-slot:[`item.isPublic`]="{ item }">
@@ -102,12 +114,12 @@ export default {
     };
   },
   computed: {
-    newCredentials() {
-      return this.$store.getters.newCredentials;
+    credentialNotifications() {
+      return this.$store.getters.credentialNotifications;
     },
   },
   watch: {
-    newCredentials: function (newValue) {
+    credentialNotifications: function (newValue) {
       if (newValue && this.type === "credential") {
         // TODO: Don't fetch all partners but only add new credential data
         this.fetch(this.type);
@@ -126,8 +138,6 @@ export default {
               this.data = result.data.filter((item) => {
                 return item.issuer;
               });
-
-              this.data = this.markNew(this.data);
             } else {
               this.data = result.data;
             }
@@ -138,8 +148,7 @@ export default {
           if (e.response.status === 404) {
             this.data = [];
           } else {
-            console.error(e);
-            EventBus.$emit("error", e);
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
           }
         });
     },
@@ -162,20 +171,6 @@ export default {
           },
         });
       }
-    },
-    markNew(data) {
-      if (this.indicateNew) {
-        const newCredentials = this.$store.getters.newCredentials;
-        if (this.$store.getters.newCredentialsCount > 0) {
-          data = data.map((cred) => {
-            if ({}.hasOwnProperty.call(newCredentials, cred.id)) {
-              cred.new = true;
-            }
-            return cred;
-          });
-        }
-      }
-      return data;
     },
   },
 };

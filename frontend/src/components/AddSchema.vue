@@ -51,7 +51,9 @@
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-bpa-button color="secondary" @click="cancel()">Cancel</v-bpa-button>
+          <v-bpa-button color="secondary" @click="cancel()"
+            >Cancel</v-bpa-button
+          >
           <v-bpa-button
             :loading="this.isBusy"
             color="primary"
@@ -72,7 +74,7 @@ import VBpaButton from "@/components/BpaButton";
 
 export default {
   name: "AddSchema",
-  components: {VBpaButton},
+  components: { VBpaButton },
   props: {},
   data: () => {
     return {
@@ -108,12 +110,7 @@ export default {
         })
         .catch((e) => {
           this.isBusy = false;
-          if (e.response.status === 400) {
-            EventBus.$emit("error", "Schema already exists");
-          } else {
-            console.error(e);
-            EventBus.$emit("error", e);
-          }
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     cancel() {

@@ -27,7 +27,7 @@ class AriesStringUtilTest {
 
     @Test
     void testGetSeqNo() {
-        assertEquals("571", AriesStringUtil.credDefIdGetSquenceNo("M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account"));
+        assertEquals("571", AriesStringUtil.credDefIdGetSequenceNo("M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:bank_account"));
     }
 
     @Test
@@ -94,6 +94,15 @@ class AriesStringUtilTest {
         assertThrows(IllegalArgumentException.class, () -> AriesStringUtil.schemaGetVersion(invalidSchemaId));
 
         assertThrows(NullPointerException.class, () -> AriesStringUtil.schemaGetVersion(null));
+    }
+
+    @Test
+    void testIsCredDef() {
+        assertFalse(AriesStringUtil.isCredDef(" "));
+        assertFalse(AriesStringUtil.isCredDef(null));
+        assertFalse(AriesStringUtil.isCredDef("test:1"));
+        assertFalse(AriesStringUtil.isCredDef("test:1:2"));
+        assertTrue(AriesStringUtil.isCredDef("EraYCDJUPsChbkw7S1vV96:3:CL:571:bob-bank-04"));
     }
 
 }

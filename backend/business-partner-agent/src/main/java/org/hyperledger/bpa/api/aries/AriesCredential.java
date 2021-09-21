@@ -38,13 +38,13 @@ public class AriesCredential {
     private String schemaId;
     private String credentialDefinitionId;
     private String connectionId;
+    private Boolean revoked;
+    private Boolean revocable;
+    private ExchangeVersion exchangeVersion;
 
     private String label;
     private String typeLabel;
     private Map<String, String> credentialData;
-
-    public static class AriesCredentialBuilder {
-    } // javadoc plugin cannot handle lombok builder
 
     public static AriesCredentialBuilder fromMyCredential(@NonNull MyCredential c) {
         return AriesCredential
@@ -55,6 +55,19 @@ public class AriesCredential {
                 .isPublic(c.getIsPublic())
                 .issuer(c.getIssuer())
                 .connectionId(c.getConnectionId())
-                .label(c.getLabel());
+                .revoked(c.getRevoked())
+                .label(c.getLabel())
+                .exchangeVersion(c.getExchangeVersion());
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static final class BPACredentialInfo {
+        private UUID credentialId;
+        private String schemaLabel;
+        private String issuerLabel;
+        private String credentialLabel;
     }
 }

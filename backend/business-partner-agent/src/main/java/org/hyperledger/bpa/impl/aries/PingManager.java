@@ -20,29 +20,34 @@ package org.hyperledger.bpa.impl.aries;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.env.Environment;
 import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.core.util.StringUtils;
 import io.micronaut.scheduling.annotation.Scheduled;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.connection.ConnectionFilter;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.message.PingRequest;
+import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Singleton
 @Requires(notEnv = { Environment.TEST })
 public class PingManager {
+
+    final static List<ConnectionState> statesToFilter = List.of(
+            ConnectionState.ACTIVE, ConnectionState.COMPLETED,
+            ConnectionState.PING_RESPONSE, ConnectionState.PING_NO_RESPONSE);
 
     @Inject
     AriesClient aries;
@@ -72,13 +77,14 @@ public class PingManager {
     @Scheduled(fixedRate = "1m", initialDelay = "90s") // init delay needs to be > than aca-py connection timeout
     public void checkConnections() {
         try {
-            List<String> activeConnections = aries.connectionIds(
-                    ConnectionFilter.builder().state(ConnectionState.ACTIVE).build());
-            if (CollectionUtils.isNotEmpty(activeConnections)) {
+            List<String> connectionsToPing = repo
+                    .findByStateInAndTrustPingTrueAndAriesSupportTrue(statesToFilter)
+                    .stream().map(Partner::getConnectionId).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(connectionsToPing)) {
                 if (!firstRun) {
                     setNewState();
                 }
-                sendPingToActiveConnections(activeConnections);
+                sendPingToConnections(connectionsToPing);
             }
             if (firstRun) {
                 firstRun = false;
@@ -92,10 +98,10 @@ public class PingManager {
         sent.forEach((k, v) -> {
             ConnectionState state;
             if (received.containsKey(k)) {
-                state = ConnectionState.ACTIVE;
+                state = ConnectionState.PING_RESPONSE;
                 repo.updateStateAndLastSeenByConnectionId(v, state, Instant.now());
             } else {
-                state = ConnectionState.INACTIVE;
+                state = ConnectionState.PING_NO_RESPONSE;
                 repo.updateStateByConnectionId(v, state);
             }
         });
@@ -103,9 +109,9 @@ public class PingManager {
         received.clear();
     }
 
-    private void sendPingToActiveConnections(List<String> activeConnections) {
+    private void sendPingToConnections(List<String> connectionsToPing) {
         try {
-            for (String connectionId : activeConnections) {
+            for (String connectionId : connectionsToPing) {
                 log.debug("Sending ping to: {}", connectionId);
                 aries.connectionsSendPing(connectionId, new PingRequest(connectionId))
                         .ifPresent(resp -> sent.put(resp.getThreadId(), connectionId));
@@ -125,8 +131,10 @@ public class PingManager {
 
     @Scheduled(fixedRate = "30m", initialDelay = "1m")
     public void deleteStaleConnections() {
-        List<String> bpaConIds = new ArrayList<>();
-        repo.findAll().forEach(p -> bpaConIds.add(p.getConnectionId()));
+        List<String> bpaConIds = StreamSupport.stream(repo.findAll().spliterator(), false)
+                .map(Partner::getConnectionId)
+                .filter(StringUtils::isNotEmpty)
+                .collect(Collectors.toList());
 
         try {
             List<String> acaConIds = aries.connectionIds();

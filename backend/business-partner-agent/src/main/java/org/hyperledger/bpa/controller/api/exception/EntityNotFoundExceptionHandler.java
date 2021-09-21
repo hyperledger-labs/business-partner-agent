@@ -20,20 +20,27 @@ package org.hyperledger.bpa.controller.api.exception;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
-import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.server.exceptions.ExceptionHandler;
+import io.micronaut.http.server.exceptions.response.ErrorContext;
+import io.micronaut.http.server.exceptions.response.ErrorResponseProcessor;
+import jakarta.inject.Singleton;
+import lombok.AllArgsConstructor;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
-
-import javax.inject.Singleton;
 
 @Produces
 @Singleton
+@AllArgsConstructor
 @Requires(classes = { EntityNotFoundException.class, ExceptionHandler.class })
 public class EntityNotFoundExceptionHandler implements ExceptionHandler<EntityNotFoundException, HttpResponse<?>> {
+
+    private final ErrorResponseProcessor<?> errorResponseProcessor;
+
     @Override
-    public HttpResponse<?> handle(HttpRequest request, EntityNotFoundException exception) {
-        return HttpResponse.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorMessage(exception.getMessage()));
+    public HttpResponse<?> handle(HttpRequest request, EntityNotFoundException e) {
+        return errorResponseProcessor.processResponse(ErrorContext.builder(request)
+                .cause(e)
+                .errorMessage(e.getMessage())
+                .build(), HttpResponse.notFound());
     }
 }

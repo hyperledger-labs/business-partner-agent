@@ -71,6 +71,7 @@
               <credential-definitions
                 :schema="schema"
                 :credentialDefinitions="schema.credentialDefinitions"
+                :reset="resetChildForms"
                 @changed="onChanged"
               />
             </v-card>
@@ -80,6 +81,7 @@
               <trusted-issuers
                 :schema="schema"
                 :trustedIssuers="schema.trustedIssuer"
+                :reset="resetChildForms"
                 @changed="onChanged"
               />
             </v-card>
@@ -136,6 +138,7 @@ export default {
   data: () => {
     return {
       tab: null,
+      resetChildForms: false,
     };
   },
   computed: {
@@ -179,14 +182,14 @@ export default {
           }
         })
         .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     onChanged() {
       this.$emit("changed");
     },
     closed() {
+      this.resetChildForms = !this.resetChildForms;
       this.$emit("closed");
     },
   },

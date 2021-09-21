@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.model;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
@@ -27,8 +28,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
 
-import io.micronaut.core.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -40,7 +41,7 @@ import java.util.UUID;
 /**
  * MyCredential is a credential that is received via aries. It is NOT to be
  * confused with the verifiable credential (VC) that is part of the public
- * profile. When a aries credential is made public it will become a VC as part
+ * profile. When an aries credential is made public it will become a VC as part
  * of the public profile.
  *
  */
@@ -67,14 +68,24 @@ public class MyCredential {
 
     private Boolean isPublic;
 
-    @Nullable
-    private String referent;
-
+    /** the connection that issued the credential */
     @Nullable
     private String connectionId;
 
+    /** aca-py credential identifier */
+    @Nullable
+    private String referent;
+
+    /** temporary credential exchange identifier */
+    @Nullable
+    private String credentialExchangeId;
+
     @Enumerated(EnumType.STRING)
     private CredentialExchangeState state;
+
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    private ExchangeVersion exchangeVersion;
 
     private String threadId;
 
@@ -87,4 +98,15 @@ public class MyCredential {
     @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> credential;
+
+    @Nullable
+    private Boolean revoked;
+
+    public static MyCredential.MyCredentialBuilder defaultCredentialBuilder() {
+        return MyCredential
+                .builder()
+                .isPublic(Boolean.FALSE)
+                .type(CredentialType.INDY)
+                .issuedAt(Instant.now());
+    }
 }

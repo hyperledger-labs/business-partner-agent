@@ -3,6 +3,10 @@ import { CredentialTypes } from "../constants";
 import { EventBus, axios, apiBaseUrl } from "../main";
 import { getPartnerProfile } from "../utils/partnerUtils";
 import adminService from "@/services/adminService";
+import proofTemplateService from "@/services/proofTemplateService";
+import partnerService from "@/services/partnerService";
+import issuerService from "@/services/issuerService";
+import * as textUtils from "@/utils/textUtils";
 
 export const loadSchemas = async ({ commit }) => {
   adminService
@@ -11,7 +15,7 @@ export const loadSchemas = async ({ commit }) => {
       let schemas = result.data;
       schemas.map((schema) => {
         if ({}.hasOwnProperty.call(schema, "schemaId")) {
-          schema.type = CredentialTypes.SCHEMA_BASED.type;
+          schema.type = CredentialTypes.INDY.type;
         } else if (
           !{}.hasOwnProperty.call(schema, "schemaId") &&
           !{}.hasOwnProperty.call(schema, "type")
@@ -26,6 +30,23 @@ export const loadSchemas = async ({ commit }) => {
       commit({
         type: "setSchemas",
         schemas: schemas,
+      });
+    })
+    .catch((e) => {
+      console.error(e);
+      EventBus.$emit("error", e);
+    });
+};
+
+export const loadTags = async ({ commit }) => {
+  adminService
+    .listTags()
+    .then((result) => {
+      let tags = result.data;
+      console.log(tags);
+      commit({
+        type: "setTags",
+        tags: tags,
       });
     })
     .catch((e) => {
@@ -118,6 +139,79 @@ export const loadSettings = async ({ commit }) => {
         commit({
           type: "setSettings",
           settings: settings,
+        });
+      }
+    })
+    .catch((e) => {
+      console.error(e);
+      EventBus.$emit("error", e);
+    });
+};
+
+export const loadProofTemplates = async ({ commit }) => {
+  proofTemplateService
+    .getProofTemplates()
+    .then((result) => {
+      let proofTemplates = result.data;
+
+      // convert date strings to locale specific date formats
+      proofTemplates.forEach((pt) => {
+        pt.createdAt = new Date(pt.createdAt).toLocaleString();
+      });
+
+      commit({
+        type: "setProofTemplates",
+        proofTemplates: proofTemplates,
+      });
+    })
+    .catch((e) => {
+      console.error(e);
+      EventBus.$emit("error", e);
+    });
+};
+
+export const loadPartnerSelectList = async ({ commit }) => {
+  partnerService
+    .listPartners()
+    .then((result) => {
+      if (result.status === 200) {
+        let partners = result.data.map((p) => {
+          return { value: p.id, text: p.name, ...p };
+        });
+        commit({
+          type: "setPartnerSelectList",
+          list: partners,
+        });
+      }
+    })
+    .catch((e) => {
+      console.error(e);
+      EventBus.$emit("error", e);
+    });
+};
+
+export const loadCredDefSelectList = async ({ commit }) => {
+  issuerService
+    .listCredDefs()
+    .then((result) => {
+      if (result.status === 200) {
+        let credDefs = result.data.map((c) => {
+          return {
+            value: c.id,
+            text: c.displayText,
+            fields: c.schema.schemaAttributeNames.map((key) => {
+              return {
+                type: key,
+                label: textUtils.schemaAttributeLabel(key),
+              };
+            }),
+            ...c,
+          };
+        });
+
+        commit({
+          type: "setCredDefSelectList",
+          list: credDefs,
         });
       }
     })

@@ -18,14 +18,19 @@
 package org.hyperledger.bpa.impl.activity;
 
 import io.micronaut.scheduling.annotation.Async;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.PartnerException;
-import org.hyperledger.bpa.client.URClient;
+import org.hyperledger.bpa.client.DidDocClient;
 import org.hyperledger.bpa.core.RegisteredWebhook;
 import org.hyperledger.bpa.impl.WebhookService;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
@@ -34,8 +39,7 @@ import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -53,7 +57,7 @@ public class DidResolver {
     PartnerLookup partnerLookup;
 
     @Inject
-    URClient ur;
+    DidDocClient ur;
 
     @Inject
     Converter converter;
@@ -68,10 +72,13 @@ public class DidResolver {
      * @param pp {@link PartnerProof}
      */
     @Async
-    public void resolveDid(PartnerProof pp) {
+    public void resolveDid(PartnerProof pp, @NonNull List<PresentationExchangeRecord.Identifier> identifiers) {
+        Optional<PresentationExchangeRecord.Identifier> cr = identifiers.stream()
+                .filter(i -> StringUtils.isNotEmpty(i.getSchemaId()))
+                .filter(i -> AriesStringUtil.schemaGetName(i.getSchemaId()).equals("commercialregister"))
+                .findAny();
         try {
-            if (StringUtils.isNotEmpty(pp.getSchemaId())
-                    && AriesStringUtil.schemaGetName(pp.getSchemaId()).equals("commercialregister")) {
+            if (cr.isPresent()) {
                 partnerRepo.findById(pp.getPartnerId()).ifPresent(p -> {
                     if (p.getVerifiablePresentation() == null
                             && p.getIncoming() != null
@@ -84,6 +91,7 @@ public class DidResolver {
                             log.error("{}", e.getMessage());
                         }
                         if (didDocument.isEmpty() && pp.getProof() != null) {
+                            // TODO only works if the did is set in the revealed attributes
                             Object pubDid = pp.getProof().get("did");
                             if (pubDid != null) {
                                 log.debug("Resolved did: {}", pubDid);
@@ -103,27 +111,48 @@ public class DidResolver {
     }
 
     /**
-     * Tries to resolve the partners public profile based on a did that is embedded
-     * in the partners label. The label is supposed to adhere to the following
-     * format: did:sov:xxx:123:MyLabel
+     * Tries to resolve the partners public profile in two steps. First try is the
+     * did can be resolved to a profile, if this is not possible try to do this
+     * based on a did that is embedded in the partners label. The label is supposed
+     * to adhere to the following format: did:sov:xxx:123:MyLabel
      * 
      * @param p {@link Partner}
      */
     @Async
     public void lookupIncoming(Partner p) {
-        ConnectionLabel cl = splitDidFrom(p.getLabel());
-        cl.getDid().ifPresent(did -> {
-            final PartnerAPI pAPI = partnerLookup.lookupPartner(did);
+        lookupPartnerSave(p.getDid()).ifPresentOrElse(pAPI -> {
             partnerRepo.updateVerifiablePresentation(
                     p.getId(),
                     converter.toMap(pAPI.getVerifiablePresentation()),
-                    pAPI.getValid(),
-                    cl.getLabel(),
-                    did);
-            pAPI.setDid(did);
+                    pAPI.getValid());
             webhook.convertAndSend(RegisteredWebhook.WebhookEventType.PARTNER_ADD, pAPI);
+        }, () -> {
+            ConnectionLabel cl = splitDidFrom(p.getLabel());
+            cl.getDid().ifPresent(did -> {
+                final PartnerAPI pAPI = partnerLookup.lookupPartner(did);
+                partnerRepo.updateVerifiablePresentation(
+                        p.getId(),
+                        converter.toMap(pAPI.getVerifiablePresentation()),
+                        pAPI.getValid(),
+                        cl.getLabel(),
+                        did);
+                webhook.convertAndSend(RegisteredWebhook.WebhookEventType.PARTNER_ADD, pAPI);
+            });
         });
+    }
 
+    private Optional<PartnerAPI> lookupPartnerSave(String did) {
+        try {
+            if (StringUtils.isNotEmpty(did)) {
+                PartnerAPI partnerAPI = partnerLookup.lookupPartner(did);
+                if (partnerAPI.getVerifiablePresentation() != null) {
+                    return Optional.of(partnerAPI);
+                }
+            }
+        } catch (PartnerException | AriesException e) {
+            log.debug("Did: {} could not be resolved", did);
+        }
+        return Optional.empty();
     }
 
     /**

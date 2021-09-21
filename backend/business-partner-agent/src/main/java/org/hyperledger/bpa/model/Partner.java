@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.model;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
 import io.micronaut.data.annotation.DateUpdated;
@@ -32,18 +33,18 @@ import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 
-import io.micronaut.core.annotation.Nullable;
-
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
  * Flat representation of a partner. In the web context a partner is just a
- * reference to a did and the public profile thats referenced via the did
+ * reference to a did and the public profile that's referenced by the did
  * documents profile endpoint. In the context of aries a partner also becomes a
- * connection including pairwise did's and states etc.
+ * connection including pairwise did's, states, trust ping etc.
  */
 @Data
 @NoArgsConstructor
@@ -63,34 +64,54 @@ public class Partner {
     @DateUpdated
     private Instant updatedAt;
 
+    /** The last time a ping response was received from the partner */
     @Nullable
-    private Instant lastSeen; // last time a ping response was received from the partner
+    private Instant lastSeen;
 
     /** The fully qualified did like did:sov:123 */
     private String did;
 
+    /**
+     * If the partner supports aries, set if the partner has an endpoint that
+     * supports did communication
+     */
     private Boolean ariesSupport;
 
+    /** aries connection id */
     @Nullable
-    private String connectionId; // aries connection id
+    private String connectionId;
 
+    /** Aries connection state */
     @Nullable
     @Enumerated(EnumType.STRING)
-    private ConnectionState state; // aries connection state
+    private ConnectionState state;
 
+    /**
+     * Aries connection label, if incoming connection set by the partner via the
+     * --label flag, or through rest overwrite
+     */
     @Nullable
-    private String label; // aries connection label
-                          // if incoming connection set by the partner, if outgoing set by us to match
-                          // connection events
+    private String label;
 
+    /** The partners alias or name, always set by a user in the UI */
     @Nullable
-    private String alias; // aries connection alias
+    private String alias;
 
+    /** Direction of the communication, incoming or outgoing aries connection */
     @Nullable
-    private Boolean incoming; // incoming aries connection
+    private Boolean incoming;
 
+    /** If the partners public profile is valid */
     @Nullable
-    private Boolean valid; // if the public profile is valid
+    private Boolean valid;
+
+    /** If the trust ping feature is active for this partner */
+    @Nullable
+    private Boolean trustPing;
+
+    /** Aries OOB invitation message id */
+    @Nullable
+    private String invitationMsgId;
 
     /**
      * The Partners Public Profile {@link VerifiablePresentation} to be used in the
@@ -107,6 +128,10 @@ public class Partner {
     @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> supportedCredentials;
+
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
+    @JoinTable(name = "partner_tag")
+    private Set<Tag> tags = new HashSet<>();
 
     @Transient
     public boolean hasConnectionId() {

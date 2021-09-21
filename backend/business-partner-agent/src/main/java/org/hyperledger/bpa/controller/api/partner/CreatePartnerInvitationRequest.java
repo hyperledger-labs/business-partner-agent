@@ -19,13 +19,19 @@ package org.hyperledger.bpa.controller.api.partner;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.model.Tag;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 public class CreatePartnerInvitationRequest {
+    private String alias;
+    private List<Tag> tag;
+    private Boolean trustPing;
+    private Boolean useOutOfBand;
 
-    public String alias;
-    // public boolean autoAccept;
-    // public boolean multiUse;
-    // public boolean public;
+    public boolean getUseOutOfBand() {
+        return useOutOfBand != null && useOutOfBand;
+    }
 }

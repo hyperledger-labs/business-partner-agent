@@ -17,9 +17,9 @@
  */
 package org.hyperledger.bpa.impl.util;
 
-import org.apache.commons.lang3.StringUtils;
-
+import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.UUID;
 
@@ -37,33 +37,27 @@ public class AriesStringUtil {
     }
 
     public static String schemaGetName(@NonNull String schemaId) {
-        String sId = StringUtils.strip(schemaId);
-        final String[] parts = sId.split(":");
-        if (parts.length != 4) {
-            throw new IllegalArgumentException("Not a valid schema id");
-        }
-        return parts[2];
+        return splitSchemaId(schemaId)[2];
     }
 
     public static String schemaGetCreator(@NonNull String schemaId) {
-        String sId = StringUtils.strip(schemaId);
-        final String[] parts = sId.split(":");
-        if (parts.length != 4) {
-            throw new IllegalArgumentException("Not a valid schema id");
-        }
-        return parts[0];
+        return splitSchemaId(schemaId)[0];
     }
 
     public static String schemaGetVersion(@NonNull String schemaId) {
+        return splitSchemaId(schemaId)[3];
+    }
+
+    private static String[] splitSchemaId(@NonNull String schemaId) {
         String sId = StringUtils.strip(schemaId);
         final String[] parts = sId.split(":");
         if (parts.length != 4) {
-            throw new IllegalArgumentException("Not a valid schema id");
+            throw new IllegalArgumentException(schemaId + " is not a valid schema id");
         }
-        return parts[3];
+        return parts;
     }
 
-    public static String credDefIdGetSquenceNo(@NonNull String credDefId) {
+    public static String credDefIdGetSequenceNo(@NonNull String credDefId) {
         final String[] parts = credDefIdSplit(credDefId);
         return parts[3];
     }
@@ -76,6 +70,21 @@ public class AriesStringUtil {
     public static String credDefIdGetTag(@NonNull String credDefId) {
         final String[] parts = credDefIdSplit(credDefId);
         return parts[4];
+    }
+
+    public static boolean isCredDef(@Nullable String expression) {
+        if (StringUtils.isBlank(expression)) {
+            return false;
+        }
+        return expression.split(":").length == 5;
+    }
+
+    private static String[] credDefIdSplit(@NonNull String credDefId) {
+        final String[] parts = credDefId.split(":");
+        if (parts.length != 5) {
+            throw new IllegalArgumentException("Not a credential definition id");
+        }
+        return parts;
     }
 
     /**
@@ -100,14 +109,6 @@ public class AriesStringUtil {
      */
     public static String schemaAttributeFormat(@NonNull String value) {
         return schemaAttributeFormat(value, '_');
-    }
-
-    private static String[] credDefIdSplit(String credDefId) {
-        final String[] parts = credDefId.split(":");
-        if (parts.length != 5) {
-            throw new IllegalArgumentException("Not a credential definition id");
-        }
-        return parts;
     }
 
     public static boolean isUUID(String input) {

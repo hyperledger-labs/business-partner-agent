@@ -112,7 +112,9 @@
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-bpa-button color="secondary" @click="cancel()">Cancel</v-bpa-button>
+          <v-bpa-button color="secondary" @click="cancel()"
+            >Cancel</v-bpa-button
+          >
           <v-bpa-button
             :loading="this.isBusy"
             color="primary"
@@ -130,10 +132,11 @@
 import { EventBus } from "@/main";
 import { issuerService } from "@/services";
 import VBpaButton from "@/components/BpaButton";
+import * as textUtils from "@/utils/textUtils";
 
 export default {
   name: "CreateSchema",
-  components: {VBpaButton},
+  components: { VBpaButton },
   props: {},
   data: () => {
     return {
@@ -150,7 +153,7 @@ export default {
           (value && /^(\d+)\.(\d+)(?:\.\d+)?$/.test(value)) ||
           "Must be follow common version numbering (ex. 1.2 or 1.2.3)",
         schemaText: (value) =>
-          (value && /^[a-zA-Z\d-_]+$/.test(value)) ||
+          textUtils.isValidSchemaAttributeName(value) ||
           "Must be alphanumeric with optional '_' or '-'",
       },
     };
@@ -214,11 +217,7 @@ export default {
           return resp.data;
         }
       } catch (error) {
-        if (error.response && error.response.status === 400) {
-          EventBus.$emit("error", "Schema already exists");
-        } else {
-          EventBus.$emit("error", error);
-        }
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
       }
     },
     async submit() {
@@ -232,7 +231,7 @@ export default {
         }
       } catch (error) {
         this.isBusy = false;
-        EventBus.$emit("error", error);
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
       }
     },
     cancel() {

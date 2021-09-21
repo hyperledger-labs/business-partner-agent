@@ -8,27 +8,32 @@
 
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Dashboard from "../views/Dashboard.vue";
-import Identity from "../views/Identity.vue";
-import PublicProfile from "../views/PublicProfile.vue";
-import ContactPerson from "../views/ContactPerson.vue";
-import Wallet from "../views/Wallet.vue";
-import Document from "../views/Document.vue";
-import RequestVerification from "../views/RequestVerification.vue";
-import RequestPresentation from "../views/RequestPresentation.vue";
-import SendPresentation from "../views/SendPresentation.vue";
-import Credential from "../views/Credential.vue";
-import Presentation from "../views/Presentation.vue";
-import Partners from "../views/Partners.vue";
-import Partner from "../views/Partner.vue";
-import AddPartner from "../views/AddPartner.vue";
-import AddPartnerbyURL from "../views/AddPartnerbyURL.vue";
-import Settings from "../views/Settings.vue";
-import SchemaSettings from "../views/SchemaSettings.vue";
-import Schema from "../views/Schema.vue";
-import AddSchema from "../views/AddSchema.vue";
-import About from "../views/About.vue";
+import Dashboard from "@/views/Dashboard.vue";
+import Identity from "@/views/Identity.vue";
+import PublicProfile from "@/views/PublicProfile.vue";
+import ContactPerson from "@/views/ContactPerson.vue";
+import Wallet from "@/views/Wallet.vue";
+import Document from "@/views/Document.vue";
+import RequestVerification from "@/views/RequestVerification.vue";
+import RequestPresentation from "@/views/RequestPresentation.vue";
+import SendPresentation from "@/views/SendPresentation.vue";
+import Credential from "@/views/Credential.vue";
+import Partners from "@/views/partner/Partners.vue";
+import Partner from "@/views/partner/Partner.vue";
+import AddPartner from "@/views/partner/AddPartner.vue";
+import AddPartnerbyURL from "@/views/partner/AddPartnerbyURL.vue";
+import Settings from "@/views/settings/Settings.vue";
+import TagManagement from "@/views/settings/TagManagement";
+import SchemaSettings from "@/views/settings/SchemaSettings.vue";
+import Schema from "@/views/Schema.vue";
+import AddSchema from "@/views/AddSchema.vue";
+import About from "@/views/About.vue";
 import CredentialManagement from "@/views/issuer/CredentialManagement.vue";
+import Notifications from "@/views/Notifications.vue";
+import ProofTemplates from "@/views/ProofTemplates";
+import ProofTemplateCreate from "@/views/ProofTemplateCreate";
+import ProofTemplateView from "@/views/ProofTemplateView";
+import RequestPresentationCreateProofTemplate from "@/views/RequestPresentationCreateProofTemplate";
 
 Vue.use(VueRouter);
 
@@ -85,15 +90,19 @@ const routes = [
     props: true,
   },
   {
-    path: "/app/partners/:id/presentation/:presentationId",
-    name: "Presentation",
-    component: Presentation,
-    props: true,
-  },
-  {
     path: "/app/partners",
     name: "Partners",
     component: Partners,
+  },
+  {
+    path: "/app/partners/add",
+    name: "AddPartner",
+    component: AddPartner,
+  },
+  {
+    path: "/app/partners/create-qr",
+    name: "AddPartnerbyURL",
+    component: AddPartnerbyURL,
   },
   {
     path: "/app/partners/:id",
@@ -108,25 +117,26 @@ const routes = [
     props: true,
   },
   {
+    path: "/app/partners/:id/request/create-proof-template",
+    name: "RequestPresentationCreateProofTemplate",
+    component: RequestPresentationCreateProofTemplate,
+    props: true,
+  },
+  {
     path: "/app/partners/:id/send",
     name: "SendPresentation",
     component: SendPresentation,
     props: true,
   },
   {
-    path: "/app/partners/add",
-    name: "AddPartner",
-    component: AddPartner,
-  },
-  {
-    path: "/app/partners/create-qr",
-    name: "AddPartnerbyURL",
-    component: AddPartnerbyURL,
-  },
-  {
     path: "/app/settings",
     name: "Settings",
     component: Settings,
+  },
+  {
+    path: "/app/settings/tag",
+    name: "TagManagement",
+    component: TagManagement,
   },
   {
     path: "/app/settings/schema",
@@ -153,6 +163,28 @@ const routes = [
     path: "/app/credentialManagement",
     name: "CredentialManagement",
     component: CredentialManagement,
+  },
+  {
+    path: "/app/notifications",
+    name: "Notifications",
+    component: Notifications,
+  },
+  {
+    path: "/app/proofTemplates",
+    name: "ProofTemplates",
+    component: ProofTemplates,
+  },
+  {
+    path: "/app/proofTemplate",
+    name: "ProofTemplateCreate",
+    component: ProofTemplateCreate,
+    props: true,
+  },
+  {
+    path: "/app/proofTemplate/:id",
+    name: "ProofTemplateView",
+    component: ProofTemplateView,
+    props: true,
   },
 ];
 

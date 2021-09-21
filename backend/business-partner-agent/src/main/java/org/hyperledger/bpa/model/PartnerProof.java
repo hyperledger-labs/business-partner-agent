@@ -17,28 +17,25 @@
  */
 package org.hyperledger.bpa.model;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
+import io.micronaut.data.annotation.DateUpdated;
 import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
-
-import io.micronaut.core.annotation.Nullable;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
-import org.hyperledger.aries.api.present_proof.PresentProofRequest;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Aries proof that I received from a partner (aka connection).
@@ -60,16 +57,16 @@ public class PartnerProof {
     @DateCreated
     private Instant createdAt;
 
-    @Nullable
-    private Instant issuedAt;
+    @DateUpdated
+    private Instant updatedAt;
 
     @Nullable
     private Boolean valid;
 
-    private String presentationExchangeId;
-
     @Nullable
     private String threadId;
+
+    private String presentationExchangeId;
 
     @Nullable
     @Enumerated(EnumType.STRING)
@@ -80,13 +77,8 @@ public class PartnerProof {
     private PresentationExchangeRole role;
 
     @Nullable
-    private String issuer;
-
-    @Nullable
-    private String schemaId;
-
-    @Nullable
-    private String credentialDefinitionId;
+    @Enumerated(EnumType.STRING)
+    private ExchangeVersion exchangeVersion;
 
     @Nullable
     private String problemReport;
@@ -98,4 +90,55 @@ public class PartnerProof {
     @TypeDef(type = DataType.JSON)
     private PresentProofRequest.ProofRequest proofRequest;
 
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    private BPAProofTemplate proofTemplate;
+
+    @TypeDef(type = DataType.JSON)
+    private ExchangeStateToTimestamp stateToTimestamp;
+
+    /**
+     * Records the timestamps of the different state changes, important in the
+     * manual exchanges as they can take a while to happen.
+     */
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static final class ExchangeStateToTimestamp {
+        private Map<PresentationExchangeState, Instant> stateToTimestamp;
+
+        public Map<PresentationExchangeState, Long> toApi() {
+            return stateToTimestamp != null
+                    ? stateToTimestamp.entrySet()
+                            .stream()
+                            .sorted(Map.Entry.comparingByValue())
+                            .collect(Collectors.toMap(
+                                    Map.Entry::getKey, v -> v.getValue().toEpochMilli(), (v1, v2) -> v1,
+                                    LinkedHashMap::new))
+                    : null;
+        }
+    }
+
+    public PartnerProof pushStateChange(@NonNull PresentationExchangeState state, @NonNull Instant ts) {
+        if (stateToTimestamp == null || stateToTimestamp.getStateToTimestamp() == null) {
+            stateToTimestamp = ExchangeStateToTimestamp
+                    .builder()
+                    .stateToTimestamp(Map.of(state, ts))
+                    .build();
+        } else {
+            stateToTimestamp.getStateToTimestamp().put(state, ts);
+        }
+        return this;
+    }
+
+    // extends lombok builder
+    public static class PartnerProofBuilder {
+        public PartnerProofBuilder pushStateChange(@NonNull PresentationExchangeState state, @NonNull Instant ts) {
+            this.stateToTimestamp(ExchangeStateToTimestamp.builder()
+                    .stateToTimestamp(Map.of(state, ts))
+                    .build());
+            return this;
+        }
+    }
 }

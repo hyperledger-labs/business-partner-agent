@@ -17,23 +17,27 @@
  */
 package org.hyperledger.bpa.impl.aries.config;
 
+import io.micronaut.cache.annotation.CacheInvalidate;
+import io.micronaut.cache.annotation.Cacheable;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.model.BPARestrictions;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPARestrictionsRepository;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -60,19 +64,25 @@ public class RestrictionsManager {
     @Inject
     BPASchemaRepository schemaRepo;
 
+    @Inject
+    BPAMessageSource.DefaultMessageSource msg;
+
     public Optional<TrustedIssuer> addRestriction(
             @NonNull UUID sId, @NonNull String issuerDid, @Nullable String label) {
-        Optional<BPASchema> dbSchema = schemaRepo.findById(sId);
-        if (dbSchema.isEmpty()) {
-            throw new WrongApiUsageException("Schema with id: " + sId + " does not exist in the db");
+        if (!schemaRepo.existsById(sId)) {
+            throw new WrongApiUsageException(msg.getMessage("api.schema.restriction.schema.not.found",
+                    Map.of("id", sId)));
         }
-        return addRestriction(sId, Boolean.FALSE,
+        if (repo.existsByIssuerDid(prefixIssuerDid(issuerDid))) {
+            throw new WrongApiUsageException(msg.getMessage("api.schema.restriction.already.configured",
+                    Map.of("did", issuerDid)));
+        }
+        return addRestriction(sId,
                 List.of(Map.of("issuerDid", issuerDid, "label", label != null ? label : "")));
     }
 
     Optional<TrustedIssuer> addRestriction(
             @NonNull UUID schemaId,
-            @NonNull Boolean isReadOnly,
             @Nullable List<Map<String, String>> config) {
         ResultWrapper result = new ResultWrapper();
         if (CollectionUtils.isNotEmpty(config)) {
@@ -84,10 +94,9 @@ public class RestrictionsManager {
                         ac.ledgerDidVerkey(issuerDid).ifPresent(verkey -> {
                             BPARestrictions def = BPARestrictions
                                     .builder()
-                                    .issuerDid(issuerDid.startsWith("did:") ? issuerDid : didPrefix + issuerDid)
+                                    .issuerDid(prefixIssuerDid(issuerDid))
                                     .label(c.get("label"))
                                     .schema(BPASchema.builder().id(schemaId).build())
-                                    .isReadOnly(isReadOnly)
                                     .build();
                             BPARestrictions db = repo.save(def);
                             result.setConfig(TrustedIssuer
@@ -102,8 +111,11 @@ public class RestrictionsManager {
                         log.error("aca-py not available", e);
                     } catch (AriesException e) {
                         if (e.getCode() == 404) {
-                            log.warn("Did: {} is not on the ledger", issuerDid);
+                            String msg = this.msg.getMessage("api.schema.restriction.issuer.not.found",
+                                    Map.of("did", issuerDid));
+                            throw new WrongApiUsageException(msg);
                         }
+                        throw new WrongApiUsageException(e.getMessage());
                     }
                 }
             });
@@ -111,24 +123,46 @@ public class RestrictionsManager {
         return Optional.ofNullable(result.getConfig());
     }
 
-    void resetReadOnly() {
-        repo.deleteByIsReadOnly(Boolean.TRUE);
-    }
-
+    @CacheInvalidate("issuer-label-cache")
     public void deleteById(@NonNull UUID id) {
         repo.deleteById(id);
     }
 
-    void deleteBySchema(@NonNull BPASchema schema) {
-        repo.deleteBySchema(schema);
-    }
-
+    @CacheInvalidate("issuer-label-cache")
     public void updateLabel(@NonNull UUID id, String label) {
         repo.updateLabel(id, label);
     }
 
     public Optional<BPARestrictions> findById(@NonNull UUID id) {
         return repo.findById(id);
+    }
+
+    public String prefixIssuerDid(@NonNull String issuerDid) {
+        return issuerDid.startsWith("did:") ? issuerDid : didPrefix + issuerDid;
+    }
+
+    /**
+     * Resolve the label of the trusted issuer either by did or credDefId
+     * 
+     * @param expression either did (qualified or unqualified) or credential
+     *                   definition id
+     * @return label of the trusted issuer if set
+     */
+    @Cacheable("issuer-label-cache")
+    public @Nullable String findIssuerLabelByDid(@Nullable String expression) {
+        String did = null;
+        if (AriesStringUtil.isCredDef(expression)) {
+            did = didPrefix + AriesStringUtil.credDefIdGetDid(expression);
+        } else if (StringUtils.isNotEmpty(expression)) {
+            did = prefixIssuerDid(expression);
+        }
+        if (did != null) {
+            Optional<BPARestrictions> restriction = repo.findByIssuerDid(did);
+            if (restriction.isPresent()) {
+                return restriction.get().getLabel();
+            }
+        }
+        return null;
     }
 
     @Data

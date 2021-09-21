@@ -17,6 +17,8 @@
  */
 package org.hyperledger.bpa.impl.activity;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +30,6 @@ import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.jsonld.VerifyResponse;
 import org.hyperledger.bpa.api.exception.NetworkException;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.Optional;
 

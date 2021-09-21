@@ -19,21 +19,35 @@ package org.hyperledger.bpa.controller.api.issuer;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.JsonNode;
+import io.micronaut.core.annotation.Introspected;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
+import org.hyperledger.bpa.impl.verification.ValidUUID;
 
+import javax.validation.constraints.NotBlank;
+
+@Introspected
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class IssueCredentialSendRequest {
     // bpa ids
+    @NotBlank
+    @ValidUUID
     private String credDefId;
+    @NotBlank
+    @ValidUUID
     private String partnerId;
 
+    /** credential exchange api version */
+    private ExchangeVersion exchangeVersion;
+
+    /** credential body key value pairs */
     @JsonRawValue
     @Schema(example = "{}")
     private JsonNode document;

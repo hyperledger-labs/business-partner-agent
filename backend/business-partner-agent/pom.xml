@@ -29,13 +29,6 @@
         <dependency>
             <groupId>io.micronaut</groupId>
             <artifactId>micronaut-inject</artifactId>
-            <exclusions>
-                <exclusion>
-                    <!-- Incompatible license! -->
-                    <groupId>javax.annotation</groupId>
-                    <artifactId>javax.annotation-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.micronaut</groupId>
@@ -101,13 +94,10 @@
             <version>2.2.3</version>
             <scope>provided</scope><!-- Prevent shipping -->
         </dependency>
-        <!-- Micronaut license overwrites -->
-        <!-- Drop in for javax.annotation-api -->
-        <!-- TODO delete once micronaut has removed javax annotations -->
-        <dependency>
+        <dependency><!-- Overwrite for jakarta-annotations-api -->
             <groupId>org.apache.tomcat</groupId>
-            <artifactId>annotations-api</artifactId>
-            <version>6.0.53</version>
+            <artifactId>tomcat-annotations-api</artifactId>
+            <version>10.1.0-M4</version>
         </dependency>
 
         <!-- Logging -->
@@ -128,7 +118,7 @@
         <dependency>
             <groupId>network.idu.acapy</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.7.0-pre.3.1</version>
+            <version>0.7.5</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>
@@ -155,7 +145,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>5.5.1</version>
+            <version>5.5.2</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
@@ -336,6 +326,7 @@
                             <extendedInfo>true</extendedInfo>
                             <writeExcelFile>true</writeExcelFile>
                             <excludedScopes>test,provided</excludedScopes>
+                            <excludedArtifacts>business-partner-agent-core</excludedArtifacts>
                             <licenseMerges>
                                 <licenseMerge>The Apache Software License, Version 2.0|The Apache License, Version 2.0|Apache License, Version 2.0|Apache License 2.0|Apache 2.0</licenseMerge>
                                 <licenseMerge>The MIT License|MIT License</licenseMerge>
@@ -396,8 +387,8 @@
                                 </goals>
                                 <configuration>
                                     <!-- See https://nodejs.org/en/download/ -->
-                                    <nodeVersion>v14.17.0</nodeVersion>
-                                    <npmVersion>6.14.13</npmVersion>
+                                    <nodeVersion>v14.17.5</nodeVersion>
+                                    <npmVersion>6.14.14</npmVersion>
                                 </configuration>
                             </execution>
                             <execution>
@@ -407,7 +398,7 @@
                                     <goal>npm</goal>
                                 </goals>
                                 <configuration>
-                                    <arguments>install</arguments>
+                                    <arguments>install --no-optional</arguments>
                                 </configuration>
                             </execution>
                             <execution>

@@ -21,9 +21,9 @@ import io.micronaut.context.annotation.Value;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.oauth2.endpoint.endsession.request.EndSessionEndpoint;
+import jakarta.inject.Singleton;
 import org.hyperledger.bpa.security.oauth2.client.RequiresKeycloak;
 
-import javax.inject.Singleton;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 

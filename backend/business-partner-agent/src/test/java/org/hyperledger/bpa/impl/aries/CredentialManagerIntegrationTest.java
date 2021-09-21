@@ -18,21 +18,18 @@
 package org.hyperledger.bpa.impl.aries;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import jakarta.inject.Inject;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.RunWithAries;
-import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.client.CachingAriesClient;
 import org.hyperledger.bpa.impl.activity.CryptoManager;
 import org.hyperledger.bpa.impl.activity.Identity;
 import org.hyperledger.bpa.impl.activity.VPManager;
-import org.hyperledger.bpa.model.MyCredential;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CredentialManagerIntegrationTest extends RunWithAries {
 
     @Inject
-    CredentialManager mgmt;
+    HolderCredentialManager mgmt;
 
     @Inject
     MyCredentialRepository credRepo;
@@ -71,7 +68,7 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
     void testDeleteCredential() throws Exception {
         // create credential
         final V1CredentialExchange credEx = createNewCredential();
-        mgmt.handleCredentialAcked(credEx);
+        mgmt.handleV1CredentialExchangeAcked(credEx);
         assertEquals(1, credRepo.count());
         assertTrue(vpMgmt.getVerifiablePresentation().isEmpty());
 
@@ -92,13 +89,6 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
     }
 
     private V1CredentialExchange createNewCredential() {
-        credRepo.save(MyCredential
-                .builder()
-                .type(CredentialType.SCHEMA_BASED)
-                .isPublic(Boolean.FALSE)
-                .connectionId("dummy")
-                .state(CredentialExchangeState.CREDENTIAL_ISSUED)
-                .threadId("cab34089-446c-411d-948e-9ed39ba6777f").build());
         final String ex = loader.load("files/credentialExchange.json");
         return GsonConfig.defaultConfig().fromJson(ex, V1CredentialExchange.class);
     }

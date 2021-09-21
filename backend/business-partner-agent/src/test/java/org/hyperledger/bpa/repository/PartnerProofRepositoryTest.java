@@ -18,12 +18,11 @@
 package org.hyperledger.bpa.repository;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.junit.jupiter.api.Test;
 
-import javax.inject.Inject;
-import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,7 +44,7 @@ class PartnerProofRepositoryTest {
                 .presentationExchangeId("pres-1")
                 .build();
         pp = repo.save(pp);
-        long uc = repo.updateReceivedProof(pp.getId(), Instant.now(), Boolean.TRUE, PresentationExchangeState.VERIFIED,
+        long uc = repo.updateReceivedProof(pp.getId(), Boolean.TRUE, PresentationExchangeState.VERIFIED,
                 Map.of("testKey", "testValue"));
         assertEquals(1, uc);
 

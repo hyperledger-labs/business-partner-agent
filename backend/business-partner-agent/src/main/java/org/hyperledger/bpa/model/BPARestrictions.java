@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.model;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
 import lombok.AllArgsConstructor;
@@ -24,7 +25,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import io.micronaut.core.annotation.Nullable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -52,8 +52,6 @@ public class BPARestrictions {
 
     @Nullable
     private String label;
-
-    private Boolean isReadOnly;
 
     private String issuerDid;
 }

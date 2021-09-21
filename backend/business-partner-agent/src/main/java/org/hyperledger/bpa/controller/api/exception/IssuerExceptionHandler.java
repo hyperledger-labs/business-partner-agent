@@ -23,19 +23,26 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.Produces;
 import io.micronaut.http.server.exceptions.ExceptionHandler;
+import io.micronaut.http.server.exceptions.response.ErrorContext;
+import io.micronaut.http.server.exceptions.response.ErrorResponseProcessor;
+import jakarta.inject.Singleton;
+import lombok.AllArgsConstructor;
 import org.hyperledger.bpa.api.exception.IssuerException;
-
-import javax.inject.Singleton;
 
 @Produces
 @Singleton
+@AllArgsConstructor
 @Requires(classes = { IssuerException.class, ExceptionHandler.class })
 public class IssuerExceptionHandler implements ExceptionHandler<IssuerException, HttpResponse<?>> {
 
+    private final ErrorResponseProcessor<?> errorResponseProcessor;
+
     @Override
-    public HttpResponse<?> handle(HttpRequest request, IssuerException exception) {
-        return HttpResponse.status(HttpStatus.PRECONDITION_FAILED)
-                .body(new ErrorMessage(exception.getMessage()));
+    public HttpResponse<?> handle(HttpRequest request, IssuerException e) {
+        return errorResponseProcessor.processResponse(ErrorContext.builder(request)
+                .cause(e)
+                .errorMessage(e.getMessage())
+                .build(), HttpResponse.status(HttpStatus.PRECONDITION_FAILED));
     }
 
 }

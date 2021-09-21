@@ -52,7 +52,9 @@
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-bpa-button color="secondary" @click="cancel()">Cancel</v-bpa-button>
+          <v-bpa-button color="secondary" @click="cancel()"
+            >Cancel</v-bpa-button
+          >
           <v-bpa-button
             :loading="this.isBusy"
             color="primary"
@@ -91,7 +93,7 @@ export default {
   created() {
     EventBus.$emit("title", "Credential");
     this.getCredential();
-    this.$store.commit("credentialSeen", { id: this.id });
+    this.$store.commit("credentialNotificationSeen", { id: this.id });
   },
   data: () => {
     return {
@@ -125,8 +127,7 @@ export default {
           }
         })
         .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     saveChanges() {
@@ -184,8 +185,7 @@ export default {
           }
         })
         .catch((e) => {
-          console.error(e);
-          EventBus.$emit("error", e);
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     cancel() {

@@ -25,10 +25,9 @@ import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Inject;
 import org.hyperledger.bpa.controller.api.stats.BPAStats;
 import org.hyperledger.bpa.impl.StatsService;
-
-import javax.inject.Inject;
 
 @Controller("/api/status")
 @Tag(name = "Status")

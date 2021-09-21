@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.repository;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
@@ -25,7 +26,7 @@ import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.model.MyCredential;
 
-import io.micronaut.core.annotation.Nullable;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -43,7 +44,9 @@ public interface MyCredentialRepository extends CrudRepository<MyCredential, UUI
 
     Number updateByConnectionId(String id, String connectionId, @Nullable String issuer);
 
-    Optional<MyCredential> findByThreadId(String threadId);
+    Optional<MyCredential> findByCredentialExchangeId(String credentialExchangeId);
+
+    Optional<MyCredential> findByReferent(String referent);
 
     List<MyCredential> findByConnectionId(String connectionId);
 
@@ -54,5 +57,12 @@ public interface MyCredentialRepository extends CrudRepository<MyCredential, UUI
     List<MyCredential> findBySchemaIdAndCredentialDefinitionId(String schemaId, String credentialDefinitionId);
 
     Long countByStateEquals(CredentialExchangeState state);
+
+    Long countByStateEqualsAndIssuedAtAfter(CredentialExchangeState state, Instant issuedAt);
+
+    @Query("SELECT * FROM my_credential WHERE type = 'INDY' AND referent IS NOT NULL AND (revoked IS NULL OR revoked = false)")
+    List<MyCredential> findNotRevoked();
+
+    Number updateRevoked(@Id UUID id, Boolean revoked);
 
 }

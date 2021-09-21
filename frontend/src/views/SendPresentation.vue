@@ -27,7 +27,9 @@
 
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-bpa-button color="secondary" @click="cancel()">{{ $t("button.cancel") }}</v-bpa-button>
+          <v-bpa-button color="secondary" @click="cancel()">{{
+            $t("button.cancel")
+          }}</v-bpa-button>
           <v-bpa-button
             :loading="this.isBusy"
             color="primary"
@@ -104,8 +106,7 @@ export default {
             })
             .catch((e) => {
               this.isBusy = false;
-              console.error(e);
-              EventBus.$emit("error", e);
+              EventBus.$emit("error", this.$axiosErrorMessage(e));
             });
         } else {
           this.isBusy = false;

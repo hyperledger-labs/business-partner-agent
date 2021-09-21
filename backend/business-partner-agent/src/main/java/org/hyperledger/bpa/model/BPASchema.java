@@ -17,20 +17,17 @@
  */
 package org.hyperledger.bpa.model;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
 import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import io.micronaut.core.annotation.Nullable;
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.UUID;
 
 @Data
@@ -50,21 +47,20 @@ public class BPASchema {
     @Nullable
     private String label;
 
-    private Boolean isReadOnly;
-
     private String schemaId;
 
     @TypeDef(type = DataType.JSON)
-    private Set<String> schemaAttributeNames;
+    @Singular
+    private SortedSet<String> schemaAttributeNames;
 
     @Nullable
     private String defaultAttributeName;
 
     private Integer seqNo;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     private List<BPARestrictions> restrictions;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     private List<BPACredentialDefinition> credentialDefinitions;
 }

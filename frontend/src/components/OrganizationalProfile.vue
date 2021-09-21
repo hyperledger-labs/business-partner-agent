@@ -90,8 +90,8 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-divider></v-divider>
-    <v-row class="pt-3">
+    <v-divider class="my-4"></v-divider>
+    <v-row>
       <v-col cols="4" class="pb-0">
         <p class="grey--text text--darken-2 font-weight-medium">
           Address Information
@@ -184,7 +184,6 @@ export default {
         id: "",
         type: "",
       });
-      console.log(this.documentData.identifier);
     },
     deleteIdentifier(i) {
       this.documentData.identifier.splice(i, 1);
@@ -194,6 +193,6 @@ export default {
       this.intDoc.label = event;
     },
   },
-  components: {VBpaButton},
+  components: { VBpaButton },
 };
 </script>
