@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.activity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.cache.annotation.Cacheable;
 import io.micronaut.core.util.CollectionUtils;
 import jakarta.inject.Inject;
@@ -49,9 +48,6 @@ public class PartnerLookup {
 
     @Inject
     CryptoManager crypto;
-
-    @Inject
-    ObjectMapper mapper;
 
     @Cacheable(cacheNames = { "partner-lookup-cache" })
     public PartnerAPI lookupPartner(@NonNull String did) {
