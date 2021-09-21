@@ -28,15 +28,14 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.acy_py.generated.model.V20CredExRecord;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.credentials.CredentialPreview;
 import org.hyperledger.aries.api.exception.AriesException;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialProposalRequest;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
@@ -102,40 +101,34 @@ public class HolderCredentialManager {
     ApplicationEventPublisher eventPublisher;
 
     // request credential from issuer (partner)
-    public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId) {
-        final Optional<Partner> dbPartner = partnerRepo.findById(partnerId);
-        if (dbPartner.isPresent()) {
-            final Optional<MyDocument> dbDoc = docRepo.findById(myDocId);
-            if (dbDoc.isPresent()) {
-                if (!CredentialType.INDY.equals(dbDoc.get().getType())) {
-                    throw new PartnerException("Only documents that are based on a " +
-                            "schema can be converted into a credential");
-                }
-                try {
-                    final Optional<org.hyperledger.bpa.model.BPASchema> s = schemaService
-                            .getSchemaFor(dbDoc.get().getSchemaId());
-                    if (s.isPresent()) {
-                        ac.issueCredentialSendProposal(
-                                V1CredentialProposalRequest
-                                        .builder()
-                                        .connectionId(Objects.requireNonNull(dbPartner.get().getConnectionId()))
-                                        .schemaId(s.get().getSchemaId())
-                                        .credentialProposal(
-                                                new CredentialPreview(
-                                                        CredentialAttributes.from(
-                                                                Objects.requireNonNull(dbDoc.get().getDocument()))))
-                                        .build());
-                    } else {
-                        throw new PartnerException("No configured schema found for id: " + dbDoc.get().getSchemaId());
-                    }
-                } catch (IOException e) {
-                    throw new NetworkException("No aries connection", e);
-                }
+    public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId, @Nullable ExchangeVersion version) {
+        Partner dbPartner = partnerRepo.findById(partnerId)
+                .orElseThrow(() -> new PartnerException("No partner found for id: " + partnerId));
+        MyDocument dbDoc = docRepo.findById(myDocId)
+                .orElseThrow(() -> new PartnerException("No document found for id: " + myDocId));
+        if (!CredentialType.INDY.equals(dbDoc.getType())) {
+            throw new PartnerException("Only documents that are based on a " +
+                    "schema can be converted into a credential");
+        }
+        try {
+            org.hyperledger.bpa.model.BPASchema s = schemaService.getSchemaFor(dbDoc.getSchemaId())
+                    .orElseThrow(() -> new PartnerException("No configured schema found for id: " + dbDoc.getSchemaId()));
+            V1CredentialProposalRequest v1CredentialProposalRequest = V1CredentialProposalRequest
+                    .builder()
+                    .connectionId(Objects.requireNonNull(dbPartner.getConnectionId()))
+                    .schemaId(s.getSchemaId())
+                    .credentialProposal(
+                            new CredentialPreview(
+                                    CredentialAttributes.from(
+                                            Objects.requireNonNull(dbDoc.getDocument()))))
+                    .build();
+            if (version == null || ExchangeVersion.V1.equals(version)) {
+                ac.issueCredentialSendProposal(v1CredentialProposalRequest);
             } else {
-                throw new PartnerException("No document found for id: " + myDocId);
+                ac.issueCredentialV2SendProposal(v1CredentialProposalRequest);
             }
-        } else {
-            throw new PartnerException("No partner found for id: " + partnerId);
+        } catch (IOException e) {
+            throw new NetworkException("No aries connection", e);
         }
     }
 
@@ -292,27 +285,27 @@ public class HolderCredentialManager {
         fireCredentialAddedEvent(dbCredential);
     }
 
-    public void handleV2CredentialExchangeReceived(@NonNull V20CredExRecord credEx) {
+    public void handleV2CredentialReceived(@NonNull V20CredExRecord credEx) {
         V2ToV1IndyCredentialConverter.INSTANCE().toV1(credEx).ifPresent(c -> {
             MyCredential dbCred = MyCredential.defaultCredentialBuilder()
                     .connectionId(credEx.getConnectionId())
                     .threadId(credEx.getThreadId())
                     .credentialExchangeId(credEx.getCredExId())
                     .referent(credEx.getCredExId())
-                    .state(CredentialExchangeState.fromV2(credEx.getState()))
+                    .state(credEx.getState())
                     .exchangeVersion(ExchangeVersion.V2)
                     .build();
             credRepo.save(dbCred);
         });
     }
 
-    public void handleV2CredentialExchangeDone(@NonNull V20CredExRecord credEx) {
+    public void handleV2CredentialDone(@NonNull V20CredExRecord credEx) {
         credRepo.findByCredentialExchangeId(credEx.getCredExId()).ifPresent(
                 dbCred -> V2ToV1IndyCredentialConverter.INSTANCE().toV1(credEx)
                         .ifPresent(c -> {
                             String label = labelStrategy.apply(c);
                             dbCred
-                                    .setState(CredentialExchangeState.fromV2(credEx.getState()))
+                                    .setState(credEx.getState())
                                     .setCredential(conv.toMap(c))
                                     .setLabel(label)
                                     .setIssuer(resolveIssuer(c));

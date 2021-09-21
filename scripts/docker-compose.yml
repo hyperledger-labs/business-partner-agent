@@ -33,7 +33,7 @@ services:
       - ${BPA_PORT}:${BPA_PORT}
     restart: always
   bpa-agent1:
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.0
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.1
     ports:
       - ${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}
       - ${ACAPY_HTTP_PORT}:${ACAPY_HTTP_PORT}
@@ -47,7 +47,7 @@ services:
         --auto-provision
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY_HTTP_PORT} \
-        --webhook-url '${BPA_WEBHOOK_URL}#${BPA_WEBHOOK_KEY}' \
+        --webhook-url ${BPA_WEBHOOK_URL}#${BPA_WEBHOOK_KEY} \
         --genesis-url '${ACAPY_GENESIS_URL}' \
         --endpoint ${ACAPY_ENDPOINT} \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \
@@ -60,8 +60,8 @@ services:
         --label '${AGENT_NAME}' \
         ${ACAPY_ADMIN_CONFIG} \
         ${ACAPY_READ_ONLY_MODE} \
-        ${ACAPY_TAILS_BASE_URL} \       
-        ${ACAPY_TAILS_UPLOAD_URL} \   
+        ${ACAPY_TAILS_BASE_URL} \
+        ${ACAPY_TAILS_UPLOAD_URL} \
         "
     ]
     volumes:
@@ -113,7 +113,7 @@ services:
   bpa-agent2:
     profiles:
       - second_bpa
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.0
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.1
     ports:
       - ${ACAPY2_ADMIN_PORT}:${ACAPY2_ADMIN_PORT}
       - ${ACAPY2_HTTP_PORT}:${ACAPY2_HTTP_PORT}       
@@ -127,7 +127,7 @@ services:
         --auto-provision
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY2_HTTP_PORT} \
-        --webhook-url '${BPA2_WEBHOOK_URL}#${BPA_WEBHOOK_KEY}' \
+        --webhook-url ${BPA2_WEBHOOK_URL}#${BPA_WEBHOOK_KEY} \
         --genesis-url '${ACAPY_GENESIS_URL}' \
         --endpoint ${ACAPY2_ENDPOINT} \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \

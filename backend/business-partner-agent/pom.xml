@@ -61,6 +61,7 @@
         <dependency>
             <groupId>io.micronaut.data</groupId>
             <artifactId>micronaut-data-jdbc</artifactId>
+            <version>${micronaut.data.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>jakarta.transaction</groupId>
@@ -118,7 +119,7 @@
         <dependency>
             <groupId>network.idu.acapy</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.7.5</version>
+            <version>0.7.7-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>
@@ -387,8 +388,8 @@
                                 </goals>
                                 <configuration>
                                     <!-- See https://nodejs.org/en/download/ -->
-                                    <nodeVersion>v14.17.5</nodeVersion>
-                                    <npmVersion>6.14.14</npmVersion>
+                                    <nodeVersion>v14.17.6</nodeVersion>
+                                    <npmVersion>6.14.15</npmVersion>
                                 </configuration>
                             </execution>
                             <execution>
