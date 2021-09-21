@@ -101,7 +101,8 @@ public class HolderCredentialManager {
     ApplicationEventPublisher eventPublisher;
 
     // request credential from issuer (partner)
-    public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId, @Nullable ExchangeVersion version) {
+    public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId,
+            @Nullable ExchangeVersion version) {
         Partner dbPartner = partnerRepo.findById(partnerId)
                 .orElseThrow(() -> new PartnerException("No partner found for id: " + partnerId));
         MyDocument dbDoc = docRepo.findById(myDocId)
@@ -112,7 +113,8 @@ public class HolderCredentialManager {
         }
         try {
             org.hyperledger.bpa.model.BPASchema s = schemaService.getSchemaFor(dbDoc.getSchemaId())
-                    .orElseThrow(() -> new PartnerException("No configured schema found for id: " + dbDoc.getSchemaId()));
+                    .orElseThrow(
+                            () -> new PartnerException("No configured schema found for id: " + dbDoc.getSchemaId()));
             V1CredentialProposalRequest v1CredentialProposalRequest = V1CredentialProposalRequest
                     .builder()
                     .connectionId(Objects.requireNonNull(dbPartner.getConnectionId()))

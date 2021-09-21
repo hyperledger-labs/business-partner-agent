@@ -50,8 +50,11 @@ public class InvitationParser {
 
     OkHttpClient httpClient = new OkHttpClient.Builder().followRedirects(false).build();
 
-    static List<String> CONNECTION_INVITATION_TYPES = List.of("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/invitation","https://didcomm.org/connections/1.0/invitation");
-    static List<String> OOB_INVITATION_TYPES = List.of("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/out-of-band/1.0/invitation","https://didcomm.org/out-of-band/1.0/invitation");
+    static List<String> CONNECTION_INVITATION_TYPES = List.of(
+            "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/invitation",
+            "https://didcomm.org/connections/1.0/invitation");
+    static List<String> OOB_INVITATION_TYPES = List.of("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/out-of-band/1.0/invitation",
+            "https://didcomm.org/out-of-band/1.0/invitation");
 
     @Inject
     @Setter(AccessLevel.PACKAGE)

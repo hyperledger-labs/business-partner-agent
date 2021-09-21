@@ -26,7 +26,6 @@ import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 
 import java.util.Map;
@@ -92,7 +91,8 @@ public class CredEx {
                 .credential(Credential
                         .builder()
                         .schemaId(db.getSchema() != null ? db.getSchema().getSchemaId() : null)
-                        .credentialDefinitionId(db.getCredDef() != null ? db.getCredDef().getCredentialDefinitionId() : null)
+                        .credentialDefinitionId(
+                                db.getCredDef() != null ? db.getCredDef().getCredentialDefinitionId() : null)
                         .attrs(credentialAttrs)
                         .build())
                 .role(db.getRole())

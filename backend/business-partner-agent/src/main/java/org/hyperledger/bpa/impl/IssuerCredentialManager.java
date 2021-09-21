@@ -356,7 +356,8 @@ public class IssuerCredentialManager {
                 ac.issueCredentialV2RecordsSendOffer(credEx.getCredentialExchangeId(), v1Offer);
             }
             Credential credential = Credential.builder()
-                    .attrs(attributes.stream().collect(Collectors.toMap(CredentialAttributes::getName, CredentialAttributes::getValue)))
+                    .attrs(attributes.stream()
+                            .collect(Collectors.toMap(CredentialAttributes::getName, CredentialAttributes::getValue)))
                     .build();
             credEx.setCredential(credential);
             credExRepo.updateCredential(credEx.getId(), credential);
