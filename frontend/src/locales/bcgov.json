@@ -8,7 +8,7 @@
   },
   "dashboard": {
     "credentialsSent": "Credentials Your Organization Issued",
-    "credentialsReceived": "Credentials Your Organization Holds",
+    "credentialsReceived": "Credentials Issued to Your Organization",
     "presentationRequestsSent": "Proof Requests Sent",
     "presentationRequestsReceived": "Proof Requests Received",
     "partners": "Secure Connections",
@@ -16,7 +16,7 @@
   },
   "view": {
     "notifications": {
-      "title": "Tasks",
+      "title": "Notifications",
       "activities": {
         "title": "Event History"
       },
@@ -26,19 +26,19 @@
     },
     "profile": {
       "title": "Your Organization",
-      "subtitle": "This is the information shared with your organization's secure connections. To update it, please go to the Held Credentials page."
+      "subtitle": "This is the public information of your organization. To update it, please go to the <strong>Held Credentials</strong> page."
     },
     "wallet": {
       "title": "Held Credentials",
       "credentials": {
-        "title": "Credentials Your Organization Holds"
+        "title": "Verified Credentials Issued to Your Organization"
       },
       "documents": {
-        "title": "UnVerified Data"
+        "title": "Unverified Information of your Organization"
       },
       "visibility": {
         "title": "Visibility",
-        "__TODO": "This is not correct, it's public profile",
+        "___subtitle": "Visible to your organization's secure connections",
         "subtitle": "Visible to other BPA's before they request a connection"
       }
     },
@@ -114,6 +114,15 @@
         "declined": "Request for proof has been declined",
         "received": "A Proof has been requested",
         "sent": "Request for Proof sent"
+      }
+    }
+  },
+  "common":{
+    "tables":{
+      "headers":{
+        "lastUpdateDate":"Updated at",
+        "createdBy":"Created by",
+        "issuedBy":"Issued by"
       }
     }
   }
