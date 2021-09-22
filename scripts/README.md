@@ -1,4 +1,4 @@
-# Docker-compose setup
+# Docker-compose Setup
 
 ## Prerequistes
 
