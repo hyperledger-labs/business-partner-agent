@@ -13,5 +13,5 @@ jobs:
           keep: 20
           dry-run: true
           names: |
-            ghcr.io/hyperledger-labs/business-partner-agent
-            ghcr.io/hyperledger-labs/business-partner-agent-license
+            business-partner-agent
+            business-partner-agent-license
