@@ -18,17 +18,19 @@
 package org.hyperledger.bpa.model;
 
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
 import io.micronaut.data.annotation.DateUpdated;
 import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.Accessors;
+import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
 
@@ -36,6 +38,7 @@ import javax.persistence.*;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Stores issued credentials
@@ -45,10 +48,12 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Builder
+@Accessors(chain = true)
 @Entity
 @Table(name = "bpa_credential_exchange")
-public class BPACredentialExchange {
+public class BPACredentialExchange extends ExchangeStateDecorator<BPACredentialExchange, CredentialExchangeState> {
 
     @Id
     @AutoPopulated
@@ -60,17 +65,20 @@ public class BPACredentialExchange {
     @DateUpdated
     private Instant updatedAt;
 
+    @Nullable
     @OneToOne
     private BPASchema schema;
 
+    @Nullable
     @OneToOne
     private BPACredentialDefinition credDef;
 
     @OneToOne
     private Partner partner;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private CredentialType type;
+    private CredentialType type = CredentialType.INDY;
 
     @Nullable
     private String label;
@@ -79,19 +87,29 @@ public class BPACredentialExchange {
 
     private String credentialExchangeId;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private CredentialExchangeRole role;
+    private CredentialExchangeRole role = CredentialExchangeRole.ISSUER;
 
     @Enumerated(EnumType.STRING)
     private CredentialExchangeState state;
 
     @Nullable
+    @TypeDef(type = DataType.JSON)
+    private ExchangeStateDecorator.ExchangeStateToTimestamp<CredentialExchangeState> stateToTimestamp;
+
+    @Nullable
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private ExchangeVersion exchangeVersion;
+    private ExchangeVersion exchangeVersion = ExchangeVersion.V1;
 
     @Nullable
     @TypeDef(type = DataType.JSON)
-    private Map<String, Object> credential;
+    private Credential credential; // do not store reference to schema and cred def here
+
+    @Nullable
+    @TypeDef(type = DataType.JSON)
+    private V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialProposal;
 
     // revocation - link to issued credential
     /** credential revocation identifier */
@@ -104,4 +122,33 @@ public class BPACredentialExchange {
     @Nullable
     private Boolean revoked;
 
+    @Nullable
+    private String errorMsg;
+
+    public Map<String, String> proposalAttributesToMap() {
+        if (credentialProposal == null || CollectionUtils.isEmpty(credentialProposal.getAttributes())) {
+            return Map.of();
+        }
+        return credentialProposal.getAttributes()
+                .stream()
+                .collect(Collectors.toMap(CredentialAttributes::getName, CredentialAttributes::getValue));
+    }
+
+    public Map<String, String> credentialAttributesToMap() {
+        if (credential == null || CollectionUtils.isEmpty(credential.getAttrs())) {
+            return Map.of();
+        }
+        return credential.getAttrs();
+    }
+
+    // extends lombok builder
+    public static class BPACredentialExchangeBuilder {
+        public BPACredentialExchange.BPACredentialExchangeBuilder pushStateChange(
+                @NonNull CredentialExchangeState state, @NonNull Instant ts) {
+            this.stateToTimestamp(ExchangeStateDecorator.ExchangeStateToTimestamp.<CredentialExchangeState>builder()
+                    .stateToTimestamp(Map.of(state, ts))
+                    .build());
+            return this;
+        }
+    }
 }

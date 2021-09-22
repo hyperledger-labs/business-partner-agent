@@ -73,7 +73,7 @@ public class RestrictionsManager {
             throw new WrongApiUsageException(msg.getMessage("api.schema.restriction.schema.not.found",
                     Map.of("id", sId)));
         }
-        if (repo.existsByIssuerDid(prefixIssuerDid(issuerDid))) {
+        if (repo.findBySchemaIdAndIssuerDid(sId, prefixIssuerDid(issuerDid)).isPresent()) {
             throw new WrongApiUsageException(msg.getMessage("api.schema.restriction.already.configured",
                     Map.of("did", issuerDid)));
         }

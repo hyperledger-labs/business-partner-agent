@@ -18,13 +18,16 @@
 package org.hyperledger.bpa.repository;
 
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
+import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.model.BPACredentialExchange;
+import org.hyperledger.bpa.model.ExchangeStateDecorator;
 
 import java.time.Instant;
 import java.util.List;
@@ -58,12 +61,24 @@ public interface BPACredentialExchangeRepository extends CrudRepository<BPACrede
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     List<BPACredentialExchange> listOrderByUpdatedAtDesc();
 
-    int updateRevoked(@Id UUID id, Boolean revoked);
-
     Long countByStateEquals(CredentialExchangeState state);
 
     Long countByStateEqualsAndCreatedAtAfter(CredentialExchangeState state, Instant createdAt);
 
-    Number updateState(@Id UUID id, CredentialExchangeState state);
+    Number updateCredential(@Id UUID id, Credential credential);
+
+    Number updateAfterEventWithRevocationInfo(@Id UUID id,
+            CredentialExchangeState state,
+            ExchangeStateDecorator.ExchangeStateToTimestamp<CredentialExchangeState> stateToTimestamp,
+            @Nullable String revRegId,
+            @Nullable String credRevId,
+            @Nullable String errorMsg);
+
+    Number updateAfterEventNoRevocationInfo(@Id UUID id,
+            CredentialExchangeState state,
+            ExchangeStateDecorator.ExchangeStateToTimestamp<CredentialExchangeState> stateToTimestamp,
+            @Nullable String errorMsg);
+
+    Number updateRevocationInfo(@Id UUID id, @Nullable String revRegId, @Nullable String credRevId);
 
 }
