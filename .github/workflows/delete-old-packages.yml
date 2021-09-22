@@ -1,7 +1,7 @@
 name: Delete old packages
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 * * * *'
 jobs:
   cleanup:
     name: Delete old packages
