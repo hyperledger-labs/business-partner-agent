@@ -74,7 +74,7 @@ export default {
           value: "partner",
         },
         {
-          text: "Last Updated",
+          text: "Update at",
           value: "updatedAt",
         },
         {

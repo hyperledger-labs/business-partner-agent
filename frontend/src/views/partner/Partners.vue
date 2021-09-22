@@ -89,7 +89,7 @@ export default {
           value: "address",
         },
         {
-          text: "Last Updated",
+          text: "Update at",
           value: "updatedAt",
         },
         {
