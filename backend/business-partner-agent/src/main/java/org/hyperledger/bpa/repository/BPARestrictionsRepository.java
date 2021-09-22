@@ -19,6 +19,7 @@ package org.hyperledger.bpa.repository;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
@@ -34,9 +35,14 @@ public interface BPARestrictionsRepository extends CrudRepository<BPARestriction
 
     void updateLabel(@Id UUID id, @Nullable String label);
 
-    boolean existsByIssuerDid(String issuerDid);
-
     List<BPARestrictions> findBySchema(BPASchema schema);
 
     Optional<BPARestrictions> findByIssuerDid(String issuerDid);
+
+    @Query("SELECT * FROM bpa_restrictions r " +
+            "LEFT JOIN bpaschema s ON r.schema_id = s.id " +
+            "WHERE r.issuer_did = :issuerDid " +
+            "AND r.schema_id = :schemaId " +
+            "LIMIT 1")
+    Optional<BPARestrictions> findBySchemaIdAndIssuerDid(UUID schemaId, String issuerDid);
 }
