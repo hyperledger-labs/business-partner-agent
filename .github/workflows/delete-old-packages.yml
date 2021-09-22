@@ -1,0 +1,17 @@
+name: Delete old packages
+on:
+  schedule:
+    - cron: '0 0 * * *'
+jobs:
+  cleanup:
+    name: Delete old packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old packages
+        uses: smartsquaregmbh/delete-old-packages@v0.3.1
+        with:
+          keep: 20
+          dry-run: true
+          names: |
+            ghcr.io/hyperledger-labs/business-partner-agent
+            ghcr.io/hyperledger-labs/business-partner-agent-license
