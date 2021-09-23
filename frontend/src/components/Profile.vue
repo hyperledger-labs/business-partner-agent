@@ -57,7 +57,9 @@
       <v-container fill-height fluid text-center>
         <v-row align="center" justify="center">
           <v-col>
-            <h4 class="grey--text">Partner does not share a public profile</h4>
+            <h4 class="grey--text">
+              {{ $t("component.partnerProfile.notFound")
+            </h4>
           </v-col>
         </v-row>
       </v-container>

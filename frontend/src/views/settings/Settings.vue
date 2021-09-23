@@ -24,7 +24,7 @@
         <v-list-item-content>
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
-            >Schemas and Trusted Issuers</v-list-item-title
+            >{{ $t("view.settings.schemaManagement") }}</v-list-item-title
           >
         </v-list-item-content>
         <v-list-item-action>

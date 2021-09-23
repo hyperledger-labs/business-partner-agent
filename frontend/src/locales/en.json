@@ -139,17 +139,22 @@
       }
     },
     "settings":{
-      "walletDID": "Wallet DID"
-    }
+      "walletDID": "Wallet DID",
+      "schemaManagement": "Schemas and Trusted Issuers"    }
   },
   "component": {
     "organizationProfile": {
       "companyInfo": {
-        "section_title": "Company Information"
+        "sectionTitle": "Company Information",
+        "companyName": "Company Legal Name",
+        "companyAltName":"Company Alternate Name"
       },
       "addressInfo": {
-        "section_title": "Address Information"
+        "sectionTitle": "Address Information"
       }
+    },
+    "partnerProfile":{
+      "notFound": "Partner does not share a public profile"
     },
     "issueCredential": {
       "title": "Issue Credential",

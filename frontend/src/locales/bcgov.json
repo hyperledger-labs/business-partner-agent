@@ -38,27 +38,27 @@
       },
       "visibility": {
         "title": "Visibility",
-        "___subtitle": "Visible to your organization's secure connections",
-        "subtitle": "Visible to other BPA's before they request a connection"
+        "subtitle": ""
       }
     },
     "proofTemplates":{
-      "title": "Proof Templates"
+      "title": "Templates for Requesting Proof"
     },
     "partners": {
       "title": "Secure Connections"
     },
     "partner": {
-      "receivedPresentations": {
-        "title": "Received Proofs",
-        "text": "The proofs you received from your partner",
-        "button": "Request Proof"
-      },
-      "sentPresentations": {
-        "title": "Sent Proofs",
-        "text": "The proofs you sent to your partner",
-        "button": "Send Proof"
-      },
+      "presentationExchanges":{
+      "title": "Proof Exchanges With This Organization",
+      "button": {
+        "send": "Send Proof",
+        "request": "Request Proof"
+      }
+    },
+    "credentialExchanges": {
+      "title": "Credential Exchanges With This Organization",
+      "button": "Issue Credential"
+    },
       "addPartner": {
         "title": "Add New Secure Connection",
         "lookupPartnerBtnLabel": "Lookup Partner",
@@ -91,17 +91,23 @@
       }
     },
     "settings":{
-      "walletDID": "Your Organization's Decentalized Identifier (DID)"
+      "walletDID": "Your Organization's Decentalized Identifier (DID)",
+      "schemaManagement": "Schema, Credentials Definition, and Trusted Issuer Configuration" 
     }
   },
   "component": {
     "organizationProfile": {
       "companyInfo": {
-        "section_title": "Administrative Information"
+        "section_title": "Administrative Information",
+        "companyName": "Organization Legal Name",
+        "companyAltName":"Organization Alternate Name"
       },
       "addressInfo": {
         "section_title": "Address"
       }
+    },
+    "partnerProfile":{
+      "notFound": "This organization does not share any information"
     }
   },
   "constants": {

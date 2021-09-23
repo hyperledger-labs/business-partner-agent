@@ -24,7 +24,7 @@
           dense
         ></v-text-field>
         <v-text-field
-          label="Company Legal Name"
+          :label="$t('component.organizationProfile.companyInfo.companyName')"
           placeholder
           :disabled="isReadOnly"
           :rules="[(v) => !!v || 'Item is required']"
@@ -35,7 +35,9 @@
           :value="documentData.legalName"
         ></v-text-field>
         <v-text-field
-          label="Company Alternative Name"
+          :label="
+            $t('component.organizationProfile.companyInfo.companyAltName')
+          "
           placeholder
           v-model="documentData.altName"
           :disabled="isReadOnly"
