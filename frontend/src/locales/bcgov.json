@@ -42,7 +42,8 @@
       }
     },
     "proofTemplates":{
-      "title": "Templates for Requesting Proof"
+      "title": "Proof Templates",
+      "tableTitle": "Templates for Requesting Proofs"
     },
     "partners": {
       "title": "Secure Connections"

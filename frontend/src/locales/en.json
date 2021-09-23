@@ -70,7 +70,9 @@
       }
     },
     "proofTemplates":{
-      "title": "Proof Templates"
+      "title": "Proof Templates",
+      "tableTitle": "Proof Templates"
+
     },
     "partners": {
       "title": "Business Partners"

@@ -10,7 +10,7 @@
     <v-card class="my-4 mx-auto">
       <!-- Title -->
       <v-card-title class="bg-light">
-        <span>Proof Request Templates</span>
+        <span>{{ $t("view.proofTemplates.tableTitle") }}</span>
       </v-card-title>
 
       <!-- Proof Templates Table -->
