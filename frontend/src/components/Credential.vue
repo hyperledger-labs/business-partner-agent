@@ -40,7 +40,7 @@
       <v-col>
         <v-text-field
           v-if="intDoc.issuer"
-          label="Issuer DID"
+          label="Issuer Decentralized Identifier (DID)"
           v-model="intDoc.issuer"
           disabled
           outlined
