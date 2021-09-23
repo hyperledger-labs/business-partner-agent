@@ -58,7 +58,7 @@
         <v-row align="center" justify="center">
           <v-col>
             <h4 class="grey--text">
-              {{ $t("component.partnerProfile.notFound")
+              {{ $t("component.partnerProfile.notFound") }}
             </h4>
           </v-col>
         </v-row>

@@ -57,7 +57,7 @@ export default {
           value: "name",
         },
         {
-          text: "Created At",
+          text: "Created at",
           value: "createdAt",
         },
       ],

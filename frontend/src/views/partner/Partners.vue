@@ -72,7 +72,7 @@ export default {
     VBpaButton,
   },
   created() {
-    EventBus.$emit("title", "Business Partners");
+    EventBus.$emit("title", this.$t("view.partners.title"));
   },
   data: () => {
     return {
@@ -89,7 +89,7 @@ export default {
           value: "address",
         },
         {
-          text: "Update at",
+          text: "Updated at",
           value: "updatedAt",
         },
         {

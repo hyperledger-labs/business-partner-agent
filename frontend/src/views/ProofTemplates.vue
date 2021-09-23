@@ -33,7 +33,7 @@
                 color="primary"
                 @click="proofTemplateCreate()"
               >
-                Create Template
+                Create New Template
               </v-bpa-button>
             </template>
           </v-dialog>

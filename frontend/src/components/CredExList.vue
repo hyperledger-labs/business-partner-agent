@@ -126,7 +126,7 @@ export default {
           value: "displayText",
         },
         {
-          text: "Issued To",
+          text: "Issued to",
           value: "partner.name",
         },
         {

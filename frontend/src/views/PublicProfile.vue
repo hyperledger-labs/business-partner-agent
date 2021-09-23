@@ -51,7 +51,7 @@ export default {
     },
   },
   created() {
-    EventBus.$emit("title", "Public Profile");
+    EventBus.$emit("title", this.$t("view.profile.title"));
     //console.log("first load credentials");
     this.$store.dispatch("loadDocuments");
     this.$store.dispatch("loadCredentials");

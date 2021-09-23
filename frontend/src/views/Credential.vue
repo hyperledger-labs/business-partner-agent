@@ -93,7 +93,7 @@ export default {
     type: String,
   },
   created() {
-    EventBus.$emit("title", "Credential");
+    EventBus.$emit("title", "Credential Details");
     this.getCredential();
     this.$store.commit("credentialNotificationSeen", { id: this.id });
   },

@@ -117,14 +117,16 @@
       "setTags": "Set tags",
       "trustPing": "Auto Ping",
       "lookupPartnerBtnLabel": "Lookup Partner",
+      "formDIDLabel": "Decentralized Identifier (DID)",
+      "formInvitationLabel": "Invitation",
       "addPartnerBtnLabel": "Add Partner"
     },
     "addPartnerbyURL": {
       "title": "Invite new Business Partner",
       "createInvitation": "Generate Invitation (QR Code)",
       "invitationURL": "Invitation URL",
-      "invitationInstructions": "Share this with another secure wallet you wish to connect with",
-      "useOOB": "Use Out of Band"
+      "useOOB": "Use Out of Band",
+      "useAutoPing": "Use Out of Band"
     },
     "issueCredentials": {
       "title": "Issue Credentials",

@@ -26,7 +26,7 @@
     },
     "profile": {
       "title": "Your Organization",
-      "subtitle": "This is the public information of your organization. To update it, please go to the <strong>Held Credentials</strong> page."
+      "subtitle": "This is the public information of your organization. To update it, please go to the Held Credentials page."
     },
     "wallet": {
       "title": "Held Credentials",
@@ -34,14 +34,14 @@
         "title": "Verified Credentials Issued to Your Organization"
       },
       "documents": {
-        "title": "Unverified Information of your Organization"
+        "title": "Unverified Information of Your Organization"
       },
       "visibility": {
-        "title": "Visibility",
+        "title": "Public",
         "subtitle": ""
       }
     },
-    "proofTemplates":{
+    "proofTemplates": {
       "title": "Proof Templates",
       "tableTitle": "Templates for Requesting Proofs"
     },
@@ -49,88 +49,91 @@
       "title": "Secure Connections"
     },
     "partner": {
-      "presentationExchanges":{
-      "title": "Proof Exchanges With This Organization",
-      "button": {
-        "send": "Send Proof",
-        "request": "Request Proof"
-      }
-    },
-    "credentialExchanges": {
-      "title": "Credential Exchanges With This Organization",
-      "button": "Issue Credential"
-    },
-      "addPartner": {
-        "title": "Add New Secure Connection",
-        "lookupPartnerBtnLabel": "Lookup Partner",
-        "addPartnerBtnLabel": "Add Partner"
-      },
-      "addPartnerbyURL": {
-        "title": "Invite new Secure Connection",
-        "createInvitation": "Create Invitation",
-        "invitationInstructions": "Share this with another secure wallet you wish to connect with",
-        "useOOB": "Out of Band (advanced users only)"
-      }
-    },
-    "sendPresentation": {
-      "title": "Send Proof",
-      "selectCredential": "Select a credential to send"
-    },
-    "presentationRequestDetails": {
-      "header": "Proof Request Details"
-    },
-    "issueCredentials": {
-      "title": "Credential Issuance",
-      "cards": {
-        "action": {
-          "partnerLabel": "Select a connection to issue credential to",
-          "credDefLabel": "Select a template to issue credential with"
-        },
-        "table": {
-          "title": "Credentials Your Organization Issued"
+      "presentationExchanges": {
+        "title": "Proof Exchanges With This Organization",
+        "button": {
+          "send": "Send Proof",
+          "request": "Request Proof"
         }
-      }
-    },
-    "settings":{
-      "walletDID": "Your Organization's Decentalized Identifier (DID)",
-      "schemaManagement": "Schema, Credentials Definition, and Trusted Issuer Configuration" 
-    }
-  },
-  "component": {
-    "organizationProfile": {
-      "companyInfo": {
-        "section_title": "Administrative Information",
-        "companyName": "Organization Legal Name",
-        "companyAltName":"Organization Alternate Name"
       },
-      "addressInfo": {
-        "section_title": "Address"
+      "credentialExchanges": {
+        "title": "Credential Exchanges With This Organization",
+        "button": "Issue Credential"
       }
     },
-    "partnerProfile":{
-      "notFound": "This organization does not share any information"
-    }
-  },
-  "constants": {
-    "activityTypes": {
-      "presentationExchange": "Proof Request"
+    "addPartner": {
+      "title": "Add New Secure Connection",
+      "lookupPartnerBtnLabel": "Search Organization",
+      "formDIDLabel": "Decentralized Identifier (DID) of the organization you want to connect with",
+      "formInvitationLabel": "Invitation URL received from the orgnaization you watn to connect with",
+      "addPartnerBtnLabel": "Add Partner"
     },
-    "activityStates": {
-      "presentationExchange": {
-        "accepted": "Proof accepted",
-        "declined": "Request for proof has been declined",
-        "received": "A Proof has been requested",
-        "sent": "Request for Proof sent"
+    "addPartnerbyURL": {
+      "title": "Invite new Secure Connection",
+      "createInvitation": "Create Invitation",
+      "invitationURL": "Send the QR code or the equivalent URL below as the connection invitiation",
+      "useOOB": "Out of Band (advanced users only)",
+      "trustPing": "Auto-Ping (advanced users only)"
+    },
+  "sendPresentation": {
+    "title": "Send Proof",
+    "selectCredential": "Select a credential to send"
+  },
+  "presentationRequestDetails": {
+    "header": "Proof Request Details"
+  },
+  "issueCredentials": {
+    "title": "Credential Issuance",
+    "cards": {
+      "action": {
+        "partnerLabel": "Select a connection to issue credential to",
+        "credDefLabel": "Select a template to issue credential with"
+      },
+      "table": {
+        "title": "Credentials Your Organization Issued"
       }
     }
   },
-  "common":{
-    "tables":{
-      "headers":{
-        "lastUpdateDate":"Updated at",
-        "createdBy":"Created by",
-        "issuedBy":"Issued by"
-      }
+  "settings": {
+    "walletDID": "Your Organization's Decentalized Identifier (DID)",
+    "schemaManagement": "Schema, Credentials Definition, and Trusted Issuer Configuration"
+  }
+},
+"component": {
+  "organizationProfile": {
+    "companyInfo": {
+      "section_title": "Administrative Information",
+      "companyName": "Organization Legal Name",
+      "companyAltName": "Organization Alternate Name"
+    },
+    "addressInfo": {
+      "section_title": "Address"
+    }
+  },
+  "partnerProfile": {
+    "notFound": "This organization does not share any information"
+  }
+},
+"constants": {
+  "activityTypes": {
+    "presentationExchange": "Proof Request"
+  },
+  "activityStates": {
+    "presentationExchange": {
+      "accepted": "Proof accepted",
+      "declined": "Request for proof has been declined",
+      "received": "A Proof has been requested",
+      "sent": "Request for Proof sent"
     }
   }
+},
+"common": {
+  "tables": {
+    "headers": {
+      "lastUpdateDate": "Updated at",
+      "createdBy": "Created by",
+      "issuedBy": "Issued by"
+    }
+  }
+}
 }

@@ -161,7 +161,7 @@ export default {
   },
   created() {
     if (this.id) {
-      EventBus.$emit("title", "Edit (" + this.document.type + ")");
+      EventBus.$emit("title", "Edit Document");
       this.getDocument();
     } else if (!this.type) {
       this.$router.push({ name: "Wallet" });
@@ -210,6 +210,7 @@ export default {
             this.document = result.data;
             this.intDoc = { ...this.document };
             this.isReady = true;
+            EventBus.$emit("title", "Edit (" + this.document.type + ")");
           }
         })
         .catch((e) => {
