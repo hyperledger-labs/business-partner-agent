@@ -37,7 +37,9 @@ import {
   mdiBookRemove,
   mdiMagnify,
   mdiTicketConfirmationOutline,
-  mdiAttachment,
+  mdiAlertCircle,
+  mdiAlert,
+  mdiAttachment
 } from "@mdi/js";
 
 Vue.use(Vuetify);
@@ -93,7 +95,9 @@ export default new Vuetify({
       search: mdiMagnify,
       dashboardGo: "fas fa-arrow-alt-circle-right",
       invitation: mdiTicketConfirmationOutline,
-      attachment: mdiAttachment,
+      validationWarning: mdiAlertCircle,
+      validationError: mdiAlert,
+      attachment: mdiAttachment
     },
   },
   theme: {

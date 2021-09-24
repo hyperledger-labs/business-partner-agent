@@ -8,7 +8,7 @@
 <template>
   <proof-template-create
     disable-route-back
-    create-button-label="Create and Send"
+    :create-button-label="$t('button.createAndSend')"
     v-on:received-proof-template-id="submitRequest($event)"
   ></proof-template-create>
 </template>
@@ -25,12 +25,8 @@ export default {
     id: String, // partner ID
   },
   mounted() {
-    EventBus.$emit("title", "Request Presentation");
+    EventBus.$emit("title", this.$t("nav.requestPresentation"));
   },
-  data: () => {
-    return {};
-  },
-  computed: {},
   methods: {
     async submitRequest(proofTemplateId) {
       proofTemplateService

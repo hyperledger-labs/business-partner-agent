@@ -34,13 +34,17 @@
               class="ml-n4 mb-4"
             >
               <v-list-item-title>
-                <strong>Issuer</strong>
+                <strong>{{
+                  $t("view.proofTemplate.view.attributeGroup.issuerTitle")
+                }}</strong>
               </v-list-item-title>
               <v-list-item-subtitle>
                 {{ attributeGroup.identifier.issuerLabel }}
               </v-list-item-subtitle>
             </v-list-item>
-            <h4 class="mb-4">Data fields</h4>
+            <h4 class="mb-4">
+              {{ $t("view.proofTemplate.view.attributeGroup.titleAttributes") }}
+            </h4>
             <v-data-table
               disable-sort
               :headers="attributeGroupHeaders"
@@ -50,8 +54,8 @@
               show-expand
               hide-default-footer
             >
-              <template v-slot:expanded-item="{ item }">
-                <td :colspan="attributeConditionHeaders.length">
+              <template v-slot:expanded-item="{ headers, item }">
+                <td :colspan="headers.length" style="padding: 0">
                   <v-data-table
                     disable-sort
                     class="sub-table elevation-0"
@@ -64,28 +68,37 @@
             </v-data-table>
           </v-container>
 
+          <!-- TODO: Display multiple restriction objects -->
           <v-container
             v-if="
-              Object.keys(attributeGroup.schemaLevelRestrictions).Length > 0
+              Object.keys(attributeGroup.schemaLevelRestrictions).length > 0
             "
           >
-            <h4 class="mb-4">Restrictions</h4>
+            <h4 class="mb-4">
+              {{
+                $t("view.proofTemplate.view.attributeGroup.titleRestrictions")
+              }}
+            </h4>
             <v-simple-table>
               <tbody>
                 <tr v-if="attributeGroup.schemaLevelRestrictions.schemaId">
-                  <td>Schema ID</td>
+                  <td>{{ $t("view.proofTemplate.restrictions.schemaId") }}</td>
                   <td>
                     {{ attributeGroup.schemaLevelRestrictions.schemaId }}
                   </td>
                 </tr>
                 <tr v-if="attributeGroup.schemaLevelRestrictions.schemaName">
-                  <td>Schema Name</td>
+                  <td>
+                    {{ $t("view.proofTemplate.restrictions.schemaName") }}
+                  </td>
                   <td>
                     {{ attributeGroup.schemaLevelRestrictions.schemaName }}
                   </td>
                 </tr>
                 <tr v-if="attributeGroup.schemaLevelRestrictions.schemaVersion">
-                  <td>Schema Version</td>
+                  <td>
+                    {{ $t("view.proofTemplate.restrictions.schemaVersion") }}
+                  </td>
                   <td>
                     {{ attributeGroup.schemaLevelRestrictions.schemaVersion }}
                   </td>
@@ -93,7 +106,9 @@
                 <tr
                   v-if="attributeGroup.schemaLevelRestrictions.schemaIssuerDid"
                 >
-                  <td>Schema Issuer DID</td>
+                  <td>
+                    {{ $t("view.proofTemplate.restrictions.schemaIssuerDid") }}
+                  </td>
                   <td>
                     {{ attributeGroup.schemaLevelRestrictions.schemaIssuerDid }}
                   </td>
@@ -104,7 +119,13 @@
                       .credentialDefinitionId
                   "
                 >
-                  <td>Credential Definition ID</td>
+                  <td>
+                    {{
+                      $t(
+                        "view.proofTemplate.restrictions.credentialDefinitionId"
+                      )
+                    }}
+                  </td>
                   <td>
                     {{
                       attributeGroup.schemaLevelRestrictions
@@ -113,7 +134,9 @@
                   </td>
                 </tr>
                 <tr v-if="attributeGroup.schemaLevelRestrictions.issuerDid">
-                  <td>Issuer DID</td>
+                  <td>
+                    {{ $t("view.proofTemplate.restrictions.trustedIssuerDid") }}
+                  </td>
                   <td>
                     {{ attributeGroup.schemaLevelRestrictions.issuerDid }}
                   </td>
@@ -131,26 +154,31 @@ export default {
   props: {
     requestData: Array,
   },
-  data: () => {
-    return {
-      attributeGroupHeaders: [
+  computed: {
+    attributeGroupHeaders() {
+      return [
         {
-          text: "name",
+          text: this.$t("view.proofTemplate.attributes.header.name"),
           value: "name",
         },
-        { text: "value", value: "value" },
-      ],
-      attributeConditionHeaders: [
         {
-          text: "operator",
+          text: this.$t("view.proofTemplate.attributes.header.value"),
+          value: "value",
+        },
+      ];
+    },
+    attributeConditionHeaders() {
+      return [
+        {
+          text: this.$t("view.proofTemplate.attributes.header.operator"),
           value: "operator",
         },
         {
-          text: "value",
+          text: this.$t("view.proofTemplate.attributes.header.value"),
           value: "value",
         },
-      ],
-    };
+      ];
+    },
   },
   methods: {
     renderSchemaLabelId(attributeGroup) {

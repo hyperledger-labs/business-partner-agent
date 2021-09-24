@@ -6,29 +6,16 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 
-<style scoped>
-.sub-table.theme--light.v-data-table {
-  background: transparent;
-}
-
-.sub-table .v-data-table-header {
-  display: none;
-}
-</style>
-
 <template>
   <v-container justify-center>
     <v-card class="mx-auto">
-      <!-- Title -->
       <v-card-title class="bg-light">
-        <v-btn depressed color="secondary" icon @click="$router.go(-1)">
+        <v-bpa-button depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>$vuetify.icons.prev</v-icon>
-        </v-btn>
-        <span>Create Proof Template</span>
+        </v-bpa-button>
+        {{ $t("view.proofTemplate.create.title") }}
       </v-card-title>
 
-      <!-- Proof Templates Table -->
-      <!-- Basic Data -->
       <v-container>
         <v-list-item class="mt-4">
           <v-text-field
@@ -36,7 +23,7 @@
             v-model="proofTemplate.name"
             dense
             label="Name"
-            :append-icon="'$vuetify.icons.copy'"
+            :rules="[rules.required]"
           ></v-text-field>
         </v-list-item>
       </v-container>
@@ -46,229 +33,65 @@
       <!-- Attribute Groups -->
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>Data to be requested</v-list-item-title>
-          <v-list-item-subtitle
-            >Add data to be requested by Schema</v-list-item-subtitle
-          >
-
+          <v-list-item-title>{{
+            $t("view.proofTemplate.create.requestedDataTitle")
+          }}</v-list-item-title>
+          <v-list-item-subtitle>{{
+            $t("view.proofTemplate.create.requestedDataSubtitle")
+          }}</v-list-item-subtitle>
           <v-container>
-            <v-expansion-panels focusable>
+            <v-expansion-panels
+              focusable
+              multiple
+              v-model="openAttributeGroupPanels"
+            >
               <v-expansion-panel
                 class="my-5"
                 v-for="(attributeGroup, idx) in proofTemplate.attributeGroups"
-                :key="idx"
+                :key="attributeGroup.schemaId"
               >
                 <v-expansion-panel-header>
-                  <span v-html="renderSchemaLabelId(attributeGroup)"></span>
+                  <div>
+                    <span v-html="renderSchemaLabelId(attributeGroup)"></span>
+                    <v-icon
+                      right
+                      color="error"
+                      v-show="
+                        attributeGroup.ui.selectedAttributes.length === 0 ||
+                        attributeGroup.ui.predicateConditionsErrorCount > 0
+                      "
+                      >$vuetify.icons.validationError</v-icon
+                    >
+                    <v-icon
+                      v-show="
+                        attributeGroup.ui.selectedRestrictionsByTrustedIssuer
+                          .length === 0
+                      "
+                      right
+                      color="warning"
+                      >$vuetify.icons.validationWarning</v-icon
+                    >
+                  </div>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                  <v-container>
-                    <v-row>
-                      <v-col cols="4" class="pb-10">
-                        <h4 class="pb-5">Data fields</h4>
-                      </v-col>
-                    </v-row>
-                    <v-data-table
-                      disable-sort
-                      :headers="attributeGroupHeaders"
-                      :items="attributeGroup.attributes"
-                      item-key="name"
-                      class="elevation-1"
-                      show-expand
-                      hide-default-footer
-                    >
-                      <!-- actions on attribute -->
-                      <template v-slot:item.actions="{ item: attribute }">
-                        <v-btn icon @click="deleteAttribute(idx, attribute)">
-                          <v-icon color="error">$vuetify.icons.delete</v-icon>
-                        </v-btn>
-                      </template>
-
-                      <!-- expanded section for attribute conditions -->
-                      <template
-                        v-slot:expanded-item="{
-                          attributeGroupHeaders,
-                          item: attribute,
-                        }"
-                      >
-                        <td :colspan="attributeConditionHeaders.length">
-                          <v-data-table
-                            disable-sort
-                            class="sub-table elevation-0"
-                            :headers="attributeConditionHeaders"
-                            :items="attribute.conditions"
-                            hide-default-footer
-                          >
-                            <template v-slot:item="{ item: condition }">
-                              <tr>
-                                <td>
-                                  <v-select
-                                    :items="operators"
-                                    v-model="condition.operator"
-                                    dense
-                                  />
-                                </td>
-                                <td>
-                                  <v-text-field
-                                    v-model="condition.value"
-                                    dense
-                                  />
-                                </td>
-                                <td>
-                                  <v-btn
-                                    icon
-                                    @click="addCondition(idx, attribute.name)"
-                                  >
-                                    <v-icon color="success"
-                                      >$vuetify.icons.add</v-icon
-                                    >
-                                  </v-btn>
-                                  <v-btn
-                                    icon
-                                    @click="
-                                      deleteCondition(
-                                        idx,
-                                        attribute.name,
-                                        condition.operator
-                                      )
-                                    "
-                                  >
-                                    <v-icon color="error"
-                                      >$vuetify.icons.delete</v-icon
-                                    >
-                                  </v-btn>
-                                </td>
-                              </tr>
-                            </template>
-                          </v-data-table>
-                        </td>
-                      </template>
-                    </v-data-table>
-
-                    <!-- add new attribute -->
-                    <v-container>
-                      <v-menu>
-                        <template v-slot:activator="{ on, attrs }">
-                          <v-btn
-                            color="primary"
-                            dark
-                            small
-                            bottom
-                            left
-                            fab
-                            v-bind="attrs"
-                            v-on="on"
-                          >
-                            <v-icon>$vuetify.icons.add</v-icon>
-                          </v-btn>
-                        </template>
-                        <v-list>
-                          <v-list-item
-                            v-for="attributeName in schemas.find(
-                              (s) => s.id === attributeGroup.schemaId
-                            ).schemaAttributeNames"
-                            :key="attributeName"
-                            :disabled="
-                              attributeGroup.attributes.some(
-                                (existingAttribute) =>
-                                  existingAttribute.name === attributeName
-                              )
-                            "
-                            @click="addAttribute(idx, attributeName)"
-                          >
-                            <v-list-item-title>{{
-                              attributeName
-                            }}</v-list-item-title>
-                          </v-list-item>
-                        </v-list>
-                      </v-menu>
-                    </v-container>
-                  </v-container>
+                  <AttributeEdit :attribute-group="attributeGroup" />
 
                   <!-- Schema Restrictions -->
-                  <v-container>
-                    <h4 class="pb-5">Restrictions</h4>
-                    <v-simple-table>
-                      <tbody>
-                        <tr>
-                          <td>Schema ID</td>
-                          <td>
-                            <v-text-field
-                              id="proofTemplateName"
-                              v-model="
-                                attributeGroup.schemaLevelRestrictions.schemaId
-                              "
-                              dense
-                            ></v-text-field>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Schema Name</td>
-                          <td>
-                            <v-text-field
-                              id="proofTemplateName"
-                              v-model="
-                                attributeGroup.schemaLevelRestrictions
-                                  .schemaName
-                              "
-                              dense
-                            ></v-text-field>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Schema Version</td>
-                          <td>
-                            <v-text-field
-                              id="proofTemplateName"
-                              v-model="
-                                attributeGroup.schemaLevelRestrictions
-                                  .schemaVersion
-                              "
-                              dense
-                            ></v-text-field>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Schema Issuer DID</td>
-                          <td>
-                            <v-text-field
-                              id="proofTemplateName"
-                              v-model="
-                                attributeGroup.schemaLevelRestrictions
-                                  .schemaIssuerDid
-                              "
-                              dense
-                            ></v-text-field>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Issuer DID</td>
-                          <td>
-                            <v-text-field
-                              id="proofTemplateName"
-                              v-model="
-                                attributeGroup.schemaLevelRestrictions.issuerDid
-                              "
-                              dense
-                            ></v-text-field>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>Credential Definition ID</td>
-                          <td>
-                            <v-text-field
-                              id="proofTemplateName"
-                              v-model="
-                                attributeGroup.schemaLevelRestrictions
-                                  .credentialDefinitionId
-                              "
-                              dense
-                            ></v-text-field>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </v-simple-table>
-                  </v-container>
+                  <RestrictionsEdit :attribute-group="attributeGroup" />
+
+                  <v-card-actions>
+                    <v-bpa-button
+                      fab
+                      absolute
+                      small
+                      bottom
+                      right
+                      color="error"
+                      @click="deleteAttributeGroup(idx)"
+                    >
+                      <v-icon>$vuetify.icons.delete</v-icon>
+                    </v-bpa-button>
+                  </v-card-actions>
                 </v-expansion-panel-content>
               </v-expansion-panel>
             </v-expansion-panels>
@@ -278,11 +101,8 @@
           <v-container>
             <v-menu>
               <template v-slot:activator="{ on, attrs }">
-                <v-btn
+                <v-bpa-button
                   color="primary"
-                  dark
-                  small
-                  absolute
                   bottom
                   left
                   fab
@@ -290,17 +110,28 @@
                   v-on="on"
                 >
                   <v-icon>$vuetify.icons.add</v-icon>
-                </v-btn>
+                </v-bpa-button>
               </template>
-              <v-list>
+              <v-list max-height="50vh" class="overflow-y-auto">
                 <v-list-item
                   v-for="(schema, idx) in schemas"
                   :key="idx"
                   @click="addAttributeGroup(schema.id)"
+                  :disabled="
+                    proofTemplate.attributeGroups.some(
+                      (existingAttributeGroup) =>
+                        existingAttributeGroup.schemaId === schema.id
+                    )
+                  "
                 >
-                  <v-list-item-title>
-                    {{ schema.label }}<i>&nbsp;({{ schema.schemaId }})</i>
-                  </v-list-item-title>
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      {{ schema.label }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{ schema.schemaId }}
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -312,18 +143,29 @@
       <v-card-actions>
         <v-layout align-end justify-end>
           <v-bpa-button color="secondary" @click="$router.go(-1)">
-            Cancel
+            {{ $t("button.cancel") }}
           </v-bpa-button>
           <v-bpa-button
-            :loading="this.isBusy"
+            :loading="this.createButtonIsBusy"
+            :disabled="overallValidationErrors"
             color="primary"
             @click="createProofTemplate"
           >
-            {{ createButtonLabel }}
+            {{ $t("button.create") }}
           </v-bpa-button>
         </v-layout>
       </v-card-actions>
     </v-card>
+
+    <!-- Notification for deletion of attribute group -->
+    <v-snackbar v-model="snackbar.deleteShow" :timeout="snackbar.timeout">
+      {{ snackbar.text }}
+      <template v-slot:action="{ attrs }">
+        <v-bpa-button text v-bind="attrs" @click="snackbar.deleteShow = false">
+          {{ $t("app.snackBar.close") }}
+        </v-bpa-button>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -331,158 +173,220 @@
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import proofTemplateService from "@/services/proofTemplateService";
+import AttributeEdit from "@/components/proof-templates/AttributeEdit";
+import RestrictionsEdit from "@/components/proof-templates/RestrictionsEdit";
 
 export default {
   name: "ProofTemplates",
   props: {
-    attributeGroupHeaders: {
-      type: Array,
-      default: () => [
-        {
-          text: "name",
-          value: "name",
-        },
-        {
-          text: "actions",
-          value: "actions",
-        },
-      ],
-    },
-    attributeConditionHeaders: {
-      type: Array,
-      default: () => [
-        {
-          text: "operator",
-          value: "operator",
-        },
-        {
-          text: "value",
-          value: "value",
-        },
-        {
-          text: "actions",
-          value: "actions",
-        },
-      ],
-    },
-    createButtonLabel: {
-      type: String,
-      default: "Create",
-    },
     disableRouteBack: {
       type: Boolean,
       default: false,
     },
   },
-  components: { VBpaButton },
+  components: { RestrictionsEdit, AttributeEdit, VBpaButton },
   created() {
-    EventBus.$emit("title", "Proof Templates");
-  },
-  mounted() {
-    // load condition operators (>, <, ==, etc)
-    proofTemplateService.getKnownConditionOperators().then((result) => {
-      this.operators = result.data;
-    });
+    EventBus.$emit("title", this.$t("nav.proofTemplates"));
   },
   data: () => {
     return {
-      isBusy: false,
-      operators: [],
+      openAttributeGroupPanels: [],
+      createButtonIsBusy: false,
       proofTemplate: {
         name: "",
         attributeGroups: [],
       },
+      snackbar: {
+        timeout: 3000,
+        deleteShow: false,
+        text: "",
+      },
     };
   },
   computed: {
+    rules() {
+      return {
+        required: (value) => !!value || this.$t("app.rules.required"),
+      };
+    },
     schemas() {
       return this.$store.getters.getSchemas.filter(
         (schema) => schema.type === "INDY"
       );
     },
+    overallValidationErrors() {
+      const proofTemplateNameInvalid = this.proofTemplate.name === "";
+      const noAttributeGroups = this.proofTemplate.attributeGroups.length === 0;
+      const attributeGroupsInvalid = this.proofTemplate.attributeGroups.some(
+        (ag) => ag.ui.selectedAttributes.length === 0
+      );
+      const predicateConditionsInvalid = this.proofTemplate.attributeGroups.some(
+        (ag) => ag.ui.predicateConditionsErrorCount > 0
+      );
+
+      return (
+        proofTemplateNameInvalid ||
+        noAttributeGroups ||
+        attributeGroupsInvalid ||
+        predicateConditionsInvalid
+      );
+    },
   },
-  watch: {},
   methods: {
+    closeOtherPanelsOnOpen() {
+      this.openAttributeGroupPanels.splice(
+        0,
+        this.openAttributeGroupPanels.length,
+        this.proofTemplate.attributeGroups.length - 1
+      );
+    },
     renderSchemaLabelId(attributeGroup) {
       const schema = this.$store.getters.getSchemas.find(
         (s) => s.id === attributeGroup.schemaId
       );
       return `${schema.label}<em>&nbsp;(${schema.schemaId})</em>`;
     },
-    addAttributeGroup(schemaId) {
-      // add a blank attribute group template
-      this.proofTemplate.attributeGroups.push({
-        schemaId: schemaId,
-        nonRevoked: true,
-        attributes: [],
-        schemaLevelRestrictions: {},
-      });
-    },
-    addAttribute(idx, attributeName) {
-      console.log(`adding attribute ${attributeName} to idx ${idx}`);
-      this.proofTemplate.attributeGroups[idx].attributes.push({
-        name: attributeName,
-        conditions: [
-          {
-            operator: "",
-            value: "",
-          },
-        ],
-      });
-    },
-    deleteAttribute(attributeGroupIdx, attribute) {
-      let attributes = this.proofTemplate.attributeGroups[attributeGroupIdx]
-        .attributes;
-      let attributeIdx = attributes.findIndex((a) => a.name === attribute.name);
-      attributes.splice(attributeIdx, 1);
-    },
-    addCondition(idx, attributeName) {
-      this.proofTemplate.attributeGroups[idx].attributes
-        .find((a) => a.name === attributeName)
-        .conditions.push({
-          operator: "",
-          value: "",
-        });
-    },
-    deleteCondition(idx, attributeName, operator) {
-      let conditions = this.proofTemplate.attributeGroups[idx].attributes.find(
-        (a) => a.name === attributeName
-      ).conditions;
-      let operatorIdx = conditions.findIndex((c) => c.operator === operator);
+    addAttributeGroup: function (schemaId) {
+      const schemaLevelRestrictions = [];
 
-      if (conditions.length > 1) {
-        conditions.splice(operatorIdx, 1);
-      } else {
-        conditions[0].operator = "";
-        conditions[0].value = "";
+      const {
+        schemaAttributeNames,
+        trustedIssuer,
+        version,
+        label,
+      } = this.schemas.find((s) => s.id === schemaId);
+
+      if (trustedIssuer) {
+        for (const issuer of trustedIssuer) {
+          schemaLevelRestrictions.push({
+            schemaId: schemaId,
+            schemaName: label,
+            schemaVersion: version,
+            schemaIssuerDid: "",
+            issuerDid: issuer.issuerDid,
+            credentialDefinitionId: "",
+          });
+        }
       }
-    },
-    async createProofTemplate() {
-      this.isBusy = true;
 
-      // sanitize attribute conditions (remove empty conditions)
-      this.proofTemplate.attributeGroups.forEach((ag) => {
-        ag.attributes.forEach((a) => {
-          a.conditions = a.conditions.filter(
+      let attributes = [];
+
+      for (const attributeName of schemaAttributeNames) {
+        attributes.push({
+          name: attributeName,
+          conditions: [
+            {
+              operator: "",
+              value: "",
+            },
+          ],
+        });
+      }
+
+      // add a basic attribute group template with all available attributes
+      // and restriction objects for each trusted issuer
+      this.proofTemplate.attributeGroups.push({
+        schemaId,
+        nonRevoked: true,
+        attributes,
+        ui: {
+          selectedAttributes: attributes,
+          selectedRestrictionsByTrustedIssuer: schemaLevelRestrictions,
+          predicateConditionsErrorCount: 0,
+        },
+        schemaLevelRestrictions,
+      });
+
+      this.closeOtherPanelsOnOpen();
+    },
+    deleteAttributeGroup(attributeGroupIdx) {
+      const schema = this.$store.getters.getSchemas.find(
+        (s) =>
+          s.id ===
+          this.proofTemplate.attributeGroups[attributeGroupIdx].schemaId
+      );
+
+      this.snackbar.text = `${this.$t(
+        "view.proofTemplate.create.snackbarContent"
+      )} ${schema.label} (${schema.schemaId})`;
+      this.proofTemplate.attributeGroups.splice(attributeGroupIdx, 1);
+      this.snackbar.deleteShow = true;
+    },
+    prepareProofTemplateData() {
+      let sanitizedAttributeGroupObjects = [];
+
+      for (const ag of this.proofTemplate.attributeGroups) {
+        let attributesInGroup = [];
+        let restrictionsInGroup = [];
+
+        // sanitize attribute conditions (remove empty conditions)
+        for (const a of ag.attributes) {
+          const sanitizedConditions = a.conditions.filter(
             (c) => c.operator !== "" && c.value !== ""
           );
-        });
-      });
 
-      // sanitize restrictions (remove empty restrictions)
-      this.proofTemplate.attributeGroups.forEach((ag) => {
-        ag.schemaLevelRestrictions = Object.fromEntries(
-          Object.entries(ag.schemaLevelRestrictions).filter(([, v]) => v !== "")
+          // only use selected attributes
+          if (ag.ui.selectedAttributes.includes(a)) {
+            attributesInGroup.push({
+              name: a.name,
+              conditions: sanitizedConditions,
+            });
+          }
+        }
+
+        // sanitize restrictions (remove empty restrictions)
+        ag.schemaLevelRestrictions.forEach(
+          (schemaLevelRestrictionObject, index) => {
+            ag.schemaLevelRestrictions[index] = Object.fromEntries(
+              Object.entries(schemaLevelRestrictionObject).filter(
+                ([, v]) => v !== ""
+              )
+            );
+
+            ag.ui.selectedRestrictionsByTrustedIssuer.map(
+              (selectedRestrictions) => {
+                if (
+                  selectedRestrictions.issuerDid ===
+                  schemaLevelRestrictionObject.issuerDid
+                ) {
+                  restrictionsInGroup.push(schemaLevelRestrictionObject);
+                }
+              }
+            );
+          }
         );
-      });
 
-      console.log(JSON.stringify(this.proofTemplate));
+        // add empty restrictions object to satisfy backend
+        if (ag.schemaLevelRestrictions.length === 0) {
+          restrictionsInGroup.push({});
+        }
+
+        // sanitize ui data (remove ui helper values)
+        sanitizedAttributeGroupObjects.push({
+          schemaId: ag.schemaId,
+          nonRevoked: ag.nonRevoked,
+          attributes: attributesInGroup,
+          schemaLevelRestrictions: restrictionsInGroup,
+        });
+      }
+
+      return {
+        name: this.proofTemplate.name,
+        attributeGroups: sanitizedAttributeGroupObjects,
+      };
+    },
+    async createProofTemplate() {
+      this.createButtonIsBusy = true;
+      const proofTemplate = this.prepareProofTemplateData();
 
       proofTemplateService
-        .createProofTemplate(this.proofTemplate)
+        .createProofTemplate(proofTemplate)
         .then((res) => {
           this.$emit("received-proof-template-id", res.data.id);
-          EventBus.$emit("success", "Proof Template Created");
+          EventBus.$emit(
+            "success",
+            this.$t("view.proofTemplate.create.success")
+          );
 
           if (!this.disableRouteBack) {
             this.$router.push({
@@ -491,11 +395,11 @@ export default {
             });
           }
 
-          this.isBusy = false;
+          this.createButtonIsBusy = false;
         })
         .catch((e) => {
           EventBus.$emit("error", this.$axiosErrorMessage(e));
-          this.isBusy = false;
+          this.createButtonIsBusy = false;
         });
     },
   },
