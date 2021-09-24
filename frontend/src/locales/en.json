@@ -32,7 +32,6 @@
     "settings": "Settings",
     "about": "About",
     "signout": "Sign out",
-    "proofTemplates": "Proof Templates",
     "requestPresentation": "Request Presentation"
   },
   "dashboard": {
@@ -49,7 +48,6 @@
     "create": "Create",
     "createAndSend": "Create and Send",
     "cancel": "Cancel",
-    "close": "Close",
     "yes": "Yes",
     "no": "No",
     "close": "Close"
@@ -142,6 +140,7 @@
     },
     "proofTemplate": {
       "title": "Proof Templates",
+      "tableTitle": "Proof Templates",
       "createProofTemplate": "Create Proof Template",
       "restrictions": {
         "title": "Restrictions",
