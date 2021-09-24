@@ -401,10 +401,16 @@ public class IssuerCredentialManager {
      */
     public void handleV1CredentialExchange(@NonNull V1CredentialExchange ex) {
         credExRepo.findByCredentialExchangeId(ex.getCredentialExchangeId()).ifPresent(bpaEx -> {
-            bpaEx.pushStateChange(ex.getState(), Instant.now());
-            credExRepo.updateAfterEventWithRevocationInfo(bpaEx.getId(),
-                    ex.getState(), bpaEx.getStateToTimestamp(),
-                    ex.getRevocRegId(), ex.getRevocationId(), ex.getErrorMsg());
+            if (bpaEx.getState() != null) {
+                bpaEx.pushStateChange(ex.getState(), Instant.now());
+                credExRepo.updateAfterEventWithRevocationInfo(bpaEx.getId(),
+                        ex.getState(), bpaEx.getStateToTimestamp(),
+                        ex.getRevocRegId(), ex.getRevocationId(), ex.getErrorMsg());
+            }
+            if (ex.isCredentialAcked() && ex.isAutoIssueEnabled()) {
+                ex.findAttributesInCredentialOfferDict().ifPresent(
+                        attr -> credExRepo.updateCredential(bpaEx.getId(), Credential.builder().attrs(attr).build()));
+            }
         });
     }
 
@@ -421,6 +427,11 @@ public class IssuerCredentialManager {
                     }
                     credExRepo.updateAfterEventNoRevocationInfo(bpaEx.getId(),
                             ex.getState(), bpaEx.getStateToTimestamp(), ex.getErrorMsg());
+                    if (ex.isDone() && ex.isAutoIssueEnabled()) {
+                        ex.getByFormat().findValuesInIndyCredIssue().ifPresent(
+                                attr -> credExRepo.updateCredential(bpaEx.getId(),
+                                        Credential.builder().attrs(attr).build()));
+                    }
                 });
     }
 

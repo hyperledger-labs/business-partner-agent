@@ -154,11 +154,6 @@ export const loadProofTemplates = async ({ commit }) => {
     .then((result) => {
       let proofTemplates = result.data;
 
-      // convert date strings to locale specific date formats
-      proofTemplates.forEach((pt) => {
-        pt.createdAt = new Date(pt.createdAt).toLocaleString();
-      });
-
       commit({
         type: "setProofTemplates",
         proofTemplates: proofTemplates,
@@ -185,9 +180,9 @@ export const loadPartnerSelectList = async ({ commit }) => {
       }
     })
     .catch((e) => {
-    console.error(e);
-    EventBus.$emit("error", e);
-  });
+      console.error(e);
+      EventBus.$emit("error", e);
+    });
 };
 
 export const loadCredDefSelectList = async ({ commit }) => {

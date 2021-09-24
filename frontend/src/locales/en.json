@@ -3,6 +3,13 @@
     "snackBar": {
       "close": "Close"
     },
+    "search": "Search",
+    "rules": {
+      "required": "Required",
+      "onlyInteger": "Value is not an integer",
+      "valueMin": "Value must be above",
+      "valueMax":  "Value must not be above"
+    },
     "sessionDialog": {
       "headline": "Session expired",
       "text": "It seems your session is expired. Do you want log in again?",
@@ -24,7 +31,9 @@
     "wallet": "Wallet",
     "settings": "Settings",
     "about": "About",
-    "signout": "Sign out"
+    "signout": "Sign out",
+    "proofTemplates": "Proof Templates",
+    "requestPresentation": "Request Presentation"
   },
   "dashboard": {
     "credentialsSent": "Credentials Issued",
@@ -37,7 +46,10 @@
   "button": {
     "save": "Save",
     "submit": "Submit",
+    "create": "Create",
+    "createAndSend": "Create and Send",
     "cancel": "Cancel",
+    "close": "Close",
     "yes": "Yes",
     "no": "No",
     "close": "Close"
@@ -127,6 +139,65 @@
       "invitationURL": "Invitation URL",
       "useOOB": "Use Out of Band",
       "useAutoPing": "Use Out of Band"
+    },
+    "proofTemplate": {
+      "title": "Proof Templates",
+      "createProofTemplate": "Create Proof Template",
+      "restrictions": {
+        "title": "Restrictions",
+        "errorNoTrustedIssuer": "There is no trusted issuer DID selected",
+        "schemaId": "Schema ID",
+        "schemaName": "Schema Name",
+        "schemaVersion": "Schema Version",
+        "schemaIssuerDid": "Schema Issuer DID",
+        "trustedIssuerDid": "Trusted Issuer DID",
+        "credentialDefinitionId": "Credential Definition ID",
+        "header": {
+          "trustedIssuerLabel": "Trusted Issuer",
+          "trustedIssuerDid": "DID"
+        },
+        "dialog": {
+          "addTrustedIssuer": "Add Trusted Issuer",
+          "label": "DID",
+          "hint": "The decentralized ID of a trusted issuer"
+        }
+      },
+      "attributes": {
+        "title": "Data fields",
+        "errorNoAttributes": "There must be at least one selected data field",
+        "header": {
+          "name": "Name",
+          "operator": "Operator",
+          "value": "Value"
+        }
+      },
+      "view": {
+        "name": "Name",
+        "createdAt": "Created At",
+        "attributeGroupsTitle": "Data to be requested",
+        "attributeGroupsSubtitle": "Grouped by Schema",
+        "createProofRequest": "Create Proof Request",
+        "attributeGroup": {
+          "issuerTitle": "Issuer",
+          "titleAttributes": "Data fields",
+          "titleRestrictions": "Restrictions"
+        }
+      },
+      "list": {
+        "name": "Name",
+        "createdAt": "Created At"
+      },
+      "create": {
+        "title": "Create Proof Template",
+        "requestedDataTitle": "Data to be requested",
+        "requestedDataSubtitle": "Add data to be requested by Schema",
+        "snackbarContent": "Removed attribute group",
+        "success": "Proof Template Created"
+      }
+    },
+    "requestPresentation": {
+      "title": "Create a Presentation Request",
+      "sendRequest": "Send Request"
     },
     "issueCredentials": {
       "title": "Issue Credentials",

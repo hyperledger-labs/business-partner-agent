@@ -33,7 +33,7 @@
                 color="primary"
                 @click="proofTemplateCreate()"
               >
-                Create New Template
+                {{ $t("view.proofTemplate.createProofTemplate") }}
               </v-bpa-button>
             </template>
           </v-dialog>
@@ -53,15 +53,13 @@ export default {
   name: "ProofTemplates",
   components: { ProofTemplatesList, VBpaButton },
   created() {
-    EventBus.$emit("title", "Proof Templates");
+    EventBus.$emit("title", this.$t("nav.proofTemplates"));
   },
   data: () => {
     return {
       proofTemplateCreateDialog: false,
     };
   },
-  computed: {},
-  watch: {},
   methods: {
     onProofTemplateCreated() {
       store.dispatch("loadProofTemplates");

@@ -12,7 +12,7 @@
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
-        Create a Presentation Request
+        {{ $t("view.requestPresentation.title") }}
       </v-card-title>
       <v-card-text>
         <proof-templates-list show-checkboxes v-model="selectedProofTemplate">
@@ -20,11 +20,11 @@
         <template>
           <v-card-actions>
             <v-layout align-end justify-end>
-              <v-bpa-button color="secondary" @click="cancel()"
-                >Cancel</v-bpa-button
-              >
+              <v-bpa-button color="secondary" @click="cancel()">{{
+                $t("button.cancel")
+              }}</v-bpa-button>
               <v-bpa-button color="primary" @click="openCreateProofTemplate()">
-                Create Proof Template
+                {{ $t("view.proofTemplate.create.title") }}
               </v-bpa-button>
               <v-bpa-button
                 :loading="this.isBusy"
@@ -32,7 +32,7 @@
                 color="primary"
                 @click="submitRequest()"
               >
-                Send Request
+                {{ $t("view.requestPresentation.sendRequest") }}
               </v-bpa-button>
             </v-layout>
           </v-card-actions>
@@ -55,7 +55,7 @@ export default {
     id: String, // partner ID
   },
   mounted() {
-    EventBus.$emit("title", "Request Presentation");
+    EventBus.$emit("title", this.$t("nav.requestPresentation"));
   },
   data: () => {
     return {

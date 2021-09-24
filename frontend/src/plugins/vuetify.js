@@ -37,6 +37,8 @@ import {
   mdiBookRemove,
   mdiMagnify,
   mdiTicketConfirmationOutline,
+  mdiAlertCircle,
+  mdiAlert,
   mdiAttachment,
 } from "@mdi/js";
 
@@ -93,6 +95,8 @@ export default new Vuetify({
       search: mdiMagnify,
       dashboardGo: "fas fa-arrow-alt-circle-right",
       invitation: mdiTicketConfirmationOutline,
+      validationWarning: mdiAlertCircle,
+      validationError: mdiAlert,
       attachment: mdiAttachment,
     },
   },
