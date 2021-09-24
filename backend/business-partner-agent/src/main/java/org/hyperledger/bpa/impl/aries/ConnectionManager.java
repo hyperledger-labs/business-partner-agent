@@ -97,6 +97,9 @@ public class ConnectionManager {
     @Inject
     InvitationParser invitationParser;
 
+    @Inject
+    PartnerCredDefLookup partnerCredDefLookup;
+
     /**
      * Creates a connection invitation to be used within a barcode
      *
@@ -283,6 +286,7 @@ public class ConnectionManager {
             }
         } else if (ConnectionState.COMPLETED.equals(record.getState()) && record.isIncomingConnection()) {
             eventPublisher.publishEventAsync(PartnerRequestCompletedEvent.builder().partner(p).build());
+            partnerCredDefLookup.lookupTypesForAllPartnersAsync();
         }
     }
 

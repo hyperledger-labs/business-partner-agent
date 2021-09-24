@@ -45,7 +45,6 @@ import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.repository.DidDocWebRepository;
 import org.hyperledger.bpa.repository.MyCredentialRepository;
 import org.hyperledger.bpa.repository.MyDocumentRepository;
-import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,9 +65,6 @@ public class VPManager {
 
     @Inject
     DidDocWebRepository didRepo;
-
-    @Inject
-    PartnerRepository partnerRepo;
 
     @Inject
     CryptoManager crypto;

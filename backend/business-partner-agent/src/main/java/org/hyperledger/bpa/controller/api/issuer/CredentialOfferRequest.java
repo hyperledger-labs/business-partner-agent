@@ -15,15 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.partner;
+package org.hyperledger.bpa.controller.api.issuer;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.api.aries.ExchangeVersion;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class RequestCredentialRequest {
-    public String documentId;
-    public ExchangeVersion version;
+public class CredentialOfferRequest {
+    private Boolean acceptProposal;
+    private List<CredentialAttributes> attributes;
+
+    public boolean acceptAll() {
+        return acceptProposal != null && acceptProposal;
+    }
 }

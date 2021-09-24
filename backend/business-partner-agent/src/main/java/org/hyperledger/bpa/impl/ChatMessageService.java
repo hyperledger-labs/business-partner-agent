@@ -23,11 +23,9 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.api.exception.DataPersistenceException;
-import org.hyperledger.bpa.impl.aries.ConnectionManager;
 import org.hyperledger.bpa.model.ChatMessage;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.ChatMessageRepository;
-import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.util.List;
 import java.util.UUID;
@@ -38,13 +36,7 @@ import java.util.UUID;
 public class ChatMessageService {
 
     @Inject
-    PartnerRepository partnerRepo;
-
-    @Inject
     ChatMessageRepository chatMsgRepo;
-
-    @Inject
-    ConnectionManager cm;
 
     public List<ChatMessage> getMessagesForPartner(@NonNull String partnerId) {
         return chatMsgRepo.findByPartnerIdOrderByCreatedAtAsc(UUID.fromString(partnerId));

@@ -36,7 +36,6 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.SchemaException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
-import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.config.SchemaConfig;
 import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
 import org.hyperledger.bpa.impl.activity.Identity;
@@ -62,9 +61,6 @@ public class SchemaService {
 
     @Inject
     List<SchemaConfig> schemas;
-
-    @Inject
-    RuntimeConfig rc;
 
     @Inject
     Identity id;
@@ -121,7 +117,7 @@ public class SchemaService {
     @Nullable
     SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label,
             @Nullable String defaultAttributeName) {
-        SchemaAPI result = null;
+        SchemaAPI result;
         String sId = StringUtils.strip(schemaId);
 
         if (schemaRepo.findBySchemaId(sId).isPresent()) {

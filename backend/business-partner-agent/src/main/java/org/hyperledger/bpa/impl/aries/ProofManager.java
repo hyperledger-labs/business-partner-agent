@@ -39,9 +39,7 @@ import org.hyperledger.bpa.api.exception.PresentationConstructionException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentials;
-import org.hyperledger.bpa.impl.MessageService;
 import org.hyperledger.bpa.impl.activity.DidResolver;
-import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.notification.PresentationRequestDeclinedEvent;
 import org.hyperledger.bpa.impl.notification.PresentationRequestSentEvent;
 import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConversion;
@@ -86,13 +84,7 @@ public class ProofManager {
     Converter conv;
 
     @Inject
-    SchemaService schemaService;
-
-    @Inject
     DidResolver didRes;
-
-    @Inject
-    MessageService messageService;
 
     @Inject
     ApplicationEventPublisher eventPublisher;
