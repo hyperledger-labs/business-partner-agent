@@ -23,7 +23,6 @@ import jakarta.inject.Inject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
-import org.hyperledger.bpa.config.ActivityLogConfig;
 import org.hyperledger.bpa.controller.api.activity.*;
 import org.hyperledger.bpa.impl.notification.TaskAddedEvent;
 import org.hyperledger.bpa.impl.notification.TaskCompletedEvent;
@@ -32,7 +31,6 @@ import org.hyperledger.bpa.model.Activity;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.repository.ActivityRepository;
-import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,12 +44,6 @@ public class ActivityManager {
 
     @Inject
     PartnerRepository partnerRepo;
-
-    @Inject
-    PartnerProofRepository proofRepository;
-
-    @Inject
-    ActivityLogConfig activityLogConfig;
 
     @Inject
     ActivityRepository activityRepository;

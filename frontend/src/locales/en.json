@@ -212,11 +212,19 @@
       },
       "expertLoad": {
         "title": "Load Credential Data",
-        "dataPlaceholder": "Enter, paste, or upload JSON data...",
-        "filePlaceholder": "Upload JSON data...",
+        "dataPlaceholder": "Enter, paste, or upload Credential Content...",
+        "filePlaceholder": "Upload file",
         "buttons": {
           "load": "Load",
           "clear": "Clear"
+        },
+        "errorMessages": {
+          "format": {
+            "json": "Ensure that data is valid JSON format.",
+            "csv": "Ensure that data is valid Comma Separated Value (CSV) format."
+          },
+          "attributes": "Could not find any matching Credential attributes.",
+          "parse": "Could not parse data."
         }
       }
     },

@@ -27,14 +27,15 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.schema.SchemaSendRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.SchemaException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
-import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.config.SchemaConfig;
 import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
 import org.hyperledger.bpa.impl.activity.Identity;
@@ -60,9 +61,6 @@ public class SchemaService {
 
     @Inject
     List<SchemaConfig> schemas;
-
-    @Inject
-    RuntimeConfig rc;
 
     @Inject
     Identity id;
@@ -92,7 +90,9 @@ public class SchemaService {
                 log.error("Schema not created.");
                 throw new SchemaException("Schema not created; could not complete request with ledger");
             }
-
+        } catch (AriesException ae) {
+            log.error("Aries Exception sending schema to ledger", ae);
+            throw new SchemaException(String.format("Error sending schema to ledger. %s", ae.getMessage()));
         } catch (IOException e) {
             log.error("aca-py not reachable", e);
             throw new NetworkException("No aries connection", e);
@@ -117,7 +117,7 @@ public class SchemaService {
     @Nullable
     SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label,
             @Nullable String defaultAttributeName) {
-        SchemaAPI result = null;
+        SchemaAPI result;
         String sId = StringUtils.strip(schemaId);
 
         if (schemaRepo.findBySchemaId(sId).isPresent()) {
@@ -137,10 +137,14 @@ public class SchemaService {
                 BPASchema saved = schemaRepo.save(dbS);
                 result = SchemaAPI.from(saved);
             } else {
-                log.error("Schema with id: {} does not exist on the ledger, skipping.", schemaId);
+                throw new EntityNotFoundException(
+                        String.format("Schema with id: %s does not exist on the ledger.", schemaId));
             }
+        } catch (AriesException ae) {
+            throw new SchemaException(String.format("Schema not created. %s", ae.getMessage()));
         } catch (IOException e) {
             log.error("aca-py not reachable", e);
+            throw new NetworkException("No aries connection", e);
         }
         return result;
     }

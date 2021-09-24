@@ -1,0 +1,16 @@
+name: Delete old packages
+on: workflow_dispatch
+jobs:
+  cleanup:
+    name: Delete old packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old packages
+        uses: smartsquaregmbh/delete-old-packages@v0.3.1
+        with:
+          keep: 20
+          dry-run: true
+          organization: hyperledger-labs
+          names: |
+            business-partner-agent
+            business-partner-agent-license

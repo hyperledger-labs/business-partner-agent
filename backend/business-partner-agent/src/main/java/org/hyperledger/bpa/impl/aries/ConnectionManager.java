@@ -97,6 +97,9 @@ public class ConnectionManager {
     @Inject
     InvitationParser invitationParser;
 
+    @Inject
+    PartnerCredDefLookup partnerCredDefLookup;
+
     /**
      * Creates a connection invitation to be used within a barcode
      *
@@ -276,13 +279,22 @@ public class ConnectionManager {
 
     private void resolveAndSend(ConnectionRecord record, Partner p) {
         // only incoming connections in state request
-        if (ConnectionState.REQUEST.equals(record.getState())) {
+        if (ConnectionRecord.ConnectionProtocol.CONNECTION_V1.equals(record.getConnectionProtocol())) {
+            // handle Connection Invitations...
+            // if we generate and they accept, we do not get a COMPLETED or ACTIVE state, only get to RESPONSE
+            // if they generate and we accept, we may get to ACTIVE, but definitely get to RESPONSE
+            // so consider RESPONSE as we are connected, just add a completed task saying connection accepted.
+            if (ConnectionState.RESPONSE.equals(record.getState())) {
+                eventPublisher.publishEventAsync(PartnerRequestCompletedEvent.builder().partner(p).build());
+            }
+        } else if (ConnectionState.REQUEST.equals(record.getState())) {
             didResolver.lookupIncoming(p);
             if (record.isIncomingConnection()) {
                 eventPublisher.publishEventAsync(PartnerRequestReceivedEvent.builder().partner(p).build());
             }
         } else if (ConnectionState.COMPLETED.equals(record.getState()) && record.isIncomingConnection()) {
             eventPublisher.publishEventAsync(PartnerRequestCompletedEvent.builder().partner(p).build());
+            partnerCredDefLookup.lookupTypesForAllPartnersAsync();
         }
     }
 

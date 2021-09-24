@@ -63,8 +63,7 @@ public class ProofEventHandler {
             handleProblemReport(proof);
         } else {
             // if not handled in the manager e.g. when sending the request
-            if (!(proof.roleIsProver() && PresentationExchangeState.PROPOSAL_SENT.equals(proof.getState()))
-                    && !proof.roleIsVerifierAndRequestSent()) {
+            if (!proof.roleIsProverAndProposalSent() && !proof.roleIsVerifierAndRequestSent()) {
                 handleAll(proof);
             }
         }

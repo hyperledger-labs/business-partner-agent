@@ -23,6 +23,7 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -48,9 +49,32 @@ class PartnerProofRepositoryTest {
                 Map.of("testKey", "testValue"));
         assertEquals(1, uc);
 
-        Optional<PartnerProof> updated = repo.findById(pp.getId());
-        assertTrue(updated.isPresent());
-        assertEquals(PresentationExchangeState.VERIFIED, updated.get().getState());
+        PartnerProof updated = repo.findById(pp.getId()).orElseThrow();
+        assertEquals(PresentationExchangeState.VERIFIED, updated.getState());
+    }
+
+    @Test
+    void testExchangeStateDecorator() {
+        PartnerProof pp = PartnerProof
+                .builder()
+                .partnerId(UUID.randomUUID())
+                .presentationExchangeId("pres-1")
+                .pushStateChange(PresentationExchangeState.PROPOSAL_SENT, Instant.ofEpochMilli(1631760000000L))
+                .build();
+        repo.save(pp);
+
+        pp = repo.findById(pp.getId()).orElseThrow();
+        pp.pushStateChange(PresentationExchangeState.REQUEST_RECEIVED, Instant.ofEpochMilli(1631770000000L));
+        pp.pushStateChange(PresentationExchangeState.PRESENTATION_ACKED, Instant.ofEpochMilli(1631780000000L))
+                .setState(PresentationExchangeState.PRESENTATION_ACKED);
+
+        repo.update(pp);
+
+        pp = repo.findById(pp.getId()).orElseThrow();
+
+        assertEquals(PresentationExchangeState.PRESENTATION_ACKED, pp.getState());
+        assertEquals(PresentationExchangeState.PRESENTATION_ACKED,
+                pp.getStateToTimestamp().toApi().keySet().toArray()[2]);
     }
 
 }
