@@ -89,9 +89,14 @@
       </v-card-actions>
     </v-card>
     <v-card class="my-4">
-      <v-card-title class="bg-light">{{
-        $t("view.issueCredentials.cards.table.title")
-      }}</v-card-title>
+      <v-card-title class="bg-light"
+        >{{ $t("view.issueCredentials.cards.table.title")
+        }}<v-layout justify-end>
+          <v-bpa-button color="primary" icon @click="loadCredentials">
+            <v-icon dark>$vuetify.icons.refresh</v-icon>
+          </v-bpa-button>
+        </v-layout>
+      </v-card-title>
       <v-card-text>
         <CredExList
           :items="issuedCredentials"
@@ -145,8 +150,8 @@ export default {
     credDefList: {
       get() {
         return this.$store.getters.getCredDefSelectList;
-      }
-    }
+      },
+    },
   },
   watch: {
     partner(val) {
