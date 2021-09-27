@@ -361,4 +361,118 @@ public class ProofTemplateConversionTest extends ProofTemplateConversionTestBase
         assertWithAcapy(actual);
         assertEqualAttributesInProofRequests(expected, actual);
     }
+
+    @Test
+    public void testAttributeGroupWithTwoRestrictions() {
+        UUID schemaId = prepareSchemaWithAttributes("mySchemaId", "name");
+        prepareConnectionId("myConnectionId");
+        BPAProofTemplate template = BPAProofTemplate.builder()
+                .id(UUID.randomUUID())
+                .name("Attribute Two Restrictions")
+                .attributeGroups(BPAAttributeGroups.builder()
+                        .attributeGroup(BPAAttributeGroup.builder()
+                                .schemaLevelRestrictions(List.of(
+                                    BPASchemaRestrictions.builder()
+                                        .issuerDid("issuerDid1")
+                                        .build(),
+                                    BPASchemaRestrictions.builder()
+                                        .issuerDid("issuerDid2")
+                                        .build()))
+                                .schemaId(schemaId.toString())
+                                .attribute(BPAAttribute.builder()
+                                        .name("name")
+                                        .condition(BPACondition
+                                                .builder()
+                                                .value("test")
+                                                .operator(ValueOperators.EQUALS)
+                                                .build())
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        PresentProofRequest expected = PresentProofRequest.builder()
+                .connectionId("myConnectionId")
+                .proofRequest(PresentProofRequest.ProofRequest.builder()
+                        .name("MyTestTemplate")
+                        .requestedAttribute("mySchemaId",
+                                PresentProofRequest.ProofRequest.ProofRequestedAttributes.builder()
+                                        .names(List.of("name"))
+                                        .restriction(
+                                            PresentProofRequest.ProofRequest.ProofRestrictions.builder()
+                                                .schemaId("mySchemaId")
+                                                .issuerDid("issuerDid1")
+                                                .addAttributeValueRestriction("name", "test")
+                                                .build()
+                                                .toJsonObject())
+                                        .restriction(
+                                            PresentProofRequest.ProofRequest.ProofRestrictions.builder()
+                                                .schemaId("mySchemaId")
+                                                .issuerDid("issuerDid2")
+                                                .addAttributeValueRestriction("name", "test")
+                                                .build()
+                                                .toJsonObject())
+                                        .build())
+                        .build())
+                .build();
+        PresentProofRequest actual = proofTemplateConversion.proofRequestViaVisitorFrom(UUID.randomUUID(), template);
+        assertWithAcapy(actual);
+        assertEqualAttributesInProofRequests(expected, actual);
+    }
+
+    @Test
+    public void testPredicateWithTwoRestrictions() {
+        UUID schemaId = prepareSchemaWithAttributes("mySchemaId", "name");
+        prepareConnectionId("myConnectionId");
+        BPAProofTemplate template = BPAProofTemplate.builder()
+                .id(UUID.randomUUID())
+                .name("Predicate Two Restrictions")
+                .attributeGroups(BPAAttributeGroups.builder()
+                        .attributeGroup(BPAAttributeGroup.builder()
+                                .schemaLevelRestrictions(List.of(
+                                        BPASchemaRestrictions.builder()
+                                                .issuerDid("issuerDid1")
+                                                .build(),
+                                        BPASchemaRestrictions.builder()
+                                                .issuerDid("issuerDid2")
+                                                .build()))
+                                .schemaId(schemaId.toString())
+                                .attribute(BPAAttribute.builder()
+                                        .name("name")
+                                        .condition(BPACondition
+                                                .builder()
+                                                .value("1234")
+                                                .operator(ValueOperators.LESS_THAN)
+                                                .build())
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+        PresentProofRequest expected = PresentProofRequest.builder()
+                .connectionId("myConnectionId")
+                .proofRequest(PresentProofRequest.ProofRequest.builder()
+                        .name("MyTestTemplate")
+                        .requestedPredicate("mySchemaId",
+                                PresentProofRequest.ProofRequest.ProofRequestedPredicates.builder()
+                                        .name("name")
+                                        .pType(IndyProofReqPredSpec.PTypeEnum.LESS_THAN)
+                                        .pValue(1234)
+                                        .restriction(
+                                                PresentProofRequest.ProofRequest.ProofRestrictions.builder()
+                                                        .schemaId("mySchemaId")
+                                                        .issuerDid("issuerDid1")
+                                                        .build()
+                                                        .toJsonObject())
+                                        .restriction(
+                                                PresentProofRequest.ProofRequest.ProofRestrictions.builder()
+                                                        .schemaId("mySchemaId")
+                                                        .issuerDid("issuerDid2")
+                                                        .build()
+                                                        .toJsonObject())
+                                        .build())
+                        .build())
+                .build();
+        PresentProofRequest actual = proofTemplateConversion.proofRequestViaVisitorFrom(UUID.randomUUID(), template);
+        assertWithAcapy(actual);
+        assertEqualAttributesInProofRequests(expected, actual);
+    }
 }
