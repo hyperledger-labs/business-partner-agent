@@ -265,6 +265,16 @@
         "credDefLabel": "Credential Definition",
         "attributesTitle": "Credential Content"
       }
+    },
+    "profile": {
+      "organizationalProfile": {
+        "title": "Organizational Profile",
+        "edit": "Edit"
+      },
+      "credential": {
+        "verifiedByLabel": "verified by"
+      },
+      "noProfileMsg": "Partner does not share a public profile"
     }
   },
   "constants": {
