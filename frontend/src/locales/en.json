@@ -227,9 +227,6 @@
         "sectionTitle": "Address Information"
       }
     },
-    "partnerProfile":{
-      "notFound": "Partner does not share a public profile"
-    },
     "issueCredential": {
       "title": "Issue Credential",
       "partnerLabel": "Partner",

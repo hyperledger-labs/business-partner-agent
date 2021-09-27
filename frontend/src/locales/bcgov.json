@@ -110,8 +110,8 @@
       "section_title": "Address"
     }
   },
-  "partnerProfile": {
-    "notFound": "This organization does not share any information"
+  "profile":{
+    "noProfileMsg": "This organization does not share anything"
   }
 },
 "constants": {
