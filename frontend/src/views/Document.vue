@@ -210,7 +210,7 @@ export default {
             this.document = result.data;
             this.intDoc = { ...this.document };
             this.isReady = true;
-            EventBus.$emit("title", "Edit (" + this.document.type + ")");
+            EventBus.$emit("title", "Edit (" + this.document.typeLabel + ")");
           }
         })
         .catch((e) => {
