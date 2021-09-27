@@ -42,14 +42,14 @@ class Attributes {
         List<PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> restrictionsBuilder = ProofTemplateElementVisitor
                 .asProofRestrictionsBuilder(
                         schemaRestrictions);
-        //equals.forEach(restrictionsBuilder::addAttributeValueRestriction);
+        restrictionsBuilder.forEach(r -> equals.forEach(r::addAttributeValueRestriction));
 
         PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder builder = PresentProofRequest.ProofRequest.ProofRequestedAttributes
                 .builder()
                 .names(names)
                 // TODO only set when restriction is set, but then name has to be set for each
                 // attribute
-                .restrictions(restrictionsBuilder.stream().map(res -> res.build().toJsonObject()).collect(Collectors.toList()));
+                .restrictions(restrictionsBuilder.stream().map(res -> res.schemaId(schemaId).build().toJsonObject()).collect(Collectors.toList()));
 
         builderSink.accept(schemaId, revocationApplicator.applyOn(builder).build());
 

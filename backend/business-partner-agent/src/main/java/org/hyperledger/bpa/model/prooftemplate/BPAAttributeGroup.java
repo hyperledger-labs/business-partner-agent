@@ -54,10 +54,9 @@ public class BPAAttributeGroup {
     @Builder.Default
     Boolean nonRevoked = Boolean.FALSE;
     @NotNull
-    @Singular
+    @Builder.Default
     @Valid
-    @ValidAttributeCondition
-    List<BPASchemaRestrictions> schemaLevelRestrictions = List.of();
+    List<BPASchemaRestrictions> schemaLevelRestrictions = List.of(BPASchemaRestrictions.builder().build());
 
     public AttributeGroup toRepresentation() {
         return AttributeGroup

@@ -46,8 +46,9 @@ public class AttributeGroup {
     @NotNull
     @Builder.Default
     private Boolean nonRevoked = Boolean.FALSE;
+
     @NotNull
-    @Singular
+    @Builder.Default
     @Valid
-    private List<SchemaRestrictions> schemaLevelRestrictions = List.of();
+    private List<SchemaRestrictions> schemaLevelRestrictions = List.of(SchemaRestrictions.builder().build());
 }

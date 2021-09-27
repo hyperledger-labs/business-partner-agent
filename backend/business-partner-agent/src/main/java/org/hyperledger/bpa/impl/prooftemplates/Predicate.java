@@ -47,7 +47,7 @@ class Predicate {
                 .name(name)
                 .pType(operator)
                 .pValue(value)
-                .restrictions(restrictionsBuilder.stream().map(res -> res.build().toJsonObject()).collect(Collectors.toList()));
+                .restrictions(restrictionsBuilder.stream().map(res -> res.schemaId(schemaId).build().toJsonObject()).collect(Collectors.toList()));
         String predicateName = schemaId + sameSchemaCounter.incrementAndGet();
         builderSink.accept(predicateName, revocationApplicator.applyOn(builder).build());
 

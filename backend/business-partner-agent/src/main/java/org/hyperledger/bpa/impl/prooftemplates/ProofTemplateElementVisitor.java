@@ -78,7 +78,7 @@ class ProofTemplateElementVisitor {
     private List<BPASchemaRestrictions> getSchemaRestrictions(Pair<String, ?> schemaAndAttributesBuilder) {
         return schemaRestrictions.computeIfAbsent(
                 schemaAndAttributesBuilder.getLeft(),
-                schemaId -> List.of());
+                schemaId -> List.of(BPASchemaRestrictions.builder().build()));
     }
 
     private AtomicInteger getSameSchemaCounter(Pair<String, ?> schemaAndAttributesBuilder) {
