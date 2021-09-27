@@ -281,9 +281,12 @@ public class ConnectionManager {
         // only incoming connections in state request
         if (ConnectionRecord.ConnectionProtocol.CONNECTION_V1.equals(record.getConnectionProtocol())) {
             // handle Connection Invitations...
-            // if we generate and they accept, we do not get a COMPLETED or ACTIVE state, only get to RESPONSE
-            // if they generate and we accept, we may get to ACTIVE, but definitely get to RESPONSE
-            // so consider RESPONSE as we are connected, just add a completed task saying connection accepted.
+            // if we generate and they accept, we do not get a COMPLETED or ACTIVE state,
+            // only get to RESPONSE
+            // if they generate and we accept, we may get to ACTIVE, but definitely get to
+            // RESPONSE
+            // so consider RESPONSE as we are connected, just add a completed task saying
+            // connection accepted.
             if (ConnectionState.RESPONSE.equals(record.getState())) {
                 eventPublisher.publishEventAsync(PartnerRequestCompletedEvent.builder().partner(p).build());
             }
