@@ -54,10 +54,10 @@ public class BPAAttributeGroup {
     @Builder.Default
     Boolean nonRevoked = Boolean.FALSE;
     @NotNull
-    @Builder.Default
+    @Singular
     @Valid
     @ValidAttributeCondition
-    BPASchemaRestrictions schemaLevelRestrictions = BPASchemaRestrictions.builder().build();
+    List<BPASchemaRestrictions> schemaLevelRestrictions = List.of();
 
     public AttributeGroup toRepresentation() {
         return AttributeGroup
@@ -67,7 +67,10 @@ public class BPAAttributeGroup {
                         .map(BPAAttribute::toRepresentation)
                         .collect(Collectors.toList()))
                 .nonRevoked(nonRevoked)
-                .schemaLevelRestrictions(schemaLevelRestrictions.toRepresentation())
+                .schemaLevelRestrictions(schemaLevelRestrictions
+                        .stream()
+                        .map(BPASchemaRestrictions::toRepresentation)
+                        .collect(Collectors.toList()))
                 .build();
     }
 
@@ -78,9 +81,9 @@ public class BPAAttributeGroup {
                         .map(BPAAttribute::fromRepresentation)
                         .collect(Collectors.toList()))
                 .nonRevoked(attributeGroup.getNonRevoked())
-                .schemaLevelRestrictions(
-                        BPASchemaRestrictions.fromRepresentation(
-                                attributeGroup.getSchemaLevelRestrictions()))
+                .schemaLevelRestrictions(attributeGroup.getSchemaLevelRestrictions().stream()
+                                .map(BPASchemaRestrictions::fromRepresentation)
+                                .collect(Collectors.toList()))
                 .build();
     }
 }
