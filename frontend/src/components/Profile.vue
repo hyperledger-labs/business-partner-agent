@@ -8,13 +8,13 @@
 
 <template>
   <div>
-    <v-card class="my-4">
+    <v-card class="my-4" v-if="profile">
       <v-card-title class="bg-light">{{
         $t("component.profile.organizationalProfile.title")
       }}</v-card-title>
       <OrganizationalProfile
-        v-if="profile"
         v-bind:documentData="profile"
+        v-if="profile"
         isReadOnly
       ></OrganizationalProfile>
       <v-card-actions>
