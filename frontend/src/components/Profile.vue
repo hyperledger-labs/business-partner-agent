@@ -8,41 +8,54 @@
 
 <template>
   <div>
-    <v-card class="my-4">
-      <v-card-title class="bg-light">{{ $t("component.profile.organizationalProfile.title") }}</v-card-title>
+    <v-card class="my-4" v-if="profile">
+      <v-card-title class="bg-light">{{
+        $t("component.profile.organizationalProfile.title")
+      }}</v-card-title>
       <OrganizationalProfile
-          v-if="profile"
-          v-bind:documentData="profile"
-          isReadOnly
+        v-bind:documentData="profile"
+        v-if="profile"
+        isReadOnly
       ></OrganizationalProfile>
       <v-card-actions>
         <!-- this should be protected by roles -->
         <v-layout align-end justify-end>
-          <v-bpa-button color="secondary" @click="editProfile">{{ $t("component.profile.organizationalProfile.edit") }}</v-bpa-button>
+          <v-bpa-button color="secondary" @click="editProfile">{{
+            $t("component.profile.organizationalProfile.edit")
+          }}</v-bpa-button>
         </v-layout>
       </v-card-actions>
     </v-card>
-    <v-card class="my-4" v-for="(item) in credentials" v-bind:key="item.id">
-      <v-card-title class="bg-light"><span v-if="item.type === CredentialTypes.UNKNOWN.type">{{
-                item.credentialDefinitionId | credentialTag
-              }}</span>
-        <span v-else>{{ item.typeLabel }}</span></v-card-title>
+    <v-card class="my-4" v-for="item in credentials" v-bind:key="item.id">
+      <v-card-title class="bg-light"
+        ><span v-if="item.type === CredentialTypes.UNKNOWN.type">{{
+          item.credentialDefinitionId | credentialTag
+        }}</span>
+        <span v-else>{{ item.typeLabel }}</span></v-card-title
+      >
       <v-container>
         <v-row>
           <v-col cols="4">
             <v-row
-              v-if="(item.issuer && profile) && (profile.id !== item.issuer)"
+              v-if="item.issuer && profile && profile.id !== item.issuer"
               class="text-caption mt-1 ml-1"
             >
-              {{ $t("component.profile.credential.verifiedByLabel") }} {{ item.issuer }}
+              {{ $t("component.profile.credential.verifiedByLabel") }}
+              {{ item.issuer }}
             </v-row>
-            <v-row v-if="item.credentialData && item.credentialData.validFrom" class="mt-1 ml-1 pt-1">
+            <v-row
+              v-if="item.credentialData && item.credentialData.validFrom"
+              class="mt-1 ml-1 pt-1"
+            >
               <v-icon small class="mt-1 ml-1 mr-2">{{ validFrom }}</v-icon>
               <span class="text-caption mt-1">{{
                 item.credentialData.validFrom | moment("YYYY-MM-DD")
               }}</span>
             </v-row>
-            <v-row v-if="item.credentialData && item.credentialData.validUntil" class="mt-1 ml-1 pt-1">
+            <v-row
+              v-if="item.credentialData && item.credentialData.validUntil"
+              class="mt-1 ml-1 pt-1"
+            >
               <v-icon small class="mt-1 ml-1 mr-2">{{ validUntil }}</v-icon>
               <span class="text-caption mt-1">{{
                 item.credentialData.validUntil | moment("YYYY-MM-DD")
@@ -56,14 +69,16 @@
               showOnlyContent
             ></Credential>
           </v-col>
-      </v-row>
+        </v-row>
       </v-container>
     </v-card>
     <v-card v-if="!profile && credentials.length === 0" height="100px" flat>
       <v-container fill-height fluid text-center>
         <v-row align="center" justify="center">
           <v-col>
-            <h4 class="grey--text">{{ $t("component.profile.noProfileMsg") }}</h4>
+            <h4 class="grey--text">
+              {{ $t("component.profile.noProfileMsg") }}
+            </h4>
           </v-col>
         </v-row>
       </v-container>
@@ -75,7 +90,10 @@
 import { CredentialTypes } from "../constants";
 import OrganizationalProfile from "@/components/OrganizationalProfile";
 import Credential from "@/components/Credential";
-import { getPartnerProfile, getPartnerProfileRoute } from "@/utils/partnerUtils";
+import {
+  getPartnerProfile,
+  getPartnerProfileRoute,
+} from "@/utils/partnerUtils";
 import { mdiCalendarCheck } from "@mdi/js";
 import { mdiCalendarRemove } from "@mdi/js";
 import VBpaButton from "@/components/BpaButton";
@@ -84,7 +102,7 @@ export default {
   components: {
     OrganizationalProfile,
     Credential,
-    VBpaButton
+    VBpaButton,
   },
   props: {
     partner: Object,
@@ -139,7 +157,7 @@ export default {
       if (route) {
         this.$router.push(route);
       }
-    }
+    },
   },
 };
 </script>

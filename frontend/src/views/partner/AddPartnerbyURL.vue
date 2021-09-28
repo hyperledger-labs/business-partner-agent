@@ -89,6 +89,7 @@
         </v-row>
         <v-row class="justify-center" v-else>
           <v-col>
+            <span>{{ $t("view.addPartnerbyURL.invitationInstructions") }}</span>
             <div>
               <qrcode-vue
                 class="d-flex justify-center"

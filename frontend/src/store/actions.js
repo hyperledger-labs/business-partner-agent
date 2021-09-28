@@ -180,9 +180,9 @@ export const loadPartnerSelectList = async ({ commit }) => {
       }
     })
     .catch((e) => {
-    console.error(e);
-    EventBus.$emit("error", e);
-  });
+      console.error(e);
+      EventBus.$emit("error", e);
+    });
 };
 
 export const loadCredDefSelectList = async ({ commit }) => {

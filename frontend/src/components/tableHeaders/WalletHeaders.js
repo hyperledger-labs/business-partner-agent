@@ -16,7 +16,7 @@ export const credHeaders = [
     value: "type",
   },
   {
-    text: "Issuer",
+    text: "Issued by",
     value: "issuer",
   },
   {
@@ -30,7 +30,7 @@ export const credHeaders = [
   {
     text: "Public",
     value: "isPublic",
-  }
+  },
 ];
 
 export const docHeaders = [
