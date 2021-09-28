@@ -306,14 +306,5 @@
   "showRawData": "Show raw data",
   "error": {
     "axios": "Request failed with status {statusText}"
-  },
-  "common":{
-    "tables":{
-      "headers":{
-        "last_update_date":"Last Updated",
-        "created_by":"Created by",
-        "issuedBy":"Issued by"
-      }
-    }
   }
 }

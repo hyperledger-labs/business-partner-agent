@@ -102,12 +102,12 @@
 "component": {
   "organizationProfile": {
     "companyInfo": {
-      "section_title": "Administrative Information",
+      "sectionTitle": "Administrative Information",
       "companyName": "Organization Legal Name",
       "companyAltName": "Organization Alternate Name"
     },
     "addressInfo": {
-      "section_title": "Address"
+      "sectionTitle": "Address"
     }
   },
   "profile":{
@@ -124,15 +124,6 @@
       "declined": "Request for proof has been declined",
       "received": "A Proof has been requested",
       "sent": "Request for Proof sent"
-    }
-  }
-},
-"common": {
-  "tables": {
-    "headers": {
-      "lastUpdateDate": "Updated at",
-      "createdBy": "Created by",
-      "issuedBy": "Issued by"
     }
   }
 }
