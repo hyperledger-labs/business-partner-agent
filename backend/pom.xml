@@ -54,21 +54,21 @@
         <!-- Dependency Versions -->
         <log4j2.version>2.14.1</log4j2.version>
         <lombok.version>1.18.20</lombok.version>
-        <micronaut.version>3.0.1</micronaut.version>
+        <micronaut.version>3.0.2</micronaut.version>
         <micronaut.data.version>3.0.1</micronaut.data.version>
         <micronaut.openapi.version>3.0.3</micronaut.openapi.version>
         <micronaut.security.version>3.0.1</micronaut.security.version>
         <mockito.version>3.12.4</mockito.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
-        <pmd.version>6.38.0</pmd.version>
+        <pmd.version>6.39.0</pmd.version>
         <spotbugs.version>4.4.1</spotbugs.version>
         <testcontainers.version>1.16.0</testcontainers.version>
         <!-- Plugin Versions -->
         <license-maven-plugin.version>4.1</license-maven-plugin.version>
         <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
         <maven.failsafe.plugin.version>3.0.0-M5</maven.failsafe.plugin.version>
-        <maven.pmd.plugin.version>3.14.0</maven.pmd.plugin.version>
-        <maven.spotbugs.plugin.version>4.3.0</maven.spotbugs.plugin.version>
+        <maven.pmd.plugin.version>3.15.0</maven.pmd.plugin.version>
+        <maven.spotbugs.plugin.version>4.4.1</maven.spotbugs.plugin.version>
         <maven.surefire.plugin.version>3.0.0-M5</maven.surefire.plugin.version>
     </properties>
 
@@ -307,7 +307,7 @@
                 <plugin>
                     <groupId>io.micronaut.build</groupId>
                     <artifactId>micronaut-maven-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.0.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -466,7 +466,7 @@
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.36.1</version>
+                    <version>0.37.0</version>
                     <configuration>
                         <images>
                             <image>
