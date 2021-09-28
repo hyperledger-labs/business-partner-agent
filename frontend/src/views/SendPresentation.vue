@@ -74,7 +74,7 @@ export default {
           value: "type",
         },
         {
-          text: "Issuer",
+          text: "Issued by",
           value: "issuer",
         },
         {

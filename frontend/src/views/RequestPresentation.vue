@@ -55,7 +55,7 @@ export default {
     id: String, // partner ID
   },
   mounted() {
-    EventBus.$emit("title", this.$t("nav.requestPresentation"));
+    EventBus.$emit("title", this.$t("view.requestPresentation.title"));
   },
   data: () => {
     return {

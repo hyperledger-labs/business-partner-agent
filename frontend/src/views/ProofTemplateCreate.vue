@@ -186,7 +186,7 @@ export default {
   },
   components: { RestrictionsEdit, AttributeEdit, VBpaButton },
   created() {
-    EventBus.$emit("title", this.$t("nav.proofTemplates"));
+    EventBus.$emit("title", this.$t("view.proofTemplates.title"));
   },
   data: () => {
     return {

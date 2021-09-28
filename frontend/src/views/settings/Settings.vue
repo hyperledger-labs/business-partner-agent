@@ -10,8 +10,8 @@
     <v-card class="my-4 mx-auto">
       <v-card-title class="bg-light">Settings</v-card-title>
       <v-list-item v-if="!isLoading">
-        <v-list-item-title class="grey--text text--darken-2 font-weight-medium"
-          >Wallet DID
+        <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
+          {{ $t("view.settings.walletDID") }}
         </v-list-item-title>
         <v-list-item-subtitle align="end" id="did">
           {{ this.status.did }}
@@ -24,7 +24,7 @@
         <v-list-item-content>
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
-            >Schemas and Trusted Issuers</v-list-item-title
+            >{{ $t("view.settings.schemaManagement") }}</v-list-item-title
           >
         </v-list-item-content>
         <v-list-item-action>
@@ -69,7 +69,7 @@
         <v-list-item-content>
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
-            >Expert mode</v-list-item-title
+            >{{ $t("view.settings.expertMode") }}</v-list-item-title
           >
         </v-list-item-content>
         <v-list-item-action>

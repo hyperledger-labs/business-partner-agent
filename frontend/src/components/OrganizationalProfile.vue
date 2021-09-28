@@ -11,7 +11,7 @@
     <v-row>
       <v-col cols="4" class="pb-0">
         <p class="grey--text text--darken-2 font-weight-medium">
-          Company Information
+          {{ $t("component.organizationProfile.companyInfo.sectionTitle") }}
         </p>
       </v-col>
       <v-col cols="8" class="pb-0">
@@ -24,7 +24,7 @@
           dense
         ></v-text-field>
         <v-text-field
-          label="Company Legal Name"
+          :label="$t('component.organizationProfile.companyInfo.companyName')"
           placeholder
           :disabled="isReadOnly"
           :rules="[(v) => !!v || 'Item is required']"
@@ -35,7 +35,9 @@
           :value="documentData.legalName"
         ></v-text-field>
         <v-text-field
-          label="Company Alternative Name"
+          :label="
+            $t('component.organizationProfile.companyInfo.companyAltName')
+          "
           placeholder
           v-model="documentData.altName"
           :disabled="isReadOnly"
@@ -94,7 +96,7 @@
     <v-row>
       <v-col cols="4" class="pb-0">
         <p class="grey--text text--darken-2 font-weight-medium">
-          Address Information
+          {{ $t("component.organizationProfile.addressInfo.sectionTitle") }}
         </p>
       </v-col>
       <v-col cols="8" class="pb-0">
