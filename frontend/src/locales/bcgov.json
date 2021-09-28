@@ -110,6 +110,9 @@
       "sectionTitle": "Address"
     }
   },
+  "issueCredential": {
+    "attributesTitle":"Credential Details"
+  },
   "profile":{
     "noProfileMsg": "This organization does not share anything"
   }
