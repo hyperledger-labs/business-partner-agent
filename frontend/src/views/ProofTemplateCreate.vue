@@ -249,19 +249,16 @@ export default {
     addAttributeGroup: function (schemaId) {
       const schemaLevelRestrictions = [];
 
-      const {
-        schemaAttributeNames,
-        trustedIssuer,
-        version,
-        label,
-      } = this.schemas.find((s) => s.id === schemaId);
+      const { schemaAttributeNames, trustedIssuer } = this.schemas.find(
+        (s) => s.id === schemaId
+      );
 
       if (trustedIssuer) {
         for (const issuer of trustedIssuer) {
           schemaLevelRestrictions.push({
             schemaId: schemaId,
-            schemaName: label,
-            schemaVersion: version,
+            schemaName: "",
+            schemaVersion: "",
             schemaIssuerDid: "",
             issuerDid: issuer.issuerDid,
             credentialDefinitionId: "",
