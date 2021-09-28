@@ -65,15 +65,15 @@
       "title": "Add New Secure Connection",
       "lookupPartnerBtnLabel": "Search Organization",
       "formDIDLabel": "Decentralized Identifier (DID) of the organization you want to connect with",
-      "formInvitationLabel": "Invitation URL received from the orgnaization you watn to connect with",
-      "addPartnerBtnLabel": "Add Partner"
+      "formInvitationLabel": "URL received from the orgnaization you want to connect with",
+      "addPartnerBtnLabel": "Add Partner",
+      "trustPing": "Auto-Ping (advanced users only)"
     },
     "addPartnerbyURL": {
       "title": "Invite new Secure Connection",
       "createInvitation": "Create Invitation",
       "invitationURL": "Send the QR code or the equivalent URL below as the connection invitiation",
-      "useOOB": "Out of Band (advanced users only)",
-      "trustPing": "Auto-Ping (advanced users only)"
+      "useOOB": "Out of Band (advanced users only)"
     },
   "sendPresentation": {
     "title": "Send Proof",

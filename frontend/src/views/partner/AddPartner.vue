@@ -23,8 +23,7 @@
           <v-col cols="12">
             <v-text-field
               prepend-icon="$vuetify.icons.identity"
-              :label="$t('view.addPartner.formDIDPlaceholder')"
-              placeholder=""
+              :label="$t('view.addPartner.formDIDLabel')"
               v-model="did"
               @change="partnerLoaded = false"
               outlined
