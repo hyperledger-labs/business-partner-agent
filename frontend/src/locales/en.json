@@ -213,7 +213,9 @@
     },
     "settings":{
       "walletDID": "Wallet DID",
-      "schemaManagement": "Schemas and Trusted Issuers"    }
+      "schemaManagement": "Schemas and Trusted Issuers",
+      "expertMode": "Expert Mode"
+    }
   },
   "component": {
     "organizationProfile": {

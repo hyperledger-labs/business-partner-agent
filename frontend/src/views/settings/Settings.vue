@@ -69,7 +69,7 @@
         <v-list-item-content>
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
-            >Expert Mode</v-list-item-title
+            >{{ $t("view.settings.expertMode") }}</v-list-item-title
           >
         </v-list-item-content>
         <v-list-item-action>
