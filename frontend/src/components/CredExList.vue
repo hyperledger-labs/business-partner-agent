@@ -90,17 +90,14 @@
                 <div v-if="isEditModeCredential">
                   <v-btn
                     icon
-                    @click="isEditModeCredential = !isEditModeCredential"
+                    :disabled="!dialogEditCredentialIsModified"
+                    @click="saveCredentialEdit"
                     color="primary"
                   >
                     <v-icon dark>$vuetify.icons.save</v-icon>
                   </v-btn>
 
-                  <v-btn
-                    icon
-                    @click="isEditModeCredential = false"
-                    color="error"
-                  >
+                  <v-btn icon @click="resetCredentialEdit" color="error">
                     <v-icon dark>$vuetify.icons.cancel</v-icon>
                   </v-btn>
                 </div>
@@ -131,12 +128,20 @@
             }}</v-bpa-button>
             <v-bpa-button
               color="primary"
+              :disabled="
+                dialogEditCredentialIsInitialData ||
+                isEditModeCredential ||
+                !dialogEditCredentialIsModified
+              "
               :loading="isLoadingSendCounterOffer"
               @click="sendCounterOffer(false)"
               >Send Counter Offer</v-bpa-button
             >
             <v-bpa-button
               color="primary"
+              :disabled="
+                !dialogEditCredentialIsInitialData || isEditModeCredential
+              "
               :loading="isLoadingSendCounterOffer"
               @click="sendCounterOffer(true)"
               >Accept</v-bpa-button
@@ -212,6 +217,19 @@ export default {
         return this.$store.getters.getCredDefSelectList;
       },
     },
+    dialogEditCredentialIsInitialData: function () {
+      return (
+        JSON.stringify(this.document.credentialData) ===
+        JSON.stringify(this.document.credentialInitialData)
+      );
+    },
+    dialogEditCredentialIsModified: function () {
+      return !!(
+        JSON.stringify(this.document.credentialData) !==
+          JSON.stringify(this.document.credentialUnchangedData) ||
+        this.document.credentialWasEdited
+      );
+    },
   },
   data: () => {
     return {
@@ -234,20 +252,39 @@ export default {
   methods: {
     openItem(item) {
       this.dialog = true;
-
       this.partner = this.partnerList.find((p) => p.value === item.partner.id);
       this.credDef = this.credDefList.find((p) => p.value === item.credDef.id);
 
       this.document = {
         credentialData: { ...item.credential.attrs },
+        credentialInitialData: { ...item.credential.attrs },
+        credentialUnchangedData: { ...item.credential.attrs },
         schemaId: item.credential.schemaId,
         credentialDefinitionId: item.credential.credentialDefinitionId,
         credentialExchangeId: item.id,
         credentialExchangeState: item.state,
+        credentialWasEdited: false,
       };
+
       this.$emit("openItem", item);
     },
+    resetCredentialEdit() {
+      Object.assign(
+        this.document.credentialData,
+        this.document.credentialUnchangedData
+      );
+      this.isEditModeCredential = false;
+    },
+    saveCredentialEdit() {
+      this.document.credentialWasEdited = true;
+      Object.assign(
+        this.document.credentialUnchangedData,
+        this.document.credentialData
+      );
+      this.isEditModeCredential = false;
+    },
     closeDialog() {
+      this.resetCredentialEdit();
       this.dialog = false;
     },
     isItemActive(item) {
