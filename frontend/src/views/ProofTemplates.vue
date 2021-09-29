@@ -10,7 +10,7 @@
     <v-card class="my-4 mx-auto">
       <!-- Title -->
       <v-card-title class="bg-light">
-        <span>{{ $t("view.proofTemplate.title") }}</span>
+        <span>{{ $t("view.proofTemplates.tableTitle") }}</span>
       </v-card-title>
 
       <!-- Proof Templates Table -->
@@ -53,7 +53,7 @@ export default {
   name: "ProofTemplates",
   components: { ProofTemplatesList, VBpaButton },
   created() {
-    EventBus.$emit("title", this.$t("nav.proofTemplates"));
+    EventBus.$emit("title", this.$t("view.proofTemplates.title"));
   },
   data: () => {
     return {

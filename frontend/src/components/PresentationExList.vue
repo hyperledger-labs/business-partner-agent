@@ -169,7 +169,7 @@ export default {
           value: "role",
         },
         {
-          text: "Updated At",
+          text: "Updated at",
           value: "updatedAt",
         },
         {

@@ -31,9 +31,9 @@ export const getPartnerProfileRoute = (partner) => {
     });
     if (partnerProfile) {
       if ({}.hasOwnProperty.call(partnerProfile, "credentialData")) {
-        return {name: "Credential", params: {id: partnerProfile.id}};
+        return { name: "Credential", params: { id: partnerProfile.id } };
       } else if ({}.hasOwnProperty.call(partnerProfile, "documentData")) {
-        return {name: "Document", params: {id: partnerProfile.id}};
+        return { name: "Document", params: { id: partnerProfile.id } };
       }
     }
   }

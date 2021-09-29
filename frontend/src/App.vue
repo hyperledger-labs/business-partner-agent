@@ -84,14 +84,16 @@
             </v-badge>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>{{ $t("nav.notifications") }}</v-list-item-title>
+            <v-list-item-title>{{
+              $t("view.notifications.title")
+            }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item link :to="{ name: 'PublicProfile' }">
           <v-list-item-action>
             <v-icon>$vuetify.icons.profile</v-icon>
           </v-list-item-action>
-          <v-list-item-title>{{ $t("nav.profile") }}</v-list-item-title>
+          <v-list-item-title>{{ $t("view.profile.title") }}</v-list-item-title>
         </v-list-item>
         <v-list-item link :to="{ name: 'Wallet' }">
           <v-list-item-action>
@@ -108,7 +110,7 @@
             </v-badge>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>{{ $t("nav.wallet") }}</v-list-item-title>
+            <v-list-item-title>{{ $t("view.wallet.title") }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item link :to="{ name: 'CredentialManagement' }">
@@ -117,7 +119,7 @@
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>{{
-              $t("nav.credentialManagement")
+              $t("view.issueCredentials.title")
             }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -128,7 +130,7 @@
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>{{
-              $t("nav.proofTemplates")
+              $t("view.proofTemplates.title")
             }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -148,7 +150,9 @@
             </v-badge>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>{{ $t("nav.partners") }}</v-list-item-title>
+            <v-list-item-title>
+              {{ $t("view.partners.title") }}</v-list-item-title
+            >
           </v-list-item-content>
         </v-list-item>
         <v-list-item
