@@ -175,9 +175,13 @@ export default {
       this.partner = {};
       this.credDef = {};
 
-      const iresp = await issuerService.listCredentialExchangesAsIssuer();
-      if (iresp.status === 200) {
-        this.issuedCredentials = iresp.data;
+      try {
+        const iresp = await issuerService.listCredentialExchangesAsIssuer();
+        if (iresp.status === 200) {
+          this.issuedCredentials = iresp.data;
+        }
+      } catch (err) {
+        EventBus.$emit("error", this.$axiosErrorMessage(err));
       }
       this.isLoadingCredentials = false;
     },

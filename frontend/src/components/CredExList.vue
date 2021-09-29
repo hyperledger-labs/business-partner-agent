@@ -22,20 +22,20 @@
         <new-message-icon :type="'credential'" :id="item.id"></new-message-icon>
       </template>
       <template v-slot:[`item.state`]="{ item }">
+        <span>
+          {{ (item.state ? item.state.replace("_", " ") : "") | capitalize }}
+        </span>
         <v-icon
           v-if="isItemActive(item) && !item.revoked"
           color="green"
-          title="credential issued"
+          title="Credential issued"
           >$vuetify.icons.check</v-icon
         >
         <v-icon
           v-else-if="isItemActive(item) && item.revoked"
-          title="credential revoked"
+          title="Credential revoked"
           >$vuetify.icons.check</v-icon
         >
-        <span v-else>
-          {{ item.state.replace("_", " ") }}
-        </span>
       </template>
       <template v-slot:[`item.updatedAt`]="{ item }">
         {{ item.updatedAt | formatDateLong }}
@@ -61,36 +61,86 @@
     <v-dialog v-model="dialog" max-width="600px">
       <v-card>
         <v-card-title class="bg-light">
-          <span class="headline">{{$t('component.credExList.dialog.title')}}</span>
+          <span class="headline">{{
+            $t("component.credExList.dialog.title")
+          }}</span>
         </v-card-title>
         <v-card-text>
           <v-select
-              :label="$t('component.credExList.dialog.partnerLabel')"
-              v-model="partner"
-              :items="partnerList"
-              outlined
-              disabled
-              dense
+            :label="$t('component.credExList.dialog.partnerLabel')"
+            v-model="partner"
+            :items="partnerList"
+            outlined
+            disabled
+            dense
           ></v-select>
           <v-select
-              :label="$t('component.credExList.dialog.credDefLabel')"
-              return-object
-              v-model="credDef"
-              :items="credDefList"
-              outlined
-              disabled
-              dense
+            :label="$t('component.credExList.dialog.credDefLabel')"
+            return-object
+            v-model="credDef"
+            :items="credDefList"
+            outlined
+            disabled
+            dense
           ></v-select>
           <v-card>
-            <v-card-title class="bg-light" style="font-size: small">{{$t('component.credExList.dialog.attributesTitle')}}</v-card-title>
+            <v-card-title class="bg-light" style="font-size: small"
+              >{{ $t("component.credExList.dialog.attributesTitle") }}
+              <v-layout align-center justify-end>
+                <div v-if="isEditModeCredential">
+                  <v-btn
+                    icon
+                    @click="isEditModeCredential = !isEditModeCredential"
+                    color="primary"
+                  >
+                    <v-icon dark>$vuetify.icons.save</v-icon>
+                  </v-btn>
+
+                  <v-btn
+                    icon
+                    @click="isEditModeCredential = false"
+                    color="error"
+                  >
+                    <v-icon dark>$vuetify.icons.cancel</v-icon>
+                  </v-btn>
+                </div>
+                <v-btn
+                  v-if="!isEditModeCredential"
+                  icon
+                  @click="isEditModeCredential = true"
+                  color="primary"
+                >
+                  <v-icon dark>$vuetify.icons.pencil</v-icon>
+                </v-btn>
+              </v-layout>
+            </v-card-title>
+
             <v-card-text>
-              <Cred :document="document" isReadOnly showOnlyContent></Cred>
+              <Cred
+                :document="document"
+                :isReadOnly="!isEditModeCredential"
+                showOnlyContent
+              ></Cred>
             </v-card-text>
           </v-card>
         </v-card-text>
         <v-card-actions>
           <v-layout align-end justify-end>
-            <v-bpa-button color="primary" @click="dialog = false">{{$t('button.close')}}</v-bpa-button>
+            <v-bpa-button color="secondary" @click="closeDialog">{{
+              $t("button.close")
+            }}</v-bpa-button>
+            <v-bpa-button
+              color="primary"
+              :loading="isLoadingSendCounterOffer"
+              @click="sendCounterOffer(false)"
+              >Send Counter Offer</v-bpa-button
+            >
+            <v-bpa-button
+              color="primary"
+              :loading="isLoadingSendCounterOffer"
+              @click="sendCounterOffer(true)"
+              >Accept</v-bpa-button
+            >
           </v-layout>
         </v-card-actions>
       </v-card>
@@ -102,6 +152,7 @@ import { issuerService } from "@/services";
 import Cred from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
 import NewMessageIcon from "@/components/NewMessageIcon";
+import { EventBus } from "@/main";
 
 export default {
   props: {
@@ -159,15 +210,18 @@ export default {
     credDefList: {
       get() {
         return this.$store.getters.getCredDefSelectList;
-      }
-    }
+      },
+    },
   },
   data: () => {
     return {
       dialog: false,
+      isEditModeCredential: false,
+      isLoadingSendCounterOffer: false,
+      credentialContentChanged: false,
       document: {},
       partner: {},
-      credDef:{},
+      credDef: {},
       revoked: [],
     };
   },
@@ -181,19 +235,20 @@ export default {
     openItem(item) {
       this.dialog = true;
 
-      this.partner = this.partnerList.find(
-        (p) => p.value === item.partner.id
-      );
-      this.credDef = this.credDefList.find(
-        (p) => p.value === item.credDef.id
-      );
+      this.partner = this.partnerList.find((p) => p.value === item.partner.id);
+      this.credDef = this.credDefList.find((p) => p.value === item.credDef.id);
 
       this.document = {
         credentialData: { ...item.credential.attrs },
         schemaId: item.credential.schemaId,
         credentialDefinitionId: item.credential.credentialDefinitionId,
+        credentialExchangeId: item.id,
+        credentialExchangeState: item.state,
       };
       this.$emit("openItem", item);
+    },
+    closeDialog() {
+      this.dialog = false;
     },
     isItemActive(item) {
       return this.isActiveFn(item);
@@ -201,6 +256,33 @@ export default {
     revokeCredential(id) {
       this.revoked.push(id);
       issuerService.revokeCredential(id);
+    },
+    async sendCounterOffer(acceptAll) {
+      this.isLoadingSendCounterOffer = true;
+
+      let acceptProposal = false;
+
+      if (acceptAll) {
+        acceptProposal = acceptAll;
+      }
+
+      const counterOffer = {
+        acceptProposal,
+        attributes: this.document.credentialData,
+      };
+
+      issuerService
+        .sendCredentialOffer(this.document.credentialExchangeId, counterOffer)
+        .then((res) => {
+          EventBus.$emit("success", this.$axiosErrorMessage(res));
+          this.closeDialog();
+        })
+        .catch((err) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(err));
+        })
+        .finally(() => {
+          this.isLoadingSendCounterOffer = false;
+        });
     },
   },
   components: {
