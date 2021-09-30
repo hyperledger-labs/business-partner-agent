@@ -59,7 +59,7 @@ public class ProofEventHandler {
             handleAckedOrVerified(proof);
         } else if (proof.roleIsProverAndRequestReceived()) {
             handleProofRequest(proof);
-        } else if (StringUtils.isNotEmpty(proof.getErrorMsg()) && proof.roleIsVerifier()) {
+        } else if (StringUtils.isNotEmpty(proof.getErrorMsg())) {
             handleProblemReport(proof);
         } else {
             // if not handled in the manager e.g. when sending the request
@@ -152,9 +152,14 @@ public class ProofEventHandler {
      */
     private void handleProblemReport(@NonNull PresentationExchangeRecord exchange) {
         pProofRepo.findByPresentationExchangeId(exchange.getPresentationExchangeId()).ifPresent(pp -> {
+            String errorMsg = org.apache.commons.lang3.StringUtils.truncate(exchange.getErrorMsg(), 255);
+            // not a useful response, but this is what we get and what it means
+            if ("abandoned: abandoned".equals(errorMsg)) {
+                errorMsg = "Partner rejected proof exchange because it is not valid";
+            }
             pp.setState(PresentationExchangeState.DECLINED);
             pp.pushStateChange(PresentationExchangeState.DECLINED, Instant.now());
-            pp.setProblemReport(exchange.getErrorMsg());
+            pp.setProblemReport(errorMsg);
             pProofRepo.update(pp);
             eventPublisher.publishEventAsync(
                     PresentationRequestDeclinedEvent.builder().partnerProof(pp).build());

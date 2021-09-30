@@ -24,6 +24,22 @@ export const getPartnerProfile = (partner) => {
   return null;
 };
 
+export const getPartnerProfileRoute = (partner) => {
+  if (partner && {}.hasOwnProperty.call(partner, "credential")) {
+    let partnerProfile = partner.credential.find((cred) => {
+      return cred.type === CredentialTypes.PROFILE.type;
+    });
+    if (partnerProfile) {
+      if ({}.hasOwnProperty.call(partnerProfile, "credentialData")) {
+        return { name: "Credential", params: { id: partnerProfile.id } };
+      } else if ({}.hasOwnProperty.call(partnerProfile, "documentData")) {
+        return { name: "Document", params: { id: partnerProfile.id } };
+      }
+    }
+  }
+  return null;
+};
+
 export const getPartnerState = (partner) => {
   if ({}.hasOwnProperty.call(partner, "state")) {
     if (partner.state === PartnerStates.REQUEST.value) {

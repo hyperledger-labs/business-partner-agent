@@ -105,7 +105,7 @@ public class BPACredentialExchange extends ExchangeStateDecorator<BPACredentialE
 
     @Nullable
     @TypeDef(type = DataType.JSON)
-    private Credential credential; // do not store reference to schema and cred def here
+    private Credential credential;
 
     @Nullable
     @TypeDef(type = DataType.JSON)

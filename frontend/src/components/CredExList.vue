@@ -199,11 +199,11 @@ export default {
           value: "displayText",
         },
         {
-          text: "Issued To",
+          text: "Issued to",
           value: "partner.name",
         },
         {
-          text: "Updated At",
+          text: "Updated at",
           value: "updatedAt",
         },
         {
