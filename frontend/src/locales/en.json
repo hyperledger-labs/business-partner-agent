@@ -260,6 +260,7 @@
     "credExList": {
       "dialog": {
         "title": "Credential",
+        "timeline": "Timeline",
         "partnerLabel": "Partner",
         "credDefLabel": "Credential Definition",
         "attributesTitle": "Credential Content",

@@ -85,6 +85,50 @@
             disabled
             dense
           ></v-select>
+
+          <!-- Timeline  -->
+          <v-expansion-panels
+            accordion
+            flat
+            v-if="document.credentialStateToTimestamp"
+          >
+            <v-expansion-panel>
+              <v-expansion-panel-header
+                class="grey--text text--darken-2 font-weight-medium bg-light"
+                >{{
+                  $t("component.credExList.dialog.timeline")
+                }}</v-expansion-panel-header
+              >
+              <v-expansion-panel-content class="bg-light">
+                <v-timeline dense>
+                  <v-timeline-item
+                    fill-dot
+                    small
+                    v-for="entry in Object.entries(
+                      document.credentialStateToTimestamp
+                    )"
+                    :key="entry.key"
+                  >
+                    <v-row class="pt-1">
+                      <v-col cols="3">
+                        {{ entry[1] | formatDateLong }}
+                      </v-col>
+                      <v-col>
+                        <div class="text-caption">
+                          <strong>
+                            {{ entry[0].replace("_", " ") | capitalize }}
+                          </strong>
+                        </div>
+                      </v-col>
+                    </v-row>
+                  </v-timeline-item>
+                </v-timeline>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
+
+          <br />
+
           <v-card>
             <v-card-title class="bg-light" style="font-size: small"
               >{{ $t("component.credExList.dialog.attributesTitle") }}
@@ -302,6 +346,7 @@ export default {
         credentialExchangeId: item.id,
         credentialExchangeState: item.state,
         credentialWasEdited: false,
+        credentialStateToTimestamp: item.stateToTimestamp,
       };
 
       this.$emit("openItem", item);
