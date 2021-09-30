@@ -330,7 +330,7 @@ public class IssuerCredentialManager {
                     ? credEx.getCredentialProposal().getAttributes()
                     : List.of();
         } else {
-            attributes = counterOffer.getAttributes();
+            attributes = counterOffer.toCredentialAttributes();
         }
         V10CredentialBoundOfferRequest v1Offer = V10CredentialBoundOfferRequest
                 .builder()
