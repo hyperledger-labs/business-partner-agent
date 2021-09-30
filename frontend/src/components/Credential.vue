@@ -58,7 +58,7 @@
     </v-row>
 
     <h3 v-if="intDoc.credentialData && !showOnlyContent" class="mb-4">
-      {{ $.t("component.issueCredential.attributesTitle") }}
+      {{ $t("component.issueCredential.attributesTitle") }}
     </h3>
     <v-row>
       <v-col>
