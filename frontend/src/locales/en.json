@@ -43,6 +43,7 @@
     "tasks": "Pending Tasks"
   },
   "button": {
+    "accept": "Accept",
     "save": "Save",
     "submit": "Submit",
     "create": "Create",
@@ -50,7 +51,8 @@
     "cancel": "Cancel",
     "yes": "Yes",
     "no": "No",
-    "close": "Close"
+    "close": "Close",
+    "sendCounterOffer": "Send Counter Offer"
   },
   "view": {
     "notifications": {
@@ -260,7 +262,10 @@
         "title": "Credential",
         "partnerLabel": "Partner",
         "credDefLabel": "Credential Definition",
-        "attributesTitle": "Credential Content"
+        "attributesTitle": "Credential Content",
+        "iconCredIssued": "Credential issued",
+        "iconCredRevoked": "Credential revoked",
+        "iconRevokeCred": "Revoke credential"
       }
     },
     "profile": {

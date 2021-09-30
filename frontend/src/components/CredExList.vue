@@ -28,12 +28,12 @@
         <v-icon
           v-if="isItemActive(item) && !item.revoked"
           color="green"
-          title="Credential issued"
+          :title="$t('component.credExList.dialog.iconCredIssued')"
           >$vuetify.icons.check</v-icon
         >
         <v-icon
           v-else-if="isItemActive(item) && item.revoked"
-          title="Credential revoked"
+          :title="$t('component.credExList.dialog.iconCredRevoked')"
           >$vuetify.icons.check</v-icon
         >
       </template>
@@ -44,13 +44,15 @@
         {{ item.createdAt | formatDateLong }}
       </template>
       <template v-slot:[`item.revocable`]="{ item }">
-        <v-icon v-if="item.revocable && item.revoked" title="credential revoked"
+        <v-icon
+          v-if="item.revocable && item.revoked"
+          :title="$t('component.credExList.dialog.iconCredRevoked')"
           >$vuetify.icons.revoked</v-icon
         >
         <v-icon
           v-else-if="item.revocable"
           color="green"
-          title="revoke credential"
+          :title="$t('component.credExList.dialog.iconRevokeCred')"
           @click.stop="revokeCredential(item.id)"
           :disabled="revoked.includes(item.id)"
           >$vuetify.icons.revoke</v-icon
@@ -153,7 +155,7 @@
               "
               :loading="isLoadingSendCounterOffer"
               @click="sendCounterOffer(false)"
-              >Send Counter Offer</v-bpa-button
+              >{{ $t("button.sendCounterOffer") }}</v-bpa-button
             >
             <v-bpa-button
               v-if="
@@ -166,7 +168,7 @@
               "
               :loading="isLoadingSendCounterOffer"
               @click="sendCounterOffer(true)"
-              >Accept</v-bpa-button
+              >{{ $t("button.accept") }}</v-bpa-button
             >
           </v-layout>
         </v-card-actions>
@@ -219,8 +221,8 @@ export default {
     isActiveFn: {
       type: Function,
       default: (item) =>
-        item.state === this.exchangeStates.CREDENTIAL_ISSUED ||
-        item.state === this.exchangeStates.CREDENTIAL_ACKED ||
+        item.state === CredentialExchangeStates.CREDENTIAL_ISSUED ||
+        item.state === CredentialExchangeStates.CREDENTIAL_ACKED ||
         item.state === "done",
     },
     isLoading: Boolean,
