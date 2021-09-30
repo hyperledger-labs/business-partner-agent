@@ -86,7 +86,14 @@
           <v-card>
             <v-card-title class="bg-light" style="font-size: small"
               >{{ $t("component.credExList.dialog.attributesTitle") }}
-              <v-layout align-center justify-end>
+              <v-layout
+                align-center
+                justify-end
+                v-if="
+                  document.credentialExchangeState ===
+                  exchangeStates.PROPOSAL_RECEIVED
+                "
+              >
                 <div v-if="isEditModeCredential">
                   <v-btn
                     icon
@@ -123,10 +130,21 @@
         </v-card-text>
         <v-card-actions>
           <v-layout align-end justify-end>
-            <v-bpa-button color="secondary" @click="closeDialog">{{
-              $t("button.close")
-            }}</v-bpa-button>
             <v-bpa-button
+              :color="
+                document.credentialExchangeState ===
+                exchangeStates.PROPOSAL_RECEIVED
+                  ? 'secondary'
+                  : 'primary'
+              "
+              @click="closeDialog"
+              >{{ $t("button.close") }}</v-bpa-button
+            >
+            <v-bpa-button
+              v-if="
+                document.credentialExchangeState ===
+                exchangeStates.PROPOSAL_RECEIVED
+              "
               color="primary"
               :disabled="
                 dialogEditCredentialIsInitialData ||
@@ -138,6 +156,10 @@
               >Send Counter Offer</v-bpa-button
             >
             <v-bpa-button
+              v-if="
+                document.credentialExchangeState ===
+                exchangeStates.PROPOSAL_RECEIVED
+              "
               color="primary"
               :disabled="
                 !dialogEditCredentialIsInitialData || isEditModeCredential
@@ -158,6 +180,7 @@ import Cred from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
 import NewMessageIcon from "@/components/NewMessageIcon";
 import { EventBus } from "@/main";
+import { CredentialExchangeStates } from "@/constants";
 
 export default {
   props: {
@@ -196,9 +219,9 @@ export default {
     isActiveFn: {
       type: Function,
       default: (item) =>
-        item.state === "credential_issued" ||
-        item.state == "credential_acked" ||
-        item.state == "done",
+        item.state === this.exchangeStates.CREDENTIAL_ISSUED ||
+        item.state === this.exchangeStates.CREDENTIAL_ACKED ||
+        item.state === "done",
     },
     isLoading: Boolean,
   },
@@ -237,6 +260,7 @@ export default {
       isEditModeCredential: false,
       isLoadingSendCounterOffer: false,
       credentialContentChanged: false,
+      exchangeStates: CredentialExchangeStates,
       document: {},
       partner: {},
       credDef: {},
