@@ -36,6 +36,19 @@ public class AriesStringUtil {
         return parts[parts.length - 1];
     }
 
+    /**
+     * Gets the last segment of a did
+     *
+     * @param did String e.g. did or credential definition id
+     * @return the last part of the input when separated by : null otherwise
+     */
+    public static String getLastSegmentOrNull(@Nullable String did) {
+        if (StringUtils.trimToNull(did) != null) {
+            return getLastSegment(did);
+        }
+        return null;
+    }
+
     public static String schemaGetName(@NonNull String schemaId) {
         return splitSchemaId(schemaId)[2];
     }

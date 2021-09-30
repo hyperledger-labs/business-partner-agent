@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -53,20 +54,20 @@ class ProofTemplateElementVisitor {
 
     private final Map<String, Attributes.AttributesBuilder> attributesBySchemaId = new HashMap<>();
     private final Map<String, List<Predicate.PredicateBuilder>> predicatesBySchemaId = new HashMap<>();
-    private final Map<String, BPASchemaRestrictions> schemaRestrictions = new HashMap<>();
+    private final Map<String, List<BPASchemaRestrictions>> schemaRestrictions = new HashMap<>();
     private final Map<String, NonRevocationApplicator> nonRevocationApplicatorMap = new HashMap<>();
     private final Map<String, AtomicInteger> sameSchemaCounters = new HashMap<>();
     private String templateName;
 
-    static PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder asProofRestrictionsBuilder(
-            BPASchemaRestrictions schemaRestrictions) {
-        return PresentProofRequest.ProofRequest.ProofRestrictions.builder()
-                .schemaId(schemaRestrictions.getSchemaId())
-                .schemaName(schemaRestrictions.getSchemaName())
-                .schemaVersion(schemaRestrictions.getSchemaVersion())
-                .schemaIssuerDid(schemaRestrictions.getSchemaIssuerDid())
-                .credentialDefinitionId(schemaRestrictions.getCredentialDefinitionId())
-                .issuerDid(schemaRestrictions.getIssuerDid());
+    static List<PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> asProofRestrictionsBuilder(
+            List<BPASchemaRestrictions> schemaRestrictions) {
+        return schemaRestrictions.stream().map(res -> PresentProofRequest.ProofRequest.ProofRestrictions.builder()
+                .schemaId(res.getSchemaId())
+                .schemaName(res.getSchemaName())
+                .schemaVersion(res.getSchemaVersion())
+                .schemaIssuerDid(res.getSchemaIssuerDid())
+                .credentialDefinitionId(res.getCredentialDefinitionId())
+                .issuerDid(res.getIssuerDid())).collect(Collectors.toList());
     }
 
     private NonRevocationApplicator getRevocationApplicator(Pair<String, ?> schemaAndAttributesBuilder) {
@@ -74,10 +75,10 @@ class ProofTemplateElementVisitor {
                 schemaId -> DEFAULT_NON_REVOCATION);
     }
 
-    private BPASchemaRestrictions getSchemaRestrictions(Pair<String, ?> schemaAndAttributesBuilder) {
+    private List<BPASchemaRestrictions> getSchemaRestrictions(Pair<String, ?> schemaAndAttributesBuilder) {
         return schemaRestrictions.computeIfAbsent(
                 schemaAndAttributesBuilder.getLeft(),
-                schemaId -> BPASchemaRestrictions.builder().build());
+                schemaId -> List.of(BPASchemaRestrictions.builder().build()));
     }
 
     private AtomicInteger getSameSchemaCounter(Pair<String, ?> schemaAndAttributesBuilder) {
