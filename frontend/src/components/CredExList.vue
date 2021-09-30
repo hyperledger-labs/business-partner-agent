@@ -99,7 +99,10 @@
                 <div v-if="isEditModeCredential">
                   <v-btn
                     icon
-                    :disabled="!dialogEditCredentialIsModified"
+                    :disabled="
+                      !dialogEditCredentialIsModified ||
+                      dialogEditCredentialHasEmptyField
+                    "
                     @click="saveCredentialEdit"
                     color="primary"
                   >
@@ -254,6 +257,15 @@ export default {
           JSON.stringify(this.document.credentialUnchangedData) ||
         this.document.credentialWasEdited
       );
+    },
+    dialogEditCredentialHasEmptyField: function () {
+      for (const attribute in this.document.credentialData) {
+        if (this.document.credentialData[attribute] === "") {
+          return true;
+        }
+      }
+
+      return false;
     },
   },
   data: () => {
