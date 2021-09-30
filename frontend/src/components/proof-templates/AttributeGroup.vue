@@ -68,81 +68,114 @@
             </v-data-table>
           </v-container>
 
-          <!-- TODO: Display multiple restriction objects -->
-          <v-container
-            v-if="
-              Object.keys(attributeGroup.schemaLevelRestrictions).length > 0
-            "
-          >
+          <v-container v-if="attributeGroup.schemaLevelRestrictions.length > 0">
             <h4 class="mb-4">
               {{
                 $t("view.proofTemplate.view.attributeGroup.titleRestrictions")
               }}
             </h4>
-            <v-simple-table>
-              <tbody>
-                <tr v-if="attributeGroup.schemaLevelRestrictions.schemaId">
-                  <td>{{ $t("view.proofTemplate.restrictions.schemaId") }}</td>
-                  <td>
-                    {{ attributeGroup.schemaLevelRestrictions.schemaId }}
-                  </td>
-                </tr>
-                <tr v-if="attributeGroup.schemaLevelRestrictions.schemaName">
-                  <td>
-                    {{ $t("view.proofTemplate.restrictions.schemaName") }}
-                  </td>
-                  <td>
-                    {{ attributeGroup.schemaLevelRestrictions.schemaName }}
-                  </td>
-                </tr>
-                <tr v-if="attributeGroup.schemaLevelRestrictions.schemaVersion">
-                  <td>
-                    {{ $t("view.proofTemplate.restrictions.schemaVersion") }}
-                  </td>
-                  <td>
-                    {{ attributeGroup.schemaLevelRestrictions.schemaVersion }}
-                  </td>
-                </tr>
-                <tr
-                  v-if="attributeGroup.schemaLevelRestrictions.schemaIssuerDid"
-                >
-                  <td>
-                    {{ $t("view.proofTemplate.restrictions.schemaIssuerDid") }}
-                  </td>
-                  <td>
-                    {{ attributeGroup.schemaLevelRestrictions.schemaIssuerDid }}
-                  </td>
-                </tr>
-                <tr
-                  v-if="
-                    attributeGroup.schemaLevelRestrictions
-                      .credentialDefinitionId
-                  "
-                >
-                  <td>
-                    {{
-                      $t(
-                        "view.proofTemplate.restrictions.credentialDefinitionId"
-                      )
-                    }}
-                  </td>
-                  <td>
-                    {{
-                      attributeGroup.schemaLevelRestrictions
-                        .credentialDefinitionId
-                    }}
-                  </td>
-                </tr>
-                <tr v-if="attributeGroup.schemaLevelRestrictions.issuerDid">
-                  <td>
-                    {{ $t("view.proofTemplate.restrictions.trustedIssuerDid") }}
-                  </td>
-                  <td>
-                    {{ attributeGroup.schemaLevelRestrictions.issuerDid }}
-                  </td>
-                </tr>
-              </tbody>
-            </v-simple-table>
+            <v-data-table
+              disable-sort
+              :hide-default-footer="
+                attributeGroup.schemaLevelRestrictions.length < 10
+              "
+              :headers="restrictionsHeaders"
+              :items="attributeGroup.schemaLevelRestrictions"
+              item-key="issuerDid"
+              class="elevation-1"
+              show-expand
+            >
+              <template v-slot:expanded-item="{ headers, item }">
+                <td :colspan="headers.length" style="padding: 0">
+                  <v-simple-table>
+                    <tbody>
+                      <tr>
+                        <td>
+                          {{ $t("view.proofTemplate.restrictions.schemaName") }}
+                        </td>
+                        <td>
+                          <v-text-field
+                            id="proofTemplateName"
+                            disabled
+                            v-model="item.schemaName"
+                            dense
+                          ></v-text-field>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          {{
+                            $t("view.proofTemplate.restrictions.schemaVersion")
+                          }}
+                        </td>
+                        <td>
+                          <v-text-field
+                            id="proofTemplateName"
+                            disabled
+                            v-model="item.schemaVersion"
+                            dense
+                          ></v-text-field>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          {{
+                            $t(
+                              "view.proofTemplate.restrictions.schemaIssuerDid"
+                            )
+                          }}
+                        </td>
+                        <td>
+                          <v-text-field
+                            id="proofTemplateName"
+                            disabled
+                            v-model="item.schemaIssuerDid"
+                            dense
+                          ></v-text-field>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          {{
+                            $t(
+                              "view.proofTemplate.restrictions.trustedIssuerDid"
+                            )
+                          }}
+                        </td>
+                        <td>
+                          <v-text-field
+                            disabled
+                            id="proofTemplateName"
+                            v-model="item.issuerDid"
+                            dense
+                          ></v-text-field>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          {{
+                            $t(
+                              "view.proofTemplate.restrictions.credentialDefinitionId"
+                            )
+                          }}
+                        </td>
+                        <td>
+                          <v-text-field
+                            disabled
+                            id="proofTemplateName"
+                            v-model="item.credentialDefinitionId"
+                            dense
+                          ></v-text-field>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </v-simple-table>
+                </td>
+              </template>
+              <template v-slot:item.issuerLabel="{ item }">
+                {{ getIssuerLabel(item) }}
+              </template>
+            </v-data-table>
           </v-container>
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -179,8 +212,55 @@ export default {
         },
       ];
     },
+    restrictionsHeaders() {
+      return [
+        {
+          text: this.$t(
+            "view.proofTemplate.restrictions.header.trustedIssuerLabel"
+          ),
+          value: "issuerLabel",
+        },
+        {
+          text: this.$t(
+            "view.proofTemplate.restrictions.header.trustedIssuerDid"
+          ),
+          value: "issuerDid",
+        },
+        {
+          text: "",
+          value: "data-table-expand",
+        },
+      ];
+    },
+    schemaTrustedIssuers() {
+      const schemas = this.$store.getters.getSchemas.filter(
+        (schema) => schema.type === "INDY"
+      );
+
+      let trustedIssuerArrays = [];
+
+      for (const schema of schemas) {
+        if (schema.trustedIssuer !== undefined) {
+          for (const trustedIssuerElement of schema.trustedIssuer) {
+            trustedIssuerArrays.push(trustedIssuerElement);
+          }
+        }
+      }
+
+      return trustedIssuerArrays;
+    },
   },
   methods: {
+    getIssuerLabel(restriction) {
+      const filteredIssuers = this.schemaTrustedIssuers.find(
+        (s) => s.issuerDid === restriction.issuerDid
+      );
+
+      return filteredIssuers !== undefined &&
+        Object.prototype.hasOwnProperty.call(filteredIssuers, "label")
+        ? filteredIssuers.label
+        : "";
+    },
     renderSchemaLabelId(attributeGroup) {
       // FIXME: This needs refactoring
       // This tries to show a schema and label but will show the attribute group if

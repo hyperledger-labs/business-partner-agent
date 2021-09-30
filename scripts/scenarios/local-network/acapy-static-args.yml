@@ -1,7 +1,7 @@
-auto-accept-invites: true
+auto-accept-invites: false
 auto-accept-requests: false
-auto-respond-messages: true
-auto-respond-credential-proposal: true
+auto-respond-messages: false
+auto-respond-credential-proposal: false
 auto-respond-credential-offer: true
 auto-respond-credential-request: true
 auto-respond-presentation-proposal: true
@@ -9,7 +9,9 @@ auto-respond-presentation-request: false
 auto-store-credential: true
 auto-verify-presentation: true
 auto-ping-connection: true
+auto-provision: true
 monitor-ping: true
+preserve-exchange-records: false
 public-invites: true
 plugin: 'aries_cloudagent.messaging.jsonld'
 outbound-transport: http
