@@ -148,7 +148,7 @@ class VPManagerTest {
         MyCredential myCredential = MyCredential
                 .builder()
                 .id(UUID.randomUUID())
-                .credential(c.toMap(credential))
+                .credential(credential)
                 .type(CredentialType.INDY)
                 .build();
         VerifiableCredential.VerifiableIndyCredential indyCred = vpm.buildFromCredential(myCredential);

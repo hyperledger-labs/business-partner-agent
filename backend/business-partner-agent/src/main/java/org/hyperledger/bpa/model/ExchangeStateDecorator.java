@@ -55,6 +55,10 @@ public abstract class ExchangeStateDecorator<T extends ExchangeStateDecorator<T,
         }
     }
 
+    public T pushStateChange(@NonNull S state) {
+        return pushStateChange(state, Instant.now());
+    }
+
     @SuppressWarnings("unchecked")
     public T pushStateChange(@NonNull S state, @NonNull Instant ts) {
         if (getStateToTimestamp() == null || getStateToTimestamp().getStateToTimestamp() == null) {

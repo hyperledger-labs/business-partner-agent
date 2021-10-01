@@ -80,8 +80,8 @@ public class BPAAttributeGroup {
                         .collect(Collectors.toList()))
                 .nonRevoked(attributeGroup.getNonRevoked())
                 .schemaLevelRestrictions(attributeGroup.getSchemaLevelRestrictions().stream()
-                                .map(BPASchemaRestrictions::fromRepresentation)
-                                .collect(Collectors.toList()))
+                        .map(BPASchemaRestrictions::fromRepresentation)
+                        .collect(Collectors.toList()))
                 .build();
     }
 }

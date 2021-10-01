@@ -173,4 +173,19 @@ public class IssuerController {
         return HttpResponse.ok(im.sendCredentialOffer(id, counterOffer));
     }
 
+    /**
+     * Manual credential exchange: Issuer or holder stops credential exchange by
+     * sending a problem report to the other party
+     *
+     * @param id      credential exchange id
+     * @param decline {@link DeclineCredentialExchangeRequest}
+     * @return HTTP status
+     */
+    @Post("/exchanges/{id}/decline")
+    public HttpResponse<Void> declineCredentialOffer(@PathVariable UUID id,
+            @Body DeclineCredentialExchangeRequest decline) {
+        im.declineCredentialOffer(id, decline.getMessage());
+        return HttpResponse.ok();
+    }
+
 }
