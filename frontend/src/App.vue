@@ -13,7 +13,7 @@
           <v-list-item
             v-if="ux.navigation.avatar.agent.enabled"
             two-line
-            class="pl-3 mt-n2"
+            class="pl-3 mt-n2 logo"
           >
             <v-list-item-avatar v-if="ux.navigation.avatar.agent.default">
               <v-img v-if="logo" :src="logo"></v-img>
@@ -39,7 +39,7 @@
           <v-list-item
             v-if="ux.navigation.avatar.user.enabled"
             two-line
-            class="pl-3 mt-n2"
+            class="pl-3 mt-n2 logo"
           >
             <v-list-item-avatar style="width: fit-content">
               <v-icon>$vuetify.icons.domain</v-icon>
@@ -471,6 +471,11 @@ export default {
       if (uiColor) {
         // if the user stored an override of the primary color, load it.
         this.$vuetify.theme.themes.light.primary = uiColor;
+      }
+      const uiColorIcons = localStorage.getItem("uiColorIcons");
+      if (uiColorIcons) {
+        // if the user stored an override of the icons color, load it.
+        this.$vuetify.theme.themes.light.icons = uiColorIcons;
       }
       // Load up an alternate favicon
       if (this.ux.favicon) {
