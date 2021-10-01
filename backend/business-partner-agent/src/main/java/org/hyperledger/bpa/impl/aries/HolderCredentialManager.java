@@ -61,6 +61,8 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Singleton
@@ -147,28 +149,22 @@ public class HolderCredentialManager {
     // credential CRUD operations
 
     public List<AriesCredential> listCredentials() {
-        List<AriesCredential> result = new ArrayList<>();
-        credRepo.findAll().forEach(c -> result.add(buildAriesCredential(c)));
-        return result;
+        return StreamSupport
+                .stream(credRepo.findAll().spliterator(), false)
+                .map(this::buildAriesCredential)
+                .collect(Collectors.toList());
     }
 
     public Optional<AriesCredential> getAriesCredentialById(@NonNull UUID id) {
-        final Optional<MyCredential> dbCred = credRepo.findById(id);
-        return dbCred.map(this::buildAriesCredential);
+        return credRepo.findById(id).map(this::buildAriesCredential);
     }
 
     private AriesCredential buildAriesCredential(@NonNull MyCredential dbCred) {
-        final AriesCredential.AriesCredentialBuilder myCred = AriesCredential.fromMyCredential(dbCred);
+        String typeLabel = null;
         if (dbCred.getCredential() != null) {
-            final Credential ariesCred = conv.fromMap(dbCred.getCredential(), Credential.class);
-            myCred
-                    .schemaId(ariesCred.getSchemaId())
-                    .credentialDefinitionId(ariesCred.getCredentialDefinitionId())
-                    .revocable(StringUtils.isNotEmpty(ariesCred.getRevRegId()))
-                    .typeLabel(schemaService.getSchemaLabel(ariesCred.getSchemaId()))
-                    .credentialData(ariesCred.getAttrs());
+            typeLabel = schemaService.getSchemaLabel(dbCred.getCredential().getSchemaId());
         }
-        return myCred.build();
+        return AriesCredential.fromMyCredential(dbCred, typeLabel);
     }
 
     /**
@@ -278,7 +274,7 @@ public class HolderCredentialManager {
                 .credentialExchangeId(credEx.getCredentialExchangeId())
                 .referent(credEx.getCredential().getReferent())
                 .state(credEx.getState())
-                .credential(conv.toMap(credEx.getCredential()))
+                .credential(credEx.getCredential())
                 .label(label)
                 .issuer(resolveIssuer(credEx.getCredential()))
                 .exchangeVersion(ExchangeVersion.V1)
@@ -308,7 +304,7 @@ public class HolderCredentialManager {
                             String label = labelStrategy.apply(c);
                             dbCred
                                     .setState(credEx.getState())
-                                    .setCredential(conv.toMap(c))
+                                    .setCredential(c)
                                     .setLabel(label)
                                     .setIssuer(resolveIssuer(c));
                             MyCredential dbCredential = credRepo.update(dbCred);

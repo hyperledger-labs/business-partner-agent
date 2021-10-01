@@ -49,7 +49,8 @@ class Attributes {
                 .names(names)
                 // TODO only set when restriction is set, but then name has to be set for each
                 // attribute
-                .restrictions(restrictionsBuilder.stream().map(res -> res.schemaId(schemaId).build().toJsonObject()).collect(Collectors.toList()));
+                .restrictions(restrictionsBuilder.stream().map(res -> res.schemaId(schemaId).build().toJsonObject())
+                        .collect(Collectors.toList()));
 
         builderSink.accept(schemaId, revocationApplicator.applyOn(builder).build());
 

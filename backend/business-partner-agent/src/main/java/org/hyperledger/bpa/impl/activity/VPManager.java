@@ -134,8 +134,7 @@ public class VPManager {
         final ArrayList<String> type = new ArrayList<>(cred.getType().getType());
         type.add("IndyCredential");
 
-        Credential ariesCred = converter.fromMap(cred.getCredential(), Credential.class);
-
+        Credential ariesCred = cred.getCredential();
         final ArrayList<Object> context = new ArrayList<>(resolveContext(cred.getType(), ariesCred.getSchemaId()));
         context.add(ApiConstants.INDY_CREDENTIAL_SCHEMA);
 

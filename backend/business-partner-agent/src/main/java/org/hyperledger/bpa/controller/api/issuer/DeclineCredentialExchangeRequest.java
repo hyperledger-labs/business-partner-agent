@@ -19,25 +19,9 @@ package org.hyperledger.bpa.controller.api.issuer;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hyperledger.aries.api.credentials.CredentialAttributes;
-
-import java.util.List;
-import java.util.Map;
 
 @Data
 @NoArgsConstructor
-public class CredentialOfferRequest {
-    private Boolean acceptProposal;
-    private Map<String, String> attributes;
-
-    public boolean acceptAll() {
-        return acceptProposal != null && acceptProposal;
-    }
-
-    public List<CredentialAttributes> toCredentialAttributes() {
-        if (attributes != null) {
-            return CredentialAttributes.fromMap(attributes);
-        }
-        return List.of();
-    }
+public class DeclineCredentialExchangeRequest {
+    private String message;
 }
