@@ -26,6 +26,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
@@ -35,7 +36,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import java.time.Instant;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -66,6 +66,7 @@ public class MyCredential {
     @Enumerated(EnumType.STRING)
     private CredentialType type;
 
+    //
     private Boolean isPublic;
 
     /** the connection that issued the credential */
@@ -92,12 +93,13 @@ public class MyCredential {
     @Nullable
     private String label;
 
+    //
     @Nullable
     private String issuer;
 
     @Nullable
     @TypeDef(type = DataType.JSON)
-    private Map<String, Object> credential;
+    private Credential credential;
 
     @Nullable
     private Boolean revoked;

@@ -13,7 +13,7 @@
           <v-list-item
             v-if="ux.navigation.avatar.agent.enabled"
             two-line
-            class="pl-3 mt-n2"
+            class="pl-3 mt-n2 logo"
           >
             <v-list-item-avatar v-if="ux.navigation.avatar.agent.default">
               <v-img v-if="logo" :src="logo"></v-img>
@@ -21,9 +21,7 @@
               <v-img src="@/assets/logo_default.svg"></v-img>
             </v-list-item-avatar>
             <v-list-item-content v-if="ux.navigation.avatar.agent.default">
-              <v-list-item-title class="text-wrap">{{
-                getOrganizationName ? getOrganizationName : getAgentName
-              }}</v-list-item-title>
+              <v-list-item-title class="text-wrap nav-display-name">{{ getNavDisplayName }}</v-list-item-title>
               <!-- <v-list-item-subtitle></v-list-item-subtitle> -->
             </v-list-item-content>
             <v-list-item-content v-if="!ux.navigation.avatar.agent.default">
@@ -35,21 +33,19 @@
                   :src="ux.navigation.avatar.agent.src"
                 ></v-img
               ></v-list-item-title>
-              <v-list-item-subtitle class="text-wrap">{{
-                getOrganizationName ? getOrganizationName : getAgentName
-              }}</v-list-item-subtitle>
+              <v-list-item-subtitle class="text-wrap nav-display-name">{{ getNavDisplayName }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item
             v-if="ux.navigation.avatar.user.enabled"
             two-line
-            class="pl-3 mt-n2"
+            class="pl-3 mt-n2 logo"
           >
             <v-list-item-avatar style="width: fit-content">
               <v-icon>$vuetify.icons.domain</v-icon>
             </v-list-item-avatar>
-            <v-list-item-content class="text-wrap"
-              >{{ getOrganizationName ? getOrganizationName : getAgentName }}
+            <v-list-item-content class="text-wrap nav-display-name"
+              >{{ getNavDisplayName }}
             </v-list-item-content>
           </v-list-item>
         </router-link>
@@ -444,6 +440,10 @@ export default {
       }
       return "";
     },
+    getNavDisplayName() {
+      const result = this.getOrganizationName;
+      return result ? result : this.getAgentName;
+    },
     getTitle() {
       if (this.ux.header.title.prefix) {
         let pageTitle =
@@ -465,12 +465,19 @@ export default {
         this.$vuetify.theme.dark = this.ux.theme.dark
           ? this.ux.theme.dark
           : false;
-        Object.assign(this.$vuetify.theme.themes, this.ux.theme.themes);
+        if (this.ux.theme.themes.light) {
+          Object.assign(this.$vuetify.theme.themes.light, this.ux.theme.themes.light);
+        }
       }
       const uiColor = localStorage.getItem("uiColor");
       if (uiColor) {
         // if the user stored an override of the primary color, load it.
         this.$vuetify.theme.themes.light.primary = uiColor;
+      }
+      const uiColorIcons = localStorage.getItem("uiColorIcons");
+      if (uiColorIcons) {
+        // if the user stored an override of the icons color, load it.
+        this.$vuetify.theme.themes.light.icons = uiColorIcons;
       }
       // Load up an alternate favicon
       if (this.ux.favicon) {

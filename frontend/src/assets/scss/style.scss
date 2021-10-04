@@ -93,7 +93,7 @@ a {
     height: 180px;
     width: 180px;
     font-size: 180px !important;
-    color: black !important;
+    color: var(--v-icons-base) !important;
   }
 
   // applied when using an svg icon (material design)
@@ -101,7 +101,7 @@ a {
     font-size: 180px;
     height: 180px;
     width: 180px;
-    color: black;
+    color: var(--v-icons-base);
   }
 
   // font size need to account for 3 number characters (ex 100).
@@ -147,6 +147,19 @@ nav {
     &:hover {
       text-decoration: none;
     }
+  }
+
+  .v-list-item:not(.logo) {
+    .v-icon.v-icon {
+      color: var(--v-icons-base) !important;
+    }
+    .v-icon__svg {
+      color: var(--v-icons-base);
+    }
+  }
+
+  .nav-display-name {
+    text-align: center;
   }
 }
 

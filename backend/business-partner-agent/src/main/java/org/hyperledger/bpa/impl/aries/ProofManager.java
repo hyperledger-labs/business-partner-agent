@@ -141,7 +141,7 @@ public class ProofManager {
     // send presentation offer to partner based on a wallet credential
     public void sendProofProposal(@NonNull UUID partnerId, @NonNull UUID myCredentialId) {
         partnerRepo.findById(partnerId).ifPresent(p -> credRepo.findById(myCredentialId).ifPresent(c -> {
-            Credential cred = conv.fromMap(Objects.requireNonNull(c.getCredential()), Credential.class);
+            Credential cred = Objects.requireNonNull(c.getCredential());
             final PresentProofProposal req = PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred);
             try {
                 ac.presentProofSendProposal(req).ifPresent(persistProof(partnerId, null));

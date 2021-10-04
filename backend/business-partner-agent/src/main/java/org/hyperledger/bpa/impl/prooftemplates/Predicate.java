@@ -22,22 +22,24 @@ import org.hyperledger.acy_py.generated.model.IndyProofReqPredSpec;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.model.prooftemplate.BPASchemaRestrictions;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 @Builder
 class Predicate {
     String schemaId;
     AtomicInteger sameSchemaCounter;
     NonRevocationApplicator revocationApplicator;
-    BPASchemaRestrictions schemaRestrictions;
+    List<BPASchemaRestrictions> schemaRestrictions;
     String name;
     IndyProofReqPredSpec.PTypeEnum operator;
     Integer value;
 
     public void addToBuilder(
             BiConsumer<String, PresentProofRequest.ProofRequest.ProofRequestedPredicates> builderSink) {
-        PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder restrictionsBuilder = ProofTemplateElementVisitor
+        List<PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> restrictionsBuilder = ProofTemplateElementVisitor
                 .asProofRestrictionsBuilder(
                         schemaRestrictions);
         PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder builder = PresentProofRequest.ProofRequest.ProofRequestedPredicates
@@ -45,7 +47,8 @@ class Predicate {
                 .name(name)
                 .pType(operator)
                 .pValue(value)
-                .restriction(restrictionsBuilder.schemaId(schemaId).build().toJsonObject());
+                .restrictions(restrictionsBuilder.stream().map(res -> res.schemaId(schemaId).build().toJsonObject())
+                        .collect(Collectors.toList()));
         String predicateName = schemaId + sameSchemaCounter.incrementAndGet();
         builderSink.accept(predicateName, revocationApplicator.applyOn(builder).build());
 

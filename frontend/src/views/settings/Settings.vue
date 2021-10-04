@@ -52,15 +52,37 @@
         </v-list-item-title>
         <v-list-item-subtitle align="end">
           <text-field-color-picker
-            v-if="isEditingColor"
-            @on-save="onPickColor"
-            @on-cancel="isEditingColor = false"
+              id="uiColor"
+              v-if="isEditingColor"
+              @on-save="onPickColor"
+              @on-cancel="isEditingColor = false"
           >
           </text-field-color-picker>
           <span v-else>{{ $vuetify.theme.themes.light.primary }}</span>
         </v-list-item-subtitle>
         <v-list-item-action v-show="!isEditingColor">
           <v-btn icon x-small @click="isEditingColor = !isEditingColor">
+            <v-icon dark>$vuetify.icons.pencil</v-icon>
+          </v-btn>
+        </v-list-item-action>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
+          Icons Color
+        </v-list-item-title>
+        <v-list-item-subtitle align="end">
+          <text-field-color-picker
+              id="uiColorIcons"
+              :base-color="$vuetify.theme.themes.light.icons"
+              v-if="isEditingColorIcons"
+              @on-save="onPickColorIcons"
+              @on-cancel="isEditingColorIcons = false"
+          >
+          </text-field-color-picker>
+          <span v-else>{{ $vuetify.theme.themes.light.icons }}</span>
+        </v-list-item-subtitle>
+        <v-list-item-action v-show="!isEditingColorIcons">
+          <v-btn icon x-small @click="isEditingColorIcons = !isEditingColorIcons">
             <v-icon dark>$vuetify.icons.pencil</v-icon>
           </v-btn>
         </v-list-item-action>
@@ -130,6 +152,7 @@ export default {
         },
       ],
       isEditingColor: false,
+      isEditingColorIcons: false,
     };
   },
   computed: {
@@ -160,6 +183,11 @@ export default {
       this.$vuetify.theme.themes.light.primary = c;
       localStorage.setItem("uiColor", c);
       this.isEditingColor = false;
+    },
+    onPickColorIcons(c) {
+      this.$vuetify.theme.themes.light.icons = c;
+      localStorage.setItem("uiColorIcons", c);
+      this.isEditingColorIcons = false;
     },
     getStatus() {
       console.log("Getting status...");
