@@ -465,7 +465,9 @@ export default {
         this.$vuetify.theme.dark = this.ux.theme.dark
           ? this.ux.theme.dark
           : false;
-        Object.assign(this.$vuetify.theme.themes, this.ux.theme.themes);
+        if (this.ux.theme.themes.light) {
+          Object.assign(this.$vuetify.theme.themes.light, this.ux.theme.themes.light);
+        }
       }
       const uiColor = localStorage.getItem("uiColor");
       if (uiColor) {
