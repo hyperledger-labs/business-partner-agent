@@ -21,9 +21,7 @@
               <v-img src="@/assets/logo_default.svg"></v-img>
             </v-list-item-avatar>
             <v-list-item-content v-if="ux.navigation.avatar.agent.default">
-              <v-list-item-title class="text-wrap">{{
-                getOrganizationName ? getOrganizationName : getAgentName
-              }}</v-list-item-title>
+              <v-list-item-title class="text-wrap nav-display-name">{{ getNavDisplayName }}</v-list-item-title>
               <!-- <v-list-item-subtitle></v-list-item-subtitle> -->
             </v-list-item-content>
             <v-list-item-content v-if="!ux.navigation.avatar.agent.default">
@@ -35,9 +33,7 @@
                   :src="ux.navigation.avatar.agent.src"
                 ></v-img
               ></v-list-item-title>
-              <v-list-item-subtitle class="text-wrap">{{
-                getOrganizationName ? getOrganizationName : getAgentName
-              }}</v-list-item-subtitle>
+              <v-list-item-subtitle class="text-wrap nav-display-name">{{ getNavDisplayName }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-list-item
@@ -48,8 +44,8 @@
             <v-list-item-avatar style="width: fit-content">
               <v-icon>$vuetify.icons.domain</v-icon>
             </v-list-item-avatar>
-            <v-list-item-content class="text-wrap"
-              >{{ getOrganizationName ? getOrganizationName : getAgentName }}
+            <v-list-item-content class="text-wrap nav-display-name"
+              >{{ getNavDisplayName }}
             </v-list-item-content>
           </v-list-item>
         </router-link>
@@ -443,6 +439,10 @@ export default {
         return profile["label"];
       }
       return "";
+    },
+    getNavDisplayName() {
+      const result = this.getOrganizationName;
+      return result ? result : this.getAgentName;
     },
     getTitle() {
       if (this.ux.header.title.prefix) {
