@@ -145,68 +145,56 @@ bpa:
     locale: ${BPA_I18N_LOCALE:en}
     fallbackLocale: ${BPA_I18N_FALLBACK_LOCALE:en}
 # The following is an example on how to override the default ux.
-# This will have all of the alternate layout and themes/colors loaded.
-# To override theme, then set themes.light properties
-# To override favicon, then need favicon.href property
+# This shows the current defaults (and appropriate alternate value)
+# To override theme, then set themes.light properties (do not use dark theme)
+# To override favicon, then need favicon.href property (public/favicon.ico used if property not set)
+# To override logo, then need navigation.avatar.agent.default = false and navigation.avatar.agent.src property
 # buttons are applied against v-bpa-buttons and determined by the color attribute
 #   example: <v-bpa-button color="primary">Primary</v-bpa-button>
 #  ux:
+# //see components/BpaButton.js
 #    buttons:
 #      primary:
-#        text: false
-#        outlined: false
+#        text: false/true
+#        outlined: false/true
 #      secondary:
-#        text: true
-#        outlined: true
+#        text: true/true
+#        outlined: false/true
+# //see plugins/vuetify.js
 #    theme:
 #      dark: false
 #      themes:
 #        light:
-#          primary: '#003366'
-#          secondary: '#003366'
-#          accent: '#82B1FF'
-#          error: '#D8292F'
-#          info: '#2196F3'
-#          success: '#2E8540'
-#          warning: '#FFC107'
-#          bgLight: "#FAFAFA"
-#          bgLight2: "#ECECEC"
-#          font: "#313132"
-#          anchor: "#1A5A96"
-#          anchorHover: "#3B99FC"
+#          primary: "#4A148C",
+#          secondary: "#424242",
+#          accent: "#82B1FF",
+#          error: "#FF5252",
+#          info: "#2196F3",
+#          success: "#4CAF50",
+#          warning: "#FFC107",
+#          // the following are custom and are used as variables in style.scss
+#          bgLight: "#FAFAFA",
+#          bgLight2: "#ECECEC",
+#          font: "#313132",
+#          anchor: "#1A5A96",
+#          anchorHover: "#3B99FC",
+#          icons: "#000000"
+# // see App.vue
 #    favicon:
-#      href: "https://raw.githubusercontent.com/bcgov/common-forms-toolkit/master/app/frontend/public/favicon.ico"
+#      href: "< uses public/favicon.ico by default, set this to url favicon image id to load an external icon>"
 #    navigation:
 #      avatar:
 #        agent:
-#          enabled: false
-#          default: true
-#          src: ""
-#        user:
-#          enabled: true
+#          enabled: true/false
+#          default: true/false
+#          src: "< url to logo image id when navigation.avatar.agent.default = false >"
+#          showName: true/false
 #      settings:
-#        location: "bottom"
+#        location: "top"/"bottom"
 #      about:
-#        enabled: false
+#        enabled: true/false
 #      logout:
-#        enabled: true
+#        enabled: false/true
 #    header:
-#      title:
-#        prefix: true
 #      logout:
-#        enabled: false
-#      logo:
-#        enabled: true
-#        href: "https://www2.gov.bc.ca"
-#        alt: "B.C. Government Logo"
-#        images:
-#          - name: "small"
-#            class: "d-none d-sm-flex d-md-none"
-#            height: "3.5rem"
-#            src: "https://raw.githubusercontent.com/bcgov/common-forms-toolkit/master/app/frontend/src/assets/images/bc_logo_square.svg"
-#            width: "3.5rem"
-#          - name: "medium"
-#            class: "d-none d-md-flex"
-#            height: "3.5rem"
-#            src: "https://raw.githubusercontent.com/bcgov/common-forms-toolkit/master/app/frontend/src/assets/images/bc_logo.svg"
-#            width: "10rem"
+#        enabled: true/false
