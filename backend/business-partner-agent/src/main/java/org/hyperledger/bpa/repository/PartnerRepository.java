@@ -75,9 +75,11 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     // update
 
-    void updateState(@Id UUID id, ConnectionState state, StateChangeDecorator.StateToTimestamp<ConnectionState> stateToTimestamp);
+    void updateState(@Id UUID id, ConnectionState state,
+            StateChangeDecorator.StateToTimestamp<ConnectionState> stateToTimestamp);
 
-    void updateStateAndLabel(@Id UUID id, ConnectionState state, StateChangeDecorator.StateToTimestamp<ConnectionState> stateToTimestamp, @Nullable String label);
+    void updateStateAndLabel(@Id UUID id, ConnectionState state,
+            StateChangeDecorator.StateToTimestamp<ConnectionState> stateToTimestamp, @Nullable String label);
 
     int updateAlias(@Id UUID id, @Nullable String alias, @Nullable Boolean trustPing);
 

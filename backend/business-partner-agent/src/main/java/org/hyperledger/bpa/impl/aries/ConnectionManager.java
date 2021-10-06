@@ -226,7 +226,7 @@ public class ConnectionManager {
                         partnerRepo.updateState(
                                 dbP.getId(), latest, dbP.getStateToTimestamp());
                     }
-                    if (record.isStateRequest()) {
+                    if (record.stateIsRequest()) {
                         eventPublisher.publishEventAsync(PartnerAddedEvent.builder().partner(dbP).build());
                     } else if (record.stateIsResponse() || record.stateIsCompleted()) {
                         eventPublisher.publishEventAsync(PartnerAcceptedEvent.builder().partner(dbP).build());
@@ -298,7 +298,7 @@ public class ConnectionManager {
             if (record.stateIsResponse()) {
                 eventPublisher.publishEventAsync(PartnerRequestCompletedEvent.builder().partner(p).build());
             }
-        } else if (record.isStateRequest()) {
+        } else if (record.stateIsRequest()) {
             didResolver.lookupIncoming(p);
             if (record.isIncomingConnection()) {
                 eventPublisher.publishEventAsync(PartnerRequestReceivedEvent.builder().partner(p).build());

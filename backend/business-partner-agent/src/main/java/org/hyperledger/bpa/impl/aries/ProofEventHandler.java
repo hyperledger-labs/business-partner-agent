@@ -24,7 +24,6 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeInitiator;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
@@ -121,7 +120,7 @@ public class ProofEventHandler {
                             // if --auto-respond-presentation-request is set to false and there is a
                             // preceding proof proposal event we can do an auto present
                             if (PresentationExchangeState.PROPOSAL_SENT.equals(pProof.getState())
-                                    && PresentationExchangeInitiator.SELF.equals(proof.getInitiator())) {
+                                    && proof.initiatorIsSelf()) {
                                 log.info(
                                         "Present_Proof: state=request_received on PresentationExchange where " +
                                                 "initator=self, responding immediately");

@@ -410,8 +410,8 @@ public class IssuerCredentialManager {
                     .partner(partner)
                     .role(CredentialExchangeRole.ISSUER)
                     .state(ex.getState())
-                    .exchangeVersion(exchangeVersion)
                     .pushStateChange(ex.getState(), Instant.now())
+                    .exchangeVersion(exchangeVersion)
                     .credentialExchangeId(ex.getCredentialExchangeId())
                     .threadId(ex.getThreadId())
                     .credentialProposal(ex.getCredentialProposalDict() != null

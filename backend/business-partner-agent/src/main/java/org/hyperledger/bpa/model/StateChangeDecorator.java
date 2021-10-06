@@ -57,10 +57,10 @@ public abstract class StateChangeDecorator<T extends StateChangeDecorator<T, S>,
         public @Nullable Map.Entry<S, Instant> findLatestEntry() {
             return stateToTimestamp != null
                     ? stateToTimestamp.entrySet()
-                    .stream()
-                    .sorted(Map.Entry.comparingByValue(Comparator.comparing(Instant::toEpochMilli)))
-                    .min(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                    .orElse(null)
+                            .stream()
+                            .sorted(Map.Entry.comparingByValue(Comparator.comparing(Instant::toEpochMilli)))
+                            .min(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                            .orElse(null)
                     : null;
         }
     }
@@ -88,6 +88,9 @@ public abstract class StateChangeDecorator<T extends StateChangeDecorator<T, S>,
     }
 
     public @io.micronaut.core.annotation.NonNull S pushStateAndGetLatest(@NonNull S state, @Nullable Instant ts) {
-        return Objects.requireNonNull(pushState(state, ts).getStateToTimestamp().findLatestEntry()).getKey();
+        T t = pushState(state, ts);
+        StateToTimestamp<S> stateToTimestamp = Objects.requireNonNull(t.getStateToTimestamp());
+        Map.Entry<S, Instant> latestEntry = Objects.requireNonNull(stateToTimestamp.findLatestEntry());
+        return Objects.requireNonNull(latestEntry.getKey());
     }
 }

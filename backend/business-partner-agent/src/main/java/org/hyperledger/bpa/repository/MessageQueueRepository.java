@@ -25,4 +25,5 @@ import org.hyperledger.bpa.model.MessageQueue;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface MessageQueueRepository extends CrudRepository<MessageQueue, UUID> {}
+public interface MessageQueueRepository extends CrudRepository<MessageQueue, UUID> {
+}
