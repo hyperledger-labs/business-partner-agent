@@ -45,7 +45,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Accessors(chain = true)
-public class PartnerProof extends ExchangeStateDecorator<PartnerProof, PresentationExchangeState> {
+public class PartnerProof extends StateChangeDecorator<PartnerProof, PresentationExchangeState> {
 
     @Id
     @AutoPopulated
@@ -94,12 +94,18 @@ public class PartnerProof extends ExchangeStateDecorator<PartnerProof, Presentat
     private BPAProofTemplate proofTemplate;
 
     @TypeDef(type = DataType.JSON)
-    private ExchangeStateDecorator.ExchangeStateToTimestamp<PresentationExchangeState> stateToTimestamp;
+    private StateToTimestamp<PresentationExchangeState> stateToTimestamp;
+
+    public PartnerProof setAndPushState(@NonNull PresentationExchangeState state) {
+        this.state = state;
+        pushState(state);
+        return this;
+    }
 
     // extends lombok builder
     public static class PartnerProofBuilder {
         public PartnerProofBuilder pushStateChange(@NonNull PresentationExchangeState state, @NonNull Instant ts) {
-            this.stateToTimestamp(ExchangeStateDecorator.ExchangeStateToTimestamp.<PresentationExchangeState>builder()
+            this.stateToTimestamp(StateToTimestamp.<PresentationExchangeState>builder()
                     .stateToTimestamp(Map.of(state, ts))
                     .build());
             return this;

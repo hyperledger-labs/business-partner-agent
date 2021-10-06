@@ -26,6 +26,4 @@ import org.hyperledger.bpa.model.BPAProofTemplate;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface BPAProofTemplateRepository extends CrudRepository<BPAProofTemplate, UUID> {
-
-}
+public interface BPAProofTemplateRepository extends CrudRepository<BPAProofTemplate, UUID> {}

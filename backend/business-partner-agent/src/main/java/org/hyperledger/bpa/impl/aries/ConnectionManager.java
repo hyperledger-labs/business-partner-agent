@@ -47,6 +47,7 @@ import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest
 import org.hyperledger.bpa.impl.InvitationParser;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.notification.*;
+import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.model.Tag;
@@ -55,6 +56,7 @@ import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -107,7 +109,7 @@ public class ConnectionManager {
      * @return {@link CreateInvitationResponse}
      */
     public JsonNode createConnectionInvitation(@NonNull CreatePartnerInvitationRequest req) {
-        Object invitation = null;
+        Object invitation;
         String connId = null;
         String invMsgId = null;
         try {
@@ -128,12 +130,13 @@ public class ConnectionManager {
                     .invitationMsgId(invMsgId)
                     .did(didPrefix + UNKNOWN_DID)
                     .state(ConnectionState.INVITATION)
+                    .pushStateChange(ConnectionState.INVITATION, Instant.now())
                     .incoming(Boolean.TRUE)
                     .tags(req.getTag() != null ? new HashSet<>(req.getTag()) : null)
                     .trustPing(req.getTrustPing() != null ? req.getTrustPing() : Boolean.FALSE)
                     .build());
         } catch (IOException e) {
-            log.error("Could not create aries connection invitation", e);
+            throw new NetworkException("acapy.unavailable");
         }
         return mapper.valueToTree(invitation);
     }
@@ -214,17 +217,18 @@ public class ConnectionManager {
     public void handleOutgoingConnectionEvent(ConnectionRecord record) {
         partnerRepo.findByConnectionId(record.getConnectionId()).ifPresent(
                 dbP -> {
+                    ConnectionState latest = dbP.pushStateAndGetLatest(
+                            record.getState(), TimeUtil.parseZonedTimestamp(record.getUpdatedAt()));
                     if (StringUtils.isEmpty(dbP.getLabel())) {
-                        dbP.setLabel(record.getTheirLabel());
-                        dbP.setState(record.getState());
-                        partnerRepo.update(dbP);
+                        partnerRepo.updateStateAndLabel(
+                                dbP.getId(), latest, dbP.getStateToTimestamp(), record.getTheirLabel());
                     } else {
-                        partnerRepo.updateState(dbP.getId(), record.getState());
+                        partnerRepo.updateState(
+                                dbP.getId(), latest, dbP.getStateToTimestamp());
                     }
-                    if (ConnectionState.REQUEST.equals(record.getState())) {
+                    if (record.isStateRequest()) {
                         eventPublisher.publishEventAsync(PartnerAddedEvent.builder().partner(dbP).build());
-                    } else if (ConnectionState.RESPONSE.equals(record.getState()) ||
-                            ConnectionState.COMPLETED.equals(record.getState())) {
+                    } else if (record.stateIsResponse() || record.stateIsCompleted()) {
                         eventPublisher.publishEventAsync(PartnerAcceptedEvent.builder().partner(dbP).build());
                     }
                 });
@@ -240,7 +244,8 @@ public class ConnectionManager {
                     if (StringUtils.isEmpty(dbP.getDid()) || dbP.getDid().endsWith(UNKNOWN_DID)) {
                         dbP.setDid(didPrefix + record.getTheirDid());
                     }
-                    dbP.setState(record.getState());
+                    dbP.setState(dbP.pushStateAndGetLatest(
+                            record.getState(), TimeUtil.parseZonedTimestamp(record.getUpdatedAt())));
                     partnerRepo.update(dbP);
                     resolveAndSend(record, dbP);
                 },
@@ -253,6 +258,7 @@ public class ConnectionManager {
                                     ? didPrefix + record.getTheirDid()
                                     : didPrefix + UNKNOWN_DID)
                             .state(record.getState())
+                            .pushStateChange(record.getState(), TimeUtil.parseZonedTimestamp(record.getUpdatedAt()))
                             .label(record.getTheirLabel())
                             .incoming(Boolean.TRUE)
                             .trustPing(Boolean.TRUE)
@@ -264,14 +270,16 @@ public class ConnectionManager {
 
     public void handleOOBInvitation(ConnectionRecord record) {
         partnerRepo.findByInvitationMsgId(record.getInvitationMsgId()).ifPresent(dbP -> {
+            ConnectionState latest = dbP.pushStateAndGetLatest(
+                    record.getState(), TimeUtil.parseZonedTimestamp(record.getUpdatedAt()));
             if (StringUtils.isEmpty(dbP.getConnectionId())) {
                 dbP.setConnectionId(record.getConnectionId());
                 dbP.setDid(didPrefix + record.getTheirDid());
-                dbP.setState(record.getState());
+                dbP.setState(latest);
                 dbP.setLabel(record.getTheirLabel());
                 partnerRepo.update(dbP);
             } else {
-                partnerRepo.updateState(dbP.getId(), record.getState());
+                partnerRepo.updateState(dbP.getId(), latest, dbP.getStateToTimestamp());
             }
             resolveAndSend(record, dbP);
         });
@@ -281,21 +289,21 @@ public class ConnectionManager {
         // only incoming connections in state request
         if (ConnectionRecord.ConnectionProtocol.CONNECTION_V1.equals(record.getConnectionProtocol())) {
             // handle Connection Invitations...
-            // if we generate and they accept, we do not get a COMPLETED or ACTIVE state,
+            // if we generate, and they accept, we do not get a COMPLETED or ACTIVE state,
             // only get to RESPONSE
-            // if they generate and we accept, we may get to ACTIVE, but definitely get to
+            // if they generate, and we accept, we may get to ACTIVE, but definitely get to
             // RESPONSE
             // so consider RESPONSE as we are connected, just add a completed task saying
             // connection accepted.
-            if (ConnectionState.RESPONSE.equals(record.getState())) {
+            if (record.stateIsResponse()) {
                 eventPublisher.publishEventAsync(PartnerRequestCompletedEvent.builder().partner(p).build());
             }
-        } else if (ConnectionState.REQUEST.equals(record.getState())) {
+        } else if (record.isStateRequest()) {
             didResolver.lookupIncoming(p);
             if (record.isIncomingConnection()) {
                 eventPublisher.publishEventAsync(PartnerRequestReceivedEvent.builder().partner(p).build());
             }
-        } else if (ConnectionState.COMPLETED.equals(record.getState()) && record.isIncomingConnection()) {
+        } else if (record.stateIsCompleted() && record.isIncomingConnection()) {
             eventPublisher.publishEventAsync(PartnerRequestCompletedEvent.builder().partner(p).build());
             partnerCredDefLookup.lookupTypesForAllPartnersAsync();
         }
@@ -389,6 +397,7 @@ public class ConnectionManager {
                 .invitationMsgId(connectionRecord.getInvitationMsgId())
                 .did(didPrefix + UNKNOWN_DID)
                 .state(ConnectionState.INVITATION)
+                .pushStateChange(ConnectionState.INVITATION, Instant.now())
                 .incoming(Boolean.TRUE)
                 .tags(tags != null ? new HashSet<>(tags) : null)
                 .trustPing(trustPing != null ? trustPing : Boolean.TRUE)

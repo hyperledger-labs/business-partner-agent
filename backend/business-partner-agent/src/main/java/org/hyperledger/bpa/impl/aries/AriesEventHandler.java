@@ -70,7 +70,7 @@ public class AriesEventHandler extends EventHandler {
     public void handleConnection(ConnectionRecord connection) {
         log.debug("Connection Event: {}", connection);
         synchronized (conMgmt) {
-            if (!connection.isIncomingConnection()) {
+            if (connection.isOutgoingConnection()) {
                 conMgmt.handleOutgoingConnectionEvent(connection);
             } else {
                 if (connection.isNotConnectionInvitation()) {

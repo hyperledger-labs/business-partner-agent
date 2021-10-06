@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 @Accessors(chain = true)
 @Entity
 @Table(name = "bpa_credential_exchange")
-public class BPACredentialExchange extends ExchangeStateDecorator<BPACredentialExchange, CredentialExchangeState> {
+public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExchange, CredentialExchangeState> {
 
     @Id
     @AutoPopulated
@@ -96,7 +96,7 @@ public class BPACredentialExchange extends ExchangeStateDecorator<BPACredentialE
 
     @Nullable
     @TypeDef(type = DataType.JSON)
-    private ExchangeStateDecorator.ExchangeStateToTimestamp<CredentialExchangeState> stateToTimestamp;
+    private StateToTimestamp<CredentialExchangeState> stateToTimestamp;
 
     @Nullable
     @Builder.Default
@@ -145,7 +145,7 @@ public class BPACredentialExchange extends ExchangeStateDecorator<BPACredentialE
     public static class BPACredentialExchangeBuilder {
         public BPACredentialExchange.BPACredentialExchangeBuilder pushStateChange(
                 @NonNull CredentialExchangeState state, @NonNull Instant ts) {
-            this.stateToTimestamp(ExchangeStateDecorator.ExchangeStateToTimestamp.<CredentialExchangeState>builder()
+            this.stateToTimestamp(StateToTimestamp.<CredentialExchangeState>builder()
                     .stateToTimestamp(Map.of(state, ts))
                     .build());
             return this;

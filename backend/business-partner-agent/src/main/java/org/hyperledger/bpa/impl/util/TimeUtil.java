@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.impl.util;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.StringUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -47,11 +48,13 @@ public class TimeUtil {
         return Instant.from(parsed);
     }
 
-    public static Instant parseZonedTimestamp(String ts) {
-        try {
-            return ZonedDateTime.parse(ts, ZONED_FORMATTER).toInstant();
-        } catch (Exception e) {
-            log.error("Could not parse TS", e);
+    public static @Nullable Instant parseZonedTimestamp(@Nullable String ts) {
+        if (StringUtils.isNotEmpty(ts)) {
+            try {
+                return ZonedDateTime.parse(ts, ZONED_FORMATTER).toInstant();
+            } catch (Exception e) {
+                log.error("Could not parse TS", e);
+            }
         }
         return null;
     }

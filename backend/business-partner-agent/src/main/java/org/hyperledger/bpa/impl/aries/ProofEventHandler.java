@@ -79,8 +79,7 @@ public class ProofEventHandler {
         pProofRepo.findByPresentationExchangeId(exchange.getPresentationExchangeId()).ifPresentOrElse(
                 pp -> {
                     if (exchange.getState() != null) {
-                        pp.setState(exchange.getState());
-                        pp.pushStateChange(exchange.getState(), Instant.now());
+                        pp.setAndPushState(exchange.getState());
                         pProofRepo.update(pp);
                     }
                 },
@@ -126,8 +125,7 @@ public class ProofEventHandler {
                                 log.info(
                                         "Present_Proof: state=request_received on PresentationExchange where " +
                                                 "initator=self, responding immediately");
-                                pProof.setState(proof.getState());
-                                pProof.pushStateChange(proof.getState(), Instant.now());
+                                pProof.setAndPushState(proof.getState());
                                 pProofRepo.update(pProof);
                                 if (proof.getAutoPresent() == null || !proof.getAutoPresent()) {
                                     proofManager.presentProofAcceptAll(proof);
@@ -157,8 +155,7 @@ public class ProofEventHandler {
             if ("abandoned: abandoned".equals(errorMsg)) {
                 errorMsg = "Partner rejected proof exchange because it is not valid";
             }
-            pp.setState(PresentationExchangeState.DECLINED);
-            pp.pushStateChange(PresentationExchangeState.DECLINED, Instant.now());
+            pp.setAndPushState(PresentationExchangeState.DECLINED);
             pp.setProblemReport(errorMsg);
             pProofRepo.update(pp);
             eventPublisher.publishEventAsync(

@@ -25,6 +25,4 @@ import org.hyperledger.bpa.model.BPAState;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface BPAStateRepository extends CrudRepository<BPAState, UUID> {
-    //
-}
+public interface BPAStateRepository extends CrudRepository<BPAState, UUID> {}

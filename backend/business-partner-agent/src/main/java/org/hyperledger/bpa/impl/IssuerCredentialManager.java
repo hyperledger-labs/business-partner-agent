@@ -298,7 +298,7 @@ public class IssuerCredentialManager {
                     .build());
             credEx.setRevoked(Boolean.TRUE);
             credEx.setState(CredentialExchangeState.REVOKED);
-            credEx.pushStateChange(CredentialExchangeState.REVOKED, Instant.now());
+            credEx.pushState(CredentialExchangeState.REVOKED);
             credExRepo.update(credEx);
             return CredEx.from(credEx);
         } catch (IOException e) {
@@ -356,7 +356,7 @@ public class IssuerCredentialManager {
         } catch (AriesException e) {
             if (e.getCode() == 400) {
                 String message = msg.getMessage("api.issuer.credential.exchange.problem");
-                credEx.pushStateChange(CredentialExchangeState.PROBLEM);
+                credEx.pushState(CredentialExchangeState.PROBLEM);
                 credExRepo.updateAfterEventNoRevocationInfo(
                         credEx.getId(), CredentialExchangeState.PROBLEM, credEx.getStateToTimestamp(), message);
                 throw new WrongApiUsageException(message);
@@ -436,7 +436,7 @@ public class IssuerCredentialManager {
     public void handleV1CredentialExchange(@NonNull V1CredentialExchange ex) {
         credExRepo.findByCredentialExchangeId(ex.getCredentialExchangeId()).ifPresent(bpaEx -> {
             CredentialExchangeState state = ex.getState() != null ? ex.getState() : CredentialExchangeState.PROBLEM;
-            bpaEx.pushStateChange(state);
+            bpaEx.pushState(state);
             if (StringUtils.isNotEmpty(ex.getErrorMsg())) {
                 credExRepo.updateAfterEventNoRevocationInfo(bpaEx.getId(),
                         state, bpaEx.getStateToTimestamp(), ex.getErrorMsg());
@@ -464,7 +464,7 @@ public class IssuerCredentialManager {
                     if (StringUtils.isNotEmpty(ex.getErrorMsg())) {
                         state = CredentialExchangeState.PROBLEM;
                     }
-                    bpaEx.pushStateChange(state, Instant.now());
+                    bpaEx.pushState(state);
                     credExRepo.updateAfterEventNoRevocationInfo(bpaEx.getId(),
                             state, bpaEx.getStateToTimestamp(), ex.getErrorMsg());
                     if (ex.isDone() && ex.isAutoIssueEnabled()) {

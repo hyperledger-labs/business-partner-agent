@@ -17,20 +17,19 @@
  */
 package org.hyperledger.bpa.model;
 
+import io.micronaut.core.annotation.Nullable;
 import lombok.*;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
-public abstract class ExchangeStateDecorator<T extends ExchangeStateDecorator<T, S>, S> {
+public abstract class StateChangeDecorator<T extends StateChangeDecorator<T, S>, S extends Enum<S>> {
 
-    abstract public T setStateToTimestamp(ExchangeStateToTimestamp<S> stateToTimestamp);
+    abstract public T setStateToTimestamp(StateToTimestamp<S> stateToTimestamp);
 
-    abstract public ExchangeStateToTimestamp<S> getStateToTimestamp();
+    abstract public StateToTimestamp<S> getStateToTimestamp();
 
     /**
      * Records the timestamps of the different state changes, important in the
@@ -40,7 +39,8 @@ public abstract class ExchangeStateDecorator<T extends ExchangeStateDecorator<T,
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static final class ExchangeStateToTimestamp<S> {
+    public static final class StateToTimestamp<S extends Enum<S>> {
+
         private Map<S, Instant> stateToTimestamp;
 
         public Map<S, Long> toApi() {
@@ -53,18 +53,31 @@ public abstract class ExchangeStateDecorator<T extends ExchangeStateDecorator<T,
                                     LinkedHashMap::new))
                     : Map.of();
         }
+
+        public @Nullable Map.Entry<S, Instant> findLatestEntry() {
+            return stateToTimestamp != null
+                    ? stateToTimestamp.entrySet()
+                    .stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.comparing(Instant::toEpochMilli)))
+                    .min(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                    .orElse(null)
+                    : null;
+        }
     }
 
-    public T pushStateChange(@NonNull S state) {
-        return pushStateChange(state, Instant.now());
+    public T pushState(@NonNull S state) {
+        return pushState(state, null);
     }
 
     @SuppressWarnings("unchecked")
-    public T pushStateChange(@NonNull S state, @NonNull Instant ts) {
+    public T pushState(@NonNull S state, @Nullable Instant ts) {
+        if (ts == null) {
+            ts = Instant.now();
+        }
         if (getStateToTimestamp() == null || getStateToTimestamp().getStateToTimestamp() == null) {
             Map<S, Instant> states = new HashMap<>();
             states.put(state, ts);
-            setStateToTimestamp(ExchangeStateToTimestamp
+            setStateToTimestamp(StateToTimestamp
                     .<S>builder()
                     .stateToTimestamp(states)
                     .build());
@@ -72,5 +85,9 @@ public abstract class ExchangeStateDecorator<T extends ExchangeStateDecorator<T,
             getStateToTimestamp().getStateToTimestamp().put(state, ts);
         }
         return (T) this;
+    }
+
+    public @io.micronaut.core.annotation.NonNull S pushStateAndGetLatest(@NonNull S state, @Nullable Instant ts) {
+        return Objects.requireNonNull(pushState(state, ts).getStateToTimestamp().findLatestEntry()).getKey();
     }
 }

@@ -27,7 +27,7 @@ import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.model.BPACredentialExchange;
-import org.hyperledger.bpa.model.ExchangeStateDecorator;
+import org.hyperledger.bpa.model.StateChangeDecorator;
 
 import java.time.Instant;
 import java.util.List;
@@ -69,14 +69,14 @@ public interface BPACredentialExchangeRepository extends CrudRepository<BPACrede
 
     Number updateAfterEventWithRevocationInfo(@Id UUID id,
             CredentialExchangeState state,
-            ExchangeStateDecorator.ExchangeStateToTimestamp<CredentialExchangeState> stateToTimestamp,
+            StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp,
             @Nullable String revRegId,
             @Nullable String credRevId,
             @Nullable String errorMsg);
 
     Number updateAfterEventNoRevocationInfo(@Id UUID id,
             CredentialExchangeState state,
-            ExchangeStateDecorator.ExchangeStateToTimestamp<CredentialExchangeState> stateToTimestamp,
+            StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp,
             @Nullable String errorMsg);
 
     Number updateRevocationInfo(@Id UUID id, @Nullable String revRegId, @Nullable String credRevId);
