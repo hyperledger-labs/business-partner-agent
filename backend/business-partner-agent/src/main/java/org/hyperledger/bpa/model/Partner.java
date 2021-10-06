@@ -141,6 +141,12 @@ public class Partner extends StateChangeDecorator<Partner, ConnectionState> {
         return connectionId != null;
     }
 
+    public Partner setAndPushState(@NonNull ConnectionState state) {
+        this.state = state;
+        pushState(state);
+        return this;
+    }
+
     // extends lombok builder
     public static class PartnerBuilder {
         public Partner.PartnerBuilder pushStateChange(@NonNull ConnectionState state, @Nullable Instant ts) {
