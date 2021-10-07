@@ -96,12 +96,6 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
     @TypeDef(type = DataType.JSON)
     private StateToTimestamp<PresentationExchangeState> stateToTimestamp;
 
-    public PartnerProof setAndPushState(@NonNull PresentationExchangeState state) {
-        this.state = state;
-        pushState(state);
-        return this;
-    }
-
     // extends lombok builder
     public static class PartnerProofBuilder {
         public PartnerProofBuilder pushStateChange(@NonNull PresentationExchangeState state, @NonNull Instant ts) {

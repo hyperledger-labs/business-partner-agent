@@ -117,7 +117,7 @@ public class PartnerManager {
                 .setAriesSupport(lookupP.getAriesSupport())
                 .setAlias(req.getAlias())
                 .setTags(req.getTag() != null ? new HashSet<>(req.getTag()) : null)
-                .setAndPushState(ConnectionState.REQUEST)
+                .pushStates(ConnectionState.REQUEST)
                 .setTrustPing(req.getTrustPing() != null ? req.getTrustPing() : Boolean.TRUE);
 
         cm.createConnection(req.getDid()).ifPresent(c -> partner.setConnectionId(c.getConnectionId()));

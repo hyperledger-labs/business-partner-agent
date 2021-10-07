@@ -19,6 +19,7 @@ package org.hyperledger.bpa.model;
 
 import io.micronaut.core.annotation.Nullable;
 import lombok.*;
+import org.hyperledger.bpa.impl.util.TimeUtil;
 
 import java.time.Instant;
 import java.util.*;
@@ -30,6 +31,8 @@ public abstract class StateChangeDecorator<T extends StateChangeDecorator<T, S>,
     abstract public T setStateToTimestamp(StateToTimestamp<S> stateToTimestamp);
 
     abstract public StateToTimestamp<S> getStateToTimestamp();
+
+    abstract public T setState(S state);
 
     /**
      * Records the timestamps of the different state changes, important in the
@@ -65,12 +68,16 @@ public abstract class StateChangeDecorator<T extends StateChangeDecorator<T, S>,
         }
     }
 
-    public T pushState(@NonNull S state) {
-        return pushState(state, null);
+    public T pushStates(@NonNull S state) {
+        return pushStates(state, Instant.now());
+    }
+
+    public T pushStates(@NonNull S state, @NonNull String ts) {
+        return pushStates(state, TimeUtil.parseZonedTimestamp(ts));
     }
 
     @SuppressWarnings("unchecked")
-    public T pushState(@NonNull S state, @Nullable Instant ts) {
+    public T pushStates(@NonNull S state, @Nullable Instant ts) {
         if (ts == null) {
             ts = Instant.now();
         }
@@ -84,13 +91,8 @@ public abstract class StateChangeDecorator<T extends StateChangeDecorator<T, S>,
         } else {
             getStateToTimestamp().getStateToTimestamp().put(state, ts);
         }
+        S latest = Objects.requireNonNull(getStateToTimestamp().findLatestEntry()).getKey();
+        setState(Objects.requireNonNull(latest));
         return (T) this;
-    }
-
-    public @io.micronaut.core.annotation.NonNull S pushStateAndGetLatest(@NonNull S state, @Nullable Instant ts) {
-        T t = pushState(state, ts);
-        StateToTimestamp<S> stateToTimestamp = Objects.requireNonNull(t.getStateToTimestamp());
-        Map.Entry<S, Instant> latestEntry = Objects.requireNonNull(stateToTimestamp.findLatestEntry());
-        return Objects.requireNonNull(latestEntry.getKey());
     }
 }

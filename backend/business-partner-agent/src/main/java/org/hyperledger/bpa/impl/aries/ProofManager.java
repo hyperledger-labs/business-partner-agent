@@ -196,7 +196,7 @@ public class ProofManager {
     public void declinePresentProofRequest(@NotNull PartnerProof proofEx, String explainString) {
         if (PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
             try {
-                proofEx.setAndPushState(PresentationExchangeState.DECLINED);
+                proofEx.pushStates(PresentationExchangeState.DECLINED);
                 pProofRepo.update(proofEx);
                 sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString);
                 eventPublisher
@@ -267,7 +267,7 @@ public class ProofManager {
                 .findRevealedAttributeGroups();
         pp
                 .setValid(proof.isVerified())
-                .setAndPushState(proof.getState())
+                .pushStates(proof.getState(), proof.getUpdatedAt())
                 .setProofRequest(proof.getPresentationRequest())
                 .setProof(CollectionUtils.isNotEmpty(revealedAttributeGroups)
                         ? conv.toMap(proof.findRevealedAttributeGroups())

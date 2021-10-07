@@ -217,14 +217,13 @@ public class ConnectionManager {
     public void handleOutgoingConnectionEvent(ConnectionRecord record) {
         partnerRepo.findByConnectionId(record.getConnectionId()).ifPresent(
                 dbP -> {
-                    ConnectionState latest = dbP.pushStateAndGetLatest(
-                            record.getState(), TimeUtil.parseZonedTimestamp(record.getUpdatedAt()));
+                    dbP.pushStates(record.getState(), record.getUpdatedAt());
                     if (StringUtils.isEmpty(dbP.getLabel())) {
                         partnerRepo.updateStateAndLabel(
-                                dbP.getId(), latest, dbP.getStateToTimestamp(), record.getTheirLabel());
+                                dbP.getId(), dbP.getState(), dbP.getStateToTimestamp(), record.getTheirLabel());
                     } else {
                         partnerRepo.updateState(
-                                dbP.getId(), latest, dbP.getStateToTimestamp());
+                                dbP.getId(), dbP.getState(), dbP.getStateToTimestamp());
                     }
                     if (record.stateIsRequest()) {
                         eventPublisher.publishEventAsync(PartnerAddedEvent.builder().partner(dbP).build());
@@ -244,8 +243,7 @@ public class ConnectionManager {
                     if (StringUtils.isEmpty(dbP.getDid()) || dbP.getDid().endsWith(UNKNOWN_DID)) {
                         dbP.setDid(didPrefix + record.getTheirDid());
                     }
-                    dbP.setState(dbP.pushStateAndGetLatest(
-                            record.getState(), TimeUtil.parseZonedTimestamp(record.getUpdatedAt())));
+                    dbP.pushStates(record.getState(), record.getUpdatedAt());
                     partnerRepo.update(dbP);
                     resolveAndSend(record, dbP);
                 },
@@ -270,16 +268,14 @@ public class ConnectionManager {
 
     public void handleOOBInvitation(ConnectionRecord record) {
         partnerRepo.findByInvitationMsgId(record.getInvitationMsgId()).ifPresent(dbP -> {
-            ConnectionState latest = dbP.pushStateAndGetLatest(
-                    record.getState(), TimeUtil.parseZonedTimestamp(record.getUpdatedAt()));
+            dbP.pushStates(record.getState(), record.getUpdatedAt());
             if (StringUtils.isEmpty(dbP.getConnectionId())) {
                 dbP.setConnectionId(record.getConnectionId());
                 dbP.setDid(didPrefix + record.getTheirDid());
-                dbP.setState(latest);
                 dbP.setLabel(record.getTheirLabel());
                 partnerRepo.update(dbP);
             } else {
-                partnerRepo.updateState(dbP.getId(), latest, dbP.getStateToTimestamp());
+                partnerRepo.updateState(dbP.getId(), dbP.getState(), dbP.getStateToTimestamp());
             }
             resolveAndSend(record, dbP);
         });
