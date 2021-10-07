@@ -6,7 +6,7 @@ pipeline {
 
    environment {
         SETTINGS_ID = 'a77b84ea-0de6-4ede-8961-060229a96fcf'
-        MVN_VERSION = 'maven-3.6.x'
+        MVN_VERSION = 'maven-3.8.x'
     }
 
    options { 
@@ -18,7 +18,7 @@ pipeline {
          steps {
             dir("backend") {
                withMaven(
-                  jdk: "java-11",
+                  jdk: "java-17",
                   maven: "${MVN_VERSION}",
                   globalMavenSettingsConfig: "${SETTINGS_ID}") {
                      sh "mvn clean deploy -Pbuild-frontend -DaltDeploymentRepository=bds-nexus::default::https://nexus.bosch-digital.com/repository/bds-snapshots/"

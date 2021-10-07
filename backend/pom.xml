@@ -484,7 +484,7 @@
                                 <name>hyperledger/%a</name>
                                 <build>
                                     <skip>${skip.docker.build}</skip>
-                                    <from>amazoncorretto:${jdk.version}</from>
+                                    <from>amazoncorretto:17</from>
                                     <assemblies>
                                         <assembly>
                                             <descriptorRef>artifact</descriptorRef>
