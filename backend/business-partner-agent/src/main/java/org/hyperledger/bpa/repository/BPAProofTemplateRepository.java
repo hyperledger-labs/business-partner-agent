@@ -27,5 +27,4 @@ import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface BPAProofTemplateRepository extends CrudRepository<BPAProofTemplate, UUID> {
-
 }

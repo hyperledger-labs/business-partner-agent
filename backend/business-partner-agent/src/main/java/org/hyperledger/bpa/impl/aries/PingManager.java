@@ -27,6 +27,7 @@ import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.ConnectionState;
+import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.message.PingRequest;
 import org.hyperledger.bpa.model.Partner;
@@ -113,11 +114,20 @@ public class PingManager {
         try {
             for (String connectionId : connectionsToPing) {
                 log.debug("Sending ping to: {}", connectionId);
-                aries.connectionsSendPing(connectionId, new PingRequest(connectionId))
-                        .ifPresent(resp -> sent.put(resp.getThreadId(), connectionId));
+                try {
+                    aries.connectionsSendPing(connectionId, new PingRequest(connectionId))
+                            .ifPresent(resp -> sent.put(resp.getThreadId(), connectionId));
+                } catch (AriesException e) {
+                    if (e.getCode() == 404) {
+                        log.error("Connection id {} exists in the BPA but not in aca-py", connectionId);
+                        repo.updateStateByConnectionId(connectionId, ConnectionState.PING_NO_RESPONSE);
+                    } else {
+                        log.error("Could not send ping request to connection {}", connectionId, e);
+                    }
+                }
             }
         } catch (IOException e) {
-            log.error("Could not ping active connections", e);
+            log.error("Could not ping active connections, because aca-py is not available", e);
         }
     }
 

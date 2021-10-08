@@ -26,5 +26,4 @@ import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface BPAStateRepository extends CrudRepository<BPAState, UUID> {
-    //
 }

@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.repository;
 
+import io.micronaut.data.annotation.Id;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
@@ -29,4 +30,6 @@ import java.util.UUID;
 public interface BPAUserRepository extends CrudRepository<BPAUser, UUID> {
 
     Optional<BPAUser> findByUsername(String username);
+
+    void updatePassword(@Id UUID id, String password);
 }

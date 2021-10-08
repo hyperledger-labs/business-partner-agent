@@ -28,11 +28,14 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.aries.config.GsonConfig;
+import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -54,6 +57,9 @@ public class DidDocClient {
     @Inject
     AriesClient ac;
 
+    @Inject
+    BPAMessageSource.DefaultMessageSource msg;
+
     private final Gson gson = GsonConfig.defaultConfig();
 
     private final OkHttpClient okClient = new OkHttpClient();
@@ -63,7 +69,9 @@ public class DidDocClient {
         try {
             return ac.resolverResolveDid(did);
         } catch (IOException e) {
-            log.error("aca-py not reachable");
+            throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
+        } catch (AriesException e) {
+            log.error("Could not resolve did document", e);
         }
         return Optional.empty();
     }
@@ -95,7 +103,7 @@ public class DidDocClient {
         } catch (IOException e) {
             String msg = "Call to partner web endpoint failed - msg: " + e.getMessage();
             log.error(msg, e);
-            throw new PartnerException(msg);
+            throw new NetworkException(msg);
         }
         return result;
     }

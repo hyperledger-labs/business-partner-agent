@@ -182,7 +182,7 @@ public class IssuerController {
      * @return HTTP status
      */
     @Post("/exchanges/{id}/decline")
-    public HttpResponse<Void> declineCredentialOffer(@PathVariable UUID id,
+    public HttpResponse<Void> declineCredentialExchange(@PathVariable UUID id,
             @Body DeclineCredentialExchangeRequest decline) {
         im.declineCredentialOffer(id, decline.getMessage());
         return HttpResponse.ok();

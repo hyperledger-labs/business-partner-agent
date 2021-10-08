@@ -25,11 +25,9 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @MicronautTest
 class PartnerProofRepositoryTest {
@@ -64,9 +62,8 @@ class PartnerProofRepositoryTest {
         repo.save(pp);
 
         pp = repo.findById(pp.getId()).orElseThrow();
-        pp.pushStateChange(PresentationExchangeState.REQUEST_RECEIVED, Instant.ofEpochMilli(1631770000000L));
-        pp.pushStateChange(PresentationExchangeState.PRESENTATION_ACKED, Instant.ofEpochMilli(1631780000000L))
-                .setState(PresentationExchangeState.PRESENTATION_ACKED);
+        pp.pushStates(PresentationExchangeState.REQUEST_RECEIVED, Instant.ofEpochMilli(1631770000000L));
+        pp.pushStates(PresentationExchangeState.PRESENTATION_ACKED, Instant.ofEpochMilli(1631780000000L));
 
         repo.update(pp);
 

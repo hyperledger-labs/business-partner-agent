@@ -31,6 +31,7 @@ import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.model.Partner;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -50,6 +51,7 @@ public class PartnerAPI {
     private Boolean ariesSupport;
     private Boolean incoming;
     private ConnectionState state;
+    private Map<ConnectionState, Long> stateToTimestamp;
     private String alias;
     private String label;
     private String did;
@@ -92,6 +94,7 @@ public class PartnerAPI {
                 .setValid(from.getValid())
                 .setAriesSupport(from.getAriesSupport())
                 .setState(from.getState())
+                .setStateToTimestamp(from.getStateToTimestamp() != null ? from.getStateToTimestamp().toApi() : null)
                 .setTrustPing(from.getTrustPing())
                 .setAlias(from.getAlias())
                 .setLabel(from.getLabel())
