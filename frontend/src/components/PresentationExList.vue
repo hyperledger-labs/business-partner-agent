@@ -75,10 +75,11 @@
             v-if="isWaitingForMatchingCreds"
             type="list-item-three-line"
           />
-          <PresentationRecord
+          <PresentationRecordV2
+            class="justify-start"
             v-else
             v-bind:record="record"
-          ></PresentationRecord>
+          ></PresentationRecordV2>
 
           <v-alert
             v-if="
@@ -121,7 +122,8 @@ import { proofExService } from "@/services";
 import { EventBus } from "@/main";
 import { PresentationExchangeStates, RequestTypes } from "@/constants";
 import NewMessageIcon from "@/components/NewMessageIcon";
-import PresentationRecord from "@/components/PresentationRecord";
+// import PresentationRecord from "@/components/PresentationRecord";
+import PresentationRecordV2 from "@/components/PresentationRecordV2";
 import VBpaButton from "@/components/BpaButton";
 export default {
   props: {
@@ -378,7 +380,8 @@ export default {
   },
   components: {
     NewMessageIcon,
-    PresentationRecord,
+    // PresentationRecord,
+    PresentationRecordV2,
     VBpaButton,
   },
 };
