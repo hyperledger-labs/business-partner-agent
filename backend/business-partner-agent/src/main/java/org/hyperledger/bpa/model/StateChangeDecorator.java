@@ -25,6 +25,14 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Decorator class for all database entities that deal with (connection, credential and proof) exchanges
+ * to track state changes over time. As the BPA might receive events in particular order this class
+ * also sets the top level state of the entity to the latest state which might not be the current state.
+ *
+ * @param <T> database entity
+ * @param <S> state
+ */
 @Data
 public abstract class StateChangeDecorator<T extends StateChangeDecorator<T, S>, S extends Enum<S>> {
 
