@@ -39,10 +39,12 @@
         <v-divider></v-divider>
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title>Public Profile</v-list-item-title>
-            <v-list-item-subtitle
-              >Visible in Public Profile</v-list-item-subtitle
-            >
+            <v-list-item-title>{{
+              $t("view.wallet.visibility.title")
+            }}</v-list-item-title>
+            <v-list-item-subtitle>{{
+              $t("view.wallet.visibility.subtitle")
+            }}</v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
             <v-switch v-model="isPublic"></v-switch>
@@ -91,7 +93,7 @@ export default {
     type: String,
   },
   created() {
-    EventBus.$emit("title", "Credential");
+    EventBus.$emit("title", "Credential Details");
     this.getCredential();
     this.$store.commit("credentialNotificationSeen", { id: this.id });
   },

@@ -32,21 +32,20 @@ import org.hyperledger.bpa.api.aries.ExchangeVersion;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Aries proof that I received from a partner (aka connection).
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
 @Accessors(chain = true)
-public class PartnerProof {
+public class PartnerProof extends StateChangeDecorator<PartnerProof, PresentationExchangeState> {
 
     @Id
     @AutoPopulated
@@ -95,47 +94,12 @@ public class PartnerProof {
     private BPAProofTemplate proofTemplate;
 
     @TypeDef(type = DataType.JSON)
-    private ExchangeStateToTimestamp stateToTimestamp;
-
-    /**
-     * Records the timestamps of the different state changes, important in the
-     * manual exchanges as they can take a while to happen.
-     */
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static final class ExchangeStateToTimestamp {
-        private Map<PresentationExchangeState, Instant> stateToTimestamp;
-
-        public Map<PresentationExchangeState, Long> toApi() {
-            return stateToTimestamp != null
-                    ? stateToTimestamp.entrySet()
-                            .stream()
-                            .sorted(Map.Entry.comparingByValue())
-                            .collect(Collectors.toMap(
-                                    Map.Entry::getKey, v -> v.getValue().toEpochMilli(), (v1, v2) -> v1,
-                                    LinkedHashMap::new))
-                    : null;
-        }
-    }
-
-    public PartnerProof pushStateChange(@NonNull PresentationExchangeState state, @NonNull Instant ts) {
-        if (stateToTimestamp == null || stateToTimestamp.getStateToTimestamp() == null) {
-            stateToTimestamp = ExchangeStateToTimestamp
-                    .builder()
-                    .stateToTimestamp(Map.of(state, ts))
-                    .build();
-        } else {
-            stateToTimestamp.getStateToTimestamp().put(state, ts);
-        }
-        return this;
-    }
+    private StateToTimestamp<PresentationExchangeState> stateToTimestamp;
 
     // extends lombok builder
     public static class PartnerProofBuilder {
         public PartnerProofBuilder pushStateChange(@NonNull PresentationExchangeState state, @NonNull Instant ts) {
-            this.stateToTimestamp(ExchangeStateToTimestamp.builder()
+            this.stateToTimestamp(StateToTimestamp.<PresentationExchangeState>builder()
                     .stateToTimestamp(Map.of(state, ts))
                     .build());
             return this;

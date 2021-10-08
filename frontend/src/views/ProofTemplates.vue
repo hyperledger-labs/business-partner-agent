@@ -10,7 +10,7 @@
     <v-card class="my-4 mx-auto">
       <!-- Title -->
       <v-card-title class="bg-light">
-        <span>Proof Templates</span>
+        <span>{{ $t("view.proofTemplates.tableTitle") }}</span>
       </v-card-title>
 
       <!-- Proof Templates Table -->
@@ -33,7 +33,7 @@
                 color="primary"
                 @click="proofTemplateCreate()"
               >
-                Create Proof Template
+                {{ $t("view.proofTemplate.createProofTemplate") }}
               </v-bpa-button>
             </template>
           </v-dialog>
@@ -53,15 +53,13 @@ export default {
   name: "ProofTemplates",
   components: { ProofTemplatesList, VBpaButton },
   created() {
-    EventBus.$emit("title", "Proof Templates");
+    EventBus.$emit("title", this.$t("view.proofTemplates.title"));
   },
   data: () => {
     return {
       proofTemplateCreateDialog: false,
     };
   },
-  computed: {},
-  watch: {},
   methods: {
     onProofTemplateCreated() {
       store.dispatch("loadProofTemplates");

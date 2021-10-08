@@ -13,21 +13,26 @@
           <v-list-item
             v-if="ux.navigation.avatar.agent.enabled"
             two-line
-            class="pl-3 mt-n2"
+            class="pl-3 mt-n2 logo"
           >
-            <v-list-item-avatar v-if="ux.navigation.avatar.agent.default">
-              <v-img v-if="logo" :src="logo"></v-img>
-              <!-- Default logo from https://logodust.com/ -->
-              <v-img src="@/assets/logo_default.svg"></v-img>
-            </v-list-item-avatar>
-            <v-list-item-content v-if="ux.navigation.avatar.agent.default">
-              <v-list-item-title class="text-wrap">{{
-                getOrganizationName ? getOrganizationName : getAgentName
-              }}</v-list-item-title>
-              <!-- <v-list-item-subtitle></v-list-item-subtitle> -->
-            </v-list-item-content>
-            <v-list-item-content v-if="!ux.navigation.avatar.agent.default">
-              <v-list-item-title>
+            <v-list-item-content>
+              <v-list-item-title v-if="ux.navigation.avatar.agent.default">
+                <v-img
+                  v-if="logo"
+                  contain
+                  max-height="100"
+                  max-width="228"
+                  :src="logo"
+                ></v-img>
+                <v-img
+                  v-else
+                  contain
+                  max-height="100"
+                  max-width="228"
+                  src="@/assets/logo_default.svg"
+                ></v-img>
+              </v-list-item-title>
+              <v-list-item-title v-else>
                 <v-img
                   contain
                   max-height="100"
@@ -35,21 +40,9 @@
                   :src="ux.navigation.avatar.agent.src"
                 ></v-img
               ></v-list-item-title>
-              <v-list-item-subtitle class="text-wrap">{{
-                getOrganizationName ? getOrganizationName : getAgentName
+              <v-list-item-subtitle class="mt-2 text-wrap nav-display-name">{{
+                getNavDisplayName
               }}</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item
-            v-if="ux.navigation.avatar.user.enabled"
-            two-line
-            class="pl-3 mt-n2"
-          >
-            <v-list-item-avatar style="width: fit-content">
-              <v-icon>$vuetify.icons.domain</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content class="text-wrap"
-              >{{ getOrganizationName ? getOrganizationName : getAgentName }}
             </v-list-item-content>
           </v-list-item>
         </router-link>
@@ -84,14 +77,16 @@
             </v-badge>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>{{ $t("nav.notifications") }}</v-list-item-title>
+            <v-list-item-title>{{
+              $t("view.notifications.title")
+            }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item link :to="{ name: 'PublicProfile' }">
           <v-list-item-action>
             <v-icon>$vuetify.icons.profile</v-icon>
           </v-list-item-action>
-          <v-list-item-title>{{ $t("nav.profile") }}</v-list-item-title>
+          <v-list-item-title>{{ $t("view.profile.title") }}</v-list-item-title>
         </v-list-item>
         <v-list-item link :to="{ name: 'Wallet' }">
           <v-list-item-action>
@@ -108,7 +103,7 @@
             </v-badge>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>{{ $t("nav.wallet") }}</v-list-item-title>
+            <v-list-item-title>{{ $t("view.wallet.title") }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item link :to="{ name: 'CredentialManagement' }">
@@ -117,7 +112,7 @@
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>{{
-              $t("nav.credentialManagement")
+              $t("view.issueCredentials.title")
             }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -128,7 +123,7 @@
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>{{
-              $t("nav.proofTemplates")
+              $t("view.proofTemplates.title")
             }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -148,7 +143,9 @@
             </v-badge>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>{{ $t("nav.partners") }}</v-list-item-title>
+            <v-list-item-title>
+              {{ $t("view.partners.title") }}</v-list-item-title
+            >
           </v-list-item-content>
         </v-list-item>
         <v-list-item
@@ -167,19 +164,6 @@
       <template v-slot:append>
         <v-list dense>
           <v-list-item
-            v-if="ux.navigation.about.enabled"
-            bottom
-            link
-            :to="{ name: 'About' }"
-          >
-            <v-list-item-action>
-              <v-icon>$vuetify.icons.about</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title>{{ $t("nav.about") }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item
             v-if="ux.navigation.settings.location === 'bottom'"
             bottom
             link
@@ -190,6 +174,19 @@
             </v-list-item-action>
             <v-list-item-content>
               <v-list-item-title>{{ $t("nav.settings") }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item
+            v-if="ux.navigation.about.enabled"
+            bottom
+            link
+            :to="{ name: 'About' }"
+          >
+            <v-list-item-action>
+              <v-icon>$vuetify.icons.about</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{ $t("nav.about") }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
           <v-list-item
@@ -211,22 +208,7 @@
     <v-app-bar color="primary" app flat dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title>{{ getTitle }}</v-toolbar-title>
-
       <v-spacer></v-spacer>
-
-      <a v-if="ux.header.logo.enabled" :href="ux.header.logo.href">
-        <v-img
-          v-for="item in ux.header.logo.images"
-          :key="item.name"
-          :alt="ux.header.logo.alt"
-          :class="item.class"
-          contain
-          :height="item.height"
-          :src="item.src"
-          :width="item.width"
-        />
-      </a>
-
       <v-btn v-if="ux.header.logout.enabled" icon @click="logout()">
         <v-icon>$vuetify.icons.signout</v-icon>
       </v-btn>
@@ -329,6 +311,7 @@
 import { EventBus } from "./main";
 import Taa from "./components/taa/TransactionAuthorAgreement";
 import BasicMessages from "@/components/messages/BasicMessages";
+import merge from "deepmerge";
 
 export default {
   components: {
@@ -354,14 +337,8 @@ export default {
     // These are defaults, if no ux configuration passed in via $config.ux...
     ux: {
       header: {
-        title: {
-          prefix: false,
-        },
         logout: {
           enabled: true,
-        },
-        logo: {
-          enabled: false,
         },
       },
       navigation: {
@@ -369,9 +346,7 @@ export default {
           agent: {
             enabled: true,
             default: true,
-          },
-          user: {
-            enabled: false,
+            "show-name": true,
           },
         },
         about: {
@@ -440,33 +415,42 @@ export default {
       }
       return "";
     },
-    getTitle() {
-      if (this.ux.header.title.prefix) {
-        let pageTitle =
-          this.title && this.title.trim().length > 0 ? ` : ${this.title}` : "";
-        return `${this.getAgentName} ${pageTitle}`;
-      } else {
-        return this.title;
+    getNavDisplayName() {
+      if (this.ux.navigation.avatar.agent["show-name"]) {
+        const result = this.getOrganizationName;
+        return result ? result : this.getAgentName;
       }
+      return "";
+    },
+    getTitle() {
+      return this.title;
     },
   },
   created() {
     // Set the browser/tab title...
     document.title = this.$config.title;
     if (this.$config.ux) {
-      Object.assign(this.ux, this.$config.ux);
+      this.ux = merge(this.ux, this.$config.ux);
 
       // Copy the the configuration UX themes, this allows us to change primary color later...
       if (this.ux.theme) {
         this.$vuetify.theme.dark = this.ux.theme.dark
           ? this.ux.theme.dark
           : false;
-        Object.assign(this.$vuetify.theme.themes, this.ux.theme.themes);
+        this.$vuetify.theme.themes.light = merge(
+          this.$vuetify.theme.themes.light,
+          this.ux.theme.themes.light
+        );
       }
       const uiColor = localStorage.getItem("uiColor");
       if (uiColor) {
         // if the user stored an override of the primary color, load it.
         this.$vuetify.theme.themes.light.primary = uiColor;
+      }
+      const uiColorIcons = localStorage.getItem("uiColorIcons");
+      if (uiColorIcons) {
+        // if the user stored an override of the icons color, load it.
+        this.$vuetify.theme.themes.light.icons = uiColorIcons;
       }
       // Load up an alternate favicon
       if (this.ux.favicon) {

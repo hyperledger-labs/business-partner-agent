@@ -1,0 +1,1 @@
+ALTER TABLE partner ADD COLUMN state_to_timestamp jsonb;

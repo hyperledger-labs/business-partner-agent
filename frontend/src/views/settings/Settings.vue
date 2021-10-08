@@ -10,8 +10,8 @@
     <v-card class="my-4 mx-auto">
       <v-card-title class="bg-light">Settings</v-card-title>
       <v-list-item v-if="!isLoading">
-        <v-list-item-title class="grey--text text--darken-2 font-weight-medium"
-          >Wallet DID
+        <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
+          {{ $t("view.settings.walletDID") }}
         </v-list-item-title>
         <v-list-item-subtitle align="end" id="did">
           {{ this.status.did }}
@@ -24,7 +24,7 @@
         <v-list-item-content>
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
-            >Schemas and Trusted Issuers</v-list-item-title
+            >{{ $t("view.settings.schemaManagement") }}</v-list-item-title
           >
         </v-list-item-content>
         <v-list-item-action>
@@ -52,6 +52,7 @@
         </v-list-item-title>
         <v-list-item-subtitle align="end">
           <text-field-color-picker
+            id="uiColor"
             v-if="isEditingColor"
             @on-save="onPickColor"
             @on-cancel="isEditingColor = false"
@@ -66,10 +67,35 @@
         </v-list-item-action>
       </v-list-item>
       <v-list-item>
+        <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
+          Icons Color
+        </v-list-item-title>
+        <v-list-item-subtitle align="end">
+          <text-field-color-picker
+            id="uiColorIcons"
+            :base-color="$vuetify.theme.themes.light.icons"
+            v-if="isEditingColorIcons"
+            @on-save="onPickColorIcons"
+            @on-cancel="isEditingColorIcons = false"
+          >
+          </text-field-color-picker>
+          <span v-else>{{ $vuetify.theme.themes.light.icons }}</span>
+        </v-list-item-subtitle>
+        <v-list-item-action v-show="!isEditingColorIcons">
+          <v-btn
+            icon
+            x-small
+            @click="isEditingColorIcons = !isEditingColorIcons"
+          >
+            <v-icon dark>$vuetify.icons.pencil</v-icon>
+          </v-btn>
+        </v-list-item-action>
+      </v-list-item>
+      <v-list-item>
         <v-list-item-content>
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
-            >Expert mode</v-list-item-title
+            >{{ $t("view.settings.expertMode") }}</v-list-item-title
           >
         </v-list-item-content>
         <v-list-item-action>
@@ -130,6 +156,7 @@ export default {
         },
       ],
       isEditingColor: false,
+      isEditingColorIcons: false,
     };
   },
   computed: {
@@ -160,6 +187,11 @@ export default {
       this.$vuetify.theme.themes.light.primary = c;
       localStorage.setItem("uiColor", c);
       this.isEditingColor = false;
+    },
+    onPickColorIcons(c) {
+      this.$vuetify.theme.themes.light.icons = c;
+      localStorage.setItem("uiColorIcons", c);
+      this.isEditingColorIcons = false;
     },
     getStatus() {
       console.log("Getting status...");

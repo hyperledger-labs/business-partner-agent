@@ -89,9 +89,14 @@
       </v-card-actions>
     </v-card>
     <v-card class="my-4">
-      <v-card-title class="bg-light">{{
-        $t("view.issueCredentials.cards.table.title")
-      }}</v-card-title>
+      <v-card-title class="bg-light"
+        >{{ $t("view.issueCredentials.cards.table.title")
+        }}<v-layout justify-end>
+          <v-bpa-button color="primary" icon @click="loadCredentials">
+            <v-icon dark>$vuetify.icons.refresh</v-icon>
+          </v-bpa-button>
+        </v-layout>
+      </v-card-title>
       <v-card-text>
         <CredExList
           :items="issuedCredentials"
@@ -170,9 +175,13 @@ export default {
       this.partner = {};
       this.credDef = {};
 
-      const iresp = await issuerService.listCredentialExchangesAsIssuer();
-      if (iresp.status === 200) {
-        this.issuedCredentials = iresp.data;
+      try {
+        const iresp = await issuerService.listCredentialExchangesAsIssuer();
+        if (iresp.status === 200) {
+          this.issuedCredentials = iresp.data;
+        }
+      } catch (err) {
+        EventBus.$emit("error", this.$axiosErrorMessage(err));
       }
       this.isLoadingCredentials = false;
     },

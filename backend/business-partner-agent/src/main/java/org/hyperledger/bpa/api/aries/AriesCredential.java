@@ -17,7 +17,9 @@
  */
 package org.hyperledger.bpa.api.aries;
 
+import io.micronaut.core.annotation.Nullable;
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.model.MyCredential;
 
@@ -46,9 +48,16 @@ public class AriesCredential {
     private String typeLabel;
     private Map<String, String> credentialData;
 
-    public static AriesCredentialBuilder fromMyCredential(@NonNull MyCredential c) {
-        return AriesCredential
-                .builder()
+    public static AriesCredential fromMyCredential(@NonNull MyCredential c, @Nullable String typeLabel) {
+        AriesCredentialBuilder b = AriesCredential.builder();
+        if (c.getCredential() != null) {
+            b
+                    .schemaId(c.getCredential().getSchemaId())
+                    .credentialDefinitionId(c.getCredential().getCredentialDefinitionId())
+                    .revocable(StringUtils.isNotEmpty(c.getCredential().getRevRegId()))
+                    .credentialData(c.getCredential().getAttrs());
+        }
+        return b
                 .id(c.getId())
                 .issuedAt(c.getIssuedAt() != null ? c.getIssuedAt().toEpochMilli() : null)
                 .state(c.getState())
@@ -57,7 +66,9 @@ public class AriesCredential {
                 .connectionId(c.getConnectionId())
                 .revoked(c.getRevoked())
                 .label(c.getLabel())
-                .exchangeVersion(c.getExchangeVersion());
+                .typeLabel(typeLabel)
+                .exchangeVersion(c.getExchangeVersion())
+                .build();
     }
 
     @Data

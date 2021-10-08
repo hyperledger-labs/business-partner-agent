@@ -7,6 +7,16 @@
 -->
 <template>
   <v-container>
+    <v-card class="my-10">
+      <v-card-title class="bg-light">{{
+        $t("view.wallet.credentials.title")
+      }}</v-card-title>
+      <MyCredentialList
+        v-bind:headers="credHeaders"
+        type="credential"
+        :indicateNew="true"
+      ></MyCredentialList>
+    </v-card>
     <v-card class="my-4">
       <v-card-title class="bg-light">{{
         $t("view.wallet.documents.title")
@@ -43,16 +53,6 @@
           </v-list>
         </v-menu>
       </v-card-actions>
-    </v-card>
-    <v-card class="my-10">
-      <v-card-title class="bg-light">{{
-        $t("view.wallet.credentials.title")
-      }}</v-card-title>
-      <MyCredentialList
-        v-bind:headers="credHeaders"
-        type="credential"
-        :indicateNew="true"
-      ></MyCredentialList>
     </v-card>
   </v-container>
 </template>

@@ -23,8 +23,7 @@
           <v-col cols="12">
             <v-text-field
               prepend-icon="$vuetify.icons.identity"
-              label="Decentralized Identifier (DID)"
-              placeholder=""
+              :label="$t('view.addPartner.formDIDLabel')"
               v-model="did"
               @change="partnerLoaded = false"
               outlined
@@ -118,8 +117,8 @@
           <v-col cols="12">
             <v-text-field
               prepend-icon="$vuetify.icons.invitation"
-              label="Invitation URL"
-              placeholder=""
+              :label="$t('view.addPartner.formInvitationLabel')"
+              placeholder="URL received from an agent you want to connect to"
               v-model="invitationUrl"
               @change="invitationUrlLoaded = false"
               outlined

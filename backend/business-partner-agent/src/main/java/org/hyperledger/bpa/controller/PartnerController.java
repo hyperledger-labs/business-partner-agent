@@ -223,7 +223,8 @@ public class PartnerController {
             @Body RequestCredentialRequest credReq) {
         credM.sendCredentialRequest(
                 UUID.fromString(id),
-                UUID.fromString(credReq.getDocumentId()));
+                UUID.fromString(credReq.getDocumentId()),
+                credReq.getVersion());
         return HttpResponse.ok();
     }
 

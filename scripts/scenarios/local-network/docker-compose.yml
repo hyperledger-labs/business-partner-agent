@@ -41,7 +41,7 @@ services:
     extra_hosts:
      - host.docker.internal:host-gateway
   bpa-agent1:
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.0
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.1
     ports:
       - ${ACAPY1_ADMIN_PORT}:${ACAPY1_ADMIN_PORT}
       - ${ACAPY1_HTTP_PORT}:${ACAPY1_HTTP_PORT}
@@ -117,6 +117,7 @@ services:
       BPA_PRIVACY_POLICY_URL: ${BPA_PRIVACY_POLICY_URL}
       BPA_CREDDEF_REVOCATION_REGISTRY_SIZE: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE}
       NODE_ENV: development
+      BPA_I18N_LOCALE: bcgov
     ports:
       - ${BPA2_PORT}:${BPA2_PORT}
       - ${BPA2_DEBUG_PORT}:${BPA2_DEBUG_PORT}
@@ -125,7 +126,7 @@ services:
     extra_hosts:
      - host.docker.internal:host-gateway
   bpa-agent2:
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.0
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.1
     ports:
       - ${ACAPY2_ADMIN_PORT}:${ACAPY2_ADMIN_PORT}
       - ${ACAPY2_HTTP_PORT}:${ACAPY2_HTTP_PORT}

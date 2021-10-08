@@ -23,10 +23,7 @@ import io.micronaut.data.annotation.DateCreated;
 import io.micronaut.data.annotation.DateUpdated;
 import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
@@ -47,12 +44,14 @@ import java.util.UUID;
  * connection including pairwise did's, states, trust ping etc.
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
 @Entity
-public class Partner {
+@Table(name = "partner")
+public class Partner extends StateChangeDecorator<Partner, ConnectionState> {
 
     @Id
     @AutoPopulated
@@ -81,13 +80,17 @@ public class Partner {
     @Nullable
     private String connectionId;
 
-    /** Aries connection state */
+    /** the current aries connection state */
     @Nullable
     @Enumerated(EnumType.STRING)
     private ConnectionState state;
 
+    /** history of aries connection states - excluding ping */
+    @TypeDef(type = DataType.JSON)
+    private StateToTimestamp<ConnectionState> stateToTimestamp;
+
     /**
-     * Aries connection label, if incoming connection set by the partner via the
+     * aries connection label, if incoming connection set by the partner via the
      * --label flag, or through rest overwrite
      */
     @Nullable
@@ -136,6 +139,19 @@ public class Partner {
     @Transient
     public boolean hasConnectionId() {
         return connectionId != null;
+    }
+
+    // extends lombok builder
+    public static class PartnerBuilder {
+        public Partner.PartnerBuilder pushStateChange(@NonNull ConnectionState state, @Nullable Instant ts) {
+            if (ts == null) {
+                ts = Instant.now();
+            }
+            this.stateToTimestamp(StateToTimestamp.<ConnectionState>builder()
+                    .stateToTimestamp(Map.of(state, ts))
+                    .build());
+            return this;
+        }
     }
 
 }

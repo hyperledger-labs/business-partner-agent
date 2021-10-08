@@ -26,26 +26,22 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.acy_py.generated.model.V20CredExRecord;
-import org.hyperledger.acy_py.generated.model.V20CredFilter;
-import org.hyperledger.acy_py.generated.model.V20CredFilterIndy;
+import org.hyperledger.acy_py.generated.model.*;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credential_definition.CredentialDefinition;
 import org.hyperledger.aries.api.credential_definition.CredentialDefinition.CredentialDefinitionRequest;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.credentials.CredentialPreview;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
-import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
-import org.hyperledger.aries.api.issue_credential_v1.V1CredentialProposalRequest;
-import org.hyperledger.aries.api.issue_credential_v2.V2CredentialSendRequest;
+import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.aries.api.issue_credential_v1.*;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.revocation.RevokeRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
-import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.IssuerException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
@@ -53,8 +49,8 @@ import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.issuer.CredDef;
 import org.hyperledger.bpa.controller.api.issuer.CredEx;
+import org.hyperledger.bpa.controller.api.issuer.CredentialOfferRequest;
 import org.hyperledger.bpa.controller.api.issuer.IssueCredentialSendRequest;
-import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.BPACredentialDefinition;
@@ -66,6 +62,7 @@ import org.hyperledger.bpa.repository.BPACredentialExchangeRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -87,9 +84,6 @@ public class IssuerCredentialManager {
 
     @Inject
     BPACredentialExchangeRepository credExRepo;
-
-    @Inject
-    LabelStrategy labelStrategy;
 
     @Inject
     Converter conv;
@@ -173,7 +167,7 @@ public class IssuerCredentialManager {
         }
     }
 
-    // Credential Management
+    // Credential Management - Called By User
 
     public String issueCredential(@NonNull IssueCredentialRequest request) {
         Partner dbPartner = partnerRepo.findById(request.getPartnerId())
@@ -194,41 +188,37 @@ public class IssuerCredentialManager {
 
         ExchangeResult exResult;
         ExchangeVersion exVersion;
-        if (request.isV1()) {
-            exVersion = ExchangeVersion.V1;
-            exResult = sendV1Credential(Objects.requireNonNull(connectionId),
-                    schemaId,
-                    credentialDefinitionId,
-                    new CredentialPreview(CredentialAttributes.fromMap(document)));
-        } else {
-            exVersion = ExchangeVersion.V2;
-            exResult = sendV2Credential(Objects.requireNonNull(connectionId),
-                    schemaId,
-                    credentialDefinitionId, V2CredentialSendRequest.V2CredentialPreview
-                            .builder()
-                            .attributes(CredentialAttributes.fromMap(document))
-                            .build());
-        }
 
-        // as I'm the issuer I know what I have issued, no need to get this info from
-        // the exchange again
-        Credential credential = Credential.builder()
+        V1CredentialProposalRequest proposal = V1CredentialProposalRequest
+                .builder()
+                .connectionId(Objects.requireNonNull(connectionId))
                 .schemaId(schemaId)
+                .credentialProposal(new CredentialPreview(CredentialAttributes.fromMap(document)))
                 .credentialDefinitionId(credentialDefinitionId)
-                .attrs(document)
                 .build();
 
+        if (request.isV1()) {
+            exVersion = ExchangeVersion.V1;
+            exResult = sendV1Credential(proposal);
+        } else {
+            exVersion = ExchangeVersion.V2;
+            exResult = sendV2Credential(proposal);
+        }
+
         BPACredentialExchange cex = BPACredentialExchange.builder()
-                .type(CredentialType.INDY)
                 .schema(dbCredDef.getSchema())
                 .partner(dbPartner)
                 .credDef(dbCredDef)
                 .role(CredentialExchangeRole.ISSUER)
                 .state(CredentialExchangeState.OFFER_SENT)
-                .credential(conv.toMap(credential))
+                .pushStateChange(CredentialExchangeState.OFFER_SENT, Instant.now())
+                // as I'm the issuer I know what I have issued, no need to get this info from
+                // the exchange record again
+                .credential(Credential.builder()
+                        .attrs(document)
+                        .build())
                 .credentialExchangeId(exResult.getCredentialExchangeId())
                 .threadId(exResult.getThreadId())
-                .label(labelStrategy.apply(credential))
                 .exchangeVersion(exVersion)
                 .build();
         credExRepo.save(cex);
@@ -251,17 +241,9 @@ public class IssuerCredentialManager {
         }
     }
 
-    private ExchangeResult sendV1Credential(@NonNull String connectionId, @NonNull String schemaId,
-            @NonNull String credDefId, @NonNull CredentialPreview attributes) {
+    private ExchangeResult sendV1Credential(@NonNull V1CredentialProposalRequest proposal) {
         try {
-            return ac.issueCredentialSend(
-                    V1CredentialProposalRequest
-                            .builder()
-                            .connectionId(connectionId)
-                            .schemaId(schemaId)
-                            .credentialProposal(attributes)
-                            .credentialDefinitionId(credDefId)
-                            .build())
+            return ac.issueCredentialSend(proposal)
                     .map(ExchangeResult::fromV1)
                     .orElseThrow();
         } catch (IOException e) {
@@ -269,23 +251,9 @@ public class IssuerCredentialManager {
         }
     }
 
-    private ExchangeResult sendV2Credential(@NonNull String connectionId, @NonNull String schemaId,
-            @NonNull String credDefId, @NonNull V2CredentialSendRequest.V2CredentialPreview attributes) {
+    private ExchangeResult sendV2Credential(@NonNull V1CredentialProposalRequest proposal) {
         try {
-            V2CredentialSendRequest v2SendRequest = V2CredentialSendRequest
-                    .builder()
-                    .connectionId(connectionId)
-                    .credentialPreview(attributes)
-                    .filter(V20CredFilter
-                            .builder()
-                            .indy(V20CredFilterIndy
-                                    .builder()
-                                    .schemaId(schemaId)
-                                    .credDefId(credDefId)
-                                    .build())
-                            .build())
-                    .build();
-            return ac.issueCredentialV2Send(v2SendRequest)
+            return ac.issueCredentialV2Send(proposal)
                     .map(ExchangeResult::fromV2)
                     .orElseThrow();
         } catch (IOException e) {
@@ -309,8 +277,154 @@ public class IssuerCredentialManager {
                     }
                     return true;
                 })
-                .map(ex -> CredEx.from(ex, Optional.of(conv)))
+                .map(ex -> CredEx.from(ex, conv.toAPIObject(ex.getPartner())))
                 .collect(Collectors.toList());
+    }
+
+    public CredEx revokeCredentialExchange(@NonNull UUID id) {
+        if (!config.getTailsServerConfigured()) {
+            throw new IssuerException(msg.getMessage("api.issuer.no.tails.server"));
+        }
+        BPACredentialExchange credEx = credExRepo.findById(id).orElseThrow(EntityNotFoundException::new);
+        if (StringUtils.isEmpty(credEx.getRevRegId())) {
+            throw new IssuerException(msg.getMessage("api.issuer.credential.missing.revocation.info"));
+        }
+        try {
+            ac.revocationRevoke(RevokeRequest
+                    .builder()
+                    .credRevId(credEx.getCredRevId())
+                    .revRegId(credEx.getRevRegId())
+                    .publish(Boolean.TRUE)
+                    .build());
+            credEx.setRevoked(Boolean.TRUE);
+            credEx.pushStates(CredentialExchangeState.REVOKED);
+            credExRepo.update(credEx);
+            return CredEx.from(credEx);
+        } catch (IOException e) {
+            throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
+        }
+    }
+
+    /**
+     * Send partner a credential offer in reference to a proposal (Not to be
+     * confused with the automated send-offer flow).
+     * 
+     * @param id           credential exchange id
+     * @param counterOffer {@link CredentialOfferRequest}
+     * @return {@link CredEx} updated credential exchange, if found
+     */
+    public CredEx sendCredentialOffer(@NonNull UUID id, @NonNull CredentialOfferRequest counterOffer) {
+        BPACredentialExchange credEx = credExRepo.findById(id).orElseThrow(EntityNotFoundException::new);
+        if (!CredentialExchangeState.PROPOSAL_RECEIVED.equals(credEx.getState())) {
+            throw new WrongApiUsageException(msg.getMessage("api.issuer.credential.send.offer.wrong.state",
+                    Map.of("state", credEx.getState())));
+        }
+        List<CredentialAttributes> attributes;
+        if (counterOffer.acceptAll()) {
+            attributes = credEx.getCredentialProposal() != null
+                    ? credEx.getCredentialProposal().getAttributes()
+                    : List.of();
+        } else {
+            attributes = counterOffer.toCredentialAttributes();
+        }
+        V10CredentialBoundOfferRequest v1Offer = V10CredentialBoundOfferRequest
+                .builder()
+                .counterProposal(CredentialProposal
+                        .builder()
+                        .schemaId(credEx.getSchema() != null ? credEx.getSchema().getSchemaId() : null)
+                        .credDefId(credEx.getCredDef() != null
+                                ? credEx.getCredDef().getCredentialDefinitionId()
+                                : null)
+                        .credentialProposal(org.hyperledger.acy_py.generated.model.CredentialPreview
+                                .builder()
+                                .attributes(attributes.stream().map(a -> CredAttrSpec
+                                        .builder()
+                                        .name(a.getName()).value(a.getValue()).mimeType(a.getMimeType())
+                                        .build()).collect(Collectors.toList()))
+                                .build())
+                        .build())
+                .build();
+        try {
+            if (ExchangeVersion.V1.equals(credEx.getExchangeVersion())) {
+                ac.issueCredentialRecordsSendOffer(credEx.getCredentialExchangeId(), v1Offer);
+            } else {
+                ac.issueCredentialV2RecordsSendOffer(credEx.getCredentialExchangeId(), v1Offer);
+            }
+        } catch (IOException e) {
+            throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
+        } catch (AriesException e) {
+            if (e.getCode() == 400) {
+                String message = msg.getMessage("api.issuer.credential.exchange.problem");
+                credEx.pushStates(CredentialExchangeState.PROBLEM);
+                credExRepo.updateAfterEventNoRevocationInfo(
+                        credEx.getId(), credEx.getState(), credEx.getStateToTimestamp(), message);
+                throw new WrongApiUsageException(message);
+            }
+            throw e;
+        }
+        Credential credential = Credential.builder()
+                .attrs(attributes.stream()
+                        .collect(Collectors.toMap(CredentialAttributes::getName, CredentialAttributes::getValue)))
+                .build();
+        credEx.setCredential(credential);
+        credExRepo.updateCredential(credEx.getId(), credential);
+        return CredEx.from(credEx);
+    }
+
+    /**
+     * The only way to stop or decline a credential exchange is for any side (issuer
+     * or holder) to send a problem report. If a problem report is sent aca-py will
+     * set the state of the exchange to null and hence it becomes unusable and con
+     * not be restarted again.
+     *
+     * @param id      {@link UUID} bpa credential exchange id
+     * @param message to sent to the other party
+     */
+    public void declineCredentialOffer(@NonNull UUID id, @Nullable String message) {
+        BPACredentialExchange credEx = credExRepo.findById(id).orElseThrow(EntityNotFoundException::new);
+        try {
+            if (ExchangeVersion.V1.equals(credEx.getExchangeVersion())) {
+                ac.issueCredentialRecordsProblemReport(credEx.getCredentialExchangeId(),
+                        V10CredentialProblemReportRequest.builder().description(message).build());
+            } else {
+                ac.issueCredentialV2RecordsProblemReport(credEx.getCredentialExchangeId(),
+                        V20CredIssueProblemReportRequest.builder().description(message).build());
+            }
+        } catch (IOException e) {
+            throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
+        } catch (AriesException e) {
+            if (e.getCode() == 404) {
+                throw new EntityNotFoundException();
+            }
+            throw e;
+        }
+    }
+
+    // Credential Management - Called By Event Handler
+
+    public void handleCredentialProposal(@NonNull V1CredentialExchange ex, ExchangeVersion exchangeVersion) {
+        partnerRepo.findByConnectionId(ex.getConnectionId()).ifPresent(partner -> {
+            BPACredentialExchange.BPACredentialExchangeBuilder b = BPACredentialExchange
+                    .builder()
+                    .partner(partner)
+                    .role(CredentialExchangeRole.ISSUER)
+                    .state(ex.getState())
+                    .pushStateChange(ex.getState(), Instant.now())
+                    .exchangeVersion(exchangeVersion)
+                    .credentialExchangeId(ex.getCredentialExchangeId())
+                    .threadId(ex.getThreadId())
+                    .credentialProposal(ex.getCredentialProposalDict() != null
+                            ? ex.getCredentialProposalDict().getCredentialProposal()
+                            : null);
+            credDefRepo.findBySchemaId(ex.getCredentialProposalDict().getSchemaId()).ifPresentOrElse(dbCredDef -> {
+                b.schema(dbCredDef.getSchema()).credDef(dbCredDef);
+                credExRepo.save(b.build());
+            }, () -> {
+                b.errorMsg("Issuer has no operable credential  definition for proposal spec: "
+                        + ex.getCredentialProposalDict().getSchemaId());
+                credExRepo.save(b.build());
+            });
+        });
     }
 
     /**
@@ -320,10 +434,20 @@ public class IssuerCredentialManager {
      */
     public void handleV1CredentialExchange(@NonNull V1CredentialExchange ex) {
         credExRepo.findByCredentialExchangeId(ex.getCredentialExchangeId()).ifPresent(bpaEx -> {
-            bpaEx.setState(ex.getState());
-            bpaEx.setRevRegId(ex.getRevocRegId());
-            bpaEx.setCredRevId(ex.getRevocationId());
-            credExRepo.update(bpaEx);
+            CredentialExchangeState state = ex.getState() != null ? ex.getState() : CredentialExchangeState.PROBLEM;
+            bpaEx.pushStates(state, ex.getUpdatedAt());
+            if (StringUtils.isNotEmpty(ex.getErrorMsg())) {
+                credExRepo.updateAfterEventNoRevocationInfo(bpaEx.getId(),
+                        bpaEx.getState(), bpaEx.getStateToTimestamp(), ex.getErrorMsg());
+            } else {
+                credExRepo.updateAfterEventWithRevocationInfo(bpaEx.getId(),
+                        bpaEx.getState(), bpaEx.getStateToTimestamp(),
+                        ex.getRevocRegId(), ex.getRevocationId(), ex.getErrorMsg());
+            }
+            if (ex.isCredentialAcked() && ex.isAutoIssueEnabled()) {
+                ex.findAttributesInCredentialOfferDict().ifPresent(
+                        attr -> credExRepo.updateCredential(bpaEx.getId(), Credential.builder().attrs(attr).build()));
+            }
         });
     }
 
@@ -334,8 +458,20 @@ public class IssuerCredentialManager {
      */
     public void handleV2CredentialExchange(@NonNull V20CredExRecord ex) {
         credExRepo.findByCredentialExchangeId(ex.getCredExId())
-                .ifPresent(
-                        bpaEx -> credExRepo.updateState(bpaEx.getId(), CredentialExchangeState.fromV2(ex.getState())));
+                .ifPresent(bpaEx -> {
+                    CredentialExchangeState state = ex.getState();
+                    if (StringUtils.isNotEmpty(ex.getErrorMsg())) {
+                        state = CredentialExchangeState.PROBLEM;
+                    }
+                    bpaEx.pushStates(state, ex.getUpdatedAt());
+                    credExRepo.updateAfterEventNoRevocationInfo(bpaEx.getId(),
+                            bpaEx.getState(), bpaEx.getStateToTimestamp(), ex.getErrorMsg());
+                    if (ex.isDone() && ex.isAutoIssueEnabled()) {
+                        ex.getByFormat().findValuesInIndyCredIssue().ifPresent(
+                                attr -> credExRepo.updateCredential(bpaEx.getId(),
+                                        Credential.builder().attrs(attr).build()));
+                    }
+                });
     }
 
     /**
@@ -344,38 +480,8 @@ public class IssuerCredentialManager {
      * @param revocationInfo {@link V2IssueIndyCredentialEvent}
      */
     public void handleIssueCredentialV2Indy(V2IssueIndyCredentialEvent revocationInfo) {
-        credExRepo.findByCredentialExchangeId(revocationInfo.getCredExId()).ifPresent(bpaEx -> {
-            bpaEx.setRevRegId(revocationInfo.getRevRegId());
-            bpaEx.setCredRevId(revocationInfo.getCredRevId());
-            credExRepo.update(bpaEx);
-        });
-    }
-
-    public Optional<CredEx> revokeCredentialExchange(@NonNull UUID id) {
-        Optional<CredEx> result = Optional.empty();
-        if (!config.getTailsServerConfigured()) {
-            throw new IssuerException(msg.getMessage("api.issuer.no.tails.server"));
-        }
-        Optional<BPACredentialExchange> credEx = credExRepo.findById(id);
-        if (credEx.isPresent()) {
-            if (StringUtils.isEmpty(credEx.get().getRevRegId())) {
-                throw new IssuerException(msg.getMessage("api.issuer.credential.missing.revocation.info"));
-            }
-            try {
-                ac.revocationRevoke(RevokeRequest
-                        .builder()
-                        .credRevId(credEx.get().getCredRevId())
-                        .revRegId(credEx.get().getRevRegId())
-                        .publish(Boolean.TRUE)
-                        .build());
-                credExRepo.updateRevoked(credEx.get().getId(), Boolean.TRUE);
-                credEx.get().setRevoked(Boolean.TRUE);
-                result = Optional.of(CredEx.from(credEx.get(), Optional.of(conv)));
-            } catch (IOException e) {
-                throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
-            }
-        }
-        return result;
+        credExRepo.findByCredentialExchangeId(revocationInfo.getCredExId()).ifPresent(bpaEx -> credExRepo
+                .updateRevocationInfo(bpaEx.getId(), revocationInfo.getRevRegId(), revocationInfo.getCredRevId()));
     }
 
     /**

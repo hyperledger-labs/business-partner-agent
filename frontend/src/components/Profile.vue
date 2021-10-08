@@ -2,62 +2,83 @@
  Copyright (c) 2020 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/organizational-agent
- 
+
  SPDX-License-Identifier: Apache-2.0
 -->
 
 <template>
   <div>
-    <OrganizationalProfile
-      v-if="profile"
-      v-bind:documentData="profile"
-      isReadOnly
-    ></OrganizationalProfile>
-    <v-container v-for="(item, index) in credentials" v-bind:key="item.id">
-      <v-row>
-        <v-col cols="4">
-          <v-row>
-            <span class="grey--text text--darken-2 font-weight-medium">
-              <span v-if="item.type === CredentialTypes.UNKNOWN.type">{{
-                item.credentialDefinitionId | credentialTag
+    <v-card class="my-4" v-if="profile">
+      <v-card-title class="bg-light">{{
+        $t("component.profile.organizationalProfile.title")
+      }}</v-card-title>
+      <OrganizationalProfile
+        v-bind:documentData="profile"
+        v-if="profile"
+        isReadOnly
+      ></OrganizationalProfile>
+      <v-card-actions>
+        <!-- this should be protected by roles -->
+        <v-layout align-end justify-end>
+          <v-bpa-button color="secondary" @click="editProfile">{{
+            $t("component.profile.organizationalProfile.edit")
+          }}</v-bpa-button>
+        </v-layout>
+      </v-card-actions>
+    </v-card>
+    <v-card class="my-4" v-for="item in credentials" v-bind:key="item.id">
+      <v-card-title class="bg-light"
+        ><span v-if="item.type === CredentialTypes.UNKNOWN.type">{{
+          item.credentialDefinitionId | credentialTag
+        }}</span>
+        <span v-else>{{ item.typeLabel }}</span></v-card-title
+      >
+      <v-container>
+        <v-row>
+          <v-col cols="4">
+            <v-row
+              v-if="item.issuer && profile && profile.id !== item.issuer"
+              class="text-caption mt-1 ml-1"
+            >
+              {{ $t("component.profile.credential.verifiedByLabel") }}
+              {{ item.issuer }}
+            </v-row>
+            <v-row
+              v-if="item.credentialData && item.credentialData.validFrom"
+              class="mt-1 ml-1 pt-1"
+            >
+              <v-icon small class="mt-1 ml-1 mr-2">{{ validFrom }}</v-icon>
+              <span class="text-caption mt-1">{{
+                item.credentialData.validFrom | moment("YYYY-MM-DD")
               }}</span>
-              <span v-else>{{ item.typeLabel }}</span>
-            </span>
-          </v-row>
-          <v-row
-            v-if="item.issuer && profile.id !== item.issuer"
-            class="text-caption"
-          >
-            verified by {{ item.issuer }}
-          </v-row>
-          <v-row v-if="item.credentialData && item.credentialData.validFrom">
-            <v-icon small class="pt-1 mr-2">{{ validFrom }}</v-icon>
-            <span class="text-caption">{{
-              item.credentialData.validFrom | moment("YYYY-MM-DD")
-            }}</span>
-          </v-row>
-          <v-row v-if="item.credentialData && item.credentialData.validUntil">
-            <v-icon small class="pt-1 mr-2">{{ validUntil }}</v-icon>
-            <span class="text-caption">{{
-              item.credentialData.validUntil | moment("YYYY-MM-DD")
-            }}</span>
-          </v-row>
-        </v-col>
-        <v-col>
-          <Credential
-            v-bind:document="item"
-            isReadOnly
-            showOnlyContent
-          ></Credential>
-        </v-col>
-      </v-row>
-      <v-divider v-if="index < credentials.length - 1" class="my-4"></v-divider>
-    </v-container>
+            </v-row>
+            <v-row
+              v-if="item.credentialData && item.credentialData.validUntil"
+              class="mt-1 ml-1 pt-1"
+            >
+              <v-icon small class="mt-1 ml-1 mr-2">{{ validUntil }}</v-icon>
+              <span class="text-caption mt-1">{{
+                item.credentialData.validUntil | moment("YYYY-MM-DD")
+              }}</span>
+            </v-row>
+          </v-col>
+          <v-col>
+            <Credential
+              v-bind:document="item"
+              isReadOnly
+              showOnlyContent
+            ></Credential>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-card>
     <v-card v-if="!profile && credentials.length === 0" height="100px" flat>
       <v-container fill-height fluid text-center>
         <v-row align="center" justify="center">
           <v-col>
-            <h4 class="grey--text">Partner does not share a public profile</h4>
+            <h4 class="grey--text">
+              {{ $t("component.profile.noProfileMsg") }}
+            </h4>
           </v-col>
         </v-row>
       </v-container>
@@ -69,14 +90,19 @@
 import { CredentialTypes } from "../constants";
 import OrganizationalProfile from "@/components/OrganizationalProfile";
 import Credential from "@/components/Credential";
-import { getPartnerProfile } from "@/utils/partnerUtils";
+import {
+  getPartnerProfile,
+  getPartnerProfileRoute,
+} from "@/utils/partnerUtils";
 import { mdiCalendarCheck } from "@mdi/js";
 import { mdiCalendarRemove } from "@mdi/js";
+import VBpaButton from "@/components/BpaButton";
 
 export default {
   components: {
     OrganizationalProfile,
     Credential,
+    VBpaButton,
   },
   props: {
     partner: Object,
@@ -125,6 +151,12 @@ export default {
         });
       }
       return credential;
+    },
+    editProfile() {
+      let route = getPartnerProfileRoute(this.partner);
+      if (route) {
+        this.$router.push(route);
+      }
     },
   },
 };

@@ -40,7 +40,7 @@
       <v-col>
         <v-text-field
           v-if="intDoc.issuer"
-          label="Issuer"
+          label="Issuer Decentralized Identifier (DID)"
           v-model="intDoc.issuer"
           disabled
           outlined
@@ -58,12 +58,12 @@
     </v-row>
 
     <h3 v-if="intDoc.credentialData && !showOnlyContent" class="mb-4">
-      Credential Content
+      {{ $t("component.issueCredential.attributesTitle") }}
     </h3>
     <v-row>
       <v-col>
         <v-text-field
-          v-for="field in filteredSchemaField"
+          v-for="field in schema.fields"
           :key="field.type"
           :label="field.label"
           placeholder
@@ -125,19 +125,6 @@ export default {
         schemaTemplate = this.createTemplateFromSchema(this.document);
       }
       return schemaTemplate;
-    },
-
-    filteredSchemaField() {
-      let fields = this.schema.fields;
-      if (!this.isReadOnly) {
-        return fields;
-      } else {
-        return fields.filter((field) => {
-          if (this.intDoc[this.documentDataType][field.type] !== "") {
-            return field;
-          }
-        });
-      }
     },
   },
   methods: {

@@ -25,12 +25,13 @@ import org.hyperledger.bpa.model.prooftemplate.BPASchemaRestrictions;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 @Builder
 class Attributes {
     String schemaId;
     NonRevocationApplicator revocationApplicator;
-    BPASchemaRestrictions schemaRestrictions;
+    List<BPASchemaRestrictions> schemaRestrictions;
     @Singular
     List<String> names;
     @Singular
@@ -38,17 +39,18 @@ class Attributes {
 
     public void addToBuilder(
             BiConsumer<String, PresentProofRequest.ProofRequest.ProofRequestedAttributes> builderSink) {
-        PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder restrictionsBuilder = ProofTemplateElementVisitor
+        List<PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder> restrictionsBuilder = ProofTemplateElementVisitor
                 .asProofRestrictionsBuilder(
                         schemaRestrictions);
-        equals.forEach(restrictionsBuilder::addAttributeValueRestriction);
+        restrictionsBuilder.forEach(r -> equals.forEach(r::addAttributeValueRestriction));
 
         PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder builder = PresentProofRequest.ProofRequest.ProofRequestedAttributes
                 .builder()
                 .names(names)
                 // TODO only set when restriction is set, but then name has to be set for each
                 // attribute
-                .restriction(restrictionsBuilder.schemaId(schemaId).build().toJsonObject());
+                .restrictions(restrictionsBuilder.stream().map(res -> res.schemaId(schemaId).build().toJsonObject())
+                        .collect(Collectors.toList()));
 
         builderSink.accept(schemaId, revocationApplicator.applyOn(builder).build());
 

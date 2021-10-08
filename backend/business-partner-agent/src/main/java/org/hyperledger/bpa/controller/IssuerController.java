@@ -75,7 +75,7 @@ public class IssuerController {
     }
 
     /**
-     * Get a configured schema
+     * Get a configured schema by id
      *
      * @param id {@link UUID} the schema id
      * @return {@link HttpResponse}
@@ -90,7 +90,7 @@ public class IssuerController {
     }
 
     /**
-     * List cred defs, items that I can issue
+     * List credential definitions, items that I can issue
      *
      * @return list of {@link SchemaAPI}
      */
@@ -111,7 +111,7 @@ public class IssuerController {
     }
 
     /**
-     * Create a new credential definition
+     * Delete a credential definition
      *
      * @param id {@link UUID} the cred def id
      * @return {@link HttpResponse}
@@ -123,7 +123,7 @@ public class IssuerController {
     }
 
     /**
-     * Issue a credential
+     * Auto credential exchange: Issuer sends credential to holder
      *
      * @param req {@link IssueCredentialSendRequest}
      * @return {@link HttpResponse}
@@ -138,9 +138,9 @@ public class IssuerController {
     }
 
     /**
-     * Issue a credential
+     * List issued credentials
      *
-     * @return {@link HttpResponse}
+     * @return list of {@link CredEx}
      */
     @Get("/exchanges")
     public HttpResponse<List<CredEx>> listCredentialExchanges(
@@ -157,11 +157,35 @@ public class IssuerController {
      */
     @Post("/exchanges/{id}/revoke")
     public HttpResponse<CredEx> revokeCredential(@PathVariable UUID id) {
-        Optional<CredEx> credEx = im.revokeCredentialExchange(id);
-        if (credEx.isPresent()) {
-            return HttpResponse.ok(credEx.get());
-        }
-        return HttpResponse.notFound();
+        return HttpResponse.ok(im.revokeCredentialExchange(id));
+    }
+
+    /**
+     * Manual credential exchange step two: Issuer sends credential counter offer to
+     * holder (in reference to a proposal)
+     * 
+     * @param id           credential exchange id
+     * @param counterOffer {@link CredentialOfferRequest}
+     * @return {@link CredEx}
+     */
+    @Post("/exchanges/{id}/send-offer")
+    public HttpResponse<CredEx> sendCredentialOffer(@PathVariable UUID id, @Body CredentialOfferRequest counterOffer) {
+        return HttpResponse.ok(im.sendCredentialOffer(id, counterOffer));
+    }
+
+    /**
+     * Manual credential exchange: Issuer or holder stops credential exchange by
+     * sending a problem report to the other party
+     *
+     * @param id      credential exchange id
+     * @param decline {@link DeclineCredentialExchangeRequest}
+     * @return HTTP status
+     */
+    @Post("/exchanges/{id}/decline")
+    public HttpResponse<Void> declineCredentialExchange(@PathVariable UUID id,
+            @Body DeclineCredentialExchangeRequest decline) {
+        im.declineCredentialOffer(id, decline.getMessage());
+        return HttpResponse.ok();
     }
 
 }

@@ -9,7 +9,7 @@
   <v-container justify-center>
     <v-card class="my-4 mx-auto">
       <v-card-title class="bg-light">
-        Business Partners
+        {{ $t("view.partners.title") }}
         <v-layout justify-end>
           <v-switch
             class="mr-4"
@@ -72,7 +72,7 @@ export default {
     VBpaButton,
   },
   created() {
-    EventBus.$emit("title", "Business Partners");
+    EventBus.$emit("title", this.$t("view.partners.title"));
   },
   data: () => {
     return {
@@ -89,7 +89,7 @@ export default {
           value: "address",
         },
         {
-          text: "Last Updated",
+          text: "Updated at",
           value: "updatedAt",
         },
         {

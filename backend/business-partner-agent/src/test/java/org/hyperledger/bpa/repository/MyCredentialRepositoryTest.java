@@ -24,7 +24,6 @@ import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.api.CredentialType;
-import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.MyCredential;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -41,9 +40,6 @@ class MyCredentialRepositoryTest extends BaseTest {
     @Inject
     MyCredentialRepository repo;
 
-    @Inject
-    Converter conv;
-
     @Test
     void testSaveCredential() {
         String schemaId = "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0";
@@ -59,7 +55,7 @@ class MyCredentialRepositoryTest extends BaseTest {
                 .connectionId("1")
                 .state(CredentialExchangeState.CREDENTIAL_ACKED)
                 .threadId("1")
-                .credential(conv.toMap(ex.getCredential()))
+                .credential(ex.getCredential())
                 .build();
         final MyCredential saved = repo.save(cred);
 

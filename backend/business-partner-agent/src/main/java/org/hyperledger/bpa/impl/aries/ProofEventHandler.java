@@ -24,13 +24,13 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeInitiator;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.impl.notification.PresentationRequestCompletedEvent;
 import org.hyperledger.bpa.impl.notification.PresentationRequestDeclinedEvent;
 import org.hyperledger.bpa.impl.notification.PresentationRequestReceivedEvent;
+import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
@@ -59,12 +59,11 @@ public class ProofEventHandler {
             handleAckedOrVerified(proof);
         } else if (proof.roleIsProverAndRequestReceived()) {
             handleProofRequest(proof);
-        } else if (StringUtils.isNotEmpty(proof.getErrorMsg()) && proof.roleIsVerifier()) {
+        } else if (StringUtils.isNotEmpty(proof.getErrorMsg())) {
             handleProblemReport(proof);
         } else {
             // if not handled in the manager e.g. when sending the request
-            if (!(proof.roleIsProver() && PresentationExchangeState.PROPOSAL_SENT.equals(proof.getState()))
-                    && !proof.roleIsVerifierAndRequestSent()) {
+            if (!proof.roleIsProverAndProposalSent() && !proof.roleIsVerifierAndRequestSent()) {
                 handleAll(proof);
             }
         }
@@ -80,8 +79,7 @@ public class ProofEventHandler {
         pProofRepo.findByPresentationExchangeId(exchange.getPresentationExchangeId()).ifPresentOrElse(
                 pp -> {
                     if (exchange.getState() != null) {
-                        pp.setState(exchange.getState());
-                        pp.pushStateChange(exchange.getState(), Instant.now());
+                        pp.pushStates(exchange.getState(), exchange.getUpdatedAt());
                         pProofRepo.update(pp);
                     }
                 },
@@ -123,12 +121,11 @@ public class ProofEventHandler {
                             // if --auto-respond-presentation-request is set to false and there is a
                             // preceding proof proposal event we can do an auto present
                             if (PresentationExchangeState.PROPOSAL_SENT.equals(pProof.getState())
-                                    && PresentationExchangeInitiator.SELF.equals(proof.getInitiator())) {
+                                    && proof.initiatorIsSelf()) {
                                 log.info(
                                         "Present_Proof: state=request_received on PresentationExchange where " +
                                                 "initator=self, responding immediately");
-                                pProof.setState(proof.getState());
-                                pProof.pushStateChange(proof.getState(), Instant.now());
+                                pProof.pushStates(proof.getState(), proof.getUpdatedAt());
                                 pProofRepo.update(pProof);
                                 if (proof.getAutoPresent() == null || !proof.getAutoPresent()) {
                                     proofManager.presentProofAcceptAll(proof);
@@ -153,9 +150,13 @@ public class ProofEventHandler {
      */
     private void handleProblemReport(@NonNull PresentationExchangeRecord exchange) {
         pProofRepo.findByPresentationExchangeId(exchange.getPresentationExchangeId()).ifPresent(pp -> {
-            pp.setState(PresentationExchangeState.DECLINED);
-            pp.pushStateChange(PresentationExchangeState.DECLINED, Instant.now());
-            pp.setProblemReport(exchange.getErrorMsg());
+            String errorMsg = org.apache.commons.lang3.StringUtils.truncate(exchange.getErrorMsg(), 255);
+            // not a useful response, but this is what we get and what it means
+            if ("abandoned: abandoned".equals(errorMsg)) {
+                errorMsg = "Partner rejected proof exchange because it is not valid";
+            }
+            pp.pushStates(PresentationExchangeState.DECLINED, exchange.getUpdatedAt());
+            pp.setProblemReport(errorMsg);
             pProofRepo.update(pp);
             eventPublisher.publishEventAsync(
                     PresentationRequestDeclinedEvent.builder().partnerProof(pp).build());
@@ -170,6 +171,7 @@ public class ProofEventHandler {
      * @return {@link PartnerProof}
      */
     private PartnerProof defaultProof(@NonNull UUID partnerId, @NonNull PresentationExchangeRecord proof) {
+        Instant ts = TimeUtil.parseZonedTimestamp(proof.getUpdatedAt());
         return PartnerProof
                 .builder()
                 .partnerId(partnerId)
@@ -179,7 +181,7 @@ public class ProofEventHandler {
                 .role(proof.getRole())
                 .proofRequest(proof.getPresentationRequest())
                 .exchangeVersion(ExchangeVersion.V1)
-                .pushStateChange(proof.getState(), Instant.now())
+                .pushStateChange(proof.getState(), ts != null ? ts : Instant.now())
                 .build();
     }
 }

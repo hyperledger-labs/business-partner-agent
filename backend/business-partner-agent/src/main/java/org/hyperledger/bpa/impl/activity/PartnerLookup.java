@@ -70,7 +70,7 @@ public class PartnerLookup {
                     .did(didDocument.get().getId())
                     .build();
         }
-        throw new PartnerException("Could not retrieve did document from universal resolver");
+        throw new PartnerException("Could not retrieve did document from ledger");
     }
 
     PartnerAPI lookupPartner(@NonNull String endpoint, List<DIDDocument.VerificationMethod> verificationMethods) {

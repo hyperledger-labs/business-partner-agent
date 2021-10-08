@@ -27,6 +27,7 @@ import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.model.Partner;
+import org.hyperledger.bpa.model.StateChangeDecorator;
 
 import java.time.Instant;
 import java.util.List;
@@ -36,6 +37,8 @@ import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface PartnerRepository extends CrudRepository<Partner, UUID> {
+
+    // find
 
     @Override
     @NonNull
@@ -47,11 +50,36 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
     @Join(value = "tags", type = Join.Type.LEFT_FETCH)
     Iterable<Partner> findAll();
 
+    Optional<Partner> findByConnectionId(String connectionId);
+
+    Optional<Partner> findByDid(String did);
+
+    List<Partner> findByDidIn(List<String> did);
+
+    Optional<Partner> findByInvitationMsgId(String invitationMsgId);
+
+    @Query("SELECT distinct partner.* FROM partner,jsonb_to_recordset(partner.supported_credentials->'wrapped') as items(seqno text) where items.seqno = :seqNo")
+    List<Partner> findBySupportedCredential(String seqNo);
+
+    List<Partner> findByStateInAndTrustPingTrueAndAriesSupportTrue(List<ConnectionState> state);
+
+    // delete
+
     @Override
     @Query("delete from partner_tag where partner_id = :id; delete from partner where id = :id")
     void deleteById(@NonNull UUID id);
 
-    void updateState(@Id UUID id, ConnectionState state);
+    // count
+
+    Long countByCreatedAtAfter(Instant createdAt);
+
+    // update
+
+    void updateState(@Id UUID id, ConnectionState state,
+            StateChangeDecorator.StateToTimestamp<ConnectionState> stateToTimestamp);
+
+    void updateStateAndLabel(@Id UUID id, ConnectionState state,
+            StateChangeDecorator.StateToTimestamp<ConnectionState> stateToTimestamp, @Nullable String label);
 
     int updateAlias(@Id UUID id, @Nullable String alias, @Nullable Boolean trustPing);
 
@@ -66,20 +94,7 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
     Number updateVerifiablePresentation(@Id UUID id,
             Map<String, Object> verifiablePresentation, @Nullable Boolean valid);
 
-    Optional<Partner> findByDid(String did);
-
-    Optional<Partner> findByConnectionId(String connectionId);
-
-    List<Partner> findByDidIn(List<String> did);
-
-    @Query("SELECT distinct partner.* FROM partner,jsonb_to_recordset(partner.supported_credentials->'wrapped') as items(seqno text) where items.seqno = :seqNo")
-    List<Partner> findBySupportedCredential(String seqNo);
-
-    List<Partner> findByStateInAndTrustPingTrueAndAriesSupportTrue(List<ConnectionState> state);
-
-    Optional<Partner> findByInvitationMsgId(String invitationMsgId);
-
-    // The queries below are native queries to prevent changes to the lastupdated
+    // The queries below are native queries to prevent changes to the last updated
     // timestamp. As this timestamp indicates user interaction, whereas the queries
     // below indicate changes made by jobs.
 
@@ -88,9 +103,5 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     @Query("UPDATE partner SET state = :newState, last_seen = :lastSeen WHERE connection_id = :connectionId")
     void updateStateAndLastSeenByConnectionId(String connectionId, ConnectionState newState, Instant lastSeen);
-
-    Iterable<Partner> findByStateIn(List<ConnectionState> states);
-
-    Long countByCreatedAtAfter(Instant createdAt);
 
 }
