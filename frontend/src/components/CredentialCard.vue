@@ -28,12 +28,16 @@
           </v-col>
         </v-row>
       </v-container>
-      <v-expansion-panels>
+      <v-expansion-panels flat>
         <v-expansion-panel>
-          <v-expansion-panel-header> </v-expansion-panel-header>
+          <v-expansion-panel-header class="font-weight-medium">
+            Details
+            <template v-slot:actions>
+              <v-icon color="primary"> $expand </v-icon>
+            </template>
+          </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <v-list v-if="expanded" dense>
-              <v-divider></v-divider>
+            <v-list dense>
               <v-list-item
                 v-for="[key, value] in Object.entries(
                   this.document.proofData.identifier
@@ -65,7 +69,6 @@ export default {
   },
   data: () => {
     return {
-      expanded: false,
       intDoc: {
         type: Object,
         default: {},
