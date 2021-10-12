@@ -37,6 +37,9 @@ public class DBOperations {
     @Inject
     private BPAUserRepository userRepo;
 
+    @Inject
+    BCryptPasswordEncoder enc;
+
     @Value("${bpa.bootstrap.username}")
     private String username;
 
@@ -54,11 +57,18 @@ public class DBOperations {
     }
 
     private void createDefaultUser() {
+        String pwEncoded = enc.encode(password);
         userRepo.findByUsername(username)
-                .ifPresentOrElse(u -> log.info("Bootstrap user already exists, skipping creation"),
+                .ifPresentOrElse(u -> {
+                            log.info("Bootstrap user already exists, skipping creation");
+                            if (!enc.matches(password, u.getPassword())) {
+                                log.info("The password of the default user has changed, doing password reset.");
+                                userRepo.updatePassword(u.getId(), pwEncoded);
+                            }
+                        },
                         () -> userRepo.save(BPAUser.builder()
                                 .username(username)
-                                .password(new BCryptPasswordEncoder().encode(password))
+                                .password(pwEncoded)
                                 .roles("ROLE_USER,ROLE_ADMIN")
                                 .build()));
     }

@@ -4,7 +4,7 @@ services:
   # Business Partner 1
   #######
   bpa1:
-    image: ghcr.io/hyperledger-labs/business-partner-agent:edge
+    image: ghcr.io/hyperledger-labs/business-partner-agent-new:edge
     depends_on:
       - bpa-agent1
     environment:
@@ -81,7 +81,7 @@ services:
   bpa2:
     profiles:
       - second_bpa
-    image: ghcr.io/hyperledger-labs/business-partner-agent:edge
+    image: ghcr.io/hyperledger-labs/business-partner-agent-new:edge
     depends_on:
       -  bpa-agent2
     environment:

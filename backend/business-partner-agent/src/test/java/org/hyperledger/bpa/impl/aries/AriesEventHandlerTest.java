@@ -25,6 +25,7 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.aries.webhook.EventParser;
 import org.hyperledger.bpa.BaseTest;
+import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
@@ -172,7 +173,8 @@ class AriesEventHandlerTest extends BaseTest {
                 .presentationExchangeId(exReqSent.getPresentationExchangeId())
                 .threadId(exReqSent.getThreadId())
                 .proofRequest(exReqSent.getPresentationRequest())
-                .pushStateChange(PresentationExchangeState.REQUEST_SENT, Instant.now())
+                .pushStateChange(PresentationExchangeState.REQUEST_SENT,
+                        TimeUtil.parseZonedTimestamp(exReqSent.getUpdatedAt()))
                 .build());
 
         aeh.handleProof(exReqSent);

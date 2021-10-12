@@ -65,7 +65,7 @@ public class InvitationController {
      * @return {@link MutableHttpResponse}
      */
     @Post("/accept")
-    public MutableHttpResponse acceptInvitation(@Body AcceptInvitationRequest body) {
+    public MutableHttpResponse<?> acceptInvitation(@Body AcceptInvitationRequest body) {
         cm.receiveInvitation(body.getInvitationBlock(), body.getAlias(), body.getTag(), body.getTrustPing());
         return HttpResponse.ok();
     }
