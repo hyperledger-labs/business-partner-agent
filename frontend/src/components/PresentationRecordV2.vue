@@ -23,8 +23,7 @@
     <h4 class="my-4">Request Content:</h4>
     <v-container
       v-if="!isStateProposalSent"
-      max-height="1200"
-      class="d-flex flex-column flex-wrap justify-space-between mx-4"
+      class="d-flex flex-wrap justify-space-between mx-4"
     >
       <!-- Requested Attributes -->
       <template
@@ -41,6 +40,7 @@
     <v-card>
       <v-card-title height="40"> About </v-card-title>
       <v-divider></v-divider>
+
       <v-list dense>
         <v-list-item>
           <v-list-item-title
