@@ -32,7 +32,6 @@ import org.hyperledger.bpa.controller.api.wallet.WalletCredentialRequest;
 import org.hyperledger.bpa.controller.api.wallet.WalletDocumentRequest;
 import org.hyperledger.bpa.impl.MyDocumentManager;
 import org.hyperledger.bpa.impl.aries.HolderCredentialManager;
-import org.hyperledger.bpa.model.MyCredential;
 
 import java.util.List;
 import java.util.Optional;
@@ -141,11 +140,7 @@ public class WalletController {
      */
     @Get("/credential/{id}")
     public HttpResponse<AriesCredential> getCredentialById(@PathVariable String id) {
-        final Optional<AriesCredential> cred = credMgmt.getAriesCredentialById(UUID.fromString(id));
-        if (cred.isPresent()) {
-            return HttpResponse.ok(cred.get());
-        }
-        return HttpResponse.notFound();
+        return HttpResponse.ok(credMgmt.getAriesCredentialById(UUID.fromString(id)));
     }
 
     /**
@@ -159,11 +154,8 @@ public class WalletController {
     public HttpResponse<Void> updateCredential(
             @PathVariable String id,
             @Body WalletCredentialRequest req) {
-        final Optional<AriesCredential> apiCred = credMgmt.updateCredentialById(UUID.fromString(id), req.getLabel());
-        if (apiCred.isPresent()) {
-            return HttpResponse.ok();
-        }
-        return HttpResponse.notFound();
+        credMgmt.updateCredentialById(UUID.fromString(id), req.getLabel());
+        return HttpResponse.ok();
     }
 
     /**
@@ -187,10 +179,7 @@ public class WalletController {
     @Put("/credential/{id}/toggle-visibility")
     public HttpResponse<Void> toggleCredentialVisibility(
             @PathVariable String id) {
-        final Optional<MyCredential> cred = credMgmt.toggleVisibility(UUID.fromString(id));
-        if (cred.isPresent()) {
-            return HttpResponse.ok();
-        }
-        return HttpResponse.notFound();
+        credMgmt.toggleVisibility(UUID.fromString(id));
+        return HttpResponse.ok();
     }
 }

@@ -43,7 +43,7 @@ public class PresentationRequestCredentials {
     public static final class CredentialInfo {
 
         /**
-         * internal credentialId {@link org.hyperledger.bpa.model.MyCredential} -
+         * internal credentialId {@link org.hyperledger.bpa.model.BPACredentialExchange} -
          * matched via referent
          */
         private UUID credentialId;

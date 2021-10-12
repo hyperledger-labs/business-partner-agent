@@ -36,7 +36,7 @@ import org.hyperledger.bpa.impl.aries.ConnectionManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.repository.MyCredentialRepository;
+import org.hyperledger.bpa.repository.HolderCredExRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.hyperledger.bpa.repository.TagRepository;
 
@@ -69,7 +69,7 @@ public class PartnerManager {
     PartnerLookup partnerLookup;
 
     @Inject
-    MyCredentialRepository myCredRepo;
+    HolderCredExRepository holderCredExRepo;
 
     @Inject
     TagRepository tagRepo;
@@ -143,8 +143,7 @@ public class PartnerManager {
             tagRepo.updateAllPartnerToTagMappings(id, req.getTag());
             repo.updateAlias(id, req.getAlias(), req.getTrustPing());
             if (StringUtils.isNotBlank(req.getAlias())) {
-                myCredRepo.updateByConnectionId(
-                        dbP.get().getConnectionId(), dbP.get().getConnectionId(), req.getAlias());
+                holderCredExRepo.updateByPartnerId(dbP.get().getId(), dbP.get().getId(), req.getAlias());
             }
             result = Optional.of(converter.toAPIObject(p));
         }

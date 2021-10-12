@@ -27,8 +27,8 @@ import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.Converter;
+import org.hyperledger.bpa.model.BPACredentialExchange;
 import org.hyperledger.bpa.model.BPASchema;
-import org.hyperledger.bpa.model.MyCredential;
 import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -145,7 +145,7 @@ class VPManagerTest {
                 "\"8faozNpSjFfPJXYtgcPtmJ:3:CL:1041:Commercial Registry Entry (Open Corporates)\"}";
 
         Credential credential = gson.fromJson(ariesCredential, Credential.class);
-        MyCredential myCredential = MyCredential
+        BPACredentialExchange myCredential = BPACredentialExchange
                 .builder()
                 .id(UUID.randomUUID())
                 .credential(credential)

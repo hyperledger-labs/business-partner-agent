@@ -27,7 +27,7 @@ import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.repository.MyCredentialRepository;
+import org.hyperledger.bpa.repository.HolderCredExRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +44,7 @@ class CredentialManagerTest extends BaseTest {
     HolderCredentialManager mgmt;
 
     @Inject
-    MyCredentialRepository credRepo;
+    HolderCredExRepository holderCredExRepo;
 
     @Inject
     PartnerRepository partnerRepo;
@@ -57,7 +57,7 @@ class CredentialManagerTest extends BaseTest {
         final String ex = loader.load("files/credentialExchange.json");
         final V1CredentialExchange credEx = GsonConfig.defaultConfig().fromJson(ex, V1CredentialExchange.class);
         mgmt.handleV1CredentialExchangeAcked(credEx);
-        assertEquals(1, credRepo.count());
+        assertEquals(1, holderCredExRepo.count());
     }
 
     @Test

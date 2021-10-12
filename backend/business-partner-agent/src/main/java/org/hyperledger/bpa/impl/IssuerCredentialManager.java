@@ -58,7 +58,7 @@ import org.hyperledger.bpa.model.BPACredentialExchange;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.BPACredentialDefinitionRepository;
-import org.hyperledger.bpa.repository.BPACredentialExchangeRepository;
+import org.hyperledger.bpa.repository.IssuerCredExRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.io.IOException;
@@ -83,7 +83,7 @@ public class IssuerCredentialManager {
     PartnerRepository partnerRepo;
 
     @Inject
-    BPACredentialExchangeRepository credExRepo;
+    IssuerCredExRepository credExRepo;
 
     @Inject
     Converter conv;
@@ -444,7 +444,7 @@ public class IssuerCredentialManager {
                         bpaEx.getState(), bpaEx.getStateToTimestamp(),
                         ex.getRevocRegId(), ex.getRevocationId(), ex.getErrorMsg());
             }
-            if (ex.isCredentialAcked() && ex.isAutoIssueEnabled()) {
+            if (ex.stateIsCredentialAcked() && ex.isAutoIssueEnabled()) {
                 ex.findAttributesInCredentialOfferDict().ifPresent(
                         attr -> credExRepo.updateCredential(bpaEx.getId(), Credential.builder().attrs(attr).build()));
             }

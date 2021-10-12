@@ -51,7 +51,7 @@ import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.model.Tag;
-import org.hyperledger.bpa.repository.MyCredentialRepository;
+import org.hyperledger.bpa.repository.HolderCredExRepository;
 import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
@@ -82,7 +82,7 @@ public class ConnectionManager {
     PartnerProofRepository partnerProofRepo;
 
     @Inject
-    MyCredentialRepository myCredRepo;
+    HolderCredExRepository holderCredExRepo;
 
     @Inject
     DidResolver didResolver;
@@ -301,6 +301,8 @@ public class ConnectionManager {
             }
         } else if (record.stateIsCompleted() && record.isIncomingConnection()) {
             eventPublisher.publishEventAsync(PartnerRequestCompletedEvent.builder().partner(p).build());
+        }
+        if (record.stateIsCompleted() || record.stateIsActive() && record.isIncomingConnection()) {
             partnerCredDefLookup.lookupTypesForAllPartnersAsync();
         }
     }
@@ -316,6 +318,7 @@ public class ConnectionManager {
 
             Optional<Partner> partner = partnerRepo.findByConnectionId(connectionId);
             partner.ifPresent(p -> {
+                holderCredExRepo.updateByPartnerId(p.getId(), null);
                 final List<PartnerProof> proofs = partnerProofRepo.findByPartnerId(p.getId());
                 if (CollectionUtils.isNotEmpty(proofs)) {
                     partnerProofRepo.deleteAll(proofs);
@@ -337,8 +340,6 @@ public class ConnectionManager {
                             }
                         });
                     });
-
-            myCredRepo.updateByConnectionId(connectionId, null);
             partner.ifPresent(value -> eventPublisher
                     .publishEventAsync(PartnerRemovedEvent.builder().partner(value).build()));
         } catch (IOException e) {

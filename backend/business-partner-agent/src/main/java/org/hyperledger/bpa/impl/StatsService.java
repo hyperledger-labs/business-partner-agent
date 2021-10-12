@@ -39,16 +39,16 @@ public class StatsService {
     PartnerRepository partnerRepo;
 
     @Inject
-    MyCredentialRepository credRepo;
+    HolderCredExRepository holderCredExRepo;
+
+    @Inject
+    IssuerCredExRepository issuerCredExRepo;
 
     @Inject
     MyDocumentRepository docRepo;
 
     @Inject
     Identity identity;
-
-    @Inject
-    BPACredentialExchangeRepository credExRepo;
 
     @Inject
     ActivityRepository activityRepository;
@@ -59,8 +59,8 @@ public class StatsService {
     public BPAStats collectStats() {
         DashboardCounts totals = DashboardCounts
                 .builder()
-                .credentialsSent(credExRepo.countByStateEquals(CredentialExchangeState.CREDENTIAL_ACKED))
-                .credentialsReceived(credRepo.countByStateEquals(CredentialExchangeState.CREDENTIAL_ACKED))
+                .credentialsSent(issuerCredExRepo.countByStateEquals(CredentialExchangeState.CREDENTIAL_ACKED))
+                .credentialsReceived(holderCredExRepo.countByStateEquals(CredentialExchangeState.CREDENTIAL_ACKED))
                 .tasks(activityRepository.countByCompletedFalse())
                 .partners(partnerRepo.count())
                 .presentationRequestsSent(proofRepository.countByStateEquals(PresentationExchangeState.REQUEST_SENT))
@@ -74,10 +74,10 @@ public class StatsService {
         Instant yesterday = Instant.now().minus(1, ChronoUnit.DAYS);
         DashboardCounts periodTotals = DashboardCounts
                 .builder()
-                .credentialsSent(credExRepo
+                .credentialsSent(issuerCredExRepo
                         .countByStateEqualsAndCreatedAtAfter(CredentialExchangeState.CREDENTIAL_ACKED, yesterday))
-                .credentialsReceived(credRepo
-                        .countByStateEqualsAndIssuedAtAfter(CredentialExchangeState.CREDENTIAL_ACKED, yesterday))
+                .credentialsReceived(holderCredExRepo
+                        .countByStateEqualsAndCreatedAtAfter(CredentialExchangeState.CREDENTIAL_ACKED, yesterday))
                 .tasks(activityRepository.countByCompletedFalseAndCreatedAtAfter(yesterday))
                 .partners(partnerRepo.countByCreatedAtAfter(yesterday))
                 .presentationRequestsSent(proofRepository

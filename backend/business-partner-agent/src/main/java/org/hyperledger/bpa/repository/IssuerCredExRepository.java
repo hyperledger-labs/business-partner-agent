@@ -35,7 +35,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface BPACredentialExchangeRepository extends CrudRepository<BPACredentialExchange, UUID> {
+public interface IssuerCredExRepository extends CrudRepository<BPACredentialExchange, UUID> {
 
     @NonNull
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)

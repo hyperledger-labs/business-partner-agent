@@ -30,10 +30,10 @@ import java.util.Map;
 import java.util.UUID;
 
 @MicronautTest
-public class CredentialExchangeRepositoryTest {
+public class IssuerCredExRepositoryTest {
 
     @Inject
-    BPACredentialExchangeRepository repo;
+    IssuerCredExRepository issuerCredExRepo;
 
     @Inject
     PartnerRepository partnerRepo;
@@ -46,7 +46,7 @@ public class CredentialExchangeRepositoryTest {
                 .ariesSupport(Boolean.TRUE)
                 .build());
 
-        BPACredentialExchange exchange = repo.save(BPACredentialExchange
+        BPACredentialExchange exchange = issuerCredExRepo.save(BPACredentialExchange
                 .builder()
                 .threadId(UUID.randomUUID().toString())
                 .credentialExchangeId(UUID.randomUUID().toString())
@@ -54,11 +54,11 @@ public class CredentialExchangeRepositoryTest {
                 .partner(p)
                 .build());
 
-        repo.updateCredential(exchange.getId(), Credential.builder()
+        issuerCredExRepo.updateCredential(exchange.getId(), Credential.builder()
                 .attrs(Map.of("attr1", "val1"))
                 .build());
 
-        exchange = repo.findById(exchange.getId()).orElseThrow();
+        exchange = issuerCredExRepo.findById(exchange.getId()).orElseThrow();
         Assertions.assertNotNull(exchange.getCredential());
         Assertions.assertEquals("val1", exchange.getCredential().getAttrs().get("attr1"));
     }

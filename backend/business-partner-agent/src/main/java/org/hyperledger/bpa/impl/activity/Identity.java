@@ -66,7 +66,7 @@ public class Identity {
     DidDocClient ur;
 
     // TODO either return the did or fail. Needs fixing the test setup to work.
-    public @Nullable String getMyDid() {
+    public @io.micronaut.core.annotation.NonNull String getMyDid() {
         String myDid = null;
         if (webOnly) {
             myDid = ApiConstants.DID_METHOD_WEB + host;
@@ -79,6 +79,9 @@ public class Identity {
             } catch (IOException e) {
                 log.error("aca-py not reachable", e);
             }
+        }
+        if (StringUtils.isEmpty(myDid)) {
+            throw new IllegalStateException("Wallet has no did configured");
         }
         return myDid;
     }

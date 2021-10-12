@@ -26,7 +26,7 @@ import org.hyperledger.bpa.client.CachingAriesClient;
 import org.hyperledger.bpa.impl.activity.CryptoManager;
 import org.hyperledger.bpa.impl.activity.Identity;
 import org.hyperledger.bpa.impl.activity.VPManager;
-import org.hyperledger.bpa.repository.MyCredentialRepository;
+import org.hyperledger.bpa.repository.HolderCredExRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +41,7 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
     HolderCredentialManager mgmt;
 
     @Inject
-    MyCredentialRepository credRepo;
+    HolderCredExRepository holderCredExRepo;
 
     @Inject
     VPManager vpMgmt;
@@ -69,11 +69,11 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
         // create credential
         final V1CredentialExchange credEx = createNewCredential();
         mgmt.handleV1CredentialExchangeAcked(credEx);
-        assertEquals(1, credRepo.count());
+        assertEquals(1, holderCredExRepo.count());
         assertTrue(vpMgmt.getVerifiablePresentation().isEmpty());
 
         // make it public
-        final UUID credId = credRepo.findAll().iterator().next().getId();
+        final UUID credId = holderCredExRepo.findAll().iterator().next().getId();
         mgmt.toggleVisibility(credId);
         waitForVP(vpMgmt, true);
         assertTrue(vpMgmt.getVerifiablePresentation().isPresent());
