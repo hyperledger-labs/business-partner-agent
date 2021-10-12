@@ -20,6 +20,7 @@ package org.hyperledger.bpa.impl;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
@@ -62,7 +63,7 @@ public class StatsService {
                 .credentialsSent(credExRepo.countByStateEquals(CredentialExchangeState.CREDENTIAL_ACKED))
                 .credentialsReceived(credRepo.countByStateEquals(CredentialExchangeState.CREDENTIAL_ACKED))
                 .tasks(activityRepository.countByCompletedFalse())
-                .partners(partnerRepo.count())
+                .partners(partnerRepo.countByStateNotEquals(ConnectionState.INVITATION))
                 .presentationRequestsSent(proofRepository.countByStateEquals(PresentationExchangeState.REQUEST_SENT))
                 .presentationRequestsReceived(
                         proofRepository.countByStateEquals(PresentationExchangeState.PRESENTATION_RECEIVED))
@@ -79,7 +80,7 @@ public class StatsService {
                 .credentialsReceived(credRepo
                         .countByStateEqualsAndIssuedAtAfter(CredentialExchangeState.CREDENTIAL_ACKED, yesterday))
                 .tasks(activityRepository.countByCompletedFalseAndCreatedAtAfter(yesterday))
-                .partners(partnerRepo.countByCreatedAtAfter(yesterday))
+                .partners(partnerRepo.countByStateNotEqualsAndCreatedAtAfter(ConnectionState.INVITATION, yesterday))
                 .presentationRequestsSent(proofRepository
                         .countByStateEqualsAndCreatedAtAfter(PresentationExchangeState.REQUEST_SENT, yesterday))
                 .presentationRequestsReceived(proofRepository.countByStateEqualsAndCreatedAtAfter(
