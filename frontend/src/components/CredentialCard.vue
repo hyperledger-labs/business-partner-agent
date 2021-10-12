@@ -7,7 +7,7 @@
 -->
 
 <template>
-  <v-card class="my-2 rounded-lg" max-width="400" elevation="5">
+  <v-card class="my-2 rounded-lg align-self-start" width="400" elevation="5">
     <v-card-title
       height="40"
       class="light-blue darken-3 card-title text-subtitle-1 white--text"

@@ -8,6 +8,36 @@
 
 <template>
   <v-container>
+    <!-- Valid/Invalid info for role verifier -->
+    <v-container v-if="isStateVerified">
+      <v-alert v-if="record.valid" dense border="left" type="success">
+        Presentation is valid
+      </v-alert>
+
+      <v-alert v-else dense border="left" type="error">
+        Presentation is not valid
+      </v-alert>
+    </v-container>
+
+    <!-- Request Content -->
+    <h4 class="my-4">Request Content:</h4>
+    <v-container
+      v-if="!isStateProposalSent"
+      max-height="1200"
+      class="d-flex flex-column flex-wrap justify-space-between mx-4"
+    >
+      <!-- Requested Attributes -->
+      <template
+        v-for="([groupName, group], idx) in Object.entries(
+          record.proofRequest['requestedAttributes']
+        )"
+      >
+        <CredentialCard :key="groupName + idx" v-bind:document="group">
+        </CredentialCard>
+      </template>
+    </v-container>
+
+    <!-- About -->
     <v-card>
       <v-card-title height="40"> About </v-card-title>
       <v-divider></v-divider>
@@ -50,71 +80,10 @@
         </v-list-item>
       </v-list>
     </v-card>
-
-    <!-- Valid/Invalid info for role verifier -->
-    <v-container v-if="isStateVerified">
-      <v-alert v-if="record.valid" dense border="left" type="success">
-        Presentation is valid
-      </v-alert>
-
-      <v-alert v-else dense border="left" type="error">
-        Presentation is not valid
-      </v-alert>
-    </v-container>
-
-    <!-- Request Content -->
-    <template
-      v-if="!isStateProposalSent"
-      class="d-flex justify-space-around align-space-between ml-4"
-    >
-      <h4 class="my-4">Request Content:</h4>
-
-      <!-- Requested Attributes -->
-      <template
-        v-for="([groupName, group], idx) in Object.entries(
-          record.proofRequest['requestedAttributes']
-        )"
-      >
-        <CredentialCard :key="groupName + idx" v-bind:document="group">
-        </CredentialCard>
-      </template>
-    </template>
-
     <!-- Timeline  -->
-    <v-expansion-panels accordion flat>
-      <v-expansion-panel>
-        <v-expansion-panel-header
-          class="grey--text text--darken-2 font-weight-medium bg-light"
-          >Timeline</v-expansion-panel-header
-        >
-        <v-expansion-panel-content class="bg-light">
-          <v-timeline dense>
-            <v-timeline-item
-              fill-dot
-              small
-              v-for="item in Object.entries(record.stateToTimestamp)"
-              :key="item.key"
-            >
-              <v-row class="pt-1">
-                <v-col cols="3">
-                  {{ item[1] | formatDateLong }}
-                </v-col>
-                <v-col>
-                  <div class="text-caption">
-                    <strong>
-                      {{ item[0].replace("_", " ") | capitalize }}
-                    </strong>
-                  </div>
-                </v-col>
-              </v-row>
-            </v-timeline-item>
-          </v-timeline>
-        </v-expansion-panel-content>
-      </v-expansion-panel>
-    </v-expansion-panels>
+    <Timeline v-bind:timeEntries="Object.entries(record.stateToTimestamp)" />
 
     <!-- ExpertMode: Raw data -->
-
     <v-expansion-panels class="mt-4" v-if="expertMode" accordion flat>
       <v-expansion-panel>
         <v-expansion-panel-header
@@ -137,6 +106,7 @@ import {
   Restrictions,
 } from "@/constants";
 import CredentialCard from "@/components/CredentialCard";
+import Timeline from "@/components/Timeline";
 
 export default {
   name: "PresentationRecord",
@@ -243,6 +213,7 @@ export default {
   },
   components: {
     CredentialCard,
+    Timeline,
   },
 };
 </script>
