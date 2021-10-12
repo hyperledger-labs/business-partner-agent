@@ -71,7 +71,11 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     // count
 
+    Long countByStateNotEquals(ConnectionState state);
+
     Long countByCreatedAtAfter(Instant createdAt);
+
+    Long countByStateNotEqualsAndCreatedAtAfter(ConnectionState state, Instant createdAt);
 
     // update
 

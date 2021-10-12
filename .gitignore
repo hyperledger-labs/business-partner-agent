@@ -91,3 +91,4 @@ scripts/**/*.txn
 scripts/local-network/von-network/
 scripts/scenarios/local-network/von-network/
 scripts/scenarios/local-network/resolver/*.txn
+scripts/dev-*
