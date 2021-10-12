@@ -318,7 +318,7 @@ public class ConnectionManager {
 
             Optional<Partner> partner = partnerRepo.findByConnectionId(connectionId);
             partner.ifPresent(p -> {
-                holderCredExRepo.updateByPartnerId(p.getId(), null);
+                holderCredExRepo.setPartnerIdToNull(p.getId());
                 final List<PartnerProof> proofs = partnerProofRepo.findByPartnerId(p.getId());
                 if (CollectionUtils.isNotEmpty(proofs)) {
                     partnerProofRepo.deleteAll(proofs);

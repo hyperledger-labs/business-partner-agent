@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.impl.activity;
 
+import io.micronaut.context.env.Environment;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
@@ -32,7 +33,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@MicronautTest
+@MicronautTest(environments = { Environment.TEST, "test-web" })
 class CryptoManagerTest extends RunWithAries {
 
     @Inject

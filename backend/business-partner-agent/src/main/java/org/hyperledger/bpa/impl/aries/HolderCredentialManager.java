@@ -301,8 +301,8 @@ public class HolderCredentialManager {
     }
 
     public void handleV2CredentialReceived(@NonNull V20CredExRecord credEx) {
-        V2ToV1IndyCredentialConverter.INSTANCE().toV1(credEx).
-                flatMap(c -> partnerRepo.findByConnectionId(credEx.getConnectionId())).ifPresent(p -> {
+        V2ToV1IndyCredentialConverter.INSTANCE().toV1(credEx)
+                .flatMap(c -> partnerRepo.findByConnectionId(credEx.getConnectionId())).ifPresent(p -> {
                     BPACredentialExchange dbCred = BPACredentialExchange.builder()
                             .partner(p)
                             .threadId(credEx.getThreadId())
@@ -311,8 +311,8 @@ public class HolderCredentialManager {
                             .state(credEx.getState())
                             .exchangeVersion(ExchangeVersion.V2)
                             .build();
-            credRepo.save(dbCred);
-        });
+                    credRepo.save(dbCred);
+                });
     }
 
     public void handleV2CredentialDone(@NonNull V20CredExRecord credEx) {

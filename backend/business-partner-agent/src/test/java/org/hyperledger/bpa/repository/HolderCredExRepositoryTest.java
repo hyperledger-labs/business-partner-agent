@@ -20,6 +20,7 @@ package org.hyperledger.bpa.repository;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.connection.ConnectionState;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.config.GsonConfig;
@@ -61,11 +62,13 @@ class HolderCredExRepositoryTest extends BaseTest {
                 .state(CredentialExchangeState.CREDENTIAL_ACKED)
                 .threadId("1")
                 .credential(ex.getCredential())
+                .role(CredentialExchangeRole.HOLDER)
                 .credentialExchangeId(UUID.randomUUID().toString())
                 .build();
         final BPACredentialExchange saved = holderCredExRepo.save(cred);
 
-        final List<BPACredentialExchange> credLoaded = holderCredExRepo.findBySchemaIdAndCredentialDefinitionId(schemaId,
+        final List<BPACredentialExchange> credLoaded = holderCredExRepo.findBySchemaIdAndCredentialDefinitionId(
+                schemaId,
                 credDefId);
         assertFalse(credLoaded.isEmpty());
         assertEquals(1, credLoaded.size());
@@ -83,13 +86,13 @@ class HolderCredExRepositoryTest extends BaseTest {
         final List<BPACredentialExchange> byPartnerId = holderCredExRepo.findByPartnerId(p.getId());
         assertEquals(2, byPartnerId.size());
 
-        Number updated = holderCredExRepo.updateByPartnerId(p.getId(), null);
+        Number updated = holderCredExRepo.setPartnerIdToNull(p.getId());
         assertEquals(2, updated.intValue());
 
-        updated = holderCredExRepo.updateByPartnerId(UUID.randomUUID(), null);
+        updated = holderCredExRepo.setPartnerIdToNull(UUID.randomUUID());
         assertEquals(0, updated.intValue());
 
-        updated = holderCredExRepo.updateByPartnerId(other.getId(), other.getId(), "My Bank");
+        updated = holderCredExRepo.updateIssuerByPartnerId(other.getId(), "My Bank");
         assertEquals(1, updated.intValue());
 
         final List<BPACredentialExchange> cred = holderCredExRepo.findByPartnerId(other.getId());
@@ -130,6 +133,7 @@ class HolderCredExRepositoryTest extends BaseTest {
                 .state(CredentialExchangeState.CREDENTIAL_ACKED)
                 .credentialExchangeId(UUID.randomUUID().toString())
                 .isPublic(Boolean.FALSE)
+                .role(CredentialExchangeRole.HOLDER)
                 .build();
     }
 

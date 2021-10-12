@@ -36,6 +36,8 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     // find
 
+    // TODO role == holder
+
     Optional<BPACredentialExchange> findByReferent(String referent);
 
     List<BPACredentialExchange> findByPartnerId(UUID partnerId);
@@ -44,11 +46,14 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     Optional<BPACredentialExchange> findByCredentialExchangeId(String credentialExchangeId);
 
-    @Query("SELECT * FROM my_credential WHERE credential->>'schemaId' = :schemaId "
-            + "AND credential->>'credentialDefinitionId' = :credentialDefinitionId")
+    @Query("SELECT * FROM bpa_credential_exchange WHERE credential->>'schemaId' = :schemaId "
+            + "AND credential->>'credentialDefinitionId' = :credentialDefinitionId "
+            + "AND role = 'HOLDER'")
     List<BPACredentialExchange> findBySchemaIdAndCredentialDefinitionId(String schemaId, String credentialDefinitionId);
 
-    @Query("SELECT * FROM my_credential WHERE type = 'INDY' AND referent IS NOT NULL AND (revoked IS NULL OR revoked = false)")
+    @Query("SELECT * FROM bpa_credential_exchange WHERE type = 'INDY' "
+            + "AND referent IS NOT NULL AND (revoked IS NULL OR revoked = false) "
+            + "AND role = 'HOLDER'")
     List<BPACredentialExchange> findNotRevoked();
 
     // update
@@ -61,9 +66,11 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     Number updateRevoked(@Id UUID id, Boolean revoked);
 
-    Number updateByPartnerId(UUID id, @Nullable UUID partnerId, @Nullable String issuer);
+    @Query("UPDATE bpa_credential_exchange SET issuer = :issuer WHERE partner_id = :partnerId")
+    Number updateIssuerByPartnerId(UUID partnerId, @Nullable String issuer);
 
-    Number updateByPartnerId(UUID id, @Nullable UUID partnerId);
+    @Query("UPDATE bpa_credential_exchange SET partner_id = null WHERE partner_id = :partnerId")
+    Number setPartnerIdToNull(UUID partnerId);
 
     // count
 

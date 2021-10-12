@@ -143,7 +143,7 @@ public class PartnerManager {
             tagRepo.updateAllPartnerToTagMappings(id, req.getTag());
             repo.updateAlias(id, req.getAlias(), req.getTrustPing());
             if (StringUtils.isNotBlank(req.getAlias())) {
-                holderCredExRepo.updateByPartnerId(dbP.get().getId(), dbP.get().getId(), req.getAlias());
+                holderCredExRepo.updateIssuerByPartnerId(dbP.get().getId(), req.getAlias());
             }
             result = Optional.of(converter.toAPIObject(p));
         }

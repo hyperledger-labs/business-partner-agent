@@ -18,7 +18,6 @@
 package org.hyperledger.bpa.impl.activity;
 
 import io.micronaut.context.annotation.Value;
-import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.Getter;
@@ -81,7 +80,7 @@ public class Identity {
             }
         }
         if (StringUtils.isEmpty(myDid)) {
-            throw new IllegalStateException("Wallet has no did configured");
+            throw new IllegalStateException("aca-py has no public did configured");
         }
         return myDid;
     }

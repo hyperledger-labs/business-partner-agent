@@ -56,6 +56,13 @@ class CredentialManagerTest extends BaseTest {
     void testSaveNewCredential() {
         final String ex = loader.load("files/credentialExchange.json");
         final V1CredentialExchange credEx = GsonConfig.defaultConfig().fromJson(ex, V1CredentialExchange.class);
+        partnerRepo.save(Partner
+                .builder()
+                .alias("My Bank")
+                .did(DID)
+                .ariesSupport(Boolean.TRUE)
+                .connectionId(credEx.getConnectionId())
+                .build());
         mgmt.handleV1CredentialExchangeAcked(credEx);
         assertEquals(1, holderCredExRepo.count());
     }

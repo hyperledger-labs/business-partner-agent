@@ -36,7 +36,6 @@ import org.hyperledger.bpa.api.aries.ExchangeVersion;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -139,16 +138,15 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
     @Nullable
     private String referent;
 
-    public @Nullable Instant calculateIssuedAt() {
+    public Instant calculateIssuedAt() {
         return stateToTimestamp != null && stateToTimestamp.getStateToTimestamp() != null
                 ? stateToTimestamp.getStateToTimestamp().entrySet()
-                .stream()
-                .filter(e ->
-                        CredentialExchangeState.CREDENTIAL_ACKED.equals(e.getKey())
-                        || CredentialExchangeState.DONE.equals(e.getKey()))
-                .map(e -> e.getValue())
-                .findFirst()
-                .orElse(null)
+                        .stream()
+                        .filter(e -> CredentialExchangeState.CREDENTIAL_ACKED.equals(e.getKey())
+                                || CredentialExchangeState.DONE.equals(e.getKey()))
+                        .map(Map.Entry::getValue)
+                        .findFirst()
+                        .orElse(null)
                 : null;
     }
 
