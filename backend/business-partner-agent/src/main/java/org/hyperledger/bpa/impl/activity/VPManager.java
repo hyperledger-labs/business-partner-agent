@@ -28,6 +28,7 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.Setter;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential.VerifiableIndyCredentialBuilder;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
@@ -81,7 +82,8 @@ public class VPManager {
 
         docRepo.findByIsPublicTrue().forEach(doc -> vcs.add(buildFromDocument(doc, myDid)));
 
-        holderCredExRepo.findByIsPublicTrue().forEach(cred -> vcs.add(buildFromCredential(cred)));
+        holderCredExRepo.findByRoleAndIsPublicTrue(CredentialExchangeRole.HOLDER)
+                .forEach(cred -> vcs.add(buildFromCredential(cred)));
 
         // only split up into own method, because of a weird issue that the second
         // thread does

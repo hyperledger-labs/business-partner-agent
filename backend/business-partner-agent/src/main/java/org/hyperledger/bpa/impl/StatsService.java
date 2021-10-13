@@ -20,6 +20,7 @@ package org.hyperledger.bpa.impl;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
@@ -42,9 +43,6 @@ public class StatsService {
     HolderCredExRepository holderCredExRepo;
 
     @Inject
-    IssuerCredExRepository issuerCredExRepo;
-
-    @Inject
     MyDocumentRepository docRepo;
 
     @Inject
@@ -59,8 +57,11 @@ public class StatsService {
     public BPAStats collectStats() {
         DashboardCounts totals = DashboardCounts
                 .builder()
-                .credentialsSent(issuerCredExRepo.countByStateEquals(CredentialExchangeState.CREDENTIAL_ACKED))
-                .credentialsReceived(holderCredExRepo.countByStateEquals(CredentialExchangeState.CREDENTIAL_ACKED))
+                .credentialsSent(holderCredExRepo.countByRoleEqualsAndStateEquals(
+                        CredentialExchangeRole.HOLDER,
+                        CredentialExchangeState.CREDENTIAL_ACKED))
+                .credentialsReceived(holderCredExRepo.countByRoleEqualsAndStateEquals(
+                        CredentialExchangeRole.HOLDER, CredentialExchangeState.CREDENTIAL_ACKED))
                 .tasks(activityRepository.countByCompletedFalse())
                 .partners(partnerRepo.count())
                 .presentationRequestsSent(proofRepository.countByStateEquals(PresentationExchangeState.REQUEST_SENT))
@@ -74,10 +75,10 @@ public class StatsService {
         Instant yesterday = Instant.now().minus(1, ChronoUnit.DAYS);
         DashboardCounts periodTotals = DashboardCounts
                 .builder()
-                .credentialsSent(issuerCredExRepo
-                        .countByStateEqualsAndCreatedAtAfter(CredentialExchangeState.CREDENTIAL_ACKED, yesterday))
-                .credentialsReceived(holderCredExRepo
-                        .countByStateEqualsAndCreatedAtAfter(CredentialExchangeState.CREDENTIAL_ACKED, yesterday))
+                .credentialsSent(holderCredExRepo.countByRoleEqualsAndStateEqualsAndCreatedAtAfter(
+                        CredentialExchangeRole.ISSUER, CredentialExchangeState.CREDENTIAL_ACKED, yesterday))
+                .credentialsReceived(holderCredExRepo.countByRoleEqualsAndStateEqualsAndCreatedAtAfter(
+                        CredentialExchangeRole.HOLDER, CredentialExchangeState.CREDENTIAL_ACKED, yesterday))
                 .tasks(activityRepository.countByCompletedFalseAndCreatedAtAfter(yesterday))
                 .partners(partnerRepo.countByCreatedAtAfter(yesterday))
                 .presentationRequestsSent(proofRepository

@@ -107,7 +107,8 @@ class HolderCredExRepositoryTest extends BaseTest {
         holderCredExRepo.save(createDummyCredEx(p).setState(CredentialExchangeState.CREDENTIAL_ISSUED));
         holderCredExRepo.save(createDummyCredEx(createRandomPartner()));
 
-        assertEquals(2, holderCredExRepo.countByStateEquals(CredentialExchangeState.CREDENTIAL_ACKED));
+        assertEquals(2, holderCredExRepo.countByRoleEqualsAndStateEquals(
+                CredentialExchangeRole.HOLDER, CredentialExchangeState.CREDENTIAL_ACKED));
     }
 
     @Test

@@ -23,6 +23,7 @@ import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 
@@ -36,15 +37,15 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     // find
 
-    // TODO role == holder
+    List<BPACredentialExchange> findByRoleEquals(CredentialExchangeRole role);
 
     Optional<BPACredentialExchange> findByReferent(String referent);
 
     List<BPACredentialExchange> findByPartnerId(UUID partnerId);
 
-    List<BPACredentialExchange> findByIsPublicTrue();
-
     Optional<BPACredentialExchange> findByCredentialExchangeId(String credentialExchangeId);
+
+    List<BPACredentialExchange> findByRoleAndIsPublicTrue(CredentialExchangeRole role);
 
     @Query("SELECT * FROM bpa_credential_exchange WHERE credential->>'schemaId' = :schemaId "
             + "AND credential->>'credentialDefinitionId' = :credentialDefinitionId "
@@ -74,8 +75,9 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     // count
 
-    Long countByStateEquals(CredentialExchangeState state);
+    Long countByRoleEqualsAndStateEquals(CredentialExchangeRole role, CredentialExchangeState state);
 
-    Long countByStateEqualsAndCreatedAtAfter(CredentialExchangeState state, Instant issuedAt);
+    Long countByRoleEqualsAndStateEqualsAndCreatedAtAfter(
+            CredentialExchangeRole role, CredentialExchangeState state, Instant issuedAt);
 
 }

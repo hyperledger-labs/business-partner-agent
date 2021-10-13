@@ -61,10 +61,6 @@ public interface IssuerCredExRepository extends CrudRepository<BPACredentialExch
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     List<BPACredentialExchange> listOrderByUpdatedAtDesc();
 
-    Long countByStateEquals(CredentialExchangeState state);
-
-    Long countByStateEqualsAndCreatedAtAfter(CredentialExchangeState state, Instant createdAt);
-
     Number updateCredential(@Id UUID id, Credential credential);
 
     Number updateAfterEventWithRevocationInfo(@Id UUID id,
