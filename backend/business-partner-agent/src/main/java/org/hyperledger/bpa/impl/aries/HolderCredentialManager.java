@@ -56,6 +56,7 @@ import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.model.BPACredentialExchange;
+import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.HolderCredExRepository;
@@ -269,10 +270,12 @@ public class HolderCredentialManager {
     // credential, signed and stored in wallet
     public void handleV1CredentialExchangeAcked(@NonNull V1CredentialExchange credEx) {
         String label = labelStrategy.apply(credEx.getCredential());
+        BPASchema bpaSchema = schemaService.getSchemaFor(credEx.getSchemaId()).orElse(null);
         partnerRepo.findByConnectionId(credEx.getConnectionId()).ifPresent(p -> {
             BPACredentialExchange ex = BPACredentialExchange
                     .builder()
                     .partner(p)
+                    .schema(bpaSchema)
                     .threadId(credEx.getThreadId())
                     .credentialExchangeId(credEx.getCredentialExchangeId())
                     .referent(credEx.getCredential() != null ? credEx.getCredential().getReferent() : null)

@@ -43,6 +43,9 @@
       <template v-slot:[`item.createdAt`]="{ item }">
         {{ item.createdAt | formatDateLong }}
       </template>
+      <template v-slot:[`item.role`]="{ item }">
+        {{ item.role }}
+      </template>
       <template v-slot:[`item.revocable`]="{ item }">
         <v-icon
           v-if="item.revocable && item.revoked"

@@ -42,8 +42,10 @@ export default {
     return appAxios().post(`${ApiRoutes.ISSUER}/issue-credential/send`, data);
   },
 
-  listCredentialExchanges() {
-    return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`);
+  listCredentialExchanges(id) {
+    return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
+      params: { partnerId: id },
+    });
   },
 
   listCredentialExchangesAsIssuer(id) {
@@ -61,6 +63,9 @@ export default {
     return appAxios().post(`${ApiRoutes.ISSUER}/exchanges/${id}/revoke`);
   },
   sendCredentialOffer(id, counterOfferData) {
-    return appAxios().post(`${ApiRoutes.ISSUER}/exchanges/${id}/send-offer`, counterOfferData);
-  }
+    return appAxios().post(
+      `${ApiRoutes.ISSUER}/exchanges/${id}/send-offer`,
+      counterOfferData
+    );
+  },
 };
