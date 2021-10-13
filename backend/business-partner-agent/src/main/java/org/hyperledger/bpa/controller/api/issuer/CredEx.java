@@ -66,7 +66,8 @@ public class CredEx {
     public static CredEx from(@NonNull BPACredentialExchange db, PartnerAPI partner) {
         CredExBuilder builder = CredEx.builder();
         SchemaAPI schemaAPI = db.getSchema() != null ? SchemaAPI.from(db.getSchema()) : null;
-        CredDef credDef = db.getCredDef() != null ? CredDef.from(db.getCredDef()) : CredDef.builder().schema(schemaAPI).build();
+        CredDef credDef = db.getCredDef() != null ? CredDef.from(db.getCredDef())
+                : CredDef.builder().schema(schemaAPI).build();
         String displayText = null;
         if (schemaAPI != null && credDef != null) {
             displayText = String.format("%s (%s)", schemaAPI.getLabel(), schemaAPI.getVersion());
