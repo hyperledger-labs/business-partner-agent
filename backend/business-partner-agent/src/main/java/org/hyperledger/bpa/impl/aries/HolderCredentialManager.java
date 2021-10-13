@@ -69,7 +69,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Slf4j
 @Singleton
@@ -121,7 +120,7 @@ public class HolderCredentialManager {
                     "schema can be converted into a credential");
         }
         try {
-            org.hyperledger.bpa.model.BPASchema s = schemaService.getSchemaFor(dbDoc.getSchemaId())
+            BPASchema s = schemaService.getSchemaFor(dbDoc.getSchemaId())
                     .orElseThrow(
                             () -> new PartnerException("No configured schema found for id: " + dbDoc.getSchemaId()));
             V1CredentialProposalRequest v1CredentialProposalRequest = V1CredentialProposalRequest
