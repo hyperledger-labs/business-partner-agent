@@ -80,6 +80,7 @@
             dense
           ></v-select>
           <v-select
+            v-if="document.credentialExchangeRole === exchangeRoles.ISSUER"
             :label="$t('component.credExList.dialog.credDefLabel')"
             return-object
             v-model="credDef"
@@ -232,7 +233,7 @@ import Cred from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
 import NewMessageIcon from "@/components/NewMessageIcon";
 import { EventBus } from "@/main";
-import { CredentialExchangeStates } from "@/constants";
+import { CredentialExchangeRoles, CredentialExchangeStates } from "@/constants";
 
 export default {
   props: {
@@ -322,6 +323,7 @@ export default {
       isLoadingSendCounterOffer: false,
       credentialContentChanged: false,
       exchangeStates: CredentialExchangeStates,
+      exchangeRoles: CredentialExchangeRoles,
       document: {},
       partner: {},
       credDef: {},
@@ -348,6 +350,7 @@ export default {
         credentialDefinitionId: item.credential.credentialDefinitionId,
         credentialExchangeId: item.id,
         credentialExchangeState: item.state,
+        credentialExchangeRole: item.role,
         credentialWasEdited: false,
         credentialStateToTimestamp: item.stateToTimestamp,
       };

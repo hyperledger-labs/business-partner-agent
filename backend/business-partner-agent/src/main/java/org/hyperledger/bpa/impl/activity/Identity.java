@@ -64,7 +64,6 @@ public class Identity {
     @Inject
     DidDocClient ur;
 
-    // TODO either return the did or fail. Needs fixing the test setup to work.
     public @io.micronaut.core.annotation.NonNull String getMyDid() {
         String myDid = null;
         if (webOnly) {
