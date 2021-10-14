@@ -33,6 +33,7 @@ import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.credentials.CredentialPreview;
 import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialProposalRequest;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
@@ -44,6 +45,7 @@ import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.ProfileVC;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
@@ -52,17 +54,21 @@ import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.notification.CredentialAddedEvent;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.MyCredential;
+import org.hyperledger.bpa.impl.util.TimeUtil;
+import org.hyperledger.bpa.model.BPACredentialExchange;
+import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.repository.MyCredentialRepository;
+import org.hyperledger.bpa.repository.HolderCredExRepository;
 import org.hyperledger.bpa.repository.MyDocumentRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Slf4j
 @Singleton
@@ -82,7 +88,7 @@ public class HolderCredentialManager {
     MyDocumentRepository docRepo;
 
     @Inject
-    MyCredentialRepository credRepo;
+    HolderCredExRepository holderCredExRepo;
 
     @Inject
     VPManager vpMgmt;
@@ -114,7 +120,7 @@ public class HolderCredentialManager {
                     "schema can be converted into a credential");
         }
         try {
-            org.hyperledger.bpa.model.BPASchema s = schemaService.getSchemaFor(dbDoc.getSchemaId())
+            BPASchema s = schemaService.getSchemaFor(dbDoc.getSchemaId())
                     .orElseThrow(
                             () -> new PartnerException("No configured schema found for id: " + dbDoc.getSchemaId()));
             V1CredentialProposalRequest v1CredentialProposalRequest = V1CredentialProposalRequest
@@ -137,34 +143,31 @@ public class HolderCredentialManager {
     }
 
     // credential visible in public profile
-    public Optional<MyCredential> toggleVisibility(UUID id) {
-        final Optional<MyCredential> cred = credRepo.findById(id);
-        if (cred.isPresent()) {
-            credRepo.updateIsPublic(id, !cred.get().getIsPublic());
-            vpMgmt.recreateVerifiablePresentation();
-        }
-        return cred;
+    public void toggleVisibility(UUID id) {
+        BPACredentialExchange cred = holderCredExRepo.findById(id).orElseThrow(EntityNotFoundException::new);
+        holderCredExRepo.updateIsPublic(id, !cred.checkIfPublic());
+        vpMgmt.recreateVerifiablePresentation();
     }
 
     // credential CRUD operations
 
     public List<AriesCredential> listCredentials() {
-        return StreamSupport
-                .stream(credRepo.findAll().spliterator(), false)
-                .map(this::buildAriesCredential)
+        return holderCredExRepo.findByRoleEquals(CredentialExchangeRole.HOLDER)
+                .stream()
+                .map(this::buildCredential)
                 .collect(Collectors.toList());
     }
 
-    public Optional<AriesCredential> getAriesCredentialById(@NonNull UUID id) {
-        return credRepo.findById(id).map(this::buildAriesCredential);
+    public AriesCredential getCredentialById(@NonNull UUID id) {
+        return holderCredExRepo.findById(id).map(this::buildCredential).orElseThrow(EntityNotFoundException::new);
     }
 
-    private AriesCredential buildAriesCredential(@NonNull MyCredential dbCred) {
+    private AriesCredential buildCredential(@NonNull BPACredentialExchange dbCred) {
         String typeLabel = null;
         if (dbCred.getCredential() != null) {
             typeLabel = schemaService.getSchemaLabel(dbCred.getCredential().getSchemaId());
         }
-        return AriesCredential.fromMyCredential(dbCred, typeLabel);
+        return AriesCredential.fromBPACredentialExchange(dbCred, typeLabel);
     }
 
     /**
@@ -174,19 +177,17 @@ public class HolderCredentialManager {
      * @param label the credentials label
      * @return the updated credential if found
      */
-    public Optional<AriesCredential> updateCredentialById(@NonNull UUID id, @Nullable String label) {
-        final Optional<AriesCredential> cred = getAriesCredentialById(id);
-        if (cred.isPresent()) {
-            String mergedLabel = labelStrategy.apply(label, cred.get());
-            credRepo.updateLabel(id, mergedLabel);
-            cred.get().setLabel(label);
-        }
+    public AriesCredential updateCredentialById(@NonNull UUID id, @Nullable String label) {
+        final AriesCredential cred = getCredentialById(id);
+        String mergedLabel = labelStrategy.apply(label, cred);
+        holderCredExRepo.updateLabel(id, mergedLabel);
+        cred.setLabel(label);
         return cred;
     }
 
     public void deleteCredentialById(@NonNull UUID id) {
-        credRepo.findById(id).ifPresent(c -> {
-            boolean isPublic = c.getIsPublic();
+        holderCredExRepo.findById(id).ifPresent(c -> {
+            boolean isPublic = c.checkIfPublic();
             try {
                 if (c.getReferent() != null) {
                     ac.credentialRemove(c.getReferent());
@@ -195,7 +196,7 @@ public class HolderCredentialManager {
                 // if we fail here it's not good, but also no deal-breaker, so log and continue
                 log.error("Could not delete aca-py credential for referent: {}", c.getReferent(), e);
             }
-            credRepo.deleteById(id);
+            holderCredExRepo.deleteById(id);
             if (isPublic) {
                 vpMgmt.recreateVerifiablePresentation();
             }
@@ -248,12 +249,12 @@ public class HolderCredentialManager {
     @Scheduled(fixedRate = "5m", initialDelay = "1m")
     public void checkRevocationStatus() {
         log.trace("Running revocation checks");
-        credRepo.findNotRevoked().forEach(cred -> {
+        holderCredExRepo.findNotRevoked().forEach(cred -> {
             try {
                 log.trace("Running revocation check for credential exchange: {}", cred.getReferent());
                 ac.credentialRevoked(Objects.requireNonNull(cred.getReferent())).ifPresent(isRevoked -> {
                     if (isRevoked.getRevoked() != null && isRevoked.getRevoked()) {
-                        credRepo.updateRevoked(cred.getId(), Boolean.TRUE);
+                        holderCredExRepo.updateRevoked(cred.getId(), Boolean.TRUE);
                         log.debug("Credential with referent id: {} has been revoked", cred.getReferent());
                     }
                 });
@@ -268,37 +269,56 @@ public class HolderCredentialManager {
     // credential, signed and stored in wallet
     public void handleV1CredentialExchangeAcked(@NonNull V1CredentialExchange credEx) {
         String label = labelStrategy.apply(credEx.getCredential());
-        MyCredential dbCred = MyCredential.defaultCredentialBuilder()
-                .connectionId(credEx.getConnectionId())
-                .threadId(credEx.getThreadId())
-                .credentialExchangeId(credEx.getCredentialExchangeId())
-                .referent(credEx.getCredential().getReferent())
-                .state(credEx.getState())
-                .credential(credEx.getCredential())
-                .label(label)
-                .issuer(resolveIssuer(credEx.getCredential()))
-                .exchangeVersion(ExchangeVersion.V1)
-                .build();
-        MyCredential dbCredential = credRepo.save(dbCred);
-        fireCredentialAddedEvent(dbCredential);
-    }
-
-    public void handleV2CredentialReceived(@NonNull V20CredExRecord credEx) {
-        V2ToV1IndyCredentialConverter.INSTANCE().toV1(credEx).ifPresent(c -> {
-            MyCredential dbCred = MyCredential.defaultCredentialBuilder()
-                    .connectionId(credEx.getConnectionId())
+        BPASchema bpaSchema = schemaService.getSchemaFor(credEx.getSchemaId()).orElse(null);
+        partnerRepo.findByConnectionId(credEx.getConnectionId()).ifPresent(p -> {
+            BPACredentialExchange ex = BPACredentialExchange
+                    .builder()
+                    .partner(p)
+                    .schema(bpaSchema)
                     .threadId(credEx.getThreadId())
-                    .credentialExchangeId(credEx.getCredExId())
-                    .referent(credEx.getCredExId())
+                    .credentialExchangeId(credEx.getCredentialExchangeId())
+                    .referent(credEx.getCredential() != null ? credEx.getCredential().getReferent() : null)
                     .state(credEx.getState())
-                    .exchangeVersion(ExchangeVersion.V2)
+                    .pushStateChange(credEx.getState(), TimeUtil.parseZonedTimestamp(credEx.getUpdatedAt()))
+                    .credential(credEx.getCredential())
+                    .label(label)
+                    .issuer(resolveIssuer(credEx.getCredential()))
+                    .role(CredentialExchangeRole.HOLDER)
                     .build();
-            credRepo.save(dbCred);
+            ex = holderCredExRepo.save(ex);
+            fireCredentialAddedEvent(ex);
         });
     }
 
+    public void handleV1ProposalSent(@NonNull V1CredentialExchange credEx) {
+        partnerRepo.findByConnectionId(credEx.getConnectionId()).ifPresent(p -> {
+            // TODO
+        });
+    }
+
+    public void handleV1OfferReceived(@NonNull V1CredentialExchange credEx) {
+        partnerRepo.findByConnectionId(credEx.getConnectionId()).ifPresent(p -> {
+            // TODO
+        });
+    }
+
+    public void handleV2CredentialReceived(@NonNull V20CredExRecord credEx) {
+        V2ToV1IndyCredentialConverter.INSTANCE().toV1(credEx)
+                .flatMap(c -> partnerRepo.findByConnectionId(credEx.getConnectionId())).ifPresent(p -> {
+                    BPACredentialExchange dbCred = BPACredentialExchange.builder()
+                            .partner(p)
+                            .threadId(credEx.getThreadId())
+                            .credentialExchangeId(credEx.getCredExId())
+                            .referent(credEx.getCredExId())
+                            .state(credEx.getState())
+                            .exchangeVersion(ExchangeVersion.V2)
+                            .build();
+                    holderCredExRepo.save(dbCred);
+                });
+    }
+
     public void handleV2CredentialDone(@NonNull V20CredExRecord credEx) {
-        credRepo.findByCredentialExchangeId(credEx.getCredExId()).ifPresent(
+        holderCredExRepo.findByCredentialExchangeId(credEx.getCredExId()).ifPresent(
                 dbCred -> V2ToV1IndyCredentialConverter.INSTANCE().toV1(credEx)
                         .ifPresent(c -> {
                             String label = labelStrategy.apply(c);
@@ -307,7 +327,7 @@ public class HolderCredentialManager {
                                     .setCredential(c)
                                     .setLabel(label)
                                     .setIssuer(resolveIssuer(c));
-                            MyCredential dbCredential = credRepo.update(dbCred);
+                            BPACredentialExchange dbCredential = holderCredExRepo.update(dbCred);
                             fireCredentialAddedEvent(dbCredential);
                         }));
     }
@@ -319,14 +339,14 @@ public class HolderCredentialManager {
      * @param credentialEvent {@link V2IssueIndyCredentialEvent}
      */
     public void handleIssueCredentialV2Indy(V2IssueIndyCredentialEvent credentialEvent) {
-        credRepo.findByCredentialExchangeId(credentialEvent.getCredExId()).ifPresent(bpaEx -> {
+        holderCredExRepo.findByCredentialExchangeId(credentialEvent.getCredExId()).ifPresent(bpaEx -> {
             bpaEx.setReferent(credentialEvent.getCredIdStored());
-            credRepo.update(bpaEx);
+            holderCredExRepo.update(bpaEx);
         });
     }
 
-    private void fireCredentialAddedEvent(@NonNull MyCredential updated) {
-        AriesCredential ariesCredential = buildAriesCredential(updated);
+    private void fireCredentialAddedEvent(@NonNull BPACredentialExchange updated) {
+        AriesCredential ariesCredential = buildCredential(updated);
         eventPublisher.publishEventAsync(CredentialAddedEvent.builder()
                 .credential(ariesCredential)
                 .build());

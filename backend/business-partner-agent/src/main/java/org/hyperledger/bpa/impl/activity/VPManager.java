@@ -28,6 +28,7 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.Setter;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential.VerifiableIndyCredentialBuilder;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
@@ -39,17 +40,14 @@ import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
+import org.hyperledger.bpa.model.BPACredentialExchange;
 import org.hyperledger.bpa.model.DidDocWeb;
-import org.hyperledger.bpa.model.MyCredential;
 import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.repository.DidDocWebRepository;
-import org.hyperledger.bpa.repository.MyCredentialRepository;
+import org.hyperledger.bpa.repository.HolderCredExRepository;
 import org.hyperledger.bpa.repository.MyDocumentRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Singleton
 public class VPManager {
@@ -61,7 +59,7 @@ public class VPManager {
     MyDocumentRepository docRepo;
 
     @Inject
-    MyCredentialRepository credRepo;
+    HolderCredExRepository holderCredExRepo;
 
     @Inject
     DidDocWebRepository didRepo;
@@ -84,7 +82,8 @@ public class VPManager {
 
         docRepo.findByIsPublicTrue().forEach(doc -> vcs.add(buildFromDocument(doc, myDid)));
 
-        credRepo.findByIsPublicTrue().forEach(cred -> vcs.add(buildFromCredential(cred)));
+        holderCredExRepo.findByRoleAndIsPublicTrue(CredentialExchangeRole.HOLDER)
+                .forEach(cred -> vcs.add(buildFromCredential(cred)));
 
         // only split up into own method, because of a weird issue that the second
         // thread does
@@ -110,7 +109,7 @@ public class VPManager {
     }
 
     protected VerifiableIndyCredential buildFromDocument(@NonNull MyDocument doc, @NonNull String myDid) {
-        final ObjectNode on = converter.fromMap(doc.getDocument(), ObjectNode.class);
+        final ObjectNode on = converter.fromMap(Objects.requireNonNull(doc.getDocument()), ObjectNode.class);
         on.remove("id");
         on.put("id", myDid);
 
@@ -130,12 +129,13 @@ public class VPManager {
                 .build();
     }
 
-    protected VerifiableIndyCredential buildFromCredential(@NonNull MyCredential cred) {
+    protected VerifiableIndyCredential buildFromCredential(@NonNull BPACredentialExchange cred) {
         final ArrayList<String> type = new ArrayList<>(cred.getType().getType());
         type.add("IndyCredential");
 
         Credential ariesCred = cred.getCredential();
-        final ArrayList<Object> context = new ArrayList<>(resolveContext(cred.getType(), ariesCred.getSchemaId()));
+        final ArrayList<Object> context = new ArrayList<>(
+                resolveContext(cred.getType(), Objects.requireNonNull(ariesCred).getSchemaId()));
         context.add(ApiConstants.INDY_CREDENTIAL_SCHEMA);
 
         @SuppressWarnings("rawtypes")
@@ -143,7 +143,7 @@ public class VPManager {
                 .id("urn:" + cred.getId().toString())
                 .type(type)
                 .context(context)
-                .issuanceDate(TimeUtil.currentTimeFormatted(cred.getIssuedAt()))
+                .issuanceDate(TimeUtil.currentTimeFormatted(cred.calculateIssuedAt()))
                 .schemaId(ariesCred.getSchemaId())
                 .credDefId(ariesCred.getCredentialDefinitionId())
                 .label(cred.getLabel())
@@ -155,7 +155,8 @@ public class VPManager {
     public Optional<VerifiablePresentation<VerifiableIndyCredential>> getVerifiablePresentation() {
         final Optional<DidDocWeb> dbVP = didRepo.findDidDocSingle();
         if (dbVP.isPresent() && dbVP.get().getProfileJson() != null) {
-            return Optional.of(converter.fromMap(dbVP.get().getProfileJson(), Converter.VP_TYPEREF));
+            return Optional
+                    .of(converter.fromMap(Objects.requireNonNull(dbVP.get().getProfileJson()), Converter.VP_TYPEREF));
         }
         return Optional.empty();
     }

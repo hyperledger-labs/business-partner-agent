@@ -1,5 +1,5 @@
 import moment from "moment";
-import {CredentialTypes, PartnerStates} from "../constants";
+import { CredentialTypes, PartnerStates } from "../constants";
 import { EventBus, axios, apiBaseUrl } from "../main";
 import { getPartnerProfile } from "../utils/partnerUtils";
 import adminService from "@/services/adminService";
@@ -171,11 +171,13 @@ export const loadPartnerSelectList = async ({ commit }) => {
     .then((result) => {
       if (result.status === 200) {
         // filter out partners that are only at the invitation stage, we can't do anything until they accept.
-        let partners = result.data.filter((partner) => {
-          return partner.state !== PartnerStates.INVITATION.value;
-        }).map((p) => {
-          return { value: p.id, text: p.name, ...p };
-        });
+        let partners = result.data
+          .filter((partner) => {
+            return partner.state !== PartnerStates.INVITATION.value;
+          })
+          .map((p) => {
+            return { value: p.id, text: p.name, ...p };
+          });
         commit({
           type: "setPartnerSelectList",
           list: partners,

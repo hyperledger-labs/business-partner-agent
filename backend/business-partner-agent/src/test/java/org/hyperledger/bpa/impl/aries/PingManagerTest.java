@@ -68,7 +68,7 @@ class PingManagerTest {
                 .thenReturn(Optional.of(new PingResponse("a")))
                 .thenReturn(Optional.of(new PingResponse("b")));
 
-        ping.handlePingEvent(PingEvent.of("a", "response_received"));
+        ping.handlePingEvent(PingEvent.of("a", "received"));
         assertEquals(1, ping.getReceivedSize());
 
         ping.checkConnections();
@@ -90,8 +90,8 @@ class PingManagerTest {
         assertEquals(2, ping.getSentSize());
         assertEquals(0, ping.getReceivedSize());
 
-        ping.handlePingEvent(PingEvent.of("a", "response_received"));
-        ping.handlePingEvent(PingEvent.of("b", "response_received"));
+        ping.handlePingEvent(PingEvent.of("a", "received"));
+        ping.handlePingEvent(PingEvent.of("b", "received"));
         ping.handlePingEvent(PingEvent.of("comment", "sent"));
 
         assertEquals(2, ping.getReceivedSize());
