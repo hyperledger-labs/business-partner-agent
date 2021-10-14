@@ -75,16 +75,16 @@
             v-if="isWaitingForMatchingCreds"
             type="list-item-three-line"
           />
-          <PresentationRecord
-            class="justify-start"
-            v-else-if="isStateRequestReceived"
-            v-bind:record="record"
-          ></PresentationRecord>
           <PresentationRecordV2
+            class="justify-start"
+            v-else-if="showV2"
+            v-bind:record="record"
+          ></PresentationRecordV2>
+          <PresentationRecord
             class="justify-start"
             v-else
             v-bind:record="record"
-          ></PresentationRecordV2>
+          ></PresentationRecord>
           <v-alert
             v-if="
               !isWaitingForMatchingCreds &&
@@ -186,6 +186,13 @@ export default {
     };
   },
   computed: {
+    showV2() {
+      return (
+        this.record.state &&
+        (this.record.state === PresentationExchangeStates.PRESENTATION_SENT ||
+          this.record.state === PresentationExchangeStates.VERIFIED)
+      );
+    },
     isStateRequestReceived() {
       return (
         this.record.state &&
