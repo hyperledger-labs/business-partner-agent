@@ -149,6 +149,9 @@ export default {
     },
 
     createTemplateFromSchemaId(schemaId) {
+      // as a holder, i may not know the schema - schemaID is set only if we have stored the schema
+      // return null if we do not have a schema id.
+      if (!schemaId) return null;
       const schemas = this.$store.getters.getSchemas;
       let schema = schemas.find((schema) => {
         return schema.schemaId === schemaId;

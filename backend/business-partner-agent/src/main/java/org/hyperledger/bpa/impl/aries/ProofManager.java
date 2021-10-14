@@ -37,6 +37,7 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.api.exception.PresentationConstructionException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.controller.api.partner.ApproveProofRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentials;
 import org.hyperledger.bpa.impl.activity.DidResolver;
@@ -210,15 +211,17 @@ public class ProofManager {
     }
 
     // manual proof request flow
-    public void presentProof(@NotNull PartnerProof proofEx, @Nullable PresentationRequest req) {
+    public void presentProof(@NotNull PartnerProof proofEx, @Nullable ApproveProofRequest req) {
         if (PresentationExchangeRole.PROVER.equals(proofEx.getRole())
                 && PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
             try {
-                if (req == null) {
+                if (req == null || req.getReferents() == null || req.getReferents().size() == 0) {
                     ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId())
                             .ifPresent(this::presentProofAcceptAll);
                 } else {
-                    ac.presentProofRecordsSendPresentation(proofEx.getPresentationExchangeId(), req);
+                    // find all the matching credentials using the provided referent data
+                    ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId())
+                            .ifPresent(per -> this.presentProofAcceptSelected(per, req.getReferents()));
                 }
             } catch (IOException e) {
                 throw new NetworkException(ACA_PY_ERROR_MSG, e);
@@ -237,6 +240,43 @@ public class ProofManager {
                         .ifPresentOrElse(creds -> {
                             if (CollectionUtils.isNotEmpty(creds)) {
                                 PresentationRequestBuilder.acceptAll(presentationExchangeRecord, creds)
+                                        .ifPresent(pr -> {
+                                            try {
+                                                ac.presentProofRecordsSendPresentation(
+                                                        presentationExchangeRecord.getPresentationExchangeId(),
+                                                        pr);
+                                            } catch (IOException e) {
+                                                log.error(ACA_PY_ERROR_MSG, e);
+                                            }
+                                        });
+                            } else {
+                                String msg = "No matching credentials found for proof request: "
+                                        + presentationExchangeRecord.getPresentationExchangeId();
+                                log.warn(msg);
+                                pProofRepo.findByPresentationExchangeId(
+                                        presentationExchangeRecord.getPresentationExchangeId())
+                                        .ifPresent(pp -> pProofRepo.updateProblemReport(pp.getId(), msg));
+                                throw new PresentationConstructionException(msg);
+                            }
+                        }, () -> log.error("Could not load matching credentials from aca-py"));
+            } catch (IOException e) {
+                throw new NetworkException(ACA_PY_ERROR_MSG, e);
+            }
+        }
+    }
+
+    void presentProofAcceptSelected(@NonNull PresentationExchangeRecord presentationExchangeRecord,
+            List<String> referents) {
+        if (PresentationExchangeState.REQUEST_RECEIVED.equals(presentationExchangeRecord.getState())) {
+            try {
+                ac.presentProofRecordsCredentials(presentationExchangeRecord.getPresentationExchangeId())
+                        .ifPresentOrElse(creds -> {
+                            if (CollectionUtils.isNotEmpty(creds)) {
+                                List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> selected = creds
+                                        .stream()
+                                        .filter(c -> referents.contains(c.getCredentialInfo().getReferent()))
+                                        .collect(Collectors.toList());
+                                PresentationRequestBuilder.acceptAll(presentationExchangeRecord, selected)
                                         .ifPresent(pr -> {
                                             try {
                                                 ac.presentProofRecordsSendPresentation(
