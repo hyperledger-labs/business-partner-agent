@@ -67,8 +67,8 @@ public class ProofExchangeController {
      * @return list of {@link PresentationRequestCredentials}
      */
     @Get("/{id}/matching-credentials")
-    public HttpResponse<List<PresentationRequestCredentials>> getMatchingCredentials(@PathVariable String id) {
-        List<PresentationRequestCredentials> mc = proofM.getMatchingCredentials(UUID.fromString(id));
+    public HttpResponse<List<PresentationRequestCredentials>> getMatchingCredentials(@PathVariable UUID id) {
+        List<PresentationRequestCredentials> mc = proofM.getMatchingCredentials(id);
         return HttpResponse.ok(mc);
     }
 
@@ -80,8 +80,8 @@ public class ProofExchangeController {
      * @return HTTP status
      */
     @Post("/{id}/prove")
-    public HttpResponse<Void> responseToProofRequest(@PathVariable String id, @Body @Nullable PresentationRequest req) {
-        final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(id));
+    public HttpResponse<Void> responseToProofRequest(@PathVariable UUID id, @Body @Nullable PresentationRequest req) {
+        final Optional<PartnerProof> proof = ppRepo.findById(id);
         if (proof.isPresent()) {
             proofM.presentProof(proof.get(), req);
             return HttpResponse.ok();
@@ -98,8 +98,8 @@ public class ProofExchangeController {
      */
     @Post("/{id}/decline")
     public HttpResponse<Void> declinePresentProofRequest(
-            @PathVariable String id) {
-        final Optional<PartnerProof> proof = ppRepo.findById(UUID.fromString(id));
+            @PathVariable UUID id) {
+        final Optional<PartnerProof> proof = ppRepo.findById(id);
         if (proof.isPresent()) {
             proofM.declinePresentProofRequest(proof.get(), "User Declined Proof Request: No reason provided");
             return HttpResponse.ok();
@@ -146,8 +146,8 @@ public class ProofExchangeController {
      * @return {@link AriesProofExchange}
      */
     @Get("/{id}")
-    public HttpResponse<AriesProofExchange> getProofExchangeById(@PathVariable String id) {
-        Optional<AriesProofExchange> pProof = proofM.getPartnerProofById(UUID.fromString(id));
+    public HttpResponse<AriesProofExchange> getProofExchangeById(@PathVariable UUID id) {
+        Optional<AriesProofExchange> pProof = proofM.getPartnerProofById(id);
         if (pProof.isPresent()) {
             return HttpResponse.ok(pProof.get());
         }
@@ -162,8 +162,8 @@ public class ProofExchangeController {
      */
     @Delete("/{id}")
     public HttpResponse<Void> deleteProofExchangeById(
-            @PathVariable String id) {
-        proofM.deletePartnerProof(UUID.fromString(id));
+            @PathVariable UUID id) {
+        proofM.deletePartnerProof(id);
         return HttpResponse.ok();
     }
 }

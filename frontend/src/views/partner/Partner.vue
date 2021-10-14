@@ -310,6 +310,10 @@ export default {
           value: "displayText",
         },
         {
+          text: "Role",
+          value: "role",
+        },
+        {
           text: "Updated at",
           value: "updatedAt",
         },
@@ -403,7 +407,7 @@ export default {
       console.log("Getting issued credential records...");
       this.isLoadingCredExRecords = true;
       issuerService
-        .listCredentialExchangesAsIssuer(id)
+        .listCredentialExchanges(id)
         .then((result) => {
           this.isLoadingCredExRecords = false;
           if ({}.hasOwnProperty.call(result, "data")) {

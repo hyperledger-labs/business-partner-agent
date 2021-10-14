@@ -83,7 +83,7 @@ public class ChatMessageManager {
         }
     }
 
-    public void sendMessage(@NonNull String partnerId, @NonNull String content) {
+    public void sendMessage(@NonNull UUID partnerId, @NonNull String content) {
         // want to send an outgoing message to a partner...
         // workflow:
         // get partner, check if we can send (connection id and aries support required)
@@ -94,7 +94,7 @@ public class ChatMessageManager {
         // something doesn't work
         // perhaps the user can fix it, but at least they will know what they expected
         // to happen didn't happen.
-        partnerRepo.findById(UUID.fromString(partnerId)).ifPresentOrElse(p -> {
+        partnerRepo.findById(partnerId).ifPresentOrElse(p -> {
             if (StringUtils.isNotEmpty(p.getConnectionId()) && p.getAriesSupport()) {
                 if (cm.sendMessage(p.getConnectionId(), content)) {
                     chatMessageService.saveOutgoingMessage(p, content);

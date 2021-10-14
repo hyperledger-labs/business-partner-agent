@@ -17,8 +17,10 @@
  */
 package org.hyperledger.bpa.impl.aries;
 
+import io.micronaut.context.env.Environment;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
+import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.RunWithAries;
@@ -26,7 +28,9 @@ import org.hyperledger.bpa.client.CachingAriesClient;
 import org.hyperledger.bpa.impl.activity.CryptoManager;
 import org.hyperledger.bpa.impl.activity.Identity;
 import org.hyperledger.bpa.impl.activity.VPManager;
-import org.hyperledger.bpa.repository.MyCredentialRepository;
+import org.hyperledger.bpa.model.Partner;
+import org.hyperledger.bpa.repository.HolderCredExRepository;
+import org.hyperledger.bpa.repository.PartnerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,14 +38,17 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@MicronautTest
+@MicronautTest(environments = { Environment.TEST, "test-web" })
 public class CredentialManagerIntegrationTest extends RunWithAries {
 
     @Inject
     HolderCredentialManager mgmt;
 
     @Inject
-    MyCredentialRepository credRepo;
+    HolderCredExRepository holderCredExRepo;
+
+    @Inject
+    PartnerRepository partnerRepo;
 
     @Inject
     VPManager vpMgmt;
@@ -68,12 +75,13 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
     void testDeleteCredential() throws Exception {
         // create credential
         final V1CredentialExchange credEx = createNewCredential();
+        createRandomPartner(credEx.getConnectionId());
         mgmt.handleV1CredentialExchangeAcked(credEx);
-        assertEquals(1, credRepo.count());
+        assertEquals(1, holderCredExRepo.count());
         assertTrue(vpMgmt.getVerifiablePresentation().isEmpty());
 
         // make it public
-        final UUID credId = credRepo.findAll().iterator().next().getId();
+        final UUID credId = holderCredExRepo.findAll().iterator().next().getId();
         mgmt.toggleVisibility(credId);
         waitForVP(vpMgmt, true);
         assertTrue(vpMgmt.getVerifiablePresentation().isPresent());
@@ -91,5 +99,16 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
     private V1CredentialExchange createNewCredential() {
         final String ex = loader.load("files/credentialExchange.json");
         return GsonConfig.defaultConfig().fromJson(ex, V1CredentialExchange.class);
+    }
+
+    private void createRandomPartner(String connectionId) {
+        partnerRepo.save(Partner
+                .builder()
+                .ariesSupport(Boolean.TRUE)
+                .did(UUID.randomUUID().toString())
+                .connectionId(connectionId)
+                .state(ConnectionState.ACTIVE)
+                .trustPing(Boolean.TRUE)
+                .build());
     }
 }

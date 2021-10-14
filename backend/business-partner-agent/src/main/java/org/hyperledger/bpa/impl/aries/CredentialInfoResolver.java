@@ -27,7 +27,7 @@ import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.impl.aries.config.RestrictionsManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
-import org.hyperledger.bpa.repository.MyCredentialRepository;
+import org.hyperledger.bpa.repository.HolderCredExRepository;
 
 @Singleton
 public class CredentialInfoResolver {
@@ -39,7 +39,7 @@ public class CredentialInfoResolver {
     RestrictionsManager restrictionsManager;
 
     @Inject
-    MyCredentialRepository credentialRepository;
+    HolderCredExRepository holderCredExRepo;
 
     public AriesCredential.BPACredentialInfo populateCredentialInfo(
             @NonNull org.hyperledger.aries.api.present_proof.PresentationRequestCredentials.CredentialInfo ci) {
@@ -53,7 +53,7 @@ public class CredentialInfoResolver {
             builder.issuerLabel(generateIssuerLabel(ci.getCredentialDefinitionId()));
         }
         if (StringUtils.isNotEmpty(ci.getReferent())) {
-            credentialRepository.findByReferent(ci.getReferent()).ifPresent(cred -> {
+            holderCredExRepo.findByReferent(ci.getReferent()).ifPresent(cred -> {
                 builder.credentialId(cred.getId());
                 builder.credentialLabel(cred.getLabel());
             });

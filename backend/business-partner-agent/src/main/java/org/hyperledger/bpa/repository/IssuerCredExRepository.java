@@ -29,13 +29,12 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 import org.hyperledger.bpa.model.StateChangeDecorator;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface BPACredentialExchangeRepository extends CrudRepository<BPACredentialExchange, UUID> {
+public interface IssuerCredExRepository extends CrudRepository<BPACredentialExchange, UUID> {
 
     @NonNull
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
@@ -60,10 +59,6 @@ public interface BPACredentialExchangeRepository extends CrudRepository<BPACrede
     @Join(value = "credDef", type = Join.Type.LEFT_FETCH)
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     List<BPACredentialExchange> listOrderByUpdatedAtDesc();
-
-    Long countByStateEquals(CredentialExchangeState state);
-
-    Long countByStateEqualsAndCreatedAtAfter(CredentialExchangeState state, Instant createdAt);
 
     Number updateCredential(@Id UUID id, Credential credential);
 

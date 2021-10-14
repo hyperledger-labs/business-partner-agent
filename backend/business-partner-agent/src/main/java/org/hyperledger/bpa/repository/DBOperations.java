@@ -60,12 +60,12 @@ public class DBOperations {
         String pwEncoded = enc.encode(password);
         userRepo.findByUsername(username)
                 .ifPresentOrElse(u -> {
-                            log.info("Bootstrap user already exists, skipping creation");
-                            if (!enc.matches(password, u.getPassword())) {
-                                log.info("The password of the default user has changed, doing password reset.");
-                                userRepo.updatePassword(u.getId(), pwEncoded);
-                            }
-                        },
+                    log.info("Bootstrap user already exists, skipping creation");
+                    if (!enc.matches(password, u.getPassword())) {
+                        log.info("The password of the default user has changed, doing password reset.");
+                        userRepo.updatePassword(u.getId(), pwEncoded);
+                    }
+                },
                         () -> userRepo.save(BPAUser.builder()
                                 .username(username)
                                 .password(pwEncoded)

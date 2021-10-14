@@ -41,9 +41,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Stores issued credentials
- *
- * TODO is basically the same as {@link MyCredential} and both can be merged
+ * Stores credential exchanges, either holder or issuer. An exchange is NOT to
+ * be confused with the verifiable credential (VC) that is part of the public
+ * profile. When an aries credential is made public it will become a VC as part
+ * of the public profile.
  */
 @Data
 @NoArgsConstructor
@@ -73,6 +74,7 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
     @OneToOne
     private BPACredentialDefinition credDef;
 
+    @Nullable
     @OneToOne
     private Partner partner;
 
@@ -83,13 +85,20 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
     @Nullable
     private String label;
 
+    /** aca-py thread id */
     private String threadId;
 
+    /** temporary credential exchange identifier */
     private String credentialExchangeId;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private CredentialExchangeRole role = CredentialExchangeRole.ISSUER;
+
+    @Nullable
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private ExchangeVersion exchangeVersion = ExchangeVersion.V1;
 
     @Enumerated(EnumType.STRING)
     private CredentialExchangeState state;
@@ -99,11 +108,6 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
     private StateToTimestamp<CredentialExchangeState> stateToTimestamp;
 
     @Nullable
-    @Builder.Default
-    @Enumerated(EnumType.STRING)
-    private ExchangeVersion exchangeVersion = ExchangeVersion.V1;
-
-    @Nullable
     @TypeDef(type = DataType.JSON)
     private Credential credential;
 
@@ -111,7 +115,10 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
     @TypeDef(type = DataType.JSON)
     private V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialProposal;
 
-    // revocation - link to issued credential
+    @Nullable
+    private String errorMsg;
+
+    // revocation - links to issued credential
     /** credential revocation identifier */
     @Nullable
     private String credRevId;
@@ -122,8 +129,30 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
     @Nullable
     private Boolean revoked;
 
+    // holder only
     @Nullable
-    private String errorMsg;
+    private Boolean isPublic;
+    @Nullable
+    private String issuer;
+    /** aca-py credential identifier */
+    @Nullable
+    private String referent;
+
+    public Instant calculateIssuedAt() {
+        return stateToTimestamp != null && stateToTimestamp.getStateToTimestamp() != null
+                ? stateToTimestamp.getStateToTimestamp().entrySet()
+                        .stream()
+                        .filter(e -> CredentialExchangeState.CREDENTIAL_ACKED.equals(e.getKey())
+                                || CredentialExchangeState.DONE.equals(e.getKey()))
+                        .map(Map.Entry::getValue)
+                        .findFirst()
+                        .orElse(null)
+                : null;
+    }
+
+    public boolean checkIfPublic() {
+        return isPublic != null && isPublic;
+    }
 
     public Map<String, String> proposalAttributesToMap() {
         if (credentialProposal == null || CollectionUtils.isEmpty(credentialProposal.getAttributes())) {

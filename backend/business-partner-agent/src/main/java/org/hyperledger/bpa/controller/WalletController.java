@@ -32,7 +32,6 @@ import org.hyperledger.bpa.controller.api.wallet.WalletCredentialRequest;
 import org.hyperledger.bpa.controller.api.wallet.WalletDocumentRequest;
 import org.hyperledger.bpa.impl.MyDocumentManager;
 import org.hyperledger.bpa.impl.aries.HolderCredentialManager;
-import org.hyperledger.bpa.model.MyCredential;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,7 +48,7 @@ public class WalletController {
     MyDocumentManager docMgmt;
 
     @Inject
-    HolderCredentialManager credMgmt;
+    HolderCredentialManager holderCredMgmt;
 
     // -------------------------------------
     // Document Management
@@ -73,8 +72,8 @@ public class WalletController {
      * @return {@link MyDocumentAPI}
      */
     @Get("/document/{id}")
-    public HttpResponse<MyDocumentAPI> getDocumentById(@PathVariable String id) {
-        final Optional<MyDocumentAPI> myCred = docMgmt.getMyDocumentById(UUID.fromString(id));
+    public HttpResponse<MyDocumentAPI> getDocumentById(@PathVariable UUID id) {
+        final Optional<MyDocumentAPI> myCred = docMgmt.getMyDocumentById(id);
         if (myCred.isPresent()) {
             return HttpResponse.ok(myCred.get());
         }
@@ -101,9 +100,9 @@ public class WalletController {
      */
     @Put("/document/{id}")
     public HttpResponse<MyDocumentAPI> updateDocument(
-            @PathVariable String id,
+            @PathVariable UUID id,
             @Body WalletDocumentRequest req) {
-        return HttpResponse.ok(docMgmt.updateDocument(UUID.fromString(id), MyDocumentAPI.fromRequest(req)));
+        return HttpResponse.ok(docMgmt.updateDocument(id, MyDocumentAPI.fromRequest(req)));
     }
 
     /**
@@ -114,8 +113,8 @@ public class WalletController {
      */
     @Delete("/document/{id}")
     public HttpResponse<Void> deleteDocument(
-            @PathVariable String id) {
-        docMgmt.deleteMyDocumentById(UUID.fromString(id));
+            @PathVariable UUID id) {
+        docMgmt.deleteMyDocumentById(id);
         return HttpResponse.ok();
     }
 
@@ -130,7 +129,7 @@ public class WalletController {
      */
     @Get("/credential")
     public HttpResponse<List<AriesCredential>> getCredentials() {
-        return HttpResponse.ok(credMgmt.listCredentials());
+        return HttpResponse.ok(holderCredMgmt.listCredentials());
     }
 
     /**
@@ -140,12 +139,8 @@ public class WalletController {
      * @return {@link AriesCredential}
      */
     @Get("/credential/{id}")
-    public HttpResponse<AriesCredential> getCredentialById(@PathVariable String id) {
-        final Optional<AriesCredential> cred = credMgmt.getAriesCredentialById(UUID.fromString(id));
-        if (cred.isPresent()) {
-            return HttpResponse.ok(cred.get());
-        }
-        return HttpResponse.notFound();
+    public HttpResponse<AriesCredential> getCredentialById(@PathVariable UUID id) {
+        return HttpResponse.ok(holderCredMgmt.getCredentialById(id));
     }
 
     /**
@@ -157,13 +152,10 @@ public class WalletController {
      */
     @Put("/credential/{id}")
     public HttpResponse<Void> updateCredential(
-            @PathVariable String id,
+            @PathVariable UUID id,
             @Body WalletCredentialRequest req) {
-        final Optional<AriesCredential> apiCred = credMgmt.updateCredentialById(UUID.fromString(id), req.getLabel());
-        if (apiCred.isPresent()) {
-            return HttpResponse.ok();
-        }
-        return HttpResponse.notFound();
+        holderCredMgmt.updateCredentialById(id, req.getLabel());
+        return HttpResponse.ok();
     }
 
     /**
@@ -173,8 +165,8 @@ public class WalletController {
      * @return HTTP status
      */
     @Delete("/credential/{id}")
-    public HttpResponse<Void> deleteCredential(@PathVariable String id) {
-        credMgmt.deleteCredentialById(UUID.fromString(id));
+    public HttpResponse<Void> deleteCredential(@PathVariable UUID id) {
+        holderCredMgmt.deleteCredentialById(id);
         return HttpResponse.ok();
     }
 
@@ -186,11 +178,8 @@ public class WalletController {
      */
     @Put("/credential/{id}/toggle-visibility")
     public HttpResponse<Void> toggleCredentialVisibility(
-            @PathVariable String id) {
-        final Optional<MyCredential> cred = credMgmt.toggleVisibility(UUID.fromString(id));
-        if (cred.isPresent()) {
-            return HttpResponse.ok();
-        }
-        return HttpResponse.notFound();
+            @PathVariable UUID id) {
+        holderCredMgmt.toggleVisibility(id);
+        return HttpResponse.ok();
     }
 }

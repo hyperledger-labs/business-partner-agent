@@ -70,8 +70,8 @@ public class PingManager {
     private final Map<String, String> received = new ConcurrentHashMap<>();
 
     public void handlePingEvent(PingEvent event) {
-        if ("response_received".equals(event.getState())) {
-            received.put(event.getThreadId(), "received");
+        if (event.stateIsReceived()) {
+            received.put(event.getThreadId(), event.getState());
         }
     }
 
