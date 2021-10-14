@@ -271,8 +271,9 @@ public class IssuerCredentialManager {
                     }
                     return true;
                 })
+                .filter(x -> x.getPartner() != null)
                 .filter(x -> {
-                    if (partnerId != null && x.getPartner() != null) {
+                    if (partnerId != null) {
                         return x.getPartner().getId().equals(partnerId);
                     }
                     return true;

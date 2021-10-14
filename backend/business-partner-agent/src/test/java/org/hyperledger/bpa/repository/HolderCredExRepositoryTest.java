@@ -34,8 +34,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 @MicronautTest
 class HolderCredExRepositoryTest extends BaseTest {
@@ -79,7 +78,7 @@ class HolderCredExRepositoryTest extends BaseTest {
     void testUpdateByPartnerId() {
         Partner p = createRandomPartner();
         Partner other = createRandomPartner();
-        holderCredExRepo.save(createDummyCredEx(p));
+        BPACredentialExchange ex1 = holderCredExRepo.save(createDummyCredEx(p));
         holderCredExRepo.save(createDummyCredEx(p));
         holderCredExRepo.save(createDummyCredEx(other));
 
@@ -91,6 +90,8 @@ class HolderCredExRepositoryTest extends BaseTest {
 
         updated = holderCredExRepo.setPartnerIdToNull(UUID.randomUUID());
         assertEquals(0, updated.intValue());
+        ex1 = holderCredExRepo.findById(ex1.getId()).orElseThrow();
+        assertNull(ex1.getPartner());
 
         updated = holderCredExRepo.updateIssuerByPartnerId(other.getId(), "My Bank");
         assertEquals(1, updated.intValue());
