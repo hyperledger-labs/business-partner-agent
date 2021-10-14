@@ -59,7 +59,7 @@ public class StatsService {
         DashboardCounts totals = DashboardCounts
                 .builder()
                 .credentialsSent(holderCredExRepo.countByRoleEqualsAndStateEquals(
-                        CredentialExchangeRole.HOLDER,
+                        CredentialExchangeRole.ISSUER,
                         CredentialExchangeState.CREDENTIAL_ACKED))
                 .credentialsReceived(holderCredExRepo.countByRoleEqualsAndStateEquals(
                         CredentialExchangeRole.HOLDER, CredentialExchangeState.CREDENTIAL_ACKED))

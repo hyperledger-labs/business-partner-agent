@@ -154,15 +154,15 @@ public class HolderCredentialManager {
     public List<AriesCredential> listCredentials() {
         return holderCredExRepo.findByRoleEquals(CredentialExchangeRole.HOLDER)
                 .stream()
-                .map(this::buildAriesCredential)
+                .map(this::buildCredential)
                 .collect(Collectors.toList());
     }
 
-    public AriesCredential getAriesCredentialById(@NonNull UUID id) {
-        return holderCredExRepo.findById(id).map(this::buildAriesCredential).orElseThrow(EntityNotFoundException::new);
+    public AriesCredential getCredentialById(@NonNull UUID id) {
+        return holderCredExRepo.findById(id).map(this::buildCredential).orElseThrow(EntityNotFoundException::new);
     }
 
-    private AriesCredential buildAriesCredential(@NonNull BPACredentialExchange dbCred) {
+    private AriesCredential buildCredential(@NonNull BPACredentialExchange dbCred) {
         String typeLabel = null;
         if (dbCred.getCredential() != null) {
             typeLabel = schemaService.getSchemaLabel(dbCred.getCredential().getSchemaId());
@@ -178,7 +178,7 @@ public class HolderCredentialManager {
      * @return the updated credential if found
      */
     public AriesCredential updateCredentialById(@NonNull UUID id, @Nullable String label) {
-        final AriesCredential cred = getAriesCredentialById(id);
+        final AriesCredential cred = getCredentialById(id);
         String mergedLabel = labelStrategy.apply(label, cred);
         holderCredExRepo.updateLabel(id, mergedLabel);
         cred.setLabel(label);
@@ -346,7 +346,7 @@ public class HolderCredentialManager {
     }
 
     private void fireCredentialAddedEvent(@NonNull BPACredentialExchange updated) {
-        AriesCredential ariesCredential = buildAriesCredential(updated);
+        AriesCredential ariesCredential = buildCredential(updated);
         eventPublisher.publishEventAsync(CredentialAddedEvent.builder()
                 .credential(ariesCredential)
                 .build());

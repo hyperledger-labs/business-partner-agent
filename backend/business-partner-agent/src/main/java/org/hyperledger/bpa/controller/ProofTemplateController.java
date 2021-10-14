@@ -29,11 +29,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.impl.ProofTemplateManager;
-import org.hyperledger.bpa.impl.verification.ValidUUID;
 import org.hyperledger.bpa.model.BPAProofTemplate;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -70,8 +68,8 @@ public class ProofTemplateController {
      * @return {@link ProofTemplate}
      */
     @Get("/{id}")
-    public HttpResponse<ProofTemplate> getProofTemplateForId(@PathVariable @ValidUUID @NotNull String id) {
-        Optional<BPAProofTemplate> proofTemplate = proofTemplateManager.getProofTemplate(UUID.fromString(id));
+    public HttpResponse<ProofTemplate> getProofTemplateForId(@PathVariable UUID id) {
+        Optional<BPAProofTemplate> proofTemplate = proofTemplateManager.getProofTemplate(id);
         if (proofTemplate.isPresent()) {
             return HttpResponse.ok(proofTemplate.get().toRepresentation());
         } else {
@@ -117,8 +115,8 @@ public class ProofTemplateController {
      * @return Http Status
      */
     @Delete("/{id}")
-    public HttpResponse<Void> removeProofTemplate(@PathVariable @ValidUUID @NotNull String id) {
-        proofTemplateManager.removeProofTemplate(UUID.fromString(id));
+    public HttpResponse<Void> removeProofTemplate(@PathVariable UUID id) {
+        proofTemplateManager.removeProofTemplate(id);
         return HttpResponse.ok();
     }
 }

@@ -43,10 +43,8 @@ import org.hyperledger.bpa.impl.activity.PartnerLookup;
 import org.hyperledger.bpa.impl.aries.HolderCredentialManager;
 import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.ProofManager;
-import org.hyperledger.bpa.impl.verification.ValidUUID;
 import org.hyperledger.bpa.model.ChatMessage;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -105,8 +103,8 @@ public class PartnerController {
      * @return partner
      */
     @Get("/{id}")
-    public HttpResponse<PartnerAPI> getPartnerById(@PathVariable String id) {
-        Optional<PartnerAPI> partner = pm.getPartnerById(UUID.fromString(id));
+    public HttpResponse<PartnerAPI> getPartnerById(@PathVariable UUID id) {
+        Optional<PartnerAPI> partner = pm.getPartnerById(id);
         if (partner.isPresent()) {
             return HttpResponse.ok(partner.get());
         }
@@ -122,9 +120,9 @@ public class PartnerController {
      */
     @Put("/{id}")
     public HttpResponse<PartnerAPI> updatePartner(
-            @PathVariable String id,
+            @PathVariable UUID id,
             @Body UpdatePartnerRequest update) {
-        Optional<PartnerAPI> partner = pm.updatePartner(UUID.fromString(id), update);
+        Optional<PartnerAPI> partner = pm.updatePartner(id, update);
         if (partner.isPresent()) {
             return HttpResponse.ok(partner.get());
         }
@@ -140,9 +138,9 @@ public class PartnerController {
      */
     @Put("/{id}/did")
     public HttpResponse<PartnerAPI> updatePartnerDid(
-            @PathVariable String id,
+            @PathVariable UUID id,
             @Body UpdatePartnerDidRequest update) {
-        Optional<PartnerAPI> partner = pm.updatePartnerDid(UUID.fromString(id), update.getDid());
+        Optional<PartnerAPI> partner = pm.updatePartnerDid(id, update.getDid());
         if (partner.isPresent()) {
             return HttpResponse.ok(partner.get());
         }
@@ -156,8 +154,8 @@ public class PartnerController {
      * @return HTTP status, no Body
      */
     @Delete("/{id}")
-    public HttpResponse<Void> removePartner(@PathVariable String id) {
-        pm.removePartnerById(UUID.fromString(id));
+    public HttpResponse<Void> removePartner(@PathVariable UUID id) {
+        pm.removePartnerById(id);
         return HttpResponse.ok();
     }
 
@@ -179,8 +177,8 @@ public class PartnerController {
      * @return HTTP status, no Body
      */
     @Put("/{id}/accept")
-    public HttpResponse<Void> acceptPartnerRequest(@PathVariable String id) {
-        pm.acceptPartner(UUID.fromString(id));
+    public HttpResponse<Void> acceptPartnerRequest(@PathVariable UUID id) {
+        pm.acceptPartner(id);
         return HttpResponse.ok();
     }
 
@@ -202,8 +200,8 @@ public class PartnerController {
      * @return {@link PartnerAPI}
      */
     @Get("/{id}/refresh")
-    public HttpResponse<PartnerAPI> refreshPartner(@PathVariable String id) {
-        final Optional<PartnerAPI> partner = pm.refreshPartner(UUID.fromString(id));
+    public HttpResponse<PartnerAPI> refreshPartner(@PathVariable UUID id) {
+        final Optional<PartnerAPI> partner = pm.refreshPartner(id);
         if (partner.isPresent()) {
             return HttpResponse.ok(partner.get());
         }
@@ -219,10 +217,10 @@ public class PartnerController {
      */
     @Post("/{id}/credential-request")
     public HttpResponse<Void> requestCredential(
-            @PathVariable String id,
+            @PathVariable UUID id,
             @Body RequestCredentialRequest credReq) {
         credM.sendCredentialRequest(
-                UUID.fromString(id),
+                id,
                 UUID.fromString(credReq.getDocumentId()),
                 credReq.getVersion());
         return HttpResponse.ok();
@@ -235,8 +233,8 @@ public class PartnerController {
      * @return HTTP status
      */
     @Get("/{id}/proof-exchanges")
-    public HttpResponse<List<AriesProofExchange>> getPartnerProofs(@PathVariable String id) {
-        return HttpResponse.ok(proofM.listPartnerProofs(UUID.fromString(id)));
+    public HttpResponse<List<AriesProofExchange>> getPartnerProofs(@PathVariable UUID id) {
+        return HttpResponse.ok(proofM.listPartnerProofs(id));
     }
 
     /**
@@ -248,9 +246,9 @@ public class PartnerController {
      */
     @Put("/{id}/proof-request/{templateId}")
     public HttpResponse<Void> invokeProofRequestByTemplate(
-            @PathVariable @ValidUUID @NotNull String id,
-            @PathVariable @ValidUUID @NotNull String templateId) {
-        proofTemplateManager.invokeProofRequestByTemplate(UUID.fromString(templateId), UUID.fromString(id));
+            @PathVariable UUID id,
+            @PathVariable UUID templateId) {
+        proofTemplateManager.invokeProofRequestByTemplate(templateId, id);
         return HttpResponse.ok();
     }
 
@@ -266,7 +264,7 @@ public class PartnerController {
     @Post("/{id}/proof-request")
     @Deprecated
     public HttpResponse<Void> requestProof(
-            @PathVariable String id,
+            @PathVariable UUID id,
             @RequestBody(description = "One of requestBySchema or requestRaw") @Body RequestProofRequest req) {
         if (req.getRequestBySchema() != null && req.getRequestRaw() != null) {
             throw new WrongApiUsageException("One of requestBySchema or requestRaw must be set.");
@@ -274,7 +272,7 @@ public class PartnerController {
         if (req.isRequestBySchema() && StringUtils.isEmpty(req.getRequestBySchema().getSchemaId())) {
             throw new WrongApiUsageException("Schema id must not be empty");
         }
-        proofM.sendPresentProofRequest(UUID.fromString(id), req);
+        proofM.sendPresentProofRequest(id, req);
         return HttpResponse.ok();
     }
 
@@ -290,9 +288,9 @@ public class PartnerController {
     @Post("/{id}/proof-send")
     @Deprecated
     public HttpResponse<Void> sendProof(
-            @PathVariable String id,
+            @PathVariable UUID id,
             @Body SendProofRequest req) {
-        proofM.sendProofProposal(UUID.fromString(id), req.getMyCredentialId());
+        proofM.sendProofProposal(id, req.getMyCredentialId());
         return HttpResponse.ok();
     }
 
@@ -305,7 +303,7 @@ public class PartnerController {
      */
     @Post("/{id}/messages")
     public HttpResponse<Void> sendMessage(
-            @PathVariable String id,
+            @PathVariable UUID id,
             @Body SendMessageRequest msg) {
         chatMessageManager.sendMessage(id, msg.getContent());
         return HttpResponse.ok();
@@ -319,7 +317,7 @@ public class PartnerController {
      */
     @Get("/{id}/messages")
     public HttpResponse<List<ChatMessage>> getMessagesForPartner(
-            @PathVariable String id) {
+            @PathVariable UUID id) {
         return HttpResponse.ok(chatMessageService.getMessagesForPartner(id));
     }
 }

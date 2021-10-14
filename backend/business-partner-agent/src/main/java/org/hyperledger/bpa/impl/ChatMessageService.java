@@ -38,8 +38,8 @@ public class ChatMessageService {
     @Inject
     ChatMessageRepository chatMsgRepo;
 
-    public List<ChatMessage> getMessagesForPartner(@NonNull String partnerId) {
-        return chatMsgRepo.findByPartnerIdOrderByCreatedAtAsc(UUID.fromString(partnerId));
+    public List<ChatMessage> getMessagesForPartner(@NonNull UUID partnerId) {
+        return chatMsgRepo.findByPartnerIdOrderByCreatedAtAsc(partnerId);
     }
 
     public ChatMessage saveIncomingMessage(@NonNull Partner partner, @NonNull String content) {
