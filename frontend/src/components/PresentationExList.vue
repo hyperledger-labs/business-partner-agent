@@ -268,25 +268,15 @@ export default {
       }
     },
     prepareApprovePayload() {
-      // based on ACA-Py structure https://github.com/hyperledger/aries-cloudagent-python/blob/a304568fc3238fe447eacca17d3dd6eb71545904/aries_cloudagent/protocols/present_proof/v1_0/manager.py#L244
       const payload = {
-        requested_attributes: {},
-        requested_predicates: {},
+        referents: []
       };
 
       RequestTypes.map((type) => {
         Object.entries(this.record.proofRequest[type]).map(
           ([groupName, group]) => {
-            if (type === "requestedAttributes") {
-              payload.requested_attributes[groupName] = {
-                cred_id: group.selectedCredential.credentialInfo.referent,
-                revealed: true,
-              };
-            } else if (type === "requestedPredicates") {
-              payload.requested_predicates = {
-                cred_id: group.selectedCredential.credentialInfo.referent,
-              };
-            }
+            console.log(groupName);
+            payload.referents.push(group.selectedCredential?.credentialInfo?.referent);
           }
         );
       });
