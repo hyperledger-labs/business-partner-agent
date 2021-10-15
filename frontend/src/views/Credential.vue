@@ -13,7 +13,7 @@
           depressed
           color="secondary"
           icon
-          @click="$router.push({ name: 'Wallet' })"
+          @click="$router.go(-1)"
         >
           <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>

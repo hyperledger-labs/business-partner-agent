@@ -76,7 +76,7 @@
 </template>
 <script>
 import { EventBus } from "@/main";
-import { ActivityRoles, ActivityStates, ActivityTypes } from "@/constants";
+import {ActivityRoles, ActivityStates, ActivityTypes} from "@/constants";
 import VBpaButton from "@/components/BpaButton";
 import activitiesService from "@/services/activitiesService";
 import NewMessageIcon from "@/components/NewMessageIcon";
@@ -177,6 +177,7 @@ export default {
     },
     openItem(item) {
       // if we click on it, mark it seen...
+      this.$store.commit("activityNotificationSeen", { id: item.id });
       this.$store.commit("taskNotificationSeen", { id: item.id });
 
       console.log(item);
@@ -188,6 +189,16 @@ export default {
             id: item.linkId,
           },
         });
+      } else if (item.type === ActivityTypes.CREDENTIAL_EXCHANGE.value) {
+        let route = {
+          name: "Credential",
+          params: {
+            id: item.linkId,
+            type: "credential",
+          },
+        };
+
+        this.$router.push(route);
       } else if (item.type === ActivityTypes.PRESENTATION_EXCHANGE.value) {
         let route = {
           name: "Partner",

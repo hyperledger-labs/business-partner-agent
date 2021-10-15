@@ -118,6 +118,10 @@ export const ActivityTypes = Object.freeze({
     value: "connection_request",
     label: i18n.t("constants.activityTypes.connectionRequest"),
   },
+  CREDENTIAL_EXCHANGE: {
+    value: "credential_exchange",
+    label: i18n.t("constants.activityTypes.credentialExchange"),
+  },
   PRESENTATION_EXCHANGE: {
     value: "presentation_exchange",
     label: i18n.t("constants.activityTypes.presentationExchange"),
@@ -136,6 +140,22 @@ export const ActivityStates = Object.freeze({
   CONNECTION_REQUEST_SENT: {
     value: "connection_request_sent",
     label: i18n.t("constants.activityStates.connectionRequest.sent"),
+  },
+  CREDENTIAL_EXCHANGE_ACCEPTED: {
+    value: "credential_exchange_accepted",
+    label: i18n.t("constants.activityStates.credentialExchange.accepted"),
+  },
+  CREDENTIAL_EXCHANGE_DECLINED: {
+    value: "credential_exchange_declined",
+    label: i18n.t("constants.activityStates.credentialExchange.declined"),
+  },
+  CREDENTIAL_EXCHANGE_RECEIVED: {
+    value: "credential_exchange_received",
+    label: i18n.t("constants.activityStates.credentialExchange.received"),
+  },
+  CREDENTIAL_EXCHANGE_SENT: {
+    value: "credential_exchange_sent",
+    label: i18n.t("constants.activityStates.credentialExchange.sent"),
   },
   PRESENTATION_EXCHANGE_ACCEPTED: {
     value: "presentation_exchange_accepted",
@@ -163,6 +183,14 @@ export const ActivityRoles = Object.freeze({
   CONNECTION_REQUEST_RECIPIENT: {
     value: "connection_request_recipient",
     label: i18n.t("constants.activityRoles.connectionRequest.recipient"),
+  },
+  CREDENTIAL_EXCHANGE_HOLDER: {
+    value: "credential_exchange_holder",
+    label: i18n.t("constants.activityRoles.credentialExchange.holder"),
+  },
+  CREDENTIAL_EXCHANGE_ISSUER: {
+    value: "credential_exchange_issuer",
+    label: i18n.t("constants.activityRoles.credentialExchange.issuer"),
   },
   PRESENTATION_EXCHANGE_PROVER: {
     value: "presentation_exchange_prover",

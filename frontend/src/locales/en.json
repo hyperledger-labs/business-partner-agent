@@ -283,7 +283,7 @@
   "constants": {
     "activityTypes": {
       "connectionRequest": "Connection Request",
-      "credentialOffer": "Credential Offer",
+      "credentialExchange": "Credential Exchange",
       "presentationExchange": "Presentation of Proof"
     },
     "activityStates": {
@@ -291,6 +291,12 @@
         "accepted": "Connection Request accepted",
         "received": "Connection Request received",
         "sent": "Connection Request sent"
+      },
+      "credentialExchange": {
+        "accepted": "Credential Offer accepted",
+        "declined": "A Credential Offer has been declined",
+        "received": "A Credential Offer has been received",
+        "sent": "Credential Offer sent"
       },
       "presentationExchange": {
         "accepted": "Proof Presentation accepted",
@@ -303,6 +309,10 @@
       "connectionRequest": {
         "sender": "Sender",
         "recipient": "Recipient"
+      },
+      "credentialExchange": {
+        "holder": "Holder",
+        "issuer": "Issuer"
       },
       "presentationExchange": {
         "prover": "Prover",

@@ -47,6 +47,10 @@ export default {
       // if this id is in the specified collection, then show it
       let result = false;
       switch (this.type) {
+        case "activity":
+        case "task":
+          result = ({}.hasOwnProperty.call(this.$store.getters.activityNotifications, this.id)) || ({}.hasOwnProperty.call(this.$store.getters.taskNotifications, this.id));
+          break;
         case "credential":
           result = ({}.hasOwnProperty.call(this.$store.getters.credentialNotifications, this.id));
           break;
@@ -55,9 +59,6 @@ export default {
           break;
         case "presentation":
           result = ({}.hasOwnProperty.call(this.$store.getters.presentationNotifications, this.id));
-          break;
-        case "task":
-          result = ({}.hasOwnProperty.call(this.$store.getters.taskNotifications, this.id));
           break;
         default:
           result = false;
@@ -68,6 +69,9 @@ export default {
       // if this id is in the specified collection, then show it
       let result = "";
       switch (this.type) {
+        case "activity":
+          result = "New activity";
+          break;
         case "credential":
           result = "New activity on Credential";
           break;

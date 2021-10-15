@@ -49,6 +49,7 @@ public class WebSocketMessageBody {
     }
 
     public enum WebSocketMessageType {
+        ACTIVITY_NOTIFICATION,
         ON_MESSAGE_RECEIVED,
         ON_CREDENTIAL_ADDED,
         ON_PARTNER_REQUEST_COMPLETED,
