@@ -216,7 +216,8 @@ public class ProofManager {
                 && PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
             try {
                 List<String> referents = (req == null) ? null : req.getReferents();
-                // find all the matching credentials using the (optionally) provided referent data
+                // find all the matching credentials using the (optionally) provided referent
+                // data
                 ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId())
                         .ifPresent(per -> this.presentProofAcceptSelected(per, req.getReferents()));
             } catch (IOException e) {
@@ -235,7 +236,8 @@ public class ProofManager {
                 ac.presentProofRecordsCredentials(presentationExchangeRecord.getPresentationExchangeId())
                         .ifPresentOrElse(creds -> {
                             if (CollectionUtils.isNotEmpty(creds)) {
-                                List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> selected = getPresentationRequestCredentials(creds, referents);
+                                List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> selected = getPresentationRequestCredentials(
+                                        creds, referents);
                                 PresentationRequestBuilder.acceptAll(presentationExchangeRecord, selected)
                                         .ifPresent(pr -> {
                                             try {
@@ -262,8 +264,11 @@ public class ProofManager {
         }
     }
 
-    private List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> getPresentationRequestCredentials(List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> creds, List<String> referents) {
-        if (referents == null || referents.size() == 0) return creds;
+    private List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> getPresentationRequestCredentials(
+            List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> creds,
+            List<String> referents) {
+        if (referents == null || referents.size() == 0)
+            return creds;
 
         List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> selected = creds
                 .stream()
