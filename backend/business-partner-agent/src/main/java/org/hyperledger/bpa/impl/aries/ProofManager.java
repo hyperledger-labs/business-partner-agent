@@ -219,7 +219,7 @@ public class ProofManager {
                 // find all the matching credentials using the (optionally) provided referent
                 // data
                 ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId())
-                        .ifPresent(per -> this.presentProofAcceptSelected(per, req.getReferents()));
+                        .ifPresent(per -> this.presentProofAcceptSelected(per, referents));
             } catch (IOException e) {
                 throw new NetworkException(ACA_PY_ERROR_MSG, e);
             }
