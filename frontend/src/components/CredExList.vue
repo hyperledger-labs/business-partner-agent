@@ -186,7 +186,9 @@
             <v-bpa-button
               :color="
                 document.credentialExchangeState ===
-                exchangeStates.PROPOSAL_RECEIVED
+                  exchangeStates.PROPOSAL_RECEIVED ||
+                document.credentialExchangeState ===
+                  exchangeStates.OFFER_RECEIVED
                   ? 'secondary'
                   : 'primary'
               "
@@ -219,6 +221,15 @@
               "
               :loading="isLoadingSendCounterOffer"
               @click="sendCounterOffer(true)"
+              >{{ $t("button.accept") }}</v-bpa-button
+            >
+            <v-bpa-button
+              v-if="
+                document.credentialExchangeState ===
+                exchangeStates.OFFER_RECEIVED
+              "
+              color="primary"
+              @click="acceptCredentialOffer(document.walletCredentialId)"
               >{{ $t("button.accept") }}</v-bpa-button
             >
           </v-layout>
@@ -353,6 +364,7 @@ export default {
         credentialExchangeRole: item.role,
         credentialWasEdited: false,
         credentialStateToTimestamp: item.stateToTimestamp,
+        walletCredentialId: item.id,
       };
 
       this.$emit("openItem", item);
@@ -382,6 +394,10 @@ export default {
     revokeCredential(id) {
       this.revoked.push(id);
       issuerService.revokeCredential(id);
+    },
+    acceptCredentialOffer(id) {
+      issuerService.acceptCredentialOffer(id);
+      this.closeDialog();
     },
     async sendCounterOffer(acceptAll) {
       this.isLoadingSendCounterOffer = true;

@@ -62,6 +62,9 @@ export default {
   revokeCredential(id) {
     return appAxios().post(`${ApiRoutes.ISSUER}/exchanges/${id}/revoke`);
   },
+  acceptCredentialOffer(id) {
+    return appAxios().put(`${ApiRoutes.WALLET}/credential/${id}/accept-offer`);
+  },
   sendCredentialOffer(id, counterOfferData) {
     return appAxios().post(
       `${ApiRoutes.ISSUER}/exchanges/${id}/send-offer`,

@@ -109,11 +109,15 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
 
     @Nullable
     @TypeDef(type = DataType.JSON)
-    private Credential credential;
+    private V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialProposal;
 
     @Nullable
     @TypeDef(type = DataType.JSON)
-    private V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialProposal;
+    private V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialOffer;
+
+    @Nullable
+    @TypeDef(type = DataType.JSON)
+    private Credential credential;
 
     @Nullable
     private String errorMsg;
@@ -154,16 +158,24 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
         return isPublic != null && isPublic;
     }
 
-    public Map<String, String> proposalAttributesToMap() {
-        if (credentialProposal == null || CollectionUtils.isEmpty(credentialProposal.getAttributes())) {
+    public @io.micronaut.core.annotation.NonNull Map<String, String> proposalAttributesToMap() {
+        return attributesToMap(credentialProposal);
+    }
+
+    public @io.micronaut.core.annotation.NonNull Map<String, String> offerAttributesToMap() {
+        return attributesToMap(credentialOffer);
+    }
+
+    private Map<String, String> attributesToMap(V1CredentialExchange.CredentialProposalDict.CredentialProposal p) {
+        if (p == null || CollectionUtils.isEmpty(p.getAttributes())) {
             return Map.of();
         }
-        return credentialProposal.getAttributes()
+        return p.getAttributes()
                 .stream()
                 .collect(Collectors.toMap(CredentialAttributes::getName, CredentialAttributes::getValue));
     }
 
-    public Map<String, String> credentialAttributesToMap() {
+    public @io.micronaut.core.annotation.NonNull Map<String, String> credentialAttributesToMap() {
         if (credential == null || CollectionUtils.isEmpty(credential.getAttrs())) {
             return Map.of();
         }

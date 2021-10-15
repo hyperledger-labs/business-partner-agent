@@ -182,4 +182,19 @@ public class WalletController {
         holderCredMgmt.toggleVisibility(id);
         return HttpResponse.ok();
     }
+
+    /**
+     * Manual credential exchange step four: Holder accepts credential offer from
+     * issuer
+     *
+     * @param id the credential id
+     * @return HTTP status
+     */
+    @Put("/credential/{id}/accept-offer")
+    public HttpResponse<Void> acceptCredentialOffer(
+            @PathVariable UUID id) {
+        holderCredMgmt.sendCredentialRequest(id);
+        return HttpResponse.ok();
+    }
+
 }

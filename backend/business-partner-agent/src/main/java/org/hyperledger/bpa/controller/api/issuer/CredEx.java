@@ -79,8 +79,11 @@ public class CredEx {
         }
         Map<String, String> credentialAttrs;
         if (CredentialExchangeState.PROPOSAL_RECEIVED.equals(db.getState())
+                || CredentialExchangeState.PROPOSAL_SENT.equals(db.getState())
                 || CredentialExchangeState.PROBLEM.equals(db.getState())) {
             credentialAttrs = db.proposalAttributesToMap(); // TODO UI should use proposal field in this case
+        } else if (CredentialExchangeState.OFFER_RECEIVED.equals(db.getState())) {
+            credentialAttrs = db.offerAttributesToMap();
         } else {
             credentialAttrs = db.credentialAttributesToMap();
         }

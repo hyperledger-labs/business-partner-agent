@@ -105,6 +105,8 @@ public class AriesEventHandler extends EventHandler {
                     holderMgr.handleV1CredentialExchangeAcked(v1CredEx);
                 } else if (v1CredEx.stateIsOfferReceived()) {
                     holderMgr.handleV1OfferReceived(v1CredEx);
+                } else {
+                    holderMgr.handleStateChangesOnly(v1CredEx);
                 }
             }
             // issuer events

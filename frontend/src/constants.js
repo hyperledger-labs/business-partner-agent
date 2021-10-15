@@ -32,6 +32,7 @@ export const ApiRoutes = Object.freeze({
   PROOF_EXCHANGES: "/proof-exchanges",
   PROOF_TEMPLATES: "/proof-templates",
   ACTIVITIES: "/activities",
+  WALLET: "/wallet",
 });
 
 export const CredentialExchangeRoles = Object.freeze({
