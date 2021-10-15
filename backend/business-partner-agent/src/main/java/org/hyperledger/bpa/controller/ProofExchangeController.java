@@ -30,9 +30,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.aries.api.present_proof.PresentationRequest;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.controller.api.partner.ApproveProofRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.controller.api.partner.SendProofRequest;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentials;
@@ -76,11 +76,11 @@ public class ProofExchangeController {
      * Manual proof exchange flow. Answer ProofRequest with matching attributes
      *
      * @param id  {@link UUID} the presentationExchangeId
-     * @param req {@link PresentationRequest}
+     * @param req {@link ApproveProofRequest}
      * @return HTTP status
      */
     @Post("/{id}/prove")
-    public HttpResponse<Void> responseToProofRequest(@PathVariable UUID id, @Body @Nullable PresentationRequest req) {
+    public HttpResponse<Void> responseToProofRequest(@PathVariable UUID id, @Body @Nullable ApproveProofRequest req) {
         final Optional<PartnerProof> proof = ppRepo.findById(id);
         if (proof.isPresent()) {
             proofM.presentProof(proof.get(), req);

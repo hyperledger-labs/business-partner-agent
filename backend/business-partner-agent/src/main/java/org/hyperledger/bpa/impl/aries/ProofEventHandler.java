@@ -128,7 +128,7 @@ public class ProofEventHandler {
                                 pProof.pushStates(proof.getState(), proof.getUpdatedAt());
                                 pProofRepo.update(pProof);
                                 if (proof.getAutoPresent() == null || !proof.getAutoPresent()) {
-                                    proofManager.presentProofAcceptAll(proof);
+                                    proofManager.presentProofAcceptSelected(proof, null);
                                 }
                             }
                         }, () -> {

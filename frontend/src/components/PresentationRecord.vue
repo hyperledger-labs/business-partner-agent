@@ -171,7 +171,7 @@
                   :item-text="toCredentialLabel"
                   v-model="group.selectedCredential"
                   outlined
-                  @change="selectedCredential(group, $event)"
+                  @change="selectCredential(group, $event)"
                   dense
                 ></v-select>
               </div>
@@ -253,7 +253,7 @@ export default {
     },
   },
   methods: {
-    selectedCredential(group, credential) {
+    selectCredential(group, credential) {
       group.cvalues = {};
       this.names(group).map((name) => {
         group.cvalues[name] = credential.credentialInfo.attrs[name];
