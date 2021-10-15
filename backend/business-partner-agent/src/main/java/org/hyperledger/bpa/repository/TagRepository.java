@@ -38,9 +38,8 @@ public interface TagRepository extends CrudRepository<Tag, UUID> {
     @Join(value = "partners", type = Join.Type.LEFT_FETCH)
     Optional<Tag> findByName(String name);
 
-    @Override
     @Query("delete from partner_tag where tag_id = :id; delete from tag where id = :id")
-    void deleteById(@NonNull UUID id);
+    void deleteByTagId(@NonNull UUID id);
 
     void updateNameById(@Id UUID id, String name);
 

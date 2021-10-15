@@ -131,7 +131,7 @@ class TagRepositoryTest {
         assertEquals(2, partnerRepo.count());
         partnerRepo.findAll().forEach(p -> assertEquals(Set.of(tag), p.getTags()));
 
-        tagRepo.deleteById(tag.getId());
+        tagRepo.deleteByTagId(tag.getId());
 
         assertEquals(0, tagRepo.count());
         assertEquals(0, tagRepo.countReferencesToPartner(tag.getId()));
@@ -191,7 +191,7 @@ class TagRepositoryTest {
         assertTrue(myTag.isPresent());
         assertEquals(1, myTag.get().getPartners().size());
 
-        partnerRepo.deleteById(partner.getId());
+        partnerRepo.deleteByPartnerId(partner.getId());
 
         myTag = tagRepo.findByName(MY_TAG);
         assertTrue(myTag.isPresent());
