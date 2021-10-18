@@ -37,7 +37,7 @@
     </v-container>
 
     <!-- About -->
-    <v-card>
+    <v-card class="mb-3">
       <v-card-title height="40"> About </v-card-title>
       <v-divider></v-divider>
 
@@ -80,6 +80,7 @@
         </v-list-item>
       </v-list>
     </v-card>
+
     <!-- Timeline  -->
     <Timeline v-bind:timeEntries="Object.entries(record.stateToTimestamp)" />
 
