@@ -50,7 +50,7 @@
       @click:row="openItem"
     >
       <template v-slot:[`item.indicator`]="{ item }">
-        <new-message-icon :type="'task'" :id="item.id"></new-message-icon>
+        <new-message-icon :type="newMessageIconType" :id="item.id"></new-message-icon>
       </template>
       <template v-slot:[`item.partner`]="{ item }">
         {{ partnerLabel(item.partner) }}
@@ -69,14 +69,14 @@
       </template>
 
       <template v-slot:[`item.updatedAt`]="{ item }">
-        {{ item.updatedAt | moment("YYYY-MM-DD HH:mm") }}
+        {{ item.updatedAt | formatDateLong }}
       </template>
     </v-data-table>
   </v-container>
 </template>
 <script>
 import { EventBus } from "@/main";
-import { ActivityRoles, ActivityStates, ActivityTypes } from "@/constants";
+import {ActivityRoles, ActivityStates, ActivityTypes} from "@/constants";
 import VBpaButton from "@/components/BpaButton";
 import activitiesService from "@/services/activitiesService";
 import NewMessageIcon from "@/components/NewMessageIcon";
@@ -152,6 +152,11 @@ export default {
       }
     },
   },
+  computed: {
+    newMessageIconType() {
+      return this.tasks ? 'task' : 'activity';
+    }
+  },
   methods: {
     fetchItems() {
       let filter = undefined;
@@ -177,6 +182,7 @@ export default {
     },
     openItem(item) {
       // if we click on it, mark it seen...
+      this.$store.commit("activityNotificationSeen", { id: item.id });
       this.$store.commit("taskNotificationSeen", { id: item.id });
 
       console.log(item);
@@ -188,6 +194,16 @@ export default {
             id: item.linkId,
           },
         });
+      } else if (item.type === ActivityTypes.CREDENTIAL_EXCHANGE.value) {
+        let route = {
+          name: "Credential",
+          params: {
+            id: item.linkId,
+            type: "credential",
+          },
+        };
+
+        this.$router.push(route);
       } else if (item.type === ActivityTypes.PRESENTATION_EXCHANGE.value) {
         let route = {
           name: "Partner",

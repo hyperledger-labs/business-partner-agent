@@ -24,8 +24,8 @@ import lombok.NoArgsConstructor;
 public enum ActivityType {
     @JsonProperty("connection_request")
     CONNECTION_REQUEST,
-    @JsonProperty("credential_offer")
-    CREDENTIAL_OFFER,
+    @JsonProperty("credential_exchange")
+    CREDENTIAL_EXCHANGE,
     @JsonProperty("presentation_exchange")
     PRESENTATION_EXCHANGE
 }
