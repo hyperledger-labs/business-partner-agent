@@ -48,8 +48,7 @@ export default {
       let result = false;
       switch (this.type) {
         case "activity":
-        case "task":
-          result = ({}.hasOwnProperty.call(this.$store.getters.activityNotifications, this.id)) || ({}.hasOwnProperty.call(this.$store.getters.taskNotifications, this.id));
+          result = ({}.hasOwnProperty.call(this.$store.getters.activityNotifications, this.id));
           break;
         case "credential":
           result = ({}.hasOwnProperty.call(this.$store.getters.credentialNotifications, this.id));
@@ -59,6 +58,9 @@ export default {
           break;
         case "presentation":
           result = ({}.hasOwnProperty.call(this.$store.getters.presentationNotifications, this.id));
+          break;
+        case "task":
+          result = ({}.hasOwnProperty.call(this.$store.getters.taskNotifications, this.id));
           break;
         default:
           result = false;

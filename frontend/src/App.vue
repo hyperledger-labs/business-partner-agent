@@ -182,7 +182,18 @@
     </v-navigation-drawer>
 
     <v-app-bar color="primary" app flat dark>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+      <v-badge v-if="!drawer"
+          overlap
+          bordered
+          :content="notificationsCount"
+          :value="notificationsCount"
+          color="red"
+          offset-x="53"
+          offset-y="53"
+      >
+        <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+      </v-badge>
+      <v-app-bar-nav-icon v-if="drawer" @click.stop="drawer = !drawer" />
       <v-toolbar-title>{{ getTitle }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn v-if="ux.header.logout.enabled" icon @click="logout()">
@@ -476,7 +487,7 @@ export default {
       }
       // now, open or close it
       this.chatWindow = !this.chatWindow;
-    },
+    }
   },
 };
 </script>

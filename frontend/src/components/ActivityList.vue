@@ -50,7 +50,7 @@
       @click:row="openItem"
     >
       <template v-slot:[`item.indicator`]="{ item }">
-        <new-message-icon :type="'task'" :id="item.id"></new-message-icon>
+        <new-message-icon :type="newMessageIconType" :id="item.id"></new-message-icon>
       </template>
       <template v-slot:[`item.partner`]="{ item }">
         {{ partnerLabel(item.partner) }}
@@ -69,7 +69,7 @@
       </template>
 
       <template v-slot:[`item.updatedAt`]="{ item }">
-        {{ item.updatedAt | moment("YYYY-MM-DD HH:mm") }}
+        {{ item.updatedAt | formatDateLong }}
       </template>
     </v-data-table>
   </v-container>
@@ -151,6 +151,11 @@ export default {
         }
       }
     },
+  },
+  computed: {
+    newMessageIconType() {
+      return this.tasks ? 'task' : 'activity';
+    }
   },
   methods: {
     fetchItems() {
