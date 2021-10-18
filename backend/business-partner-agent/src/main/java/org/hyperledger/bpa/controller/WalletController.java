@@ -197,4 +197,18 @@ public class WalletController {
         return HttpResponse.ok();
     }
 
+    /**
+     * Manual credential exchange: Holder declines credential offer from
+     * issuer
+     *
+     * @param id the credential id
+     * @return HTTP status
+     */
+    @Put("/credential/{id}/decline-offer")
+    public HttpResponse<Void> declineCredentialOffer(
+            @PathVariable UUID id) {
+        holderCredMgmt.declineCredentialOffer(id);
+        return HttpResponse.ok();
+    }
+
 }

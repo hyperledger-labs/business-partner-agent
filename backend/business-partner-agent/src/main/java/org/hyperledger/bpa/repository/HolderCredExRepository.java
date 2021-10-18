@@ -68,11 +68,11 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
     void updateState(@Id UUID id, CredentialExchangeState state);
 
     void updateStates(@Id UUID id, CredentialExchangeState state,
-            StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp);
+            StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp, @Nullable String errorMsg);
 
     void updateOnCredentialOfferEvent(@Id UUID id, CredentialExchangeState state,
-                                      StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp,
-                                      V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialOffer);
+            StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp,
+            V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialOffer);
 
     void updateLabel(@Id UUID id, String label);
 

@@ -228,6 +228,15 @@
                 document.credentialExchangeState ===
                 exchangeStates.OFFER_RECEIVED
               "
+              color="secondary"
+              @click="declineCredentialOffer(document.walletCredentialId)"
+              >{{ $t("button.decline") }}</v-bpa-button
+            >
+            <v-bpa-button
+              v-if="
+                document.credentialExchangeState ===
+                exchangeStates.OFFER_RECEIVED
+              "
               color="primary"
               @click="acceptCredentialOffer(document.walletCredentialId)"
               >{{ $t("button.accept") }}</v-bpa-button
@@ -397,6 +406,10 @@ export default {
     },
     acceptCredentialOffer(id) {
       issuerService.acceptCredentialOffer(id);
+      this.closeDialog();
+    },
+    declineCredentialOffer(id) {
+      issuerService.declineCredentialOffer(id);
       this.closeDialog();
     },
     async sendCounterOffer(acceptAll) {

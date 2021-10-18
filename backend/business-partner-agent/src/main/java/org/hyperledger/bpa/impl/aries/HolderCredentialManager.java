@@ -28,6 +28,8 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.acy_py.generated.model.V10CredentialProblemReportRequest;
+import org.hyperledger.acy_py.generated.model.V20CredIssueProblemReportRequest;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
@@ -238,6 +240,28 @@ public class HolderCredentialManager {
         }
     }
 
+    public void declineCredentialOffer(@NonNull UUID id) {
+        String des = "Holder declined credential offer: no reason provided";
+        BPACredentialExchange dbEx = holderCredExRepo.findById(id).orElseThrow(EntityNotFoundException::new);
+        try {
+            if (ExchangeVersion.V1.equals(dbEx.getExchangeVersion())) {
+                ac.issueCredentialRecordsProblemReport(dbEx.getCredentialExchangeId(), V10CredentialProblemReportRequest
+                        .builder()
+                        .description(des)
+                        .build());
+            } else {
+                ac.issueCredentialV2RecordsProblemReport(dbEx.getCredentialExchangeId(), V20CredIssueProblemReportRequest
+                        .builder()
+                        .description(des)
+                        .build());
+            }
+        } catch (IOException e) {
+            throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
+        }
+        dbEx.pushStates(CredentialExchangeState.DECLINED, Instant.now());
+        holderCredExRepo.updateStates(dbEx.getId(), dbEx.getState(), dbEx.getStateToTimestamp(), des);
+    }
+
     /**
      * Tries to resolve the issuers DID into a human-readable name. Resolution order
      * is: 1. Partner alias the user gave 2. Legal name from the partners public
@@ -345,10 +369,16 @@ public class HolderCredentialManager {
         });
     }
 
-    public void handleStateChangesOnly(@NonNull V1CredentialExchange credEx) {
-        holderCredExRepo.findByCredentialExchangeId(credEx.getCredentialExchangeId()).ifPresent(db -> {
-            db.pushStates(credEx.getState(), credEx.getUpdatedAt());
-            holderCredExRepo.updateStates(db.getId(), db.getState(), db.getStateToTimestamp());
+    public void handleStateChangesOnly(
+            @NonNull String credExId, @Nullable CredentialExchangeState state,
+            @NonNull String updatedAt, @Nullable String errorMsg) {
+        holderCredExRepo.findByCredentialExchangeId(credExId).ifPresent(db -> {
+            CredentialExchangeState s = state != null ? state : CredentialExchangeState.PROBLEM;
+            // TODO needs check on initiator==self
+            if(!CredentialExchangeState.DECLINED.equals(db.getState())) {
+                db.pushStates(s, updatedAt);
+                holderCredExRepo.updateStates(db.getId(), db.getState(), db.getStateToTimestamp(), errorMsg);
+            }
         });
     }
 

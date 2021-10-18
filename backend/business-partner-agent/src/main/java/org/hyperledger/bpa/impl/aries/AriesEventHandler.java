@@ -106,7 +106,9 @@ public class AriesEventHandler extends EventHandler {
                 } else if (v1CredEx.stateIsOfferReceived()) {
                     holderMgr.handleV1OfferReceived(v1CredEx);
                 } else {
-                    holderMgr.handleStateChangesOnly(v1CredEx);
+                    holderMgr.handleStateChangesOnly(
+                            v1CredEx.getCredentialExchangeId(), v1CredEx.getState(),
+                            v1CredEx.getUpdatedAt(), v1CredEx.getErrorMsg());
                 }
             }
             // issuer events
@@ -122,23 +124,29 @@ public class AriesEventHandler extends EventHandler {
     }
 
     @Override
-    public void handleCredentialV2(V20CredExRecord v20Credential) {
-        log.debug("Credential V2 Event: {}", v20Credential);
-        if (v20Credential.isIssuer()) {
+    public void handleCredentialV2(V20CredExRecord v2Credex) {
+        log.debug("Credential V2 Event: {}", v2Credex);
+        if (v2Credex.isIssuer()) {
             synchronized (issuerMgr) {
-                if (v20Credential.isProposalReceived()) {
-                    issuerMgr.handleCredentialProposal(v20Credential.toV1CredentialExchangeFromProposal(),
+                if (v2Credex.isProposalReceived()) {
+                    issuerMgr.handleCredentialProposal(v2Credex.toV1CredentialExchangeFromProposal(),
                             ExchangeVersion.V2);
                 } else {
-                    issuerMgr.handleV2CredentialExchange(v20Credential);
+                    issuerMgr.handleV2CredentialExchange(v2Credex);
                 }
             }
-        } else if (v20Credential.isHolder()) {
+        } else if (v2Credex.isHolder()) {
             synchronized (holderMgr) {
-                if (v20Credential.isCredentialReceived()) {
-                    holderMgr.handleV2CredentialReceived(v20Credential);
-                } else if (v20Credential.isDone()) {
-                    holderMgr.handleV2CredentialDone(v20Credential);
+                if (v2Credex.isOfferReceived()) {
+                    //
+                } else if (v2Credex.isCredentialReceived()) {
+                    holderMgr.handleV2CredentialReceived(v2Credex);
+                } else if (v2Credex.isDone()) {
+                    holderMgr.handleV2CredentialDone(v2Credex);
+                } else {
+                    holderMgr.handleStateChangesOnly(
+                            v2Credex.getCredExId(), v2Credex.getState(),
+                            v2Credex.getUpdatedAt(), v2Credex.getErrorMsg());
                 }
             }
         }
