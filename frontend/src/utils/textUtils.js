@@ -17,4 +17,8 @@ export const schemaAttributeLabel = (key) => {
   return key;
 };
 
-export const isValidSchemaAttributeName = (value) => (value && /^[a-zA-Z\d-_]+$/.test(value));
+export const isValidSchemaName = (value) => (value && /^[a-zA-Z\d-_]+$/.test(value));
+
+export const isValidSchemaAttributeName = (value) => (value && /^[a-z_]+$/.test(value));
+
+export const isValidSchemaVersion = (value) => (value && /^(\d+)\.(\d+)(?:\.\d+)?$/.test(value));
