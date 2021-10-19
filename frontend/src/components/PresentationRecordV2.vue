@@ -23,7 +23,7 @@
     <h4 class="my-4">Request Content:</h4>
     <v-container
       v-if="!isStateProposalSent"
-      class="d-flex flex-wrap justify-space-between mx-4"
+      class="d-flex flex-wrap justify-space-between"
     >
       <!-- Requested Attributes -->
       <template

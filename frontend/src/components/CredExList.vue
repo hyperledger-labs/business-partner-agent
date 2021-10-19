@@ -91,45 +91,12 @@
           ></v-select>
 
           <!-- Timeline  -->
-          <v-expansion-panels
-            accordion
-            flat
+          <Timeline
             v-if="document.credentialStateToTimestamp"
-          >
-            <v-expansion-panel>
-              <v-expansion-panel-header
-                class="grey--text text--darken-2 font-weight-medium bg-light"
-                >{{
-                  $t("component.credExList.dialog.timeline")
-                }}</v-expansion-panel-header
-              >
-              <v-expansion-panel-content class="bg-light">
-                <v-timeline dense>
-                  <v-timeline-item
-                    fill-dot
-                    small
-                    v-for="entry in Object.entries(
-                      document.credentialStateToTimestamp
-                    )"
-                    :key="entry.key"
-                  >
-                    <v-row class="pt-1">
-                      <v-col cols="3">
-                        {{ entry[1] | formatDateLong }}
-                      </v-col>
-                      <v-col>
-                        <div class="text-caption">
-                          <strong>
-                            {{ entry[0].replace("_", " ") | capitalize }}
-                          </strong>
-                        </div>
-                      </v-col>
-                    </v-row>
-                  </v-timeline-item>
-                </v-timeline>
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-expansion-panels>
+            v-bind:timeEntries="
+              Object.entries(document.credentialStateToTimestamp)
+            "
+          />
 
           <br />
 
@@ -232,6 +199,7 @@ import { issuerService } from "@/services";
 import Cred from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
 import NewMessageIcon from "@/components/NewMessageIcon";
+import Timeline from "@/components/Timeline";
 import { EventBus } from "@/main";
 import { CredentialExchangeRoles, CredentialExchangeStates } from "@/constants";
 
@@ -415,6 +383,7 @@ export default {
     VBpaButton,
     Cred,
     NewMessageIcon,
+    Timeline,
   },
 };
 </script>
