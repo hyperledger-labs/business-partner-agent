@@ -217,7 +217,7 @@ export default {
       const payload = this.prepareApprovePayload();
       try {
         await proofExService.approveProofRequest(this.record.id, payload);
-        EventBus.$emit("success", "Proof presentation has been sent");
+        EventBus.$emit("success", "Proof has been sent");
         this.dialog = false;
         this.$emit("changed");
       } catch (e) {
