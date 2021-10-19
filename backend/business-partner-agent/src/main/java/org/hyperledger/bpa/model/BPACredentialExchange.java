@@ -192,4 +192,8 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
             return this;
         }
     }
+
+    public boolean stateIsNotDeclined() {
+        return !CredentialExchangeState.DECLINED.equals(state);
+    }
 }

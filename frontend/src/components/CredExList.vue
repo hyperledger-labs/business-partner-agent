@@ -200,6 +200,15 @@
                 document.credentialExchangeState ===
                 exchangeStates.PROPOSAL_RECEIVED
               "
+              color="secondary"
+              @click="declineCredentialProposal(document.walletCredentialId)"
+              >{{ $t("button.decline") }}</v-bpa-button
+            >
+            <v-bpa-button
+              v-if="
+                document.credentialExchangeState ===
+                exchangeStates.PROPOSAL_RECEIVED
+              "
               color="primary"
               :disabled="
                 dialogEditCredentialIsInitialData ||
@@ -410,6 +419,10 @@ export default {
     },
     declineCredentialOffer(id) {
       issuerService.declineCredentialOffer(id);
+      this.closeDialog();
+    },
+    declineCredentialProposal(id) {
+      issuerService.declineCredentialProposal(id);
       this.closeDialog();
     },
     async sendCounterOffer(acceptAll) {

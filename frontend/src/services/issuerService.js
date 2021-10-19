@@ -60,7 +60,7 @@ export default {
     });
   },
   revokeCredential(id) {
-    return appAxios().post(`${ApiRoutes.ISSUER}/exchanges/${id}/revoke`);
+    return appAxios().put(`${ApiRoutes.ISSUER}/exchanges/${id}/revoke`);
   },
   acceptCredentialOffer(id) {
     return appAxios().put(`${ApiRoutes.WALLET}/credential/${id}/accept-offer`);
@@ -68,8 +68,13 @@ export default {
   declineCredentialOffer(id) {
     return appAxios().put(`${ApiRoutes.WALLET}/credential/${id}/decline-offer`);
   },
+  declineCredentialProposal(id) {
+    return appAxios().put(
+      `${ApiRoutes.ISSUER}/exchanges/${id}/decline-proposal`
+    );
+  },
   sendCredentialOffer(id, counterOfferData) {
-    return appAxios().post(
+    return appAxios().put(
       `${ApiRoutes.ISSUER}/exchanges/${id}/send-offer`,
       counterOfferData
     );

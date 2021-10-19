@@ -53,6 +53,7 @@ import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.impl.BaseCredentialManager;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.activity.VPManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
@@ -78,7 +79,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
-public class HolderCredentialManager {
+public class HolderCredentialManager extends BaseCredentialManager {
 
     @Value("${bpa.did.prefix}")
     String didPrefix;
@@ -240,26 +241,14 @@ public class HolderCredentialManager {
         }
     }
 
-    public void declineCredentialOffer(@NonNull UUID id) {
-        String des = "Holder declined credential offer: no reason provided";
-        BPACredentialExchange dbEx = holderCredExRepo.findById(id).orElseThrow(EntityNotFoundException::new);
-        try {
-            if (ExchangeVersion.V1.equals(dbEx.getExchangeVersion())) {
-                ac.issueCredentialRecordsProblemReport(dbEx.getCredentialExchangeId(), V10CredentialProblemReportRequest
-                        .builder()
-                        .description(des)
-                        .build());
-            } else {
-                ac.issueCredentialV2RecordsProblemReport(dbEx.getCredentialExchangeId(), V20CredIssueProblemReportRequest
-                        .builder()
-                        .description(des)
-                        .build());
-            }
-        } catch (IOException e) {
-            throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
+    public void declineCredentialOffer(@NonNull UUID id, @Nullable String message) {
+        if (StringUtils.isEmpty(message)) {
+            message = "Holder declined credential offer: no reason provided";
         }
+        BPACredentialExchange dbEx = getCredentialExchange(id);
         dbEx.pushStates(CredentialExchangeState.DECLINED, Instant.now());
-        holderCredExRepo.updateStates(dbEx.getId(), dbEx.getState(), dbEx.getStateToTimestamp(), des);
+        holderCredExRepo.updateStates(dbEx.getId(), dbEx.getState(), dbEx.getStateToTimestamp(), message);
+        declineCredentialExchange(dbEx, message);
     }
 
     /**
@@ -373,9 +362,8 @@ public class HolderCredentialManager {
             @NonNull String credExId, @Nullable CredentialExchangeState state,
             @NonNull String updatedAt, @Nullable String errorMsg) {
         holderCredExRepo.findByCredentialExchangeId(credExId).ifPresent(db -> {
-            CredentialExchangeState s = state != null ? state : CredentialExchangeState.PROBLEM;
-            // TODO needs check on initiator==self
-            if(!CredentialExchangeState.DECLINED.equals(db.getState())) {
+            if (db.stateIsNotDeclined()) {
+                CredentialExchangeState s = state != null ? state : CredentialExchangeState.PROBLEM;
                 db.pushStates(s, updatedAt);
                 holderCredExRepo.updateStates(db.getId(), db.getState(), db.getStateToTimestamp(), errorMsg);
             }
