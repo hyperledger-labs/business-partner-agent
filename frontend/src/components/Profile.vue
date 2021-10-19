@@ -18,8 +18,8 @@
         isReadOnly
       ></OrganizationalProfile>
       <v-card-actions>
-        <!-- this should be protected by roles -->
-        <v-layout align-end justify-end>
+        <!-- this should be protected by roles and whether we are showing the edit button -->
+        <v-layout v-if="organizationProfileEditVisible" align-end justify-end>
           <v-bpa-button color="secondary" @click="editProfile">{{
             $t("component.profile.organizationalProfile.edit")
           }}</v-bpa-button>
@@ -106,6 +106,10 @@ export default {
   },
   props: {
     partner: Object,
+    organizationProfileEditVisible: {
+      type: Boolean,
+      default: false,
+    }
   },
   created() {},
   data: () => {
