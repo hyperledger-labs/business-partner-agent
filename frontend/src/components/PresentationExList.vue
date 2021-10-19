@@ -217,7 +217,7 @@ export default {
       const payload = this.prepareApprovePayload();
       try {
         await proofExService.approveProofRequest(this.record.id, payload);
-        EventBus.$emit("success", "Presentation request accepted");
+        EventBus.$emit("success", "Proof presentation has been sent");
         this.dialog = false;
         this.$emit("changed");
       } catch (e) {
@@ -282,14 +282,16 @@ export default {
     },
     prepareApprovePayload() {
       const payload = {
-        referents: []
+        referents: [],
       };
 
       RequestTypes.map((type) => {
         Object.entries(this.record.proofRequest[type]).map(
           ([groupName, group]) => {
             console.log(groupName);
-            payload.referents.push(group.selectedCredential?.credentialInfo?.referent);
+            payload.referents.push(
+              group.selectedCredential?.credentialInfo?.referent
+            );
           }
         );
       });
