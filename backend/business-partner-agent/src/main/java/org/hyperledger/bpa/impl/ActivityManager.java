@@ -23,7 +23,9 @@ import jakarta.inject.Inject;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
+import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.controller.api.activity.*;
+import org.hyperledger.bpa.impl.notification.ActivityNotificationEvent;
 import org.hyperledger.bpa.impl.notification.TaskAddedEvent;
 import org.hyperledger.bpa.impl.notification.TaskCompletedEvent;
 import org.hyperledger.bpa.impl.util.Converter;
@@ -124,6 +126,26 @@ public class ActivityManager {
                 });
     }
 
+    public void addCredentialAddedActivity(@NonNull AriesCredential credential) {
+        partnerRepo.findByConnectionId(credential.getConnectionId()).ifPresent(partner -> {
+            Optional<Activity> existing = activityRepository.findByLinkIdAndTypeAndRole(credential.getId(),
+                    ActivityType.CREDENTIAL_EXCHANGE,
+                    ActivityRole.CREDENTIAL_EXCHANGE_HOLDER);
+            if (existing.isEmpty()) {
+                Activity a = Activity.builder()
+                        .linkId(credential.getId())
+                        .partner(partner)
+                        .type(ActivityType.CREDENTIAL_EXCHANGE)
+                        .role(ActivityRole.CREDENTIAL_EXCHANGE_HOLDER)
+                        .state(ActivityState.CREDENTIAL_EXCHANGE_ACCEPTED)
+                        .completed(true)
+                        .build();
+                activityRepository.save(a);
+                eventPublisher.publishEventAsync(ActivityNotificationEvent.builder().activity(a).build());
+            }
+        });
+    }
+
     public void addPartnerAddedActivity(@NonNull Partner partner) {
         Optional<Activity> existing = activityRepository.findByLinkIdAndTypeAndRole(partner.getId(),
                 ActivityType.CONNECTION_REQUEST,
@@ -138,6 +160,7 @@ public class ActivityManager {
                     .completed(true)
                     .build();
             activityRepository.save(a);
+            eventPublisher.publishEventAsync(ActivityNotificationEvent.builder().activity(a).build());
         }
     }
 
@@ -159,6 +182,7 @@ public class ActivityManager {
                             .completed(true)
                             .build();
                     activityRepository.save(a);
+                    eventPublisher.publishEventAsync(ActivityNotificationEvent.builder().activity(a).build());
                 });
     }
 
@@ -186,6 +210,8 @@ public class ActivityManager {
                 if (!a.isCompleted()) {
                     // this looks like we created a task!
                     eventPublisher.publishEventAsync(TaskAddedEvent.builder().activity(a).build());
+                } else {
+                    eventPublisher.publishEventAsync(ActivityNotificationEvent.builder().activity(a).build());
                 }
             }
         });

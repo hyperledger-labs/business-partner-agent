@@ -66,6 +66,12 @@ export default {
     return {
       activityHeaders: [
         {
+          text: "",
+          value: "indicator",
+          sortable: false,
+          filterable: false,
+        },
+        {
           text: "Type",
           value: "type",
         },
