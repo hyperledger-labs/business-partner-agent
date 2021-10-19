@@ -28,8 +28,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.acy_py.generated.model.V10CredentialProblemReportRequest;
-import org.hyperledger.acy_py.generated.model.V20CredIssueProblemReportRequest;
+import org.hyperledger.acy_py.generated.model.V20CredRequestRequest;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
@@ -234,7 +233,8 @@ public class HolderCredentialManager extends BaseCredentialManager {
             if (ExchangeVersion.V1.equals(dbEx.getExchangeVersion())) {
                 ac.issueCredentialRecordsSendRequest(dbEx.getCredentialExchangeId());
             } else {
-                ac.issueCredentialV2RecordsSendRequest(dbEx.getCredentialExchangeId(), null);
+                ac.issueCredentialV2RecordsSendRequest(dbEx.getCredentialExchangeId(), V20CredRequestRequest
+                        .builder().build());
             }
         } catch (IOException e) {
             throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
@@ -314,7 +314,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
 
     // credential event handling
 
-    public void handleV1OfferReceived(@NonNull V1CredentialExchange credEx) {
+    public void handleV1OfferReceived(@NonNull V1CredentialExchange credEx, @NonNull ExchangeVersion version) {
         holderCredExRepo.findByCredentialExchangeId(credEx.getCredentialExchangeId()).ifPresentOrElse(db -> {
             db.pushStates(credEx.getState(), credEx.getUpdatedAt());
             holderCredExRepo.updateOnCredentialOfferEvent(db.getId(), db.getState(), db.getStateToTimestamp(),
@@ -337,7 +337,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
                     .credentialOffer(credEx.getCredentialProposalDict().getCredentialProposal())
                     .pushStateChange(credEx.getState(), TimeUtil.parseZonedTimestamp(credEx.getUpdatedAt()))
                     .role(CredentialExchangeRole.HOLDER)
-                    .exchangeVersion(ExchangeVersion.V1)
+                    .exchangeVersion(version)
                     .build();
             holderCredExRepo.save(ex);
         }));
@@ -370,28 +370,14 @@ public class HolderCredentialManager extends BaseCredentialManager {
         });
     }
 
-    public void handleV2CredentialReceived(@NonNull V20CredExRecord credEx) {
-        V2ToV1IndyCredentialConverter.INSTANCE().toV1(credEx)
-                .flatMap(c -> partnerRepo.findByConnectionId(credEx.getConnectionId())).ifPresent(p -> {
-                    BPACredentialExchange dbCred = BPACredentialExchange.builder()
-                            .partner(p)
-                            .threadId(credEx.getThreadId())
-                            .credentialExchangeId(credEx.getCredExId())
-                            .referent(credEx.getCredExId())
-                            .state(credEx.getState())
-                            .exchangeVersion(ExchangeVersion.V2)
-                            .build();
-                    holderCredExRepo.save(dbCred);
-                });
-    }
-
     public void handleV2CredentialDone(@NonNull V20CredExRecord credEx) {
         holderCredExRepo.findByCredentialExchangeId(credEx.getCredExId()).ifPresent(
-                dbCred -> V2ToV1IndyCredentialConverter.INSTANCE().toV1(credEx)
+                dbCred -> V2ToV1IndyCredentialConverter.INSTANCE().toV1Credential(credEx)
                         .ifPresent(c -> {
                             String label = labelStrategy.apply(c);
                             dbCred
-                                    .setState(credEx.getState())
+                                    .pushStates(credEx.getState(), credEx.getUpdatedAt())
+                                    .setReferent(c.getReferent() != null ? c.getReferent() : null)
                                     .setCredential(c)
                                     .setLabel(label)
                                     .setIssuer(resolveIssuer(c));

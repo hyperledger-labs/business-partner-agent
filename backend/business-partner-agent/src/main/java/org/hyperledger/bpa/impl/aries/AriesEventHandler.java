@@ -24,6 +24,7 @@ import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
+import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
@@ -104,7 +105,7 @@ public class AriesEventHandler extends EventHandler {
                 if (v1CredEx.stateIsCredentialAcked()) {
                     holderMgr.handleV1CredentialExchangeAcked(v1CredEx);
                 } else if (v1CredEx.stateIsOfferReceived()) {
-                    holderMgr.handleV1OfferReceived(v1CredEx);
+                    holderMgr.handleV1OfferReceived(v1CredEx, ExchangeVersion.V1);
                 } else {
                     holderMgr.handleStateChangesOnly(
                             v1CredEx.getCredentialExchangeId(), v1CredEx.getState(),
@@ -124,29 +125,28 @@ public class AriesEventHandler extends EventHandler {
     }
 
     @Override
-    public void handleCredentialV2(V20CredExRecord v2Credex) {
-        log.debug("Credential V2 Event: {}", v2Credex);
-        if (v2Credex.isIssuer()) {
+    public void handleCredentialV2(V20CredExRecord v2CredEx) {
+        log.debug("Credential V2 Event: {}", v2CredEx);
+        if (v2CredEx.isIssuer()) {
             synchronized (issuerMgr) {
-                if (v2Credex.isProposalReceived()) {
-                    issuerMgr.handleCredentialProposal(v2Credex.toV1CredentialExchangeFromProposal(),
+                if (v2CredEx.isProposalReceived()) {
+                    issuerMgr.handleCredentialProposal(v2CredEx.toV1CredentialExchangeFromProposal(),
                             ExchangeVersion.V2);
                 } else {
-                    issuerMgr.handleV2CredentialExchange(v2Credex);
+                    issuerMgr.handleV2CredentialExchange(v2CredEx);
                 }
             }
-        } else if (v2Credex.isHolder()) {
+        } else if (v2CredEx.isHolder()) {
             synchronized (holderMgr) {
-                if (v2Credex.isOfferReceived()) {
-                    //
-                } else if (v2Credex.isCredentialReceived()) {
-                    holderMgr.handleV2CredentialReceived(v2Credex);
-                } else if (v2Credex.isDone()) {
-                    holderMgr.handleV2CredentialDone(v2Credex);
+                if (v2CredEx.isOfferReceived()) {
+                    holderMgr.handleV1OfferReceived(
+                            V2ToV1IndyCredentialConverter.INSTANCE().toV1Offer(v2CredEx), ExchangeVersion.V2);
+                } else if (v2CredEx.isDone()) {
+                    holderMgr.handleV2CredentialDone(v2CredEx);
                 } else {
                     holderMgr.handleStateChangesOnly(
-                            v2Credex.getCredExId(), v2Credex.getState(),
-                            v2Credex.getUpdatedAt(), v2Credex.getErrorMsg());
+                            v2CredEx.getCredExId(), v2CredEx.getState(),
+                            v2CredEx.getUpdatedAt(), v2CredEx.getErrorMsg());
                 }
             }
         }
