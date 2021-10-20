@@ -74,6 +74,8 @@ public interface IssuerCredExRepository extends CrudRepository<BPACredentialExch
             StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp,
             @Nullable String errorMsg);
 
-    Number updateRevocationInfo(@Id UUID id, @Nullable String revRegId, @Nullable String credRevId);
+    Number updateRevocationInfo(@Id UUID id, String revRegId, @Nullable String credRevId);
+
+    Number updateReferent(@Id UUID id, String referent);
 
 }

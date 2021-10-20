@@ -39,7 +39,6 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialProposalRequest;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
-import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
@@ -314,7 +313,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
 
     // credential event handling
 
-    public void handleV1OfferReceived(@NonNull V1CredentialExchange credEx, @NonNull ExchangeVersion version) {
+    public void handleOfferReceived(@NonNull V1CredentialExchange credEx, @NonNull ExchangeVersion version) {
         holderCredExRepo.findByCredentialExchangeId(credEx.getCredentialExchangeId()).ifPresentOrElse(db -> {
             db.pushStates(credEx.getState(), credEx.getUpdatedAt());
             holderCredExRepo.updateOnCredentialOfferEvent(db.getId(), db.getState(), db.getStateToTimestamp(),
@@ -343,6 +342,18 @@ public class HolderCredentialManager extends BaseCredentialManager {
         }));
     }
 
+    public void handleStateChangesOnly(
+            @NonNull String credExId, @Nullable CredentialExchangeState state,
+            @NonNull String updatedAt, @Nullable String errorMsg) {
+        holderCredExRepo.findByCredentialExchangeId(credExId).ifPresent(db -> {
+            if (db.stateIsNotDeclined()) {
+                CredentialExchangeState s = state != null ? state : CredentialExchangeState.PROBLEM;
+                db.pushStates(s, updatedAt);
+                holderCredExRepo.updateStates(db.getId(), db.getState(), db.getStateToTimestamp(), errorMsg);
+            }
+        });
+    }
+
     // credential, signed and stored in wallet
     public void handleV1CredentialExchangeAcked(@NonNull V1CredentialExchange credEx) {
         String label = labelStrategy.apply(credEx.getCredential());
@@ -358,18 +369,6 @@ public class HolderCredentialManager extends BaseCredentialManager {
         });
     }
 
-    public void handleStateChangesOnly(
-            @NonNull String credExId, @Nullable CredentialExchangeState state,
-            @NonNull String updatedAt, @Nullable String errorMsg) {
-        holderCredExRepo.findByCredentialExchangeId(credExId).ifPresent(db -> {
-            if (db.stateIsNotDeclined()) {
-                CredentialExchangeState s = state != null ? state : CredentialExchangeState.PROBLEM;
-                db.pushStates(s, updatedAt);
-                holderCredExRepo.updateStates(db.getId(), db.getState(), db.getStateToTimestamp(), errorMsg);
-            }
-        });
-    }
-
     public void handleV2CredentialDone(@NonNull V20CredExRecord credEx) {
         holderCredExRepo.findByCredentialExchangeId(credEx.getCredExId()).ifPresent(
                 dbCred -> V2ToV1IndyCredentialConverter.INSTANCE().toV1Credential(credEx)
@@ -377,26 +376,12 @@ public class HolderCredentialManager extends BaseCredentialManager {
                             String label = labelStrategy.apply(c);
                             dbCred
                                     .pushStates(credEx.getState(), credEx.getUpdatedAt())
-                                    .setReferent(c.getReferent() != null ? c.getReferent() : null)
                                     .setCredential(c)
                                     .setLabel(label)
                                     .setIssuer(resolveIssuer(c));
                             BPACredentialExchange dbCredential = holderCredExRepo.update(dbCred);
                             fireCredentialAddedEvent(dbCredential);
                         }));
-    }
-
-    /**
-     * This handler maps the 'stored credential id' from the event to the referent
-     * as only this event has this id
-     * 
-     * @param credentialEvent {@link V2IssueIndyCredentialEvent}
-     */
-    public void handleIssueCredentialV2Indy(V2IssueIndyCredentialEvent credentialEvent) {
-        holderCredExRepo.findByCredentialExchangeId(credentialEvent.getCredExId()).ifPresent(bpaEx -> {
-            bpaEx.setReferent(credentialEvent.getCredIdStored());
-            holderCredExRepo.update(bpaEx);
-        });
     }
 
     private void fireCredentialAddedEvent(@NonNull BPACredentialExchange updated) {

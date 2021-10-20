@@ -142,6 +142,22 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
     @Nullable
     private String referent;
 
+    public boolean checkIfPublic() {
+        return isPublic != null && isPublic;
+    }
+
+    public boolean stateIsNotDeclined() {
+        return !CredentialExchangeState.DECLINED.equals(state);
+    }
+
+    public boolean roleIsHolder() {
+        return CredentialExchangeRole.HOLDER.equals(role);
+    }
+
+    public boolean roleIsIssuer() {
+        return CredentialExchangeRole.ISSUER.equals(role);
+    }
+
     public Instant calculateIssuedAt() {
         return stateToTimestamp != null && stateToTimestamp.getStateToTimestamp() != null
                 ? stateToTimestamp.getStateToTimestamp().entrySet()
@@ -152,10 +168,6 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
                         .findFirst()
                         .orElse(null)
                 : null;
-    }
-
-    public boolean checkIfPublic() {
-        return isPublic != null && isPublic;
     }
 
     public @io.micronaut.core.annotation.NonNull Map<String, String> proposalAttributesToMap() {
@@ -191,9 +203,5 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
                     .build());
             return this;
         }
-    }
-
-    public boolean stateIsNotDeclined() {
-        return !CredentialExchangeState.DECLINED.equals(state);
     }
 }
