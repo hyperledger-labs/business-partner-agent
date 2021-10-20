@@ -100,7 +100,7 @@ public class AriesEventHandler extends EventHandler {
     public void handleCredential(V1CredentialExchange v1CredEx) {
         log.debug("Credential Event: {}", v1CredEx);
         // holder events
-        if (v1CredEx.roleIsHolder()) {
+        if (v1CredEx.isHolder()) {
             synchronized (holderMgr) {
                 if (v1CredEx.stateIsCredentialAcked()) {
                     holderMgr.handleV1CredentialExchangeAcked(v1CredEx);
@@ -113,7 +113,7 @@ public class AriesEventHandler extends EventHandler {
                 }
             }
             // issuer events
-        } else if (v1CredEx.roleIsIssuer()) {
+        } else if (v1CredEx.isIssuer()) {
             synchronized (issuerMgr) {
                 if (v1CredEx.stateIsProposalReceived()) {
                     issuerMgr.handleCredentialProposal(v1CredEx, ExchangeVersion.V1);
