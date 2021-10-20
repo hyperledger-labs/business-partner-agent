@@ -9,11 +9,12 @@
   <v-container>
     <div v-if="publicDocumentsAndCredentials.length > 0">
       <v-alert colored-border color="primary" border="left" elevation="2" dense>
-        <span class="text-caption">{{ $t("view.profile.subtitle") }} </span>
+        <span class="text-caption" v-html="$t('view.profile.subtitle')"></span>
       </v-alert>
       <v-card class="mx-auto" flat>
         <Profile
           v-bind:partner="{ credential: publicDocumentsAndCredentials }"
+          organization-profile-edit-visible="true"
         />
       </v-card>
     </div>
