@@ -47,10 +47,10 @@ class HolderCredExRepositoryTest extends BaseTest {
 
     @Test
     void testSaveCredential() {
-        String schemaId = "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0";
-        String credDefId = "VoSfM3eGaPxduty34ySygw:3:CL:571:sparta_bank";
+        String schemaId = "F6dB7dMVHUQSC64qemnBi7:2:spaces:1.0";
+        String credDefId = "EraYCDJUPsChbkw7S1vV96:3:CL:4740:spaces";
 
-        final String json = loader.load("files/credentialExchange.json");
+        final String json = loader.load("files/v1-credex-holder/04-acked.json");
         final V1CredentialExchange ex = GsonConfig.defaultConfig().fromJson(json, V1CredentialExchange.class);
 
         BPACredentialExchange cred = BPACredentialExchange

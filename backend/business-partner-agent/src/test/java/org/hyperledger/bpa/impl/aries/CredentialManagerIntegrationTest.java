@@ -118,7 +118,8 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
         eventHandler.handleCredential(acked);
 
         assertEquals(1, holderCredExRepo.count());
-        BPACredentialExchange ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredentialExchangeId()).orElseThrow();
+        BPACredentialExchange ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredentialExchangeId())
+                .orElseThrow();
         assertEquals(CredentialExchangeState.CREDENTIAL_ACKED, ex.getState());
         assertNotNull(ex.getStateToTimestamp());
         assertNotNull(ex.getStateToTimestamp().getStateToTimestamp());
@@ -154,7 +155,8 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
 
         eventHandler.handleCredential(offer);
 
-        BPACredentialExchange ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredentialExchangeId()).orElseThrow();
+        BPACredentialExchange ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredentialExchangeId())
+                .orElseThrow();
         assertEquals(CredentialExchangeState.OFFER_RECEIVED, ex.getState());
 
         holderMgmt.declineCredentialOffer(ex.getId(), "declined");

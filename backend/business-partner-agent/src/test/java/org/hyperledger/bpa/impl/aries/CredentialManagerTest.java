@@ -20,14 +20,11 @@ package org.hyperledger.bpa.impl.aries;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.credentials.Credential;
-import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
-import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.repository.HolderCredExRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
 
@@ -44,28 +41,10 @@ class CredentialManagerTest extends BaseTest {
     HolderCredentialManager mgmt;
 
     @Inject
-    HolderCredExRepository holderCredExRepo;
-
-    @Inject
     PartnerRepository partnerRepo;
 
     @Inject
     Converter conv;
-
-    @Test
-    void testSaveNewCredential() {
-        final String ex = loader.load("files/credentialExchange.json");
-        final V1CredentialExchange credEx = GsonConfig.defaultConfig().fromJson(ex, V1CredentialExchange.class);
-        partnerRepo.save(Partner
-                .builder()
-                .alias("My Bank")
-                .did(DID)
-                .ariesSupport(Boolean.TRUE)
-                .connectionId(credEx.getConnectionId())
-                .build());
-        mgmt.handleV1CredentialExchangeAcked(credEx);
-        assertEquals(1, holderCredExRepo.count());
-    }
 
     @Test
     void testResolveIssuerDidOnly() {
