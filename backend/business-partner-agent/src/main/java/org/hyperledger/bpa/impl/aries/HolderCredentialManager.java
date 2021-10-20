@@ -298,7 +298,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
     @Scheduled(fixedRate = "5m", initialDelay = "1m")
     public void checkRevocationStatus() {
         log.trace("Running revocation checks");
-        holderCredExRepo.findNotRevoked().forEach(cred -> {
+        holderCredExRepo.findNotRevoked().parallelStream().forEach(cred -> {
             try {
                 log.trace("Running revocation check for credential exchange: {}", cred.getReferent());
                 ac.credentialRevoked(Objects.requireNonNull(cred.getReferent())).ifPresent(isRevoked -> {
@@ -307,6 +307,11 @@ public class HolderCredentialManager extends BaseCredentialManager {
                         log.debug("Credential with referent id: {} has been revoked", cred.getReferent());
                     }
                 });
+            } catch (AriesException e) {
+                if (e.getCode() == 404) {
+                    log.error("aca-py has no credential with referent id: {}", cred.getReferent());
+                    holderCredExRepo.updateReferent(cred.getId(), null);
+                }
             } catch (Exception e) {
                 log.error("Revocation check failed", e);
             }
@@ -315,12 +320,15 @@ public class HolderCredentialManager extends BaseCredentialManager {
 
     // credential event handling
 
+    // credential offer event
     public void handleOfferReceived(@NonNull V1CredentialExchange credEx, @NonNull ExchangeVersion version) {
         holderCredExRepo.findByCredentialExchangeId(credEx.getCredentialExchangeId()).ifPresentOrElse(db -> {
+            // counter offer or accepted proposal from issuer
             db.pushStates(credEx.getState(), credEx.getUpdatedAt());
             holderCredExRepo.updateOnCredentialOfferEvent(db.getId(), db.getState(), db.getStateToTimestamp(),
                     credEx.getCredentialProposalDict().getCredentialProposal());
         }, () -> partnerRepo.findByConnectionId(credEx.getConnectionId()).ifPresent(p -> {
+            // issuer started with offer, no preexisting proposal
             BPASchema bpaSchema = schemaService.getSchemaFor(credEx.getSchemaId()).orElse(null);
             if (bpaSchema == null) {
                 SchemaAPI schemaAPI = schemaService.addSchema(credEx.getSchemaId(), null, null);
@@ -344,11 +352,12 @@ public class HolderCredentialManager extends BaseCredentialManager {
         }));
     }
 
+    // credential request, receive and problem events
     public void handleStateChangesOnly(
             @NonNull String credExId, @Nullable CredentialExchangeState state,
             @NonNull String updatedAt, @Nullable String errorMsg) {
         holderCredExRepo.findByCredentialExchangeId(credExId).ifPresent(db -> {
-            if (db.stateIsNotDeclined()) {
+            if (db.stateIsNotDeclined()) { // already handled
                 CredentialExchangeState s = state != null ? state : CredentialExchangeState.PROBLEM;
                 db.pushStates(s, updatedAt);
                 holderCredExRepo.updateStates(db.getId(), db.getState(), db.getStateToTimestamp(), errorMsg);
@@ -356,7 +365,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
         });
     }
 
-    // credential, signed and stored in wallet
+    // v1 credential, signed and stored in wallet
     public void handleV1CredentialExchangeAcked(@NonNull V1CredentialExchange credEx) {
         String label = labelStrategy.apply(credEx.getCredential());
         holderCredExRepo.findByCredentialExchangeId(credEx.getCredentialExchangeId()).ifPresent(db -> {
@@ -371,6 +380,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
         });
     }
 
+    // v2 credential, signed and stored in wallet
     public void handleV2CredentialDone(@NonNull V20CredExRecord credEx) {
         holderCredExRepo.findByCredentialExchangeId(credEx.getCredExId()).ifPresent(
                 dbCred -> V2ToV1IndyCredentialConverter.INSTANCE().toV1Credential(credEx)

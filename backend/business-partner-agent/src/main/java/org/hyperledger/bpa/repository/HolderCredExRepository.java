@@ -78,6 +78,8 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     Number updateRevoked(@Id UUID id, Boolean revoked);
 
+    Number updateReferent(@Id UUID id, @Nullable String referent);
+
     @Query("UPDATE bpa_credential_exchange SET issuer = :issuer WHERE partner_id = :partnerId AND role = 'HOLDER'")
     Number updateIssuerByPartnerId(UUID partnerId, @Nullable String issuer);
 

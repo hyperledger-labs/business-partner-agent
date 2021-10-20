@@ -33,6 +33,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
+import org.hyperledger.bpa.impl.aries.CredExStateAndRoleTranslator;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -54,7 +55,9 @@ import java.util.stream.Collectors;
 @Accessors(chain = true)
 @Entity
 @Table(name = "bpa_credential_exchange")
-public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExchange, CredentialExchangeState> {
+public class BPACredentialExchange
+        extends StateChangeDecorator<BPACredentialExchange, CredentialExchangeState>
+        implements CredExStateAndRoleTranslator {
 
     @Id
     @AutoPopulated
@@ -144,18 +147,6 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
 
     public boolean checkIfPublic() {
         return isPublic != null && isPublic;
-    }
-
-    public boolean stateIsNotDeclined() {
-        return !CredentialExchangeState.DECLINED.equals(state);
-    }
-
-    public boolean roleIsHolder() {
-        return CredentialExchangeRole.HOLDER.equals(role);
-    }
-
-    public boolean roleIsIssuer() {
-        return CredentialExchangeRole.ISSUER.equals(role);
     }
 
     public Instant calculateIssuedAt() {

@@ -169,6 +169,13 @@ public class IssuerCredentialManager extends BaseCredentialManager {
 
     // Credential Management - Called By User
 
+    /**
+     * Issuer initialises the credential exchange with an offer. There is no
+     * preexisting proposal from the holder.
+     * 
+     * @param request {@link IssueCredentialRequest}
+     * @return credential exchange id
+     */
     public String issueCredential(@NonNull IssueCredentialRequest request) {
         Partner dbPartner = partnerRepo.findById(request.getPartnerId())
                 .orElseThrow(() -> new IssuerException(String.format("Could not find partner with id '%s'",
@@ -307,8 +314,8 @@ public class IssuerCredentialManager extends BaseCredentialManager {
     }
 
     /**
-     * Send partner a credential offer in reference to a proposal (Not to be
-     * confused with the automated send-offer flow).
+     * Send partner a credential (counter) offer in reference to a proposal (Not to
+     * be confused with the automated send-offer flow).
      * 
      * @param id           credential exchange id
      * @param counterOffer {@link CredentialOfferRequest}

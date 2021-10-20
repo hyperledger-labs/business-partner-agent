@@ -77,5 +77,4 @@ public interface IssuerCredExRepository extends CrudRepository<BPACredentialExch
     Number updateRevocationInfo(@Id UUID id, String revRegId, @Nullable String credRevId);
 
     Number updateReferent(@Id UUID id, String referent);
-
 }
