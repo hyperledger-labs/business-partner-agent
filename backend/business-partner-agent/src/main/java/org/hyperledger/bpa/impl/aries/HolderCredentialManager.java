@@ -24,6 +24,7 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.scheduling.annotation.Scheduled;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -83,7 +84,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
     String didPrefix;
 
     @Inject
-    @Setter
+    @Setter(AccessLevel.PACKAGE)
     AriesClient ac;
 
     @Inject
@@ -99,6 +100,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
     VPManager vpMgmt;
 
     @Inject
+    @Setter(AccessLevel.PACKAGE)
     SchemaService schemaService;
 
     @Inject

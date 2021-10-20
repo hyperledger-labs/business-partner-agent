@@ -53,7 +53,7 @@ public abstract class BaseCredentialManager {
      * set the state of the exchange to null and hence it becomes unusable and con
      * not be restarted again.
      *
-     * @param credEx {@link BPACredentialExchange}
+     * @param credEx  {@link BPACredentialExchange}
      * @param message to sent to the other party
      */
     public void declineCredentialExchange(@NonNull BPACredentialExchange credEx, @Nullable String message) {
@@ -76,9 +76,10 @@ public abstract class BaseCredentialManager {
     }
 
     /**
-     * If there is a problem during the credential exchange and aca-py is started without the option
-     * to preserve exchange records, the record is deleted immediately. Hence, we need to check if
-     * the record exists in both systems.
+     * If there is a problem during the credential exchange and aca-py is started
+     * without the option to preserve exchange records, the record is deleted
+     * immediately. Hence, we need to check if the record exists in both systems.
+     * 
      * @param id credential exchange id
      * @return {@link BPACredentialExchange}
      */

@@ -468,14 +468,15 @@ public class IssuerCredentialManager extends BaseCredentialManager {
      * @param revocationInfo {@link V2IssueIndyCredentialEvent}
      */
     public void handleIssueCredentialV2Indy(V2IssueIndyCredentialEvent revocationInfo) {
-        // Note: This event contains no role info, so we have to check this here explicitly
+        // Note: This event contains no role info, so we have to check this here
+        // explicitly
         credExRepo.findByCredentialExchangeId(revocationInfo.getCredExId()).ifPresent(bpaEx -> {
-                if (bpaEx.roleIsIssuer() && StringUtils.isNotEmpty(revocationInfo.getRevRegId())) {
-                    credExRepo.updateRevocationInfo(bpaEx.getId(), revocationInfo.getRevRegId(),
-                            revocationInfo.getCredRevId());
-                } else if (bpaEx.roleIsHolder() && StringUtils.isNotEmpty(revocationInfo.getCredIdStored())) {
-                    credExRepo.updateReferent(bpaEx.getId(), revocationInfo.getCredIdStored());
-                }
+            if (bpaEx.roleIsIssuer() && StringUtils.isNotEmpty(revocationInfo.getRevRegId())) {
+                credExRepo.updateRevocationInfo(bpaEx.getId(), revocationInfo.getRevRegId(),
+                        revocationInfo.getCredRevId());
+            } else if (bpaEx.roleIsHolder() && StringUtils.isNotEmpty(revocationInfo.getCredIdStored())) {
+                credExRepo.updateReferent(bpaEx.getId(), revocationInfo.getCredIdStored());
+            }
         });
     }
 
