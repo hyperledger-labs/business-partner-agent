@@ -282,7 +282,7 @@ export default {
       default: (item) =>
         item.state === CredentialExchangeStates.CREDENTIAL_ISSUED ||
         item.state === CredentialExchangeStates.CREDENTIAL_ACKED ||
-        item.state === "done",
+        item.state === CredentialExchangeStates.DONE,
     },
     isLoading: Boolean,
   },
