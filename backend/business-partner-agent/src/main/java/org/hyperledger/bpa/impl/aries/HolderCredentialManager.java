@@ -295,8 +295,8 @@ public class HolderCredentialManager extends BaseCredentialManager {
      * Scheduled task that checks the revocation status of all credentials issued to
      * this BPA.
      */
-    @Scheduled(fixedRate = "5m", initialDelay = "1m")
-    public void checkRevocationStatus() {
+    @Scheduled(fixedDelay = "5m", initialDelay = "1m")
+    void checkRevocationStatus() {
         log.trace("Running revocation checks");
         holderCredExRepo.findNotRevoked().parallelStream().forEach(cred -> {
             try {

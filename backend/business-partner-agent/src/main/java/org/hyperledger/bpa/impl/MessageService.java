@@ -86,8 +86,8 @@ public class MessageService {
         queue.deleteAll();
     }
 
-    @Scheduled(fixedRate = "1h")
-    public void cleanupStaleSessions() {
+    @Scheduled(fixedDelay = "1h", initialDelay = "2m")
+    void cleanupStaleSessions() {
         log.debug("Cleaning up stale websocket sessions.");
         List<String> stale = new ArrayList<>();
         connected.forEach((k, v) -> {

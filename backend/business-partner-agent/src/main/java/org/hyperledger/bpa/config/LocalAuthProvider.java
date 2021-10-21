@@ -19,7 +19,7 @@ package org.hyperledger.bpa.config;
 
 import io.micronaut.http.HttpRequest;
 import io.micronaut.security.authentication.*;
-import io.reactivex.Maybe;
+import io.reactivex.rxjava3.core.Maybe;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.hyperledger.bpa.model.BPAUser;

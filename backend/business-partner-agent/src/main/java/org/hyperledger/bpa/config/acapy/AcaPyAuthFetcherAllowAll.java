@@ -21,7 +21,7 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.http.HttpMethod;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.filters.AuthenticationFetcher;
-import io.reactivex.Maybe;
+import io.reactivex.rxjava3.core.Maybe;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.controller.AriesWebhookController;
