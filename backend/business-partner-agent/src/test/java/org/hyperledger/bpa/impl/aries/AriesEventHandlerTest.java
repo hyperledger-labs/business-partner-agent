@@ -32,7 +32,6 @@ import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
 
-import java.time.Instant;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -180,11 +179,10 @@ class AriesEventHandlerTest extends BaseTest {
         aeh.handleProof(exReqSent);
         aeh.handleProof(exProblem);
 
-        Optional<PartnerProof> dbProof = proofRepo.findByThreadId(exProblem.getThreadId());
-        assertTrue(dbProof.isPresent());
-        assertEquals(PresentationExchangeState.DECLINED, dbProof.get().getState());
-        assertNotNull(dbProof.get().getProblemReport());
-        assertTrue(dbProof.get().getProblemReport().startsWith("no matching"));
+        PartnerProof dbProof = proofRepo.findByThreadId(exProblem.getThreadId()).orElseThrow();
+        assertEquals(PresentationExchangeState.DECLINED, dbProof.getState());
+        assertNotNull(dbProof.getProblemReport());
+        assertTrue(dbProof.getProblemReport().startsWith("no matching"));
 
     }
 

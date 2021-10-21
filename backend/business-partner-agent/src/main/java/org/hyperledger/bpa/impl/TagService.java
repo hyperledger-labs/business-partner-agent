@@ -91,7 +91,7 @@ public class TagService {
         if (!force && refs > 0) {
             throw new WrongApiUsageException("Tag is still used by " + refs + " partner(s)");
         }
-        tagRepo.findById(id).ifPresent(s -> tagRepo.deleteById(id));
+        tagRepo.findById(id).ifPresent(s -> tagRepo.deleteByTagId(id));
     }
 
     public void createDefaultTags() {

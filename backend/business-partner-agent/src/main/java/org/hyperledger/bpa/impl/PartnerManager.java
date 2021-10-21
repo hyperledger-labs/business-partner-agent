@@ -103,7 +103,7 @@ public class PartnerManager {
                 cm.removeConnection(p.getConnectionId());
             }
         });
-        repo.deleteById(id);
+        repo.deleteByPartnerId(id);
     }
 
     public PartnerAPI addPartnerFlow(@NonNull AddPartnerRequest req) {

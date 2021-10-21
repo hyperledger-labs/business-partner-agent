@@ -32,6 +32,7 @@ export const ApiRoutes = Object.freeze({
   PROOF_EXCHANGES: "/proof-exchanges",
   PROOF_TEMPLATES: "/proof-templates",
   ACTIVITIES: "/activities",
+  WALLET: "/wallet",
 });
 
 export const CredentialExchangeRoles = Object.freeze({
@@ -42,6 +43,8 @@ export const CredentialExchangeRoles = Object.freeze({
 export const CredentialExchangeStates = Object.freeze({
   PROPOSAL_SENT: "proposal_sent",
   PROPOSAL_RECEIVED: "proposal_received",
+  PROBLEM: "problem",
+  DECLINED: "declined",
   OFFER_SENT: "offer_sent",
   OFFER_RECEIVED: "offer_received",
   REQUEST_SENT: "request_sent",
@@ -49,6 +52,7 @@ export const CredentialExchangeStates = Object.freeze({
   CREDENTIAL_ISSUED: "credential_issued",
   CREDENTIAL_RECEIVED: "credential_received",
   CREDENTIAL_ACKED: "credential_acked",
+  DONE: "done",
 });
 
 export const PresentationExchangeStates = Object.freeze({

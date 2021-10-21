@@ -114,7 +114,7 @@ public class PartnerCredDefLookup {
      * an issuer of credentials that are based on that schema.
      */
     @Scheduled(cron = "0 15 2 ? * *")
-    public void lookupTypesForAllPartners() {
+    void lookupTypesForAllPartners() {
         ledger.ifPresent(l -> {
             Map<String, List<PartnerCredentialType>> didToTypes = new HashMap<>();
             schemaRepo.findAll().forEach(

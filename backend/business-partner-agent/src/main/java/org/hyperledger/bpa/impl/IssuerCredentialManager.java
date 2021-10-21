@@ -68,7 +68,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
-public class IssuerCredentialManager {
+public class IssuerCredentialManager extends BaseCredentialManager {
 
     @Inject
     AriesClient ac;
@@ -169,6 +169,13 @@ public class IssuerCredentialManager {
 
     // Credential Management - Called By User
 
+    /**
+     * Issuer initialises the credential exchange with an offer. There is no
+     * preexisting proposal from the holder.
+     * 
+     * @param request {@link IssueCredentialRequest}
+     * @return credential exchange id
+     */
     public String issueCredential(@NonNull IssueCredentialRequest request) {
         Partner dbPartner = partnerRepo.findById(request.getPartnerId())
                 .orElseThrow(() -> new IssuerException(String.format("Could not find partner with id '%s'",
@@ -307,8 +314,8 @@ public class IssuerCredentialManager {
     }
 
     /**
-     * Send partner a credential offer in reference to a proposal (Not to be
-     * confused with the automated send-offer flow).
+     * Send partner a credential (counter) offer in reference to a proposal (Not to
+     * be confused with the automated send-offer flow).
      * 
      * @param id           credential exchange id
      * @param counterOffer {@link CredentialOfferRequest}
@@ -372,33 +379,15 @@ public class IssuerCredentialManager {
         return CredEx.from(credEx);
     }
 
-    /**
-     * The only way to stop or decline a credential exchange is for any side (issuer
-     * or holder) to send a problem report. If a problem report is sent aca-py will
-     * set the state of the exchange to null and hence it becomes unusable and con
-     * not be restarted again.
-     *
-     * @param id      {@link UUID} bpa credential exchange id
-     * @param message to sent to the other party
-     */
-    public void declineCredentialOffer(@NonNull UUID id, @Nullable String message) {
-        BPACredentialExchange credEx = credExRepo.findById(id).orElseThrow(EntityNotFoundException::new);
-        try {
-            if (ExchangeVersion.V1.equals(credEx.getExchangeVersion())) {
-                ac.issueCredentialRecordsProblemReport(credEx.getCredentialExchangeId(),
-                        V10CredentialProblemReportRequest.builder().description(message).build());
-            } else {
-                ac.issueCredentialV2RecordsProblemReport(credEx.getCredentialExchangeId(),
-                        V20CredIssueProblemReportRequest.builder().description(message).build());
-            }
-        } catch (IOException e) {
-            throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
-        } catch (AriesException e) {
-            if (e.getCode() == 404) {
-                throw new EntityNotFoundException();
-            }
-            throw e;
+    public void declineCredentialProposal(@NonNull UUID id, @Nullable String message) {
+        if (StringUtils.isEmpty(message)) {
+            message = "Issuer declined credential proposal: no reason provided";
         }
+        BPACredentialExchange credEx = getCredentialExchange(id);
+        credEx.pushStates(CredentialExchangeState.DECLINED, Instant.now());
+        credExRepo.updateAfterEventNoRevocationInfo(credEx.getId(), credEx.getState(), credEx.getStateToTimestamp(),
+                message);
+        declineCredentialExchange(credEx, message);
     }
 
     // Credential Management - Called By Event Handler
@@ -435,11 +424,14 @@ public class IssuerCredentialManager {
      */
     public void handleV1CredentialExchange(@NonNull V1CredentialExchange ex) {
         credExRepo.findByCredentialExchangeId(ex.getCredentialExchangeId()).ifPresent(bpaEx -> {
+            boolean notDeclined = bpaEx.stateIsNotDeclined();
             CredentialExchangeState state = ex.getState() != null ? ex.getState() : CredentialExchangeState.PROBLEM;
             bpaEx.pushStates(state, ex.getUpdatedAt());
             if (StringUtils.isNotEmpty(ex.getErrorMsg())) {
-                credExRepo.updateAfterEventNoRevocationInfo(bpaEx.getId(),
-                        bpaEx.getState(), bpaEx.getStateToTimestamp(), ex.getErrorMsg());
+                if (notDeclined) {
+                    credExRepo.updateAfterEventNoRevocationInfo(bpaEx.getId(),
+                            bpaEx.getState(), bpaEx.getStateToTimestamp(), ex.getErrorMsg());
+                }
             } else {
                 credExRepo.updateAfterEventWithRevocationInfo(bpaEx.getId(),
                         bpaEx.getState(), bpaEx.getStateToTimestamp(),
@@ -460,17 +452,19 @@ public class IssuerCredentialManager {
     public void handleV2CredentialExchange(@NonNull V20CredExRecord ex) {
         credExRepo.findByCredentialExchangeId(ex.getCredExId())
                 .ifPresent(bpaEx -> {
-                    CredentialExchangeState state = ex.getState();
-                    if (StringUtils.isNotEmpty(ex.getErrorMsg())) {
-                        state = CredentialExchangeState.PROBLEM;
-                    }
-                    bpaEx.pushStates(state, ex.getUpdatedAt());
-                    credExRepo.updateAfterEventNoRevocationInfo(bpaEx.getId(),
-                            bpaEx.getState(), bpaEx.getStateToTimestamp(), ex.getErrorMsg());
-                    if (ex.isDone() && ex.isAutoIssueEnabled()) {
-                        ex.getByFormat().findValuesInIndyCredIssue().ifPresent(
-                                attr -> credExRepo.updateCredential(bpaEx.getId(),
-                                        Credential.builder().attrs(attr).build()));
+                    if (bpaEx.stateIsNotDeclined()) {
+                        CredentialExchangeState state = ex.getState();
+                        if (StringUtils.isNotEmpty(ex.getErrorMsg())) {
+                            state = CredentialExchangeState.PROBLEM;
+                        }
+                        bpaEx.pushStates(state, ex.getUpdatedAt());
+                        credExRepo.updateAfterEventNoRevocationInfo(bpaEx.getId(),
+                                bpaEx.getState(), bpaEx.getStateToTimestamp(), ex.getErrorMsg());
+                        if (ex.isDone() && ex.isAutoIssueEnabled()) {
+                            ex.getByFormat().findValuesInIndyCredIssue().ifPresent(
+                                    attr -> credExRepo.updateCredential(bpaEx.getId(),
+                                            Credential.builder().attrs(attr).build()));
+                        }
                     }
                 });
     }
@@ -481,8 +475,16 @@ public class IssuerCredentialManager {
      * @param revocationInfo {@link V2IssueIndyCredentialEvent}
      */
     public void handleIssueCredentialV2Indy(V2IssueIndyCredentialEvent revocationInfo) {
-        credExRepo.findByCredentialExchangeId(revocationInfo.getCredExId()).ifPresent(bpaEx -> credExRepo
-                .updateRevocationInfo(bpaEx.getId(), revocationInfo.getRevRegId(), revocationInfo.getCredRevId()));
+        // Note: This event contains no role info, so we have to check this here
+        // explicitly
+        credExRepo.findByCredentialExchangeId(revocationInfo.getCredExId()).ifPresent(bpaEx -> {
+            if (bpaEx.roleIsIssuer() && StringUtils.isNotEmpty(revocationInfo.getRevRegId())) {
+                credExRepo.updateRevocationInfo(bpaEx.getId(), revocationInfo.getRevRegId(),
+                        revocationInfo.getCredRevId());
+            } else if (bpaEx.roleIsHolder() && StringUtils.isNotEmpty(revocationInfo.getCredIdStored())) {
+                credExRepo.updateReferent(bpaEx.getId(), revocationInfo.getCredIdStored());
+            }
+        });
     }
 
     /**

@@ -36,6 +36,17 @@
           :title="$t('component.credExList.dialog.iconCredRevoked')"
           >$vuetify.icons.check</v-icon
         >
+        <v-tooltip
+          v-if="item.errorMsg && item.state === exchangeStates.PROBLEM"
+          top
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon color="error" small v-bind="attrs" v-on="on">
+              $vuetify.icons.connectionAlert
+            </v-icon>
+          </template>
+          <span>{{ item.errorMsg }}</span>
+        </v-tooltip>
       </template>
       <template v-slot:[`item.updatedAt`]="{ item }">
         {{ item.updatedAt | formatDateLong }}
@@ -153,12 +164,23 @@
             <v-bpa-button
               :color="
                 document.credentialExchangeState ===
-                exchangeStates.PROPOSAL_RECEIVED
+                  exchangeStates.PROPOSAL_RECEIVED ||
+                document.credentialExchangeState ===
+                  exchangeStates.OFFER_RECEIVED
                   ? 'secondary'
                   : 'primary'
               "
               @click="closeDialog"
               >{{ $t("button.close") }}</v-bpa-button
+            >
+            <v-bpa-button
+              v-if="
+                document.credentialExchangeState ===
+                exchangeStates.PROPOSAL_RECEIVED
+              "
+              color="secondary"
+              @click="declineCredentialProposal(document.walletCredentialId)"
+              >{{ $t("button.decline") }}</v-bpa-button
             >
             <v-bpa-button
               v-if="
@@ -186,6 +208,24 @@
               "
               :loading="isLoadingSendCounterOffer"
               @click="sendCounterOffer(true)"
+              >{{ $t("button.accept") }}</v-bpa-button
+            >
+            <v-bpa-button
+              v-if="
+                document.credentialExchangeState ===
+                exchangeStates.OFFER_RECEIVED
+              "
+              color="secondary"
+              @click="declineCredentialOffer(document.walletCredentialId)"
+              >{{ $t("button.decline") }}</v-bpa-button
+            >
+            <v-bpa-button
+              v-if="
+                document.credentialExchangeState ===
+                exchangeStates.OFFER_RECEIVED
+              "
+              color="primary"
+              @click="acceptCredentialOffer(document.walletCredentialId)"
               >{{ $t("button.accept") }}</v-bpa-button
             >
           </v-layout>
@@ -242,7 +282,7 @@ export default {
       default: (item) =>
         item.state === CredentialExchangeStates.CREDENTIAL_ISSUED ||
         item.state === CredentialExchangeStates.CREDENTIAL_ACKED ||
-        item.state === "done",
+        item.state === CredentialExchangeStates.DONE,
     },
     isLoading: Boolean,
   },
@@ -321,6 +361,7 @@ export default {
         credentialExchangeRole: item.role,
         credentialWasEdited: false,
         credentialStateToTimestamp: item.stateToTimestamp,
+        walletCredentialId: item.id,
       };
 
       this.$emit("openItem", item);
@@ -350,6 +391,18 @@ export default {
     revokeCredential(id) {
       this.revoked.push(id);
       issuerService.revokeCredential(id);
+    },
+    acceptCredentialOffer(id) {
+      issuerService.acceptCredentialOffer(id);
+      this.closeDialog();
+    },
+    declineCredentialOffer(id) {
+      issuerService.declineCredentialOffer(id);
+      this.closeDialog();
+    },
+    declineCredentialProposal(id) {
+      issuerService.declineCredentialProposal(id);
+      this.closeDialog();
     },
     async sendCounterOffer(acceptAll) {
       this.isLoadingSendCounterOffer = true;

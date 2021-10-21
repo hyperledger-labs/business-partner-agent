@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.controller;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
@@ -28,6 +29,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
+import org.hyperledger.bpa.controller.api.issuer.DeclineCredentialExchangeRequest;
 import org.hyperledger.bpa.controller.api.wallet.WalletCredentialRequest;
 import org.hyperledger.bpa.controller.api.wallet.WalletDocumentRequest;
 import org.hyperledger.bpa.impl.MyDocumentManager;
@@ -123,7 +125,7 @@ public class WalletController {
     // -------------------------------------
 
     /**
-     * Aries: List aries wallet credentials
+     * Aries: List wallet credentials
      *
      * @return list of {@link AriesCredential}
      */
@@ -133,7 +135,7 @@ public class WalletController {
     }
 
     /**
-     * Aries: Get aries wallet credential by id
+     * Aries: Get wallet credential by id
      *
      * @param id the credential id
      * @return {@link AriesCredential}
@@ -159,7 +161,7 @@ public class WalletController {
     }
 
     /**
-     * Aries: Delete an aries wallet credential by id
+     * Aries: Delete a wallet credential by id
      *
      * @param id the credential id
      * @return HTTP status
@@ -171,7 +173,7 @@ public class WalletController {
     }
 
     /**
-     * Toggles the credentials visibility
+     * Toggles the credential's visibility in the public profile
      *
      * @param id the credential id
      * @return {@link HttpResponse}
@@ -182,4 +184,32 @@ public class WalletController {
         holderCredMgmt.toggleVisibility(id);
         return HttpResponse.ok();
     }
+
+    /**
+     * Manual credential exchange step four: Holder accepts credential offer from
+     * issuer
+     *
+     * @param id the credential id
+     * @return HTTP status
+     */
+    @Put("/credential/{id}/accept-offer")
+    public HttpResponse<Void> acceptCredentialOffer(
+            @PathVariable UUID id) {
+        holderCredMgmt.sendCredentialRequest(id);
+        return HttpResponse.ok();
+    }
+
+    /**
+     * Manual credential exchange: Holder declines credential offer from issuer
+     *
+     * @param id the credential id
+     * @return HTTP status
+     */
+    @Put("/credential/{id}/decline-offer")
+    public HttpResponse<Void> declineCredentialOffer(
+            @PathVariable UUID id, @Body @Nullable DeclineCredentialExchangeRequest decline) {
+        holderCredMgmt.declineCredentialOffer(id, decline != null ? decline.getMessage() : null);
+        return HttpResponse.ok();
+    }
+
 }

@@ -61,10 +61,9 @@ class CryptoManagerTest extends RunWithAries {
         VerifiablePresentation<VerifiableIndyCredential> vp = builder
                 .verifiableCredential(List.of(vc))
                 .build();
-        final Optional<VerifiablePresentation<VerifiableIndyCredential>> signed = mgmt.sign(vp);
-        assertTrue(signed.isPresent());
-        assertNotNull(signed.get().getProof());
-        assertEquals("authentication", signed.get().getProof().getProofPurpose());
+        VerifiablePresentation<VerifiableIndyCredential> signed = mgmt.sign(vp).orElseThrow();
+        assertNotNull(signed.getProof());
+        assertEquals("authentication", signed.getProof().getProofPurpose());
     }
 
     @Test
@@ -88,11 +87,10 @@ class CryptoManagerTest extends RunWithAries {
         VerifiablePresentation<VerifiableIndyCredential> vp = builder
                 .verifiableCredential(List.of(vc))
                 .build();
-        final Optional<VerifiablePresentation<VerifiableIndyCredential>> signed = mgmt.sign(vp);
-        assertTrue(signed.isPresent());
-        assertNotNull(signed.get().getProof());
-        assertEquals("authentication", signed.get().getProof().getProofPurpose());
-        assertEquals("did:sov:asdfsafs", signed.get().getVerifiableCredential().get(0).getIssuer());
+        VerifiablePresentation<VerifiableIndyCredential> signed = mgmt.sign(vp).orElseThrow();
+        assertNotNull(signed.getProof());
+        assertEquals("authentication", signed.getProof().getProofPurpose());
+        assertEquals("did:sov:asdfsafs", signed.getVerifiableCredential().get(0).getIssuer());
     }
 
 }

@@ -19,13 +19,16 @@ package org.hyperledger.bpa.repository;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.Join;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.model.BPACredentialExchange;
+import org.hyperledger.bpa.model.StateChangeDecorator;
 
 import java.time.Instant;
 import java.util.List;
@@ -43,6 +46,7 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     List<BPACredentialExchange> findByPartnerId(UUID partnerId);
 
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     Optional<BPACredentialExchange> findByCredentialExchangeId(String credentialExchangeId);
 
     List<BPACredentialExchange> findByRoleAndIsPublicTrue(CredentialExchangeRole role);
@@ -63,9 +67,18 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     void updateState(@Id UUID id, CredentialExchangeState state);
 
+    void updateStates(@Id UUID id, CredentialExchangeState state,
+            StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp, @Nullable String errorMsg);
+
+    void updateOnCredentialOfferEvent(@Id UUID id, CredentialExchangeState state,
+            StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp,
+            V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialOffer);
+
     void updateLabel(@Id UUID id, String label);
 
     Number updateRevoked(@Id UUID id, Boolean revoked);
+
+    Number updateReferent(@Id UUID id, @Nullable String referent);
 
     @Query("UPDATE bpa_credential_exchange SET issuer = :issuer WHERE partner_id = :partnerId AND role = 'HOLDER'")
     Number updateIssuerByPartnerId(UUID partnerId, @Nullable String issuer);

@@ -33,6 +33,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
+import org.hyperledger.bpa.impl.aries.CredExStateAndRoleTranslator;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -54,7 +55,9 @@ import java.util.stream.Collectors;
 @Accessors(chain = true)
 @Entity
 @Table(name = "bpa_credential_exchange")
-public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExchange, CredentialExchangeState> {
+public class BPACredentialExchange
+        extends StateChangeDecorator<BPACredentialExchange, CredentialExchangeState>
+        implements CredExStateAndRoleTranslator {
 
     @Id
     @AutoPopulated
@@ -109,11 +112,15 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
 
     @Nullable
     @TypeDef(type = DataType.JSON)
-    private Credential credential;
+    private V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialProposal;
 
     @Nullable
     @TypeDef(type = DataType.JSON)
-    private V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialProposal;
+    private V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialOffer;
+
+    @Nullable
+    @TypeDef(type = DataType.JSON)
+    private Credential credential;
 
     @Nullable
     private String errorMsg;
@@ -138,6 +145,10 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
     @Nullable
     private String referent;
 
+    public boolean checkIfPublic() {
+        return isPublic != null && isPublic;
+    }
+
     public Instant calculateIssuedAt() {
         return stateToTimestamp != null && stateToTimestamp.getStateToTimestamp() != null
                 ? stateToTimestamp.getStateToTimestamp().entrySet()
@@ -150,20 +161,24 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
                 : null;
     }
 
-    public boolean checkIfPublic() {
-        return isPublic != null && isPublic;
+    public @io.micronaut.core.annotation.NonNull Map<String, String> proposalAttributesToMap() {
+        return attributesToMap(credentialProposal);
     }
 
-    public Map<String, String> proposalAttributesToMap() {
-        if (credentialProposal == null || CollectionUtils.isEmpty(credentialProposal.getAttributes())) {
+    public @io.micronaut.core.annotation.NonNull Map<String, String> offerAttributesToMap() {
+        return attributesToMap(credentialOffer);
+    }
+
+    private Map<String, String> attributesToMap(V1CredentialExchange.CredentialProposalDict.CredentialProposal p) {
+        if (p == null || CollectionUtils.isEmpty(p.getAttributes())) {
             return Map.of();
         }
-        return credentialProposal.getAttributes()
+        return p.getAttributes()
                 .stream()
                 .collect(Collectors.toMap(CredentialAttributes::getName, CredentialAttributes::getValue));
     }
 
-    public Map<String, String> credentialAttributesToMap() {
+    public @io.micronaut.core.annotation.NonNull Map<String, String> credentialAttributesToMap() {
         if (credential == null || CollectionUtils.isEmpty(credential.getAttrs())) {
             return Map.of();
         }
