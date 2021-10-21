@@ -43,6 +43,8 @@ export const CredentialExchangeRoles = Object.freeze({
 export const CredentialExchangeStates = Object.freeze({
   PROPOSAL_SENT: "proposal_sent",
   PROPOSAL_RECEIVED: "proposal_received",
+  PROBLEM: "problem",
+  DECLINED: "declined",
   OFFER_SENT: "offer_sent",
   OFFER_RECEIVED: "offer_received",
   REQUEST_SENT: "request_sent",

@@ -36,6 +36,17 @@
           :title="$t('component.credExList.dialog.iconCredRevoked')"
           >$vuetify.icons.check</v-icon
         >
+        <v-tooltip
+          v-if="item.errorMsg && item.state === exchangeStates.PROBLEM"
+          top
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon color="error" small v-bind="attrs" v-on="on">
+              $vuetify.icons.connectionAlert
+            </v-icon>
+          </template>
+          <span>{{ item.errorMsg }}</span>
+        </v-tooltip>
       </template>
       <template v-slot:[`item.updatedAt`]="{ item }">
         {{ item.updatedAt | formatDateLong }}
