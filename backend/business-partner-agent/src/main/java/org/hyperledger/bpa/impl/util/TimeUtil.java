@@ -48,7 +48,7 @@ public class TimeUtil {
         return Instant.from(parsed);
     }
 
-    public static @Nullable Instant parseZonedTimestamp(@Nullable String ts) {
+    public static Instant parseZonedTimestamp(@Nullable String ts) {
         if (StringUtils.isNotEmpty(ts)) {
             try {
                 return ZonedDateTime.parse(ts, ZONED_FORMATTER).toInstant();

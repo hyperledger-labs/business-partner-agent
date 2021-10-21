@@ -9,12 +9,7 @@
   <v-container>
     <v-card v-if="isReady" class="mx-auto">
       <v-card-title class="bg-light">
-        <v-btn
-          depressed
-          color="secondary"
-          icon
-          @click="$router.push({ name: 'Wallet' })"
-        >
+        <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
         <div v-if="credential.type === CredentialTypes.UNKNOWN.type">

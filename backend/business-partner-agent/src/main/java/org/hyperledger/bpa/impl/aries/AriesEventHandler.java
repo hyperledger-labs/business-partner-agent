@@ -24,6 +24,7 @@ import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
+import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
@@ -101,14 +102,20 @@ public class AriesEventHandler extends EventHandler {
         // holder events
         if (v1CredEx.isHolder()) {
             synchronized (holderMgr) {
-                if (v1CredEx.isCredentialAcked()) {
+                if (v1CredEx.stateIsCredentialAcked()) {
                     holderMgr.handleV1CredentialExchangeAcked(v1CredEx);
+                } else if (v1CredEx.stateIsOfferReceived()) {
+                    holderMgr.handleOfferReceived(v1CredEx, ExchangeVersion.V1);
+                } else {
+                    holderMgr.handleStateChangesOnly(
+                            v1CredEx.getCredentialExchangeId(), v1CredEx.getState(),
+                            v1CredEx.getUpdatedAt(), v1CredEx.getErrorMsg());
                 }
             }
             // issuer events
         } else if (v1CredEx.isIssuer()) {
             synchronized (issuerMgr) {
-                if (v1CredEx.isProposalReceived()) {
+                if (v1CredEx.stateIsProposalReceived()) {
                     issuerMgr.handleCredentialProposal(v1CredEx, ExchangeVersion.V1);
                 } else {
                     issuerMgr.handleV1CredentialExchange(v1CredEx);
@@ -118,23 +125,28 @@ public class AriesEventHandler extends EventHandler {
     }
 
     @Override
-    public void handleCredentialV2(V20CredExRecord v20Credential) {
-        log.debug("Credential V2 Event: {}", v20Credential);
-        if (v20Credential.isIssuer()) {
+    public void handleCredentialV2(V20CredExRecord v2CredEx) {
+        log.debug("Credential V2 Event: {}", v2CredEx);
+        if (v2CredEx.isIssuer()) {
             synchronized (issuerMgr) {
-                if (v20Credential.isProposalReceived()) {
-                    issuerMgr.handleCredentialProposal(v20Credential.toV1CredentialExchangeFromProposal(),
+                if (v2CredEx.isProposalReceived()) {
+                    issuerMgr.handleCredentialProposal(v2CredEx.toV1CredentialExchangeFromProposal(),
                             ExchangeVersion.V2);
                 } else {
-                    issuerMgr.handleV2CredentialExchange(v20Credential);
+                    issuerMgr.handleV2CredentialExchange(v2CredEx);
                 }
             }
-        } else if (v20Credential.isHolder()) {
+        } else if (v2CredEx.isHolder()) {
             synchronized (holderMgr) {
-                if (v20Credential.isCredentialReceived()) {
-                    holderMgr.handleV2CredentialReceived(v20Credential);
-                } else if (v20Credential.isDone()) {
-                    holderMgr.handleV2CredentialDone(v20Credential);
+                if (v2CredEx.isOfferReceived()) {
+                    holderMgr.handleOfferReceived(
+                            V2ToV1IndyCredentialConverter.INSTANCE().toV1Offer(v2CredEx), ExchangeVersion.V2);
+                } else if (v2CredEx.isDone()) {
+                    holderMgr.handleV2CredentialDone(v2CredEx);
+                } else {
+                    holderMgr.handleStateChangesOnly(
+                            v2CredEx.getCredExId(), v2CredEx.getState(),
+                            v2CredEx.getUpdatedAt(), v2CredEx.getErrorMsg());
                 }
             }
         }
@@ -145,9 +157,6 @@ public class AriesEventHandler extends EventHandler {
         log.debug("Issue Credential V2 Indy Event: {}", revocationInfo);
         synchronized (issuerMgr) {
             issuerMgr.handleIssueCredentialV2Indy(revocationInfo);
-        }
-        synchronized (holderMgr) {
-            holderMgr.handleIssueCredentialV2Indy(revocationInfo);
         }
     }
 

@@ -33,6 +33,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
+import org.hyperledger.bpa.impl.aries.CredExStateAndRoleTranslator;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -41,9 +42,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Stores issued credentials
- *
- * TODO is basically the same as {@link MyCredential} and both can be merged
+ * Stores credential exchanges, either holder or issuer. An exchange is NOT to
+ * be confused with the verifiable credential (VC) that is part of the public
+ * profile. When an aries credential is made public it will become a VC as part
+ * of the public profile.
  */
 @Data
 @NoArgsConstructor
@@ -53,7 +55,9 @@ import java.util.stream.Collectors;
 @Accessors(chain = true)
 @Entity
 @Table(name = "bpa_credential_exchange")
-public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExchange, CredentialExchangeState> {
+public class BPACredentialExchange
+        extends StateChangeDecorator<BPACredentialExchange, CredentialExchangeState>
+        implements CredExStateAndRoleTranslator {
 
     @Id
     @AutoPopulated
@@ -73,6 +77,7 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
     @OneToOne
     private BPACredentialDefinition credDef;
 
+    @Nullable
     @OneToOne
     private Partner partner;
 
@@ -83,13 +88,20 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
     @Nullable
     private String label;
 
+    /** aca-py thread id */
     private String threadId;
 
+    /** temporary credential exchange identifier */
     private String credentialExchangeId;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private CredentialExchangeRole role = CredentialExchangeRole.ISSUER;
+
+    @Nullable
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private ExchangeVersion exchangeVersion = ExchangeVersion.V1;
 
     @Enumerated(EnumType.STRING)
     private CredentialExchangeState state;
@@ -99,19 +111,21 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
     private StateToTimestamp<CredentialExchangeState> stateToTimestamp;
 
     @Nullable
-    @Builder.Default
-    @Enumerated(EnumType.STRING)
-    private ExchangeVersion exchangeVersion = ExchangeVersion.V1;
+    @TypeDef(type = DataType.JSON)
+    private V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialProposal;
+
+    @Nullable
+    @TypeDef(type = DataType.JSON)
+    private V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialOffer;
 
     @Nullable
     @TypeDef(type = DataType.JSON)
     private Credential credential;
 
     @Nullable
-    @TypeDef(type = DataType.JSON)
-    private V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialProposal;
+    private String errorMsg;
 
-    // revocation - link to issued credential
+    // revocation - links to issued credential
     /** credential revocation identifier */
     @Nullable
     private String credRevId;
@@ -122,19 +136,49 @@ public class BPACredentialExchange extends StateChangeDecorator<BPACredentialExc
     @Nullable
     private Boolean revoked;
 
+    // holder only
     @Nullable
-    private String errorMsg;
+    private Boolean isPublic;
+    @Nullable
+    private String issuer;
+    /** aca-py credential identifier */
+    @Nullable
+    private String referent;
 
-    public Map<String, String> proposalAttributesToMap() {
-        if (credentialProposal == null || CollectionUtils.isEmpty(credentialProposal.getAttributes())) {
+    public boolean checkIfPublic() {
+        return isPublic != null && isPublic;
+    }
+
+    public Instant calculateIssuedAt() {
+        return stateToTimestamp != null && stateToTimestamp.getStateToTimestamp() != null
+                ? stateToTimestamp.getStateToTimestamp().entrySet()
+                        .stream()
+                        .filter(e -> CredentialExchangeState.CREDENTIAL_ACKED.equals(e.getKey())
+                                || CredentialExchangeState.DONE.equals(e.getKey()))
+                        .map(Map.Entry::getValue)
+                        .findFirst()
+                        .orElse(null)
+                : null;
+    }
+
+    public @io.micronaut.core.annotation.NonNull Map<String, String> proposalAttributesToMap() {
+        return attributesToMap(credentialProposal);
+    }
+
+    public @io.micronaut.core.annotation.NonNull Map<String, String> offerAttributesToMap() {
+        return attributesToMap(credentialOffer);
+    }
+
+    private Map<String, String> attributesToMap(V1CredentialExchange.CredentialProposalDict.CredentialProposal p) {
+        if (p == null || CollectionUtils.isEmpty(p.getAttributes())) {
             return Map.of();
         }
-        return credentialProposal.getAttributes()
+        return p.getAttributes()
                 .stream()
                 .collect(Collectors.toMap(CredentialAttributes::getName, CredentialAttributes::getValue));
     }
 
-    public Map<String, String> credentialAttributesToMap() {
+    public @io.micronaut.core.annotation.NonNull Map<String, String> credentialAttributesToMap() {
         if (credential == null || CollectionUtils.isEmpty(credential.getAttrs())) {
             return Map.of();
         }

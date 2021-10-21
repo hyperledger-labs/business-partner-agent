@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.impl.activity;
 
+import io.micronaut.context.env.Environment;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
@@ -32,7 +33,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@MicronautTest
+@MicronautTest(environments = { Environment.TEST, "test-web" })
 class CryptoManagerTest extends RunWithAries {
 
     @Inject
@@ -60,10 +61,9 @@ class CryptoManagerTest extends RunWithAries {
         VerifiablePresentation<VerifiableIndyCredential> vp = builder
                 .verifiableCredential(List.of(vc))
                 .build();
-        final Optional<VerifiablePresentation<VerifiableIndyCredential>> signed = mgmt.sign(vp);
-        assertTrue(signed.isPresent());
-        assertNotNull(signed.get().getProof());
-        assertEquals("authentication", signed.get().getProof().getProofPurpose());
+        VerifiablePresentation<VerifiableIndyCredential> signed = mgmt.sign(vp).orElseThrow();
+        assertNotNull(signed.getProof());
+        assertEquals("authentication", signed.getProof().getProofPurpose());
     }
 
     @Test
@@ -87,11 +87,10 @@ class CryptoManagerTest extends RunWithAries {
         VerifiablePresentation<VerifiableIndyCredential> vp = builder
                 .verifiableCredential(List.of(vc))
                 .build();
-        final Optional<VerifiablePresentation<VerifiableIndyCredential>> signed = mgmt.sign(vp);
-        assertTrue(signed.isPresent());
-        assertNotNull(signed.get().getProof());
-        assertEquals("authentication", signed.get().getProof().getProofPurpose());
-        assertEquals("did:sov:asdfsafs", signed.get().getVerifiableCredential().get(0).getIssuer());
+        VerifiablePresentation<VerifiableIndyCredential> signed = mgmt.sign(vp).orElseThrow();
+        assertNotNull(signed.getProof());
+        assertEquals("authentication", signed.getProof().getProofPurpose());
+        assertEquals("did:sov:asdfsafs", signed.getVerifiableCredential().get(0).getIssuer());
     }
 
 }

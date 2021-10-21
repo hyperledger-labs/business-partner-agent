@@ -66,6 +66,7 @@ public class NotificationEventListener {
                     event.getCredential(),
                     partnerAPI);
             messageService.sendMessage(message);
+            activityManager.addCredentialAddedActivity(event.getCredential());
         }
     }
 
@@ -198,6 +199,18 @@ public class NotificationEventListener {
         log.debug("onPresentationRequestSentEvent");
         handlePresentationRequestEvent(event.getPartnerProof(),
                 WebSocketMessageBody.WebSocketMessageType.ON_PRESENTATION_REQUEST_SENT);
+    }
+
+    @EventListener
+    @Async
+    public void onActivityNotificationEvent(ActivityNotificationEvent event) {
+        log.debug("onActivityNotificationEvent");
+        WebSocketMessageBody msg = WebSocketMessageBody.notificationEvent(
+                WebSocketMessageBody.WebSocketMessageType.ACTIVITY_NOTIFICATION,
+                event.getActivity().getId().toString(),
+                event.getActivity(),
+                conv.toAPIObject(event.getActivity().getPartner()));
+        messageService.sendMessage(msg);
     }
 
     @EventListener

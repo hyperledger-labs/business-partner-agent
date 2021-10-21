@@ -67,9 +67,6 @@ micronaut:
     io:
       type: fixed
       nThreads: 25
-    scheduled:
-      type: scheduled
-      core-pool-size: 5
 
 endpoints:
   all:

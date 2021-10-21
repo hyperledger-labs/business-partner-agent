@@ -29,13 +29,12 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 import org.hyperledger.bpa.model.StateChangeDecorator;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface BPACredentialExchangeRepository extends CrudRepository<BPACredentialExchange, UUID> {
+public interface IssuerCredExRepository extends CrudRepository<BPACredentialExchange, UUID> {
 
     @NonNull
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
@@ -61,10 +60,6 @@ public interface BPACredentialExchangeRepository extends CrudRepository<BPACrede
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     List<BPACredentialExchange> listOrderByUpdatedAtDesc();
 
-    Long countByStateEquals(CredentialExchangeState state);
-
-    Long countByStateEqualsAndCreatedAtAfter(CredentialExchangeState state, Instant createdAt);
-
     Number updateCredential(@Id UUID id, Credential credential);
 
     Number updateAfterEventWithRevocationInfo(@Id UUID id,
@@ -79,6 +74,7 @@ public interface BPACredentialExchangeRepository extends CrudRepository<BPACrede
             StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp,
             @Nullable String errorMsg);
 
-    Number updateRevocationInfo(@Id UUID id, @Nullable String revRegId, @Nullable String credRevId);
+    Number updateRevocationInfo(@Id UUID id, String revRegId, @Nullable String credRevId);
 
+    Number updateReferent(@Id UUID id, String referent);
 }

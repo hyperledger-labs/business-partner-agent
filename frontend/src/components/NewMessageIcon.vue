@@ -53,6 +53,12 @@ export default {
       // if this id is in the specified collection, then show it
       let result = false;
       switch (this.type) {
+        case "activity":
+          result = {}.hasOwnProperty.call(
+            this.$store.getters.activityNotifications,
+            this.id
+          );
+          break;
         case "credential":
           result = {}.hasOwnProperty.call(
             this.$store.getters.credentialNotifications,
@@ -86,6 +92,9 @@ export default {
       // if this id is in the specified collection, then show it
       let result = "";
       switch (this.type) {
+        case "activity":
+          result = "New activity";
+          break;
         case "credential":
           result = "New activity on Credential";
           break;

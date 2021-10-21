@@ -67,8 +67,8 @@
             <v-badge
               overlap
               bordered
-              :content="taskNotificationsCount"
-              :value="taskNotificationsCount"
+              :content="notificationsCount"
+              :value="notificationsCount"
               color="red"
               offset-x="10"
               offset-y="10"
@@ -90,17 +90,7 @@
         </v-list-item>
         <v-list-item link :to="{ name: 'Wallet' }">
           <v-list-item-action>
-            <v-badge
-              overlap
-              bordered
-              :content="credentialNotificationsCount"
-              :value="credentialNotificationsCount"
-              color="red"
-              offset-x="10"
-              offset-y="10"
-            >
-              <v-icon>$vuetify.icons.wallet</v-icon>
-            </v-badge>
+            <v-icon>$vuetify.icons.wallet</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>{{ $t("view.wallet.title") }}</v-list-item-title>
@@ -130,17 +120,7 @@
 
         <v-list-item link :to="{ name: 'Partners' }">
           <v-list-item-action>
-            <v-badge
-              overlap
-              bordered
-              :content="partnerNotificationsCount"
-              :value="partnerNotificationsCount"
-              color="red"
-              offset-x="10"
-              offset-y="10"
-            >
-              <v-icon>$vuetify.icons.partners</v-icon>
-            </v-badge>
+            <v-icon>$vuetify.icons.partners</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>
@@ -206,7 +186,19 @@
     </v-navigation-drawer>
 
     <v-app-bar color="primary" app flat dark>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+      <v-badge
+        v-if="!drawer"
+        overlap
+        bordered
+        :content="notificationsCount"
+        :value="notificationsCount"
+        color="red"
+        offset-x="53"
+        offset-y="53"
+      >
+        <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+      </v-badge>
+      <v-app-bar-nav-icon v-if="drawer" @click.stop="drawer = !drawer" />
       <v-toolbar-title>{{ getTitle }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn v-if="ux.header.logout.enabled" icon @click="logout()">
@@ -391,14 +383,11 @@ export default {
     messagesReceivedCount() {
       return this.$store.getters.messagesCount;
     },
-    credentialNotificationsCount() {
-      return this.$store.getters.credentialNotificationsCount;
-    },
-    partnerNotificationsCount() {
-      return this.$store.getters.partnerNotificationsCount;
-    },
-    taskNotificationsCount() {
-      return this.$store.getters.taskNotificationsCount;
+    notificationsCount() {
+      return (
+        this.$store.getters.taskNotificationsCount +
+        this.$store.getters.activityNotificationsCount
+      );
     },
     getAgentName() {
       let bpaName = "Business Partner Agent";

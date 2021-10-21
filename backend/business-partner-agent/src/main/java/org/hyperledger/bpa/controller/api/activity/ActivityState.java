@@ -28,6 +28,14 @@ public enum ActivityState {
     CONNECTION_REQUEST_SENT,
     @JsonProperty("connection_request_accepted")
     CONNECTION_REQUEST_ACCEPTED,
+    @JsonProperty("credential_exchange_sent")
+    CREDENTIAL_EXCHANGE_SENT,
+    @JsonProperty("credential_exchange_received")
+    CREDENTIAL_EXCHANGE_RECEIVED,
+    @JsonProperty("credential_exchange_accepted")
+    CREDENTIAL_EXCHANGE_ACCEPTED,
+    @JsonProperty("credential_exchange_declined")
+    CREDENTIAL_EXCHANGE_DECLINED,
     @JsonProperty("presentation_exchange_sent")
     PRESENTATION_EXCHANGE_SENT,
     @JsonProperty("presentation_exchange_received")

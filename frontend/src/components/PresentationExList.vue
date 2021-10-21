@@ -75,11 +75,16 @@
             v-if="isWaitingForMatchingCreds"
             type="list-item-three-line"
           />
+          <PresentationRecordV2
+            class="justify-start"
+            v-else-if="showV2"
+            v-bind:record="record"
+          ></PresentationRecordV2>
           <PresentationRecord
+            class="justify-start"
             v-else
             v-bind:record="record"
           ></PresentationRecord>
-
           <v-alert
             v-if="
               !isWaitingForMatchingCreds &&
@@ -122,6 +127,7 @@ import { EventBus } from "@/main";
 import { PresentationExchangeStates, RequestTypes } from "@/constants";
 import NewMessageIcon from "@/components/NewMessageIcon";
 import PresentationRecord from "@/components/PresentationRecord";
+import PresentationRecordV2 from "@/components/PresentationRecordV2";
 import VBpaButton from "@/components/BpaButton";
 export default {
   props: {
@@ -180,6 +186,13 @@ export default {
     };
   },
   computed: {
+    showV2() {
+      return (
+        this.record.state &&
+        (this.record.state === PresentationExchangeStates.PRESENTATION_SENT ||
+          this.record.state === PresentationExchangeStates.VERIFIED)
+      );
+    },
     isStateRequestReceived() {
       return (
         this.record.state &&
@@ -204,7 +217,7 @@ export default {
       const payload = this.prepareApprovePayload();
       try {
         await proofExService.approveProofRequest(this.record.id, payload);
-        EventBus.$emit("success", "Presentation request accepted");
+        EventBus.$emit("success", "Proof has been sent");
         this.dialog = false;
         this.$emit("changed");
       } catch (e) {
@@ -268,25 +281,17 @@ export default {
       }
     },
     prepareApprovePayload() {
-      // based on ACA-Py structure https://github.com/hyperledger/aries-cloudagent-python/blob/a304568fc3238fe447eacca17d3dd6eb71545904/aries_cloudagent/protocols/present_proof/v1_0/manager.py#L244
       const payload = {
-        requested_attributes: {},
-        requested_predicates: {},
+        referents: [],
       };
 
       RequestTypes.map((type) => {
         Object.entries(this.record.proofRequest[type]).map(
           ([groupName, group]) => {
-            if (type === "requestedAttributes") {
-              payload.requested_attributes[groupName] = {
-                cred_id: group.selectedCredential.credentialInfo.referent,
-                revealed: true,
-              };
-            } else if (type === "requestedPredicates") {
-              payload.requested_predicates = {
-                cred_id: group.selectedCredential.credentialInfo.referent,
-              };
-            }
+            console.log(groupName);
+            payload.referents.push(
+              group.selectedCredential?.credentialInfo?.referent
+            );
           }
         );
       });
@@ -379,6 +384,7 @@ export default {
   components: {
     NewMessageIcon,
     PresentationRecord,
+    PresentationRecordV2,
     VBpaButton,
   },
 };

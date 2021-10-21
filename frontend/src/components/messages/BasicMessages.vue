@@ -34,7 +34,7 @@ import ChatWindow from "vue-advanced-chat";
 import "vue-advanced-chat/dist/vue-advanced-chat.css";
 import partnerService from "@/services/partnerService";
 import { mapMutations } from "vuex";
-import { CHAT_CURRENT_USERID } from "@/constants";
+import { CHAT_CURRENT_USERID, PartnerStates } from "@/constants";
 import { formatDateLong } from "@/filters";
 
 export default {
@@ -95,7 +95,7 @@ export default {
         for (let i = 0; i < partners.data.length; i++) {
           const p = partners.data[i];
           // assume they have a connection id, but check to make sure this partner is ARIES
-          if (p.ariesSupport) {
+          if (p.ariesSupport && p.state !== PartnerStates.INVITATION.value) {
             const name = p.name;
             // each room is for a single partner/connection
             // so set the room id to the partner id.

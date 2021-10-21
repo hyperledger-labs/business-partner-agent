@@ -30,7 +30,7 @@
                 label="Schema Name"
                 placeholder="Published schema name (ex. my-schema)"
                 v-model="schemaName"
-                :rules="[rules.required, rules.schemaText]"
+                :rules="[rules.required, rules.schemaName]"
                 required
                 outlined
                 dense
@@ -72,7 +72,7 @@
                   <v-text-field
                     placeholder="Ex. companyName or company-name"
                     v-model="attr.text"
-                    :rules="[rules.required, rules.schemaText]"
+                    :rules="[rules.required, rules.schemaAttributeName]"
                     outlined
                     dense
                   ></v-text-field>
@@ -150,11 +150,14 @@ export default {
       rules: {
         required: (value) => !!value || "Can't be empty",
         version: (value) =>
-          (value && /^(\d+)\.(\d+)(?:\.\d+)?$/.test(value)) ||
+          textUtils.isValidSchemaVersion(value) ||
           "Must be follow common version numbering (ex. 1.2 or 1.2.3)",
-        schemaText: (value) =>
+        schemaName: (value) =>
+          textUtils.isValidSchemaName(value) ||
+          "Must be alphanumeric with optional '_' or '-'.",
+        schemaAttributeName: (value) =>
           textUtils.isValidSchemaAttributeName(value) ||
-          "Must be alphanumeric with optional '_' or '-'",
+          "Must be lowercase alpha with optional '_'.",
       },
     };
   },
@@ -163,8 +166,14 @@ export default {
       return (
         this.schemaLabel.length === 0 ||
         this.schemaName.length === 0 ||
+        !textUtils.isValidSchemaName(this.schemaName) ||
         this.schemaVersion.length === 0 ||
-        this.schemaAttributes.length === 0
+        !textUtils.isValidSchemaVersion(this.schemaVersion) ||
+        this.schemaAttributes.filter((x) => x.text.trim().length).length ===
+          0 ||
+        this.schemaAttributes
+          .filter((x) => x.text.trim().length)
+          .some((x) => !textUtils.isValidSchemaAttributeName(x.text))
       );
     },
   },

@@ -90,17 +90,16 @@ class BPAProofTemplateRepositoryTest {
 
         UUID newEntityId = repo.save(proofTemplateToSave).getId();
 
-        Optional<BPAProofTemplate> savedProofTemplate = repo.findById(newEntityId);
-        assertTrue(savedProofTemplate.isPresent());
-        assertTrue(savedProofTemplate.map(BPAProofTemplate::getCreatedAt).isPresent());
-        assertNotEquals(givenCreatedAt, savedProofTemplate.get().getCreatedAt());
-        assertTrue(givenCreatedAt.isBefore(savedProofTemplate.get().getCreatedAt()));
+        BPAProofTemplate savedProofTemplate = repo.findById(newEntityId).orElseThrow();
+        assertNotNull(savedProofTemplate.getCreatedAt());
+        assertNotEquals(givenCreatedAt, savedProofTemplate.getCreatedAt());
+        assertTrue(givenCreatedAt.isBefore(savedProofTemplate.getCreatedAt()));
         BPAProofTemplate expectedProofTemplate = proofTemplateBuilder
                 .id(newEntityId)
                 // copy database generated time stamp
-                .createdAt(savedProofTemplate.get().getCreatedAt())
+                .createdAt(savedProofTemplate.getCreatedAt())
                 .build();
-        assertEquals(expectedProofTemplate, savedProofTemplate.get());
+        assertEquals(expectedProofTemplate, savedProofTemplate);
     }
 
     @Test

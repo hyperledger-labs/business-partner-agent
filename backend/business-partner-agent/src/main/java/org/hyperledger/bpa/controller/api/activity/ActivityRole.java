@@ -26,6 +26,10 @@ public enum ActivityRole {
     CONNECTION_REQUEST_SENDER,
     @JsonProperty("connection_request_recipient")
     CONNECTION_REQUEST_RECIPIENT,
+    @JsonProperty("credential_exchange_holder")
+    CREDENTIAL_EXCHANGE_HOLDER,
+    @JsonProperty("credential_exchange_issuer")
+    CREDENTIAL_EXCHANGE_ISSUER,
     @JsonProperty("presentation_exchange_prover")
     PRESENTATION_EXCHANGE_PROVER,
     @JsonProperty("presentation_exchange_verifier")

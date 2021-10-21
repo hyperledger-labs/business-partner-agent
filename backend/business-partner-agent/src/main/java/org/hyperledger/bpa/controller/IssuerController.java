@@ -155,7 +155,7 @@ public class IssuerController {
      * @param id credential exchange id
      * @return {@link HttpResponse}
      */
-    @Post("/exchanges/{id}/revoke")
+    @Put("/exchanges/{id}/revoke")
     public HttpResponse<CredEx> revokeCredential(@PathVariable UUID id) {
         return HttpResponse.ok(im.revokeCredentialExchange(id));
     }
@@ -168,23 +168,23 @@ public class IssuerController {
      * @param counterOffer {@link CredentialOfferRequest}
      * @return {@link CredEx}
      */
-    @Post("/exchanges/{id}/send-offer")
+    @Put("/exchanges/{id}/send-offer")
     public HttpResponse<CredEx> sendCredentialOffer(@PathVariable UUID id, @Body CredentialOfferRequest counterOffer) {
         return HttpResponse.ok(im.sendCredentialOffer(id, counterOffer));
     }
 
     /**
-     * Manual credential exchange: Issuer or holder stops credential exchange by
-     * sending a problem report to the other party
+     * Manual credential exchange: Issuer declines credential proposal received from
+     * the holder
      *
      * @param id      credential exchange id
      * @param decline {@link DeclineCredentialExchangeRequest}
      * @return HTTP status
      */
-    @Post("/exchanges/{id}/decline")
+    @Put("/exchanges/{id}/decline-proposal")
     public HttpResponse<Void> declineCredentialExchange(@PathVariable UUID id,
-            @Body DeclineCredentialExchangeRequest decline) {
-        im.declineCredentialOffer(id, decline.getMessage());
+            @Body @Nullable DeclineCredentialExchangeRequest decline) {
+        im.declineCredentialProposal(id, decline != null ? decline.getMessage() : null);
         return HttpResponse.ok();
     }
 

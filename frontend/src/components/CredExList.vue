@@ -36,12 +36,26 @@
           :title="$t('component.credExList.dialog.iconCredRevoked')"
           >$vuetify.icons.check</v-icon
         >
+        <v-tooltip
+          v-if="item.errorMsg && item.state === exchangeStates.PROBLEM"
+          top
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon color="error" small v-bind="attrs" v-on="on">
+              $vuetify.icons.connectionAlert
+            </v-icon>
+          </template>
+          <span>{{ item.errorMsg }}</span>
+        </v-tooltip>
       </template>
       <template v-slot:[`item.updatedAt`]="{ item }">
         {{ item.updatedAt | formatDateLong }}
       </template>
       <template v-slot:[`item.createdAt`]="{ item }">
         {{ item.createdAt | formatDateLong }}
+      </template>
+      <template v-slot:[`item.role`]="{ item }">
+        {{ item.role }}
       </template>
       <template v-slot:[`item.revocable`]="{ item }">
         <v-icon
@@ -77,6 +91,7 @@
             dense
           ></v-select>
           <v-select
+            v-if="document.credentialExchangeRole === exchangeRoles.ISSUER"
             :label="$t('component.credExList.dialog.credDefLabel')"
             return-object
             v-model="credDef"
@@ -87,45 +102,12 @@
           ></v-select>
 
           <!-- Timeline  -->
-          <v-expansion-panels
-            accordion
-            flat
+          <Timeline
             v-if="document.credentialStateToTimestamp"
-          >
-            <v-expansion-panel>
-              <v-expansion-panel-header
-                class="grey--text text--darken-2 font-weight-medium bg-light"
-                >{{
-                  $t("component.credExList.dialog.timeline")
-                }}</v-expansion-panel-header
-              >
-              <v-expansion-panel-content class="bg-light">
-                <v-timeline dense>
-                  <v-timeline-item
-                    fill-dot
-                    small
-                    v-for="entry in Object.entries(
-                      document.credentialStateToTimestamp
-                    )"
-                    :key="entry.key"
-                  >
-                    <v-row class="pt-1">
-                      <v-col cols="3">
-                        {{ entry[1] | formatDateLong }}
-                      </v-col>
-                      <v-col>
-                        <div class="text-caption">
-                          <strong>
-                            {{ entry[0].replace("_", " ") | capitalize }}
-                          </strong>
-                        </div>
-                      </v-col>
-                    </v-row>
-                  </v-timeline-item>
-                </v-timeline>
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-expansion-panels>
+            v-bind:timeEntries="
+              Object.entries(document.credentialStateToTimestamp)
+            "
+          />
 
           <br />
 
@@ -182,12 +164,23 @@
             <v-bpa-button
               :color="
                 document.credentialExchangeState ===
-                exchangeStates.PROPOSAL_RECEIVED
+                  exchangeStates.PROPOSAL_RECEIVED ||
+                document.credentialExchangeState ===
+                  exchangeStates.OFFER_RECEIVED
                   ? 'secondary'
                   : 'primary'
               "
               @click="closeDialog"
               >{{ $t("button.close") }}</v-bpa-button
+            >
+            <v-bpa-button
+              v-if="
+                document.credentialExchangeState ===
+                exchangeStates.PROPOSAL_RECEIVED
+              "
+              color="secondary"
+              @click="declineCredentialProposal(document.walletCredentialId)"
+              >{{ $t("button.decline") }}</v-bpa-button
             >
             <v-bpa-button
               v-if="
@@ -217,6 +210,24 @@
               @click="sendCounterOffer(true)"
               >{{ $t("button.accept") }}</v-bpa-button
             >
+            <v-bpa-button
+              v-if="
+                document.credentialExchangeState ===
+                exchangeStates.OFFER_RECEIVED
+              "
+              color="secondary"
+              @click="declineCredentialOffer(document.walletCredentialId)"
+              >{{ $t("button.decline") }}</v-bpa-button
+            >
+            <v-bpa-button
+              v-if="
+                document.credentialExchangeState ===
+                exchangeStates.OFFER_RECEIVED
+              "
+              color="primary"
+              @click="acceptCredentialOffer(document.walletCredentialId)"
+              >{{ $t("button.accept") }}</v-bpa-button
+            >
           </v-layout>
         </v-card-actions>
       </v-card>
@@ -228,8 +239,9 @@ import { issuerService } from "@/services";
 import Cred from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
 import NewMessageIcon from "@/components/NewMessageIcon";
+import Timeline from "@/components/Timeline";
 import { EventBus } from "@/main";
-import { CredentialExchangeStates } from "@/constants";
+import { CredentialExchangeRoles, CredentialExchangeStates } from "@/constants";
 
 export default {
   props: {
@@ -270,7 +282,7 @@ export default {
       default: (item) =>
         item.state === CredentialExchangeStates.CREDENTIAL_ISSUED ||
         item.state === CredentialExchangeStates.CREDENTIAL_ACKED ||
-        item.state === "done",
+        item.state === CredentialExchangeStates.DONE,
     },
     isLoading: Boolean,
   },
@@ -319,6 +331,7 @@ export default {
       isLoadingSendCounterOffer: false,
       credentialContentChanged: false,
       exchangeStates: CredentialExchangeStates,
+      exchangeRoles: CredentialExchangeRoles,
       document: {},
       partner: {},
       credDef: {},
@@ -345,8 +358,10 @@ export default {
         credentialDefinitionId: item.credential.credentialDefinitionId,
         credentialExchangeId: item.id,
         credentialExchangeState: item.state,
+        credentialExchangeRole: item.role,
         credentialWasEdited: false,
         credentialStateToTimestamp: item.stateToTimestamp,
+        walletCredentialId: item.id,
       };
 
       this.$emit("openItem", item);
@@ -376,6 +391,18 @@ export default {
     revokeCredential(id) {
       this.revoked.push(id);
       issuerService.revokeCredential(id);
+    },
+    acceptCredentialOffer(id) {
+      issuerService.acceptCredentialOffer(id);
+      this.closeDialog();
+    },
+    declineCredentialOffer(id) {
+      issuerService.declineCredentialOffer(id);
+      this.closeDialog();
+    },
+    declineCredentialProposal(id) {
+      issuerService.declineCredentialProposal(id);
+      this.closeDialog();
     },
     async sendCounterOffer(acceptAll) {
       this.isLoadingSendCounterOffer = true;
@@ -409,6 +436,7 @@ export default {
     VBpaButton,
     Cred,
     NewMessageIcon,
+    Timeline,
   },
 };
 </script>

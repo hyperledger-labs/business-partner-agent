@@ -70,13 +70,13 @@ public class PingManager {
     private final Map<String, String> received = new ConcurrentHashMap<>();
 
     public void handlePingEvent(PingEvent event) {
-        if ("response_received".equals(event.getState())) {
-            received.put(event.getThreadId(), "received");
+        if (event.stateIsReceived()) {
+            received.put(event.getThreadId(), event.getState());
         }
     }
 
-    @Scheduled(fixedRate = "1m", initialDelay = "90s") // init delay needs to be > than aca-py connection timeout
-    public void checkConnections() {
+    @Scheduled(fixedDelay = "1m", initialDelay = "90s") // init delay needs to be > than aca-py connection timeout
+    void checkConnections() {
         try {
             List<String> connectionsToPing = repo
                     .findByStateInAndTrustPingTrueAndAriesSupportTrue(statesToFilter)
@@ -139,8 +139,8 @@ public class PingManager {
         return received.size();
     }
 
-    @Scheduled(fixedRate = "30m", initialDelay = "1m")
-    public void deleteStaleConnections() {
+    @Scheduled(fixedDelay = "30m", initialDelay = "1m")
+    void deleteStaleConnections() {
         List<String> bpaConIds = StreamSupport.stream(repo.findAll().spliterator(), false)
                 .map(Partner::getConnectionId)
                 .filter(StringUtils::isNotEmpty)

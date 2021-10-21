@@ -65,13 +65,16 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     // delete
 
-    @Override
     @Query("delete from partner_tag where partner_id = :id; delete from partner where id = :id")
-    void deleteById(@NonNull UUID id);
+    void deleteByPartnerId(@NonNull UUID id);
 
     // count
 
+    Long countByStateNotEquals(ConnectionState state);
+
     Long countByCreatedAtAfter(Instant createdAt);
+
+    Long countByStateNotEqualsAndCreatedAtAfter(ConnectionState state, Instant createdAt);
 
     // update
 

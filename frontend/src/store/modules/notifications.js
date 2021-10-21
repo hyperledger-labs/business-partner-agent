@@ -12,6 +12,7 @@ const removeItem = (collection, id) => {
 };
 
 const state = {
+  activityNotifications: {},
   credentialNotifications: {},
   partnerNotifications: {},
   presentationNotifications: {},
@@ -19,6 +20,12 @@ const state = {
 };
 
 const getters = {
+  activityNotifications: (state) => {
+    return state.activityNotifications;
+  },
+  activityNotificationsCount: (state) => {
+    return Object.keys(state.activityNotifications).length;
+  },
   credentialNotifications: (state) => {
     return state.credentialNotifications;
   },
@@ -53,6 +60,13 @@ const mutations = {
     let id = payload.message.linkId;
     console.log(`onNotification(type=${type}, id=${id})`);
     switch (type) {
+      case "ACTIVITY_NOTIFICATION":
+        state.activityNotifications = addItem(
+          state.activityNotifications,
+          id,
+          payload
+        );
+        break;
       case "ON_CREDENTIAL_ADDED":
         state.credentialNotifications = addItem(
           state.credentialNotifications,
@@ -101,6 +115,10 @@ const mutations = {
         console.log(`Unknown notification type: ${type}`);
     }
   },
+  activityNotificationSeen(state, payload) {
+    let id = payload.id;
+    state.activityNotifications = removeItem(state.activityNotifications, id);
+  },
   credentialNotificationSeen(state, payload) {
     let id = payload.id;
     state.credentialNotifications = removeItem(
@@ -123,6 +141,9 @@ const mutations = {
     let id = payload.id;
     state.taskNotifications = removeItem(state.taskNotifications, id);
   },
+  activityNotificationClear(state) {
+    state.activityNotification = {};
+  },
   credentialNotificationsClear(state) {
     state.credentialNotifications = {};
   },
@@ -136,6 +157,7 @@ const mutations = {
     state.taskNotifications = {};
   },
   allNotificationsClear(state) {
+    state.activityNotifications = {};
     state.credentialNotifications = {};
     state.partnerNotifications = {};
     state.presentationNotifications = {};

@@ -21,7 +21,7 @@ import io.micronaut.core.annotation.Nullable;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
-import org.hyperledger.bpa.model.MyCredential;
+import org.hyperledger.bpa.model.BPACredentialExchange;
 
 import java.util.Map;
 import java.util.UUID;
@@ -48,7 +48,8 @@ public class AriesCredential {
     private String typeLabel;
     private Map<String, String> credentialData;
 
-    public static AriesCredential fromMyCredential(@NonNull MyCredential c, @Nullable String typeLabel) {
+    public static AriesCredential fromBPACredentialExchange(@NonNull BPACredentialExchange c,
+            @Nullable String typeLabel) {
         AriesCredentialBuilder b = AriesCredential.builder();
         if (c.getCredential() != null) {
             b
@@ -59,11 +60,11 @@ public class AriesCredential {
         }
         return b
                 .id(c.getId())
-                .issuedAt(c.getIssuedAt() != null ? c.getIssuedAt().toEpochMilli() : null)
+                .issuedAt(c.calculateIssuedAt() != null ? c.calculateIssuedAt().toEpochMilli() : null)
                 .state(c.getState())
-                .isPublic(c.getIsPublic())
+                .isPublic(c.checkIfPublic())
                 .issuer(c.getIssuer())
-                .connectionId(c.getConnectionId())
+                .connectionId(c.getPartner() != null ? c.getPartner().getConnectionId() : null)
                 .revoked(c.getRevoked())
                 .label(c.getLabel())
                 .typeLabel(typeLabel)

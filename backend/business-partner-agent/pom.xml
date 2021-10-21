@@ -70,9 +70,8 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>io.reactivex.rxjava2</groupId>
-            <artifactId>rxjava</artifactId>
-            <version>2.2.21</version>
+            <groupId>io.micronaut.rxjava3</groupId>
+            <artifactId>micronaut-rxjava3</artifactId>
         </dependency>
         <dependency>
             <groupId>io.micronaut.sql</groupId>
@@ -124,7 +123,7 @@
         <dependency>
             <groupId>network.idu.acapy</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.7.10</version>
+            <version>0.7.12</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>

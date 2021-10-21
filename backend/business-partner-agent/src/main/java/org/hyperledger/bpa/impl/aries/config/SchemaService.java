@@ -115,7 +115,7 @@ public class SchemaService {
     }
 
     @Nullable
-    SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label,
+    public SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label,
             @Nullable String defaultAttributeName) {
         SchemaAPI result;
         String sId = StringUtils.strip(schemaId);
@@ -128,7 +128,7 @@ public class SchemaService {
             Optional<SchemaSendResponse.Schema> ariesSchema = ac.schemasGetById(sId);
             if (ariesSchema.isPresent()) {
                 BPASchema dbS = BPASchema.builder()
-                        .label(label)
+                        .label(label != null ? label : AriesStringUtil.schemaGetName(schemaId))
                         .schemaId(ariesSchema.get().getId())
                         .schemaAttributeNames(new LinkedHashSet<>(ariesSchema.get().getAttrNames()))
                         .defaultAttributeName(defaultAttributeName)

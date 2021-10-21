@@ -76,9 +76,9 @@ public class WebhookController {
      */
     @Put("/{id}")
     public HttpResponse<RegisteredWebhookResponse> updateWebhook(
-            @PathVariable String id,
+            @PathVariable UUID id,
             @Body RegisteredWebhook request) {
-        final Optional<RegisteredWebhookResponse> updated = ws.updateRegisteredWebhook(UUID.fromString(id), request);
+        final Optional<RegisteredWebhookResponse> updated = ws.updateRegisteredWebhook(id, request);
         if (updated.isPresent()) {
             return HttpResponse.ok(updated.get());
         }
@@ -92,8 +92,8 @@ public class WebhookController {
      * @return always OK
      */
     @Delete("/{id}")
-    public HttpResponse<Void> deleteWebhook(@PathVariable String id) {
-        ws.deleteRegisteredWebhook(UUID.fromString(id));
+    public HttpResponse<Void> deleteWebhook(@PathVariable UUID id) {
+        ws.deleteRegisteredWebhook(id);
         return HttpResponse.ok();
     }
 }

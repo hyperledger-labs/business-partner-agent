@@ -66,18 +66,26 @@ public class CredEx {
     public static CredEx from(@NonNull BPACredentialExchange db, PartnerAPI partner) {
         CredExBuilder builder = CredEx.builder();
         SchemaAPI schemaAPI = db.getSchema() != null ? SchemaAPI.from(db.getSchema()) : null;
-        CredDef credDef = db.getCredDef() != null ? CredDef.from(db.getCredDef()) : null;
+        CredDef credDef = db.getCredDef() != null ? CredDef.from(db.getCredDef())
+                : CredDef.builder().schema(schemaAPI).build();
         String displayText = null;
         if (schemaAPI != null && credDef != null) {
-            displayText = String.format("%s (%s) - %s", schemaAPI.getLabel(), schemaAPI.getVersion(),
-                    credDef.getTag());
+            displayText = String.format("%s (%s)", schemaAPI.getLabel(), schemaAPI.getVersion());
+            if (StringUtils.isNotBlank(credDef.getTag())) {
+                displayText = displayText + String.format(" - %s", credDef.getTag());
+            }
         } else if (StringUtils.isNotEmpty(db.getErrorMsg())) {
             displayText = db.getErrorMsg();
         }
         Map<String, String> credentialAttrs;
-        if (CredentialExchangeState.PROPOSAL_RECEIVED.equals(db.getState())
-                || CredentialExchangeState.PROBLEM.equals(db.getState())) {
-            credentialAttrs = db.proposalAttributesToMap(); // TODO UI should use proposal field in this case
+        if (db.stateIsProposalReceived()
+                || db.stateIsProposalSent()
+                || db.roleIsHolder() && db.stateIsProblem()
+                || db.roleIsIssuer() && db.stateIsDeclined()) {
+            credentialAttrs = db.proposalAttributesToMap();
+        } else if (db.stateIsOfferReceived()
+                || db.roleIsHolder() && db.stateIsDeclined()) {
+            credentialAttrs = db.offerAttributesToMap();
         } else {
             credentialAttrs = db.credentialAttributesToMap();
         }
