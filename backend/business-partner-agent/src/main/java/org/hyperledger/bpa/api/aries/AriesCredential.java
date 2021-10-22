@@ -81,5 +81,6 @@ public class AriesCredential {
         private String schemaLabel;
         private String issuerLabel;
         private String credentialLabel;
+        private Boolean revoked;
     }
 }

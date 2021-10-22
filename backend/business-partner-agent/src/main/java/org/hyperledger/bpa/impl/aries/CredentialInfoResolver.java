@@ -20,7 +20,10 @@ package org.hyperledger.bpa.impl.aries;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
@@ -29,8 +32,14 @@ import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.repository.HolderCredExRepository;
 
+import java.io.IOException;
+
+@Slf4j
 @Singleton
 public class CredentialInfoResolver {
+
+    @Inject
+    AriesClient ac;
 
     @Inject
     SchemaService schemaService;
@@ -57,6 +66,13 @@ public class CredentialInfoResolver {
                 builder.credentialId(cred.getId());
                 builder.credentialLabel(cred.getLabel());
             });
+        }
+        if (StringUtils.isNotEmpty(ci.getReferent())) {
+            try {
+                ac.credentialRevoked(ci.getReferent()).ifPresent(rev -> builder.revoked(rev.getRevoked()));
+            } catch (IOException | AriesException e) {
+                log.error("Could not check credential revocation status", e);
+            }
         }
         return builder.build();
     }

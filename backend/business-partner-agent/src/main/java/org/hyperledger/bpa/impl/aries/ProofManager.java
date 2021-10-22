@@ -180,7 +180,7 @@ public class ProofManager {
         if (partnerProof.isPresent()) {
             try {
                 return ac.presentProofRecordsCredentials(partnerProof.get().getPresentationExchangeId())
-                        .map(pres -> pres.stream().map(rec -> PresentationRequestCredentials
+                        .map(pres -> pres.parallelStream().map(rec -> PresentationRequestCredentials
                                 .from(rec, credentialInfoResolver.populateCredentialInfo(rec.getCredentialInfo())))
                                 .collect(Collectors.toList()))
                         .orElseThrow();
