@@ -20,6 +20,7 @@ package org.hyperledger.bpa.impl.aries;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.acy_py.generated.model.V20PresExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
@@ -28,6 +29,7 @@ import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConvert
 import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.aries.api.present_proof_v2.V20PresExRecordToV1Converter;
 import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.impl.ChatMessageManager;
@@ -97,10 +99,16 @@ public class AriesEventHandler extends EventHandler {
     }
 
     @Override
+    public void handleProofV2(V20PresExRecord v2) {
+        log.debug("Present Proof V2 Event: {}", v2);
+        handleProof(V20PresExRecordToV1Converter.toV1(v2));
+    }
+
+    @Override
     public void handleCredential(V1CredentialExchange v1CredEx) {
         log.debug("Credential Event: {}", v1CredEx);
         // holder events
-        if (v1CredEx.isHolder()) {
+        if (v1CredEx.roleIsHolder()) {
             synchronized (holderMgr) {
                 if (v1CredEx.stateIsCredentialAcked()) {
                     holderMgr.handleV1CredentialExchangeAcked(v1CredEx);
@@ -113,7 +121,7 @@ public class AriesEventHandler extends EventHandler {
                 }
             }
             // issuer events
-        } else if (v1CredEx.isIssuer()) {
+        } else if (v1CredEx.roleIsIssuer()) {
             synchronized (issuerMgr) {
                 if (v1CredEx.stateIsProposalReceived()) {
                     issuerMgr.handleCredentialProposal(v1CredEx, ExchangeVersion.V1);

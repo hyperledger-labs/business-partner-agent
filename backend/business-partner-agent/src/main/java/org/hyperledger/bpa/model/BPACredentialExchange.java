@@ -28,12 +28,12 @@ import lombok.*;
 import lombok.experimental.Accessors;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
+import org.hyperledger.aries.api.issue_credential_v1.CredExStateAndRoleTranslator;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
-import org.hyperledger.bpa.impl.aries.CredExStateAndRoleTranslator;
 
 import javax.persistence.*;
 import java.time.Instant;

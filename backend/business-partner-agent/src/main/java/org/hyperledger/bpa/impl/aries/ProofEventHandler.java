@@ -55,7 +55,7 @@ public class ProofEventHandler {
     ApplicationEventPublisher eventPublisher;
 
     void dispatch(PresentationExchangeRecord proof) {
-        if (proof.isVerified() && proof.roleIsVerifier() || proof.roleIsProverAndPresentationAcked()) {
+        if (proof.roleIsVerifierAndVerified() || proof.roleIsProverAndPresentationAcked()) {
             handleAckedOrVerified(proof);
         } else if (proof.roleIsProverAndRequestReceived()) {
             handleProofRequest(proof);
