@@ -31,7 +31,7 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof_v2.V20PresExRecord;
 import org.hyperledger.aries.api.present_proof_v2.V20PresExRecordToV1Converter;
 import org.hyperledger.aries.webhook.EventHandler;
-import org.hyperledger.bpa.api.aries.ExchangeVersion;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.impl.ChatMessageManager;
 import org.hyperledger.bpa.impl.IssuerCredentialManager;
 

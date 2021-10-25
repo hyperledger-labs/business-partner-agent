@@ -23,7 +23,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import org.hyperledger.bpa.api.aries.ExchangeVersion;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.api.exception.DataPersistenceException;
 import org.hyperledger.bpa.api.exception.ProofTemplateException;
 import org.hyperledger.bpa.config.BPAMessageSource;

@@ -20,6 +20,7 @@ package org.hyperledger.bpa.api.aries;
 import io.micronaut.core.annotation.Nullable;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 

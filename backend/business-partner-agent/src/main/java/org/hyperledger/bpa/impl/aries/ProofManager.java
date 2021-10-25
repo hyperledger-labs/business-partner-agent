@@ -27,6 +27,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.acy_py.generated.model.V10PresentationProblemReportRequest;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.present_proof.*;
@@ -34,7 +35,6 @@ import org.hyperledger.aries.api.present_proof_v2.V20PresExRecordToV1Converter;
 import org.hyperledger.aries.api.present_proof_v2.V20PresSendRequestRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
-import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.api.exception.PresentationConstructionException;
@@ -183,7 +183,7 @@ public class ProofManager {
                     .threadId(exchange.getThreadId())
                     .proofRequest(exchange.getPresentationRequest())
                     .proofTemplate(proofTemplate)
-                    .exchangeVersion(ExchangeVersion.V1)
+                    .exchangeVersion(exchange.getVersion() != null ? exchange.getVersion() : ExchangeVersion.V1)
                     .pushStateChange(exchange.getState(), Instant.now())
                     .build();
             pProofRepo.save(pp);

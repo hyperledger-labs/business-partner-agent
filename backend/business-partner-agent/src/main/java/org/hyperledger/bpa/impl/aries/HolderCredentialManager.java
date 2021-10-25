@@ -45,7 +45,7 @@ import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCrede
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.AriesCredential;
-import org.hyperledger.bpa.api.aries.ExchangeVersion;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.ProfileVC;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;

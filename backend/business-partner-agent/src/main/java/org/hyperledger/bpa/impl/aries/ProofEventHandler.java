@@ -26,7 +26,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
-import org.hyperledger.bpa.api.aries.ExchangeVersion;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.impl.notification.PresentationRequestCompletedEvent;
 import org.hyperledger.bpa.impl.notification.PresentationRequestDeclinedEvent;
 import org.hyperledger.bpa.impl.notification.PresentationRequestReceivedEvent;
@@ -180,7 +180,7 @@ public class ProofEventHandler {
                 .threadId(proof.getThreadId())
                 .role(proof.getRole())
                 .proofRequest(proof.getPresentationRequest())
-                .exchangeVersion(ExchangeVersion.V1)
+                .exchangeVersion(proof.getVersion() != null ? proof.getVersion() : ExchangeVersion.V1)
                 .pushStateChange(proof.getState(), ts != null ? ts : Instant.now())
                 .build();
     }
