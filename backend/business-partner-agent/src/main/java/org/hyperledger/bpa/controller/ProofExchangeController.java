@@ -31,6 +31,7 @@ import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.partner.ApproveProofRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
@@ -52,9 +53,6 @@ import java.util.UUID;
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @ExecuteOn(TaskExecutors.IO)
 public class ProofExchangeController {
-
-    @Inject
-    PartnerProofRepository ppRepo;
 
     @Inject
     ProofManager proofM;
@@ -81,13 +79,8 @@ public class ProofExchangeController {
      */
     @Post("/{id}/prove")
     public HttpResponse<Void> responseToProofRequest(@PathVariable UUID id, @Body @Nullable ApproveProofRequest req) {
-        final Optional<PartnerProof> proof = ppRepo.findById(id);
-        if (proof.isPresent()) {
-            proofM.presentProof(proof.get(), req);
-            return HttpResponse.ok();
-        } else {
-            return HttpResponse.notFound();
-        }
+        proofM.presentProof(id, req);
+        return HttpResponse.ok();
     }
 
     /**
@@ -99,12 +92,8 @@ public class ProofExchangeController {
     @Post("/{id}/decline")
     public HttpResponse<Void> declinePresentProofRequest(
             @PathVariable UUID id) {
-        final Optional<PartnerProof> proof = ppRepo.findById(id);
-        if (proof.isPresent()) {
-            proofM.declinePresentProofRequest(proof.get(), "User Declined Proof Request: No reason provided");
-            return HttpResponse.ok();
-        }
-        return HttpResponse.notFound();
+        proofM.declinePresentProofRequest(id, "User Declined Proof Request: No reason provided");
+        return HttpResponse.ok();
     }
 
     /**
@@ -147,11 +136,8 @@ public class ProofExchangeController {
      */
     @Get("/{id}")
     public HttpResponse<AriesProofExchange> getProofExchangeById(@PathVariable UUID id) {
-        Optional<AriesProofExchange> pProof = proofM.getPartnerProofById(id);
-        if (pProof.isPresent()) {
-            return HttpResponse.ok(pProof.get());
-        }
-        return HttpResponse.notFound();
+        AriesProofExchange pProof = proofM.getPartnerProofById(id).orElseThrow(EntityNotFoundException::new);
+        return HttpResponse.ok(pProof);
     }
 
     /**

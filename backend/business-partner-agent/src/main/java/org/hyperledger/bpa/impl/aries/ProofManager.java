@@ -26,6 +26,7 @@ import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.acy_py.generated.model.V10PresentationProblemReportRequest;
+import org.hyperledger.acy_py.generated.model.V20PresProblemReportRequest;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.credentials.Credential;
@@ -35,10 +36,7 @@ import org.hyperledger.aries.api.present_proof_v2.V20PresExRecordToV1Converter;
 import org.hyperledger.aries.api.present_proof_v2.V20PresSendRequestRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
-import org.hyperledger.bpa.api.exception.NetworkException;
-import org.hyperledger.bpa.api.exception.PartnerException;
-import org.hyperledger.bpa.api.exception.PresentationConstructionException;
-import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.api.exception.*;
 import org.hyperledger.bpa.controller.api.partner.ApproveProofRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentials;
@@ -55,7 +53,6 @@ import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
@@ -195,30 +192,35 @@ public class ProofManager {
 
     // manual proof request flow
     public List<PresentationRequestCredentials> getMatchingCredentials(@NonNull UUID partnerProofId) {
-        Optional<PartnerProof> partnerProof = pProofRepo.findById(partnerProofId);
-        if (partnerProof.isPresent()) {
-            try {
-                return ac.presentProofRecordsCredentials(partnerProof.get().getPresentationExchangeId())
-                        .map(pres -> pres.stream().map(rec -> PresentationRequestCredentials
-                                .from(rec, credentialInfoResolver.populateCredentialInfo(rec.getCredentialInfo())))
-                                .collect(Collectors.toList()))
-                        .orElseThrow();
-            } catch (IOException e) {
-                throw new NetworkException(ACA_PY_ERROR_MSG, e);
-            } catch (AriesException | NoSuchElementException e) {
-                log.warn("No matching credentials found");
+        PartnerProof partnerProof = pProofRepo.findById(partnerProofId).orElseThrow(EntityNotFoundException::new);
+        try {
+            Optional<List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials>> matches;
+            if (partnerProof.isV1Exchange()) {
+                matches =  ac.presentProofRecordsCredentials(partnerProof.getPresentationExchangeId());
+            } else {
+                matches = ac.presentProofV2RecordsCredentials(partnerProof.getPresentationExchangeId(), null);
             }
+            return matches
+                    .map(pres -> pres.stream().map(rec -> PresentationRequestCredentials
+                            .from(rec, credentialInfoResolver.populateCredentialInfo(rec.getCredentialInfo())))
+                    .collect(Collectors.toList()))
+                    .orElseThrow();
+        } catch (IOException e) {
+            throw new NetworkException(ACA_PY_ERROR_MSG, e);
+        } catch (AriesException | NoSuchElementException e) {
+            log.warn("No matching credentials found");
         }
         return List.of();
     }
 
     // manual proof request flow
-    public void declinePresentProofRequest(@NotNull PartnerProof proofEx, String explainString) {
+    public void declinePresentProofRequest(@NonNull UUID partnerProofId, String explainString) {
+        PartnerProof proofEx = pProofRepo.findById(partnerProofId).orElseThrow(EntityNotFoundException::new);
         if (PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
             try {
                 proofEx.pushStates(PresentationExchangeState.DECLINED);
                 pProofRepo.update(proofEx);
-                sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString);
+                sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString, proofEx.getExchangeVersion());
                 eventPublisher
                         .publishEventAsync(PresentationRequestDeclinedEvent.builder().partnerProof(proofEx).build());
             } catch (IOException e) {
@@ -230,15 +232,22 @@ public class ProofManager {
     }
 
     // manual proof request flow
-    public void presentProof(@NotNull PartnerProof proofEx, @Nullable ApproveProofRequest req) {
+    public void presentProof(@NonNull UUID partnerProofId, @Nullable ApproveProofRequest req) {
+        PartnerProof proofEx = pProofRepo.findById(partnerProofId).orElseThrow(EntityNotFoundException::new);
         if (PresentationExchangeRole.PROVER.equals(proofEx.getRole())
                 && PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
             try {
                 List<String> referents = (req == null) ? null : req.getReferents();
                 // find all the matching credentials using the (optionally) provided referent
                 // data
-                ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId())
-                        .ifPresent(per -> this.presentProofAcceptSelected(per, referents));
+                Optional<PresentationExchangeRecord> record;
+                if (proofEx.isV1Exchange()) {
+                    record = ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId());
+                } else {
+                    record = ac.presentProofV2RecordsGetById(proofEx.getPresentationExchangeId())
+                            .map(V20PresExRecordToV1Converter::toV1);
+                }
+                record.ifPresent(per -> this.presentProofAcceptSelected(per, referents));
             } catch (IOException e) {
                 throw new NetworkException(ACA_PY_ERROR_MSG, e);
             }
@@ -310,12 +319,18 @@ public class ProofManager {
         return savedProof;
     }
 
-    private void sendPresentProofProblemReport(@NonNull String PresentationExchangeId, @NonNull String problemString)
-            throws IOException {
-        V10PresentationProblemReportRequest request = V10PresentationProblemReportRequest.builder()
-                .description(problemString)
-                .build();
-        ac.presentProofRecordsProblemReport(PresentationExchangeId, request);
+    private void sendPresentProofProblemReport(@NonNull String presentationExchangeId,
+                                               @NonNull String problemString,
+                                               @Nullable ExchangeVersion version) throws IOException {
+        if (version == null || version.isV1()) {
+            ac.presentProofRecordsProblemReport(presentationExchangeId, V10PresentationProblemReportRequest.builder()
+                    .description(problemString)
+                    .build());
+        } else {
+            ac.presentProofV2RecordsProblemReport(presentationExchangeId, V20PresProblemReportRequest.builder()
+                    .description(problemString)
+                    .build());
+        }
     }
 
     // CRUD methods
