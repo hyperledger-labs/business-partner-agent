@@ -30,6 +30,8 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.present_proof.*;
+import org.hyperledger.aries.api.present_proof_v2.V20PresExRecordToV1Converter;
+import org.hyperledger.aries.api.present_proof_v2.V20PresSendRequestRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
@@ -96,17 +98,34 @@ public class ProofManager {
     @Inject
     CredentialInfoResolver credentialInfoResolver;
 
-    // request proof from partner via proof template
+    // request proof from partner via proof template with exchange version 1
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
+        sendPresentProofRequest(partnerId, proofTemplate, ExchangeVersion.V1);
+    }
+
+    // request proof from partner via proof template
+    public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate,
+                                        @NonNull ExchangeVersion version) {
         try {
             PresentProofRequest proofRequest = proofTemplateConversion.proofRequestViaVisitorFrom(partnerId,
                     proofTemplate);
             // the proofTemplate does not contain the proof request Non-Revocation value, if
             // that was not part of the template and set during proof request creation.
-            ac.presentProofSendRequest(proofRequest).ifPresent(
-                    // using null for issuerId and schemaId because the template could have multiple
-                    // of each.
-                    persistProof(partnerId, proofTemplate));
+            // using null for issuerId and schemaId because the template could have multiple
+            // of each.
+            if (version.isV1()) {
+                ac.presentProofSendRequest(proofRequest).ifPresent(persistProof(partnerId, proofTemplate));
+            } else {
+                ac.presentProofV2SendRequest(V20PresSendRequestRequest
+                        .builder()
+                                .connectionId(proofRequest.getConnectionId())
+                                .presentationRequest(V20PresSendRequestRequest.V20PresRequestByFormat.builder()
+                                        .indy(proofRequest.getProofRequest())
+                                        .build())
+                        .build())
+                        .map(V20PresExRecordToV1Converter::toV1)
+                        .ifPresent(persistProof(partnerId, proofTemplate));
+            }
         } catch (IOException e) {
             throw new NetworkException(ACA_PY_ERROR_MSG, e);
         }
@@ -267,14 +286,13 @@ public class ProofManager {
     private List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> getPresentationRequestCredentials(
             List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> creds,
             List<String> referents) {
-        if (referents == null || referents.size() == 0)
+        if (referents == null || referents.size() == 0) {
             return creds;
-
-        List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> selected = creds
+        }
+        return creds
                 .stream()
                 .filter(c -> referents.contains(c.getCredentialInfo().getReferent()))
                 .collect(Collectors.toList());
-        return selected;
     }
 
     PartnerProof handleAckedOrVerifiedProofEvent(@NonNull PresentationExchangeRecord proof, @NonNull PartnerProof pp) {

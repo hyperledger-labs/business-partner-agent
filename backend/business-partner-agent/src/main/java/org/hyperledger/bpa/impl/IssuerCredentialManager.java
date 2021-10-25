@@ -437,7 +437,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                         bpaEx.getState(), bpaEx.getStateToTimestamp(),
                         ex.getRevocRegId(), ex.getRevocationId(), ex.getErrorMsg());
             }
-            if (ex.stateIsCredentialAcked() && ex.isAutoIssueEnabled()) {
+            if (ex.stateIsCredentialAcked() && ex.autoIssueEnabled()) {
                 ex.findAttributesInCredentialOfferDict().ifPresent(
                         attr -> credExRepo.updateCredential(bpaEx.getId(), Credential.builder().attrs(attr).build()));
             }
@@ -460,7 +460,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                         bpaEx.pushStates(state, ex.getUpdatedAt());
                         credExRepo.updateAfterEventNoRevocationInfo(bpaEx.getId(),
                                 bpaEx.getState(), bpaEx.getStateToTimestamp(), ex.getErrorMsg());
-                        if (ex.isDone() && ex.isAutoIssueEnabled()) {
+                        if (ex.stateIsDone() && ex.autoIssueEnabled()) {
                             ex.getByFormat().findValuesInIndyCredIssue().ifPresent(
                                     attr -> credExRepo.updateCredential(bpaEx.getId(),
                                             Credential.builder().attrs(attr).build()));

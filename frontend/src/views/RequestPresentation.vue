@@ -19,7 +19,12 @@
         </proof-templates-list>
         <template>
           <v-card-actions>
-            <v-layout align-end justify-end>
+            <v-layout align-center align-end justify-end>
+              <v-switch
+                v-if="expertMode"
+                v-model="useV2Exchange"
+                :label="$t('component.issueCredential.options.useV2')"
+              ></v-switch>
               <v-bpa-button color="secondary" @click="cancel()">{{
                 $t("button.cancel")
               }}</v-bpa-button>
@@ -47,6 +52,7 @@ import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import ProofTemplatesList from "@/components/proof-templates/ProofTemplatesList";
 import proofTemplateService from "@/services/proofTemplateService";
+import { ExchangeVersion } from "@/constants";
 
 export default {
   name: "RequestPresentation",
@@ -63,6 +69,7 @@ export default {
       selectedProofTemplate: [],
       selectedSchema: [],
       selectedIssuer: [],
+      useV2Exchange: false,
     };
   },
   computed: {
@@ -82,8 +89,15 @@ export default {
     async submitRequest() {
       this.isBusy = true;
 
+      let data = null;
+      if (this.useV2Exchange) {
+        data = {
+          exchangeVersion: ExchangeVersion.V2,
+        };
+      }
+
       proofTemplateService
-        .sendProofTemplate(this.selectedProofTemplate[0].id, this.id)
+        .sendProofTemplate(this.selectedProofTemplate[0].id, this.id, data)
         .then(() => {
           EventBus.$emit("success", "Presentation request sent");
           this.isBusy = false;

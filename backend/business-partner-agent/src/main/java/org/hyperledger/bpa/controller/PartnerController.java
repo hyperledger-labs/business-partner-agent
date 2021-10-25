@@ -31,10 +31,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.partner.*;
+import org.hyperledger.bpa.controller.api.proof.PresentationRequestVersion;
 import org.hyperledger.bpa.impl.ChatMessageManager;
 import org.hyperledger.bpa.impl.ChatMessageService;
 import org.hyperledger.bpa.impl.PartnerManager;
@@ -247,8 +250,10 @@ public class PartnerController {
     @Put("/{id}/proof-request/{templateId}")
     public HttpResponse<Void> invokeProofRequestByTemplate(
             @PathVariable UUID id,
-            @PathVariable UUID templateId) {
-        proofTemplateManager.invokeProofRequestByTemplate(templateId, id);
+            @PathVariable UUID templateId,
+            @Body @Nullable PresentationRequestVersion version) {
+        proofTemplateManager.invokeProofRequestByTemplate(templateId, id,
+                version != null ? version.getExchangeVersion() : ExchangeVersion.V1);
         return HttpResponse.ok();
     }
 

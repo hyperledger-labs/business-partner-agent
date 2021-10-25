@@ -15,20 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.api.aries;
+package org.hyperledger.bpa.controller.api.proof;
 
-public enum ExchangeVersion {
-    /** credential or proof exchange version 1 */
-    V1,
-    /** credential or proof exchange version 2 */
-    V2
-    ;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
 
-    public boolean isV1() {
-        return this.equals(ExchangeVersion.V1);
-    }
-
-    public boolean isV2() {
-        return this.equals(ExchangeVersion.V2);
-    }
+@Data @NoArgsConstructor @AllArgsConstructor
+public class PresentationRequestVersion {
+    /** presentation exchange api version */
+    private ExchangeVersion exchangeVersion;
 }

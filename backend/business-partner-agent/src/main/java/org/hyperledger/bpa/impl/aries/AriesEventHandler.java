@@ -20,7 +20,6 @@ package org.hyperledger.bpa.impl.aries;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.acy_py.generated.model.V20PresExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
@@ -29,6 +28,7 @@ import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConvert
 import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.message.PingEvent;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.aries.api.present_proof_v2.V20PresExRecord;
 import org.hyperledger.aries.api.present_proof_v2.V20PresExRecordToV1Converter;
 import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
@@ -135,21 +135,21 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleCredentialV2(V20CredExRecord v2CredEx) {
         log.debug("Credential V2 Event: {}", v2CredEx);
-        if (v2CredEx.isIssuer()) {
+        if (v2CredEx.roleIsIssuer()) {
             synchronized (issuerMgr) {
-                if (v2CredEx.isProposalReceived()) {
+                if (v2CredEx.stateIsProposalReceived()) {
                     issuerMgr.handleCredentialProposal(v2CredEx.toV1CredentialExchangeFromProposal(),
                             ExchangeVersion.V2);
                 } else {
                     issuerMgr.handleV2CredentialExchange(v2CredEx);
                 }
             }
-        } else if (v2CredEx.isHolder()) {
+        } else if (v2CredEx.roleIsHolder()) {
             synchronized (holderMgr) {
-                if (v2CredEx.isOfferReceived()) {
+                if (v2CredEx.stateIsOfferReceived()) {
                     holderMgr.handleOfferReceived(
                             V2ToV1IndyCredentialConverter.INSTANCE().toV1Offer(v2CredEx), ExchangeVersion.V2);
-                } else if (v2CredEx.isDone()) {
+                } else if (v2CredEx.stateIsDone()) {
                     holderMgr.handleV2CredentialDone(v2CredEx);
                 } else {
                     holderMgr.handleStateChangesOnly(

@@ -22,6 +22,8 @@ import io.micronaut.data.exceptions.DataAccessException;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.exception.DataPersistenceException;
 import org.hyperledger.bpa.api.exception.ProofTemplateException;
 import org.hyperledger.bpa.config.BPAMessageSource;
@@ -30,7 +32,6 @@ import org.hyperledger.bpa.model.BPAProofTemplate;
 import org.hyperledger.bpa.model.prooftemplate.ValueOperators;
 import org.hyperledger.bpa.repository.BPAProofTemplateRepository;
 
-import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
@@ -52,17 +53,21 @@ public class ProofTemplateManager {
     @Inject
     BPAMessageSource.DefaultMessageSource ms;
 
-    public void invokeProofRequestByTemplate(@NotNull UUID id, @NotNull UUID partnerId) {
-        Optional<BPAProofTemplate> proofTemplate = repo.findById(id);
-        proofTemplate.ifPresent(t -> proofManager.sendPresentProofRequest(partnerId, t));
-        proofTemplate.orElseThrow(() -> new ProofTemplateException("No proof template found for: " + id));
+    public void invokeProofRequestByTemplate(@NonNull UUID id, @NonNull UUID partnerId) {
+        invokeProofRequestByTemplate(id, partnerId, ExchangeVersion.V1);
     }
 
-    public Optional<BPAProofTemplate> getProofTemplate(UUID id) {
+    public void invokeProofRequestByTemplate(@NonNull UUID id, @NonNull UUID partnerId, @NonNull ExchangeVersion version) {
+        BPAProofTemplate proofTemplate = repo.findById(id)
+                .orElseThrow(() -> new ProofTemplateException("No proof template found for: " + id));
+        proofManager.sendPresentProofRequest(partnerId, proofTemplate, version);
+    }
+
+    public Optional<BPAProofTemplate> getProofTemplate(@NonNull UUID id) {
         return repo.findById(id);
     }
 
-    public BPAProofTemplate addProofTemplate(BPAProofTemplate template) {
+    public BPAProofTemplate addProofTemplate(@NonNull BPAProofTemplate template) {
         return repo.save(template);
     }
 
@@ -70,7 +75,7 @@ public class ProofTemplateManager {
         return StreamSupport.stream(repo.findAll().spliterator(), false);
     }
 
-    public void removeProofTemplate(UUID templateId) {
+    public void removeProofTemplate(@NonNull UUID templateId) {
         try {
             repo.deleteById(templateId);
         } catch (DataAccessException e) {

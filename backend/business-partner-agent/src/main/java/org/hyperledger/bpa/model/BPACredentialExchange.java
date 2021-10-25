@@ -28,7 +28,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
-import org.hyperledger.aries.api.issue_credential_v1.CredExStateAndRoleTranslator;
+import org.hyperledger.aries.api.issue_credential_v1.CredExStateTranslator;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
 @Table(name = "bpa_credential_exchange")
 public class BPACredentialExchange
         extends StateChangeDecorator<BPACredentialExchange, CredentialExchangeState>
-        implements CredExStateAndRoleTranslator {
+        implements CredExStateTranslator {
 
     @Id
     @AutoPopulated
