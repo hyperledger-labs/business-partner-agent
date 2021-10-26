@@ -50,6 +50,7 @@ public class PresentationRequestCredentials {
         private String credentialLabel;
 
         private String referent;
+        private Boolean revoked;
 
         private Map<String, String> attrs;
 
@@ -66,6 +67,7 @@ public class PresentationRequestCredentials {
                     .builder()
                     .credentialId(bpa.getCredentialId())
                     .referent(aca.getReferent())
+                    .revoked(bpa.getRevoked())
                     .attrs(aca.getAttrs())
                     .schemaId(aca.getSchemaId())
                     .schemaLabel(bpa.getSchemaLabel())
