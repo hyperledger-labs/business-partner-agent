@@ -68,8 +68,8 @@
                           .length === 0
                       "
                       right
-                      color="warning"
-                      >$vuetify.icons.validationWarning</v-icon
+                      color="info"
+                      >$vuetify.icons.about</v-icon
                     >
                   </div>
                 </v-expansion-panel-header>
