@@ -25,8 +25,10 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.acy_py.generated.model.IndyPresSpec;
 import org.hyperledger.acy_py.generated.model.V10PresentationProblemReportRequest;
 import org.hyperledger.acy_py.generated.model.V20PresProblemReportRequest;
+import org.hyperledger.acy_py.generated.model.V20PresSpecByFormatRequest;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.credentials.Credential;
@@ -193,24 +195,29 @@ public class ProofManager {
     // manual proof request flow
     public List<PresentationRequestCredentials> getMatchingCredentials(@NonNull UUID partnerProofId) {
         PartnerProof partnerProof = pProofRepo.findById(partnerProofId).orElseThrow(EntityNotFoundException::new);
+        return getMatchingCredentials(partnerProof.getPresentationExchangeId(), partnerProof.getExchangeVersion())
+                .map(pres -> pres.stream().map(rec -> PresentationRequestCredentials
+                                .from(rec, credentialInfoResolver.populateCredentialInfo(rec.getCredentialInfo())))
+                        .collect(Collectors.toList()))
+                .orElse(List.of());
+    }
+
+    private Optional<List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials>> getMatchingCredentials(
+            @NonNull String presentationExchangeId, @NonNull ExchangeVersion version) {
         try {
             Optional<List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials>> matches;
-            if (partnerProof.isV1Exchange()) {
-                matches =  ac.presentProofRecordsCredentials(partnerProof.getPresentationExchangeId());
+            if (version.isV1()) {
+                matches =  ac.presentProofRecordsCredentials(presentationExchangeId);
             } else {
-                matches = ac.presentProofV2RecordsCredentials(partnerProof.getPresentationExchangeId(), null);
+                matches = ac.presentProofV2RecordsCredentials(presentationExchangeId, null);
             }
-            return matches
-                    .map(pres -> pres.stream().map(rec -> PresentationRequestCredentials
-                            .from(rec, credentialInfoResolver.populateCredentialInfo(rec.getCredentialInfo())))
-                    .collect(Collectors.toList()))
-                    .orElseThrow();
+            return matches;
         } catch (IOException e) {
             throw new NetworkException(ACA_PY_ERROR_MSG, e);
         } catch (AriesException | NoSuchElementException e) {
             log.warn("No matching credentials found");
         }
-        return List.of();
+        return Optional.of(List.of());
     }
 
     // manual proof request flow
@@ -241,13 +248,13 @@ public class ProofManager {
                 // find all the matching credentials using the (optionally) provided referent
                 // data
                 Optional<PresentationExchangeRecord> record;
-                if (proofEx.isV1Exchange()) {
+                if (proofEx.getExchangeVersion().isV1()) {
                     record = ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId());
                 } else {
                     record = ac.presentProofV2RecordsGetById(proofEx.getPresentationExchangeId())
                             .map(V20PresExRecordToV1Converter::toV1);
                 }
-                record.ifPresent(per -> this.presentProofAcceptSelected(per, referents));
+                record.ifPresent(per -> this.presentProofAcceptSelected(per, referents, proofEx.getExchangeVersion()));
             } catch (IOException e) {
                 throw new NetworkException(ACA_PY_ERROR_MSG, e);
             }
@@ -258,44 +265,49 @@ public class ProofManager {
     }
 
     void presentProofAcceptSelected(@NonNull PresentationExchangeRecord presentationExchangeRecord,
-            @Nullable List<String> referents) {
+            @Nullable List<String> referents, @NonNull ExchangeVersion version) {
         if (PresentationExchangeState.REQUEST_RECEIVED.equals(presentationExchangeRecord.getState())) {
-            try {
-                ac.presentProofRecordsCredentials(presentationExchangeRecord.getPresentationExchangeId())
-                        .ifPresentOrElse(creds -> {
-                            if (CollectionUtils.isNotEmpty(creds)) {
-                                List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> selected = getPresentationRequestCredentials(
-                                        creds, referents);
-                                PresentationRequestBuilder.acceptAll(presentationExchangeRecord, selected)
-                                        .ifPresent(pr -> {
-                                            try {
+            getMatchingCredentials(presentationExchangeRecord.getPresentationExchangeId(), version)
+                    .ifPresentOrElse(creds -> {
+                        if (CollectionUtils.isNotEmpty(creds)) {
+                            List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> selected = getPresentationRequestCredentials(
+                                    creds, referents);
+                            PresentationRequestBuilder.acceptAll(presentationExchangeRecord, selected)
+                                    .ifPresent(pr -> {
+                                        try {
+                                            if (version.isV1()) {
                                                 ac.presentProofRecordsSendPresentation(
                                                         presentationExchangeRecord.getPresentationExchangeId(),
                                                         pr);
-                                            } catch (IOException e) {
-                                                log.error(ACA_PY_ERROR_MSG, e);
+
+                                            } else {
+                                                ac.presentProofV2RecordsSendPresentation(
+                                                        presentationExchangeRecord.getPresentationExchangeId(),
+                                                        V20PresSpecByFormatRequest.builder()
+                                                                .indy(null) // TODO V1 to V2
+                                                                .build());
                                             }
-                                        });
-                            } else {
-                                String msg = "No matching credentials found for proof request: "
-                                        + presentationExchangeRecord.getPresentationExchangeId();
-                                log.warn(msg);
-                                pProofRepo.findByPresentationExchangeId(
-                                        presentationExchangeRecord.getPresentationExchangeId())
-                                        .ifPresent(pp -> pProofRepo.updateProblemReport(pp.getId(), msg));
-                                throw new PresentationConstructionException(msg);
-                            }
-                        }, () -> log.error("Could not load matching credentials from aca-py"));
-            } catch (IOException e) {
-                throw new NetworkException(ACA_PY_ERROR_MSG, e);
-            }
+                                        } catch (IOException e) {
+                                            log.error(ACA_PY_ERROR_MSG, e);
+                                        }
+                                    });
+                        } else {
+                            String msg = "No matching credentials found for proof request: "
+                                    + presentationExchangeRecord.getPresentationExchangeId();
+                            log.warn(msg);
+                            pProofRepo.findByPresentationExchangeId(
+                                    presentationExchangeRecord.getPresentationExchangeId())
+                                    .ifPresent(pp -> pProofRepo.updateProblemReport(pp.getId(), msg));
+                            throw new PresentationConstructionException(msg);
+                        }
+                    }, () -> log.error("Could not load matching credentials from aca-py"));
         }
     }
 
     private List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> getPresentationRequestCredentials(
             List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> creds,
             List<String> referents) {
-        if (referents == null || referents.size() == 0) {
+        if (CollectionUtils.isNotEmpty(referents)) {
             return creds;
         }
         return creds

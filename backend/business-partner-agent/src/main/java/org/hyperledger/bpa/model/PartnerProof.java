@@ -106,7 +106,10 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
         }
     }
 
-    public boolean isV1Exchange() {
-        return exchangeVersion != null && exchangeVersion.isV1();
+    public ExchangeVersion getExchangeVersion() {
+        if (exchangeVersion == null) {
+            return ExchangeVersion.V1;
+        }
+        return exchangeVersion;
     }
 }
