@@ -9,8 +9,7 @@
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/hyperledger-labs/business-partner-agent)
 
 # Short Description
-The Business Partner Agent is an SSI based cloud controller and wallet that strives to make the complex SSI flows and 
-API's more accessible to end users by providing a user interface and a higher level API.
+The BPA allows organizations to verify, hold, and issue verifiable credentials.
 
 The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Identity Stack, in particular 
 [Hyperledger Indy](https://www.hyperledger.org/use/hyperledger-indy) and 
@@ -37,7 +36,7 @@ The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Ide
 |                  | auto: issue credential                                                  | v1, v2                            |
 |                  | manual: send credential offer to holder                                 | v1, v2                            |
 |                  | manual: receive credential proposal from holder                         | v1, v2                            |
-|                  | manual: decline credential proposal from holder                         | v1, v2                            |
+|                  | manual: decline credential proposal from holder and provide reason      | v1, v2                            |
 |                  | revoke issued credential (requires tails server)                        | n/a                               |
 | Holder           |                                                                         |                                   |
 |                  | auto: receive credential                                                | v1, v2                            |
@@ -48,7 +47,7 @@ The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Ide
 | Prover           |                                                                         |                                   |
 |                  | auto: send presentation to verifier                                     | v1                                |
 |                  | auto: answer presentation request                                       | v1                                |
-|                  | manual: accept/decline presentation request                             | v1                                |
+|                  | manual: accept/decline presentation request and provide reason          | v1                                |
 | Verifier         |                                                                         |                                   |
 |                  | auto: request presentation from prover based on proof template          | v1                                |
 | Connection       |                                                                         |                                   |
@@ -78,7 +77,7 @@ The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Ide
 - Support additional verifiable credential formats (W3C JSON-LD VCs in addition to Indy Anoncreds)
 - Business rules to automate processes
 - Endorser support (both as endorser and transaction author)
-- Multi-user support
+- Multi-user and roles support
 
 ## Project Status
 
