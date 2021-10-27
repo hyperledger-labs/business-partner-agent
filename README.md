@@ -9,24 +9,71 @@
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/hyperledger-labs/business-partner-agent)
 
 # Short Description
-The Business Partner Agent allows to manage and exchange master data between organizations. Exchange of master data should not happen via telephone, excel, e-mail or various supplier portals. Organizations should be able to publish documents like addresses, locations, contacts, bank accounts and certifications publicly, or exchange them privately with their business partners in a machine-readable and tamper-proof format. Furthemore, verified documents, issued by trusted institutions, are able streamline the process of onboarding new business partners.
+The Business Partner Agent is an SSI based cloud controller and wallet that strives to make the complex SSI flows and 
+API's more accessible to end users by providing a user interface and a higher level API.
 
-The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Identity Stack, in particular [Hyperledger Indy](https://www.hyperledger.org/use/hyperledger-indy) and [Hyperledger Cloud Agent Python](https://github.com/hyperledger/aries-cloudagent-python).
+The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Identity Stack, in particular 
+[Hyperledger Indy](https://www.hyperledger.org/use/hyperledger-indy) and 
+[Hyperledger Cloud Agent Python](https://github.com/hyperledger/aries-cloudagent-python).
 
 ![](https://i.imgur.com/kz4s0gQ.png)
 
-## Current Features
+## Most Important Features
 
 - Attach a public organizational profile to your public DID (either did:indy/sov or did:web)
 - Add business partners by their public DIDs or via invitations and view their public profiles
-- Business partnes can be other cloud agents or smartphone wallets
+- Business partners can be other cloud agents or smartphone wallets
 - Basic chat functionality to interact with business partners
 - Add documents based on Indy schemas and request verifications from business partners
 - Issue verifiable credentials to your business partners
 - Create templates for presentation requests supporting zero knowledge proofs (selective disclose and predicate proofs) 
 - Send and respond to presentation requests
 
-## Upcoming features
+## Features in Detail
+
+| Role/Feature     | Flow                                                                    | Protocol Version                  |
+|------------------|-------------------------------------------------------------------------|-----------------------------------|
+| Issuer           |                                                                         |                                   |
+|                  | auto: issue credential                                                  | v1, v2                            |
+|                  | manual: send credential offer to holder                                 | v1, v2                            |
+|                  | manual: receive credential proposal from holder                         | v1, v2                            |
+|                  | manual: decline credential proposal from holder                         | v1, v2                            |
+|                  | revoke issued credential (requires tails server)                        | n/a                               |
+| Holder           |                                                                         |                                   |
+|                  | auto: receive credential                                                | v1, v2                            |
+|                  | manual: send credential proposal to issuer (based on document)          | v1, v2                            |
+|                  | manual: receive credential offer from issuer                            | v1, v2                            |
+|                  | manual: decline credential offer from issuer                            | v1, v2                            |
+|                  | scheduled revocation check on all received credentials                  | n/a                               |
+| Prover           |                                                                         |                                   |
+|                  | auto: send presentation to verifier                                     | v1                                |
+|                  | auto: answer presentation request                                       | v1                                |
+|                  | manual: accept/decline presentation request                             | v1                                |
+| Verifier         |                                                                         |                                   |
+|                  | auto: request presentation from prover based on proof template          | v1                                |
+| Connection       |                                                                         |                                   |
+|                  | connect by did:sov, did:web (if endpoint is aca-py)                     | did-exchange                      |
+|                  | receive invitation by URL                                               | connection-protocol, OOB          |
+|                  | create invitation (barcode or URL)                                      | connection-protocol, OOB          |
+|                  | auto: accept incoming connection                                        | did-exchange, connection-protocol |
+|                  | manual: accept incoming connection                                      | did-exchange, connection-protocol |
+|                  | optional: scheduled trust ping to check connection status               | n/a                               |
+|                  | tag a connection, e.g. as trusted issue                                 | n/a                               |
+| Ledger           |                                                                         |                                   |
+|                  | send schema to the ledger (requires endorser role)                      | n/a                               |
+|                  | create a credential definition on the ledger (requires endorser role)   | n/a                               |
+| Basic Message    |                                                                         |                                   |
+|                  | send and receive basic messages via chat window                         | n/a                               |
+| Tasks/Activities |                                                                         |                                   |
+|                  | list of tasks that need attention, and list of past activities          | n/a                               |
+| TAA              |                                                                         |                                   |
+|                  | if ledger is configured with a TAA, show it and give option to accept   | n/a                               |
+| Read Only Ledger |                                                                         |                                   |
+|                  | if mode is set to web only                                              | n/a                               |
+| Public Profile   |                                                                         |                                   |
+|                  | web accessible (self signed) imprint based on credentials or documents  | n/a                               |
+
+## Upcoming Features
 
 - Support additional verifiable credential formats (W3C JSON-LD VCs in addition to Indy Anoncreds)
 - Business rules to automate processes
