@@ -160,12 +160,20 @@
                 </v-expansion-panel>
               </v-expansion-panels>
 
-              <!-- Select matcing credential -->
+              <!-- Select matching credential -->
 
               <div v-if="group.matchingCredentials">
-                <h4 class="mb-4">Select data for presentation</h4>
+                <h4 class="mb-4">
+                  {{
+                    $t(
+                      "view.presentationRecord.matchingCredentials.selectHeader"
+                    )
+                  }}
+                </h4>
                 <v-select
-                  label="Matching Credentials"
+                  :label="
+                    $t('view.presentationRecord.matchingCredentials.label')
+                  "
                   return-object
                   :items="group.matchingCredentials"
                   :item-text="toCredentialLabel"
@@ -275,17 +283,23 @@ export default {
     toCredentialLabel(matchedCred) {
       if (matchedCred.credentialInfo) {
         const credInfo = matchedCred.credentialInfo;
+        let revokedLabel = "";
+        if (credInfo.revoked) {
+          revokedLabel = this.$t(
+            "view.presentationRecord.matchingCredentials.credentialRevoked"
+          );
+        }
 
         if (credInfo.credentialLabel) {
-          return `${credInfo.credentialLabel} (${credInfo.credentialId})`;
+          return `${credInfo.credentialLabel} (${credInfo.credentialId}) ${revokedLabel}`;
         } else if (credInfo.schemaLabel) {
           if (credInfo.issuerLabel) {
-            return `${credInfo.schemaLabel} (${credInfo.credentialId}) - ${credInfo.issuerLabel}`;
+            return `${credInfo.schemaLabel} (${credInfo.credentialId}) - ${credInfo.issuerLabel} ${revokedLabel}`;
           } else {
-            return credInfo.schemaLabel;
+            return `${credInfo.schemaLabel} ${revokedLabel}`;
           }
         } else {
-          return credInfo.credentialId;
+          return `${credInfo.credentialId} ${revokedLabel}`;
         }
       } else {
         return "No info found";

@@ -199,6 +199,13 @@
       "title": "Create a Presentation Request",
       "sendRequest": "Send Request"
     },
+    "presentationRecord": {
+      "matchingCredentials": {
+        "selectHeader": "Select data for presentation",
+        "label": "Matching Credentials",
+        "credentialRevoked": " - credential is revoked"
+      }
+    },
     "issueCredentials": {
       "title": "Issue Credentials",
       "cards": {
