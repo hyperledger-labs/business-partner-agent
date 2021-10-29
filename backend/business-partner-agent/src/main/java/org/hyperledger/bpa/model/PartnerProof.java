@@ -46,7 +46,8 @@ import java.util.UUID;
 @Builder
 @Entity
 @Accessors(chain = true)
-public class PartnerProof extends StateChangeDecorator<PartnerProof, PresentationExchangeState> implements PresExStateTranslator {
+public class PartnerProof extends StateChangeDecorator<PartnerProof, PresentationExchangeState>
+        implements PresExStateTranslator {
 
     @Id
     @AutoPopulated

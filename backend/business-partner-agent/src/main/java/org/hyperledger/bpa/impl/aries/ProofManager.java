@@ -36,6 +36,7 @@ import org.hyperledger.aries.api.present_proof_v2.V20PresExRecordToV1Converter;
 import org.hyperledger.aries.api.present_proof_v2.V20PresSendRequestRequest;
 import org.hyperledger.aries.api.present_proof_v2.V20PresSpecByFormatRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
+import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.*;
 import org.hyperledger.bpa.controller.api.partner.ApproveProofRequest;
@@ -103,10 +104,11 @@ public class ProofManager {
 
     // request proof from partner via proof template
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate,
-                                        @NonNull ExchangeVersion version) {
+            @NonNull ExchangeVersion version) {
         try {
             PresentProofRequest proofRequest = proofTemplateConversion.proofRequestViaVisitorFrom(partnerId,
                     proofTemplate);
+            System.out.println(GsonConfig.prettyPrinter().toJson(proofRequest));
             // the proofTemplate does not contain the proof request Non-Revocation value, if
             // that was not part of the template and set during proof request creation.
             // using null for issuerId and schemaId because the template could have multiple
@@ -116,10 +118,10 @@ public class ProofManager {
             } else {
                 ac.presentProofV2SendRequest(V20PresSendRequestRequest
                         .builder()
-                                .connectionId(proofRequest.getConnectionId())
-                                .presentationRequest(V20PresSendRequestRequest.V20PresRequestByFormat.builder()
-                                        .indy(proofRequest.getProofRequest())
-                                        .build())
+                        .connectionId(proofRequest.getConnectionId())
+                        .presentationRequest(V20PresSendRequestRequest.V20PresRequestByFormat.builder()
+                                .indy(proofRequest.getProofRequest())
+                                .build())
                         .build())
                         .map(V20PresExRecordToV1Converter::toV1)
                         .ifPresent(persistProof(partnerId, proofTemplate));
@@ -197,7 +199,7 @@ public class ProofManager {
         PartnerProof partnerProof = pProofRepo.findById(partnerProofId).orElseThrow(EntityNotFoundException::new);
         return getMatchingCredentials(partnerProof.getPresentationExchangeId(), partnerProof.getExchangeVersion())
                 .map(pres -> pres.stream().map(rec -> PresentationRequestCredentials
-                                .from(rec, credentialInfoResolver.populateCredentialInfo(rec.getCredentialInfo())))
+                        .from(rec, credentialInfoResolver.populateCredentialInfo(rec.getCredentialInfo())))
                         .collect(Collectors.toList()))
                 .orElse(List.of());
     }
@@ -207,7 +209,7 @@ public class ProofManager {
         try {
             Optional<List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials>> matches;
             if (version.isV1()) {
-                matches =  ac.presentProofRecordsCredentials(presentationExchangeId);
+                matches = ac.presentProofRecordsCredentials(presentationExchangeId);
             } else {
                 matches = ac.presentProofV2RecordsCredentials(presentationExchangeId, null);
             }
@@ -227,7 +229,8 @@ public class ProofManager {
             try {
                 proofEx.pushStates(PresentationExchangeState.DECLINED);
                 pProofRepo.update(proofEx);
-                sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString, proofEx.getExchangeVersion());
+                sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString,
+                        proofEx.getExchangeVersion());
                 eventPublisher
                         .publishEventAsync(PresentationRequestDeclinedEvent.builder().partnerProof(proofEx).build());
             } catch (IOException e) {
@@ -331,8 +334,8 @@ public class ProofManager {
     }
 
     private void sendPresentProofProblemReport(@NonNull String presentationExchangeId,
-                                               @NonNull String problemString,
-                                               @Nullable ExchangeVersion version) throws IOException {
+            @NonNull String problemString,
+            @Nullable ExchangeVersion version) throws IOException {
         if (version == null || version.isV1()) {
             ac.presentProofRecordsProblemReport(presentationExchangeId, V10PresentationProblemReportRequest.builder()
                     .description(problemString)

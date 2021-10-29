@@ -57,7 +57,8 @@ public class ProofTemplateManager {
         invokeProofRequestByTemplate(id, partnerId, ExchangeVersion.V1);
     }
 
-    public void invokeProofRequestByTemplate(@NonNull UUID id, @NonNull UUID partnerId, @NonNull ExchangeVersion version) {
+    public void invokeProofRequestByTemplate(@NonNull UUID id, @NonNull UUID partnerId,
+            @NonNull ExchangeVersion version) {
         BPAProofTemplate proofTemplate = repo.findById(id)
                 .orElseThrow(() -> new ProofTemplateException("No proof template found for: " + id));
         proofManager.sendPresentProofRequest(partnerId, proofTemplate, version);

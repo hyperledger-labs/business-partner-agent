@@ -22,7 +22,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.ExchangeVersion;
 
-@Data @NoArgsConstructor @AllArgsConstructor
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PresentationRequestVersion {
     /** presentation exchange api version */
     private ExchangeVersion exchangeVersion;
