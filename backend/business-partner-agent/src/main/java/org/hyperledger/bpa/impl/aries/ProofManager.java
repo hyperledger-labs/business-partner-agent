@@ -25,10 +25,8 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.acy_py.generated.model.IndyPresSpec;
 import org.hyperledger.acy_py.generated.model.V10PresentationProblemReportRequest;
 import org.hyperledger.acy_py.generated.model.V20PresProblemReportRequest;
-import org.hyperledger.acy_py.generated.model.V20PresSpecByFormatRequest;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.credentials.Credential;
@@ -36,6 +34,7 @@ import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.present_proof.*;
 import org.hyperledger.aries.api.present_proof_v2.V20PresExRecordToV1Converter;
 import org.hyperledger.aries.api.present_proof_v2.V20PresSendRequestRequest;
+import org.hyperledger.aries.api.present_proof_v2.V20PresSpecByFormatRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.*;
@@ -158,6 +157,7 @@ public class ProofManager {
     }
 
     // send presentation offer to partner based on a wallet credential
+    // TODO V2
     public void sendProofProposal(@NonNull UUID partnerId, @NonNull UUID myCredentialId) {
         partnerRepo.findById(partnerId).ifPresent(p -> holderCredExRepo.findById(myCredentialId).ifPresent(c -> {
             Credential cred = Objects.requireNonNull(c.getCredential());
@@ -223,7 +223,7 @@ public class ProofManager {
     // manual proof request flow
     public void declinePresentProofRequest(@NonNull UUID partnerProofId, String explainString) {
         PartnerProof proofEx = pProofRepo.findById(partnerProofId).orElseThrow(EntityNotFoundException::new);
-        if (PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
+        if (proofEx.stateIsRequestReceived()) {
             try {
                 proofEx.pushStates(PresentationExchangeState.DECLINED);
                 pProofRepo.update(proofEx);
@@ -241,8 +241,7 @@ public class ProofManager {
     // manual proof request flow
     public void presentProof(@NonNull UUID partnerProofId, @Nullable ApproveProofRequest req) {
         PartnerProof proofEx = pProofRepo.findById(partnerProofId).orElseThrow(EntityNotFoundException::new);
-        if (PresentationExchangeRole.PROVER.equals(proofEx.getRole())
-                && PresentationExchangeState.REQUEST_RECEIVED.equals(proofEx.getState())) {
+        if (proofEx.roleIsProverAndRequestReceived()) {
             try {
                 List<String> referents = (req == null) ? null : req.getReferents();
                 // find all the matching credentials using the (optionally) provided referent
@@ -266,7 +265,7 @@ public class ProofManager {
 
     void presentProofAcceptSelected(@NonNull PresentationExchangeRecord presentationExchangeRecord,
             @Nullable List<String> referents, @NonNull ExchangeVersion version) {
-        if (PresentationExchangeState.REQUEST_RECEIVED.equals(presentationExchangeRecord.getState())) {
+        if (presentationExchangeRecord.stateIsRequestReceived()) {
             getMatchingCredentials(presentationExchangeRecord.getPresentationExchangeId(), version)
                     .ifPresentOrElse(creds -> {
                         if (CollectionUtils.isNotEmpty(creds)) {
@@ -284,7 +283,7 @@ public class ProofManager {
                                                 ac.presentProofV2RecordsSendPresentation(
                                                         presentationExchangeRecord.getPresentationExchangeId(),
                                                         V20PresSpecByFormatRequest.builder()
-                                                                .indy(null) // TODO V1 to V2
+                                                                .indy(pr)
                                                                 .build());
                                             }
                                         } catch (IOException e) {

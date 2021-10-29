@@ -88,13 +88,11 @@ export default {
     },
     async submitRequest() {
       this.isBusy = true;
-
-      let data = null;
-      if (this.useV2Exchange) {
-        data = {
-          exchangeVersion: ExchangeVersion.V2,
-        };
-      }
+      let data = {
+        exchangeVersion: this.useV2Exchange
+          ? ExchangeVersion.V2
+          : ExchangeVersion.V1,
+      };
 
       proofTemplateService
         .sendProofTemplate(this.selectedProofTemplate[0].id, this.id, data)
