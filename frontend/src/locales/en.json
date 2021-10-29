@@ -303,6 +303,7 @@
       "credentialExchange": {
         "accepted": "Credential Offer accepted",
         "declined": "A Credential Offer has been declined",
+        "problem": "Problem with Credential Offer",
         "received": "A Credential Offer has been received",
         "sent": "Credential Offer sent"
       },

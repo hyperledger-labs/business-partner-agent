@@ -150,8 +150,18 @@ public class IssuerController {
     }
 
     /**
+     * Get credential exchange
+     *
+     * @return list of {@link CredEx}
+     */
+    @Get("/exchanges/{id}")
+    public HttpResponse<CredEx> getCredentialExchange(@PathVariable UUID id) {
+        return HttpResponse.ok(im.getCredEx(id));
+    }
+
+    /**
      * Revoke an issued credential
-     * 
+     *
      * @param id credential exchange id
      * @return {@link HttpResponse}
      */
@@ -163,7 +173,7 @@ public class IssuerController {
     /**
      * Manual credential exchange step two: Issuer sends credential counter offer to
      * holder (in reference to a proposal)
-     * 
+     *
      * @param id           credential exchange id
      * @param counterOffer {@link CredentialOfferRequest}
      * @return {@link CredEx}

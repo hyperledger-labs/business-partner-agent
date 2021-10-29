@@ -201,6 +201,7 @@
         v-if="isReady"
         v-bind:items="issuedCredentials"
         v-bind:headers="headersIssued"
+        v-bind:openItemById="credExId"
       ></CredExList>
       <v-card-actions>
         <v-dialog v-model="issueCredentialDialog" persistent max-width="600px">
@@ -266,6 +267,7 @@ export default {
   props: {
     id: String,
     presExId: String,
+    credExId: String,
   },
   components: {
     VBpaButton,
@@ -305,6 +307,12 @@ export default {
       },
       PartnerStates: PartnerStates,
       headersIssued: [
+        {
+          text: "",
+          value: "indicator",
+          sortable: false,
+          filterable: false,
+        },
         {
           text: "Type",
           value: "displayText",
