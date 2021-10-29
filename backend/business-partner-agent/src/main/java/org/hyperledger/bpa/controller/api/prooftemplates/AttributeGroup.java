@@ -19,8 +19,10 @@
 package org.hyperledger.bpa.controller.api.prooftemplates;
 
 import io.micronaut.core.annotation.Introspected;
+import io.micronaut.core.util.CollectionUtils;
 import lombok.*;
 import org.hyperledger.bpa.impl.verification.ValidUUID;
+import org.hyperledger.bpa.model.prooftemplate.BPASchemaRestrictions;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -51,4 +53,11 @@ public class AttributeGroup {
     @Builder.Default
     @Valid
     private List<SchemaRestrictions> schemaLevelRestrictions = List.of(SchemaRestrictions.builder().build());
+
+    public List<SchemaRestrictions> getSchemaLevelRestrictions() {
+        if (CollectionUtils.isEmpty(schemaLevelRestrictions)) {
+            return List.of(SchemaRestrictions.builder().build());
+        }
+        return schemaLevelRestrictions;
+    }
 }
