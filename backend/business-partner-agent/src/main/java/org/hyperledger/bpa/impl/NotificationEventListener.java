@@ -71,7 +71,8 @@ public class NotificationEventListener {
                 messageService.sendMessage(message);
             }
             // if we auto-responded to the offer then this creates a completed activity
-            // if we did not auto-respond to the offer, then we have an existing task to mark as completed
+            // if we did not auto-respond to the offer, then we have an existing task to
+            // mark as completed
             activityManager.completeCredentialOfferedTask(event.getCredential());
         }
     }
@@ -83,16 +84,15 @@ public class NotificationEventListener {
         // we have the connection id, but not the partner, will need to look up
         // partner...
         PartnerAPI partnerAPI = partnerManager.getPartnerByConnectionId(event.getCredential().getConnectionId());
-        if (partnerAPI != null) {
-            if (activityLogConfig.getCredentialExchangeStatesForTasks().contains(event.getCredential().getState())) {
-                WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
-                        WebSocketMessageBody.WebSocketMessageType.ON_CREDENTIAL_OFFERED,
-                        event.getCredential().getId().toString(),
-                        event.getCredential(),
-                        partnerAPI);
-                messageService.sendMessage(message);
-                activityManager.addCredentialOfferedTask(event.getCredential());
-            }
+        if (partnerAPI != null
+                && activityLogConfig.getCredentialExchangeStatesForTasks().contains(event.getCredential().getState())) {
+            WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
+                    WebSocketMessageBody.WebSocketMessageType.ON_CREDENTIAL_OFFERED,
+                    event.getCredential().getId().toString(),
+                    event.getCredential(),
+                    partnerAPI);
+            messageService.sendMessage(message);
+            activityManager.addCredentialOfferedTask(event.getCredential());
         }
     }
 
