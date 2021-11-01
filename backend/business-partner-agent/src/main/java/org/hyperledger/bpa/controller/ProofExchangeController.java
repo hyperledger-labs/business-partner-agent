@@ -31,19 +31,15 @@ import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
-import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.partner.ApproveProofRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.controller.api.partner.SendProofRequest;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentials;
 import org.hyperledger.bpa.impl.aries.ProofManager;
-import org.hyperledger.bpa.model.PartnerProof;
-import org.hyperledger.bpa.repository.PartnerProofRepository;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -124,7 +120,7 @@ public class ProofExchangeController {
     @Post("/proof-send")
     public HttpResponse<Void> sendProof(
             @Body SendProofRequest req) {
-        proofM.sendProofProposal(req.getPartnerId(), req.getMyCredentialId());
+        proofM.sendProofProposal(req.getPartnerId(), req.getMyCredentialId(), req.getExchangeVersion());
         return HttpResponse.ok();
     }
 
@@ -136,7 +132,7 @@ public class ProofExchangeController {
      */
     @Get("/{id}")
     public HttpResponse<AriesProofExchange> getProofExchangeById(@PathVariable UUID id) {
-        AriesProofExchange pProof = proofM.getPartnerProofById(id).orElseThrow(EntityNotFoundException::new);
+        AriesProofExchange pProof = proofM.getPartnerProofById(id);
         return HttpResponse.ok(pProof);
     }
 

@@ -244,6 +244,7 @@ public class PartnerController {
      *
      * @param id         partner id
      * @param templateId proof template id
+     * @param version {@link PresentationRequestVersion}
      * @return Http Status
      */
     @Put("/{id}/proof-request/{templateId}")
@@ -294,7 +295,7 @@ public class PartnerController {
     public HttpResponse<Void> sendProof(
             @PathVariable UUID id,
             @Body SendProofRequest req) {
-        proofM.sendProofProposal(id, req.getMyCredentialId());
+        proofM.sendProofProposal(id, req.getMyCredentialId(), req.getExchangeVersion());
         return HttpResponse.ok();
     }
 
