@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -39,6 +40,7 @@ import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.revocation.RevokeRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
+import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
@@ -52,6 +54,9 @@ import org.hyperledger.bpa.controller.api.issuer.CredEx;
 import org.hyperledger.bpa.controller.api.issuer.CredentialOfferRequest;
 import org.hyperledger.bpa.controller.api.issuer.IssueCredentialSendRequest;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.notification.CredentialAcceptedEvent;
+import org.hyperledger.bpa.impl.notification.CredentialIssuedEvent;
+import org.hyperledger.bpa.impl.notification.CredentialProblemEvent;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.BPACredentialDefinition;
 import org.hyperledger.bpa.model.BPACredentialExchange;
@@ -93,6 +98,9 @@ public class IssuerCredentialManager extends BaseCredentialManager {
 
     @Inject
     BPAMessageSource.DefaultMessageSource msg;
+
+    @Inject
+    ApplicationEventPublisher eventPublisher;
 
     // Credential Definition Management
 
@@ -172,7 +180,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
     /**
      * Issuer initialises the credential exchange with an offer. There is no
      * preexisting proposal from the holder.
-     * 
+     *
      * @param request {@link IssueCredentialRequest}
      * @return credential exchange id
      */
@@ -222,6 +230,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                 // as I'm the issuer I know what I have issued, no need to get this info from
                 // the exchange record again
                 .credential(Credential.builder()
+                        .schemaId(schemaId)
                         .attrs(document)
                         .build())
                 .credentialExchangeId(exResult.getCredentialExchangeId())
@@ -230,6 +239,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                 .build();
         credExRepo.save(cex);
 
+        fireCredentialIssuedEvent(cex);
         return exResult.getCredentialExchangeId();
     }
 
@@ -289,6 +299,11 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                 .collect(Collectors.toList());
     }
 
+    public CredEx getCredEx(@NonNull UUID id) {
+        BPACredentialExchange ex = this.getCredentialExchange(id);
+        return CredEx.from(ex, conv.toAPIObject(ex.getPartner()));
+    }
+
     public CredEx revokeCredentialExchange(@NonNull UUID id) {
         if (!config.getTailsServerConfigured()) {
             throw new IssuerException(msg.getMessage("api.issuer.no.tails.server"));
@@ -316,7 +331,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
     /**
      * Send partner a credential (counter) offer in reference to a proposal (Not to
      * be confused with the automated send-offer flow).
-     * 
+     *
      * @param id           credential exchange id
      * @param counterOffer {@link CredentialOfferRequest}
      * @return {@link CredEx} updated credential exchange, if found
@@ -431,6 +446,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                 if (notDeclined) {
                     credExRepo.updateAfterEventNoRevocationInfo(bpaEx.getId(),
                             bpaEx.getState(), bpaEx.getStateToTimestamp(), ex.getErrorMsg());
+                    fireCredentialProblemEvent(bpaEx);
                 }
             } else {
                 credExRepo.updateAfterEventWithRevocationInfo(bpaEx.getId(),
@@ -439,7 +455,10 @@ public class IssuerCredentialManager extends BaseCredentialManager {
             }
             if (ex.stateIsCredentialAcked() && ex.isAutoIssueEnabled()) {
                 ex.findAttributesInCredentialOfferDict().ifPresent(
-                        attr -> credExRepo.updateCredential(bpaEx.getId(), Credential.builder().attrs(attr).build()));
+                        attr -> {
+                            credExRepo.updateCredential(bpaEx.getId(), Credential.builder().attrs(attr).build());
+                            fireCredentialAcceptedEvent(bpaEx);
+                        });
             }
         });
     }
@@ -485,6 +504,31 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                 credExRepo.updateReferent(bpaEx.getId(), revocationInfo.getCredIdStored());
             }
         });
+    }
+
+    private void fireCredentialIssuedEvent(@NonNull BPACredentialExchange db) {
+        eventPublisher.publishEventAsync(CredentialIssuedEvent.builder()
+                .credential(AriesCredential.fromBPACredentialExchange(db, schemaLabel(db)))
+                .build());
+    }
+
+    private void fireCredentialAcceptedEvent(@NonNull BPACredentialExchange db) {
+        eventPublisher.publishEventAsync(CredentialAcceptedEvent.builder()
+                .credential(AriesCredential.fromBPACredentialExchange(db, schemaLabel(db)))
+                .build());
+    }
+
+    private void fireCredentialProblemEvent(@NonNull BPACredentialExchange db) {
+        eventPublisher.publishEventAsync(CredentialProblemEvent.builder()
+                .credential(AriesCredential.fromBPACredentialExchange(db, schemaLabel(db)))
+                .build());
+    }
+
+    private String schemaLabel(@NonNull BPACredentialExchange db) {
+        if (db.getCredential() != null && db.getCredential().getSchemaId() != null) {
+            return schemaService.getSchemaLabel(db.getCredential().getSchemaId());
+        }
+        return "";
     }
 
     /**
