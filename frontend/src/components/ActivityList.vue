@@ -195,15 +195,28 @@ export default {
           },
         });
       } else if (item.type === ActivityTypes.CREDENTIAL_EXCHANGE.value) {
-        let route = {
-          name: "Credential",
-          params: {
-            id: item.linkId,
-            type: "credential",
-          },
-        };
+        if (item.role === ActivityRoles.CREDENTIAL_EXCHANGE_ISSUER.value || item.state === ActivityStates.CREDENTIAL_EXCHANGE_RECEIVED.value) {
+          // this isn't a credential... either we issued it, or it is just at an offer state
+          let route = {
+            name: "Partner",
+            params: {
+              id: item.partner.id,
+              credExId: item.linkId,
+            },
+          };
 
-        this.$router.push(route);
+          this.$router.push(route);
+        } else {
+          let route = {
+            name: "Credential",
+            params: {
+              id: item.linkId,
+              type: "credential",
+            },
+          };
+
+          this.$router.push(route);
+        }
       } else if (item.type === ActivityTypes.PRESENTATION_EXCHANGE.value) {
         let route = {
           name: "Partner",

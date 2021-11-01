@@ -11,6 +11,25 @@ const removeItem = (collection, id) => {
   return collection;
 };
 
+const removeItemByMessageInfoLinkId = (collection, linkId) => {
+  const tmp = { ...collection };
+  const keys = Object.keys(tmp);
+  let k = undefined;
+  keys.forEach((key, index) => {
+    const o = collection[key];
+    console.log(`${index} ${key} ${linkId}`);
+    console.log(o);
+    if (o?.message?.info?.linkId === linkId) {
+      k = key;
+    }
+  });
+  if (k) {
+    delete tmp[k];
+    return tmp;
+  }
+  return collection;
+}
+
 const state = {
   activityNotifications: {},
   credentialNotifications: {},
@@ -63,7 +82,10 @@ const mutations = {
       case "ACTIVITY_NOTIFICATION":
         state.activityNotifications = addItem(state.activityNotifications, id, payload);
         break;
+      case "ON_CREDENTIAL_ACCEPTED":
       case "ON_CREDENTIAL_ADDED":
+      case "ON_CREDENTIAL_OFFERED":
+      case "ON_CREDENTIAL_PROBLEM":
         state.credentialNotifications = addItem(state.credentialNotifications, id, payload);
         break;
       case "ON_PARTNER_REMOVED":
@@ -99,6 +121,7 @@ const mutations = {
   credentialNotificationSeen(state, payload) {
     let id = payload.id;
     state.credentialNotifications = removeItem(state.credentialNotifications, id);
+    state.activityNotifications = removeItemByMessageInfoLinkId(state.activityNotifications, id);
   },
   partnerNotificationSeen(state, payload) {
     let id = payload.id;

@@ -57,6 +57,7 @@ import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.activity.VPManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.notification.CredentialAddedEvent;
+import org.hyperledger.bpa.impl.notification.CredentialOfferedEvent;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.TimeUtil;
@@ -349,6 +350,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
                     .exchangeVersion(version)
                     .build();
             holderCredExRepo.save(ex);
+            fireCredentialOfferedEvent(ex);
         }));
     }
 
@@ -399,6 +401,13 @@ public class HolderCredentialManager extends BaseCredentialManager {
     private void fireCredentialAddedEvent(@NonNull BPACredentialExchange updated) {
         AriesCredential ariesCredential = buildCredential(updated);
         eventPublisher.publishEventAsync(CredentialAddedEvent.builder()
+                .credential(ariesCredential)
+                .build());
+    }
+
+    private void fireCredentialOfferedEvent(@NonNull BPACredentialExchange updated) {
+        AriesCredential ariesCredential = buildCredential(updated);
+        eventPublisher.publishEventAsync(CredentialOfferedEvent.builder()
                 .credential(ariesCredential)
                 .build());
     }
