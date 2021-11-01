@@ -46,6 +46,7 @@ import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.notification.PresentationRequestDeclinedEvent;
 import org.hyperledger.bpa.impl.notification.PresentationRequestSentEvent;
 import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConversion;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.BPAProofTemplate;
 import org.hyperledger.bpa.model.Partner;
@@ -168,8 +169,8 @@ public class ProofManager {
                     ac.presentProofSendProposal(PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred))
                             .ifPresent(persistProof(partnerId, null));
                 } else {
-                    // TODO currently broken on the aca-py side
-                    ac.presentProofV2SendProposal(PresentProofProposalBuilder.v2IndyFromCredential(p.getConnectionId(), cred))
+                    ac.presentProofV2SendProposal(PresentProofProposalBuilder.v2IndyFromCredential(
+                            p.getConnectionId(), cred, AriesStringUtil.schemaGetName(cred.getSchemaId())))
                             .map(V20PresExRecordToV1Converter::toV1)
                             .ifPresent(persistProof(partnerId, null));
                 }
