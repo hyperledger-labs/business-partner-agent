@@ -31,7 +31,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;

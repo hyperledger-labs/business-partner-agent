@@ -132,7 +132,7 @@ public class ProofManager {
         }
     }
 
-    // request proof from partner
+    // request proof from partner - currently not used by the frontend
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {
         try {
             final Partner partner = partnerRepo.findById(partnerId)

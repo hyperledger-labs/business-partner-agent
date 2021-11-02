@@ -26,7 +26,7 @@ import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.message.BasicMessage;
-import org.hyperledger.aries.api.message.PingEvent;
+import org.hyperledger.aries.api.trustping.PingEvent;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof_v2.V20PresExRecord;
 import org.hyperledger.aries.api.present_proof_v2.V20PresExRecordToV1Converter;
