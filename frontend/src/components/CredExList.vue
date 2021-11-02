@@ -55,7 +55,7 @@
         {{ item.createdAt | formatDateLong }}
       </template>
       <template v-slot:[`item.role`]="{ item }">
-        {{ item.role }}
+        {{ item.role | capitalize }}
       </template>
       <template v-slot:[`item.revocable`]="{ item }">
         <v-icon
@@ -235,7 +235,7 @@
   </v-container>
 </template>
 <script>
-import {issuerService} from "@/services";
+import { issuerService } from "@/services";
 import Cred from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
 import NewMessageIcon from "@/components/NewMessageIcon";
