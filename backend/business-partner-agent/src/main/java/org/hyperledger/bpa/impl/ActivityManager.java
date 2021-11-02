@@ -126,7 +126,33 @@ public class ActivityManager {
                 });
     }
 
-    public void addCredentialAddedActivity(@NonNull AriesCredential credential) {
+    public void completeCredentialOfferedTask(@NonNull AriesCredential credential) {
+        partnerRepo.findByConnectionId(credential.getConnectionId()).ifPresent(partner -> {
+            activityRepository.findByLinkIdAndTypeAndRole(credential.getId(),
+                    ActivityType.CREDENTIAL_EXCHANGE,
+                    ActivityRole.CREDENTIAL_EXCHANGE_HOLDER).ifPresentOrElse(activity -> {
+                        activity.setState(ActivityState.CREDENTIAL_EXCHANGE_ACCEPTED);
+                        activity.setCompleted(true);
+                        activityRepository.update(activity);
+                        eventPublisher.publishEventAsync(TaskCompletedEvent.builder().activity(activity).build());
+                    },
+                            () -> {
+                                Activity a = Activity.builder()
+                                        .linkId(credential.getId())
+                                        .partner(partner)
+                                        .type(ActivityType.CREDENTIAL_EXCHANGE)
+                                        .role(ActivityRole.CREDENTIAL_EXCHANGE_HOLDER)
+                                        .state(ActivityState.CREDENTIAL_EXCHANGE_ACCEPTED)
+                                        .completed(true)
+                                        .build();
+                                activityRepository.save(a);
+                                eventPublisher
+                                        .publishEventAsync(ActivityNotificationEvent.builder().activity(a).build());
+                            });
+        });
+    }
+
+    public void addCredentialOfferedTask(@NonNull AriesCredential credential) {
         partnerRepo.findByConnectionId(credential.getConnectionId()).ifPresent(partner -> {
             Optional<Activity> existing = activityRepository.findByLinkIdAndTypeAndRole(credential.getId(),
                     ActivityType.CREDENTIAL_EXCHANGE,
@@ -137,12 +163,70 @@ public class ActivityManager {
                         .partner(partner)
                         .type(ActivityType.CREDENTIAL_EXCHANGE)
                         .role(ActivityRole.CREDENTIAL_EXCHANGE_HOLDER)
-                        .state(ActivityState.CREDENTIAL_EXCHANGE_ACCEPTED)
-                        .completed(true)
+                        .state(ActivityState.CREDENTIAL_EXCHANGE_RECEIVED)
+                        .completed(false)
                         .build();
                 activityRepository.save(a);
-                eventPublisher.publishEventAsync(ActivityNotificationEvent.builder().activity(a).build());
+                eventPublisher.publishEventAsync(TaskAddedEvent.builder().activity(a).build());
             }
+        });
+    }
+
+    public void addCredentialIssuedActivity(@NonNull AriesCredential credential) {
+        partnerRepo.findByConnectionId(credential.getConnectionId()).ifPresent(partner -> {
+            activityRepository.findByLinkIdAndTypeAndRole(credential.getId(),
+                    ActivityType.CREDENTIAL_EXCHANGE,
+                    ActivityRole.CREDENTIAL_EXCHANGE_ISSUER).ifPresentOrElse(activity -> {
+                        activity.setState(ActivityState.CREDENTIAL_EXCHANGE_SENT);
+                        activity.setCompleted(true);
+                        activityRepository.update(activity);
+                    },
+                            () -> {
+                                Activity a = Activity.builder()
+                                        .linkId(credential.getId())
+                                        .partner(partner)
+                                        .type(ActivityType.CREDENTIAL_EXCHANGE)
+                                        .role(ActivityRole.CREDENTIAL_EXCHANGE_ISSUER)
+                                        .state(ActivityState.CREDENTIAL_EXCHANGE_SENT)
+                                        .completed(true)
+                                        .build();
+                                activityRepository.save(a);
+                            });
+        });
+    }
+
+    public void addCredentialAcceptedActivity(@NonNull AriesCredential credential) {
+        notifyCredentialIssuerActivity(credential, ActivityState.CREDENTIAL_EXCHANGE_ACCEPTED);
+    }
+
+    public void addCredentialProblemActivity(@NonNull AriesCredential credential) {
+        notifyCredentialIssuerActivity(credential, ActivityState.CREDENTIAL_EXCHANGE_PROBLEM);
+    }
+
+    private void notifyCredentialIssuerActivity(@NonNull AriesCredential credential, ActivityState state) {
+        partnerRepo.findByConnectionId(credential.getConnectionId()).ifPresent(partner -> {
+            activityRepository.findByLinkIdAndTypeAndRole(credential.getId(),
+                    ActivityType.CREDENTIAL_EXCHANGE,
+                    ActivityRole.CREDENTIAL_EXCHANGE_ISSUER).ifPresentOrElse(activity -> {
+                        activity.setState(state);
+                        activity.setCompleted(true);
+                        activityRepository.update(activity);
+                        eventPublisher
+                                .publishEventAsync(ActivityNotificationEvent.builder().activity(activity).build());
+                    },
+                            () -> {
+                                Activity a = Activity.builder()
+                                        .linkId(credential.getId())
+                                        .partner(partner)
+                                        .type(ActivityType.CREDENTIAL_EXCHANGE)
+                                        .role(ActivityRole.CREDENTIAL_EXCHANGE_ISSUER)
+                                        .state(state)
+                                        .completed(true)
+                                        .build();
+                                activityRepository.save(a);
+                                eventPublisher
+                                        .publishEventAsync(ActivityNotificationEvent.builder().activity(a).build());
+                            });
         });
     }
 

@@ -36,6 +36,8 @@ public enum ActivityState {
     CREDENTIAL_EXCHANGE_ACCEPTED,
     @JsonProperty("credential_exchange_declined")
     CREDENTIAL_EXCHANGE_DECLINED,
+    @JsonProperty("credential_exchange_problem")
+    CREDENTIAL_EXCHANGE_PROBLEM,
     @JsonProperty("presentation_exchange_sent")
     PRESENTATION_EXCHANGE_SENT,
     @JsonProperty("presentation_exchange_received")

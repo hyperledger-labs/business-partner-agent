@@ -21,6 +21,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.Getter;
 import org.hyperledger.aries.api.connection.ConnectionState;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 
 import java.util.ArrayList;
@@ -51,12 +52,24 @@ public class ActivityLogConfig {
             PresentationExchangeState.VERIFIED,
             PresentationExchangeState.PRESENTATION_ACKED);
 
+    private static final List<CredentialExchangeState> CREDENTIAL_EXCHANGE_STATES_TASKS = List
+            .of(CredentialExchangeState.OFFER_RECEIVED);
+
+    private static final List<CredentialExchangeState> CREDENTIAL_EXCHANGE_STATES_COMPLETED = List.of(
+            CredentialExchangeState.CREDENTIAL_ACKED,
+            CredentialExchangeState.CREDENTIAL_RECEIVED,
+            CredentialExchangeState.CREDENTIAL_ISSUED,
+            CredentialExchangeState.DECLINED);
+
     private final List<ConnectionState> connectionStatesForActivities;
     private final List<ConnectionState> connectionStatesForCompleted;
     private final List<ConnectionState> connectionStatesForTasks;
     private final List<PresentationExchangeState> presentationExchangeStatesForActivities;
     private final List<PresentationExchangeState> presentationExchangeStatesForCompleted;
     private final List<PresentationExchangeState> presentationExchangeStatesForTasks;
+    private final List<CredentialExchangeState> credentialExchangeStatesForActivities;
+    private final List<CredentialExchangeState> credentialExchangeStatesForCompleted;
+    private final List<CredentialExchangeState> credentialExchangeStatesForTasks;
 
     private final AcaPyConfig acaPyConfig;
 
@@ -67,14 +80,18 @@ public class ActivityLogConfig {
         connectionStatesForTasks = this.isConnectionRequestTask() ? CONNECTION_STATES_TASKS : List.of();
         presentationExchangeStatesForTasks = this.isPresentationExchangeTask() ? PRESENTATION_EXCHANGE_STATES_TASKS
                 : List.of();
+        credentialExchangeStatesForTasks = this.isCredentialExchangeTask() ? CREDENTIAL_EXCHANGE_STATES_TASKS
+                : List.of();
 
         // 2. set the completed state lists
         connectionStatesForCompleted = CONNECTION_STATES_COMPLETED;
         presentationExchangeStatesForCompleted = PRESENTATION_EXCHANGE_STATES_COMPLETED;
+        credentialExchangeStatesForCompleted = CREDENTIAL_EXCHANGE_STATES_COMPLETED;
 
         // 3. build the activity lists based on task and completed lists
         connectionStatesForActivities = this.buildConnectionStatesForActivities();
         presentationExchangeStatesForActivities = this.buildPresentationExchangeStatesForActivities();
+        credentialExchangeStatesForActivities = this.buildCredentialExchangeStatesForActivities();
     }
 
     private List<ConnectionState> buildConnectionStatesForActivities() {
@@ -97,6 +114,17 @@ public class ActivityLogConfig {
 
     private boolean isPresentationExchangeTask() {
         return !this.acaPyConfig.getAutoRespondPresentationRequest();
+    }
+
+    public List<CredentialExchangeState> buildCredentialExchangeStatesForActivities() {
+        List<CredentialExchangeState> results = new ArrayList<>(this.getCredentialExchangeStatesForCompleted());
+        results.addAll(this.getCredentialExchangeStatesForTasks());
+        results.add(CredentialExchangeState.REQUEST_SENT);
+        return List.copyOf(results);
+    }
+
+    private boolean isCredentialExchangeTask() {
+        return !this.acaPyConfig.getAutoRespondCredentialOffer();
     }
 
 }
