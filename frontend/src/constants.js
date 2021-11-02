@@ -157,6 +157,10 @@ export const ActivityStates = Object.freeze({
     value: "credential_exchange_received",
     label: i18n.t("constants.activityStates.credentialExchange.received"),
   },
+  CREDENTIAL_EXCHANGE_PROBLEM: {
+    value: "credential_exchange_problem",
+    label: i18n.t("constants.activityStates.credentialExchange.problem"),
+  },
   CREDENTIAL_EXCHANGE_SENT: {
     value: "credential_exchange_sent",
     label: i18n.t("constants.activityStates.credentialExchange.sent"),

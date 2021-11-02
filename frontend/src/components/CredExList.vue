@@ -285,10 +285,28 @@ export default {
         item.state === CredentialExchangeStates.DONE,
     },
     isLoading: Boolean,
+    openItemById: String,
   },
   created() {
     this.$store.dispatch("loadPartnerSelectList");
     this.$store.dispatch("loadCredDefSelectList");
+  },
+  mounted() {
+    // Open Item directly. Is used for links from notifications/activity
+    if (this.openItemById) {
+      // FIXME: items observable is typically not resolved yet. Then items is empty
+      const item = this.items.find((item) => item.id === this.openItemById);
+      if (item) {
+        this.openItem(item);
+      } else {
+        // Load record separately if items have not be resolved
+        issuerService.getCredExRecord(this.openItemById).then((resp) => {
+          if (resp.data) {
+            this.openItem(resp.data);
+          }
+        });
+      }
+    }
   },
   computed: {
     partnerList: {
@@ -364,6 +382,8 @@ export default {
         walletCredentialId: item.id,
       };
 
+      this.$store.commit("credentialNotificationSeen", { id: item.id });
+      this.$store.commit("credentialNotificationSeen", { id: item.id });
       this.$emit("openItem", item);
     },
     resetCredentialEdit() {

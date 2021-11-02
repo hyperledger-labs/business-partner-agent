@@ -60,13 +60,81 @@ public class NotificationEventListener {
         // partner...
         PartnerAPI partnerAPI = partnerManager.getPartnerByConnectionId(event.getCredential().getConnectionId());
         if (partnerAPI != null) {
+            // if we auto respond to credential offers, and it is added, push up a
+            // notification
+            if (this.activityLogConfig.getAcaPyConfig().getAutoRespondCredentialOffer()) {
+                WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
+                        WebSocketMessageBody.WebSocketMessageType.ON_CREDENTIAL_ADDED,
+                        event.getCredential().getId().toString(),
+                        event.getCredential(),
+                        partnerAPI);
+                messageService.sendMessage(message);
+            }
+            // if we auto-responded to the offer then this creates a completed activity
+            // if we did not auto-respond to the offer, then we have an existing task to
+            // mark as completed
+            activityManager.completeCredentialOfferedTask(event.getCredential());
+        }
+    }
+
+    @EventListener
+    @Async
+    public void onCredentialOfferedEvent(CredentialOfferedEvent event) {
+        log.debug("onCredentialOfferedEvent");
+        // we have the connection id, but not the partner, will need to look up
+        // partner...
+        PartnerAPI partnerAPI = partnerManager.getPartnerByConnectionId(event.getCredential().getConnectionId());
+        if (partnerAPI != null
+                && activityLogConfig.getCredentialExchangeStatesForTasks().contains(event.getCredential().getState())) {
             WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
-                    WebSocketMessageBody.WebSocketMessageType.ON_CREDENTIAL_ADDED,
+                    WebSocketMessageBody.WebSocketMessageType.ON_CREDENTIAL_OFFERED,
                     event.getCredential().getId().toString(),
                     event.getCredential(),
                     partnerAPI);
             messageService.sendMessage(message);
-            activityManager.addCredentialAddedActivity(event.getCredential());
+            activityManager.addCredentialOfferedTask(event.getCredential());
+        }
+    }
+
+    @EventListener
+    @Async
+    public void onCredentialIssuedEvent(CredentialIssuedEvent event) {
+        log.debug("onCredentialIssuedEvent");
+        // this is for the issuer - we issued a credential...
+        // just need to add an activity... we don't need to push a notification
+
+        activityManager.addCredentialIssuedActivity(event.getCredential());
+    }
+
+    @EventListener
+    @Async
+    public void onCredentialAcceptedEvent(CredentialAcceptedEvent event) {
+        log.debug("onCredentialAcceptedEvent");
+        PartnerAPI partnerAPI = partnerManager.getPartnerByConnectionId(event.getCredential().getConnectionId());
+        if (partnerAPI != null) {
+            WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
+                    WebSocketMessageBody.WebSocketMessageType.ON_CREDENTIAL_ACCEPTED,
+                    event.getCredential().getId().toString(),
+                    event.getCredential(),
+                    partnerAPI);
+            messageService.sendMessage(message);
+            activityManager.addCredentialAcceptedActivity(event.getCredential());
+        }
+    }
+
+    @EventListener
+    @Async
+    public void onCredentialProblemEvent(CredentialProblemEvent event) {
+        log.debug("onCredentialProblemEvent");
+        PartnerAPI partnerAPI = partnerManager.getPartnerByConnectionId(event.getCredential().getConnectionId());
+        if (partnerAPI != null) {
+            WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
+                    WebSocketMessageBody.WebSocketMessageType.ON_CREDENTIAL_PROBLEM,
+                    event.getCredential().getId().toString(),
+                    event.getCredential(),
+                    partnerAPI);
+            messageService.sendMessage(message);
+            activityManager.addCredentialProblemActivity(event.getCredential());
         }
     }
 

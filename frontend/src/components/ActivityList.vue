@@ -50,7 +50,10 @@
       @click:row="openItem"
     >
       <template v-slot:[`item.indicator`]="{ item }">
-        <new-message-icon :type="newMessageIconType" :id="item.id"></new-message-icon>
+        <new-message-icon
+          :type="newMessageIconType"
+          :id="item.id"
+        ></new-message-icon>
       </template>
       <template v-slot:[`item.partner`]="{ item }">
         {{ partnerLabel(item.partner) }}
@@ -76,7 +79,7 @@
 </template>
 <script>
 import { EventBus } from "@/main";
-import {ActivityRoles, ActivityStates, ActivityTypes} from "@/constants";
+import { ActivityRoles, ActivityStates, ActivityTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
 import activitiesService from "@/services/activitiesService";
 import NewMessageIcon from "@/components/NewMessageIcon";
@@ -154,8 +157,8 @@ export default {
   },
   computed: {
     newMessageIconType() {
-      return this.tasks ? 'task' : 'activity';
-    }
+      return this.tasks ? "task" : "activity";
+    },
   },
   methods: {
     fetchItems() {
@@ -195,15 +198,31 @@ export default {
           },
         });
       } else if (item.type === ActivityTypes.CREDENTIAL_EXCHANGE.value) {
-        let route = {
-          name: "Credential",
-          params: {
-            id: item.linkId,
-            type: "credential",
-          },
-        };
+        if (
+          item.role === ActivityRoles.CREDENTIAL_EXCHANGE_ISSUER.value ||
+          item.state === ActivityStates.CREDENTIAL_EXCHANGE_RECEIVED.value
+        ) {
+          // this isn't a credential... either we issued it, or it is just at an offer state
+          let route = {
+            name: "Partner",
+            params: {
+              id: item.partner.id,
+              credExId: item.linkId,
+            },
+          };
 
-        this.$router.push(route);
+          this.$router.push(route);
+        } else {
+          let route = {
+            name: "Credential",
+            params: {
+              id: item.linkId,
+              type: "credential",
+            },
+          };
+
+          this.$router.push(route);
+        }
       } else if (item.type === ActivityTypes.PRESENTATION_EXCHANGE.value) {
         let route = {
           name: "Partner",
