@@ -18,6 +18,7 @@
 
 package org.hyperledger.bpa.impl;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.exceptions.DataAccessException;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -54,13 +55,14 @@ public class ProofTemplateManager {
     BPAMessageSource.DefaultMessageSource ms;
 
     public void invokeProofRequestByTemplate(@NonNull UUID id, @NonNull UUID partnerId) {
-        invokeProofRequestByTemplate(id, partnerId, ExchangeVersion.V1);
+        invokeProofRequestByTemplate(id, partnerId, null);
     }
 
     public void invokeProofRequestByTemplate(@NonNull UUID id, @NonNull UUID partnerId,
-            @NonNull ExchangeVersion version) {
+            @Nullable ExchangeVersion version) {
         BPAProofTemplate proofTemplate = repo.findById(id)
                 .orElseThrow(() -> new ProofTemplateException("No proof template found for: " + id));
+        version = version != null ? version : ExchangeVersion.V1;
         proofManager.sendPresentProofRequest(partnerId, proofTemplate, version);
     }
 

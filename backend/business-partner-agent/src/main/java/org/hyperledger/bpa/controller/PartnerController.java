@@ -253,7 +253,7 @@ public class PartnerController {
             @PathVariable UUID templateId,
             @Body @Nullable PresentationRequestVersion version) {
         proofTemplateManager.invokeProofRequestByTemplate(templateId, id,
-                version != null ? version.getExchangeVersion() : ExchangeVersion.V1);
+                version != null ? version.getExchangeVersion() : null);
         return HttpResponse.ok();
     }
 
