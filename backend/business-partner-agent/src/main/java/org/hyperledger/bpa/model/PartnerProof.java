@@ -108,7 +108,7 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
         }
     }
 
-    public @io.micronaut.core.annotation.NonNull ExchangeVersion getExchangeVersion() {
+    public ExchangeVersion getExchangeVersion() {
         if (exchangeVersion == null) {
             return ExchangeVersion.V1;
         }

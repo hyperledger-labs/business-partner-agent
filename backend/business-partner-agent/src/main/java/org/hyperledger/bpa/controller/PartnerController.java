@@ -244,7 +244,7 @@ public class PartnerController {
      *
      * @param id         partner id
      * @param templateId proof template id
-     * @param version {@link PresentationRequestVersion}
+     * @param version    {@link PresentationRequestVersion}
      * @return Http Status
      */
     @Put("/{id}/proof-request/{templateId}")

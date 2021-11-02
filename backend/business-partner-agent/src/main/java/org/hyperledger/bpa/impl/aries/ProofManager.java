@@ -160,12 +160,13 @@ public class ProofManager {
     }
 
     // send presentation offer to partner based on a wallet credential
-    public void sendProofProposal(@NonNull UUID partnerId, @NonNull UUID myCredentialId, @Nullable ExchangeVersion version) {
+    public void sendProofProposal(@NonNull UUID partnerId, @NonNull UUID myCredentialId,
+            @Nullable ExchangeVersion version) {
         partnerRepo.findById(partnerId).ifPresent(p -> holderCredExRepo.findById(myCredentialId).ifPresent(c -> {
             ExchangeVersion v = version != null ? version : ExchangeVersion.V1;
             Credential cred = Objects.requireNonNull(c.getCredential());
             try {
-                if  (v.isV1()) {
+                if (v.isV1()) {
                     ac.presentProofSendProposal(PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred))
                             .ifPresent(persistProof(partnerId, null));
                 } else {

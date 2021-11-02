@@ -21,6 +21,7 @@ package org.hyperledger.bpa.impl;
 import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.api.exception.ProofTemplateException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.ProofManager;
@@ -85,7 +86,7 @@ class ProofTemplateManagerTest {
         ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, msg);
         sut.invokeProofRequestByTemplate(template.getId(), partnerId);
 
-        verify(proofManager, times(1)).sendPresentProofRequest(partnerId, template);
+        verify(proofManager, times(1)).sendPresentProofRequest(partnerId, template, ExchangeVersion.V1);
     }
 
     @Test
