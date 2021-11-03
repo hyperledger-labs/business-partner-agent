@@ -74,7 +74,7 @@
         <span v-else> </span>
       </template>
     </v-data-table>
-    <v-dialog v-model="dialog" max-width="600px">
+    <v-dialog v-model="dialog" max-width="600px" persistent>
       <v-card>
         <v-card-title class="bg-light">
           <span class="headline">{{
@@ -158,6 +158,10 @@
               ></Cred>
             </v-card-text>
           </v-card>
+          <v-text-field
+            v-model="declineReasonText"
+            label="Decline reason (Optional)"
+          ></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-layout align-end justify-end>
@@ -179,7 +183,12 @@
                 exchangeStates.PROPOSAL_RECEIVED
               "
               color="secondary"
-              @click="declineCredentialProposal(document.walletCredentialId)"
+              @click="
+                declineCredentialProposal(
+                  document.walletCredentialId,
+                  this.declineReasonText
+                )
+              "
               >{{ $t("button.decline") }}</v-bpa-button
             >
             <v-bpa-button
@@ -216,7 +225,12 @@
                 exchangeStates.OFFER_RECEIVED
               "
               color="secondary"
-              @click="declineCredentialOffer(document.walletCredentialId)"
+              @click="
+                declineCredentialOffer(
+                  document.walletCredentialId,
+                  this.declineReasonText
+                )
+              "
               >{{ $t("button.decline") }}</v-bpa-button
             >
             <v-bpa-button
@@ -348,6 +362,7 @@ export default {
       isEditModeCredential: false,
       isLoadingSendCounterOffer: false,
       credentialContentChanged: false,
+      declineReasonText: undefined,
       exchangeStates: CredentialExchangeStates,
       exchangeRoles: CredentialExchangeRoles,
       document: {},
@@ -403,6 +418,7 @@ export default {
     },
     closeDialog() {
       this.resetCredentialEdit();
+      this.declineReasonText = undefined;
       this.dialog = false;
     },
     isItemActive(item) {
