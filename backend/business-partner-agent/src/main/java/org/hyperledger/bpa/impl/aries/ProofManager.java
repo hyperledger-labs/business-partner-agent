@@ -21,6 +21,7 @@ import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -232,13 +233,16 @@ public class ProofManager {
     }
 
     // manual proof request flow
-    public void declinePresentProofRequest(@NonNull UUID partnerProofId, String explainString) {
+    public void declinePresentProofRequest(@NonNull UUID partnerProofId, @Nullable String message) {
         PartnerProof proofEx = pProofRepo.findById(partnerProofId).orElseThrow(EntityNotFoundException::new);
         if (proofEx.stateIsRequestReceived()) {
             try {
+                if (StringUtils.isEmpty(message)) {
+                    message = ms.getMessage("api.proof.exchange.declined");
+                }
                 proofEx.pushStates(PresentationExchangeState.DECLINED);
                 pProofRepo.update(proofEx);
-                sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), explainString,
+                sendPresentProofProblemReport(proofEx.getPresentationExchangeId(), message,
                         proofEx.getExchangeVersion());
                 eventPublisher
                         .publishEventAsync(PresentationRequestDeclinedEvent.builder().partnerProof(proofEx).build());
@@ -246,7 +250,7 @@ public class ProofManager {
                 throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
             }
         } else {
-            throw new WrongApiUsageException("PresentationExchangeState != 'request-received'");
+            throw new WrongApiUsageException(ms.getMessage("api.proof.exchange.wrong.state"));
         }
     }
 

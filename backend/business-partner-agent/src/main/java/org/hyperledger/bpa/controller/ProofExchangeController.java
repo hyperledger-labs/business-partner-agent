@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.controller.api.issuer.DeclineExchangeRequest;
 import org.hyperledger.bpa.controller.api.partner.ApproveProofRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.controller.api.partner.SendProofRequest;
@@ -83,12 +84,14 @@ public class ProofExchangeController {
      * Manual proof exchange flow. Reject ProofRequest received from a partner
      *
      * @param id {@link UUID} the presentationExchangeId
+     * @param req {@link DeclineExchangeRequest}
      * @return HTTP status
      */
     @Post("/{id}/decline")
     public HttpResponse<Void> declinePresentProofRequest(
-            @PathVariable UUID id) {
-        proofM.declinePresentProofRequest(id, "User Declined Proof Request: No reason provided");
+            @PathVariable UUID id,
+            @Body @Nullable DeclineExchangeRequest req) {
+        proofM.declinePresentProofRequest(id, req != null ? req.getMessage() : null);
         return HttpResponse.ok();
     }
 

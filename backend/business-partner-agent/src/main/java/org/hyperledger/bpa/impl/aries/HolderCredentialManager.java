@@ -245,7 +245,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
 
     public void declineCredentialOffer(@NonNull UUID id, @Nullable String message) {
         if (StringUtils.isEmpty(message)) {
-            message = "Holder declined credential offer: no reason provided";
+            message = msg.getMessage("api.holder.credential.exchange.declined");
         }
         BPACredentialExchange dbEx = getCredentialExchange(id);
         dbEx.pushStates(CredentialExchangeState.DECLINED, Instant.now());

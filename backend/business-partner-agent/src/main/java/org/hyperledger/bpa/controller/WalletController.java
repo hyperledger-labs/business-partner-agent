@@ -29,7 +29,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
-import org.hyperledger.bpa.controller.api.issuer.DeclineCredentialExchangeRequest;
+import org.hyperledger.bpa.controller.api.issuer.DeclineExchangeRequest;
 import org.hyperledger.bpa.controller.api.wallet.WalletCredentialRequest;
 import org.hyperledger.bpa.controller.api.wallet.WalletDocumentRequest;
 import org.hyperledger.bpa.impl.MyDocumentManager;
@@ -203,12 +203,13 @@ public class WalletController {
      * Manual credential exchange: Holder declines credential offer from issuer
      *
      * @param id the credential id
+     * @param req {@link DeclineExchangeRequest}
      * @return HTTP status
      */
     @Put("/credential/{id}/decline-offer")
     public HttpResponse<Void> declineCredentialOffer(
-            @PathVariable UUID id, @Body @Nullable DeclineCredentialExchangeRequest decline) {
-        holderCredMgmt.declineCredentialOffer(id, decline != null ? decline.getMessage() : null);
+            @PathVariable UUID id, @Body @Nullable DeclineExchangeRequest req) {
+        holderCredMgmt.declineCredentialOffer(id, req != null ? req.getMessage() : null);
         return HttpResponse.ok();
     }
 

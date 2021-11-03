@@ -396,7 +396,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
 
     public void declineCredentialProposal(@NonNull UUID id, @Nullable String message) {
         if (StringUtils.isEmpty(message)) {
-            message = "Issuer declined credential proposal: no reason provided";
+            message = msg.getMessage("api.issuer.credential.exchange.declined");
         }
         BPACredentialExchange credEx = getCredentialExchange(id);
         credEx.pushStates(CredentialExchangeState.DECLINED, Instant.now());
