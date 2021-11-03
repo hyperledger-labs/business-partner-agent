@@ -34,6 +34,7 @@ import org.hyperledger.aries.api.connection.ReceiveInvitationRequest;
 import org.hyperledger.aries.api.out_of_band.InvitationMessage;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.exception.InvitationException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.invitation.CheckInvitationResponse;
 import org.hyperledger.bpa.impl.util.Converter;
 
@@ -60,6 +61,9 @@ public class InvitationParser {
     @Setter(AccessLevel.PACKAGE)
     ObjectMapper mapper;
 
+    @Inject
+    BPAMessageSource.DefaultMessageSource ms;
+
     @Data
     public static final class Invitation {
         private boolean oob;
@@ -82,7 +86,7 @@ public class InvitationParser {
                 invitationBlock = parseInvitationBlockFromRedirect(url);
             }
             if (StringUtils.isEmpty(invitationBlock)) {
-                throw new InvitationException("Invitation Url does not contain a known or valid invitation.");
+                throw new InvitationException(ms.getMessage("api.invitation.url.invalid"));
             }
 
             Invitation invite = parseInvitation(invitationBlock);
@@ -108,7 +112,7 @@ public class InvitationParser {
                 }
             }
         } else {
-            throw new InvitationException("Invitation Url could not be decoded. Cannot determine invitation details.");
+            throw new InvitationException(ms.getMessage("api.invitation.decoding.error"));
         }
         return null;
     }
@@ -134,7 +138,7 @@ public class InvitationParser {
                             ReceiveInvitationRequest r = gson.fromJson(decodedBlock, ReceiveInvitationRequest.class);
                             invitation.setInvitationRequest(r);
                         } catch (Exception e) {
-                            String msg = "Expecting a valid Connections 1.0 invitation; could not parse data.";
+                            String msg = ms.getMessage("api.invitation.decoding.error.not.v1");
                             invitation.setError(msg);
                             log.error(msg);
                         }
@@ -153,29 +157,28 @@ public class InvitationParser {
                                         InvitationMessage.STRING_TYPE);
                                 invitation.setInvitationMessage(im);
                             } catch (JsonSyntaxException ex) {
-                                String msg = "Expecting a valid Out Of Band 1.0 invitation; could not parse data.";
+                                String msg = ms.getMessage("api.invitation.decoding.error.not.oob");
                                 invitation.setError(msg);
                                 log.error(msg);
                             }
                         }
                     } else {
-                        String msg = String.format("Unknown or unsupported Invitation type. @type = '%s'",
-                                o.get("@type"));
+                        String msg = ms.getMessage("api.invitation.decoding.error.unsupported.type", Map.of("type", o.get("@type")));
                         invitation.setError(msg);
                         log.error(msg);
                     }
                 } catch (JsonProcessingException e) {
-                    String msg = String.format("Error parsing invitation %s", e.getMessage());
+                    String msg = ms.getMessage("api.invitation.parsing.error", Map.of("message", e.getMessage()));
                     invitation.setError(msg);
                     log.error(msg, e);
                 }
             } else {
-                String msg = "Invitation could not be decoded; result was empty";
+                String msg = ms.getMessage("api.invitation.decoding.error.empty.result");
                 invitation.setError(msg);
                 log.error(msg);
             }
         } else {
-            String msg = "Invitation was empty";
+            String msg = ms.getMessage("api.invitation.empty");
             invitation.setError(msg);
             log.error(msg);
         }

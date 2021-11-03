@@ -28,6 +28,7 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.PartnerException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.partner.AddPartnerRequest;
 import org.hyperledger.bpa.controller.api.partner.UpdatePartnerRequest;
 import org.hyperledger.bpa.core.RegisteredWebhook.WebhookEventType;
@@ -40,10 +41,7 @@ import org.hyperledger.bpa.repository.HolderCredExRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.hyperledger.bpa.repository.TagRepository;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -77,6 +75,9 @@ public class PartnerManager {
     @Inject
     WebhookService webhook;
 
+    @Inject
+    BPAMessageSource.DefaultMessageSource ms;
+
     public List<PartnerAPI> getPartners() {
         return StreamSupport.stream(repo.findAll().spliterator(), false)
                 .map(converter::toAPIObject)
@@ -109,7 +110,7 @@ public class PartnerManager {
     public PartnerAPI addPartnerFlow(@NonNull AddPartnerRequest req) {
         Optional<Partner> dbPartner = repo.findByDid(req.getDid());
         if (dbPartner.isPresent()) {
-            throw new PartnerException("Partner for did already exists: " + req.getDid());
+            throw new PartnerException(ms.getMessage("api.partner.already.exists", Map.of("id", req.getDid())));
         }
         PartnerAPI lookupP = partnerLookup.lookupPartner(req.getDid());
 

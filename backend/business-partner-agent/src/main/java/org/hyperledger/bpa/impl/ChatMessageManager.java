@@ -115,7 +115,7 @@ public class ChatMessageManager {
         },
                 () -> {
                     log.error("Error handling outgoing chat message. Partner not found for ID = {}", partnerId);
-                    throw new PartnerException(String.format(msg.getMessage("api.partner.not.found", Map.of("id", partnerId))));
+                    throw new PartnerException(msg.getMessage("api.partner.not.found", Map.of("id", partnerId)));
                 });
     }
 }

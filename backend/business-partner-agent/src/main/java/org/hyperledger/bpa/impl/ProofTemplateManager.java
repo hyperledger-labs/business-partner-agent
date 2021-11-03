@@ -33,10 +33,7 @@ import org.hyperledger.bpa.model.BPAProofTemplate;
 import org.hyperledger.bpa.model.prooftemplate.ValueOperators;
 import org.hyperledger.bpa.repository.BPAProofTemplateRepository;
 
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -61,7 +58,7 @@ public class ProofTemplateManager {
     public void invokeProofRequestByTemplate(@NonNull UUID id, @NonNull UUID partnerId,
             @Nullable ExchangeVersion version) {
         BPAProofTemplate proofTemplate = repo.findById(id)
-                .orElseThrow(() -> new ProofTemplateException("No proof template found for: " + id));
+                .orElseThrow(() -> new ProofTemplateException(ms.getMessage("api.proof.template.not.found", Map.of("id", id))));
         version = version != null ? version : ExchangeVersion.V1;
         proofManager.sendPresentProofRequest(partnerId, proofTemplate, version);
     }
