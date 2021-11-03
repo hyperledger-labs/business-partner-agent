@@ -97,7 +97,7 @@ public abstract class BaseCredentialManager {
             if (e.getCode() == 404) {
                 credEx.pushStates(CredentialExchangeState.PROBLEM, Instant.now());
                 credExRepo.updateAfterEventNoRevocationInfo(credEx.getId(), credEx.getState(),
-                        credEx.getStateToTimestamp(), "aca-py has no matching credential exchange record");
+                        credEx.getStateToTimestamp(), msg.getMessage("api.credential.no.match"));
                 throw new EntityNotFoundException();
             }
             throw e;

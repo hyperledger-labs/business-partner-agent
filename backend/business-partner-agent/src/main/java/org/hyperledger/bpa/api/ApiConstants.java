@@ -28,6 +28,4 @@ public class ApiConstants {
     public static final String CREDENTIALS_V1 = "https://www.w3.org/2018/credentials/v1";
 
     public static final String INDY_CREDENTIAL_SCHEMA = "https://raw.githubusercontent.com/iil-network/contexts/master/indycredential.jsonld";
-
-    public static final String ORG_PROFILE_NAME = "Organizational Profile";
 }

@@ -88,14 +88,14 @@ public class SchemaService {
                 result = this.addSchema(ssr.getSchemaId(), schemaLabel, defaultAttributeName, null);
             } else {
                 log.error("Schema not created.");
-                throw new SchemaException("Schema not created; could not complete request with ledger");
+                throw new SchemaException(ms.getMessage("api.schema.creation.failed"));
             }
         } catch (AriesException ae) {
             log.error("Aries Exception sending schema to ledger", ae);
-            throw new SchemaException(String.format("Error sending schema to ledger. %s", ae.getMessage()));
+            throw new SchemaException(ms.getMessage("api.schema.ledger.error", Map.of("message", ae.getMessage())));
         } catch (IOException e) {
             log.error("aca-py not reachable", e);
-            throw new NetworkException("No aries connection", e);
+            throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
         }
         return result;
     }
@@ -104,7 +104,7 @@ public class SchemaService {
             @Nullable String defaultAttributeName, @Nullable List<AddTrustedIssuerRequest> restrictions) {
         SchemaAPI schema = addSchema(schemaId, label, defaultAttributeName);
         if (schema == null) {
-            throw new WrongApiUsageException("Schema config could not be added");
+            throw new WrongApiUsageException(ms.getMessage("api.schema.creation.adding.failed"));
         }
         if (CollectionUtils.isNotEmpty(restrictions)) {
             restrictions
@@ -121,7 +121,7 @@ public class SchemaService {
         String sId = StringUtils.strip(schemaId);
 
         if (schemaRepo.findBySchemaId(sId).isPresent()) {
-            throw new WrongApiUsageException("Schema with id: " + sId + " already exists.");
+            throw new WrongApiUsageException(ms.getMessage("api.schema.already.exists", Map.of("id", sId)));
         }
 
         try {
@@ -137,26 +137,24 @@ public class SchemaService {
                 BPASchema saved = schemaRepo.save(dbS);
                 result = SchemaAPI.from(saved);
             } else {
-                throw new EntityNotFoundException(
-                        String.format("Schema with id: %s does not exist on the ledger.", schemaId));
+                throw new EntityNotFoundException(ms.getMessage("api.schema.already.exists.ledger",
+                        Map.of("id", sId)));
             }
         } catch (AriesException ae) {
-            throw new SchemaException(String.format("Schema not created. %s", ae.getMessage()));
+            throw new SchemaException(ms.getMessage("api.schema.creation.general.error",
+                    Map.of("message", ae.getMessage())));
         } catch (IOException e) {
             log.error("aca-py not reachable", e);
-            throw new NetworkException("No aries connection", e);
+            throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
         }
         return result;
     }
 
-    public Optional<SchemaAPI> updateSchema(@NonNull UUID id, @Nullable String defaultAttribute) {
-        Optional<BPASchema> schema = schemaRepo.findById(id);
-        if (schema.isPresent()) {
-            schemaRepo.updateDefaultAttributeName(id, defaultAttribute);
-            schema.get().setDefaultAttributeName(defaultAttribute);
-            return Optional.of(SchemaAPI.from(schema.get()));
-        }
-        return Optional.empty();
+    public SchemaAPI updateSchema(@NonNull UUID id, @Nullable String defaultAttribute) {
+        BPASchema schema = schemaRepo.findById(id).orElseThrow(EntityNotFoundException::new);
+        schemaRepo.updateDefaultAttributeName(id, defaultAttribute);
+        schema.setDefaultAttributeName(defaultAttribute);
+        return SchemaAPI.from(schema);
     }
 
     public List<SchemaAPI> listSchemas() {
@@ -171,14 +169,14 @@ public class SchemaService {
     }
 
     public void deleteSchema(@NonNull UUID id) {
-        schemaRepo.findById(id).ifPresent(s -> {
+        schemaRepo.findById(id).ifPresentOrElse(s -> {
             try {
                 schemaRepo.deleteById(id);
             } catch (DataAccessException e) {
                 log.error("Could not delete schema", e);
                 throw new WrongApiUsageException(ms.getMessage("api.schema.constrain.violation"));
             }
-        });
+        }, EntityNotFoundException::new);
     }
 
     public Optional<BPASchema> getSchemaFor(@Nullable String schemaId) {

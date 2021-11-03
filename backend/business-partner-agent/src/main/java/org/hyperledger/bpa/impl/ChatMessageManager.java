@@ -26,10 +26,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.ConnectionManager;
 import org.hyperledger.bpa.model.ChatMessage;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -48,6 +50,9 @@ public class ChatMessageManager {
 
     @Inject
     NotificationService notificationService;
+
+    @Inject
+    BPAMessageSource.DefaultMessageSource msg;
 
     public void handleIncomingMessage(@NonNull BasicMessage basicMessage) {
         // if this was more complicated (ie many states and roles), we would
@@ -105,12 +110,12 @@ public class ChatMessageManager {
                 log.error(
                         "Error handling outgoing chat message. Partner has no connection id or missing Aries Support. Partner ID = {}, Connection ID = {}",
                         partnerId, p.getConnectionId());
-                throw new PartnerException("Partner does not accept messages.");
+                throw new PartnerException(msg.getMessage("api.partner.no.connection"));
             }
         },
                 () -> {
                     log.error("Error handling outgoing chat message. Partner not found for ID = {}", partnerId);
-                    throw new PartnerException(String.format("Partner not found for ID = '%s'", partnerId));
+                    throw new PartnerException(String.format(msg.getMessage("api.partner.not.found", Map.of("id", partnerId))));
                 });
     }
 }

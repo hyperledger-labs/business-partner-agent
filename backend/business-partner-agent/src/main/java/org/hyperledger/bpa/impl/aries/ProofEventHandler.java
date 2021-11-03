@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.notification.PresentationRequestCompletedEvent;
 import org.hyperledger.bpa.impl.notification.PresentationRequestDeclinedEvent;
 import org.hyperledger.bpa.impl.notification.PresentationRequestReceivedEvent;
@@ -53,6 +54,9 @@ public class ProofEventHandler {
 
     @Inject
     ApplicationEventPublisher eventPublisher;
+
+    @Inject
+    BPAMessageSource.DefaultMessageSource msg;
 
     void dispatch(PresentationExchangeRecord proof) {
         if (proof.roleIsVerifierAndStateIsVerifiedOrDone() || proof.roleIsProverAndStateIsPresentationAckedOrDone()) {
@@ -153,7 +157,7 @@ public class ProofEventHandler {
             String errorMsg = org.apache.commons.lang3.StringUtils.truncate(exchange.getErrorMsg(), 255);
             // not a useful response, but this is what we get and what it means
             if ("abandoned: abandoned".equals(errorMsg)) {
-                errorMsg = "Partner rejected proof exchange because it is not valid";
+                errorMsg = msg.getMessage("api.proof.exchange.abandoned");
             }
             pp.pushStates(PresentationExchangeState.DECLINED, exchange.getUpdatedAt());
             pp.setProblemReport(errorMsg);

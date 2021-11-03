@@ -24,6 +24,7 @@ import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.api.TagAPI;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.TagConfig;
 import org.hyperledger.bpa.model.Tag;
@@ -64,15 +65,12 @@ public class TagService {
         return TagAPI.from(saved);
     }
 
-    public Optional<TagAPI> updateTag(@NonNull UUID id, @NonNull String name) {
-        Optional<Tag> dbTag = tagRepo.findById(id);
-        if (dbTag.isPresent()) {
-            tagRepo.updateNameById(dbTag.get().getId(), name);
-            log.debug("Updating existing tag name {} with new name: {}", dbTag.get(), name);
-            dbTag.get().setName(name);
-            return Optional.of(TagAPI.from(dbTag.get()));
-        }
-        return Optional.empty();
+    public TagAPI updateTag(@NonNull UUID id, @NonNull String name) {
+        Tag dbTag = tagRepo.findById(id).orElseThrow(EntityNotFoundException::new);
+        tagRepo.updateNameById(dbTag.getId(), name);
+        log.debug("Updating existing tag name {} with new name: {}", dbTag, name);
+        dbTag.setName(name);
+        return TagAPI.from(dbTag);
     }
 
     public List<TagAPI> listTags() {

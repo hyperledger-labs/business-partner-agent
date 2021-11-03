@@ -71,10 +71,7 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -123,17 +120,17 @@ public class HolderCredentialManager extends BaseCredentialManager {
     public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId,
             @Nullable ExchangeVersion version) {
         Partner dbPartner = partnerRepo.findById(partnerId)
-                .orElseThrow(() -> new PartnerException("No partner found for id: " + partnerId));
+                .orElseThrow(() -> new PartnerException(msg.getMessage("api.partner.not.found", Map.of("id", partnerId))));
         MyDocument dbDoc = docRepo.findById(myDocId)
-                .orElseThrow(() -> new PartnerException("No document found for id: " + myDocId));
+                .orElseThrow(() -> new PartnerException(msg.getMessage("api.document.not.found", Map.of("id", myDocId))));
         if (!CredentialType.INDY.equals(dbDoc.getType())) {
-            throw new PartnerException("Only documents that are based on a " +
-                    "schema can be converted into a credential");
+            throw new PartnerException(msg.getMessage("api.schema.credential.document.conversion.failure"));
         }
         try {
             BPASchema s = schemaService.getSchemaFor(dbDoc.getSchemaId())
                     .orElseThrow(
-                            () -> new PartnerException("No configured schema found for id: " + dbDoc.getSchemaId()));
+                            () -> new PartnerException(msg.getMessage("api.schema.restriction.schema.not.found",
+                                    Map.of("id", dbDoc.getSchemaId()))));
             V1CredentialProposalRequest v1CredentialProposalRequest = V1CredentialProposalRequest
                     .builder()
                     .connectionId(Objects.requireNonNull(dbPartner.getConnectionId()))

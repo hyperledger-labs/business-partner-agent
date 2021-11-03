@@ -137,15 +137,15 @@ public class ProofManager {
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {
         try {
             final Partner partner = partnerRepo.findById(partnerId)
-                    .orElseThrow(() -> new PartnerException("Partner not found"));
+                    .orElseThrow(() -> new PartnerException(ms.getMessage("api.partner.not.found", Map.of("id", partnerId))));
             if (!partner.hasConnectionId()) {
-                throw new PartnerException("Partner has no aca-py connection");
+                throw new PartnerException("api.partner.no.connection");
             }
             if (req.isRequestBySchema()) {
                 String schemaId = req.getRequestBySchema().getSchemaId();
                 final Schema schema = ac.schemasGetById(schemaId)
-                        .orElseThrow(() -> new PartnerException(
-                                "Could not find any schema on the ledger for id: " + schemaId));
+                        .orElseThrow(() -> new PartnerException(ms
+                                .getMessage("api.schema.restriction.schema.not.found.on.ledger", Map.of("id", schemaId))));
                 PresentProofRequest proofRequest = PresentProofRequestHelper
                         .buildForAllAttributes(partner.getConnectionId(),
                                 schema.getAttrNames(), req.buildRestrictions());
@@ -274,8 +274,7 @@ public class ProofManager {
                 throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
             }
         } else {
-            throw new WrongApiUsageException(
-                    "PresentationExchangeRole!= 'prover' or PresentationExchangeState != 'request-received'");
+            throw new WrongApiUsageException(ms.getMessage("api.present.proof.wrong.state"));
         }
     }
 
@@ -307,8 +306,8 @@ public class ProofManager {
                                         }
                                     });
                         } else {
-                            String msg = "No matching credentials found for proof request: "
-                                    + presentationExchangeRecord.getPresentationExchangeId();
+                            String msg = ms.getMessage("api.proof.exchange.no.match",
+                                    Map.of("id", presentationExchangeRecord.getPresentationExchangeId()));
                             log.warn(msg);
                             pProofRepo.findByPresentationExchangeId(
                                     presentationExchangeRecord.getPresentationExchangeId())

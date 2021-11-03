@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.PartnerException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.BPAProofTemplate;
 import org.hyperledger.bpa.model.Partner;
@@ -35,6 +36,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.validation.Valid;
 import java.time.Clock;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -52,13 +54,16 @@ public class ProofTemplateConversion {
     @Inject
     SchemaService schemaService;
 
+    @Inject
+    BPAMessageSource.DefaultMessageSource ms;
+
     @NonNull
     public PresentProofRequest proofRequestViaVisitorFrom(@NonNull UUID partnerId,
             @NonNull @Valid BPAProofTemplate proofTemplate) {
         final Partner partner = partnerRepo.findById(partnerId)
-                .orElseThrow(() -> new PartnerException("Partner not found"));
+                .orElseThrow(() -> new PartnerException(ms.getMessage("api.partner.not.found", Map.of("id", partnerId))));
         if (!partner.hasConnectionId()) {
-            throw new PartnerException("Partner has no aca-py connection");
+            throw new PartnerException(ms.getMessage("api.partner.no.connection"));
         }
 
         ProofTemplateElementVisitor proofTemplateElementVisitor = new ProofTemplateElementVisitor(
