@@ -36,10 +36,7 @@
           :title="$t('component.credExList.dialog.iconCredRevoked')"
           >$vuetify.icons.check</v-icon
         >
-        <v-tooltip
-          v-if="item.errorMsg && item.state === exchangeStates.PROBLEM"
-          top
-        >
+        <v-tooltip v-if="item.errorMsg && stateIsProblem(item)" top>
           <template v-slot:activator="{ on, attrs }">
             <v-icon color="error" small v-bind="attrs" v-on="on">
               $vuetify.icons.connectionAlert
@@ -91,7 +88,7 @@
             dense
           ></v-select>
           <v-select
-            v-if="document.credentialExchangeRole === exchangeRoles.ISSUER"
+            v-if="documentRoleIsOfferReceived"
             :label="$t('component.credExList.dialog.credDefLabel')"
             return-object
             v-model="credDef"
@@ -117,10 +114,7 @@
               <v-layout
                 align-center
                 justify-end
-                v-if="
-                  document.credentialExchangeState ===
-                  exchangeStates.PROPOSAL_RECEIVED
-                "
+                v-if="documentStateIsProposalReceived"
               >
                 <div v-if="isEditModeCredential">
                   <v-btn
@@ -167,10 +161,7 @@
           <v-layout align-end justify-end>
             <v-bpa-button
               :color="
-                document.credentialExchangeState ===
-                  exchangeStates.PROPOSAL_RECEIVED ||
-                document.credentialExchangeState ===
-                  exchangeStates.OFFER_RECEIVED
+                documentStateIsProposalReceived || documentStateIsOfferReceived
                   ? 'secondary'
                   : 'primary'
               "
@@ -178,10 +169,7 @@
               >{{ $t("button.close") }}</v-bpa-button
             >
             <v-bpa-button
-              v-if="
-                document.credentialExchangeState ===
-                exchangeStates.PROPOSAL_RECEIVED
-              "
+              v-if="documentStateIsProposalReceived"
               color="secondary"
               @click="
                 declineCredentialProposal(
@@ -192,10 +180,7 @@
               >{{ $t("button.decline") }}</v-bpa-button
             >
             <v-bpa-button
-              v-if="
-                document.credentialExchangeState ===
-                exchangeStates.PROPOSAL_RECEIVED
-              "
+              v-if="documentStateIsProposalReceived"
               color="primary"
               :disabled="
                 dialogEditCredentialIsInitialData ||
@@ -207,10 +192,7 @@
               >{{ $t("button.sendCounterOffer") }}</v-bpa-button
             >
             <v-bpa-button
-              v-if="
-                document.credentialExchangeState ===
-                exchangeStates.PROPOSAL_RECEIVED
-              "
+              v-if="documentStateIsProposalReceived"
               color="primary"
               :disabled="
                 !dialogEditCredentialIsInitialData || isEditModeCredential
@@ -220,10 +202,7 @@
               >{{ $t("button.accept") }}</v-bpa-button
             >
             <v-bpa-button
-              v-if="
-                document.credentialExchangeState ===
-                exchangeStates.OFFER_RECEIVED
-              "
+              v-if="documentStateIsOfferReceived"
               color="secondary"
               @click="
                 declineCredentialOffer(
@@ -234,10 +213,7 @@
               >{{ $t("button.decline") }}</v-bpa-button
             >
             <v-bpa-button
-              v-if="
-                document.credentialExchangeState ===
-                exchangeStates.OFFER_RECEIVED
-              "
+              v-if="documentStateIsOfferReceived"
               color="primary"
               @click="acceptCredentialOffer(document.walletCredentialId)"
               >{{ $t("button.accept") }}</v-bpa-button
@@ -333,6 +309,26 @@ export default {
         return this.$store.getters.getCredDefSelectList;
       },
     },
+    stateIsProblem(item) {
+      return item.state === CredentialExchangeStates.PROBLEM;
+    },
+    documentStateIsProposalReceived() {
+      return (
+        this.document.credentialExchangeState ===
+        CredentialExchangeStates.PROPOSAL_RECEIVED
+      );
+    },
+    documentStateIsOfferReceived() {
+      return (
+        this.document.credentialExchangeState ===
+        CredentialExchangeStates.OFFER_RECEIVED
+      );
+    },
+    documentRoleIsOfferReceived() {
+      return (
+        this.document.credentialExchangeRole === CredentialExchangeRoles.ISSUER
+      );
+    },
     dialogEditCredentialIsInitialData: function () {
       return (
         JSON.stringify(this.document.credentialData) ===
@@ -352,7 +348,6 @@ export default {
           return true;
         }
       }
-
       return false;
     },
   },
@@ -363,8 +358,6 @@ export default {
       isLoadingSendCounterOffer: false,
       credentialContentChanged: false,
       declineReasonText: undefined,
-      exchangeStates: CredentialExchangeStates,
-      exchangeRoles: CredentialExchangeRoles,
       document: {},
       partner: {},
       credDef: {},
