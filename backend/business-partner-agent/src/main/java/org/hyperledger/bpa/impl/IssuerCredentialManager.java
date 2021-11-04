@@ -301,8 +301,8 @@ public class IssuerCredentialManager extends BaseCredentialManager {
     }
 
     public CredEx getCredEx(@NonNull UUID id) {
-        BPACredentialExchange ex = this.getCredentialExchange(id);
-        return CredEx.from(ex, conv.toAPIObject(ex.getPartner()));
+        BPACredentialExchange credEx = credExRepo.findById(id).orElseThrow(EntityNotFoundException::new);
+        return CredEx.from(credEx, conv.toAPIObject(credEx.getPartner()));
     }
 
     public CredEx revokeCredentialExchange(@NonNull UUID id) {
