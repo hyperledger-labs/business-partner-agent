@@ -73,7 +73,7 @@ public class DidDocClient {
             throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
         } catch (AriesException e) {
             log.error("Could not resolve did document", e);
-            throw e;
+            throw new NetworkException(msg.getMessage("api.diddoc.resolution.error"), e);
         }
     }
 
