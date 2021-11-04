@@ -120,9 +120,11 @@ public class HolderCredentialManager extends BaseCredentialManager {
     public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId,
             @Nullable ExchangeVersion version) {
         Partner dbPartner = partnerRepo.findById(partnerId)
-                .orElseThrow(() -> new PartnerException(msg.getMessage("api.partner.not.found", Map.of("id", partnerId))));
+                .orElseThrow(
+                        () -> new PartnerException(msg.getMessage("api.partner.not.found", Map.of("id", partnerId))));
         MyDocument dbDoc = docRepo.findById(myDocId)
-                .orElseThrow(() -> new PartnerException(msg.getMessage("api.document.not.found", Map.of("id", myDocId))));
+                .orElseThrow(
+                        () -> new PartnerException(msg.getMessage("api.document.not.found", Map.of("id", myDocId))));
         if (!CredentialType.INDY.equals(dbDoc.getType())) {
             throw new PartnerException(msg.getMessage("api.schema.credential.document.conversion.failure"));
         }

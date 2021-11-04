@@ -61,7 +61,8 @@ public class ProofTemplateConversion {
     public PresentProofRequest proofRequestViaVisitorFrom(@NonNull UUID partnerId,
             @NonNull @Valid BPAProofTemplate proofTemplate) {
         final Partner partner = partnerRepo.findById(partnerId)
-                .orElseThrow(() -> new PartnerException(ms.getMessage("api.partner.not.found", Map.of("id", partnerId))));
+                .orElseThrow(
+                        () -> new PartnerException(ms.getMessage("api.partner.not.found", Map.of("id", partnerId))));
         if (!partner.hasConnectionId()) {
             throw new PartnerException(ms.getMessage("api.partner.no.connection"));
         }

@@ -137,15 +137,17 @@ public class ProofManager {
     public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {
         try {
             final Partner partner = partnerRepo.findById(partnerId)
-                    .orElseThrow(() -> new PartnerException(ms.getMessage("api.partner.not.found", Map.of("id", partnerId))));
+                    .orElseThrow(() -> new PartnerException(
+                            ms.getMessage("api.partner.not.found", Map.of("id", partnerId))));
             if (!partner.hasConnectionId()) {
-                throw new PartnerException("api.partner.no.connection");
+                throw new PartnerException(ms.getMessage("api.partner.no.connection"));
             }
             if (req.isRequestBySchema()) {
                 String schemaId = req.getRequestBySchema().getSchemaId();
                 final Schema schema = ac.schemasGetById(schemaId)
                         .orElseThrow(() -> new PartnerException(ms
-                                .getMessage("api.schema.restriction.schema.not.found.on.ledger", Map.of("id", schemaId))));
+                                .getMessage("api.schema.restriction.schema.not.found.on.ledger",
+                                        Map.of("id", schemaId))));
                 PresentProofRequest proofRequest = PresentProofRequestHelper
                         .buildForAllAttributes(partner.getConnectionId(),
                                 schema.getAttrNames(), req.buildRestrictions());
@@ -383,7 +385,7 @@ public class ProofManager {
                 log.error(ms.getMessage("acapy.unavailable"), e);
             } catch (AriesException e) {
                 if (e.getCode() == 404) {
-                    log.warn("ACA-py PresentationExchange not found, still deleting BPA Partner Proof");
+                    log.warn("ACA-py PresentationExchange not found, BPA Partner Proof will still be deleted");
                 } else {
                     throw e;
                 }

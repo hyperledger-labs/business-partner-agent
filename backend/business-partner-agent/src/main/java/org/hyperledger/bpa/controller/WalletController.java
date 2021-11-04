@@ -202,7 +202,7 @@ public class WalletController {
     /**
      * Manual credential exchange: Holder declines credential offer from issuer
      *
-     * @param id the credential id
+     * @param id  the credential id
      * @param req {@link DeclineExchangeRequest}
      * @return HTTP status
      */

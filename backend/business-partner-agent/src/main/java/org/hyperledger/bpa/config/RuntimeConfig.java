@@ -38,6 +38,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Slf4j
 public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaPyReady> {
+
     @JsonIgnore
     @Inject
     AriesClient ac;

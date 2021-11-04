@@ -81,12 +81,14 @@ public class DocumentValidator {
                 // assuming flat structure
                 document.getDocumentData().fieldNames().forEachRemaining(fn -> {
                     if (!attributeNames.contains(fn)) {
-                        throw new WrongApiUsageException(ms.getMessage("api.document.validation.attribute.not.in.schema",
-                                Map.of("attr", fn)));
+                        throw new WrongApiUsageException(
+                                ms.getMessage("api.document.validation.attribute.not.in.schema",
+                                        Map.of("attr", fn)));
                     }
                 });
             } else {
-                throw new WrongApiUsageException(ms.getMessage("api.schema.not.found", Map.of("id", document.getSchemaId())));
+                throw new WrongApiUsageException(
+                        ms.getMessage("api.schema.not.found", Map.of("id", document.getSchemaId())));
             }
         }
     }

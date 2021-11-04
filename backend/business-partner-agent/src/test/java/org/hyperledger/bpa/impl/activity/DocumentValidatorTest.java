@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.model.MyDocument;
@@ -52,6 +53,9 @@ public class DocumentValidatorTest {
 
     @Mock
     private SchemaService schemaService;
+
+    @Mock
+    BPAMessageSource.DefaultMessageSource msg;
 
     @InjectMocks
     private DocumentValidator validator;

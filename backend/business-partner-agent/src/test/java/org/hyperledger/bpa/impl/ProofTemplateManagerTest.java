@@ -31,7 +31,6 @@ import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroups;
 import org.hyperledger.bpa.repository.BPAProofTemplateRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import javax.validation.ConstraintViolationException;
@@ -46,6 +45,7 @@ import static org.mockito.Mockito.*;
 
 @MicronautTest
 class ProofTemplateManagerTest {
+
     @Inject
     private BPAProofTemplateRepository repo;
 
@@ -57,15 +57,12 @@ class ProofTemplateManagerTest {
         return Mockito.mock(ProofManager.class);
     }
 
-    @Inject
-    SchemaService schemaService;
-
     @MockBean(SchemaService.class)
     SchemaService schemaService() {
         return Mockito.mock(SchemaService.class);
     }
 
-    @Mock
+    @Inject
     BPAMessageSource.DefaultMessageSource msg;
 
     @Test

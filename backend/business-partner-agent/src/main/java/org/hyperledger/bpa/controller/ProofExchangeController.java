@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.issuer.DeclineExchangeRequest;
 import org.hyperledger.bpa.controller.api.partner.ApproveProofRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
@@ -53,6 +54,9 @@ public class ProofExchangeController {
 
     @Inject
     ProofManager proofM;
+
+    @Inject
+    BPAMessageSource.DefaultMessageSource msg;
 
     /**
      * Manual proof exchange flow. Get matching wallet credentials before sending or
@@ -83,7 +87,7 @@ public class ProofExchangeController {
     /**
      * Manual proof exchange flow. Reject ProofRequest received from a partner
      *
-     * @param id {@link UUID} the presentationExchangeId
+     * @param id  {@link UUID} the presentationExchangeId
      * @param req {@link DeclineExchangeRequest}
      * @return HTTP status
      */
@@ -105,10 +109,10 @@ public class ProofExchangeController {
     public HttpResponse<Void> requestProof(
             @RequestBody(description = "One of requestBySchema or requestRaw") @Valid @Body RequestProofRequest req) {
         if (req.getRequestBySchema() != null && req.getRequestRaw() != null) {
-            throw new WrongApiUsageException("One of requestBySchema or requestRaw must be set.");
+            throw new WrongApiUsageException(msg.getMessage("api.partner.proof.request.empty.body"));
         }
         if (req.isRequestBySchema() && StringUtils.isEmpty(req.getRequestBySchema().getSchemaId())) {
-            throw new WrongApiUsageException("Schema id must not be empty");
+            throw new WrongApiUsageException(msg.getMessage("api.partner.proof.request.no.schema.id"));
         }
         proofM.sendPresentProofRequest(req.getPartnerId(), req);
         return HttpResponse.ok();

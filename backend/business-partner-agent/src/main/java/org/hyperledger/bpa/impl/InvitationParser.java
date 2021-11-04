@@ -163,7 +163,8 @@ public class InvitationParser {
                             }
                         }
                     } else {
-                        String msg = ms.getMessage("api.invitation.decoding.error.unsupported.type", Map.of("type", o.get("@type")));
+                        String msg = ms.getMessage("api.invitation.decoding.error.unsupported.type",
+                                Map.of("type", o.get("@type")));
                         invitation.setError(msg);
                         log.error(msg);
                     }

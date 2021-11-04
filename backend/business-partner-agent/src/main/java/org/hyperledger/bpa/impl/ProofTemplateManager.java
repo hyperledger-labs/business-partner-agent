@@ -58,7 +58,8 @@ public class ProofTemplateManager {
     public void invokeProofRequestByTemplate(@NonNull UUID id, @NonNull UUID partnerId,
             @Nullable ExchangeVersion version) {
         BPAProofTemplate proofTemplate = repo.findById(id)
-                .orElseThrow(() -> new ProofTemplateException(ms.getMessage("api.proof.template.not.found", Map.of("id", id))));
+                .orElseThrow(() -> new ProofTemplateException(
+                        ms.getMessage("api.proof.template.not.found", Map.of("id", id))));
         version = version != null ? version : ExchangeVersion.V1;
         proofManager.sendPresentProofRequest(partnerId, proofTemplate, version);
     }

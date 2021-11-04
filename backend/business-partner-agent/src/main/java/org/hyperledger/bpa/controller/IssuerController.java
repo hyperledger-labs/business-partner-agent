@@ -187,7 +187,7 @@ public class IssuerController {
      * Manual credential exchange: Issuer declines credential proposal received from
      * the holder
      *
-     * @param id      credential exchange id
+     * @param id  credential exchange id
      * @param req {@link DeclineExchangeRequest}
      * @return HTTP status
      */
