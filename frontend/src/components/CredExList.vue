@@ -432,12 +432,12 @@ export default {
       issuerService.acceptCredentialOffer(id);
       this.closeDialog();
     },
-    declineCredentialOffer(id) {
-      issuerService.declineCredentialOffer(id);
+    declineCredentialOffer(id, reasonMessage) {
+      issuerService.declineCredentialOffer(id, reasonMessage);
       this.closeDialog();
     },
-    declineCredentialProposal(id) {
-      issuerService.declineCredentialProposal(id);
+    declineCredentialProposal(id, reasonMessage) {
+      issuerService.declineCredentialProposal(id, reasonMessage);
       this.closeDialog();
     },
     async sendCounterOffer(acceptAll) {

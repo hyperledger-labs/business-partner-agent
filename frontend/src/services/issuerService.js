@@ -72,13 +72,17 @@ export default {
   declineCredentialOffer(id, reasonMessage = undefined) {
     return appAxios().put(
       `${ApiRoutes.WALLET}/credential/${id}/decline-offer`,
-      reasonMessage
+      {
+        message: reasonMessage,
+      }
     );
   },
   declineCredentialProposal(id, reasonMessage = undefined) {
     return appAxios().put(
       `${ApiRoutes.ISSUER}/exchanges/${id}/decline-proposal`,
-      reasonMessage
+      {
+        message: reasonMessage,
+      }
     );
   },
   sendCredentialOffer(id, counterOfferData) {
