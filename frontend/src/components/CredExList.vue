@@ -377,6 +377,7 @@ export default {
       isLoadingSendCounterOffer: false,
       credentialContentChanged: false,
       declineReasonText: "",
+      exchangeRoles: CredentialExchangeRoles,
       document: {},
       partner: {},
       credDef: {},
