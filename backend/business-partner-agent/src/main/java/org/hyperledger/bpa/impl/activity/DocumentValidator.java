@@ -24,11 +24,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.repository.MyDocumentRepository;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -47,6 +49,9 @@ public class DocumentValidator {
     @Setter
     SchemaService schemaService;
 
+    @Inject
+    BPAMessageSource.DefaultMessageSource ms;
+
     public void validateNew(MyDocumentAPI document) {
         verifyOnlyOneOrgProfile(document);
         validateInternal(document);
@@ -54,11 +59,11 @@ public class DocumentValidator {
 
     public void validateExisting(Optional<MyDocument> existing, MyDocumentAPI newDocument) {
         if (existing.isEmpty()) {
-            throw new WrongApiUsageException("Document does not exist in database");
+            throw new WrongApiUsageException(ms.getMessage("api.document.validation.empty"));
         }
 
         if (!existing.get().getType().equals(newDocument.getType())) {
-            throw new WrongApiUsageException("Document type can not be changed after creation");
+            throw new WrongApiUsageException(ms.getMessage("api.document.validation.type.changed"));
         }
 
         validateInternal(newDocument);
@@ -67,7 +72,7 @@ public class DocumentValidator {
     private void validateInternal(MyDocumentAPI document) {
         if (CredentialType.INDY.equals(document.getType())) {
             if (StringUtils.isEmpty(document.getSchemaId())) {
-                throw new WrongApiUsageException("A document of type indy_credential must have a schema id set.");
+                throw new WrongApiUsageException(ms.getMessage("api.document.validation.schema.id.missing"));
             }
             // validate document data against schema
             Optional<BPASchema> schema = schemaService.getSchemaFor(document.getSchemaId());
@@ -76,11 +81,14 @@ public class DocumentValidator {
                 // assuming flat structure
                 document.getDocumentData().fieldNames().forEachRemaining(fn -> {
                     if (!attributeNames.contains(fn)) {
-                        throw new WrongApiUsageException("Attribute: " + fn + " is not a part of the schema");
+                        throw new WrongApiUsageException(
+                                ms.getMessage("api.document.validation.attribute.not.in.schema",
+                                        Map.of("attr", fn)));
                     }
                 });
             } else {
-                throw new WrongApiUsageException("Schema with id: " + document.getSchemaId() + " does not exist.");
+                throw new WrongApiUsageException(
+                        ms.getMessage("api.schema.not.found", Map.of("id", document.getSchemaId())));
             }
         }
     }
@@ -89,7 +97,7 @@ public class DocumentValidator {
         if (doc.getType().equals(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL)) {
             docRepo.findAll().forEach(d -> {
                 if (CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(d.getType())) {
-                    throw new WrongApiUsageException("Organizational profile already exists, use update instead");
+                    throw new WrongApiUsageException(ms.getMessage("api.document.validation.profile.already.exists"));
                 }
             });
         }

@@ -21,6 +21,7 @@ package org.hyperledger.bpa.impl;
 import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.api.exception.ProofTemplateException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.ProofManager;
@@ -30,7 +31,6 @@ import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroups;
 import org.hyperledger.bpa.repository.BPAProofTemplateRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import javax.validation.ConstraintViolationException;
@@ -45,6 +45,7 @@ import static org.mockito.Mockito.*;
 
 @MicronautTest
 class ProofTemplateManagerTest {
+
     @Inject
     private BPAProofTemplateRepository repo;
 
@@ -56,15 +57,12 @@ class ProofTemplateManagerTest {
         return Mockito.mock(ProofManager.class);
     }
 
-    @Inject
-    SchemaService schemaService;
-
     @MockBean(SchemaService.class)
     SchemaService schemaService() {
         return Mockito.mock(SchemaService.class);
     }
 
-    @Mock
+    @Inject
     BPAMessageSource.DefaultMessageSource msg;
 
     @Test
@@ -85,7 +83,7 @@ class ProofTemplateManagerTest {
         ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, msg);
         sut.invokeProofRequestByTemplate(template.getId(), partnerId);
 
-        verify(proofManager, times(1)).sendPresentProofRequest(partnerId, template);
+        verify(proofManager, times(1)).sendPresentProofRequest(partnerId, template, ExchangeVersion.V1);
     }
 
     @Test

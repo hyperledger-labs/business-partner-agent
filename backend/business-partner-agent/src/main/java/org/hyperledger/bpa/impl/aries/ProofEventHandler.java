@@ -26,7 +26,8 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
-import org.hyperledger.bpa.api.aries.ExchangeVersion;
+import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.notification.PresentationRequestCompletedEvent;
 import org.hyperledger.bpa.impl.notification.PresentationRequestDeclinedEvent;
 import org.hyperledger.bpa.impl.notification.PresentationRequestReceivedEvent;
@@ -54,8 +55,11 @@ public class ProofEventHandler {
     @Inject
     ApplicationEventPublisher eventPublisher;
 
+    @Inject
+    BPAMessageSource.DefaultMessageSource msg;
+
     void dispatch(PresentationExchangeRecord proof) {
-        if (proof.isVerified() && proof.roleIsVerifier() || proof.roleIsProverAndPresentationAcked()) {
+        if (proof.roleIsVerifierAndStateIsVerifiedOrDone() || proof.roleIsProverAndStateIsPresentationAckedOrDone()) {
             handleAckedOrVerified(proof);
         } else if (proof.roleIsProverAndRequestReceived()) {
             handleProofRequest(proof);
@@ -128,7 +132,7 @@ public class ProofEventHandler {
                                 pProof.pushStates(proof.getState(), proof.getUpdatedAt());
                                 pProofRepo.update(pProof);
                                 if (proof.getAutoPresent() == null || !proof.getAutoPresent()) {
-                                    proofManager.presentProofAcceptSelected(proof, null);
+                                    proofManager.presentProofAcceptSelected(proof, null, pProof.getExchangeVersion());
                                 }
                             }
                         }, () -> {
@@ -153,7 +157,7 @@ public class ProofEventHandler {
             String errorMsg = org.apache.commons.lang3.StringUtils.truncate(exchange.getErrorMsg(), 255);
             // not a useful response, but this is what we get and what it means
             if ("abandoned: abandoned".equals(errorMsg)) {
-                errorMsg = "Partner rejected proof exchange because it is not valid";
+                errorMsg = msg.getMessage("api.proof.exchange.abandoned");
             }
             pp.pushStates(PresentationExchangeState.DECLINED, exchange.getUpdatedAt());
             pp.setProblemReport(errorMsg);
@@ -180,7 +184,7 @@ public class ProofEventHandler {
                 .threadId(proof.getThreadId())
                 .role(proof.getRole())
                 .proofRequest(proof.getPresentationRequest())
-                .exchangeVersion(ExchangeVersion.V1)
+                .exchangeVersion(proof.getVersion() != null ? proof.getVersion() : ExchangeVersion.V1)
                 .pushStateChange(proof.getState(), ts != null ? ts : Instant.now())
                 .build();
     }

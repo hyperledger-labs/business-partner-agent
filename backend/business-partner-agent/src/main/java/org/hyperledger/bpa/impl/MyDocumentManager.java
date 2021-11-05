@@ -23,6 +23,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.activity.DocumentValidator;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.activity.VPManager;
@@ -30,10 +31,7 @@ import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.repository.MyDocumentRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Singleton
 public class MyDocumentManager {
@@ -53,6 +51,9 @@ public class MyDocumentManager {
     @Inject
     @Setter
     DocumentValidator validator;
+
+    @Inject
+    BPAMessageSource.DefaultMessageSource ms;
 
     public MyDocumentAPI saveNewDocument(@NonNull MyDocumentAPI apiDoc) {
         validator.validateNew(apiDoc);
@@ -80,7 +81,7 @@ public class MyDocumentManager {
 
             return converter.toApiObject(dbDoc);
         }
-        throw new WrongApiUsageException("No document with id " + id + " found.");
+        throw new WrongApiUsageException(ms.getMessage("api.document.not.found", Map.of("id", id)));
     }
 
     public List<MyDocumentAPI> getMyDocuments() {

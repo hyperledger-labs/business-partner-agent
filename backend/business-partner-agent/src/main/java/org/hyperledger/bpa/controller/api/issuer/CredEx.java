@@ -19,12 +19,12 @@ package org.hyperledger.bpa.controller.api.issuer;
 
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.PartnerAPI;
-import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 
@@ -110,12 +110,19 @@ public class CredEx {
                 .type(db.getType())
                 .displayText(displayText)
                 .revoked(db.getRevoked())
-                .revocable(StringUtils.isNotEmpty(db.getRevRegId()))
+                .revocable(checkIfRevocable(db))
                 .exchangeVersion(db.getExchangeVersion())
                 .errorMsg(db.getErrorMsg())
 
                 .schema(schemaAPI)
                 .credDef(credDef)
                 .build();
+    }
+
+    private static Boolean checkIfRevocable(@NonNull BPACredentialExchange db) {
+        if (db.roleIsHolder() && db.getCredential() != null) {
+            return StringUtils.isNotEmpty(db.getCredential().getRevRegId());
+        }
+        return StringUtils.isNotEmpty(db.getRevRegId());
     }
 }

@@ -26,7 +26,12 @@
       </v-card-text>
 
       <v-card-actions>
-        <v-layout align-end justify-end>
+        <v-layout align-center align-end justify-end>
+          <v-switch
+            v-if="expertMode"
+            v-model="useV2Exchange"
+            :label="$t('component.issueCredential.options.useV2')"
+          ></v-switch>
           <v-bpa-button color="secondary" @click="cancel()">{{
             $t("button.cancel")
           }}</v-bpa-button>
@@ -48,6 +53,7 @@ import { EventBus } from "../main";
 // import { CredentialTypes } from "../constants";
 import MyCredentialList from "@/components/MyCredentialList";
 import VBpaButton from "@/components/BpaButton";
+import { ExchangeVersion } from "@/constants";
 
 export default {
   name: "SendPresentation",
@@ -64,6 +70,7 @@ export default {
   data: () => {
     return {
       isBusy: false,
+      useV2Exchange: false,
       credHeaders: [
         {
           text: "Label",
@@ -84,7 +91,11 @@ export default {
       ],
     };
   },
-  computed: {},
+  computed: {
+    expertMode() {
+      return this.$store.state.expertMode;
+    },
+  },
   methods: {
     sendPresentation() {
       this.isBusy = true;
@@ -94,6 +105,9 @@ export default {
           this.$axios
             .post(`${this.$apiBaseUrl}/partners/${this.id}/proof-send`, {
               myCredentialId: selectedCredential,
+              exchangeVersion: this.useV2Exchange
+                ? ExchangeVersion.V2
+                : ExchangeVersion.V1,
             })
             .then((res) => {
               console.log(res);

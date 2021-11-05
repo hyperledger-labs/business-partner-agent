@@ -29,6 +29,7 @@ import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
@@ -133,8 +134,8 @@ public class RestrictionsManager {
         repo.updateLabel(id, label);
     }
 
-    public Optional<BPARestrictions> findById(@NonNull UUID id) {
-        return repo.findById(id);
+    public BPARestrictions findById(@NonNull UUID id) {
+        return repo.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     public String prefixIssuerDid(@NonNull String issuerDid) {

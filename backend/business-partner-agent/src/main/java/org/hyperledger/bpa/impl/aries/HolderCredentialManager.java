@@ -45,7 +45,7 @@ import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCrede
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.AriesCredential;
-import org.hyperledger.bpa.api.aries.ExchangeVersion;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.ProfileVC;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
@@ -71,10 +71,7 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -123,17 +120,19 @@ public class HolderCredentialManager extends BaseCredentialManager {
     public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId,
             @Nullable ExchangeVersion version) {
         Partner dbPartner = partnerRepo.findById(partnerId)
-                .orElseThrow(() -> new PartnerException("No partner found for id: " + partnerId));
+                .orElseThrow(
+                        () -> new PartnerException(msg.getMessage("api.partner.not.found", Map.of("id", partnerId))));
         MyDocument dbDoc = docRepo.findById(myDocId)
-                .orElseThrow(() -> new PartnerException("No document found for id: " + myDocId));
+                .orElseThrow(
+                        () -> new PartnerException(msg.getMessage("api.document.not.found", Map.of("id", myDocId))));
         if (!CredentialType.INDY.equals(dbDoc.getType())) {
-            throw new PartnerException("Only documents that are based on a " +
-                    "schema can be converted into a credential");
+            throw new PartnerException(msg.getMessage("api.schema.credential.document.conversion.failure"));
         }
         try {
             BPASchema s = schemaService.getSchemaFor(dbDoc.getSchemaId())
                     .orElseThrow(
-                            () -> new PartnerException("No configured schema found for id: " + dbDoc.getSchemaId()));
+                            () -> new PartnerException(msg.getMessage("api.schema.restriction.schema.not.found",
+                                    Map.of("id", dbDoc.getSchemaId()))));
             V1CredentialProposalRequest v1CredentialProposalRequest = V1CredentialProposalRequest
                     .builder()
                     .connectionId(Objects.requireNonNull(dbPartner.getConnectionId()))
@@ -245,7 +244,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
 
     public void declineCredentialOffer(@NonNull UUID id, @Nullable String message) {
         if (StringUtils.isEmpty(message)) {
-            message = "Holder declined credential offer: no reason provided";
+            message = msg.getMessage("api.holder.credential.exchange.declined");
         }
         BPACredentialExchange dbEx = getCredentialExchange(id);
         dbEx.pushStates(CredentialExchangeState.DECLINED, Instant.now());

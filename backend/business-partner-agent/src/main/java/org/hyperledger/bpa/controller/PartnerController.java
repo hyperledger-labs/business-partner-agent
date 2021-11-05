@@ -34,7 +34,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.partner.*;
+import org.hyperledger.bpa.controller.api.proof.PresentationRequestVersion;
 import org.hyperledger.bpa.impl.ChatMessageManager;
 import org.hyperledger.bpa.impl.ChatMessageService;
 import org.hyperledger.bpa.impl.PartnerManager;
@@ -80,6 +82,9 @@ public class PartnerController {
 
     @Inject
     ProofTemplateManager proofTemplateManager;
+
+    @Inject
+    BPAMessageSource.DefaultMessageSource msg;
 
     /**
      * Get known partners
@@ -242,13 +247,16 @@ public class PartnerController {
      *
      * @param id         partner id
      * @param templateId proof template id
+     * @param version    {@link PresentationRequestVersion}
      * @return Http Status
      */
     @Put("/{id}/proof-request/{templateId}")
     public HttpResponse<Void> invokeProofRequestByTemplate(
             @PathVariable UUID id,
-            @PathVariable UUID templateId) {
-        proofTemplateManager.invokeProofRequestByTemplate(templateId, id);
+            @PathVariable UUID templateId,
+            @Body @Nullable PresentationRequestVersion version) {
+        proofTemplateManager.invokeProofRequestByTemplate(templateId, id,
+                version != null ? version.getExchangeVersion() : null);
         return HttpResponse.ok();
     }
 
@@ -267,10 +275,10 @@ public class PartnerController {
             @PathVariable UUID id,
             @RequestBody(description = "One of requestBySchema or requestRaw") @Body RequestProofRequest req) {
         if (req.getRequestBySchema() != null && req.getRequestRaw() != null) {
-            throw new WrongApiUsageException("One of requestBySchema or requestRaw must be set.");
+            throw new WrongApiUsageException(msg.getMessage("api.partner.proof.request.empty.body"));
         }
         if (req.isRequestBySchema() && StringUtils.isEmpty(req.getRequestBySchema().getSchemaId())) {
-            throw new WrongApiUsageException("Schema id must not be empty");
+            throw new WrongApiUsageException(msg.getMessage("api.partner.proof.request.no.schema.id"));
         }
         proofM.sendPresentProofRequest(id, req);
         return HttpResponse.ok();
@@ -290,7 +298,7 @@ public class PartnerController {
     public HttpResponse<Void> sendProof(
             @PathVariable UUID id,
             @Body SendProofRequest req) {
-        proofM.sendProofProposal(id, req.getMyCredentialId());
+        proofM.sendProofProposal(id, req.getMyCredentialId(), req.getExchangeVersion());
         return HttpResponse.ok();
     }
 

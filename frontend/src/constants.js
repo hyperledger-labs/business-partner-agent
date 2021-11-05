@@ -227,3 +227,8 @@ export const Restrictions = Object.freeze({
 });
 
 export const RequestTypes = ["requestedAttributes", "requestedPredicates"];
+
+export const ExchangeVersion = Object.freeze({
+  V1: "V1",
+  V2: "V2",
+});

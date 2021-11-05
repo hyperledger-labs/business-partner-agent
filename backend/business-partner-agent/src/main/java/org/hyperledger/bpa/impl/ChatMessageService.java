@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.api.exception.DataPersistenceException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.model.ChatMessage;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.ChatMessageRepository;
@@ -38,6 +39,9 @@ public class ChatMessageService {
     @Inject
     ChatMessageRepository chatMsgRepo;
 
+    @Inject
+    BPAMessageSource.DefaultMessageSource ms;
+
     public List<ChatMessage> getMessagesForPartner(@NonNull UUID partnerId) {
         return chatMsgRepo.findByPartnerIdOrderByCreatedAtAsc(partnerId);
     }
@@ -46,7 +50,7 @@ public class ChatMessageService {
         try {
             return chatMsgRepo.save(ChatMessage.builder().partner(partner).content(content).incoming(true).build());
         } catch (Exception e) {
-            String msg = "Error saving (incoming) chat message";
+            String msg = ms.getMessage("api.chat.error.incoming");
             log.error(msg, e);
             throw new DataPersistenceException(msg);
         }
@@ -56,7 +60,7 @@ public class ChatMessageService {
         try {
             return chatMsgRepo.save(ChatMessage.builder().partner(partner).content(content).incoming(false).build());
         } catch (Exception e) {
-            String msg = "Error saving (outgoing) chat message";
+            String msg = ms.getMessage("api.chat.error.outgoing");
             log.error(msg, e);
             throw new DataPersistenceException(msg);
         }

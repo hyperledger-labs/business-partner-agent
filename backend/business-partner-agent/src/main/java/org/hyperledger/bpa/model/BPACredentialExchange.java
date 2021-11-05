@@ -28,12 +28,12 @@ import lombok.*;
 import lombok.experimental.Accessors;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
+import org.hyperledger.aries.api.issue_credential_v1.CredExStateTranslator;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.CredentialType;
-import org.hyperledger.bpa.api.aries.ExchangeVersion;
-import org.hyperledger.bpa.impl.aries.CredExStateAndRoleTranslator;
+import org.hyperledger.aries.api.ExchangeVersion;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
 @Table(name = "bpa_credential_exchange")
 public class BPACredentialExchange
         extends StateChangeDecorator<BPACredentialExchange, CredentialExchangeState>
-        implements CredExStateAndRoleTranslator {
+        implements CredExStateTranslator {
 
     @Id
     @AutoPopulated

@@ -25,10 +25,11 @@ import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.aries.api.present_proof.PresExStateTranslator;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
-import org.hyperledger.bpa.api.aries.ExchangeVersion;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -45,7 +46,8 @@ import java.util.UUID;
 @Builder
 @Entity
 @Accessors(chain = true)
-public class PartnerProof extends StateChangeDecorator<PartnerProof, PresentationExchangeState> {
+public class PartnerProof extends StateChangeDecorator<PartnerProof, PresentationExchangeState>
+        implements PresExStateTranslator {
 
     @Id
     @AutoPopulated
@@ -104,5 +106,12 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
                     .build());
             return this;
         }
+    }
+
+    public ExchangeVersion getExchangeVersion() {
+        if (exchangeVersion == null) {
+            return ExchangeVersion.V1;
+        }
+        return exchangeVersion;
     }
 }

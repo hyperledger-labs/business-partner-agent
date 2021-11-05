@@ -19,6 +19,7 @@ package org.hyperledger.bpa.api.aries;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.*;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
