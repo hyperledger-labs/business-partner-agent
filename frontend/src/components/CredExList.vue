@@ -153,8 +153,11 @@
             </v-card-text>
           </v-card>
           <v-text-field
+            v-if="
+              documentStateIsOfferReceived || documentStateIsProposalReceived
+            "
             v-model="declineReasonText"
-            label="Decline reason (Optional)"
+            :label="$t('component.credExList.dialog.declineReasonLabel')"
           ></v-text-field>
         </v-card-text>
         <v-card-actions>

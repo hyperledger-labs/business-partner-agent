@@ -274,7 +274,8 @@
         "attributesTitle": "Credential Content",
         "iconCredIssued": "Credential issued",
         "iconCredRevoked": "Credential revoked",
-        "iconRevokeCred": "Revoke credential"
+        "iconRevokeCred": "Revoke credential",
+        "declineReasonLabel": "Decline reason (Optional)"
       }
     },
     "profile": {
