@@ -434,13 +434,16 @@ public class IssuerCredentialManager extends BaseCredentialManager {
     }
 
     /**
-     * In v1 (indy) this message can only be received after a preceding Credential Offer,
-     * meaning the holder can never start with a Credential Request, so it is ok to directly auto accept the request
+     * In v1 (indy) this message can only be received after a preceding Credential
+     * Offer, meaning the holder can never start with a Credential Request, so it is
+     * ok to directly auto accept the request
+     * 
      * @param ex {@link V1CredentialExchange}
      */
     public void handleV1CredentialRequest(@NonNull V1CredentialExchange ex) {
         try {
-            ac.issueCredentialRecordsIssue(ex.getCredentialExchangeId(), null);
+            ac.issueCredentialRecordsIssue(ex.getCredentialExchangeId(), V1CredentialIssueRequest.builder().build());
+            handleV1CredentialExchange(ex); // save state changes
         } catch (IOException e) {
             log.error(msg.getMessage("acapy.unavailable"));
         }
@@ -521,15 +524,20 @@ public class IssuerCredentialManager extends BaseCredentialManager {
     }
 
     /**
-     * In v2 (indy and w3c) a holder can decide to skip negotiation and directly start the whole flow
-     * with a request. So we check if there is a preceding record if not decline with problem report
-     * TODO support v2 credential request without prior negotiation
+     * In v2 (indy and w3c) a holder can decide to skip negotiation and directly
+     * start the whole flow with a request. So we check if there is a preceding
+     * record if not decline with problem report TODO support v2 credential request
+     * without prior negotiation
+     * 
      * @param ex {@link V20CredExRecord v2CredEx}
      */
     public void handleV2CredentialRequest(@NonNull V20CredExRecord ex) {
         credExRepo.findByCredentialExchangeId(ex.getCredExId()).ifPresentOrElse(db -> {
             try {
                 ac.issueCredentialV2RecordsIssue(ex.getCredExId(), null);
+                db.pushStates(ex.getState(), ex.getUpdatedAt());
+                credExRepo.updateAfterEventNoRevocationInfo(db.getId(),
+                        db.getState(), db.getStateToTimestamp(), ex.getErrorMsg());
             } catch (IOException e) {
                 log.error(msg.getMessage("acapy.unavailable"));
             }
@@ -537,8 +545,10 @@ public class IssuerCredentialManager extends BaseCredentialManager {
             try {
                 ac.issueCredentialV2RecordsProblemReport(ex.getCredExId(), V20CredIssueProblemReportRequest
                         .builder()
-                        .description("starting a credential exchange without prior negotiation is not supported by this agent")
+                        .description(
+                                "starting a credential exchange without prior negotiation is not supported by this agent")
                         .build());
+                log.warn("Received credential request without existing offer, dropping request");
             } catch (IOException e) {
                 log.error(msg.getMessage("acapy.unavailable"));
             }

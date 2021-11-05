@@ -110,8 +110,8 @@ public class AriesEventHandler extends EventHandler {
         // holder events
         if (v1CredEx.roleIsHolder()) {
             synchronized (holderMgr) {
-                if (v1CredEx.stateIsCredentialReceived()) {
-                    holderMgr.handleV1CredentialExchangeReceived(v1CredEx);
+                if (v1CredEx.stateIsCredentialAcked()) {
+                    holderMgr.handleV1CredentialExchangeAcked(v1CredEx);
                 } else if (v1CredEx.stateIsOfferReceived()) {
                     holderMgr.handleOfferReceived(v1CredEx, ExchangeVersion.V1);
                 } else {
