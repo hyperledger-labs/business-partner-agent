@@ -69,19 +69,25 @@ export default {
   acceptCredentialOffer(id) {
     return appAxios().put(`${ApiRoutes.WALLET}/credential/${id}/accept-offer`);
   },
-  declineCredentialOffer(id, reasonMessage = undefined) {
+  async declineCredentialOffer(id, reasonMessage = undefined) {
+    const message =
+      reasonMessage === undefined || "" ? undefined : reasonMessage;
+
     return appAxios().put(
       `${ApiRoutes.WALLET}/credential/${id}/decline-offer`,
       {
-        message: reasonMessage,
+        message,
       }
     );
   },
-  declineCredentialProposal(id, reasonMessage = undefined) {
+  async declineCredentialProposal(id, reasonMessage = undefined) {
+    const message =
+      reasonMessage === undefined || "" ? undefined : reasonMessage;
+
     return appAxios().put(
       `${ApiRoutes.ISSUER}/exchanges/${id}/decline-proposal`,
       {
-        message: reasonMessage,
+        message,
       }
     );
   },

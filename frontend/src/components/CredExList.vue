@@ -36,7 +36,7 @@
           :title="$t('component.credExList.dialog.iconCredRevoked')"
           >$vuetify.icons.check</v-icon
         >
-        <v-tooltip v-if="item.errorMsg && stateIsProblem(item)" top>
+        <v-tooltip v-if="item.errorMsg && stateIsProblemOrDeclined(item)" top>
           <template v-slot:activator="{ on, attrs }">
             <v-icon color="error" small v-bind="attrs" v-on="on">
               $vuetify.icons.connectionAlert
@@ -174,7 +174,7 @@
               @click="
                 declineCredentialProposal(
                   document.walletCredentialId,
-                  this.declineReasonText
+                  declineReasonText
                 )
               "
               >{{ $t("button.decline") }}</v-bpa-button
@@ -207,7 +207,7 @@
               @click="
                 declineCredentialOffer(
                   document.walletCredentialId,
-                  this.declineReasonText
+                  declineReasonText
                 )
               "
               >{{ $t("button.decline") }}</v-bpa-button
@@ -309,9 +309,6 @@ export default {
         return this.$store.getters.getCredDefSelectList;
       },
     },
-    stateIsProblem(item) {
-      return item.state === CredentialExchangeStates.PROBLEM;
-    },
     documentStateIsProposalReceived() {
       return (
         this.document.credentialExchangeState ===
@@ -357,7 +354,7 @@ export default {
       isEditModeCredential: false,
       isLoadingSendCounterOffer: false,
       credentialContentChanged: false,
-      declineReasonText: undefined,
+      declineReasonText: "",
       document: {},
       partner: {},
       credDef: {},
@@ -394,6 +391,12 @@ export default {
       this.$store.commit("credentialNotificationSeen", { id: item.id });
       this.$emit("openItem", item);
     },
+    stateIsProblemOrDeclined(item) {
+      return (
+        item.state === CredentialExchangeStates.DECLINED ||
+        item.state === CredentialExchangeStates.PROBLEM
+      );
+    },
     resetCredentialEdit() {
       Object.assign(
         this.document.credentialData,
@@ -411,7 +414,7 @@ export default {
     },
     closeDialog() {
       this.resetCredentialEdit();
-      this.declineReasonText = undefined;
+      this.declineReasonText = "";
       this.dialog = false;
     },
     isItemActive(item) {
