@@ -24,21 +24,30 @@
       <template v-slot:[`item.state`]="{ item }">
         <span>
           {{ (item.state ? item.state.replace("_", " ") : "") | capitalize }}
+          <v-icon
+            v-if="isItemActive(item) && !item.revoked"
+            class="iconHeight"
+            color="green"
+            >$vuetify.icons.check</v-icon
+          >
+          <v-icon v-else-if="isItemActive(item) && item.revoked"
+            >$vuetify.icons.check</v-icon
+          >
+          <v-tooltip v-if="item.errorMsg && stateIsProblemOrDeclined(item)" top>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon
+                color="error"
+                class="iconHeight"
+                small
+                v-bind="attrs"
+                v-on="on"
+              >
+                $vuetify.icons.connectionAlert
+              </v-icon>
+            </template>
+            <span>{{ item.errorMsg }}</span>
+          </v-tooltip>
         </span>
-        <v-icon v-if="isItemActive(item) && !item.revoked" color="green"
-          >$vuetify.icons.check</v-icon
-        >
-        <v-icon v-else-if="isItemActive(item) && item.revoked"
-          >$vuetify.icons.check</v-icon
-        >
-        <v-tooltip v-if="item.errorMsg && stateIsProblemOrDeclined(item)" top>
-          <template v-slot:activator="{ on, attrs }">
-            <v-icon color="error" small v-bind="attrs" v-on="on">
-              $vuetify.icons.connectionAlert
-            </v-icon>
-          </template>
-          <span>{{ item.errorMsg }}</span>
-        </v-tooltip>
       </template>
       <template v-slot:[`item.updatedAt`]="{ item }">
         {{ item.updatedAt | formatDateLong }}
@@ -53,6 +62,7 @@
         <v-icon
           v-if="item.revocable && item.revoked"
           :title="$t('component.credExList.table.iconCredRevoked')"
+          class="iconHeight"
           >$vuetify.icons.revoked</v-icon
         >
         <v-icon
@@ -64,6 +74,7 @@
           "
           color="green"
           :title="$t('component.credExList.table.holderNotRevoked')"
+          class="iconHeight"
           >$vuetify.icons.revoke</v-icon
         >
         <v-icon
@@ -74,6 +85,7 @@
           "
           color="green"
           :title="$t('component.credExList.table.holderNotRevocable')"
+          class="iconHeight"
           >$vuetify.icons.check</v-icon
         >
         <v-btn
@@ -246,6 +258,11 @@
     </v-dialog>
   </v-container>
 </template>
+<style scoped>
+.iconHeight {
+  display: inherit;
+}
+</style>
 <script>
 import { issuerService } from "@/services";
 import Cred from "@/components/Credential.vue";
