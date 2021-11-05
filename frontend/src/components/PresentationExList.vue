@@ -38,23 +38,32 @@
       <template v-slot:[`item.state`]="{ item }">
         <span>
           {{ (item.state ? item.state.replace("_", " ") : "") | capitalize }}
+          <v-icon v-if="item.valid" color="green" class="iconHeight"
+            >$vuetify.icons.check</v-icon
+          >
+          <v-icon
+            v-if="isStateVerified(item) && !item.valid && !item.problemReport"
+            color="error"
+            small
+            class="iconHeight"
+          >
+            $vuetify.icons.connectionAlert
+          </v-icon>
+          <v-tooltip v-if="item.problemReport" top>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon
+                color="error"
+                small
+                class="iconHeight"
+                v-bind="attrs"
+                v-on="on"
+              >
+                $vuetify.icons.connectionAlert
+              </v-icon>
+            </template>
+            <span>{{ item.problemReport }}</span>
+          </v-tooltip>
         </span>
-        <v-icon v-if="item.valid" color="green">$vuetify.icons.check</v-icon>
-        <v-icon
-          v-if="isStateVerified(item) && !item.valid && !item.problemReport"
-          color="error"
-          small
-        >
-          $vuetify.icons.connectionAlert
-        </v-icon>
-        <v-tooltip v-if="item.problemReport" top>
-          <template v-slot:activator="{ on, attrs }">
-            <v-icon color="error" small v-bind="attrs" v-on="on">
-              $vuetify.icons.connectionAlert
-            </v-icon>
-          </template>
-          <span>{{ item.problemReport }}</span>
-        </v-tooltip>
       </template>
       <template v-slot:[`item.updatedAt`]="{ item }">
         {{ item.updatedAt | formatDateLong }}
@@ -120,7 +129,11 @@
     </v-dialog>
   </v-container>
 </template>
-
+<style scoped>
+.iconHeight {
+  display: inherit;
+}
+</style>
 <script>
 import { proofExService } from "@/services";
 import { EventBus } from "@/main";
