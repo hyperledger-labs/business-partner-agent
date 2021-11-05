@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -72,8 +73,8 @@ public class DidDocClient {
             throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
         } catch (AriesException e) {
             log.error("Could not resolve did document", e);
+            throw new NetworkException(msg.getMessage("api.diddoc.resolution.error"), e);
         }
-        return Optional.empty();
     }
 
     public Optional<VerifiablePresentation<VerifiableIndyCredential>> getPublicProfile(String url) {
@@ -97,13 +98,13 @@ public class DidDocClient {
                 }
             }
         } catch (MalformedURLException e) {
-            String msg = "Malformed endpoint URL: " + url;
-            log.error(msg, e);
-            throw new PartnerException(msg);
+            String message = msg.getMessage("api.diddoc.malformed.url", Map.of("url", url));
+            log.error(message, e);
+            throw new PartnerException(message);
         } catch (IOException e) {
-            String msg = "Call to partner web endpoint failed - msg: " + e.getMessage();
-            log.error(msg, e);
-            throw new NetworkException(msg);
+            String message = msg.getMessage("api.diddoc.partner.call.failed", Map.of("msg", e.getMessage()));
+            log.error(message, e);
+            throw new NetworkException(message);
         }
         return result;
     }

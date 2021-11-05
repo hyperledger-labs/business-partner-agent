@@ -28,8 +28,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.exception.AriesException;
-import org.hyperledger.aries.api.message.PingEvent;
-import org.hyperledger.aries.api.message.PingRequest;
+import org.hyperledger.aries.api.trustping.PingEvent;
+import org.hyperledger.aries.api.trustping.PingEventState;
+import org.hyperledger.aries.api.trustping.PingRequest;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
@@ -67,10 +68,10 @@ public class PingManager {
     private final Map<String, String> sent = new ConcurrentHashMap<>();
 
     // threadId, state
-    private final Map<String, String> received = new ConcurrentHashMap<>();
+    private final Map<String, PingEventState> received = new ConcurrentHashMap<>();
 
     public void handlePingEvent(PingEvent event) {
-        if (event.stateIsReceived()) {
+        if (event.stateIsResponseReceived()) {
             received.put(event.getThreadId(), event.getState());
         }
     }

@@ -28,10 +28,10 @@ import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
-import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.TAAInfo.TAARecord;
 import org.hyperledger.bpa.api.TagAPI;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.admin.*;
@@ -39,7 +39,6 @@ import org.hyperledger.bpa.impl.TagService;
 import org.hyperledger.bpa.impl.aries.config.RestrictionsManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.mode.indy.EndpointService;
-import org.hyperledger.bpa.model.BPARestrictions;
 
 import java.util.List;
 import java.util.Optional;
@@ -67,9 +66,6 @@ public class AdminController {
     @Inject
     RuntimeConfig config;
 
-    @Inject
-    AriesClient ac;
-
     /**
      * List configured schemas
      *
@@ -88,11 +84,8 @@ public class AdminController {
      */
     @Get("/schema/{id}")
     public HttpResponse<SchemaAPI> getSchema(@PathVariable UUID id) {
-        final Optional<SchemaAPI> schema = schemaService.getSchema(id);
-        if (schema.isPresent()) {
-            return HttpResponse.ok(schema.get());
-        }
-        return HttpResponse.notFound();
+        SchemaAPI schema = schemaService.getSchema(id).orElseThrow(EntityNotFoundException::new);
+        return HttpResponse.ok(schema);
     }
 
     /**
@@ -116,11 +109,8 @@ public class AdminController {
      */
     @Put("/schema/{id}")
     public HttpResponse<SchemaAPI> updateSchema(@PathVariable UUID id, @Body UpdateSchemaRequest req) {
-        Optional<SchemaAPI> schemaAPI = schemaService.updateSchema(id, req.getDefaultAttribute());
-        if (schemaAPI.isPresent()) {
-            return HttpResponse.ok(schemaAPI.get());
-        }
-        return HttpResponse.notFound();
+        SchemaAPI schemaAPI = schemaService.updateSchema(id, req.getDefaultAttribute());
+        return HttpResponse.ok(schemaAPI);
     }
 
     /**
@@ -134,12 +124,8 @@ public class AdminController {
     @ApiResponse(responseCode = "404", description = "If the schema does not exist")
     @ApiResponse(responseCode = "405", description = "If the schema is read only")
     public HttpResponse<Void> removeSchema(@PathVariable UUID id) {
-        Optional<SchemaAPI> schema = schemaService.getSchema(id);
-        if (schema.isPresent()) {
-            schemaService.deleteSchema(id);
-            return HttpResponse.ok();
-        }
-        return HttpResponse.notFound();
+        schemaService.deleteSchema(id);
+        return HttpResponse.ok();
     }
 
     /**
@@ -191,12 +177,9 @@ public class AdminController {
     public HttpResponse<Void> deleteTrustedIssuer(
             @SuppressWarnings("unused") @PathVariable UUID id,
             @PathVariable UUID trustedIssuerId) {
-        Optional<BPARestrictions> config = restrictionsManager.findById(trustedIssuerId);
-        if (config.isPresent()) {
-            restrictionsManager.deleteById(trustedIssuerId);
-            return HttpResponse.ok();
-        }
-        return HttpResponse.notFound();
+        restrictionsManager.findById(trustedIssuerId);
+        restrictionsManager.deleteById(trustedIssuerId);
+        return HttpResponse.ok();
     }
 
     /**
@@ -244,11 +227,8 @@ public class AdminController {
      */
     @Put("/tag/{id}")
     public HttpResponse<TagAPI> updateTag(@PathVariable UUID id, @Body UpdateTagRequest req) {
-        Optional<TagAPI> tagAPI = tagService.updateTag(id, req.getName());
-        if (tagAPI.isPresent()) {
-            return HttpResponse.ok(tagAPI.get());
-        }
-        return HttpResponse.notFound();
+        TagAPI tagAPI = tagService.updateTag(id, req.getName());
+        return HttpResponse.ok(tagAPI);
     }
 
     /**

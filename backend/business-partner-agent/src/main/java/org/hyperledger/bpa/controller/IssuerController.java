@@ -187,14 +187,14 @@ public class IssuerController {
      * Manual credential exchange: Issuer declines credential proposal received from
      * the holder
      *
-     * @param id      credential exchange id
-     * @param decline {@link DeclineCredentialExchangeRequest}
+     * @param id  credential exchange id
+     * @param req {@link DeclineExchangeRequest}
      * @return HTTP status
      */
     @Put("/exchanges/{id}/decline-proposal")
     public HttpResponse<Void> declineCredentialExchange(@PathVariable UUID id,
-            @Body @Nullable DeclineCredentialExchangeRequest decline) {
-        im.declineCredentialProposal(id, decline != null ? decline.getMessage() : null);
+            @Body @Nullable DeclineExchangeRequest req) {
+        im.declineCredentialProposal(id, req != null ? req.getMessage() : null);
         return HttpResponse.ok();
     }
 

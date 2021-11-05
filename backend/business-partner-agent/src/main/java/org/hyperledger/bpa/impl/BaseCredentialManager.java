@@ -25,7 +25,7 @@ import org.hyperledger.acy_py.generated.model.V20CredIssueProblemReportRequest;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
-import org.hyperledger.bpa.api.aries.ExchangeVersion;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
@@ -97,7 +97,7 @@ public abstract class BaseCredentialManager {
             if (e.getCode() == 404) {
                 credEx.pushStates(CredentialExchangeState.PROBLEM, Instant.now());
                 credExRepo.updateAfterEventNoRevocationInfo(credEx.getId(), credEx.getState(),
-                        credEx.getStateToTimestamp(), "aca-py has no matching credential exchange record");
+                        credEx.getStateToTimestamp(), msg.getMessage("api.credential.no.match"));
                 throw new EntityNotFoundException();
             }
             throw e;

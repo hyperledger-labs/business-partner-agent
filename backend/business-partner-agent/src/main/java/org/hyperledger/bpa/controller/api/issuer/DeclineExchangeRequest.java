@@ -22,6 +22,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class DeclineCredentialExchangeRequest {
+public class DeclineExchangeRequest {
     private String message;
 }

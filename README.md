@@ -45,11 +45,11 @@ The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Ide
 |                  | manual: decline credential offer from issuer                            | v1, v2                            |
 |                  | scheduled revocation check on all received credentials                  | n/a                               |
 | Prover           |                                                                         |                                   |
-|                  | auto: send presentation to verifier                                     | v1                                |
-|                  | auto: answer presentation request                                       | v1                                |
-|                  | manual: accept/decline presentation request and provide reason          | v1                                |
+|                  | auto: send presentation to verifier                                     | v1, v2                            |
+|                  | auto: answer presentation request                                       | v1, v2                            |
+|                  | manual: accept/decline presentation request and provide reason          | v1, v2                            |
 | Verifier         |                                                                         |                                   |
-|                  | auto: request presentation from prover based on proof template          | v1                                |
+|                  | auto: request presentation from prover based on proof template          | v1, v2                            |
 | Connection       |                                                                         |                                   |
 |                  | connect by did:sov, did:web (if endpoint is aca-py)                     | did-exchange                      |
 |                  | receive invitation by URL                                               | connection-protocol, OOB          |
@@ -57,7 +57,7 @@ The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Ide
 |                  | auto: accept incoming connection                                        | did-exchange, connection-protocol |
 |                  | manual: accept incoming connection                                      | did-exchange, connection-protocol |
 |                  | optional: scheduled trust ping to check connection status               | n/a                               |
-|                  | tag a connection, e.g. as trusted issue                                 | n/a                               |
+|                  | tag a connection, e.g. as trusted issuer                                | n/a                               |
 | Ledger           |                                                                         |                                   |
 |                  | send schema to the ledger (requires endorser role)                      | n/a                               |
 |                  | create a credential definition on the ledger (requires endorser role)   | n/a                               |

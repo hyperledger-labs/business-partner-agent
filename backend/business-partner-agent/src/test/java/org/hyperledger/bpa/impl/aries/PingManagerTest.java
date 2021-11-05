@@ -20,9 +20,10 @@ package org.hyperledger.bpa.impl.aries;
 import lombok.NonNull;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.ConnectionState;
-import org.hyperledger.aries.api.message.PingEvent;
-import org.hyperledger.aries.api.message.PingRequest;
-import org.hyperledger.aries.api.message.PingResponse;
+import org.hyperledger.aries.api.trustping.PingEvent;
+import org.hyperledger.aries.api.trustping.PingEventState;
+import org.hyperledger.aries.api.trustping.PingRequest;
+import org.hyperledger.aries.api.trustping.PingResponse;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
@@ -68,7 +69,7 @@ class PingManagerTest {
                 .thenReturn(Optional.of(new PingResponse("a")))
                 .thenReturn(Optional.of(new PingResponse("b")));
 
-        ping.handlePingEvent(PingEvent.of("a", "received"));
+        ping.handlePingEvent(PingEvent.of("a", PingEventState.RESPONSE_RECEIVED));
         assertEquals(1, ping.getReceivedSize());
 
         ping.checkConnections();
@@ -90,9 +91,9 @@ class PingManagerTest {
         assertEquals(2, ping.getSentSize());
         assertEquals(0, ping.getReceivedSize());
 
-        ping.handlePingEvent(PingEvent.of("a", "received"));
-        ping.handlePingEvent(PingEvent.of("b", "received"));
-        ping.handlePingEvent(PingEvent.of("comment", "sent"));
+        ping.handlePingEvent(PingEvent.of("a", PingEventState.RESPONSE_RECEIVED));
+        ping.handlePingEvent(PingEvent.of("b", PingEventState.RESPONSE_RECEIVED));
+        ping.handlePingEvent(PingEvent.of("comment", PingEventState.RECEIVED));
 
         assertEquals(2, ping.getReceivedSize());
 

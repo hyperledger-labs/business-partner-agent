@@ -28,7 +28,7 @@ const removeItemByMessageInfoLinkId = (collection, linkId) => {
     return tmp;
   }
   return collection;
-}
+};
 
 const state = {
   activityNotifications: {},
@@ -80,29 +80,52 @@ const mutations = {
     console.log(`onNotification(type=${type}, id=${id})`);
     switch (type) {
       case "ACTIVITY_NOTIFICATION":
-        state.activityNotifications = addItem(state.activityNotifications, id, payload);
+        state.activityNotifications = addItem(
+          state.activityNotifications,
+          id,
+          payload
+        );
         break;
       case "ON_CREDENTIAL_ACCEPTED":
       case "ON_CREDENTIAL_ADDED":
       case "ON_CREDENTIAL_OFFERED":
       case "ON_CREDENTIAL_PROBLEM":
-        state.credentialNotifications = addItem(state.credentialNotifications, id, payload);
+        state.credentialNotifications = addItem(
+          state.credentialNotifications,
+          id,
+          payload
+        );
         break;
       case "ON_PARTNER_REMOVED":
-        state.partnerNotifications = removeItem(state.partnerNotifications, payload.message.partner.id);
+        state.partnerNotifications = removeItem(
+          state.partnerNotifications,
+          payload.message.partner.id
+        );
         break;
       case "ON_PARTNER_REQUEST_COMPLETED":
       case "ON_PARTNER_REQUEST_RECEIVED":
       case "ON_PARTNER_ACCEPTED":
       case "ON_PARTNER_ADDED":
-        state.partnerNotifications = addItem(state.partnerNotifications, payload.message.partner.id, payload.message.partner);
+        state.partnerNotifications = addItem(
+          state.partnerNotifications,
+          payload.message.partner.id,
+          payload.message.partner
+        );
         break;
       case "ON_PRESENTATION_PROVED":
       case "ON_PRESENTATION_VERIFIED":
       case "ON_PRESENTATION_REQUEST_RECEIVED":
       case "ON_PRESENTATION_REQUEST_SENT":
-        state.presentationNotifications = addItem(state.presentationNotifications, id, payload);
-        state.partnerNotifications = addItem(state.partnerNotifications, payload.message.partner.id, payload.message.partner);
+        state.presentationNotifications = addItem(
+          state.presentationNotifications,
+          id,
+          payload
+        );
+        state.partnerNotifications = addItem(
+          state.partnerNotifications,
+          payload.message.partner.id,
+          payload.message.partner
+        );
         break;
       case "TASK_ADDED":
         state.taskNotifications = addItem(state.taskNotifications, id, payload);
@@ -120,8 +143,14 @@ const mutations = {
   },
   credentialNotificationSeen(state, payload) {
     let id = payload.id;
-    state.credentialNotifications = removeItem(state.credentialNotifications, id);
-    state.activityNotifications = removeItemByMessageInfoLinkId(state.activityNotifications, id);
+    state.credentialNotifications = removeItem(
+      state.credentialNotifications,
+      id
+    );
+    state.activityNotifications = removeItemByMessageInfoLinkId(
+      state.activityNotifications,
+      id
+    );
   },
   partnerNotificationSeen(state, payload) {
     let id = payload.id;
@@ -129,7 +158,10 @@ const mutations = {
   },
   presentationNotificationSeen(state, payload) {
     let id = payload.id;
-    state.presentationNotifications = removeItem(state.presentationNotifications, id);
+    state.presentationNotifications = removeItem(
+      state.presentationNotifications,
+      id
+    );
   },
   taskNotificationSeen(state, payload) {
     let id = payload.id;
@@ -156,7 +188,7 @@ const mutations = {
     state.partnerNotifications = {};
     state.presentationNotifications = {};
     state.taskNotifications = {};
-  }
+  },
 };
 
 export default {

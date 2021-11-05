@@ -40,8 +40,8 @@ import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.revocation.RevokeRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.AriesCredential;
-import org.hyperledger.bpa.api.aries.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.IssuerException;
@@ -116,7 +116,8 @@ public class IssuerCredentialManager extends BaseCredentialManager {
             String sId = StringUtils.strip(schemaId);
             Optional<SchemaSendResponse.Schema> ariesSchema = ac.schemasGetById(sId);
             if (ariesSchema.isEmpty()) {
-                throw new WrongApiUsageException(String.format("No schema with id '%s' found on ledger.", sId));
+                throw new WrongApiUsageException(msg.getMessage("api.schema.restriction.schema.not.found.on.ledger",
+                        Map.of("id", sId)));
             }
 
             Optional<BPASchema> bpaSchema = schemaService.getSchemaFor(sId);
@@ -124,7 +125,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                 // schema exists on ledger, but no in db, let's add it.
                 SchemaAPI schema = schemaService.addSchema(ariesSchema.get().getId(), null, null, null);
                 if (schema == null) {
-                    throw new IssuerException(String.format("Could not add schema with id '%s' to database.", sId));
+                    throw new IssuerException(msg.getMessage("api.issuer.schema.failure", Map.of("id", sId)));
                 }
                 bpaSchema = schemaService.getSchemaFor(schema.getSchemaId());
             }
@@ -152,12 +153,12 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                     BPACredentialDefinition saved = credDefRepo.save(cdef);
                     result = CredDef.from(saved);
                 } else {
-                    throw new WrongApiUsageException(
-                            String.format("Schema already as a Credential Definition with tag '%s'", tag));
+                    throw new WrongApiUsageException(msg.getMessage("api.issuer.creddef.already.exists",
+                            Map.of("id", sId, "tag", tag)));
                 }
             } else {
                 log.error("Credential Definition not created.");
-                throw new IssuerException("Credential Definition not created; could not complete request with ledger");
+                throw new IssuerException(msg.getMessage("api.issuer.creddef.ledger.failure"));
             }
         } catch (IOException e) {
             log.error("aca-py not reachable", e);
@@ -171,7 +172,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
         if (recs == 0) {
             credDefRepo.deleteById(id);
         } else {
-            throw new IssuerException("Credential Definition cannot be deleted, it has been used to issue credentials");
+            throw new IssuerException(msg.getMessage("api.issuer.creddef.in.use"));
         }
     }
 
@@ -186,12 +187,12 @@ public class IssuerCredentialManager extends BaseCredentialManager {
      */
     public String issueCredential(@NonNull IssueCredentialRequest request) {
         Partner dbPartner = partnerRepo.findById(request.getPartnerId())
-                .orElseThrow(() -> new IssuerException(String.format("Could not find partner with id '%s'",
-                        request.getPartnerId())));
+                .orElseThrow(() -> new IssuerException(msg.getMessage("api.partner.not.found",
+                        Map.of("id", request.getPartnerId()))));
 
         BPACredentialDefinition dbCredDef = credDefRepo.findById(request.getCredDefId())
                 .orElseThrow(() -> new IssuerException(
-                        String.format("Could not find credential definition with id '%s'", request.getCredDefId())));
+                        msg.getMessage("api.issuer.creddef.not.found", Map.of("id", request.getCredDefId()))));
 
         Map<String, String> document = conv.toStringMap(request.getDocument());
 
@@ -253,8 +254,8 @@ public class IssuerCredentialManager extends BaseCredentialManager {
         Set<String> documentAttributeNames = document.keySet();
         Set<String> schemaAttributeNames = dbCredDef.getSchema().getSchemaAttributeNames();
         if (!documentAttributeNames.equals(schemaAttributeNames)) {
-            throw new IssuerException(String.format("Document attributes %s do not match schema attributes %s",
-                    documentAttributeNames, schemaAttributeNames));
+            throw new IssuerException(msg.getMessage("api.issuer.credential.document.mismatch",
+                    Map.of("doc", documentAttributeNames, "schema", schemaAttributeNames)));
         }
     }
 
@@ -396,7 +397,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
 
     public void declineCredentialProposal(@NonNull UUID id, @Nullable String message) {
         if (StringUtils.isEmpty(message)) {
-            message = "Issuer declined credential proposal: no reason provided";
+            message = msg.getMessage("api.issuer.credential.exchange.declined");
         }
         BPACredentialExchange credEx = getCredentialExchange(id);
         credEx.pushStates(CredentialExchangeState.DECLINED, Instant.now());
@@ -425,8 +426,8 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                 b.schema(dbCredDef.getSchema()).credDef(dbCredDef);
                 credExRepo.save(b.build());
             }, () -> {
-                b.errorMsg("Issuer has no operable credential  definition for proposal spec: "
-                        + ex.getCredentialProposalDict().getSchemaId());
+                b.errorMsg(msg.getMessage("api.holder.issuer.has.no.creddef",
+                        Map.of("id", ex.getCredentialProposalDict().getSchemaId())));
                 credExRepo.save(b.build());
             });
         });
@@ -453,7 +454,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                         bpaEx.getState(), bpaEx.getStateToTimestamp(),
                         ex.getRevocRegId(), ex.getRevocationId(), ex.getErrorMsg());
             }
-            if (ex.stateIsCredentialAcked() && ex.isAutoIssueEnabled()) {
+            if (ex.stateIsCredentialAcked() && ex.autoIssueEnabled()) {
                 ex.findAttributesInCredentialOfferDict().ifPresent(
                         attr -> {
                             credExRepo.updateCredential(bpaEx.getId(), Credential.builder().attrs(attr).build());
@@ -479,7 +480,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                         bpaEx.pushStates(state, ex.getUpdatedAt());
                         credExRepo.updateAfterEventNoRevocationInfo(bpaEx.getId(),
                                 bpaEx.getState(), bpaEx.getStateToTimestamp(), ex.getErrorMsg());
-                        if (ex.isDone() && ex.isAutoIssueEnabled()) {
+                        if (ex.stateIsDone() && ex.autoIssueEnabled()) {
                             ex.getByFormat().findValuesInIndyCredIssue().ifPresent(
                                     attr -> credExRepo.updateCredential(bpaEx.getId(),
                                             Credential.builder().attrs(attr).build()));

@@ -31,9 +31,11 @@ import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.client.DidDocClient;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.util.Converter;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -48,6 +50,9 @@ public class PartnerLookup {
 
     @Inject
     CryptoManager crypto;
+
+    @Inject
+    BPAMessageSource.DefaultMessageSource ms;
 
     @Cacheable(cacheNames = { "partner-lookup-cache" })
     public PartnerAPI lookupPartner(@NonNull String did) {
@@ -70,7 +75,7 @@ public class PartnerLookup {
                     .did(didDocument.get().getId())
                     .build();
         }
-        throw new PartnerException("Could not retrieve did document from ledger");
+        throw new PartnerException(ms.getMessage("api.partner.lookup.no.did.doc"));
     }
 
     PartnerAPI lookupPartner(@NonNull String endpoint, List<DIDDocument.VerificationMethod> verificationMethods) {
@@ -89,7 +94,7 @@ public class PartnerLookup {
             }
             return partner;
         }
-        throw new PartnerException("Could not retrieve public profile from endpoint: " + endpoint);
+        throw new PartnerException(ms.getMessage("api.partner.lookup.no.endpoint", Map.of("endpoint", endpoint)));
     }
 
     /**

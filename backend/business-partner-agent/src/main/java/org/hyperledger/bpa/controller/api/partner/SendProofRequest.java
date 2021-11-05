@@ -19,6 +19,7 @@ package org.hyperledger.bpa.controller.api.partner;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.aries.api.ExchangeVersion;
 
 import java.util.UUID;
 
@@ -27,4 +28,5 @@ import java.util.UUID;
 public class SendProofRequest {
     private UUID partnerId;
     private UUID myCredentialId;
+    private ExchangeVersion exchangeVersion;
 }

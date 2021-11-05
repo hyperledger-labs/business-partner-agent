@@ -20,35 +20,43 @@ package org.hyperledger.bpa.config;
 import io.micronaut.context.MessageSource;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.i18n.ResourceBundleMessageSource;
+import io.micronaut.http.context.ServerRequestContext;
+import io.micronaut.http.server.util.locale.CompositeHttpLocaleResolver;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
 
+import java.util.Locale;
 import java.util.Map;
 
 @Factory
 public class BPAMessageSource {
 
     @Singleton
-    public DefaultMessageSource messageSource() {
-        return new DefaultMessageSource();
+    public DefaultMessageSource messageSource(CompositeHttpLocaleResolver resolver) {
+        return new DefaultMessageSource(resolver);
     }
 
     public static class DefaultMessageSource {
 
+        private final CompositeHttpLocaleResolver resolver;
+
         private final ResourceBundleMessageSource ms;
 
-        private final MessageSource.MessageContext messageContext = MessageSource.MessageContext.DEFAULT;
-
-        public DefaultMessageSource() {
+        public DefaultMessageSource(CompositeHttpLocaleResolver resolver) {
+            this.resolver = resolver;
             this.ms = new ResourceBundleMessageSource("org.hyperledger.bpa.i18n.messages");
         }
 
         public String getMessage(@NonNull String key) {
-            return ms.getMessage(key, messageContext, "");
+            return ms.getMessage(key, MessageSource.MessageContext.of(resolveLocale()), "");
         }
 
         public String getMessage(@NonNull String key, Map<String, Object> variables) {
-            return ms.getMessage(key, MessageSource.MessageContext.of(variables), "");
+            return ms.getMessage(key, MessageSource.MessageContext.of(resolveLocale(), variables), "");
+        }
+
+        private Locale resolveLocale() {
+            return ServerRequestContext.currentRequest().map(resolver::resolveOrDefault).orElse(Locale.ENGLISH);
         }
     }
 }

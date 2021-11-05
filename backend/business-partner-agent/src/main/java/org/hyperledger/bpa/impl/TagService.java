@@ -24,15 +24,14 @@ import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.api.TagAPI;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.config.TagConfig;
 import org.hyperledger.bpa.model.Tag;
 import org.hyperledger.bpa.repository.TagRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Singleton
@@ -43,6 +42,9 @@ public class TagService {
 
     @Inject
     TagConfig configuredTags;
+
+    @Inject
+    BPAMessageSource.DefaultMessageSource ms;
 
     public @Nullable TagAPI addTag(@NonNull String name) {
         return addTag(name, Boolean.FALSE);
@@ -58,21 +60,18 @@ public class TagService {
         try {
             saved = tagRepo.save(tag);
         } catch (DataAccessException e) {
-            throw new WrongApiUsageException("Tag with name: " + name + " already exists.");
+            throw new WrongApiUsageException(ms.getMessage("api.tag.already.exists", Map.of("name", name)));
         }
 
         return TagAPI.from(saved);
     }
 
-    public Optional<TagAPI> updateTag(@NonNull UUID id, @NonNull String name) {
-        Optional<Tag> dbTag = tagRepo.findById(id);
-        if (dbTag.isPresent()) {
-            tagRepo.updateNameById(dbTag.get().getId(), name);
-            log.debug("Updating existing tag name {} with new name: {}", dbTag.get(), name);
-            dbTag.get().setName(name);
-            return Optional.of(TagAPI.from(dbTag.get()));
-        }
-        return Optional.empty();
+    public TagAPI updateTag(@NonNull UUID id, @NonNull String name) {
+        Tag dbTag = tagRepo.findById(id).orElseThrow(EntityNotFoundException::new);
+        tagRepo.updateNameById(dbTag.getId(), name);
+        log.debug("Updating existing tag name {} with new name: {}", dbTag, name);
+        dbTag.setName(name);
+        return TagAPI.from(dbTag);
     }
 
     public List<TagAPI> listTags() {
@@ -89,7 +88,7 @@ public class TagService {
     public void deleteTag(@NonNull UUID id, @Nullable boolean force) {
         int refs = tagRepo.countReferencesToPartner(id);
         if (!force && refs > 0) {
-            throw new WrongApiUsageException("Tag is still used by " + refs + " partner(s)");
+            throw new WrongApiUsageException(ms.getMessage("api.tag.constraint.violation", Map.of("count", refs)));
         }
         tagRepo.findById(id).ifPresent(s -> tagRepo.deleteByTagId(id));
     }

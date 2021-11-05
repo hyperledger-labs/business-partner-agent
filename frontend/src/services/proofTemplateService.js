@@ -27,9 +27,10 @@ export default {
   deleteProofTemplate(id) {
     return appAxios().delete(`${ApiRoutes.PROOF_TEMPLATES}/${id}`);
   },
-  sendProofTemplate(id, partnerId) {
+  sendProofTemplate(id, partnerId, data) {
     return appAxios().put(
-      `${ApiRoutes.PARTNERS}/${partnerId}/proof-request/${id}`
+      `${ApiRoutes.PARTNERS}/${partnerId}/proof-request/${id}`,
+      data
     );
   },
 };

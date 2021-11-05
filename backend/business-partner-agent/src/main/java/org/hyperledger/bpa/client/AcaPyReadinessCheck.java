@@ -35,6 +35,7 @@ import java.util.Optional;
 @Readiness
 @Requires(beans = HealthEndpoint.class)
 public class AcaPyReadinessCheck extends AbstractHealthIndicator<Map<String, String>> {
+
     @Inject
     AriesClient ac;
 
