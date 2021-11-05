@@ -434,6 +434,19 @@ public class IssuerCredentialManager extends BaseCredentialManager {
     }
 
     /**
+     * In v1 (indy) this message can only be received after a preceding Credential Offer,
+     * meaning the holder can never start with a Credential Request, so it is ok to directly auto accept the request
+     * @param ex {@link V1CredentialExchange}
+     */
+    public void handleV1CredentialRequest(@NonNull V1CredentialExchange ex) {
+        try {
+            ac.issueCredentialRecordsIssue(ex.getCredentialExchangeId(), null);
+        } catch (IOException e) {
+            log.error(msg.getMessage("acapy.unavailable"));
+        }
+    }
+
+    /**
      * Handle issue credential v1 state changes and revocation info
      *
      * @param ex {@link V1CredentialExchange}
@@ -454,7 +467,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                         bpaEx.getState(), bpaEx.getStateToTimestamp(),
                         ex.getRevocRegId(), ex.getRevocationId(), ex.getErrorMsg());
             }
-            if (ex.stateIsCredentialAcked() && ex.autoIssueEnabled()) {
+            if (ex.stateIsCredentialIssued() && ex.autoIssueEnabled()) {
                 ex.findAttributesInCredentialOfferDict().ifPresent(
                         attr -> {
                             credExRepo.updateCredential(bpaEx.getId(), Credential.builder().attrs(attr).build());
@@ -480,7 +493,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                         bpaEx.pushStates(state, ex.getUpdatedAt());
                         credExRepo.updateAfterEventNoRevocationInfo(bpaEx.getId(),
                                 bpaEx.getState(), bpaEx.getStateToTimestamp(), ex.getErrorMsg());
-                        if (ex.stateIsDone() && ex.autoIssueEnabled()) {
+                        if (ex.stateIsCredentialIssued() && ex.autoIssueEnabled()) {
                             ex.getByFormat().findValuesInIndyCredIssue().ifPresent(
                                     attr -> credExRepo.updateCredential(bpaEx.getId(),
                                             Credential.builder().attrs(attr).build()));
@@ -503,6 +516,31 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                         revocationInfo.getCredRevId());
             } else if (bpaEx.roleIsHolder() && StringUtils.isNotEmpty(revocationInfo.getCredIdStored())) {
                 credExRepo.updateReferent(bpaEx.getId(), revocationInfo.getCredIdStored());
+            }
+        });
+    }
+
+    /**
+     * In v2 (indy and w3c) a holder can decide to skip negotiation and directly start the whole flow
+     * with a request. So we check if there is a preceding record if not decline with problem report
+     * TODO support v2 credential request without prior negotiation
+     * @param ex {@link V20CredExRecord v2CredEx}
+     */
+    public void handleV2CredentialRequest(@NonNull V20CredExRecord ex) {
+        credExRepo.findByCredentialExchangeId(ex.getCredExId()).ifPresentOrElse(db -> {
+            try {
+                ac.issueCredentialV2RecordsIssue(ex.getCredExId(), null);
+            } catch (IOException e) {
+                log.error(msg.getMessage("acapy.unavailable"));
+            }
+        }, () -> {
+            try {
+                ac.issueCredentialV2RecordsProblemReport(ex.getCredExId(), V20CredIssueProblemReportRequest
+                        .builder()
+                        .description("starting a credential exchange without prior negotiation is not supported by this agent")
+                        .build());
+            } catch (IOException e) {
+                log.error(msg.getMessage("acapy.unavailable"));
             }
         });
     }

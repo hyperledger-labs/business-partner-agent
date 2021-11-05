@@ -367,7 +367,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
     }
 
     // v1 credential, signed and stored in wallet
-    public void handleV1CredentialExchangeAcked(@NonNull V1CredentialExchange credEx) {
+    public void handleV1CredentialExchangeReceived(@NonNull V1CredentialExchange credEx) {
         String label = labelStrategy.apply(credEx.getCredential());
         holderCredExRepo.findByCredentialExchangeId(credEx.getCredentialExchangeId()).ifPresent(db -> {
             db
@@ -382,7 +382,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
     }
 
     // v2 credential, signed and stored in wallet
-    public void handleV2CredentialDone(@NonNull V20CredExRecord credEx) {
+    public void handleV2CredentialReceived(@NonNull V20CredExRecord credEx) {
         holderCredExRepo.findByCredentialExchangeId(credEx.getCredExId()).ifPresent(
                 dbCred -> V2ToV1IndyCredentialConverter.INSTANCE().toV1Credential(credEx)
                         .ifPresent(c -> {
