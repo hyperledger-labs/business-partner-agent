@@ -53,7 +53,8 @@
     "yes": "Yes",
     "no": "No",
     "close": "Close",
-    "sendCounterOffer": "Send Counter Offer"
+    "sendCounterOffer": "Send Counter Offer",
+    "revoke": "Revoke"
   },
   "view": {
     "notifications": {
@@ -266,15 +267,19 @@
       }
     },
     "credExList": {
+      "table": {
+        "iconCredIssued": "Credential issued",
+        "iconCredRevoked": "Credential revoked",
+        "iconRevokeCred": "Revoke credential",
+        "holderNotRevoked": "credential valid and not revoked",
+        "holderNotRevocable": "credential valid and not revocable"
+      },
       "dialog": {
         "title": "Credential",
         "timeline": "Timeline",
         "partnerLabel": "Partner",
         "credDefLabel": "Credential Definition",
-        "attributesTitle": "Credential Content",
-        "iconCredIssued": "Credential issued",
-        "iconCredRevoked": "Credential revoked",
-        "iconRevokeCred": "Revoke credential"
+        "attributesTitle": "Credential Content"
       }
     },
     "profile": {

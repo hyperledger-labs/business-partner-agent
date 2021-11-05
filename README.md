@@ -50,6 +50,7 @@ The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Ide
 |                  | manual: accept/decline presentation request and provide reason          | v1, v2                            |
 | Verifier         |                                                                         |                                   |
 |                  | auto: request presentation from prover based on proof template          | v1, v2                            |
+|                  | auto: receive and verify presentation from prover                       | v1, v2                            |
 | Connection       |                                                                         |                                   |
 |                  | connect by did:sov, did:web (if endpoint is aca-py)                     | did-exchange                      |
 |                  | receive invitation by URL                                               | connection-protocol, OOB          |

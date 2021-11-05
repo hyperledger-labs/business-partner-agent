@@ -25,15 +25,10 @@
         <span>
           {{ (item.state ? item.state.replace("_", " ") : "") | capitalize }}
         </span>
-        <v-icon
-          v-if="isItemActive(item) && !item.revoked"
-          color="green"
-          :title="$t('component.credExList.dialog.iconCredIssued')"
+        <v-icon v-if="isItemActive(item) && !item.revoked" color="green"
           >$vuetify.icons.check</v-icon
         >
-        <v-icon
-          v-else-if="isItemActive(item) && item.revoked"
-          :title="$t('component.credExList.dialog.iconCredRevoked')"
+        <v-icon v-else-if="isItemActive(item) && item.revoked"
           >$vuetify.icons.check</v-icon
         >
         <v-tooltip
@@ -60,18 +55,42 @@
       <template v-slot:[`item.revocable`]="{ item }">
         <v-icon
           v-if="item.revocable && item.revoked"
-          :title="$t('component.credExList.dialog.iconCredRevoked')"
+          :title="$t('component.credExList.table.iconCredRevoked')"
           >$vuetify.icons.revoked</v-icon
         >
         <v-icon
-          v-else-if="item.revocable"
+          v-else-if="
+            isItemActive(item) &&
+            item.revocable &&
+            !item.revoked &&
+            item.role === exchangeRoles.HOLDER
+          "
           color="green"
-          :title="$t('component.credExList.dialog.iconRevokeCred')"
-          @click.stop="revokeCredential(item.id)"
-          :disabled="revoked.includes(item.id)"
+          :title="$t('component.credExList.table.holderNotRevoked')"
           >$vuetify.icons.revoke</v-icon
         >
-        <span v-else> </span>
+        <v-icon
+          v-else-if="
+            isItemActive(item) &&
+            !item.revocable &&
+            item.role === exchangeRoles.HOLDER
+          "
+          color="green"
+          :title="$t('component.credExList.table.holderNotRevocable')"
+          >$vuetify.icons.check</v-icon
+        >
+        <v-btn
+          small
+          v-else-if="item.revocable && item.role === exchangeRoles.ISSUER"
+          color="green"
+          :title="$t('component.credExList.table.iconRevokeCred')"
+          @click.stop="revokeCredential(item.id)"
+          :disabled="revoked.includes(item.id)"
+        >
+          <v-icon left>$vuetify.icons.revoke</v-icon>
+          {{ $t("button.revoke") }}
+        </v-btn>
+        <span v-else></span>
       </template>
     </v-data-table>
     <v-dialog v-model="dialog" max-width="600px">

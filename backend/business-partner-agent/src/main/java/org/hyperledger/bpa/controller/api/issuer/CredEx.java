@@ -110,12 +110,19 @@ public class CredEx {
                 .type(db.getType())
                 .displayText(displayText)
                 .revoked(db.getRevoked())
-                .revocable(StringUtils.isNotEmpty(db.getRevRegId()))
+                .revocable(checkIfRevocable(db))
                 .exchangeVersion(db.getExchangeVersion())
                 .errorMsg(db.getErrorMsg())
 
                 .schema(schemaAPI)
                 .credDef(credDef)
                 .build();
+    }
+
+    private static Boolean checkIfRevocable(@NonNull BPACredentialExchange db) {
+        if (db.roleIsHolder() && db.getCredential() != null) {
+            return StringUtils.isNotEmpty(db.getCredential().getRevRegId());
+        }
+        return StringUtils.isNotEmpty(db.getRevRegId());
     }
 }
