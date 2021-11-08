@@ -477,7 +477,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                         bpaEx.getState(), bpaEx.getStateToTimestamp(),
                         ex.getRevocRegId(), ex.getRevocationId(), ex.getErrorMsg());
             }
-            if (ex.stateIsCredentialIssued() && ex.autoIssueEnabled()) {
+            if (ex.stateIsCredentialAcked() && ex.autoIssueEnabled()) {
                 ex.findAttributesInCredentialOfferDict().ifPresent(
                         attr -> {
                             credExRepo.updateCredential(bpaEx.getId(), Credential.builder().attrs(attr).build());
@@ -533,8 +533,8 @@ public class IssuerCredentialManager extends BaseCredentialManager {
     /**
      * In v2 (indy and w3c) a holder can decide to skip negotiation and directly
      * start the whole flow with a request. So we check if there is a preceding
-     * record if not decline with problem report TODO support v2 credential request
-     * without prior negotiation
+     * record if not decline with problem report
+     * TODO support v2 credential request without prior negotiation
      * 
      * @param ex {@link V20CredExRecord v2CredEx}
      */

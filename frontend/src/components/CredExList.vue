@@ -70,11 +70,7 @@
           >$vuetify.icons.revoke</v-icon
         >
         <v-icon
-          v-else-if="
-            isItemActive(item) &&
-            !item.revocable &&
-            item.role === exchangeRoles.HOLDER
-          "
+          v-else-if="isItemActive(item) && !item.revocable"
           color="green"
           :title="$t('component.credExList.table.holderNotRevocable')"
           >$vuetify.icons.check</v-icon

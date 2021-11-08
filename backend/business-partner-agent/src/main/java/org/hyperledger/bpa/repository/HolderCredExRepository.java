@@ -76,7 +76,7 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     void updateLabel(@Id UUID id, String label);
 
-    Number updateRevoked(@Id UUID id, Boolean revoked);
+    Number updateRevoked(@Id UUID id, Boolean revoked, StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp);
 
     Number updateReferent(@Id UUID id, @Nullable String referent);
 

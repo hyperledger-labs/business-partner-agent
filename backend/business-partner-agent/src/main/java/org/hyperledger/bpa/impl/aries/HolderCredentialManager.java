@@ -159,6 +159,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
                 ac.issueCredentialV2SendProposal(v1CredentialProposalRequest).ifPresent(v2 -> dbCredEx
                         .threadId(v2.getThreadId())
                         .credentialExchangeId(v2.getCredExId())
+                        .exchangeVersion(ExchangeVersion.V2)
                         .credentialProposal(v2.toV1CredentialExchangeFromProposal().getCredentialProposalDict()
                                 .getCredentialProposal()));
             }
@@ -304,7 +305,8 @@ public class HolderCredentialManager extends BaseCredentialManager {
                 log.trace("Running revocation check for credential exchange: {}", cred.getReferent());
                 ac.credentialRevoked(Objects.requireNonNull(cred.getReferent())).ifPresent(isRevoked -> {
                     if (isRevoked.getRevoked() != null && isRevoked.getRevoked()) {
-                        holderCredExRepo.updateRevoked(cred.getId(), Boolean.TRUE);
+                        cred.pushStates(CredentialExchangeState.REVOKED, Instant.now());
+                        holderCredExRepo.updateRevoked(cred.getId(), Boolean.TRUE, cred.getStateToTimestamp());
                         log.debug("Credential with referent id: {} has been revoked", cred.getReferent());
                     }
                 });
