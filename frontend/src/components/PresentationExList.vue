@@ -72,7 +72,9 @@
     <v-dialog v-if="dialog" v-model="dialog" scrollable max-width="1000px">
       <v-card>
         <v-card-title class="bg-light">
-          <span class="headline">Presentation Exchange</span>
+          <span class="headline">{{
+            $t("component.presentationExList.dialog.title")
+          }}</span>
           <v-layout justify-end>
             <v-btn depressed color="red" icon @click="deleteItem">
               <v-icon dark>$vuetify.icons.delete</v-icon>
@@ -104,24 +106,31 @@
             border="left"
             type="warning"
           >
-            Request can't be fullfilled with credentials in wallet
+            {{ $t("component.presentationExList.dialog.alertFulfill") }}
           </v-alert>
+          <v-text-field
+            v-if="isStateRequestReceived"
+            v-model="declineReasonText"
+            :label="
+              $t('component.presentationExList.dialog.declineReasonLabel')
+            "
+          ></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-bpa-button color="secondary" @click="closeItem(record)"
-            >Close</v-bpa-button
-          >
+          <v-bpa-button color="secondary" @click="closeItem(record)">{{
+            $t("button.close")
+          }}</v-bpa-button>
           <span v-if="isStateRequestReceived">
-            <v-bpa-button color="secondary" @click="decline"
-              >Decline</v-bpa-button
-            >
+            <v-bpa-button color="secondary" @click="decline">{{
+              $t("button.decline")
+            }}</v-bpa-button>
             <v-bpa-button
               :loading="isBusy"
               color="primary"
               :disabled="!isReadyToApprove"
               @click="approve"
-              >Accept</v-bpa-button
+              >{{ $t("button.accept") }}</v-bpa-button
             >
           </span>
         </v-card-actions>
@@ -172,6 +181,7 @@ export default {
       isBusy: false,
       isLoading: false,
       isWaitingForMatchingCreds: false,
+      declineReasonText: "",
       headers: [
         {
           text: "",
@@ -226,12 +236,16 @@ export default {
     },
   },
   methods: {
+    closeDialog() {
+      this.declineReasonText = "";
+      this.dialog = false;
+    },
     async approve() {
       const payload = this.prepareApprovePayload();
       try {
         await proofExService.approveProofRequest(this.record.id, payload);
         EventBus.$emit("success", "Proof has been sent");
-        this.dialog = false;
+        this.closeDialog();
         this.$emit("changed");
       } catch (e) {
         EventBus.$emit("error", this.$axiosErrorMessage(e));
@@ -239,9 +253,12 @@ export default {
     },
     async decline() {
       try {
-        await proofExService.declineProofRequest(this.record.id);
+        await proofExService.declineProofRequest(
+          this.record.id,
+          this.declineReasonText
+        );
         EventBus.$emit("success", "Presentation request declined");
-        this.dialog = false;
+        this.closeDialog();
         this.$emit("changed");
       } catch (e) {
         EventBus.$emit("error", this.$axiosErrorMessage(e));
@@ -254,7 +271,7 @@ export default {
       this.$emit("openItem", item);
     },
     closeItem() {
-      this.dialog = false;
+      this.closeDialog();
       this.record = {};
     },
     isStateVerified(item) {
@@ -269,7 +286,7 @@ export default {
           );
           this.items.splice(idx, 1);
           EventBus.$emit("success", "Presentation record deleted");
-          this.dialog = false;
+          this.closeDialog();
         }
       } catch (e) {
         EventBus.$emit("error", this.$axiosErrorMessage(e));

@@ -283,6 +283,13 @@
         "declineReasonLabel": "Decline reason (Optional)"
       }
     },
+    "presentationExList": {
+      "dialog": {
+        "title": "Presentation Exchange",
+        "alertFulfill": "Request can't be fulfilled with credentials in wallet",
+        "declineReasonLabel": "Decline reason (Optional)"
+      }
+    },
     "profile": {
       "organizationalProfile": {
         "title": "Organizational Profile",

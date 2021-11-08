@@ -205,12 +205,7 @@
             <v-bpa-button
               v-if="documentStateIsProposalReceived"
               color="secondary"
-              @click="
-                declineCredentialProposal(
-                  document.walletCredentialId,
-                  declineReasonText
-                )
-              "
+              @click="declineCredentialProposal(document.walletCredentialId)"
               >{{ $t("button.decline") }}</v-bpa-button
             >
             <v-bpa-button
@@ -238,12 +233,7 @@
             <v-bpa-button
               v-if="documentStateIsOfferReceived"
               color="secondary"
-              @click="
-                declineCredentialOffer(
-                  document.walletCredentialId,
-                  declineReasonText
-                )
-              "
+              @click="declineCredentialOffer(document.walletCredentialId)"
               >{{ $t("button.decline") }}</v-bpa-button
             >
             <v-bpa-button
@@ -468,12 +458,12 @@ export default {
       issuerService.acceptCredentialOffer(id);
       this.closeDialog();
     },
-    declineCredentialOffer(id, reasonMessage) {
-      issuerService.declineCredentialOffer(id, reasonMessage);
+    declineCredentialOffer(id) {
+      issuerService.declineCredentialOffer(id, this.declineReasonText);
       this.closeDialog();
     },
-    declineCredentialProposal(id, reasonMessage) {
-      issuerService.declineCredentialProposal(id, reasonMessage);
+    declineCredentialProposal(id) {
+      issuerService.declineCredentialProposal(id, this.declineReasonText);
       this.closeDialog();
     },
     async sendCounterOffer(acceptAll) {
