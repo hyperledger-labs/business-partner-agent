@@ -47,6 +47,7 @@ import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.IssuerException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.config.AcaPyConfig;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.issuer.CredDef;
@@ -77,6 +78,9 @@ public class IssuerCredentialManager extends BaseCredentialManager {
 
     @Inject
     AriesClient ac;
+
+    @Inject
+    AcaPyConfig acaPyConfig;
 
     @Inject
     SchemaService schemaService;
@@ -442,7 +446,10 @@ public class IssuerCredentialManager extends BaseCredentialManager {
      */
     public void handleV1CredentialRequest(@NonNull V1CredentialExchange ex) {
         try {
-            ac.issueCredentialRecordsIssue(ex.getCredentialExchangeId(), V1CredentialIssueRequest.builder().build());
+            if (Boolean.FALSE.equals(acaPyConfig.getAutoRespondCredentialRequest())) {
+                ac.issueCredentialRecordsIssue(ex.getCredentialExchangeId(),
+                        V1CredentialIssueRequest.builder().build());
+            }
             handleV1CredentialExchange(ex); // save state changes
         } catch (IOException e) {
             log.error(msg.getMessage("acapy.unavailable"));
@@ -534,7 +541,9 @@ public class IssuerCredentialManager extends BaseCredentialManager {
     public void handleV2CredentialRequest(@NonNull V20CredExRecord ex) {
         credExRepo.findByCredentialExchangeId(ex.getCredExId()).ifPresentOrElse(db -> {
             try {
-                ac.issueCredentialV2RecordsIssue(ex.getCredExId(), null);
+                if (Boolean.FALSE.equals(acaPyConfig.getAutoRespondCredentialRequest())) {
+                    ac.issueCredentialV2RecordsIssue(ex.getCredExId(), V20CredIssueRequest.builder().build());
+                }
                 db.pushStates(ex.getState(), ex.getUpdatedAt());
                 credExRepo.updateAfterEventNoRevocationInfo(db.getId(),
                         db.getState(), db.getStateToTimestamp(), ex.getErrorMsg());

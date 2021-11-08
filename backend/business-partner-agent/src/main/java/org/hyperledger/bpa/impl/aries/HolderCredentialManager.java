@@ -68,6 +68,7 @@ import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.HolderCredExRepository;
 import org.hyperledger.bpa.repository.MyDocumentRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.util.CryptoUtil;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -325,8 +326,14 @@ public class HolderCredentialManager extends BaseCredentialManager {
         holderCredExRepo.findByCredentialExchangeId(credEx.getCredentialExchangeId()).ifPresentOrElse(db -> {
             // counter offer or accepted proposal from issuer
             db.pushStates(credEx.getState(), credEx.getUpdatedAt());
+            V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialOffer = credEx
+                    .getCredentialProposalDict().getCredentialProposal();
             holderCredExRepo.updateOnCredentialOfferEvent(db.getId(), db.getState(), db.getStateToTimestamp(),
-                    credEx.getCredentialProposalDict().getCredentialProposal());
+                    credentialOffer);
+            // if offer equals proposal send request immediately
+            if (CryptoUtil.hashCompare(db.getCredentialProposal(), credentialOffer)) {
+                this.sendCredentialRequest(db.getId());
+            }
         }, () -> partnerRepo.findByConnectionId(credEx.getConnectionId()).ifPresent(p -> {
             // issuer started with offer, no preexisting proposal
             BPASchema bpaSchema = schemaService.getSchemaFor(credEx.getSchemaId()).orElse(null);

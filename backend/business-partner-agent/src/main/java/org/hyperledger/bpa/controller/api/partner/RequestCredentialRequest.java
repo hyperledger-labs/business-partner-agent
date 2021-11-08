@@ -25,5 +25,5 @@ import org.hyperledger.aries.api.ExchangeVersion;
 @NoArgsConstructor
 public class RequestCredentialRequest {
     public String documentId;
-    public ExchangeVersion version;
+    public ExchangeVersion exchangeVersion;
 }

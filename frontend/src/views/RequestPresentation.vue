@@ -23,7 +23,7 @@
               <v-switch
                 v-if="expertMode"
                 v-model="useV2Exchange"
-                :label="$t('component.issueCredential.options.useV2')"
+                :label="$t('button.useV2')"
               ></v-switch>
               <v-bpa-button color="secondary" @click="cancel()">{{
                 $t("button.cancel")
