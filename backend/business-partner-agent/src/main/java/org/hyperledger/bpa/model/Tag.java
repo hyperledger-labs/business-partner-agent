@@ -42,6 +42,7 @@ public class Tag {
 
     private String name;
 
+    @Builder.Default
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH }, mappedBy = "tags")
     @JoinTable(name = "partner_tag")
     private Set<Partner> partners = new HashSet<>();

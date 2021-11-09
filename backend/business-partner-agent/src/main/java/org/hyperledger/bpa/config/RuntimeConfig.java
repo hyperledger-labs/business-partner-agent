@@ -84,12 +84,17 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
     @Value("${bpa.i18n.fallbackLocale}")
     String fallbackLocale;
 
+    String buildVersion;
+
     public String getAgentName() {
         return DidResolver.splitDidFrom(agentName).getLabel();
     }
 
     @Override
     public void onApplicationEvent(StartupTasks.AcaPyReady event) {
+        // only set when running from .jar
+        buildVersion = getClass().getPackage().getImplementationVersion();
+        log.info("BPA running with build version: {}", buildVersion);
         try {
             this.tailsServerConfigured = ac
                     .statusConfig()
