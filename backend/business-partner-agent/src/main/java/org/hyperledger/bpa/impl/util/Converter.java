@@ -224,7 +224,7 @@ public class Converter {
     public AriesProofExchange toAPIObject(@NonNull PartnerProof p) {
         AriesProofExchange proof = AriesProofExchange.from(p);
 
-        proof.setTypeLabel(p.getProofRequest() != null ? p.getProofRequest().getName() : null);
+        proof.setTypeLabel(resolveTypeLabel(p));
 
         JsonNode proofData = null;
         try {
@@ -245,6 +245,37 @@ public class Converter {
         }
         proof.setProofData(proofData);
         return proof;
+    }
+
+    /**
+     * In V1 proof proposal there is no way to name the proof request so aca-py
+     * always falls back to 'proof-request' for the name. In most cases this is only
+     * relevant in bpa to bpa communication, so we know how the proposal looks like,
+     * and we can fall back to the label of the credential definition.
+     * 
+     * @param p {@link PartnerProof}
+     * @return name, credential definition tag, or default label
+     */
+    private String resolveTypeLabel(@NonNull PartnerProof p) {
+        String defaultLabel = msg.getMessage("api.proof.exchange.default.name");
+        if (p.getProofRequest() != null && !"proof-request".equals(p.getProofRequest().getName())) {
+            return p.getProofRequest().getName();
+        }
+        if (p.getProofRequest() != null
+                && p.getProofRequest().getRequestedAttributes() != null
+                && p.getProofRequest().getRequestedAttributes().size() == 1) {
+            return p.getProofRequest().getRequestedAttributes().entrySet().stream().findFirst().map(attr -> {
+                if (attr.getValue().getRestrictions() != null && attr.getValue().getRestrictions().size() == 1) {
+                    JsonObject jo = attr.getValue().getRestrictions().get(0);
+                    String credDefId = jo.get("cred_def_id") != null ? jo.get("cred_def_id").getAsString() : null;
+                    if (credDefId != null) {
+                        return StringUtils.replace(AriesStringUtil.credDefIdGetTag(credDefId), "-", " ");
+                    }
+                }
+                return defaultLabel;
+            }).orElse(defaultLabel);
+        }
+        return defaultLabel;
     }
 
     private String resolveTypeLabel(@NonNull CredentialType type, @Nullable String schemaId) {
