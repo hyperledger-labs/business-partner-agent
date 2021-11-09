@@ -59,12 +59,14 @@
         {{ item.role | capitalize }}
       </template>
       <template v-slot:[`item.revocable`]="{ item }">
-        <v-icon
-          v-if="item.revocable && item.revoked"
-          :title="$t('component.credExList.table.iconCredRevoked')"
-          class="iconHeight"
-          >$vuetify.icons.revoked</v-icon
-        >
+        <span v-if="item.revocable && item.revoked"
+          >{{ $t("component.credExList.table.revoked") }}
+          <v-icon
+            :title="$t('component.credExList.table.iconCredRevoked')"
+            class="iconHeight"
+            >$vuetify.icons.revoked</v-icon
+          >
+        </span>
         <v-icon
           v-else-if="
             isItemActive(item) &&
