@@ -54,7 +54,8 @@
     "no": "No",
     "close": "Close",
     "sendCounterOffer": "Send Counter Offer",
-    "revoke": "Revoke"
+    "revoke": "Revoke",
+    "useV2": "Use V2"
   },
   "view": {
     "notifications": {
@@ -245,8 +246,7 @@
       "successMessage": "Credential issued",
       "attributesTitle": "Credential Content",
       "options": {
-        "title": "Options",
-        "useV2": "Use V2 Protocol"
+        "title": "Options"
       },
       "expertLoad": {
         "title": "Load Credential Data",

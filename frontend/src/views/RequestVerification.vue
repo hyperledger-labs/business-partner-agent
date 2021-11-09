@@ -27,7 +27,12 @@
       </v-card-text>
 
       <v-card-actions>
-        <v-layout align-end justify-end>
+        <v-layout align-center align-end justify-end>
+          <v-switch
+            v-if="expertMode"
+            v-model="useV2Exchange"
+            :label="$t('button.useV2')"
+          ></v-switch>
           <v-bpa-button color="secondary" @click="cancel()"
             >Cancel</v-bpa-button
           >
@@ -75,7 +80,8 @@ import { EventBus } from "@/main";
 import PartnerList from "@/components/PartnerList";
 import VBpaButton from "@/components/BpaButton";
 import { getPartnerState } from "@/utils/partnerUtils";
-import {PartnerStates} from "@/constants";
+import { PartnerStates } from "@/constants";
+import { ExchangeVersion } from "@/constants";
 
 export default {
   name: "RequestVerification",
@@ -101,17 +107,23 @@ export default {
       isReady: false,
       attentionPartnerStateDialog: false,
       partner: {},
-      getPartnerState: getPartnerState
+      getPartnerState: getPartnerState,
+      useV2Exchange: false,
     };
   },
-  computed: {},
+  computed: {
+    expertMode() {
+      return this.$store.state.expertMode;
+    },
+  },
   methods: {
     checkRequest() {
       if (this.$refs.partnerList.selected.length === 1) {
         if (this.$refs.partnerList.selected[0].id) {
           this.partner = this.$refs.partnerList.selected[0];
           if (
-              this.getPartnerState(this.partner) === PartnerStates.ACTIVE_OR_RESPONSE
+            this.getPartnerState(this.partner) ===
+            PartnerStates.ACTIVE_OR_RESPONSE
           ) {
             this.submitRequest();
           } else {
@@ -130,6 +142,9 @@ export default {
           `${this.$apiBaseUrl}/partners/${this.partner.id}/credential-request`,
           {
             documentId: this.documentId,
+            exchangeVersion: this.useV2Exchange
+              ? ExchangeVersion.V2
+              : ExchangeVersion.V1,
           }
         )
         .then((res) => {
@@ -156,5 +171,4 @@ export default {
 .bg-light {
   background-color: #fafafa;
 }
-
 </style>

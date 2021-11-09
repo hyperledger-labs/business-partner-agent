@@ -25,11 +25,7 @@
         ></new-message-icon>
       </template>
       <template v-slot:[`item.label`]="{ item }">
-        {{
-          item.proofRequest && item.proofRequest.name
-            ? item.proofRequest.name
-            : item.typeLabel
-        }}
+        {{ item.typeLabel }}
       </template>
 
       <template v-slot:[`item.role`]="{ item }">

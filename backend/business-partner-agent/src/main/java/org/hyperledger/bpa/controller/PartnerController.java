@@ -227,7 +227,7 @@ public class PartnerController {
         credM.sendCredentialRequest(
                 id,
                 UUID.fromString(credReq.getDocumentId()),
-                credReq.getVersion());
+                credReq.getExchangeVersion());
         return HttpResponse.ok();
     }
 
