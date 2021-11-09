@@ -25,10 +25,11 @@
                 {{ item[1] | formatDateLong }}
               </v-col>
               <v-col>
+                <strong>
+                  {{ item[0].replace("_", " ") | capitalize }}
+                </strong>
                 <div class="text-caption">
-                  <strong>
-                    {{ item[0].replace("_", " ") | capitalize }}
-                  </strong>
+                  {{ item[2] }}
                 </div>
               </v-col>
             </v-row>

@@ -132,9 +132,7 @@
           <!-- Timeline  -->
           <Timeline
             v-if="document.credentialStateToTimestamp"
-            v-bind:timeEntries="
-              Object.entries(document.credentialStateToTimestamp)
-            "
+            :time-entries="document.credentialStateToTimestamp"
           />
 
           <br />
@@ -404,6 +402,18 @@ export default {
       this.partner = this.partnerList.find((p) => p.value === item.partner.id);
       this.credDef = this.credDefList.find((p) => p.value === item.credDef.id);
 
+      const credentialStateToTimestamp = Object.entries(item.stateToTimestamp);
+      for (const stateElement of credentialStateToTimestamp) {
+        if (
+          item.errorMsg &&
+          stateElement[0] === CredentialExchangeStates.DECLINED
+        ) {
+          stateElement.push(item.errorMsg);
+        } else {
+          stateElement.push(undefined);
+        }
+      }
+
       this.document = {
         credentialData: { ...item.credential.attrs },
         credentialInitialData: { ...item.credential.attrs },
@@ -414,7 +424,7 @@ export default {
         credentialExchangeState: item.state,
         credentialExchangeRole: item.role,
         credentialWasEdited: false,
-        credentialStateToTimestamp: item.stateToTimestamp,
+        credentialStateToTimestamp,
         walletCredentialId: item.id,
       };
 

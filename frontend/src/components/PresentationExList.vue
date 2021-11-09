@@ -266,7 +266,27 @@ export default {
       }
     },
     openItem(item) {
-      this.record = item;
+      const itemCopy = {};
+      Object.assign(itemCopy, item);
+
+      const presentationStateToTimestamp = Object.entries(
+        itemCopy.stateToTimestamp
+      );
+
+      for (const stateElement of presentationStateToTimestamp) {
+        if (
+          itemCopy.problemReport &&
+          stateElement[0] === PresentationExchangeStates.DECLINED
+        ) {
+          stateElement.push(itemCopy.problemReport);
+        } else {
+          stateElement.push(undefined);
+        }
+      }
+
+      itemCopy.stateToTimestamp = presentationStateToTimestamp;
+
+      this.record = itemCopy;
       this.dialog = true;
       this.addProofData();
       this.$emit("openItem", item);
