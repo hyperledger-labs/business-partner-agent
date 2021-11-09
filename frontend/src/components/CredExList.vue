@@ -189,6 +189,7 @@
             "
             v-model="declineReasonText"
             :label="$t('component.credExList.dialog.declineReasonLabel')"
+            counter="255"
           ></v-text-field>
         </v-card-text>
         <v-card-actions>
