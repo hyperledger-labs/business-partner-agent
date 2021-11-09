@@ -454,6 +454,7 @@ export default {
     closeDialog() {
       this.resetCredentialEdit();
       this.declineReasonText = "";
+      this.$emit("changed");
       this.dialog = false;
     },
     isItemActive(item) {
@@ -463,16 +464,16 @@ export default {
       this.revoked.push(id);
       issuerService.revokeCredential(id);
     },
-    acceptCredentialOffer(id) {
-      issuerService.acceptCredentialOffer(id);
+    async acceptCredentialOffer(id) {
+      await issuerService.acceptCredentialOffer(id);
       this.closeDialog();
     },
-    declineCredentialOffer(id) {
-      issuerService.declineCredentialOffer(id, this.declineReasonText);
+    async declineCredentialOffer(id) {
+      await issuerService.declineCredentialOffer(id, this.declineReasonText);
       this.closeDialog();
     },
-    declineCredentialProposal(id) {
-      issuerService.declineCredentialProposal(id, this.declineReasonText);
+    async declineCredentialProposal(id) {
+      await issuerService.declineCredentialProposal(id, this.declineReasonText);
       this.closeDialog();
     },
     async sendCounterOffer(acceptAll) {
