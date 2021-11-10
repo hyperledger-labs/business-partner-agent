@@ -48,6 +48,27 @@ jobs:
         with:
           plugin_groups: '[ "com.spotify" ]' 
 
+      - name: Prepare docker tags for license image
+        id: preparetagslicense
+        uses: docker/metadata-action@v3
+        if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') }}
+        with:
+          images: ghcr.io/hyperledger-labs/business-partner-agent-license
+          tags: |
+            type=ref,event=tag
+            type=edge,branch=main
+            type=sha
+
+      - name: Prepare docker tags for bpa image
+        id: preparetags
+        uses: docker/metadata-action@v3
+        with:
+          images: ghcr.io/hyperledger-labs/business-partner-agent-new
+          tags: |
+            type=ref,event=tag
+            type=edge,branch=main
+            type=sha
+
       # Test Phase
 
       - name: Test with npm
@@ -74,7 +95,7 @@ jobs:
         run: cp -r ./frontend/dist ./backend/business-partner-agent/src/main/resources/public
 
       - name: Build backend
-        run: mvn -f backend/pom.xml clean package -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true -Dlicense.skip=true
+        run: mvn -f backend/pom.xml clean package -Drevision=${{ fromJSON(steps.preparetags.outputs.json).labels['org.opencontainers.image.revision] }} -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true -Dlicense.skip=true
 
       # Docker Phase (triggered only on main or tag)
 
@@ -89,15 +110,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner}}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Prepare docker tags license image
-        uses: Surgo/docker-smart-tag-action@v1      
-        if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') }}
-        id: preparetagslicense
-        with:
-          docker_image: ghcr.io/hyperledger-labs/business-partner-agent-license
-          default_branch: ${{ github.event.repository.default_branch }}
-          tag_with_sha: true 
 
       - name: Build and push license container
         if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') }}
@@ -106,16 +118,7 @@ jobs:
           context: .
           push: true
           file: Dockerfile.license
-          tags: ${{ steps.preparetagslicense.outputs.tag }}
-          
-      - name: Prepare docker images bpa
-        uses: Surgo/docker-smart-tag-action@v1
-        if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') }}
-        id: preparetags
-        with:
-          docker_image: ghcr.io/hyperledger-labs/business-partner-agent-new
-          default_branch: ${{ github.event.repository.default_branch }}
-          tag_with_sha: true
+          tags: ${{ steps.preparetagslicense.outputs.tags }}
 
       - name: Build and push container
         if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') }}
@@ -124,4 +127,4 @@ jobs:
           context: .
           push: true
           file: Dockerfile.run
-          tags: ${{ steps.preparetags.outputs.tag }}
+          tags: ${{ steps.preparetags.outputs.tags }}

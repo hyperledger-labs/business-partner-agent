@@ -146,7 +146,7 @@ export default {
         .then((result) => {
           this.isBusy = false;
           if (result.status === 200) {
-            EventBus.$emit("success", "Parttner updated successfully");
+            EventBus.$emit("success", "Partner updated successfully");
             this.$emit("success");
           }
         })
