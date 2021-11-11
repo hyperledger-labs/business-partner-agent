@@ -95,7 +95,7 @@ jobs:
         run: cp -r ./frontend/dist ./backend/business-partner-agent/src/main/resources/public
 
       - name: Build backend
-        run: mvn -f backend/pom.xml clean package -Drevision=${{ fromJSON(steps.preparetags.outputs.json).labels['org.opencontainers.image.revision] }} -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true -Dlicense.skip=true
+        run: mvn -f backend/pom.xml clean package -Drevision=${{ fromJSON(steps.preparetags.outputs.json).labels['org.opencontainers.image.revision'] }} -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true -Dlicense.skip=true
 
       # Docker Phase (triggered only on main or tag)
 

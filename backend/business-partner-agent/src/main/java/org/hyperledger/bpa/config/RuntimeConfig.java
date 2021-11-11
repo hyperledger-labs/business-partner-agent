@@ -26,11 +26,14 @@ import jakarta.inject.Singleton;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.bpa.impl.StartupTasks;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 
 @Getter
@@ -87,16 +90,27 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
     /** only set when running from .jar */
     String buildVersion;
 
+    @JsonIgnore
+    Instant startTime;
+
     public String getAgentName() {
         return DidResolver.splitDidFrom(agentName).getLabel();
+    }
+
+    public String getUptime() {
+        Duration up = Duration.between(startTime, Instant.now());
+        return DurationFormatUtils.formatDurationHMS(up.toMillis());
     }
 
     @Override
     public void onApplicationEvent(StartupTasks.AcaPyReady event) {
 
+        startTime = Instant.now();
         buildVersion = getClass().getPackage().getImplementationVersion();
         if (buildVersion != null) {
             log.info("BPA running with build version: {}", buildVersion);
+        } else {
+            buildVersion = "development";
         }
 
         try {

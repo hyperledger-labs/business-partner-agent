@@ -155,6 +155,10 @@ export default {
           value: "ledgerPrefix",
         },
         {
+          text: "Uptime HH:mm:ss.SSS",
+          value: "uptime",
+        },
+        {
           text: "Version",
           value: "buildVersion",
         },
