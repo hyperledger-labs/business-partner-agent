@@ -132,6 +132,7 @@ public class Partner extends StateChangeDecorator<Partner, ConnectionState> {
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> supportedCredentials;
 
+    @Builder.Default
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     @JoinTable(name = "partner_tag")
     private Set<Tag> tags = new HashSet<>();

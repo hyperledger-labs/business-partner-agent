@@ -25,8 +25,8 @@ import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import java.util.Objects;
 
 public class NonRevocationApplicator {
-    @Builder.Default
-    Boolean applyNonRevocation = false;
+
+    Boolean applyNonRevocation;
 
     PresentProofRequest.ProofRequest.ProofNonRevoked nonRevocation;
 

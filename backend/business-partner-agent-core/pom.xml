@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.hyperledger.business-partner-agent</groupId>
         <artifactId>business-partner-agent-parent</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>business-partner-agent-core</artifactId>
