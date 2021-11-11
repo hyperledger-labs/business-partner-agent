@@ -55,6 +55,7 @@
     "close": "Close",
     "sendCounterOffer": "Send Counter Offer",
     "revoke": "Revoke",
+    "reissue": "ReIssue",
     "useV2": "Use V2"
   },
   "view": {

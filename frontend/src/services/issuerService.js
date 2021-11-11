@@ -97,4 +97,7 @@ export default {
       counterOfferData
     );
   },
+  reIssueCredential(id) {
+    return appAxios().post(`${ApiRoutes.ISSUER}/exchanges/${id}/re-issue`);
+  },
 };
