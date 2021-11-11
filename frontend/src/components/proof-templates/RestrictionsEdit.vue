@@ -17,7 +17,7 @@
         "
       >
         <v-col>
-          <v-alert type="warning"
+          <v-alert type="info"
             >{{ $t("view.proofTemplate.restrictions.errorNoTrustedIssuer") }}
           </v-alert>
         </v-col>

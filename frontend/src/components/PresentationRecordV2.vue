@@ -82,7 +82,7 @@
     </v-card>
 
     <!-- Timeline  -->
-    <Timeline v-bind:timeEntries="Object.entries(record.stateToTimestamp)" />
+    <Timeline v-bind:timeEntries="record.stateToTimestamp" />
 
     <!-- ExpertMode: Raw data -->
     <v-expansion-panels class="mt-4" v-if="expertMode" accordion flat>

@@ -63,6 +63,7 @@ export const PresentationExchangeStates = Object.freeze({
   PRESENTATION_SENT: "presentation_sent",
   PRESENTATION_RECEIVED: "presentation_received",
   VERIFIED: "verified",
+  DECLINED: "declined",
   PRESENTATION_ACKED: "presentation_acked",
 });
 

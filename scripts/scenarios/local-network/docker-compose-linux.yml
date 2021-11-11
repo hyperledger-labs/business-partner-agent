@@ -68,6 +68,8 @@ services:
         --label '${AGENT1_NAME}' \
         ${ACAPY_ADMIN_CONFIG} \
         ${ACAPY_READ_ONLY_MODE} \
+        ${ACAPY_TAILS_BASE_URL} \
+        ${ACAPY_TAILS_UPLOAD_URL} \
         "
       ]
     volumes:
@@ -149,6 +151,8 @@ services:
         --label '${AGENT2_NAME}' \
         ${ACAPY_ADMIN_CONFIG} \
         ${ACAPY_READ_ONLY_MODE} \
+        ${ACAPY_TAILS_BASE_URL} \
+        ${ACAPY_TAILS_UPLOAD_URL} \
         "
       ]
     volumes:
@@ -165,9 +169,30 @@ services:
     volumes:
       - bpa-wallet-db2:/var/lib/postgresql/data
 
+  #######
+  # Tails Server for Revocation support
+  #######
+  tails-server:
+    build:
+      context: https://github.com/bcgov/indy-tails-server.git#master
+      dockerfile: docker/Dockerfile.tails-server
+    ports:
+      - "6543:6543"
+    command: >
+      tails-server
+        --host 0.0.0.0
+        --port 6543
+        --storage-path /home/indy/tails-server-files
+        --log-level DEBUG
+    # container runs as user indy, but mount belongs to root
+    # needs change in Dockerfile to fix the permissions
+    user: root
+    volumes:
+      - tails-data:/home/indy/tails-server-files
+
 
 
 volumes:
   bpa-wallet-db1:
   bpa-wallet-db2:
-
+  tails-data:

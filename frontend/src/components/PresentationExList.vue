@@ -34,23 +34,32 @@
       <template v-slot:[`item.state`]="{ item }">
         <span>
           {{ (item.state ? item.state.replace("_", " ") : "") | capitalize }}
+          <v-icon v-if="item.valid" color="green" class="iconHeight"
+            >$vuetify.icons.check</v-icon
+          >
+          <v-icon
+            v-if="isStateVerified(item) && !item.valid && !item.problemReport"
+            color="error"
+            small
+            class="iconHeight"
+          >
+            $vuetify.icons.connectionAlert
+          </v-icon>
+          <v-tooltip v-if="item.problemReport" top>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon
+                color="error"
+                small
+                class="iconHeight"
+                v-bind="attrs"
+                v-on="on"
+              >
+                $vuetify.icons.connectionAlert
+              </v-icon>
+            </template>
+            <span>{{ item.problemReport }}</span>
+          </v-tooltip>
         </span>
-        <v-icon v-if="item.valid" color="green">$vuetify.icons.check</v-icon>
-        <v-icon
-          v-if="isStateVerified(item) && !item.valid && !item.problemReport"
-          color="error"
-          small
-        >
-          $vuetify.icons.connectionAlert
-        </v-icon>
-        <v-tooltip v-if="item.problemReport" top>
-          <template v-slot:activator="{ on, attrs }">
-            <v-icon color="error" small v-bind="attrs" v-on="on">
-              $vuetify.icons.connectionAlert
-            </v-icon>
-          </template>
-          <span>{{ item.problemReport }}</span>
-        </v-tooltip>
       </template>
       <template v-slot:[`item.updatedAt`]="{ item }">
         {{ item.updatedAt | formatDateLong }}
@@ -59,7 +68,9 @@
     <v-dialog v-if="dialog" v-model="dialog" scrollable max-width="1000px">
       <v-card>
         <v-card-title class="bg-light">
-          <span class="headline">Presentation Exchange</span>
+          <span class="headline">{{
+            $t("component.presentationExList.dialog.title")
+          }}</span>
           <v-layout justify-end>
             <v-btn depressed color="red" icon @click="deleteItem">
               <v-icon dark>$vuetify.icons.delete</v-icon>
@@ -91,24 +102,32 @@
             border="left"
             type="warning"
           >
-            Request can't be fullfilled with credentials in wallet
+            {{ $t("component.presentationExList.dialog.alertFulfill") }}
           </v-alert>
+          <v-text-field
+            v-if="isStateRequestReceived"
+            v-model="declineReasonText"
+            :label="
+              $t('component.presentationExList.dialog.declineReasonLabel')
+            "
+            counter="255"
+          ></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-bpa-button color="secondary" @click="closeItem(record)"
-            >Close</v-bpa-button
-          >
+          <v-bpa-button color="secondary" @click="closeItem(record)">{{
+            $t("button.close")
+          }}</v-bpa-button>
           <span v-if="isStateRequestReceived">
-            <v-bpa-button color="secondary" @click="decline"
-              >Decline</v-bpa-button
-            >
+            <v-bpa-button color="secondary" @click="decline">{{
+              $t("button.decline")
+            }}</v-bpa-button>
             <v-bpa-button
               :loading="isBusy"
               color="primary"
               :disabled="!isReadyToApprove"
               @click="approve"
-              >Accept</v-bpa-button
+              >{{ $t("button.accept") }}</v-bpa-button
             >
           </span>
         </v-card-actions>
@@ -116,7 +135,11 @@
     </v-dialog>
   </v-container>
 </template>
-
+<style scoped>
+.iconHeight {
+  display: inherit;
+}
+</style>
 <script>
 import { proofExService } from "@/services";
 import { EventBus } from "@/main";
@@ -155,6 +178,7 @@ export default {
       isBusy: false,
       isLoading: false,
       isWaitingForMatchingCreds: false,
+      declineReasonText: "",
       headers: [
         {
           text: "",
@@ -209,12 +233,16 @@ export default {
     },
   },
   methods: {
+    closeDialog() {
+      this.declineReasonText = "";
+      this.dialog = false;
+    },
     async approve() {
       const payload = this.prepareApprovePayload();
       try {
         await proofExService.approveProofRequest(this.record.id, payload);
         EventBus.$emit("success", "Proof has been sent");
-        this.dialog = false;
+        this.closeDialog();
         this.$emit("changed");
       } catch (e) {
         EventBus.$emit("error", this.$axiosErrorMessage(e));
@@ -222,22 +250,45 @@ export default {
     },
     async decline() {
       try {
-        await proofExService.declineProofRequest(this.record.id);
+        await proofExService.declineProofRequest(
+          this.record.id,
+          this.declineReasonText
+        );
         EventBus.$emit("success", "Presentation request declined");
-        this.dialog = false;
+        this.closeDialog();
         this.$emit("changed");
       } catch (e) {
         EventBus.$emit("error", this.$axiosErrorMessage(e));
       }
     },
     openItem(item) {
-      this.record = item;
+      const itemCopy = {};
+      Object.assign(itemCopy, item);
+
+      const presentationStateToTimestamp = Object.entries(
+        itemCopy.stateToTimestamp
+      );
+
+      for (const stateElement of presentationStateToTimestamp) {
+        if (
+          itemCopy.problemReport &&
+          stateElement[0] === PresentationExchangeStates.DECLINED
+        ) {
+          stateElement.push(itemCopy.problemReport);
+        } else {
+          stateElement.push(undefined);
+        }
+      }
+
+      itemCopy.stateToTimestamp = presentationStateToTimestamp;
+
+      this.record = itemCopy;
       this.dialog = true;
       this.addProofData();
       this.$emit("openItem", item);
     },
     closeItem() {
-      this.dialog = false;
+      this.closeDialog();
       this.record = {};
     },
     isStateVerified(item) {
@@ -252,7 +303,7 @@ export default {
           );
           this.items.splice(idx, 1);
           EventBus.$emit("success", "Presentation record deleted");
-          this.dialog = false;
+          this.closeDialog();
         }
       } catch (e) {
         EventBus.$emit("error", this.$axiosErrorMessage(e));
