@@ -14,8 +14,13 @@ export default {
   // Presentation/Proof Exchange API
   //
 
-  declineProofRequest(id) {
-    return appAxios().post(`${ApiRoutes.PROOF_EXCHANGES}/${id}/decline`);
+  declineProofRequest(id, reasonMessage = undefined) {
+    const message =
+      reasonMessage === undefined || "" ? undefined : reasonMessage;
+
+    return appAxios().post(`${ApiRoutes.PROOF_EXCHANGES}/${id}/decline`, {
+      message,
+    });
   },
   approveProofRequest(id, payload) {
     return appAxios().post(`${ApiRoutes.PROOF_EXCHANGES}/${id}/prove`, payload);

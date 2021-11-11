@@ -202,6 +202,7 @@
         v-bind:items="issuedCredentials"
         v-bind:headers="headersIssued"
         v-bind:openItemById="credExId"
+        @changed="refreshIssuedCredentialRecords"
       ></CredExList>
       <v-card-actions>
         <v-dialog v-model="issueCredentialDialog" persistent max-width="600px">

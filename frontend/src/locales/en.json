@@ -271,15 +271,24 @@
         "iconCredIssued": "Credential issued",
         "iconCredRevoked": "Credential revoked",
         "iconRevokeCred": "Revoke credential",
-        "holderNotRevoked": "credential valid and not revoked",
-        "holderNotRevocable": "credential valid and not revocable"
+        "revoked": "Revoked",
+        "holderNotRevoked": "Credential valid and not revoked",
+        "holderNotRevocable": "Credential valid and not revocable"
       },
       "dialog": {
         "title": "Credential",
         "timeline": "Timeline",
         "partnerLabel": "Partner",
         "credDefLabel": "Credential Definition",
-        "attributesTitle": "Credential Content"
+        "attributesTitle": "Credential Content",
+        "declineReasonLabel": "Decline reason (Optional)"
+      }
+    },
+    "presentationExList": {
+      "dialog": {
+        "title": "Presentation Exchange",
+        "alertFulfill": "Request can't be fulfilled with credentials in wallet",
+        "declineReasonLabel": "Decline reason (Optional)"
       }
     },
     "profile": {

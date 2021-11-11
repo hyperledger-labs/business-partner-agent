@@ -35,37 +35,7 @@
       </v-list-item-subtitle>
     </v-list-item>
     <!-- Timeline  -->
-    <v-expansion-panels accordion flat>
-      <v-expansion-panel>
-        <v-expansion-panel-header
-          class="grey--text text--darken-2 font-weight-medium bg-light"
-          >Timeline</v-expansion-panel-header
-        >
-        <v-expansion-panel-content class="bg-light">
-          <v-timeline dense>
-            <v-timeline-item
-              fill-dot
-              small
-              v-for="item in Object.entries(record.stateToTimestamp)"
-              :key="item.key"
-            >
-              <v-row class="pt-1">
-                <v-col cols="3">
-                  {{ item[1] | formatDateLong }}
-                </v-col>
-                <v-col>
-                  <div class="text-caption">
-                    <strong>
-                      {{ item[0].replace("_", " ") | capitalize }}
-                    </strong>
-                  </div>
-                </v-col>
-              </v-row>
-            </v-timeline-item>
-          </v-timeline>
-        </v-expansion-panel-content>
-      </v-expansion-panel>
-    </v-expansion-panels>
+    <Timeline :time-entries="record.stateToTimestamp"></Timeline>
 
     <!-- Request Content -->
     <template v-if="!isStateProposalSent">
@@ -224,6 +194,7 @@ import {
   RequestTypes,
   Restrictions,
 } from "@/constants";
+import Timeline from "@/components/Timeline";
 export default {
   name: "PresentationRecord",
   props: {
@@ -333,7 +304,7 @@ export default {
       RequestTypes,
     };
   },
-  components: {},
+  components: { Timeline },
 };
 </script>
 

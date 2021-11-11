@@ -24,24 +24,30 @@
       <template v-slot:[`item.state`]="{ item }">
         <span>
           {{ (item.state ? item.state.replace("_", " ") : "") | capitalize }}
+          <v-icon
+            v-if="isItemActive(item) && !item.revoked"
+            class="iconHeight"
+            color="green"
+            >$vuetify.icons.check</v-icon
+          >
+          <v-icon v-else-if="isItemActive(item) && item.revoked"
+            >$vuetify.icons.check</v-icon
+          >
+          <v-tooltip v-if="item.errorMsg && stateIsProblemOrDeclined(item)" top>
+            <template v-slot:activator="{ on, attrs }">
+              <v-icon
+                color="error"
+                class="iconHeight"
+                small
+                v-bind="attrs"
+                v-on="on"
+              >
+                $vuetify.icons.connectionAlert
+              </v-icon>
+            </template>
+            <span>{{ item.errorMsg }}</span>
+          </v-tooltip>
         </span>
-        <v-icon v-if="isItemActive(item) && !item.revoked" color="green"
-          >$vuetify.icons.check</v-icon
-        >
-        <v-icon v-else-if="isItemActive(item) && item.revoked"
-          >$vuetify.icons.check</v-icon
-        >
-        <v-tooltip
-          v-if="item.errorMsg && item.state === exchangeStates.PROBLEM"
-          top
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-icon color="error" small v-bind="attrs" v-on="on">
-              $vuetify.icons.connectionAlert
-            </v-icon>
-          </template>
-          <span>{{ item.errorMsg }}</span>
-        </v-tooltip>
       </template>
       <template v-slot:[`item.updatedAt`]="{ item }">
         {{ item.updatedAt | formatDateLong }}
@@ -50,14 +56,17 @@
         {{ item.createdAt | formatDateLong }}
       </template>
       <template v-slot:[`item.role`]="{ item }">
-        {{ item.role }}
+        {{ item.role | capitalize }}
       </template>
       <template v-slot:[`item.revocable`]="{ item }">
-        <v-icon
-          v-if="item.revocable && item.revoked"
-          :title="$t('component.credExList.table.iconCredRevoked')"
-          >$vuetify.icons.revoked</v-icon
-        >
+        <span v-if="item.revocable && item.revoked"
+          >{{ $t("component.credExList.table.revoked") }}
+          <v-icon
+            :title="$t('component.credExList.table.iconCredRevoked')"
+            class="iconHeight"
+            >$vuetify.icons.revoked</v-icon
+          >
+        </span>
         <v-icon
           v-else-if="
             isItemActive(item) &&
@@ -67,12 +76,14 @@
           "
           color="green"
           :title="$t('component.credExList.table.holderNotRevoked')"
+          class="iconHeight"
           >$vuetify.icons.revoke</v-icon
         >
         <v-icon
           v-else-if="isItemActive(item) && !item.revocable"
           color="green"
           :title="$t('component.credExList.table.holderNotRevocable')"
+          class="iconHeight"
           >$vuetify.icons.check</v-icon
         >
         <v-btn
@@ -89,7 +100,7 @@
         <span v-else></span>
       </template>
     </v-data-table>
-    <v-dialog v-model="dialog" max-width="600px">
+    <v-dialog v-model="dialog" max-width="600px" persistent>
       <v-card>
         <v-card-title class="bg-light">
           <span class="headline">{{
@@ -106,7 +117,7 @@
             dense
           ></v-select>
           <v-select
-            v-if="document.credentialExchangeRole === exchangeRoles.ISSUER"
+            v-if="documentRoleIsOfferReceived"
             :label="$t('component.credExList.dialog.credDefLabel')"
             return-object
             v-model="credDef"
@@ -119,9 +130,7 @@
           <!-- Timeline  -->
           <Timeline
             v-if="document.credentialStateToTimestamp"
-            v-bind:timeEntries="
-              Object.entries(document.credentialStateToTimestamp)
-            "
+            :time-entries="document.credentialStateToTimestamp"
           />
 
           <br />
@@ -132,10 +141,7 @@
               <v-layout
                 align-center
                 justify-end
-                v-if="
-                  document.credentialExchangeState ===
-                  exchangeStates.PROPOSAL_RECEIVED
-                "
+                v-if="documentStateIsProposalReceived"
               >
                 <div v-if="isEditModeCredential">
                   <v-btn
@@ -173,15 +179,20 @@
               ></Cred>
             </v-card-text>
           </v-card>
+          <v-text-field
+            v-if="
+              documentStateIsOfferReceived || documentStateIsProposalReceived
+            "
+            v-model="declineReasonText"
+            :label="$t('component.credExList.dialog.declineReasonLabel')"
+            counter="255"
+          ></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-layout align-end justify-end>
             <v-bpa-button
               :color="
-                document.credentialExchangeState ===
-                  exchangeStates.PROPOSAL_RECEIVED ||
-                document.credentialExchangeState ===
-                  exchangeStates.OFFER_RECEIVED
+                documentStateIsProposalReceived || documentStateIsOfferReceived
                   ? 'secondary'
                   : 'primary'
               "
@@ -189,19 +200,13 @@
               >{{ $t("button.close") }}</v-bpa-button
             >
             <v-bpa-button
-              v-if="
-                document.credentialExchangeState ===
-                exchangeStates.PROPOSAL_RECEIVED
-              "
+              v-if="documentStateIsProposalReceived"
               color="secondary"
               @click="declineCredentialProposal(document.walletCredentialId)"
               >{{ $t("button.decline") }}</v-bpa-button
             >
             <v-bpa-button
-              v-if="
-                document.credentialExchangeState ===
-                exchangeStates.PROPOSAL_RECEIVED
-              "
+              v-if="documentStateIsProposalReceived"
               color="primary"
               :disabled="
                 dialogEditCredentialIsInitialData ||
@@ -213,10 +218,7 @@
               >{{ $t("button.sendCounterOffer") }}</v-bpa-button
             >
             <v-bpa-button
-              v-if="
-                document.credentialExchangeState ===
-                exchangeStates.PROPOSAL_RECEIVED
-              "
+              v-if="documentStateIsProposalReceived"
               color="primary"
               :disabled="
                 !dialogEditCredentialIsInitialData || isEditModeCredential
@@ -226,19 +228,13 @@
               >{{ $t("button.accept") }}</v-bpa-button
             >
             <v-bpa-button
-              v-if="
-                document.credentialExchangeState ===
-                exchangeStates.OFFER_RECEIVED
-              "
+              v-if="documentStateIsOfferReceived"
               color="secondary"
               @click="declineCredentialOffer(document.walletCredentialId)"
               >{{ $t("button.decline") }}</v-bpa-button
             >
             <v-bpa-button
-              v-if="
-                document.credentialExchangeState ===
-                exchangeStates.OFFER_RECEIVED
-              "
+              v-if="documentStateIsOfferReceived"
               color="primary"
               @click="acceptCredentialOffer(document.walletCredentialId)"
               >{{ $t("button.accept") }}</v-bpa-button
@@ -249,6 +245,11 @@
     </v-dialog>
   </v-container>
 </template>
+<style scoped>
+.iconHeight {
+  display: inherit;
+}
+</style>
 <script>
 import { issuerService } from "@/services";
 import Cred from "@/components/Credential.vue";
@@ -334,6 +335,23 @@ export default {
         return this.$store.getters.getCredDefSelectList;
       },
     },
+    documentStateIsProposalReceived() {
+      return (
+        this.document.credentialExchangeState ===
+        CredentialExchangeStates.PROPOSAL_RECEIVED
+      );
+    },
+    documentStateIsOfferReceived() {
+      return (
+        this.document.credentialExchangeState ===
+        CredentialExchangeStates.OFFER_RECEIVED
+      );
+    },
+    documentRoleIsOfferReceived() {
+      return (
+        this.document.credentialExchangeRole === CredentialExchangeRoles.ISSUER
+      );
+    },
     dialogEditCredentialIsInitialData: function () {
       return (
         JSON.stringify(this.document.credentialData) ===
@@ -353,7 +371,6 @@ export default {
           return true;
         }
       }
-
       return false;
     },
   },
@@ -363,7 +380,7 @@ export default {
       isEditModeCredential: false,
       isLoadingSendCounterOffer: false,
       credentialContentChanged: false,
-      exchangeStates: CredentialExchangeStates,
+      declineReasonText: "",
       exchangeRoles: CredentialExchangeRoles,
       document: {},
       partner: {},
@@ -383,6 +400,18 @@ export default {
       this.partner = this.partnerList.find((p) => p.value === item.partner.id);
       this.credDef = this.credDefList.find((p) => p.value === item.credDef.id);
 
+      const credentialStateToTimestamp = Object.entries(item.stateToTimestamp);
+      for (const stateElement of credentialStateToTimestamp) {
+        if (
+          item.errorMsg &&
+          stateElement[0] === CredentialExchangeStates.DECLINED
+        ) {
+          stateElement.push(item.errorMsg);
+        } else {
+          stateElement.push(undefined);
+        }
+      }
+
       this.document = {
         credentialData: { ...item.credential.attrs },
         credentialInitialData: { ...item.credential.attrs },
@@ -393,13 +422,19 @@ export default {
         credentialExchangeState: item.state,
         credentialExchangeRole: item.role,
         credentialWasEdited: false,
-        credentialStateToTimestamp: item.stateToTimestamp,
+        credentialStateToTimestamp,
         walletCredentialId: item.id,
       };
 
       this.$store.commit("credentialNotificationSeen", { id: item.id });
       this.$store.commit("credentialNotificationSeen", { id: item.id });
       this.$emit("openItem", item);
+    },
+    stateIsProblemOrDeclined(item) {
+      return (
+        item.state === CredentialExchangeStates.DECLINED ||
+        item.state === CredentialExchangeStates.PROBLEM
+      );
     },
     resetCredentialEdit() {
       Object.assign(
@@ -418,6 +453,8 @@ export default {
     },
     closeDialog() {
       this.resetCredentialEdit();
+      this.declineReasonText = "";
+      this.$emit("changed");
       this.dialog = false;
     },
     isItemActive(item) {
@@ -427,16 +464,16 @@ export default {
       this.revoked.push(id);
       issuerService.revokeCredential(id);
     },
-    acceptCredentialOffer(id) {
-      issuerService.acceptCredentialOffer(id);
+    async acceptCredentialOffer(id) {
+      await issuerService.acceptCredentialOffer(id);
       this.closeDialog();
     },
-    declineCredentialOffer(id) {
-      issuerService.declineCredentialOffer(id);
+    async declineCredentialOffer(id) {
+      await issuerService.declineCredentialOffer(id, this.declineReasonText);
       this.closeDialog();
     },
-    declineCredentialProposal(id) {
-      issuerService.declineCredentialProposal(id);
+    async declineCredentialProposal(id) {
+      await issuerService.declineCredentialProposal(id, this.declineReasonText);
       this.closeDialog();
     },
     async sendCounterOffer(acceptAll) {
