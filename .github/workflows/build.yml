@@ -66,6 +66,7 @@ jobs:
           images: ghcr.io/hyperledger-labs/business-partner-agent-new
           tags: |
             type=ref,event=tag
+            type=ref,event=pr
             type=edge,branch=main
             type=sha
 
