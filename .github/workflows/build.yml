@@ -65,9 +65,9 @@ jobs:
         with:
           images: ghcr.io/hyperledger-labs/business-partner-agent-new
           tags: |
-            type=ref,event=tag
-            type=sha
-            type=edge,branch=main
+            type=ref,event=tag,priority=900
+            type=sha,priority=800
+            type=edge,branch=main,priority=700
 
       # Test Phase
 
