@@ -109,7 +109,10 @@
       },
       "credentialExchanges": {
         "title": "Credential Exchanges",
-        "button": "Issue Credential"
+        "button": {
+          "issueCredential": "Issue Credential",
+          "requestCredential": "Request Credential"
+        }
       },
       "stateDialog": {
         "title": "Connection State {state}",
@@ -199,6 +202,11 @@
     },
     "requestPresentation": {
       "title": "Create a Presentation Request",
+      "sendRequest": "Send Request"
+    },
+    "requestCredential": {
+      "title": "Create a Credential Request",
+      "createDocument": "Create Document",
       "sendRequest": "Send Request"
     },
     "presentationRecord": {

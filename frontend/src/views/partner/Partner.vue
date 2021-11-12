@@ -208,7 +208,7 @@
         <v-dialog v-model="issueCredentialDialog" persistent max-width="600px">
           <template v-slot:activator="{ on, attrs }">
             <v-bpa-button color="primary" small v-bind="attrs" v-on="on">{{
-              $t("view.partner.credentialExchanges.button")
+              $t("view.partner.credentialExchanges.button.issueCredential")
             }}</v-bpa-button>
           </template>
           <IssueCredential
@@ -218,6 +218,10 @@
           >
           </IssueCredential>
         </v-dialog>
+        <!-- TODO -->
+        <v-bpa-button small color="primary" @click="requestCredential">{{
+          $t("view.partner.credentialExchanges.button.requestCredential")
+        }}</v-bpa-button>
       </v-card-actions>
     </v-card>
 
@@ -432,6 +436,25 @@ export default {
     },
     refreshIssuedCredentialRecords() {
       this.getIssuedCredentials(this.id);
+    },
+    // TODO
+    requestCredential() {
+      if (this.isActive) {
+        this.$router.push({
+          name: "RequestCredential",
+          params: {
+            id: this.id,
+          },
+        });
+      } else {
+        this.attentionPartnerStateDialog = true;
+        this.goTo = {
+          name: "RequestCredential",
+          params: {
+            id: this.id,
+          },
+        };
+      }
     },
     getPartner() {
       console.log("Getting partner...");
