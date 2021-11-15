@@ -403,8 +403,9 @@ export default {
       const credentialStateToTimestamp = Object.entries(item.stateToTimestamp);
       for (const stateElement of credentialStateToTimestamp) {
         if (
-          item.errorMsg &&
-          stateElement[0] === CredentialExchangeStates.DECLINED
+          (item.errorMsg &&
+            stateElement[0] === CredentialExchangeStates.DECLINED) ||
+          stateElement[0] === CredentialExchangeStates.PROBLEM
         ) {
           stateElement.push(item.errorMsg);
         } else {
