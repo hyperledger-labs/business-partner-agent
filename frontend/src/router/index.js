@@ -35,6 +35,7 @@ import ProofTemplateCreate from "@/views/ProofTemplateCreate";
 import ProofTemplateView from "@/views/ProofTemplateView";
 import RequestPresentationCreateProofTemplate from "@/views/RequestPresentationCreateProofTemplate";
 import RequestCredential from "@/views/RequestCredential";
+import RequestCredentialCreateDocument from "@/views/RequestCredentialCreateDocument";
 
 Vue.use(VueRouter);
 
@@ -134,6 +135,12 @@ const routes = [
     path: "/app/partners/:id/request-credential",
     name: "RequestCredential",
     component: RequestCredential,
+    props: true,
+  },
+  {
+    path: "/app/partners/:id/request-credential/create-document",
+    name: "RequestCredentialCreateDocument",
+    component: RequestCredentialCreateDocument,
     props: true,
   },
   {

@@ -207,7 +207,7 @@
       <v-card-actions>
         <v-dialog v-model="issueCredentialDialog" persistent max-width="600px">
           <template v-slot:activator="{ on, attrs }">
-            <v-bpa-button color="primary" small v-bind="attrs" v-on="on">{{
+            <v-bpa-button color="secondary" small v-bind="attrs" v-on="on">{{
               $t("view.partner.credentialExchanges.button.issueCredential")
             }}</v-bpa-button>
           </template>
@@ -219,9 +219,15 @@
           </IssueCredential>
         </v-dialog>
         <!-- TODO -->
-        <v-bpa-button small color="primary" @click="requestCredential">{{
-          $t("view.partner.credentialExchanges.button.requestCredential")
-        }}</v-bpa-button>
+        <v-bpa-button
+          style="margin-left: 8px"
+          small
+          color="primary"
+          @click="requestCredential"
+          >{{
+            $t("view.partner.credentialExchanges.button.requestCredential")
+          }}</v-bpa-button
+        >
       </v-card-actions>
     </v-card>
 

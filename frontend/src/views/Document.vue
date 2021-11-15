@@ -9,12 +9,7 @@
   <v-container>
     <v-card v-if="isReady" class="mx-auto">
       <v-card-title class="bg-light">
-        <v-btn
-          depressed
-          color="secondary"
-          icon
-          @click="$router.push({ name: 'Wallet' })"
-        >
+        <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
         {{ schemaLabel }}
@@ -164,7 +159,7 @@ export default {
       EventBus.$emit("title", "Edit Document");
       this.getDocument();
     } else if (!this.type) {
-      this.$router.push({ name: "Wallet" });
+      this.$router.go(-1);
     } else {
       EventBus.$emit("title", "Create new Document");
       this.document.type = this.type;
@@ -234,9 +229,7 @@ export default {
             console.log(res);
             this.isBusy = false;
             if (closeDocument) {
-              this.$router.push({
-                name: "Wallet",
-              });
+              this.$router.go(-1);
             } else {
               this.$router.go(this.$router.currentRoute);
             }
@@ -261,9 +254,7 @@ export default {
           .then((res) => {
             console.log(res);
             this.isBusy = false;
-            this.$router.push({
-              name: "Wallet",
-            });
+            this.$router.go(-1);
             EventBus.$emit("success", "Success");
           })
           .catch((e) => {
@@ -278,9 +269,7 @@ export default {
         .then((result) => {
           if (result.status === 200) {
             EventBus.$emit("success", "Document deleted");
-            this.$router.push({
-              name: "Wallet",
-            });
+            this.$router.go(-1);
           }
         })
         .catch((e) => {
@@ -288,20 +277,15 @@ export default {
         });
     },
     cancel() {
-      this.$router.push({
-        name: "Wallet",
-      });
+      this.$router.go(-1);
     },
     isProfile(schemaType) {
       return !this.schemaId && schemaType === CredentialTypes.PROFILE.type;
     },
     fieldModified() {
-      const isModified = Object.keys(this.intDoc).find((key) => {
-        return this.document[key] != this.intDoc[key];
-      })
-        ? true
-        : false;
-      this.docChanged = isModified;
+      this.docChanged = !!Object.keys(this.intDoc).find((key) => {
+        return this.document[key] !== this.intDoc[key];
+      });
       this.docModified();
     },
     documentDataFieldChanged(credChanged) {

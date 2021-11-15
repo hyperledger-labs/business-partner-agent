@@ -15,6 +15,7 @@
       >
       <MyCredentialList
         v-bind:headers="docHeaders"
+        v-model="selectedDocument"
         selectable
         type="document"
       ></MyCredentialList>
@@ -23,45 +24,18 @@
           <v-bpa-button color="secondary" @click="cancel()">{{
             $t("button.cancel")
           }}</v-bpa-button>
-          <v-bpa-button color="primary" @click="openCreateProofTemplate()">
+          <v-bpa-button color="primary" @click="openCreateDocument()">
             {{ $t("view.requestCredential.createDocument") }}
           </v-bpa-button>
           <v-bpa-button
             :loading="this.isBusy"
-            :disabled="selectedProofTemplate.length === 0"
+            :disabled="selectedDocument.length === 0"
             color="primary"
-            @click="submitRequest()"
+            @click="submitCredentialRequest()"
           >
             {{ $t("view.requestCredential.sendRequest") }}
           </v-bpa-button>
         </v-layout>
-
-        <!-- <v-menu>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn
-                color="primary"
-                dark
-                small
-                absolute
-                bottom
-                left
-                fab
-                v-bind="attrs"
-                v-on="on"
-            >
-              <v-icon>$vuetify.icons.add</v-icon>
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item
-                v-for="(type, i) in newDocumentTypes"
-                :key="i"
-                @click="createDocument(type)"
-            >
-              <v-list-item-title>{{ type.label }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu> -->
       </v-card-actions>
     </v-card>
   </v-container>
@@ -69,11 +43,11 @@
 
 <script>
 import { EventBus } from "@/main";
-import proofTemplateService from "@/services/proofTemplateService";
 import { ExchangeVersion } from "@/constants";
 import MyCredentialList from "@/components/MyCredentialList";
 import { docHeaders } from "@/components/tableHeaders/WalletHeaders";
 import VBpaButton from "@/components/BpaButton";
+import credentialService from "@/services/credentialService";
 
 export default {
   name: "RequestPresentation",
@@ -89,7 +63,7 @@ export default {
   data: () => {
     return {
       isBusy: false,
-      selectedProofTemplate: [],
+      selectedDocument: [],
       selectedSchema: [],
       selectedIssuer: [],
       useV2Exchange: false,
@@ -102,26 +76,27 @@ export default {
     },
   },
   methods: {
-    openCreateProofTemplate() {
+    openCreateDocument() {
       this.$router.push({
-        name: "RequestPresentationCreateProofTemplate",
+        name: "RequestCredentialCreateDocument",
         params: {
           id: this.id,
         },
       });
     },
-    async submitRequest() {
+    async submitCredentialRequest() {
       this.isBusy = true;
       let data = {
+        documentId: this.selectedDocument[0].id,
         exchangeVersion: this.useV2Exchange
           ? ExchangeVersion.V2
           : ExchangeVersion.V1,
       };
 
-      proofTemplateService
-        .sendProofTemplate(this.selectedProofTemplate[0].id, this.id, data)
+      credentialService
+        .sendCredentialRequest(this.id, data)
         .then(() => {
-          EventBus.$emit("success", "Presentation request sent");
+          EventBus.$emit("success", "Credential verification request sent");
           this.isBusy = false;
           this.$router.go(-1);
         })
