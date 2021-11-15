@@ -11,7 +11,7 @@
     <v-data-table
       :hide-default-footer="data.length < 10"
       :loading="isBusy"
-      v-model="selected"
+      v-model="inputValue"
       :headers="headers"
       :items="data"
       :show-select="selectable"
@@ -114,13 +114,20 @@ export default {
     return {
       data: [],
       isBusy: true,
-      selected: [],
       CredentialTypes: CredentialTypes,
     };
   },
   computed: {
     credentialNotifications() {
       return this.$store.getters.credentialNotifications;
+    },
+    inputValue: {
+      get() {
+        return this.value;
+      },
+      set(val) {
+        this.$emit("input", val);
+      },
     },
   },
   watch: {

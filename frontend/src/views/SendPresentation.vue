@@ -19,8 +19,8 @@
         <h4 class="pt-4">{{ $t("view.sendPresentation.selectCredential") }}</h4>
         <MyCredentialList
           v-bind:headers="credHeaders"
+          v-model="selectedCredentials"
           type="credential"
-          ref="PresentationList"
           selectable
         ></MyCredentialList>
       </v-card-text>
@@ -37,6 +37,7 @@
           }}</v-bpa-button>
           <v-bpa-button
             :loading="this.isBusy"
+            :disabled="this.selectedCredentials.length === 0"
             color="primary"
             @click="sendPresentation()"
             >{{ $t("button.submit") }}</v-bpa-button
@@ -48,9 +49,7 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
-
-// import { CredentialTypes } from "../constants";
+import { EventBus } from "@/main";
 import MyCredentialList from "@/components/MyCredentialList";
 import VBpaButton from "@/components/BpaButton";
 import { ExchangeVersion } from "@/constants";
@@ -71,6 +70,7 @@ export default {
     return {
       isBusy: false,
       useV2Exchange: false,
+      selectedCredentials: [],
       credHeaders: [
         {
           text: "Label",
@@ -99,35 +99,30 @@ export default {
   methods: {
     sendPresentation() {
       this.isBusy = true;
-      if (this.$refs.PresentationList.selected.length === 1) {
-        if (this.$refs.PresentationList.selected[0].id) {
-          let selectedCredential = this.$refs.PresentationList.selected[0].id;
-          this.$axios
-            .post(`${this.$apiBaseUrl}/partners/${this.id}/proof-send`, {
-              myCredentialId: selectedCredential,
-              exchangeVersion: this.useV2Exchange
-                ? ExchangeVersion.V2
-                : ExchangeVersion.V1,
-            })
-            .then((res) => {
-              console.log(res);
-              this.isBusy = false;
-              EventBus.$emit("success", "Presentation sent");
-              this.$router.push({
-                name: "Partner",
-                params: { id: this.id },
-              });
-            })
-            .catch((e) => {
-              this.isBusy = false;
-              EventBus.$emit("error", this.$axiosErrorMessage(e));
+      const selectedCredential = this.selectedCredentials[0].id;
+      if (selectedCredential) {
+        this.$axios
+          .post(`${this.$apiBaseUrl}/partners/${this.id}/proof-send`, {
+            myCredentialId: selectedCredential,
+            exchangeVersion: this.useV2Exchange
+              ? ExchangeVersion.V2
+              : ExchangeVersion.V1,
+          })
+          .then((res) => {
+            console.log(res);
+            this.isBusy = false;
+            EventBus.$emit("success", "Presentation sent");
+            this.$router.push({
+              name: "Partner",
+              params: { id: this.id },
             });
-        } else {
-          this.isBusy = false;
-        }
+          })
+          .catch((e) => {
+            this.isBusy = false;
+            EventBus.$emit("error", this.$axiosErrorMessage(e));
+          });
       } else {
         this.isBusy = false;
-        EventBus.$emit("error", "No credential selected");
       }
     },
 
