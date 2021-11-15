@@ -196,6 +196,10 @@ public class Converter {
                 .build();
     }
 
+    public JsonNode mapToNode(@NonNull Map<String, String> from) {
+        return mapper.valueToTree(from);
+    }
+
     public Map<String, Object> toMap(@NonNull Object fromValue) {
         return mapper.convertValue(fromValue, STRING_OBJECT_MAP);
     }
