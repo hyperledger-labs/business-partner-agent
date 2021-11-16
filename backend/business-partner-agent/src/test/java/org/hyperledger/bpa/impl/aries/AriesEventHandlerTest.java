@@ -173,7 +173,7 @@ class AriesEventHandlerTest extends BaseTest {
                 .threadId(exReqSent.getThreadId())
                 .proofRequest(exReqSent.getPresentationRequest())
                 .pushStateChange(PresentationExchangeState.REQUEST_SENT,
-                        TimeUtil.parseZonedTimestamp(exReqSent.getUpdatedAt()))
+                        TimeUtil.fromISOInstant(exReqSent.getUpdatedAt()))
                 .build());
 
         aeh.handleProof(exReqSent);

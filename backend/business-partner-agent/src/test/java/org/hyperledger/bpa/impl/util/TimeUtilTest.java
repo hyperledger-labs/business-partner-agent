@@ -27,20 +27,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class TimeUtilTest {
 
     @Test
-    void testParseAndWrite() {
+    void testISONoMilli() {
         final String ts = "2020-07-17T14:32:34Z";
-        Instant i = TimeUtil.parseTimestamp(ts);
-        String time = TimeUtil.currentTimeFormatted(i);
+        Instant i = TimeUtil.fromISOInstant(ts);
+        String time = TimeUtil.toISOInstantTruncated(i);
         assertEquals(ts, time);
     }
 
     @Test
-    void testParseZoned() {
-        final String ts = "2020-07-30 08:36:19.461968Z";
-        final Instant i = TimeUtil.parseZonedTimestamp(ts);
+    void testISOWithMilli() {
+        final String ts = "2021-11-16T12:02:41.930486Z";
+        final Instant i = TimeUtil.fromISOInstant(ts);
         assertNotNull(i);
-        String time = TimeUtil.currentTimeFormatted(i);
-        assertEquals("2020-07-30T08:36:19Z", time);
+        String time = TimeUtil.toISOInstant(i);
+        assertEquals(ts, time);
     }
-
 }
