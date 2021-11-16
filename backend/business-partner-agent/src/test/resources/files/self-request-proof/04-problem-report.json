@@ -1,5 +1,5 @@
 {
-  "updated_at": "2021-11-16T12:02:41.930499Z",
+  "updated_at": "2021-08-26T07:57:00.416044Z",
   "trace": false,
   "presentation_request": {
     "nonce": "929779824754905793012293",
@@ -42,7 +42,7 @@
   "thread_id": "62f7fa51-2e0f-4fec-9c5e-7b7a48c3ce1b",
   "initiator": "self",
   "presentation_exchange_id": "dc3c553c-5a87-476a-96c6-05e60aad475e",
-  "created_at": "2021-11-16T12:02:42.930486Z",
+  "created_at": "2021-08-26T07:56:37.648268Z",
   "error_msg": "no matching credential found",
   "role": "verifier"
 }

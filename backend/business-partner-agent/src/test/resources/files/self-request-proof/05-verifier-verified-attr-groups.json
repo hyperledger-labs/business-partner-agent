@@ -40,7 +40,7 @@
     },
     "requested_predicates": {}
   },
-  "created_at": "2021-08-25 09:28:28.510805Z",
+  "created_at": "2021-08-25T09:28:28.510805Z",
   "thread_id": "c8ddf6c1-e468-47b3-9fd9-9a6adbad93e2",
   "trace": false,
   "auto_present": false,
@@ -358,6 +358,6 @@
       }
     ]
   },
-  "updated_at": "2021-08-25 09:28:29.080394Z",
+  "updated_at": "2021-08-25T09:28:29.080394Z",
   "initiator": "self"
 }
