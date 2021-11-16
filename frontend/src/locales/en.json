@@ -207,7 +207,10 @@
     "requestCredential": {
       "title": "Create a Credential Request",
       "createDocument": "Create Document",
-      "sendRequest": "Send Request"
+      "sendRequest": "Send Request",
+      "createDocumentView": {
+        "selectSchemaLabel": "Select schema as document base"
+      }
     },
     "presentationRecord": {
       "matchingCredentials": {

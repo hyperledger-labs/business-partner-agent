@@ -95,6 +95,11 @@ export default {
   props: {
     type: String,
     headers: Array,
+    disableVerificationRequest: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     selectable: {
       type: Boolean,
       default: false,
@@ -171,6 +176,7 @@ export default {
           name: "Document",
           params: {
             id: doc.id,
+            disableVerificationRequest: this.disableVerificationRequest,
             // type: doc.type,
           },
         });

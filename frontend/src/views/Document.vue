@@ -58,41 +58,43 @@
         </v-list-item>
         <v-divider></v-divider>
 
-        <v-list-item
-          v-if="this.id && !isProfile(document.type)"
-          :disabled="docModified()"
+        <div
+          v-if="
+            !disableVerificationRequest && this.id && !isProfile(document.type)
+          "
         >
-          <v-tooltip right v-model="showTooltip">
-            <template v-slot:activator="{ attrs }">
-              <v-list-item-content>
-                <v-list-item-title>Verification</v-list-item-title>
-                <v-list-item-subtitle
-                  >Request a verification</v-list-item-subtitle
-                >
-              </v-list-item-content>
+          <v-list-item :disabled="docModified()">
+            <v-tooltip right v-model="showTooltip">
+              <template v-slot:activator="{ attrs }">
+                <v-list-item-content>
+                  <v-list-item-title>Verification</v-list-item-title>
+                  <v-list-item-subtitle
+                    >Request a verification</v-list-item-subtitle
+                  >
+                </v-list-item-content>
 
-              <v-list-item-action>
-                <!-- TODO übergabe der parameter mit schemaId params {type: { type: meinType schemaId: schemaId }}-->
-                <v-btn
-                  v-bind="attrs"
-                  icon
-                  :to="{
-                    name: 'RequestVerification',
-                    params: { documentId: id, schemaId: intDoc.schemaId },
-                  }"
-                  :disabled="docModified()"
-                >
-                  <v-icon color="grey">$vuetify.icons.next</v-icon>
-                </v-btn>
-              </v-list-item-action>
-            </template>
-            <span
-              >Document modified, please save before start verification</span
-            >
-          </v-tooltip>
-        </v-list-item>
-
-        <v-divider></v-divider>
+                <v-list-item-action>
+                  <!-- TODO übergabe der parameter mit schemaId params {type: { type: meinType schemaId: schemaId }}-->
+                  <v-btn
+                    v-bind="attrs"
+                    icon
+                    :to="{
+                      name: 'RequestVerification',
+                      params: { documentId: id, schemaId: intDoc.schemaId },
+                    }"
+                    :disabled="docModified()"
+                  >
+                    <v-icon color="grey">$vuetify.icons.next</v-icon>
+                  </v-btn>
+                </v-list-item-action>
+              </template>
+              <span
+                >Document modified, please save before start verification</span
+              >
+            </v-tooltip>
+          </v-list-item>
+          <v-divider></v-divider>
+        </div>
       </v-card-text>
 
       <v-card-actions>
@@ -132,8 +134,8 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
-import { CredentialTypes } from "../constants";
+import { EventBus } from "@/main";
+import { CredentialTypes } from "@/constants";
 import OrganizationalProfile from "@/components/OrganizationalProfile";
 import Credential from "@/components/Credential";
 import VBpaButton from "@/components/BpaButton";
@@ -153,13 +155,16 @@ export default {
       type: String,
       required: false,
     },
+    disableVerificationRequest: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   created() {
-    if (this.id) {
+    if (this.id && !this.type) {
       EventBus.$emit("title", "Edit Document");
       this.getDocument();
-    } else if (!this.type) {
-      this.$router.go(-1);
     } else {
       EventBus.$emit("title", "Create new Document");
       this.document.type = this.type;
