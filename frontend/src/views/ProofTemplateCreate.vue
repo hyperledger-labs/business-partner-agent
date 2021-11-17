@@ -151,7 +151,7 @@
             color="primary"
             @click="createProofTemplate"
           >
-            {{ $t("button.create") }}
+            {{ getCreateButtonLabel }}
           </v-bpa-button>
         </v-layout>
       </v-card-actions>
@@ -183,6 +183,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    createButtonLabel: {
+      type: String,
+      default: undefined,
+    },
   },
   components: { RestrictionsEdit, AttributeEdit, VBpaButton },
   created() {
@@ -204,6 +208,11 @@ export default {
     };
   },
   computed: {
+    getCreateButtonLabel() {
+      return this.createButtonLabel
+        ? this.createButtonLabel
+        : this.$t("button.create");
+    },
     rules() {
       return {
         required: (value) => !!value || this.$t("app.rules.required"),

@@ -29,6 +29,8 @@
       :schema-id="selectedSchema.schemaId"
       :type="selectedSchema.type"
       disable-verification-request
+      :create-button-label="$t('button.saveAndSend')"
+      v-on:received-document-id="submitRequest($event)"
     ></Document>
   </v-container>
 </template>
@@ -36,7 +38,8 @@
 <script>
 import { EventBus } from "@/main";
 import Document from "@/views/Document.vue";
-import { CredentialTypes } from "@/constants";
+import { CredentialTypes, ExchangeVersion } from "@/constants";
+import credentialService from "@/services/credentialService";
 
 export default {
   name: "RequestCredentialCreateDocument",
@@ -48,6 +51,29 @@ export default {
     return {
       selectedSchema: undefined,
     };
+  },
+  methods: {
+    async submitRequest(documentIdAndExchangeVersion) {
+      this.isBusy = true;
+      let data = {
+        documentId: documentIdAndExchangeVersion.documentId,
+        exchangeVersion: documentIdAndExchangeVersion.useV2Exchange
+          ? ExchangeVersion.V2
+          : ExchangeVersion.V1,
+      };
+
+      credentialService
+        .sendCredentialRequest(this.id, data)
+        .then(() => {
+          EventBus.$emit("success", "Credential verification request sent");
+          this.isBusy = false;
+          this.$router.go(-1);
+        })
+        .catch((e) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(e));
+          this.isBusy = false;
+        });
+    },
   },
   computed: {
     newDocumentTypes() {

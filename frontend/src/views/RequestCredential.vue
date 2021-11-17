@@ -22,6 +22,11 @@
       ></MyCredentialList>
       <v-card-actions>
         <v-layout align-center align-end justify-end>
+          <v-switch
+            v-if="expertMode"
+            v-model="useV2Exchange"
+            :label="$t('button.useV2')"
+          ></v-switch>
           <v-bpa-button color="secondary" @click="cancel()">{{
             $t("button.cancel")
           }}</v-bpa-button>

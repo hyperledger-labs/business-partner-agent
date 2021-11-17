@@ -45,6 +45,7 @@
   "button": {
     "accept": "Accept",
     "save": "Save",
+    "saveAndSend": "Save and Send",
     "submit": "Submit",
     "create": "Create",
     "createAndSend": "Create and Send",

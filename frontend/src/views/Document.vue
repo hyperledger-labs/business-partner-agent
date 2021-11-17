@@ -98,7 +98,12 @@
       </v-card-text>
 
       <v-card-actions>
-        <v-layout align-end justify-end>
+        <v-layout align-center align-end justify-end>
+          <v-switch
+            v-if="expertMode"
+            v-model="useV2Exchange"
+            :label="$t('button.useV2')"
+          ></v-switch>
           <v-bpa-button color="secondary" @click="cancel()"
             >Cancel</v-bpa-button
           >
@@ -106,7 +111,7 @@
             :loading="this.isBusy"
             color="primary"
             @click="saveDocument(false || isProfile(intDoc.type))"
-            >Save</v-bpa-button
+            >{{ getCreateButtonLabel }}</v-bpa-button
           >
           <v-bpa-button
             v-show="this.id && !isProfile(intDoc.type)"
@@ -160,6 +165,10 @@ export default {
       required: false,
       default: false,
     },
+    createButtonLabel: {
+      type: String,
+      default: undefined,
+    },
   },
   created() {
     if (this.id && !this.type) {
@@ -180,6 +189,7 @@ export default {
       intDoc: {},
       isBusy: false,
       isReady: false,
+      useV2Exchange: false,
       CredentialTypes,
       docChanged: false,
       credChanged: false,
@@ -198,6 +208,11 @@ export default {
       } else {
         return null;
       }
+    },
+    getCreateButtonLabel() {
+      return this.createButtonLabel
+        ? this.createButtonLabel
+        : this.$t("button.save");
     },
   },
   watch: {},
@@ -258,6 +273,10 @@ export default {
           .post(`${this.$apiBaseUrl}/wallet/document`, docForSave)
           .then((res) => {
             console.log(res);
+            this.$emit("received-document-id", {
+              documentId: res.data.id,
+              useV2Exchange: this.useV2Exchange,
+            });
             this.isBusy = false;
             this.$router.go(-1);
             EventBus.$emit("success", "Success");
