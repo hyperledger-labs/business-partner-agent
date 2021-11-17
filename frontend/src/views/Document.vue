@@ -100,7 +100,7 @@
       <v-card-actions>
         <v-layout align-center align-end justify-end>
           <v-switch
-            v-if="expertMode"
+            v-if="expertMode && enableV2Switch"
             v-model="useV2Exchange"
             :label="$t('button.useV2')"
           ></v-switch>
@@ -161,6 +161,11 @@ export default {
       required: false,
     },
     disableVerificationRequest: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    enableV2Switch: {
       type: Boolean,
       required: false,
       default: false,

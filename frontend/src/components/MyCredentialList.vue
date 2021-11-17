@@ -8,12 +8,20 @@
 
 <template>
   <v-container>
+    <v-text-field
+      v-model="search"
+      append-icon="$vuetify.icons.search"
+      :label="$t('app.search')"
+      single-line
+      hide-details
+    ></v-text-field>
     <v-data-table
       :hide-default-footer="data.length < 10"
       :loading="isBusy"
       v-model="inputValue"
       :headers="headers"
       :items="data"
+      :search="search"
       :show-select="selectable"
       single-select
       :sort-by="['createdDate']"
@@ -118,6 +126,7 @@ export default {
   data: () => {
     return {
       data: [],
+      search: "",
       isBusy: true,
       CredentialTypes: CredentialTypes,
     };

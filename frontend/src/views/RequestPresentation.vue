@@ -88,7 +88,7 @@ export default {
     },
     async submitRequest() {
       this.isBusy = true;
-      let data = {
+      const data = {
         exchangeVersion: this.useV2Exchange
           ? ExchangeVersion.V2
           : ExchangeVersion.V1,

@@ -29,6 +29,7 @@
       :schema-id="selectedSchema.schemaId"
       :type="selectedSchema.type"
       disable-verification-request
+      enable-v2-switch
       :create-button-label="$t('button.saveAndSend')"
       v-on:received-document-id="submitRequest($event)"
     ></Document>
