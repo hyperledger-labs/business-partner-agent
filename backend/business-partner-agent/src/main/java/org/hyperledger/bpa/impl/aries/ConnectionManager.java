@@ -256,7 +256,7 @@ public class ConnectionManager {
                                     ? didPrefix + record.getTheirDid()
                                     : didPrefix + UNKNOWN_DID)
                             .state(record.getState())
-                            .pushStateChange(record.getState(), TimeUtil.parseZonedTimestamp(record.getUpdatedAt()))
+                            .pushStateChange(record.getState(), TimeUtil.fromISOInstant(record.getUpdatedAt()))
                             .label(record.getTheirLabel())
                             .incoming(Boolean.TRUE)
                             .trustPing(Boolean.TRUE)

@@ -1,6 +1,6 @@
 {
   "error_msg": "created problem report: Holder declined credential offer: no reason provided",
-  "created_at": "2021-10-20 10:29:30.090863Z",
+  "created_at": "2021-10-20T10:29:30.090863Z",
   "auto_offer": false,
   "trace": false,
   "role": "holder",
@@ -36,7 +36,7 @@
       }
     ]
   },
-  "updated_at": "2021-10-20 10:29:37.187795Z",
+  "updated_at": "2021-10-20T10:29:37.187795Z",
   "auto_issue": false,
   "initiator": "external",
   "thread_id": "407ac88a-3bf2-4597-a13a-ae330626479e",

@@ -175,7 +175,7 @@ public class ProofEventHandler {
      * @return {@link PartnerProof}
      */
     private PartnerProof defaultProof(@NonNull UUID partnerId, @NonNull PresentationExchangeRecord proof) {
-        Instant ts = TimeUtil.parseZonedTimestamp(proof.getUpdatedAt());
+        Instant ts = TimeUtil.fromISOInstant(proof.getUpdatedAt());
         return PartnerProof
                 .builder()
                 .partnerId(partnerId)

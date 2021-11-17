@@ -17,13 +17,11 @@
  */
 package org.hyperledger.bpa.impl.util;
 
-import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.StringUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
@@ -33,29 +31,19 @@ public class TimeUtil {
 
     private static final DateTimeFormatter ISO_INSTANT_FORMATTER = DateTimeFormatter.ISO_INSTANT;
 
-    private static final DateTimeFormatter ZONED_FORMATTER = DateTimeFormatter.ofPattern(
-            "yyyy-MM-dd' 'HH:mm:ss[.SSSSSS]X");
+    public static String toISOInstant(@NonNull Instant instant) {
+        return ISO_INSTANT_FORMATTER.format(instant);
+    }
 
-    public static String currentTimeFormatted(@NonNull Instant instant) {
+    public static String toISOInstantTruncated(@NonNull Instant instant) {
         return ISO_INSTANT_FORMATTER.format(instant.truncatedTo(ChronoUnit.SECONDS));
     }
 
-    public static Instant parseTimestamp(String ts) {
+    public static Instant fromISOInstant(String ts) {
         if (StringUtils.isEmpty(ts)) {
             return Instant.ofEpochMilli(0);
         }
         final TemporalAccessor parsed = ISO_INSTANT_FORMATTER.parse(ts);
         return Instant.from(parsed);
-    }
-
-    public static Instant parseZonedTimestamp(@Nullable String ts) {
-        if (StringUtils.isNotEmpty(ts)) {
-            try {
-                return ZonedDateTime.parse(ts, ZONED_FORMATTER).toInstant();
-            } catch (Exception e) {
-                log.error("Could not parse TS", e);
-            }
-        }
-        return null;
     }
 }

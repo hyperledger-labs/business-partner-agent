@@ -102,7 +102,7 @@
         <dependency><!-- Overwrite for jakarta-annotations-api -->
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-annotations-api</artifactId>
-            <version>10.1.0-M5</version>
+            <version>10.1.0-M7</version>
         </dependency>
 
         <!-- Logging -->
@@ -123,7 +123,7 @@
         <dependency>
             <groupId>network.idu.acapy</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.7.13</version>
+            <version>0.7.14</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>
@@ -150,7 +150,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>5.5.2</version>
+            <version>5.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>

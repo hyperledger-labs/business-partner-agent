@@ -140,14 +140,14 @@ class ConnectionManagerTest extends BaseTest {
             "    \"accept\": \"manual\",\n" +
             "    \"routing_state\": \"none\",\n" +
             "    \"alias\": \"a950b832-59ac-480c-8135-e76ba76f03ba\",\n" +
-            "    \"updated_at\": \"2021-07-05 13:31:09.179622Z\",\n" +
+            "    \"updated_at\": \"2021-07-05T13:31:09.179622Z\",\n" +
             "    \"their_did\": \"did:sov:EraYCDJUPsChbkw7S1vV96\",\n" +
             "    \"their_public_did\": \"did:sov:EraYCDJUPsChbkw7S1vV96\",\n" +
             "    \"state\": \"request\",\n" +
             "    \"my_did\": \"F6dB7dMVHUQSC64qemnBi7\",\n" +
             "    \"request_id\": \"e7b668eb-2a26-4dc0-84e5-73b0f2c0fe05\",\n" +
             "    \"connection_id\": \"de0d51e8-4c7f-4dc9-8b7b-a8f57182d8a5\",\n" +
-            "    \"created_at\": \"2021-07-05 13:31:09.179622Z\"\n" +
+            "    \"created_at\": \"2021-07-05T13:31:09.179622Z\"\n" +
             "}";
 
     private final String connInvitationActive = "{\n" +
@@ -158,14 +158,14 @@ class ConnectionManagerTest extends BaseTest {
             "    \"accept\": \"manual\",\n" +
             "    \"routing_state\": \"none\",\n" +
             "    \"alias\": \"a950b832-59ac-480c-8135-e76ba76f03ba\",\n" +
-            "    \"updated_at\": \"2021-07-05 13:32:29.689513Z\",\n" +
+            "    \"updated_at\": \"2021-07-05T13:32:29.689513Z\",\n" +
             "    \"their_did\": \"8hXCW94BRYSm2PQeFHFcV1\",\n" +
             "    \"their_public_did\": \"did:sov:EraYCDJUPsChbkw7S1vV96\",\n" +
             "    \"state\": \"completed\",\n" +
             "    \"my_did\": \"F6dB7dMVHUQSC64qemnBi7\",\n" +
             "    \"request_id\": \"e7b668eb-2a26-4dc0-84e5-73b0f2c0fe05\",\n" +
             "    \"connection_id\": \"de0d51e8-4c7f-4dc9-8b7b-a8f57182d8a5\",\n" +
-            "    \"created_at\": \"2021-07-05 13:31:09.179622Z\"\n" +
+            "    \"created_at\": \"2021-07-05T13:31:09.179622Z\"\n" +
             "}";
 
     private final String receiveRequest = "{\n" +
@@ -178,12 +178,12 @@ class ConnectionManagerTest extends BaseTest {
             "    \"accept\": \"auto\",\n" +
             "    \"invitation_mode\": \"once\",\n" +
             "    \"routing_state\": \"none\",\n" +
-            "    \"created_at\": \"2021-07-05 14:31:59.321382Z\",\n" +
+            "    \"created_at\": \"2021-07-05T14:31:59.321382Z\",\n" +
             "    \"connection_protocol\": \"didexchange/1.0\",\n" +
             "    \"rfc23_state\": \"request-received\",\n" +
             "    \"their_did\": \"EraYCDJUPsChbkw7S1vV96\",\n" +
             "    \"connection_id\": \"b8d4f176-7967-4af7-9686-60a59b35f122\",\n" +
-            "    \"updated_at\": \"2021-07-05 14:31:59.321382Z\"\n" +
+            "    \"updated_at\": \"2021-07-05T14:31:59.321382Z\"\n" +
             "}";
 
     private final String receiveActive = "{\n" +
@@ -196,23 +196,23 @@ class ConnectionManagerTest extends BaseTest {
             "    \"accept\": \"auto\",\n" +
             "    \"invitation_mode\": \"once\",\n" +
             "    \"routing_state\": \"none\",\n" +
-            "    \"created_at\": \"2021-07-05 14:31:59.321382Z\",\n" +
+            "    \"created_at\": \"2021-07-05T14:31:59.321382Z\",\n" +
             "    \"connection_protocol\": \"didexchange/1.0\",\n" +
             "    \"rfc23_state\": \"completed\",\n" +
             "    \"their_did\": \"EraYCDJUPsChbkw7S1vV96\",\n" +
             "    \"connection_id\": \"b8d4f176-7967-4af7-9686-60a59b35f122\",\n" +
-            "    \"updated_at\": \"2021-07-05 14:31:59.735196Z\"\n" +
+            "    \"updated_at\": \"2021-07-05T14:31:59.735196Z\"\n" +
             "}";
 
     private final String inviteReceive = "{\n" +
             "    \"accept\": \"auto\",\n" +
             "    \"connection_id\": \"5d41c1cb-2856-4026-984e-24d2976a05ba\",\n" +
             "    \"connection_protocol\": \"connections/1.0\",\n" +
-            "    \"updated_at\": \"2021-04-28 08:20:17.034908Z\",\n" +
+            "    \"updated_at\": \"2021-04-28T08:20:17.034908Z\",\n" +
             "    \"alias\": \"Invitation 1\",\n" +
             "    \"routing_state\": \"none\",\n" +
             "    \"invitation_key\": \"J9CHkDjr3oG7nq3enrojCRvsY9Cxq1Z7W1Y56GHNZe29\",\n" +
-            "    \"created_at\": \"2021-04-28 08:20:17.034908Z\",\n" +
+            "    \"created_at\": \"2021-04-28T08:20:17.034908Z\",\n" +
             "    \"their_role\": \"invitee\",\n" +
             "    \"state\": \"invitation\",\n" +
             "    \"invitation_mode\": \"once\",\n" +
@@ -222,13 +222,13 @@ class ConnectionManagerTest extends BaseTest {
     private final String inviteResponse = "{\n" +
             "    \"accept\": \"auto\",\n" +
             "    \"connection_id\": \"5d41c1cb-2856-4026-984e-24d2976a05ba\",\n" +
-            "    \"updated_at\": \"2021-04-28 08:20:43.237710Z\",\n" +
+            "    \"updated_at\": \"2021-04-28T08:20:43.237710Z\",\n" +
             "    \"their_label\": \"Wallet\",\n" +
             "    \"alias\": \"Invitation 1\",\n" +
             "    \"their_did\": \"QjqxU2wnrBGwLJnW585QWp\",\n" +
             "    \"routing_state\": \"none\",\n" +
             "    \"invitation_key\": \"J9CHkDjr3oG7nq3enrojCRvsY9Cxq1Z7W1Y56GHNZe29\",\n" +
-            "    \"created_at\": \"2021-04-28 08:20:17.034908Z\",\n" +
+            "    \"created_at\": \"2021-04-28T08:20:17.034908Z\",\n" +
             "    \"their_role\": \"invitee\",\n" +
             "    \"state\": \"response\",\n" +
             "    \"my_did\": \"37FY6gGZWATtKv8ywwJjdi\",\n" +
@@ -242,7 +242,7 @@ class ConnectionManagerTest extends BaseTest {
             "    \"invitation_key\": \"8gdhRLtvJHzKoJGyuEqgdN1QZGYfai4wMHFGgtfDXg3D\",\n" +
             "    \"connection_protocol\": \"didexchange/1.0\",\n" +
             "    \"invitation_mode\": \"once\",\n" +
-            "    \"updated_at\": \"2021-07-19 12:16:04.851837Z\",\n" +
+            "    \"updated_at\": \"2021-07-19T12:16:04.851837Z\",\n" +
             "    \"their_did\": \"XYQQ6f1VDkDEDzWLRKzMc2\",\n" +
             "    \"accept\": \"auto\",\n" +
             "    \"connection_id\": \"3f4da8f3-04e9-49dd-9dd8-fc09183efc83\",\n" +
@@ -251,7 +251,7 @@ class ConnectionManagerTest extends BaseTest {
             "    \"routing_state\": \"none\",\n" +
             "    \"invitation_msg_id\": \"2d1f1bd7-5f87-48d6-929e-104297c24173\",\n" +
             "    \"their_label\": \"bob\",\n" +
-            "    \"created_at\": \"2021-07-19 12:15:48.001375Z\",\n" +
+            "    \"created_at\": \"2021-07-19T12:15:48.001375Z\",\n" +
             "    \"request_id\": \"ab682132-8c45-48aa-ae32-babaae435f6d\"\n" +
             "}";
 
@@ -261,7 +261,7 @@ class ConnectionManagerTest extends BaseTest {
             "    \"invitation_key\": \"8gdhRLtvJHzKoJGyuEqgdN1QZGYfai4wMHFGgtfDXg3D\",\n" +
             "    \"connection_protocol\": \"didexchange/1.0\",\n" +
             "    \"invitation_mode\": \"once\",\n" +
-            "    \"updated_at\": \"2021-07-19 12:16:05.291960Z\",\n" +
+            "    \"updated_at\": \"2021-07-19T12:16:05.291960Z\",\n" +
             "    \"their_did\": \"XYQQ6f1VDkDEDzWLRKzMc2\",\n" +
             "    \"accept\": \"auto\",\n" +
             "    \"connection_id\": \"3f4da8f3-04e9-49dd-9dd8-fc09183efc83\",\n" +
@@ -271,7 +271,7 @@ class ConnectionManagerTest extends BaseTest {
             "    \"routing_state\": \"none\",\n" +
             "    \"invitation_msg_id\": \"2d1f1bd7-5f87-48d6-929e-104297c24173\",\n" +
             "    \"their_label\": \"bob\",\n" +
-            "    \"created_at\": \"2021-07-19 12:15:48.001375Z\",\n" +
+            "    \"created_at\": \"2021-07-19T12:15:48.001375Z\",\n" +
             "    \"request_id\": \"ab682132-8c45-48aa-ae32-babaae435f6d\"\n" +
             "}";
 }

@@ -29,7 +29,7 @@ import java.util.List;
 
 @Singleton
 @Getter
-public class ActivityLogConfig {
+public final class ActivityLogConfig {
     /*
      * For now, we are not sure what to do with this configuration. Will each
      * installation determine what their own definition of "complete" is, or which
@@ -95,8 +95,8 @@ public class ActivityLogConfig {
     }
 
     private List<ConnectionState> buildConnectionStatesForActivities() {
-        List<ConnectionState> results = new ArrayList<>(this.getConnectionStatesForCompleted());
-        results.addAll(this.getConnectionStatesForTasks());
+        List<ConnectionState> results = new ArrayList<>(this.connectionStatesForCompleted);
+        results.addAll(this.connectionStatesForTasks);
         results.add(ConnectionState.INVITATION);
         return List.copyOf(results);
     }
@@ -105,9 +105,9 @@ public class ActivityLogConfig {
         return !this.acaPyConfig.getAutoAcceptRequests();
     }
 
-    public List<PresentationExchangeState> buildPresentationExchangeStatesForActivities() {
-        List<PresentationExchangeState> results = new ArrayList<>(this.getPresentationExchangeStatesForCompleted());
-        results.addAll(this.getPresentationExchangeStatesForTasks());
+    private List<PresentationExchangeState> buildPresentationExchangeStatesForActivities() {
+        List<PresentationExchangeState> results = new ArrayList<>(this.presentationExchangeStatesForCompleted);
+        results.addAll(this.presentationExchangeStatesForTasks);
         results.add(PresentationExchangeState.REQUEST_SENT);
         return List.copyOf(results);
     }
@@ -116,9 +116,9 @@ public class ActivityLogConfig {
         return !this.acaPyConfig.getAutoRespondPresentationRequest();
     }
 
-    public List<CredentialExchangeState> buildCredentialExchangeStatesForActivities() {
-        List<CredentialExchangeState> results = new ArrayList<>(this.getCredentialExchangeStatesForCompleted());
-        results.addAll(this.getCredentialExchangeStatesForTasks());
+    private List<CredentialExchangeState> buildCredentialExchangeStatesForActivities() {
+        List<CredentialExchangeState> results = new ArrayList<>(this.credentialExchangeStatesForCompleted);
+        results.addAll(this.credentialExchangeStatesForTasks);
         results.add(CredentialExchangeState.REQUEST_SENT);
         return List.copyOf(results);
     }

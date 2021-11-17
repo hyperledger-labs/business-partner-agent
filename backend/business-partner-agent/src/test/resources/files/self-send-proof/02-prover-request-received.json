@@ -1,5 +1,5 @@
 {
-    "updated_at": "2020-09-07 09:19:53.108674Z",
+    "updated_at": "2020-09-07T09:19:53.108674Z",
     "thread_id": "00107a82-d4fd-4d8d-a985-4cbbc6ea624d",
     "initiator": "self",
     "role": "prover",
@@ -48,6 +48,6 @@
     },
     "auto_present": true,
     "state": "request_received",
-    "created_at": "2020-09-07 09:19:52.220141Z",
+    "created_at": "2020-09-07T09:19:52.220141Z",
     "trace": false
 }

@@ -353,7 +353,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
                     .credentialExchangeId(credEx.getCredentialExchangeId())
                     .state(credEx.getState())
                     .credentialOffer(credEx.getCredentialProposalDict().getCredentialProposal())
-                    .pushStateChange(credEx.getState(), TimeUtil.parseZonedTimestamp(credEx.getUpdatedAt()))
+                    .pushStateChange(credEx.getState(), TimeUtil.fromISOInstant(credEx.getUpdatedAt()))
                     .role(CredentialExchangeRole.HOLDER)
                     .exchangeVersion(version)
                     .build();
@@ -384,7 +384,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
                     .setCredential(credEx.getCredential())
                     .setLabel(label)
                     .setIssuer(resolveIssuer(credEx.getCredential()))
-                    .pushStates(credEx.getState(), TimeUtil.parseZonedTimestamp(credEx.getUpdatedAt()));
+                    .pushStates(credEx.getState(), TimeUtil.fromISOInstant(credEx.getUpdatedAt()));
             holderCredExRepo.update(db);
             fireCredentialAddedEvent(db);
         });

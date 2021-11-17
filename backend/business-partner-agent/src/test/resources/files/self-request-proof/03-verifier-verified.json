@@ -1,5 +1,5 @@
  {
-    "updated_at": "2020-09-07 09:31:33.626386Z",
+    "updated_at": "2020-09-07T09:31:33.626386Z",
     "thread_id": "62f7fa51-2e0f-4fec-9c5e-7b7a48c3ce1b",
     "initiator": "self",
     "role": "verifier",
@@ -361,6 +361,6 @@
         ]
     },
     "state": "verified",
-    "created_at": "2020-09-07 09:31:31.460063Z",
+    "created_at": "2020-09-07T09:31:31.460063Z",
     "trace": false
 }
