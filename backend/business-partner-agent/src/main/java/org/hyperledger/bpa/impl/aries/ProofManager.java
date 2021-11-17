@@ -150,7 +150,7 @@ public class ProofManager {
                                         Map.of("id", schemaId))));
                 PresentProofRequest proofRequest = PresentProofRequestHelper
                         .buildForAllAttributes(partner.getConnectionId(),
-                                schema.getAttrNames(), req.buildRestrictions());
+                                Set.copyOf(schema.getAttrNames()), req.buildRestrictions());
                 ac.presentProofSendRequest(proofRequest).ifPresent(
                         persistProof(partnerId, null));
             } else {
@@ -341,7 +341,7 @@ public class ProofManager {
                 .setProofRequest(proof.getPresentationRequest())
                 .setProof(CollectionUtils.isNotEmpty(revealedAttributeGroups)
                         ? conv.toMap(proof.findRevealedAttributeGroups())
-                        : proof.findRevealedAttributes());
+                        : conv.revealedAttrsToGroup(proof.findRevealedAttributedFull(), proof.getIdentifiers()));
         final PartnerProof savedProof = pProofRepo.update(pp);
         didRes.resolveDid(savedProof, proof.getIdentifiers());
         return savedProof;

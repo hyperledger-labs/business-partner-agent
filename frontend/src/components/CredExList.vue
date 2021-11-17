@@ -117,7 +117,7 @@
             dense
           ></v-select>
           <v-select
-            v-if="documentRoleIsOfferReceived"
+            v-if="documentRoleIsIssuer"
             :label="$t('component.credExList.dialog.credDefLabel')"
             return-object
             v-model="credDef"
@@ -192,7 +192,9 @@
           <v-layout align-end justify-end>
             <v-bpa-button
               :color="
-                documentStateIsProposalReceived || documentStateIsOfferReceived
+                documentStateIsProposalReceived ||
+                documentStateIsOfferReceived ||
+                documentStateIsRevokedAndRoleIsIssuer
                   ? 'secondary'
                   : 'primary'
               "
@@ -238,6 +240,12 @@
               color="primary"
               @click="acceptCredentialOffer(document.walletCredentialId)"
               >{{ $t("button.accept") }}</v-bpa-button
+            >
+            <v-bpa-button
+              v-if="documentStateIsRevokedAndRoleIsIssuer"
+              color="primary"
+              @click="reIssueCredential(document.walletCredentialId)"
+              >{{ $t("button.reissue") }}</v-bpa-button
             >
           </v-layout>
         </v-card-actions>
@@ -347,8 +355,15 @@ export default {
         CredentialExchangeStates.OFFER_RECEIVED
       );
     },
-    documentRoleIsOfferReceived() {
+    documentRoleIsIssuer() {
       return (
+        this.document.credentialExchangeRole === CredentialExchangeRoles.ISSUER
+      );
+    },
+    documentStateIsRevokedAndRoleIsIssuer() {
+      return (
+        this.document.credentialExchangeState ===
+          CredentialExchangeStates.REVOKED &&
         this.document.credentialExchangeRole === CredentialExchangeRoles.ISSUER
       );
     },
@@ -475,6 +490,10 @@ export default {
     },
     async declineCredentialProposal(id) {
       await issuerService.declineCredentialProposal(id, this.declineReasonText);
+      this.closeDialog();
+    },
+    async reIssueCredential(id) {
+      await issuerService.reIssueCredential(id);
       this.closeDialog();
     },
     async sendCounterOffer(acceptAll) {

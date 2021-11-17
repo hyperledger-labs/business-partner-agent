@@ -1,8 +1,8 @@
 {
-  "updated_at": "2021-06-03 12:26:46.228371Z",
+  "updated_at": "2021-06-03T12:26:46.228371Z",
   "role": "prover",
   "state": "presentation_sent",
-  "created_at": "2021-06-03 12:26:36.849651Z",
+  "created_at": "2021-06-03T12:26:36.849651Z",
   "presentation_exchange_id": "99bbedd0-2f17-45f9-b8fd-53b846aef2cd",
   "connection_id": "8bc1ccef-7ae3-40e9-90bf-12d3228856d3",
   "trace": false,

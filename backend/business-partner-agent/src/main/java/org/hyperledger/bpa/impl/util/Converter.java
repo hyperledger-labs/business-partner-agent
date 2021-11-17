@@ -53,10 +53,7 @@ import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -75,7 +72,7 @@ public class Converter {
     public static final TypeReference<VerifiablePresentation<VerifiableIndyCredential>> VP_TYPEREF = new TypeReference<>() {
     };
 
-    public static final TypeReference<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>> IDENTIFIER_TYPE = new TypeReference<>() {
+    public static final TypeReference<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>> ATTRIBUTE_GROUP = new TypeReference<>() {
     };
 
     @Value("${bpa.did.prefix}")
@@ -196,6 +193,10 @@ public class Converter {
                 .build();
     }
 
+    public JsonNode mapToNode(@NonNull Map<String, String> from) {
+        return mapper.valueToTree(from);
+    }
+
     public Map<String, Object> toMap(@NonNull Object fromValue) {
         return mapper.convertValue(fromValue, STRING_OBJECT_MAP);
     }
@@ -230,7 +231,7 @@ public class Converter {
         try {
             if (p.getProof() != null) {
                 Map<String, PresentationExchangeRecord.RevealedAttributeGroup> groups = fromMap(p.getProof(),
-                        IDENTIFIER_TYPE);
+                        ATTRIBUTE_GROUP);
                 Map<String, AriesProofExchange.RevealedAttributeGroup> collect = groups.entrySet().stream()
                         .collect(Collectors.toMap(Map.Entry::getKey, e -> AriesProofExchange.RevealedAttributeGroup
                                 .builder()
@@ -245,6 +246,19 @@ public class Converter {
         }
         proof.setProofData(proofData);
         return proof;
+    }
+
+    public Map<String, Object> revealedAttrsToGroup(Map<String, PresentationExchangeRecord.RevealedAttribute> attrs,
+            List<PresentationExchangeRecord.Identifier> identifier) {
+        Map<String, PresentationExchangeRecord.RevealedAttributeGroup> attrToGroup = new LinkedHashMap<>();
+        if (CollectionUtils.isNotEmpty(attrs)) {
+            attrs.forEach((k, v) -> attrToGroup.put(k, PresentationExchangeRecord.RevealedAttributeGroup
+                    .builder()
+                    .revealedAttributes(Map.of(k, v.getRaw()))
+                    .identifier(CollectionUtils.isNotEmpty(identifier) ? identifier.get(v.getSubProofIndex()) : null)
+                    .build()));
+        }
+        return toMap(attrToGroup);
     }
 
     /**

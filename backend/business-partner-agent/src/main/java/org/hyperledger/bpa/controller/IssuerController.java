@@ -171,6 +171,19 @@ public class IssuerController {
     }
 
     /**
+     * Send holder a new credential offer based on an existing (revoked) exchange
+     * record
+     * 
+     * @param id credential exchange id
+     * @return {@link HttpResponse}
+     */
+    @Post("/exchanges/{id}/re-issue")
+    public HttpResponse<Void> reIssueCredential(@PathVariable UUID id) {
+        im.reIssueCredential(id);
+        return HttpResponse.ok();
+    }
+
+    /**
      * Manual credential exchange step two: Issuer sends credential counter offer to
      * holder (in reference to a proposal)
      *

@@ -248,6 +248,21 @@ public class IssuerCredentialManager extends BaseCredentialManager {
         return exResult.getCredentialExchangeId();
     }
 
+    public void reIssueCredential(@NonNull UUID exchangeId) {
+        BPACredentialExchange credEx = credExRepo.findById(exchangeId).orElseThrow(EntityNotFoundException::new);
+        if (credEx.roleIsIssuer() && credEx.stateIsRevoked()) {
+            issueCredential(IssueCredentialRequest.builder()
+                    .partnerId(credEx.getPartner().getId())
+                    .credDefId(credEx.getCredDef().getId())
+                    .exchangeVersion(credEx.getExchangeVersion())
+                    .document(conv.mapToNode(credEx.getCredential().getAttrs()))
+                    .build());
+        } else {
+            throw new IssuerException(
+                    msg.getMessage("api.issuer.reissue.wrong.state", Map.of("state", credEx.getState())));
+        }
+    }
+
     /**
      * Check if the supplied attributes match the schema
      *

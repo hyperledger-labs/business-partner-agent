@@ -9,4 +9,4 @@ WORKDIR /home/app
 EXPOSE 8080
 CMD java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote ${JAVA_OPTS} -jar business-partner-agent.jar
 
-COPY ./backend/business-partner-agent/target/business-partner-agent*SNAPSHOT.jar business-partner-agent.jar
+COPY ./backend/business-partner-agent/target/business-partner-agent*.jar business-partner-agent.jar

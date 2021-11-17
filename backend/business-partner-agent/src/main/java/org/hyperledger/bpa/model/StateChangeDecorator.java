@@ -82,7 +82,7 @@ public abstract class StateChangeDecorator<T extends StateChangeDecorator<T, S>,
     }
 
     public T pushStates(@NonNull S state, @NonNull String ts) {
-        return pushStates(state, TimeUtil.parseZonedTimestamp(ts));
+        return pushStates(state, TimeUtil.fromISOInstant(ts));
     }
 
     @SuppressWarnings("unchecked")
