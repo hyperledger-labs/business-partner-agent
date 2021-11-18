@@ -3,12 +3,25 @@
     "snackBar": {
       "close": "Close"
     },
+    "chat": {
+      "usernameDefault": "Me"
+    },
     "search": "Search",
     "rules": {
       "required": "Required",
       "onlyInteger": "Value is not an integer",
       "valueMin": "Value must be above",
-      "valueMax":  "Value must not be above"
+      "valueMax":  "Value must not be above",
+      "colorPrefix": "Color should begin with #",
+      "colorInvalid": "Invalid color (e.g. #FF00FF)",
+      "agree": "You must agree to continue"
+    },
+    "transactionAuthorAgreement": {
+      "title": "Transaction Author Agreement",
+      "text": "To allow other companies to communicate with this agent, some configuration has to be written to the ledger - the endpoint configuration. In order to do so, the transaction author has to accept the Transaction Author Agreement for this session which is the following:",
+      "loading": "Loading",
+      "labelVersion": "Version:",
+      "labelCheckbox": "As transaction author I reviewed and accept the above Transaction Author Agreement for this session"
     },
     "sessionDialog": {
       "headline": "Session expired",
@@ -57,7 +70,8 @@
     "sendCounterOffer": "Send Counter Offer",
     "revoke": "Revoke",
     "reissue": "ReIssue",
-    "useV2": "Use V2"
+    "useV2": "Use V2",
+    "writeToLedger": "Write endpoints to ledger"
   },
   "view": {
     "notifications": {

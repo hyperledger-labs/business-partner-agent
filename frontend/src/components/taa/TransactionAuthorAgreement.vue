@@ -4,14 +4,10 @@
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-card>
           <v-card-title class="headline">
-            Transaction Author Agreement
+            {{ $t("app.transactionAuthorAgreement.title") }}
           </v-card-title>
           <v-card-text>
-            To allow other companies to communicate with this agent, some
-            configuration has to be written to the ledger - the endpoint
-            configuration. In order to do so, the transaction author has to
-            accept the Transaction Author Agreement for this session which is
-            the following:
+            {{ $t("app.transactionAuthorAgreement.text") }}
             <br /><br />
             <hr />
             <br />
@@ -25,22 +21,25 @@
                   indeterminate
                   color="primary"
                 ></v-progress-circular>
-                <div>Loading</div>
+                <div>{{ $t("app.transactionAuthorAgreement.loading") }}</div>
               </div>
             </span>
             <hr />
-            <small v-show="isTaaLoaded()">Version: {{ getTaaVersion() }}</small>
+            <small v-show="isTaaLoaded()"
+              >{{ $t("app.transactionAuthorAgreement.labelVersion") }}
+              {{ getTaaVersion() }}</small
+            >
             <v-checkbox
               v-model="agree"
-              :rules="[(v) => !!v || 'You must agree to continue!']"
-              label="As transaction author I reviewed and accept the above Transaction Author Agreement for this session."
+              :rules="[(v) => !!v || $t('app.rules.agree')]"
+              :label="$t('app.transactionAuthorAgreement.labelCheckbox')"
               required
             ></v-checkbox>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-bpa-button :disabled="!valid" color="primary" @click="register">
-              Write endpoints to ledger
+              {{ $t("button.writeToLedger") }}
             </v-bpa-button>
           </v-card-actions>
         </v-card>
