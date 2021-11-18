@@ -42,13 +42,20 @@
               <v-icon>$vuetify.icons.add</v-icon>
             </v-btn>
           </template>
-          <v-list>
+          <v-list max-height="50vh" class="overflow-y-auto">
             <v-list-item
-              v-for="(type, i) in newDocumentTypes"
-              :key="i"
-              @click="createDocument(type)"
+              v-for="(schema, idx) in newDocumentTypes"
+              :key="idx"
+              @click="createDocument(schema)"
             >
-              <v-list-item-title>{{ type.label }}</v-list-item-title>
+              <v-list-item-content>
+                <v-list-item-title>
+                  {{ schema.label }}
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  {{ schema.schemaId }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -58,9 +65,9 @@
 </template>
 
 <script>
-import { CredentialTypes } from "../constants";
+import { CredentialTypes } from "@/constants";
 import MyCredentialList from "@/components/MyCredentialList";
-import { EventBus } from "../main";
+import { EventBus } from "@/main";
 import {
   credHeaders,
   docHeaders,
