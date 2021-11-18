@@ -24,6 +24,7 @@ import org.hyperledger.bpa.model.BPASchema;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -47,13 +48,20 @@ public class BPACredentialDefinitionRepositoryTest {
                 .build());
         credRepo.save(BPACredentialDefinition
                 .builder()
-                .credentialDefinitionId("my-cred-def")
+                .credentialDefinitionId("my-cred-def-01")
                 .schema(schema)
                 .tag("bob-issuer")
                 .revocationRegistrySize(200)
                 .build());
+        credRepo.save(BPACredentialDefinition
+                .builder()
+                .credentialDefinitionId("my-cred-def-02")
+                .schema(schema)
+                .tag("oscar-issuer")
+                .revocationRegistrySize(200)
+                .build());
 
-        Optional<BPACredentialDefinition> bySchemaId = credRepo.findBySchemaId(schemaId);
-        Assertions.assertTrue(bySchemaId.isPresent());
+        List<BPACredentialDefinition> bySchemaId = credRepo.findBySchemaId(schemaId);
+        Assertions.assertEquals(2, bySchemaId.size());
     }
 }

@@ -25,6 +25,7 @@ import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.bpa.model.BPACredentialDefinition;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,7 +43,7 @@ public interface BPACredentialDefinitionRepository extends CrudRepository<BPACre
     @Query("SELECT * FROM bpa_cred_def c " +
             "LEFT JOIN bpaschema s ON c.schema_id = s.id " +
             "WHERE s.schema_id = :schemaId")
-    Optional<BPACredentialDefinition> findBySchemaId(String schemaId);
+    List<BPACredentialDefinition> findBySchemaId(String schemaId);
 
     @NonNull
     Optional<BPACredentialDefinition> findByCredentialDefinitionId(@NonNull String credentialDefinitionId);

@@ -123,7 +123,7 @@
             v-model="credDef"
             :items="credDefList"
             outlined
-            disabled
+            :disabled="!documentStateIsProposalReceived"
             dense
           ></v-select>
 
@@ -507,6 +507,7 @@ export default {
 
       const counterOffer = {
         acceptProposal,
+        credDefId: this.credDef.credentialDefinitionId,
         attributes: this.document.credentialData,
       };
 

@@ -28,6 +28,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class CredentialOfferRequest {
     private Boolean acceptProposal;
+    private String credDefId;
     private Map<String, String> attributes;
 
     public boolean acceptAll() {
