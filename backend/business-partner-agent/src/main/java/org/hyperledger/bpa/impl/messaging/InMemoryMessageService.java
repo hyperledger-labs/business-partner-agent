@@ -15,10 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.impl;
+package org.hyperledger.bpa.impl.messaging;
 
-import io.lettuce.core.api.StatefulRedisConnection;
-import io.micronaut.context.annotation.Value;
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.scheduling.annotation.Async;
 import io.micronaut.scheduling.annotation.Scheduled;
@@ -27,8 +26,6 @@ import io.micronaut.websocket.WebSocketSession;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.aries.config.GsonConfig;
-import org.hyperledger.bpa.controller.WebsocketControllerRedis;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.MessageQueue;
@@ -38,10 +35,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Singleton
-public class MessageService {
+@Requires(missingProperty = "micronaut.session.http.redis.enabled")
+public class InMemoryMessageService implements MessageService {
 
     @Inject
     WebSocketBroadcaster broadcaster;
@@ -49,40 +48,28 @@ public class MessageService {
     @Inject
     MessageQueueRepository queue;
 
-    @Value("${micronaut.application.instance.id}")
-    String instanceId;
-
     @Inject
     Converter conv;
 
-    @Inject
-    StatefulRedisConnection<String, String> redis;
-
     private final Map<String, WebSocketSession> connected = new ConcurrentHashMap<>();
 
-    public void addSession(WebSocketSession session) {
+    public void subscribe(WebSocketSession session) {
         connected.put(session.getId(), session);
     }
 
-    public void removeSession(WebSocketSession session) {
+    public void unsubscribe(WebSocketSession session) {
         connected.remove(session.getId());
     }
 
     public boolean hasConnectedSessions() {
-        List<String> channels = redis.reactive().pubsubChannels().collectList().block();
-        if (CollectionUtils.isNotEmpty(channels)) {
-            return channels.contains(WebsocketControllerRedis.BASE_CHANNEL);
-        }
-        return false;
+        return CollectionUtils.isNotEmpty(connected);
     }
 
-    // called by impl
     @Async
     public void sendMessage(WebSocketMessageBody message) {
         try {
             if (hasConnectedSessions()) {
-                //broadcaster.broadcastSync(message);
-                redis.reactive().publish(WebsocketControllerRedis.BASE_CHANNEL, GsonConfig.jacksonBehaviour().toJson(message)).block();
+                broadcaster.broadcastSync(message);
             } else {
                 MessageQueue msg = MessageQueue.builder().message(conv.toMap(message)).build();
                 queue.save(msg);
@@ -92,12 +79,12 @@ public class MessageService {
         }
     }
 
-    // called by controller
     public void sendStored(WebSocketSession session) {
-        queue.findAll().forEach(msg -> {
-            WebSocketMessageBody toSend = conv.fromMap(msg.getMessage(), WebSocketMessageBody.class);
-            //session.sendSync(toSend);
-            redis.reactive().publish(WebsocketControllerRedis.BASE_CHANNEL, GsonConfig.jacksonBehaviour().toJson(toSend)).block();
+        StreamSupport.stream(queue.findAll().spliterator(), false)
+                .filter(msg -> msg.getMessage() != null)
+                .forEach(msg -> {
+                    WebSocketMessageBody toSend = conv.fromMap(msg.getMessage(), WebSocketMessageBody.class);
+                    session.sendSync(toSend);
         });
         queue.deleteAll();
     }
@@ -113,14 +100,5 @@ public class MessageService {
         });
         log.debug("Found {} session(s), {} of them are stale.", connected.size(), stale.size());
         stale.forEach(connected::remove);
-    }
-
-    @Scheduled(fixedRate = "10s")
-    void writeToSocket() {
-        //broadcaster.broadcastSync(instanceId + " Hallo to all");
-        redis.reactive().publish(WebsocketControllerRedis.BASE_CHANNEL, instanceId + " Hallo to all").block();
-        //String c = redis.reactive().pubsubChannels().blockFirst(); // if contains base channel then someone is subscribed
-        //List<String> channels = redis.reactive().pubsubChannels().collectList().block();
-        //System.out.println(channels);
     }
 }
