@@ -36,7 +36,7 @@ import org.hyperledger.bpa.impl.MessageService;
  */
 @Slf4j
 @Singleton
-@ServerWebSocket("/events")
+@ServerWebSocket("/events2")
 @Secured(SecurityRule.IS_AUTHENTICATED)
 public class WebsocketController {
 

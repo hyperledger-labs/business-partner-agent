@@ -55,10 +55,6 @@
             <artifactId>micronaut-views-handlebars</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.micronaut.security</groupId>
-            <artifactId>micronaut-security-session</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.micronaut.data</groupId>
             <artifactId>micronaut-data-jdbc</artifactId>
             <version>${micronaut.data.version}</version>
@@ -83,11 +79,20 @@
         </dependency>
         <dependency>
             <groupId>io.micronaut.security</groupId>
+            <artifactId>micronaut-security-session</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micronaut.security</groupId>
             <artifactId>micronaut-security-oauth2</artifactId>
         </dependency>
         <dependency>
             <groupId>io.micronaut.security</groupId>
             <artifactId>micronaut-security-jwt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micronaut.redis</groupId>
+            <artifactId>micronaut-redis-lettuce</artifactId>
+            <version>5.1.0</version>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>

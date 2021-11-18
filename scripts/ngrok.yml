@@ -1,3 +1,4 @@
+# authtoken: <your-token>
 tunnels:
     businesspartner:
       proto: http

@@ -32,9 +32,15 @@ micronaut:
       - pattern: /**
         access:
           - isAuthenticated()
-
   session:
     max-inactive-interval: 12h
+    http:
+      redis:
+        enabled: true
+        namespace: 'bpa:sessions'
+        write-mode: BACKGROUND
+        enable-keyspace-events: true
+        valueSerializer: io.micronaut.jackson.serialize.JacksonObjectSerializer
   router:
     # note also check the AppController
     static-resources:
@@ -104,6 +110,9 @@ jackson:
     enabled: true
   mapper:
     acceptCaseInsensitiveEnums: true
+
+redis:
+  uri: redis://localhost
 
 bpa:
   docker:

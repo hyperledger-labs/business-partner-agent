@@ -17,6 +17,8 @@
  */
 package org.hyperledger.bpa.impl;
 
+import io.lettuce.core.api.StatefulRedisConnection;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.scheduling.annotation.Async;
 import io.micronaut.scheduling.annotation.Scheduled;
@@ -25,6 +27,8 @@ import io.micronaut.websocket.WebSocketSession;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.aries.config.GsonConfig;
+import org.hyperledger.bpa.controller.WebsocketControllerRedis;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.MessageQueue;
@@ -45,8 +49,14 @@ public class MessageService {
     @Inject
     MessageQueueRepository queue;
 
+    @Value("${micronaut.application.instance.id}")
+    String instanceId;
+
     @Inject
     Converter conv;
+
+    @Inject
+    StatefulRedisConnection<String, String> redis;
 
     private final Map<String, WebSocketSession> connected = new ConcurrentHashMap<>();
 
@@ -59,7 +69,11 @@ public class MessageService {
     }
 
     public boolean hasConnectedSessions() {
-        return CollectionUtils.isNotEmpty(connected);
+        List<String> channels = redis.reactive().pubsubChannels().collectList().block();
+        if (CollectionUtils.isNotEmpty(channels)) {
+            return channels.contains(WebsocketControllerRedis.BASE_CHANNEL);
+        }
+        return false;
     }
 
     // called by impl
@@ -67,7 +81,8 @@ public class MessageService {
     public void sendMessage(WebSocketMessageBody message) {
         try {
             if (hasConnectedSessions()) {
-                broadcaster.broadcastSync(message);
+                //broadcaster.broadcastSync(message);
+                redis.reactive().publish(WebsocketControllerRedis.BASE_CHANNEL, GsonConfig.jacksonBehaviour().toJson(message)).block();
             } else {
                 MessageQueue msg = MessageQueue.builder().message(conv.toMap(message)).build();
                 queue.save(msg);
@@ -81,7 +96,8 @@ public class MessageService {
     public void sendStored(WebSocketSession session) {
         queue.findAll().forEach(msg -> {
             WebSocketMessageBody toSend = conv.fromMap(msg.getMessage(), WebSocketMessageBody.class);
-            session.sendSync(toSend);
+            //session.sendSync(toSend);
+            redis.reactive().publish(WebsocketControllerRedis.BASE_CHANNEL, GsonConfig.jacksonBehaviour().toJson(toSend)).block();
         });
         queue.deleteAll();
     }
@@ -97,5 +113,14 @@ public class MessageService {
         });
         log.debug("Found {} session(s), {} of them are stale.", connected.size(), stale.size());
         stale.forEach(connected::remove);
+    }
+
+    @Scheduled(fixedRate = "10s")
+    void writeToSocket() {
+        //broadcaster.broadcastSync(instanceId + " Hallo to all");
+        redis.reactive().publish(WebsocketControllerRedis.BASE_CHANNEL, instanceId + " Hallo to all").block();
+        //String c = redis.reactive().pubsubChannels().blockFirst(); // if contains base channel then someone is subscribed
+        //List<String> channels = redis.reactive().pubsubChannels().collectList().block();
+        //System.out.println(channels);
     }
 }
