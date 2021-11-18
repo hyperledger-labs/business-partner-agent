@@ -172,7 +172,7 @@
                   </v-simple-table>
                 </td>
               </template>
-              <template v-slot:item.issuerLabel="{ item }">
+              <template v-slot:[`item.issuerLabel`]="{ item }">
                 {{ getIssuerLabel(item) }}
               </template>
             </v-data-table>

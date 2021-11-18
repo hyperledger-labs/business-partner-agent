@@ -112,14 +112,22 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
+import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 export default {
   name: "ContactPerson",
   components: { VBpaButton },
   props: {
+    value: {},
+  },
+  computed: {
     person: {
-      type: Object,
+      get() {
+        return this.value;
+      },
+      set(val) {
+        this.$emit("input", val);
+      },
     },
   },
   created() {

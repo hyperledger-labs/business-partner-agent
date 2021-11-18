@@ -150,7 +150,7 @@ import PresentationRecordV2 from "@/components/PresentationRecordV2";
 import VBpaButton from "@/components/BpaButton";
 export default {
   props: {
-    items: Array,
+    value: Array,
     openItemById: String,
   },
   mounted() {
@@ -206,6 +206,14 @@ export default {
     };
   },
   computed: {
+    items: {
+      get() {
+        return this.value;
+      },
+      set(val) {
+        this.$emit("input", val);
+      },
+    },
     showV2() {
       return (
         this.record.state &&

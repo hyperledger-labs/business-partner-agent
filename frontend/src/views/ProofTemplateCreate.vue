@@ -74,10 +74,12 @@
                   </div>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                  <AttributeEdit :attribute-group="attributeGroup" />
+                  <AttributeEdit v-model="proofTemplate.attributeGroups[idx]" />
 
                   <!-- Schema Restrictions -->
-                  <RestrictionsEdit :attribute-group="attributeGroup" />
+                  <RestrictionsEdit
+                    v-model="proofTemplate.attributeGroups[idx]"
+                  />
 
                   <v-card-actions>
                     <v-bpa-button

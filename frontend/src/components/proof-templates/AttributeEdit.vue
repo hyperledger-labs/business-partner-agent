@@ -35,14 +35,14 @@
       class="elevation-1"
     >
       <!-- attribute conditions -->
-      <template v-slot:item.operator="{ item }">
+      <template v-slot:[`item.operator`]="{ item }">
         <v-select
           :items="operators"
           v-model="item.conditions[0].operator"
           dense
         />
       </template>
-      <template v-slot:item.value="{ item }">
+      <template v-slot:[`item.value`]="{ item }">
         <v-text-field
           :type="
             item.conditions[0].operator !== undefined &&
@@ -74,7 +74,7 @@ import proofTemplateService from "@/services/proofTemplateService";
 export default {
   name: "AttributeEdit",
   props: {
-    attributeGroup: {},
+    value: {},
   },
   data: () => {
     return {
@@ -89,6 +89,14 @@ export default {
     });
   },
   computed: {
+    attributeGroup: {
+      get() {
+        return this.value;
+      },
+      set(val) {
+        this.$emit("input", val);
+      },
+    },
     attributeGroupHeaders() {
       return [
         {

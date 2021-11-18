@@ -152,7 +152,7 @@
       ></v-progress-linear>
       <PresentationExList
         v-if="isReady"
-        v-bind:items="presentationExRecords"
+        v-model="presentationExRecords"
         v-bind:openItemById="presExId"
         @changed="refreshPresentationRecords"
       />

@@ -40,7 +40,7 @@ create new ones
       single-select
       @click:row="viewProofTemplate"
     >
-      <template v-slot:item.createdAt="{ item }">
+      <template v-slot:[`item.createdAt`]="{ item }">
         {{ item.createdAt | formatDateLong }}
       </template>
     </v-data-table>
