@@ -111,7 +111,6 @@ export default {
       type: Boolean,
       default: () => false,
     },
-    schema: Object,
     trustedIssuers: {
       type: Boolean,
       default: () => true,
@@ -120,6 +119,7 @@ export default {
       type: Boolean,
       default: () => true,
     },
+    value: {},
   },
   components: {
     VBpaButton,
@@ -134,7 +134,6 @@ export default {
       }
     },
   },
-  created() {},
   data: () => {
     return {
       tab: null,
@@ -142,6 +141,14 @@ export default {
     };
   },
   computed: {
+    schema: {
+      get() {
+        return this.value;
+      },
+      set(val) {
+        this.$emit("input", val);
+      },
+    },
     items() {
       const tabs = [{ title: "Schema Attributes", key: "schema-attributes" }];
       if (this.credentialDefinitions)

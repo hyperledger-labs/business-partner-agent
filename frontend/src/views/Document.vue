@@ -28,7 +28,7 @@
       <v-card-text>
         <OrganizationalProfile
           v-if="isProfile(intDoc.type)"
-          v-bind:documentData="document.documentData"
+          v-model="document.documentData"
           ref="doc"
         ></OrganizationalProfile>
         <Credential

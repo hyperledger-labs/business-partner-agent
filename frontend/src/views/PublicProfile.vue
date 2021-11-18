@@ -14,7 +14,7 @@
       <v-card class="mx-auto" flat>
         <Profile
           v-bind:partner="{ credential: publicDocumentsAndCredentials }"
-          organization-profile-edit-visible="true"
+          :organization-profile-edit-visible="true"
         />
       </v-card>
     </div>

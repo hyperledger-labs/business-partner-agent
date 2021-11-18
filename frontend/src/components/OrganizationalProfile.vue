@@ -158,12 +158,12 @@
 </template>
 
 <script>
-import { profileModel } from "../models/model";
+import { profileModel } from "@/models/model";
 import VBpaButton from "@/components/BpaButton";
 export default {
   props: {
     isReadOnly: Boolean,
-    documentData: {
+    value: {
       type: Object,
       default: () => profileModel,
     },
@@ -175,11 +175,19 @@ export default {
   data: () => {
     return {
       identifierTypes: ["LEI", "GLN", "D-U-N-S", "VAT", "USCC"],
-      orgTypes: ["Legal Entity", "Business Unit", "Site"],
       intDoc: Object,
     };
   },
-  computed: {},
+  computed: {
+    documentData: {
+      get() {
+        return this.value;
+      },
+      set(val) {
+        this.$emit("input", val);
+      },
+    },
+  },
   methods: {
     addIdentifier() {
       this.documentData.identifier.push({

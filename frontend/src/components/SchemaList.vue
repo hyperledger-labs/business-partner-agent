@@ -32,7 +32,7 @@
     <v-dialog v-model="dialog" persistent max-width="800px">
       <ManageSchema
         :dialog="dialog"
-        :schema="schema"
+        v-model="schema"
         :credential-definitions="manageCredentialDefinitions"
         :trusted-issuers="manageTrustedIssuers"
         @closed="onClosed"

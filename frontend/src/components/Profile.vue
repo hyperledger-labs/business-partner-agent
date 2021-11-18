@@ -13,7 +13,7 @@
         $t("component.profile.organizationalProfile.title")
       }}</v-card-title>
       <OrganizationalProfile
-        v-bind:documentData="profile"
+        v-model="profile"
         v-if="profile"
         isReadOnly
       ></OrganizationalProfile>
@@ -109,9 +109,8 @@ export default {
     organizationProfileEditVisible: {
       type: Boolean,
       default: false,
-    }
+    },
   },
-  created() {},
   data: () => {
     return {
       CredentialTypes: CredentialTypes,
@@ -157,7 +156,7 @@ export default {
       return credential;
     },
     editProfile() {
-      let route = getPartnerProfileRoute(this.partner);
+      const route = getPartnerProfileRoute(this.partner);
       if (route) {
         this.$router.push(route);
       }
