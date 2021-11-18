@@ -9,12 +9,7 @@
   <v-container>
     <v-card v-if="isReady" class="mx-auto">
       <v-card-title class="bg-light">
-        <v-btn
-          depressed
-          color="secondary"
-          icon
-          @click="$router.push({ name: 'Wallet' })"
-        >
+        <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
         {{ schemaLabel }}
@@ -63,45 +58,52 @@
         </v-list-item>
         <v-divider></v-divider>
 
-        <v-list-item
-          v-if="this.id && !isProfile(document.type)"
-          :disabled="docModified()"
+        <div
+          v-if="
+            !disableVerificationRequest && this.id && !isProfile(document.type)
+          "
         >
-          <v-tooltip right v-model="showTooltip">
-            <template v-slot:activator="{ attrs }">
-              <v-list-item-content>
-                <v-list-item-title>Verification</v-list-item-title>
-                <v-list-item-subtitle
-                  >Request a verification</v-list-item-subtitle
-                >
-              </v-list-item-content>
+          <v-list-item :disabled="docModified()">
+            <v-tooltip right v-model="showTooltip">
+              <template v-slot:activator="{ attrs }">
+                <v-list-item-content>
+                  <v-list-item-title>Verification</v-list-item-title>
+                  <v-list-item-subtitle
+                    >Request a verification</v-list-item-subtitle
+                  >
+                </v-list-item-content>
 
-              <v-list-item-action>
-                <!-- TODO übergabe der parameter mit schemaId params {type: { type: meinType schemaId: schemaId }}-->
-                <v-btn
-                  v-bind="attrs"
-                  icon
-                  :to="{
-                    name: 'RequestVerification',
-                    params: { documentId: id, schemaId: intDoc.schemaId },
-                  }"
-                  :disabled="docModified()"
-                >
-                  <v-icon color="grey">$vuetify.icons.next</v-icon>
-                </v-btn>
-              </v-list-item-action>
-            </template>
-            <span
-              >Document modified, please save before start verification</span
-            >
-          </v-tooltip>
-        </v-list-item>
-
-        <v-divider></v-divider>
+                <v-list-item-action>
+                  <!-- TODO übergabe der parameter mit schemaId params {type: { type: meinType schemaId: schemaId }}-->
+                  <v-btn
+                    v-bind="attrs"
+                    icon
+                    :to="{
+                      name: 'RequestVerification',
+                      params: { documentId: id, schemaId: intDoc.schemaId },
+                    }"
+                    :disabled="docModified()"
+                  >
+                    <v-icon color="grey">$vuetify.icons.next</v-icon>
+                  </v-btn>
+                </v-list-item-action>
+              </template>
+              <span
+                >Document modified, please save before start verification</span
+              >
+            </v-tooltip>
+          </v-list-item>
+          <v-divider></v-divider>
+        </div>
       </v-card-text>
 
       <v-card-actions>
-        <v-layout align-end justify-end>
+        <v-layout align-center align-end justify-end>
+          <v-switch
+            v-if="expertMode && enableV2Switch"
+            v-model="useV2Exchange"
+            :label="$t('button.useV2')"
+          ></v-switch>
           <v-bpa-button color="secondary" @click="cancel()"
             >Cancel</v-bpa-button
           >
@@ -109,7 +111,7 @@
             :loading="this.isBusy"
             color="primary"
             @click="saveDocument(false || isProfile(intDoc.type))"
-            >Save</v-bpa-button
+            >{{ getCreateButtonLabel }}</v-bpa-button
           >
           <v-bpa-button
             v-show="this.id && !isProfile(intDoc.type)"
@@ -137,8 +139,8 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
-import { CredentialTypes } from "../constants";
+import { EventBus } from "@/main";
+import { CredentialTypes } from "@/constants";
 import OrganizationalProfile from "@/components/OrganizationalProfile";
 import Credential from "@/components/Credential";
 import VBpaButton from "@/components/BpaButton";
@@ -158,13 +160,25 @@ export default {
       type: String,
       required: false,
     },
+    disableVerificationRequest: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    enableV2Switch: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    createButtonLabel: {
+      type: String,
+      default: undefined,
+    },
   },
   created() {
-    if (this.id) {
+    if (this.id && !this.type) {
       EventBus.$emit("title", "Edit Document");
       this.getDocument();
-    } else if (!this.type) {
-      this.$router.push({ name: "Wallet" });
     } else {
       EventBus.$emit("title", "Create new Document");
       this.document.type = this.type;
@@ -180,6 +194,7 @@ export default {
       intDoc: {},
       isBusy: false,
       isReady: false,
+      useV2Exchange: false,
       CredentialTypes,
       docChanged: false,
       credChanged: false,
@@ -198,6 +213,11 @@ export default {
       } else {
         return null;
       }
+    },
+    getCreateButtonLabel() {
+      return this.createButtonLabel
+        ? this.createButtonLabel
+        : this.$t("button.save");
     },
   },
   watch: {},
@@ -234,9 +254,7 @@ export default {
             console.log(res);
             this.isBusy = false;
             if (closeDocument) {
-              this.$router.push({
-                name: "Wallet",
-              });
+              this.$router.go(-1);
             } else {
               this.$router.go(this.$router.currentRoute);
             }
@@ -260,10 +278,12 @@ export default {
           .post(`${this.$apiBaseUrl}/wallet/document`, docForSave)
           .then((res) => {
             console.log(res);
-            this.isBusy = false;
-            this.$router.push({
-              name: "Wallet",
+            this.$emit("received-document-id", {
+              documentId: res.data.id,
+              useV2Exchange: this.useV2Exchange,
             });
+            this.isBusy = false;
+            this.$router.go(-1);
             EventBus.$emit("success", "Success");
           })
           .catch((e) => {
@@ -278,9 +298,7 @@ export default {
         .then((result) => {
           if (result.status === 200) {
             EventBus.$emit("success", "Document deleted");
-            this.$router.push({
-              name: "Wallet",
-            });
+            this.$router.go(-1);
           }
         })
         .catch((e) => {
@@ -288,20 +306,15 @@ export default {
         });
     },
     cancel() {
-      this.$router.push({
-        name: "Wallet",
-      });
+      this.$router.go(-1);
     },
     isProfile(schemaType) {
       return !this.schemaId && schemaType === CredentialTypes.PROFILE.type;
     },
     fieldModified() {
-      const isModified = Object.keys(this.intDoc).find((key) => {
-        return this.document[key] != this.intDoc[key];
-      })
-        ? true
-        : false;
-      this.docChanged = isModified;
+      this.docChanged = !!Object.keys(this.intDoc).find((key) => {
+        return this.document[key] !== this.intDoc[key];
+      });
       this.docModified();
     },
     documentDataFieldChanged(credChanged) {

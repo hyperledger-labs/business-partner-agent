@@ -8,12 +8,20 @@
 
 <template>
   <v-container>
+    <v-text-field
+      v-model="search"
+      append-icon="$vuetify.icons.search"
+      :label="$t('app.search')"
+      single-line
+      hide-details
+    ></v-text-field>
     <v-data-table
       :hide-default-footer="data.length < 10"
       :loading="isBusy"
-      v-model="selected"
+      v-model="inputValue"
       :headers="headers"
       :items="data"
+      :search="search"
       :show-select="selectable"
       single-select
       :sort-by="['createdDate']"
@@ -95,6 +103,11 @@ export default {
   props: {
     type: String,
     headers: Array,
+    disableVerificationRequest: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     selectable: {
       type: Boolean,
       default: false,
@@ -113,14 +126,22 @@ export default {
   data: () => {
     return {
       data: [],
+      search: "",
       isBusy: true,
-      selected: [],
       CredentialTypes: CredentialTypes,
     };
   },
   computed: {
     credentialNotifications() {
       return this.$store.getters.credentialNotifications;
+    },
+    inputValue: {
+      get() {
+        return this.value;
+      },
+      set(val) {
+        this.$emit("input", val);
+      },
     },
   },
   watch: {
@@ -164,6 +185,7 @@ export default {
           name: "Document",
           params: {
             id: doc.id,
+            disableVerificationRequest: this.disableVerificationRequest,
             // type: doc.type,
           },
         });

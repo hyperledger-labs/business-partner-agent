@@ -82,6 +82,7 @@ import VBpaButton from "@/components/BpaButton";
 import { getPartnerState } from "@/utils/partnerUtils";
 import { PartnerStates } from "@/constants";
 import { ExchangeVersion } from "@/constants";
+import credentialService from "@/services/credentialService";
 
 export default {
   name: "RequestVerification",
@@ -137,23 +138,20 @@ export default {
     submitRequest() {
       this.attentionPartnerStateDialog = false;
       this.isBusy = true;
-      this.$axios
-        .post(
-          `${this.$apiBaseUrl}/partners/${this.partner.id}/credential-request`,
-          {
-            documentId: this.documentId,
-            exchangeVersion: this.useV2Exchange
-              ? ExchangeVersion.V2
-              : ExchangeVersion.V1,
-          }
-        )
+      const data = {
+        documentId: this.documentId,
+        exchangeVersion: this.useV2Exchange
+          ? ExchangeVersion.V2
+          : ExchangeVersion.V1,
+      };
+
+      credentialService
+        .sendCredentialRequest(this.partner.id, data)
         .then((res) => {
           console.log(res);
           this.isBusy = false;
-          EventBus.$emit("success", "Verification Request sent");
-          this.$router.push({
-            name: "Wallet",
-          });
+          EventBus.$emit("success", "Credential verification request sent");
+          this.$router.go(-2);
         })
         .catch((e) => {
           this.isBusy = false;

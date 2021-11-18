@@ -141,7 +141,12 @@
 
       <!-- Proof Templates Actions -->
       <v-card-actions>
-        <v-layout align-end justify-end>
+        <v-layout align-center align-end justify-end>
+          <v-switch
+            v-if="expertMode && enableV2Switch"
+            v-model="useV2Exchange"
+            :label="$t('button.useV2')"
+          ></v-switch>
           <v-bpa-button color="secondary" @click="$router.go(-1)">
             {{ $t("button.cancel") }}
           </v-bpa-button>
@@ -151,7 +156,7 @@
             color="primary"
             @click="createProofTemplate"
           >
-            {{ $t("button.create") }}
+            {{ getCreateButtonLabel }}
           </v-bpa-button>
         </v-layout>
       </v-card-actions>
@@ -183,6 +188,15 @@ export default {
       type: Boolean,
       default: false,
     },
+    createButtonLabel: {
+      type: String,
+      default: undefined,
+    },
+    enableV2Switch: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   components: { RestrictionsEdit, AttributeEdit, VBpaButton },
   created() {
@@ -192,6 +206,7 @@ export default {
     return {
       openAttributeGroupPanels: [],
       createButtonIsBusy: false,
+      useV2Exchange: false,
       proofTemplate: {
         name: "",
         attributeGroups: [],
@@ -204,6 +219,14 @@ export default {
     };
   },
   computed: {
+    expertMode() {
+      return this.$store.state.expertMode;
+    },
+    getCreateButtonLabel() {
+      return this.createButtonLabel
+        ? this.createButtonLabel
+        : this.$t("button.create");
+    },
     rules() {
       return {
         required: (value) => !!value || this.$t("app.rules.required"),
@@ -379,7 +402,10 @@ export default {
       proofTemplateService
         .createProofTemplate(proofTemplate)
         .then((res) => {
-          this.$emit("received-proof-template-id", res.data.id);
+          this.$emit("received-proof-template-id", {
+            documentId: res.data.id,
+            useV2Exchange: this.useV2Exchange,
+          });
           EventBus.$emit(
             "success",
             this.$t("view.proofTemplate.create.success")
