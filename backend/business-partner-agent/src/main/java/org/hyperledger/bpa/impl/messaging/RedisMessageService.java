@@ -1,31 +1,47 @@
+/*
+ * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * see the NOTICE file and/or the repository at
+ * https://github.com/hyperledger-labs/business-partner-agent
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.hyperledger.bpa.impl.messaging;
 
+import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.lettuce.core.KeyValue;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
-import io.micronaut.core.util.CollectionUtils;
-import io.micronaut.scheduling.annotation.Async;
-import io.micronaut.scheduling.annotation.Scheduled;
+import io.micronaut.context.event.StartupEvent;
+import io.micronaut.runtime.event.annotation.EventListener;
 import io.micronaut.websocket.WebSocketBroadcaster;
 import io.micronaut.websocket.WebSocketSession;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.aries.config.GsonConfig;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.MessageQueue;
 import org.hyperledger.bpa.repository.MessageQueueRepository;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import org.slf4j.Logger;
 
 @Slf4j
 @Singleton
 @Requires(property = "micronaut.session.http.redis.enabled")
-public class RedisMessageService implements MessageService {
+public final class RedisMessageService implements MessageService {
 
     @Value("${micronaut.application.instance.id}")
     String instanceId;
@@ -34,89 +50,59 @@ public class RedisMessageService implements MessageService {
     WebSocketBroadcaster broadcaster;
 
     @Inject
+    @Getter
     MessageQueueRepository queue;
 
     @Inject
+    @Getter
     Converter conv;
+
+    @Inject
+    ObjectMapper mapper;
 
     @Inject
     StatefulRedisConnection<String, String> redis;
 
-    private final StatefulRedisPubSubConnection<String, String> pubSub;
+    @Inject
+    StatefulRedisPubSubConnection<String, String> pubSub;
 
-    public RedisMessageService(StatefulRedisPubSubConnection<String, String> pubSub) {
-
-        this.pubSub = pubSub;
-
-        this.pubSub.reactive().observeChannels()
+    @EventListener
+    public void onServiceStartedEvent(@SuppressWarnings("unused") StartupEvent startEvent) {
+        pubSub.reactive().subscribe(baseChannel()).subscribe();
+        pubSub.reactive().observeChannels()
                 .doOnNext(pm -> {
                     log.debug("Reactive handler sending to channel: {}, message, {}", pm.getChannel(), pm.getMessage());
-                    broadcaster.broadcastSync(pm.getMessage());
+                    if (StringUtils.equals(pm.getChannel(), baseChannel())) {
+                        broadcaster.broadcastSync(pm.getMessage());
+                    }
                 })
                 .doOnError(e -> log.error("Error in reactive observer", e))
                 .subscribe();
     }
 
     public void subscribe(WebSocketSession session) {
-        log.debug("Subscribing session: {}", session.getId());
-        pubSub.reactive().subscribe(baseChannel() + session.getId()).subscribe();
+        redis.sync().hset(baseChannel(), session.getId(), null);
     }
 
     public void unsubscribe(WebSocketSession session) {
-        log.debug("Unsubscribing session: {} from redis event handler", session.getId());
-        pubSub.reactive().unsubscribe(baseChannel() + session.getId()).block();
+        redis.sync().hdel(baseChannel(), session.getId());
     }
 
     public boolean hasConnectedSessions() {
-        return CollectionUtils.isNotEmpty(findConnectedSessions());
+        KeyValue<String, String> subscriptions = redis.reactive().hgetall(baseChannel()).blockFirst();
+        return subscriptions != null && !subscriptions.isEmpty();
     }
 
-    @Async
-    public void sendMessage(WebSocketMessageBody message) {
+    public void send(WebSocketMessageBody body) {
         try {
-            if (hasConnectedSessions()) {
-                sendToSubscribedChannels(message);
-            } else {
-                MessageQueue msg = MessageQueue.builder().message(conv.toMap(message)).build();
-                queue.save(msg);
-            }
-        } catch (Exception e) {
-            log.error("Could not send websocket message.", e);
+            String message = mapper.writeValueAsString(body);
+            redis.reactive().publish(baseChannel(), message).block();
+        } catch (JacksonException e) {
+            log.error("Could not send message to channel", e);
         }
     }
 
-    public void sendStored(WebSocketSession session) {
-        StreamSupport.stream(queue.findAll().spliterator(), false)
-                .filter(msg -> msg.getMessage() != null)
-                .forEach(msg -> {
-                    WebSocketMessageBody toSend = conv.fromMap(msg.getMessage(), WebSocketMessageBody.class);
-                    sendToSubscribedChannels(toSend);
-        });
-        queue.deleteAll();
-    }
-
-    private void sendToSubscribedChannels(WebSocketMessageBody body) {
-        String message = GsonConfig.jacksonBehaviour().toJson(body);
-        findConnectedSessions().forEach(s -> redis
-                .reactive()
-                .publish(s, message)
-                .block());
-    }
-
-    private List<String> findConnectedSessions() {
-        List<String> channels = redis.reactive().pubsubChannels().collectList().block();
-        return channels != null
-                ? channels.stream().filter(c -> c.startsWith(baseChannel())).collect(Collectors.toList())
-                : List.of();
-    }
-
-    @Scheduled(fixedRate = "10s", initialDelay = "10s")
-    void writeToSocket() {
-        sendMessage(WebSocketMessageBody.of(WebSocketMessageBody.WebSocketMessage.builder()
-                        .linkId("1")
-                        .type(WebSocketMessageBody.WebSocketMessageType.ON_CREDENTIAL_OFFERED)
-                        .info(instanceId + " Hallo to all")
-                .build()));
-        // redis.reactive().publish(WebsocketControllerRedis.BASE_CHANNEL, instanceId + " Hallo to all").block();
+    public Logger getLog() {
+        return log;
     }
 }

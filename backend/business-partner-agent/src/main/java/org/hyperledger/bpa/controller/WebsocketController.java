@@ -54,7 +54,7 @@ public class WebsocketController {
     public void onOpen(WebSocketSession session) {
         log.debug("New websocket session: {}", session.getId());
         msg.subscribe(session);
-        msg.sendStored(session);
+        msg.sendStored();
     }
 
     @OnMessage

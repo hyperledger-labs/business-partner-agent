@@ -19,36 +19,37 @@ package org.hyperledger.bpa.impl.messaging;
 
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.CollectionUtils;
-import io.micronaut.scheduling.annotation.Async;
 import io.micronaut.scheduling.annotation.Scheduled;
 import io.micronaut.websocket.WebSocketBroadcaster;
 import io.micronaut.websocket.WebSocketSession;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.MessageQueue;
 import org.hyperledger.bpa.repository.MessageQueueRepository;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.StreamSupport;
 
 @Slf4j
 @Singleton
 @Requires(missingProperty = "micronaut.session.http.redis.enabled")
-public class InMemoryMessageService implements MessageService {
+public final class InMemoryMessageService implements MessageService {
 
     @Inject
     WebSocketBroadcaster broadcaster;
 
     @Inject
+    @Getter
     MessageQueueRepository queue;
 
     @Inject
+    @Getter
     Converter conv;
 
     private final Map<String, WebSocketSession> connected = new ConcurrentHashMap<>();
@@ -65,30 +66,15 @@ public class InMemoryMessageService implements MessageService {
         return CollectionUtils.isNotEmpty(connected);
     }
 
-    @Async
-    public void sendMessage(WebSocketMessageBody message) {
-        try {
-            if (hasConnectedSessions()) {
-                broadcaster.broadcastSync(message);
-            } else {
-                MessageQueue msg = MessageQueue.builder().message(conv.toMap(message)).build();
-                queue.save(msg);
-            }
-        } catch (Exception e) {
-            log.error("Could not send websocket message.", e);
-        }
+    public void send(WebSocketMessageBody message) {
+        broadcaster.broadcastSync(message);
     }
 
-    public void sendStored(WebSocketSession session) {
-        StreamSupport.stream(queue.findAll().spliterator(), false)
-                .filter(msg -> msg.getMessage() != null)
-                .forEach(msg -> {
-                    WebSocketMessageBody toSend = conv.fromMap(msg.getMessage(), WebSocketMessageBody.class);
-                    session.sendSync(toSend);
-        });
-        queue.deleteAll();
+    public Logger getLog() {
+        return log;
     }
 
+    @SuppressWarnings("unused")
     @Scheduled(fixedDelay = "1h", initialDelay = "2m")
     void cleanupStaleSessions() {
         log.debug("Cleaning up stale websocket sessions.");
