@@ -8,18 +8,20 @@
 <template>
   <v-container>
     <v-card class="mx-auto">
-      <v-card-title class="bg-light"> Import Schema </v-card-title>
+      <v-card-title class="bg-light">
+        {{ $t("component.addSchema.title") }}
+      </v-card-title>
       <v-card-text>
         <v-list-item>
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
           >
-            Schema Name:
+            {{ $t("component.addSchema.schemaName") }}
           </v-list-item-title>
           <v-list-item-subtitle>
             <v-text-field
               class="mt-6"
-              placeholder="Name"
+              :placeholder="$t('component.addSchema.placeholderName')"
               v-model="schema.label"
               :rules="[rules.required]"
               outlined
@@ -33,12 +35,12 @@
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
           >
-            Schema ID:
+            {{ $t("component.addSchema.schemaId") }}
           </v-list-item-title>
           <v-list-item-subtitle>
             <v-text-field
               class="mt-6"
-              placeholder="Schema ID"
+              :placeholder="$t('component.addSchema.placeholderId')"
               v-model="schema.schemaId"
               :rules="[rules.required]"
               outlined
@@ -51,15 +53,15 @@
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-bpa-button color="secondary" @click="cancel()"
-            >Cancel</v-bpa-button
-          >
+          <v-bpa-button color="secondary" @click="cancel()">{{
+            $t("button.cancel")
+          }}</v-bpa-button>
           <v-bpa-button
             :loading="this.isBusy"
             color="primary"
             @click="submit()"
             :disabled="fieldsEmpty"
-            >Submit</v-bpa-button
+            >{{ $t("button.submit") }}</v-bpa-button
           >
         </v-layout>
       </v-card-actions>
@@ -83,19 +85,20 @@ export default {
         schemaId: "",
       },
       isBusy: false,
-      rules: {
-        required: (value) => !!value || "Can't be empty",
-      },
     };
   },
   computed: {
+    rules() {
+      return {
+        required: (value) => !!value || this.$t("app.rules.required"),
+      };
+    },
     fieldsEmpty() {
       return (
         this.schema.label.length === 0 || this.schema.schemaId.length === 0
       );
     },
   },
-  watch: {},
   methods: {
     async submit() {
       this.isBusy = true;
@@ -104,7 +107,10 @@ export default {
         .then((result) => {
           this.isBusy = false;
           if (result.status === 200) {
-            EventBus.$emit("success", "Schema added successfully");
+            EventBus.$emit(
+              "success",
+              this.$t("component.addSchema.eventSuccess")
+            );
             this.$emit("success");
           }
         })

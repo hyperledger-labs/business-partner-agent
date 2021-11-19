@@ -9,7 +9,7 @@
   <v-container>
     <v-layout align-end justify-end>
       <v-combobox
-        label="Filter by"
+        :label="$t('component.activityList.labelFilterCombobox')"
         v-model="filter"
         :items="filterList"
         class="mx-4"
@@ -37,7 +37,9 @@
         clearable
         clear-icon="$vuetify.icons.delete"
       ></v-combobox>
-      <v-bpa-button color="primary" @click="fetchItems()">Refresh</v-bpa-button>
+      <v-bpa-button color="primary" @click="fetchItems()">{{
+        $t("button.refresh")
+      }}</v-bpa-button>
     </v-layout>
     <v-data-table
       :hide-default-footer="items.length < 10"
@@ -96,33 +98,6 @@ export default {
       type: Boolean,
       default: () => true,
     },
-    headers: {
-      type: Array,
-      default: () => [
-        {
-          text: "",
-          value: "indicator",
-          sortable: false,
-          filterable: false,
-        },
-        {
-          text: "Type",
-          value: "type",
-        },
-        {
-          text: "Connection",
-          value: "partner",
-        },
-        {
-          text: "Update at",
-          value: "updatedAt",
-        },
-        {
-          text: "State",
-          value: "state",
-        },
-      ],
-    },
   },
   mounted() {
     this.filter = null;
@@ -135,7 +110,6 @@ export default {
       isBusy: true,
       items: [],
       filter: null,
-      filterList: [{ text: "Type", value: "type" }],
       filterValue: null,
       filterValueList: [],
     };
@@ -156,6 +130,40 @@ export default {
     },
   },
   computed: {
+    filterList() {
+      return [
+        {
+          text: this.headers.find((x) => x.value === "type").text,
+          value: "type",
+        },
+      ];
+    },
+    headers() {
+      return [
+        {
+          text: "",
+          value: "indicator",
+          sortable: false,
+          filterable: false,
+        },
+        {
+          text: this.$t("component.activityList.tableHeaders.type"),
+          value: "type",
+        },
+        {
+          text: this.$t("component.activityList.tableHeaders.partner"),
+          value: "partner",
+        },
+        {
+          text: this.$t("component.activityList.tableHeaders.updatedAt"),
+          value: "updatedAt",
+        },
+        {
+          text: this.$t("component.activityList.tableHeaders.state"),
+          value: "state",
+        },
+      ];
+    },
     newMessageIconType() {
       return this.tasks ? "task" : "activity";
     },
@@ -248,7 +256,9 @@ export default {
       return o ? o.label : role;
     },
     partnerLabel(partner) {
-      return partner ? partner.name : "Unknown";
+      return partner
+        ? partner.name
+        : this.$t("component.activityList.labelPartnerUnknown");
     },
   },
 };

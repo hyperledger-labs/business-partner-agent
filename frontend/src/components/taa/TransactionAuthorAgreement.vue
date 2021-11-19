@@ -4,10 +4,10 @@
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-card>
           <v-card-title class="headline">
-            {{ $t("app.transactionAuthorAgreement.title") }}
+            {{ $t("component.transactionAuthorAgreement.title") }}
           </v-card-title>
           <v-card-text>
-            {{ $t("app.transactionAuthorAgreement.text") }}
+            {{ $t("component.transactionAuthorAgreement.text") }}
             <br /><br />
             <hr />
             <br />
@@ -21,18 +21,20 @@
                   indeterminate
                   color="primary"
                 ></v-progress-circular>
-                <div>{{ $t("app.transactionAuthorAgreement.loading") }}</div>
+                <div>
+                  {{ $t("component.transactionAuthorAgreement.loading") }}
+                </div>
               </div>
             </span>
             <hr />
             <small v-show="isTaaLoaded()"
-              >{{ $t("app.transactionAuthorAgreement.labelVersion") }}
+              >{{ $t("component.transactionAuthorAgreement.labelVersion") }}
               {{ getTaaVersion() }}</small
             >
             <v-checkbox
               v-model="agree"
               :rules="[(v) => !!v || $t('app.rules.agree')]"
-              :label="$t('app.transactionAuthorAgreement.labelCheckbox')"
+              :label="$t('component.transactionAuthorAgreement.labelCheckbox')"
               required
             ></v-checkbox>
           </v-card-text>
