@@ -349,6 +349,14 @@
       }
     },
     "credExList": {
+      "headers": {
+        "displayText": "Type",
+        "partnerName": "Issued to",
+        "role": "Role",
+        "updatedAt": "Updated at",
+        "state": "State",
+        "revocable": "Revocation"
+      },
       "table": {
         "iconCredIssued": "Credential issued",
         "iconCredRevoked": "Credential revoked",

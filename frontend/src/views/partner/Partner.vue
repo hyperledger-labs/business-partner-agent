@@ -200,7 +200,7 @@
       <CredExList
         v-if="isReady"
         v-bind:items="issuedCredentials"
-        v-bind:headers="headersIssued"
+        header-role
         v-bind:openItemById="credExId"
         @changed="refreshIssuedCredentialRecords"
       ></CredExList>
@@ -317,34 +317,6 @@ export default {
         required: (value) => !!value || "Can't be empty",
       },
       PartnerStates: PartnerStates,
-      headersIssued: [
-        {
-          text: "",
-          value: "indicator",
-          sortable: false,
-          filterable: false,
-        },
-        {
-          text: "Type",
-          value: "displayText",
-        },
-        {
-          text: "Role",
-          value: "role",
-        },
-        {
-          text: "Updated at",
-          value: "updatedAt",
-        },
-        {
-          text: "State",
-          value: "state",
-        },
-        {
-          text: "Revocation",
-          value: "revocable",
-        },
-      ],
       issueCredentialDialog: false,
     };
   },
