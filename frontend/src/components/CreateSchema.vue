@@ -8,27 +8,29 @@
 <template>
   <v-container>
     <v-card class="mx-auto">
-      <v-card-title class="bg-light"> Create Schema </v-card-title>
+      <v-card-title class="bg-light">
+        {{ $t("component.createSchema.title") }}
+      </v-card-title>
       <v-card-text>
         <v-form ref="form" v-model="valid">
           <v-row>
             <v-col cols="4" class="pb-0">
               <p class="grey--text text--darken-2 font-weight-medium">
-                Schema Information
+                {{ $t("component.createSchema.schemaInformation") }}
               </p>
             </v-col>
             <v-col cols="8" class="pb-0">
               <v-text-field
-                label="Schema Label"
-                placeholder="Label in your application for this schema"
+                :label="$t('component.createSchema.labelSchema')"
+                :placeholder="$t('component.createSchema.placeholderSchema')"
                 v-model="schemaLabel"
                 :rules="[rules.required]"
                 outlined
                 dense
               ></v-text-field>
               <v-text-field
-                label="Schema Name"
-                placeholder="Published schema name (ex. my-schema)"
+                :label="$t('component.createSchema.labelName')"
+                :placeholder="$t('component.createSchema.placeholderName')"
                 v-model="schemaName"
                 :rules="[rules.required, rules.schemaName]"
                 required
@@ -36,8 +38,8 @@
                 dense
               ></v-text-field>
               <v-text-field
-                label="Schema Version"
-                placeholder="Published schema version (ex. 1.2 or 1.2.3)"
+                :label="$t('component.createSchema.labelVersion')"
+                :placeholder="$t('component.createSchema.placeholderVersion')"
                 v-model="schemaVersion"
                 :rules="[rules.required, rules.version]"
                 required
@@ -49,7 +51,7 @@
           <v-row>
             <v-col cols="4" class="pb-0">
               <p class="grey--text text--darken-2 font-weight-medium">
-                Schema Attributes
+                {{ $t("component.createSchema.schemaAttributes") }}
               </p>
             </v-col>
           </v-row>
@@ -57,12 +59,20 @@
             <v-col class="pb-0">
               <v-row>
                 <v-col cols="8" class="py-0"
-                  ><p class="grey--text">Name</p></v-col
+                  ><p class="grey--text">
+                    {{ $t("component.createSchema.headersColumn.name") }}
+                  </p></v-col
                 >
                 <v-col cols="2" class="py-0"
-                  ><p class="grey--text">Is Default</p></v-col
+                  ><p class="grey--text">
+                    {{ $t("component.createSchema.headersColumn.isDefault") }}
+                  </p></v-col
                 >
-                <v-col class="py-0"><p class="grey--text">Action</p> </v-col>
+                <v-col class="py-0"
+                  ><p class="grey--text">
+                    {{ $t("component.createSchema.headersColumn.action") }}
+                  </p>
+                </v-col>
               </v-row>
               <v-row
                 v-for="(attr, index) in schemaAttributes"
@@ -70,7 +80,9 @@
               >
                 <v-col cols="8" class="py-0">
                   <v-text-field
-                    placeholder="Ex. companyName or company-name"
+                    :placeholder="
+                      $t('component.createSchema.placeholderAttribute')
+                    "
                     v-model="attr.text"
                     :rules="[rules.required, rules.schemaAttributeName]"
                     outlined
@@ -112,15 +124,15 @@
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-bpa-button color="secondary" @click="cancel()"
-            >Cancel</v-bpa-button
-          >
+          <v-bpa-button color="secondary" @click="cancel()">{{
+            $t("button.cancel")
+          }}</v-bpa-button>
           <v-bpa-button
             :loading="this.isBusy"
             color="primary"
             @click="submit()"
             :disabled="fieldsEmpty"
-            >Submit</v-bpa-button
+            >{{ $t("button.submit") }}</v-bpa-button
           >
         </v-layout>
       </v-card-actions>
@@ -147,29 +159,36 @@ export default {
       schemaAttributeText: "",
       schemaAttributes: [{ defaultAttribute: true, text: "" }],
       isBusy: false,
-      rules: {
-        required: (value) => !!value || "Can't be empty",
-        version: (value) =>
-          textUtils.isValidSchemaVersion(value) ||
-          "Must be follow common version numbering (ex. 1.2 or 1.2.3)",
-        schemaName: (value) =>
-            textUtils.isValidSchemaName(value) ||
-            "Must be alphanumeric with optional '_' or '-'.",
-        schemaAttributeName: (value) =>
-          textUtils.isValidSchemaAttributeName(value) ||
-          "Must be lowercase alpha with optional '_'.",
-      },
     };
   },
   computed: {
     fieldsEmpty() {
       return (
         this.schemaLabel.length === 0 ||
-        this.schemaName.length === 0 || !textUtils.isValidSchemaName(this.schemaName) ||
-        this.schemaVersion.length === 0 || !textUtils.isValidSchemaVersion(this.schemaVersion) ||
-        this.schemaAttributes.filter((x) => x.text.trim().length).length === 0 ||
-        this.schemaAttributes.filter((x) => x.text.trim().length).some(x => !textUtils.isValidSchemaAttributeName(x.text))
+        this.schemaName.length === 0 ||
+        !textUtils.isValidSchemaName(this.schemaName) ||
+        this.schemaVersion.length === 0 ||
+        !textUtils.isValidSchemaVersion(this.schemaVersion) ||
+        this.schemaAttributes.filter((x) => x.text.trim().length).length ===
+          0 ||
+        this.schemaAttributes
+          .filter((x) => x.text.trim().length)
+          .some((x) => !textUtils.isValidSchemaAttributeName(x.text))
       );
+    },
+    rules() {
+      return {
+        required: (value) => !!value || this.$t("app.rules.required"),
+        version: (value) =>
+          textUtils.isValidSchemaVersion(value) ||
+          this.$t("app.rules.validVersion"),
+        schemaName: (value) =>
+          textUtils.isValidSchemaName(value) ||
+          this.$t("app.rules.validSchema"),
+        schemaAttributeName: (value) =>
+          textUtils.isValidSchemaAttributeName(value) ||
+          this.$t("app.rules.validAttributeName"),
+      };
     },
   },
   methods: {
@@ -229,7 +248,10 @@ export default {
       try {
         const _schema = await this.saveSchema();
         if (_schema) {
-          EventBus.$emit("success", "Schema created successfully");
+          EventBus.$emit(
+            "success",
+            this.$t("component.createSchema.eventSuccess")
+          );
           this.resetForm();
           this.$emit("success");
         }

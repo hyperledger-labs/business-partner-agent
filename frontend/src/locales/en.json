@@ -14,7 +14,10 @@
       "valueMax":  "Value must not be above",
       "colorPrefix": "Color should begin with #",
       "colorInvalid": "Invalid color (e.g. #FF00FF)",
-      "agree": "You must agree to continue"
+      "agree": "You must agree to continue",
+      "validVersion": "Must be follow common version numbering (ex. 1.2 or 1.2.3)",
+      "validSchema": "Must be alphanumeric with optional '_' or '-'.",
+      "validAttributeName": "Must be lowercase alpha with optional '_'."
     },
     "sessionDialog": {
       "headline": "Session expired",
@@ -264,6 +267,24 @@
       "placeholderName": "Name",
       "placeholderId": "Schema ID",
       "eventSuccess": "Schema added successfully"
+    },
+    "createSchema": {
+      "title": "Create Schema",
+      "schemaInformation": "Schema Information",
+      "labelSchema": "Schema Label",
+      "labelName": "Schema Name",
+      "labelVersion": "Schema Version",
+      "placeholderSchema": "Label in your application for this schema",
+      "placeholderName": "Published schema name (ex. my-schema)",
+      "placeholderVersion": "Published schema version (ex. 1.2 or 1.2.3)",
+      "schemaAttributes": "Schema Attributes",
+      "placeholderAttribute": "E.g. company, name or company_name",
+      "eventSuccess": "Schema created successfully",
+      "headersColumn": {
+        "name": "Name",
+        "isDefault": "Is Default",
+        "action": "Action"
+      }
     },
     "activityList": {
       "labelFilterCombobox": "Filter by",
