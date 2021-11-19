@@ -16,8 +16,7 @@
     >
       <v-col cols="12" class="pb-0 mt-4">
         <v-text-field
-          label="Label (Optional)"
-          placeholder
+          :label="$t('component.credential.label')"
           outlined
           dense
           :value="intDoc.label"
@@ -26,21 +25,19 @@
         ></v-text-field>
       </v-col>
     </v-row>
-    <!-- <v-row>
-      <v-col> -->
+
     <h3
       v-if="!showOnlyContent && (intDoc.issuer || intDoc.issuedAt)"
       class="mb-4"
     >
-      Issuer
+      {{ $t("component.credential.issuerTitle") }}
     </h3>
-    <!-- </v-col>
-    </v-row> -->
+
     <v-row v-if="!showOnlyContent">
       <v-col>
         <v-text-field
           v-if="intDoc.issuer"
-          label="Issuer Decentralized Identifier (DID)"
+          :label="$t('component.credential.issuerLabel')"
           v-model="intDoc.issuer"
           disabled
           outlined
@@ -48,7 +45,7 @@
         ></v-text-field>
         <v-text-field
           v-if="intDoc.issuedAt"
-          label="Issued at"
+          :label="$t('component.credential.issuedAt')"
           :value="$options.filters.moment(intDoc.issuedAt, 'YYYY-MM-DD HH:mm')"
           disabled
           outlined
@@ -66,9 +63,8 @@
           v-for="field in schema.fields"
           :key="field.type"
           :label="field.label"
-          placeholder
           :disabled="isReadOnly"
-          :rules="[(v) => !!v || 'Item is required']"
+          :rules="[(v) => !!v || $t('app.rules.required')]"
           :required="field.required"
           outlined
           dense
@@ -129,22 +125,20 @@ export default {
   },
   methods: {
     docDataFieldChanged(propertyName, event) {
-      if (this.origIntDoc[this.documentDataType][propertyName] != event) {
+      if (this.origIntDoc[this.documentDataType][propertyName] !== event) {
         this.intDoc[this.documentDataType][propertyName] = event;
       } else {
         this.intDoc[this.documentDataType][propertyName] = event;
       }
 
-      const isDirty = Object.keys(this.origIntDoc[this.documentDataType]).find(
-        (key) => {
-          return this.intDoc[this.documentDataType][key] !=
-            this.origIntDoc[this.documentDataType][key]
-            ? true
-            : false;
-        }
-      )
-        ? true
-        : false;
+      const isDirty = !!Object.keys(
+        this.origIntDoc[this.documentDataType]
+      ).find((key) => {
+        return (
+          this.intDoc[this.documentDataType][key] !==
+          this.origIntDoc[this.documentDataType][key]
+        );
+      });
       this.$emit("doc-data-field-changed", isDirty);
     },
 
@@ -153,12 +147,12 @@ export default {
       // return null if we do not have a schema id.
       if (!schemaId) return null;
       const schemas = this.$store.getters.getSchemas;
-      let schema = schemas.find((schema) => {
-        return schema.schemaId === schemaId;
+      let schema = schemas.find((s) => {
+        return s.schemaId === schemaId;
       });
       if (schema) {
         //TODO check if fields already available
-        let objectTemplate = Object.assign(schema, {
+        return Object.assign(schema, {
           fields: schema.schemaAttributeNames.map((key) => {
             return {
               type: key,
@@ -166,7 +160,6 @@ export default {
             };
           }),
         });
-        return objectTemplate;
       }
       return null;
     },
@@ -178,7 +171,7 @@ export default {
           return val;
         }
       });
-      const s = {
+      return {
         type: objData.type,
         label: "",
         fields: Object.keys(dataType ? objData[dataType] : objData).map(
@@ -190,11 +183,10 @@ export default {
           }
         ),
       };
-      return s;
     },
 
     docFieldChanged(propertyName, event) {
-      if (this.origIntDoc[propertyName] != event) {
+      if (this.origIntDoc[propertyName] !== event) {
         this.intDoc[propertyName] = event;
       } else {
         this.intDoc[propertyName] = event;
@@ -221,7 +213,6 @@ export default {
             this.documentDataType = field;
             this.intDoc = this.document;
             this.intCopy();
-            return;
           }
         });
       }

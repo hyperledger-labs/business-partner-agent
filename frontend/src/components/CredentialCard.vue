@@ -31,7 +31,7 @@
       <v-expansion-panels flat>
         <v-expansion-panel>
           <v-expansion-panel-header class="font-weight-medium">
-            Details
+            {{ $t("component.credentialCard.details") }}
             <template v-slot:actions>
               <v-icon color="primary"> $expand </v-icon>
             </template>
