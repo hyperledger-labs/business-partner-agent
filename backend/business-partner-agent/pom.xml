@@ -66,12 +66,12 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>io.micronaut.rxjava3</groupId>
-            <artifactId>micronaut-rxjava3</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.micronaut.sql</groupId>
             <artifactId>micronaut-jdbc-hikari</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micronaut.rxjava3</groupId>
+            <artifactId>micronaut-rxjava3</artifactId>
         </dependency>
         <dependency>
             <groupId>io.micronaut.security</groupId>

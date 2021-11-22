@@ -1,9 +1,5 @@
 version: "3.9"
 services:
-  redis:
-    image: "redis:6-alpine"
-    ports:
-      - "6379:6379"
   #######
   # Business Partner 1
   #######
@@ -11,7 +7,6 @@ services:
     image: ghcr.io/hyperledger-labs/business-partner-agent-new:edge
     depends_on:
       - bpa-agent1
-      - redis
     environment:
       JAVA_OPTS: >
         -Dbpa.acapy.url=http://bpa-agent1:${ACAPY_ADMIN_PORT}
@@ -89,7 +84,6 @@ services:
     image: ghcr.io/hyperledger-labs/business-partner-agent-new:edge
     depends_on:
       -  bpa-agent2
-      - redis
     environment:
       JAVA_OPTS: >
         -Dbpa.acapy.url=http://bpa-agent2:${ACAPY2_ADMIN_PORT}

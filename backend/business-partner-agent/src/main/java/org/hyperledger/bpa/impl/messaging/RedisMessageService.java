@@ -23,7 +23,6 @@ import io.lettuce.core.KeyValue;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.StartupEvent;
 import io.micronaut.runtime.event.annotation.EventListener;
 import io.micronaut.websocket.WebSocketBroadcaster;
@@ -38,13 +37,16 @@ import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.repository.MessageQueueRepository;
 import org.slf4j.Logger;
 
+/**
+ * Simple messaging service implementation that broadcasts incoming events to a
+ * channel. Each bpa instance publishes/subscribes events to the same channel,
+ * incoming channel events are then broadcast to all connected websockets. TODO:
+ * for multi tenancy channels need to be separated by tenant id.
+ */
 @Slf4j
 @Singleton
 @Requires(property = "micronaut.session.http.redis.enabled")
 public final class RedisMessageService implements MessageService {
-
-    @Value("${micronaut.application.instance.id}")
-    String instanceId;
 
     @Inject
     WebSocketBroadcaster broadcaster;
