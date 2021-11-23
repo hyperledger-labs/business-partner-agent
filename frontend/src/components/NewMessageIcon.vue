@@ -8,16 +8,22 @@
 
 <template>
   <div class="newIconContainer">
-  <span>
-    <v-tooltip right>
-      <template v-slot:activator="{ on, attrs }">
-        <v-icon small :color="color" v-show="show" :class="{ newIconCredential: isCredential }" v-bind="attrs" v-on="on"
-        >$vuetify.icons.newMessage</v-icon
-        >
-      </template>
-      <span>{{ this.text }}</span>
-    </v-tooltip>
-  </span>
+    <span>
+      <v-tooltip right>
+        <template v-slot:activator="{ on, attrs }">
+          <v-icon
+            small
+            :color="color"
+            v-show="show"
+            :class="{ newIconCredential: isCredential }"
+            v-bind="attrs"
+            v-on="on"
+            >$vuetify.icons.newMessage</v-icon
+          >
+        </template>
+        <span>{{ this.text }}</span>
+      </v-tooltip>
+    </span>
   </div>
 </template>
 
@@ -40,27 +46,42 @@ export default {
       // partner will also have a partner state... so could be confusing ?
       return "green";
     },
-    isCredential: function() {
+    isCredential: function () {
       return this.type === "credential";
     },
     show: function () {
       // if this id is in the specified collection, then show it
-      let result = false;
+      let result;
       switch (this.type) {
         case "activity":
-          result = ({}.hasOwnProperty.call(this.$store.getters.activityNotifications, this.id));
+          result = {}.hasOwnProperty.call(
+            this.$store.getters.activityNotifications,
+            this.id
+          );
           break;
         case "credential":
-          result = ({}.hasOwnProperty.call(this.$store.getters.credentialNotifications, this.id));
+          result = {}.hasOwnProperty.call(
+            this.$store.getters.credentialNotifications,
+            this.id
+          );
           break;
         case "partner":
-          result = ({}.hasOwnProperty.call(this.$store.getters.partnerNotifications, this.id));
+          result = {}.hasOwnProperty.call(
+            this.$store.getters.partnerNotifications,
+            this.id
+          );
           break;
         case "presentation":
-          result = ({}.hasOwnProperty.call(this.$store.getters.presentationNotifications, this.id));
+          result = {}.hasOwnProperty.call(
+            this.$store.getters.presentationNotifications,
+            this.id
+          );
           break;
         case "task":
-          result = ({}.hasOwnProperty.call(this.$store.getters.taskNotifications, this.id));
+          result = {}.hasOwnProperty.call(
+            this.$store.getters.taskNotifications,
+            this.id
+          );
           break;
         default:
           result = false;
@@ -72,25 +93,25 @@ export default {
       let result = "";
       switch (this.type) {
         case "activity":
-          result = "New activity";
+          result = this.$t("component.newMessageIcon.activity");
           break;
         case "credential":
-          result = "New activity on Credential";
+          result = this.$t("component.newMessageIcon.credential");
           break;
         case "partner":
-          result = "New activity related to this Partner";
+          result = this.$t("component.newMessageIcon.partner");
           break;
         case "presentation":
-          result = "New activity on Presentation";
+          result = this.$t("component.newMessageIcon.presentation");
           break;
         case "task":
-          result = "New task requires attention";
+          result = this.$t("component.newMessageIcon.task");
           break;
         default:
-          result = "New activity on item";
+          result = this.$t("component.newMessageIcon.default");
       }
       return result;
-    }
+    },
   },
 };
 </script>

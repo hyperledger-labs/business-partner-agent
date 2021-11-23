@@ -115,7 +115,6 @@
                   :key="field.type"
                   :label="field.label"
                   v-model="credentialFields[field.type]"
-                  placeholder=""
                   outlined
                   dense
                   @blur="enableSubmit"
@@ -145,15 +144,15 @@
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-bpa-button color="secondary" @click="cancel()"
-            >Cancel</v-bpa-button
-          >
+          <v-bpa-button color="secondary" @click="cancel()">{{
+            $t("button.cancel")
+          }}</v-bpa-button>
           <v-bpa-button
             :loading="this.isBusy"
             color="primary"
             @click="submit()"
             :disabled="submitDisabled"
-            >Submit</v-bpa-button
+            >{{ $t("button.submit") }}</v-bpa-button
           >
         </v-layout>
       </v-card-actions>
@@ -367,13 +366,17 @@ export default {
           reader.onerror = (evt) => {
             EventBus.$emit(
               "error",
-              `Error reading file '${v.name}'. ${evt.message}`
+              `${this.$t(
+                "component.issueCredential.expertLoad.errorMessages.readFile"
+              )} '${v.name}'. ${evt.message}`
             );
           };
         } catch (e) {
           EventBus.$emit(
             "error",
-            `Error reading file '${v.name}'. ${e.message}`
+            `${this.$t(
+              "component.issueCredential.expertLoad.errorMessages.readFile"
+            )} '${v.name}'. ${e.message}`
           );
         }
       }

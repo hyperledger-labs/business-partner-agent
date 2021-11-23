@@ -95,8 +95,8 @@
 </template>
 
 <script>
-import { CredentialTypes } from "../constants";
-import { EventBus } from "../main";
+import { CredentialTypes } from "@/constants";
+import { EventBus } from "@/main";
 import NewMessageIcon from "@/components/NewMessageIcon";
 
 export default {

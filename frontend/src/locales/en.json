@@ -260,6 +260,14 @@
       "labelVersion": "Version:",
       "labelCheckbox": "As transaction author I reviewed and accept the above Transaction Author Agreement for this session"
     },
+    "newMessageIcon": {
+      "activity": "New activity",
+      "credential": "New activity on Credential",
+      "partner": "New activity related to this Partner",
+      "presentation": "New activity on Presentation 2",
+      "task": "New task requires attention",
+      "default": "New activity on item"
+    },
     "addSchema": {
       "title": "Import Schema",
       "schemaName": "Schema Name:",
@@ -267,6 +275,18 @@
       "placeholderName": "Name",
       "placeholderId": "Schema ID",
       "eventSuccess": "Schema added successfully"
+    },
+    "manageSchema": {
+      "labelSchemaId": "Schema ID",
+      "labelCheckbox": "My Schema",
+      "eventSuccessCopy": "Schema ID copied",
+      "eventErrorCopy": "Can't copy Schema ID",
+      "eventSuccessDelete": "Schema deleted",
+      "tabs": {
+        "schemaAttributes": "Schema Attributes",
+        "credentialDefinitions": "Credential Definitions",
+        "trustedIssuers": "Trusted Issuers"
+      }
     },
     "credential": {
       "label": "Label (Optional)",
@@ -344,7 +364,8 @@
             "csv": "Ensure that data is valid Comma Separated Value (CSV) format."
           },
           "attributes": "Could not find any matching Credential attributes.",
-          "parse": "Could not parse data."
+          "parse": "Could not parse data.",
+          "readFile": "Error reading file"
         }
       }
     },

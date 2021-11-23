@@ -30,7 +30,7 @@
             readonly
             outlined
             dense
-            label="Schema ID"
+            :label="$t('component.manageSchema.labelSchemaId')"
             :append-icon="'$vuetify.icons.copy'"
             @click:append="copySchemaId"
           ></v-text-field>
@@ -38,7 +38,7 @@
         <v-list-item class="mt-4">
           <v-checkbox
             class="mt-1"
-            label="My Schema"
+            :label="$t('component.manageSchema.labelCheckbox')"
             v-model="schema.isMine"
             :readonly="true"
             outlined
@@ -91,7 +91,9 @@
 
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-bpa-button color="primary" @click="closed">Close</v-bpa-button>
+          <v-bpa-button color="primary" @click="closed">{{
+            $t("button.close")
+          }}</v-bpa-button>
         </v-layout>
       </v-card-actions>
     </v-card>
@@ -150,14 +152,22 @@ export default {
       },
     },
     items() {
-      const tabs = [{ title: "Schema Attributes", key: "schema-attributes" }];
+      const tabs = [
+        {
+          title: this.$t("component.manageSchema.tabs.schemaAttributes"),
+          key: "schema-attributes",
+        },
+      ];
       if (this.credentialDefinitions)
         tabs.push({
-          title: "Credential Definitions",
+          title: this.$t("component.manageSchema.tabs.credentialDefinitions"),
           key: "credential-definitions",
         });
       if (!this.schema.isMine && this.trustedIssuers)
-        tabs.push({ title: "Trusted Issuers", key: "trusted-issuers" });
+        tabs.push({
+          title: this.$t("component.manageSchema.tabs.trustedIssuers"),
+          key: "trusted-issuers",
+        });
       return tabs;
     },
   },
@@ -165,15 +175,21 @@ export default {
     copySchemaId() {
       let idEl = document.querySelector("#schemaId");
       idEl.select();
-      let successfull;
+      let successful;
       try {
-        successfull = document.execCommand("copy");
+        successful = document.execCommand("copy");
       } catch (err) {
-        successfull = false;
+        successful = false;
       }
-      successfull
-        ? EventBus.$emit("success", "Schema ID copied")
-        : EventBus.$emit("error", "Can't copy Schema ID");
+      successful
+        ? EventBus.$emit(
+            "success",
+            this.$t("component.manageSchema.eventSuccessCopy")
+          )
+        : EventBus.$emit(
+            "error",
+            this.$t("component.manageSchema.eventErrorCopy")
+          );
       idEl.blur();
       window.getSelection().removeAllRanges();
     },
@@ -183,7 +199,10 @@ export default {
         .then((result) => {
           console.log(result);
           if (result.status === 200) {
-            EventBus.$emit("success", "Schema deleted");
+            EventBus.$emit(
+              "success",
+              this.$t("component.manageSchema.eventSuccessDelete")
+            );
             this.$emit("changed");
             this.$emit("deleted");
           }
