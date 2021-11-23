@@ -32,7 +32,6 @@ micronaut:
       - pattern: /**
         access:
           - isAuthenticated()
-
   session:
     max-inactive-interval: 12h
   router:

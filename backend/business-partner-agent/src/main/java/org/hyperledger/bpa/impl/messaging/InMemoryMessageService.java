@@ -15,20 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.impl;
+package org.hyperledger.bpa.impl.messaging;
 
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.CollectionUtils;
-import io.micronaut.scheduling.annotation.Async;
 import io.micronaut.scheduling.annotation.Scheduled;
 import io.micronaut.websocket.WebSocketBroadcaster;
 import io.micronaut.websocket.WebSocketSession;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.MessageQueue;
 import org.hyperledger.bpa.repository.MessageQueueRepository;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,24 +38,27 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Singleton
-public class MessageService {
+@Requires(missingProperty = "micronaut.session.http.redis.enabled")
+public final class InMemoryMessageService implements MessageService {
 
     @Inject
     WebSocketBroadcaster broadcaster;
 
     @Inject
+    @Getter
     MessageQueueRepository queue;
 
     @Inject
+    @Getter
     Converter conv;
 
     private final Map<String, WebSocketSession> connected = new ConcurrentHashMap<>();
 
-    public void addSession(WebSocketSession session) {
+    public void subscribe(WebSocketSession session) {
         connected.put(session.getId(), session);
     }
 
-    public void removeSession(WebSocketSession session) {
+    public void unsubscribe(WebSocketSession session) {
         connected.remove(session.getId());
     }
 
@@ -62,30 +66,15 @@ public class MessageService {
         return CollectionUtils.isNotEmpty(connected);
     }
 
-    // called by impl
-    @Async
-    public void sendMessage(WebSocketMessageBody message) {
-        try {
-            if (hasConnectedSessions()) {
-                broadcaster.broadcastSync(message);
-            } else {
-                MessageQueue msg = MessageQueue.builder().message(conv.toMap(message)).build();
-                queue.save(msg);
-            }
-        } catch (Exception e) {
-            log.error("Could not send websocket message.", e);
-        }
+    public void send(WebSocketMessageBody message) {
+        broadcaster.broadcastSync(message);
     }
 
-    // called by controller
-    public void sendStored(WebSocketSession session) {
-        queue.findAll().forEach(msg -> {
-            WebSocketMessageBody toSend = conv.fromMap(msg.getMessage(), WebSocketMessageBody.class);
-            session.sendSync(toSend);
-        });
-        queue.deleteAll();
+    public Logger getLog() {
+        return log;
     }
 
+    @SuppressWarnings("unused")
     @Scheduled(fixedDelay = "1h", initialDelay = "2m")
     void cleanupStaleSessions() {
         log.debug("Cleaning up stale websocket sessions.");
