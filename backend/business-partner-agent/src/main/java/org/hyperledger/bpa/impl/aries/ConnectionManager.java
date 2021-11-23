@@ -39,6 +39,7 @@ import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
 import org.hyperledger.aries.api.out_of_band.ReceiveInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.InvitationException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
@@ -205,11 +206,16 @@ public class ConnectionManager {
     // manual connection flow
     public void acceptConnection(@NonNull String connectionId) {
         try {
-            ac.didExchangeAcceptRequest(connectionId, null);
+            ConnectionRecord con = ac.connectionsGetById(connectionId).orElseThrow(EntityNotFoundException::new);
+            if (ConnectionRecord.ConnectionProtocol.DID_EXCHANGE_V1.equals(con.getConnectionProtocol())) {
+                ac.didExchangeAcceptRequest(connectionId, null);
+            } else {
+                ac.connectionsAcceptRequest(connectionId, null);
+            }
         } catch (IOException e) {
-            String msg = messageSource.getMessage("acapy.unavailable");
-            log.error(msg, e);
-            throw new NetworkException(msg);
+            String errorMsg = messageSource.getMessage("acapy.unavailable");
+            log.error(errorMsg, e);
+            throw new NetworkException(errorMsg);
         }
     }
 
