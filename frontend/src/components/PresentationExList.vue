@@ -157,7 +157,7 @@ export default {
     // Open Item directly. Is used for links from notifications/activity
     if (this.openItemById) {
       // FIXME: items observable is typically not resolved yet. Then items is empty
-      const item = this.items.find((item) => item.id === this.openItemById);
+      const item = this.items.find((i) => i.id === this.openItemById);
       if (item) {
         this.openItem(item);
       } else {
@@ -179,30 +179,6 @@ export default {
       isLoading: false,
       isWaitingForMatchingCreds: false,
       declineReasonText: "",
-      headers: [
-        {
-          text: "",
-          value: "indicator",
-          sortable: false,
-          filterable: false,
-        },
-        {
-          text: "Name",
-          value: "label",
-        },
-        {
-          text: "Role",
-          value: "role",
-        },
-        {
-          text: "Updated at",
-          value: "updatedAt",
-        },
-        {
-          text: "State",
-          value: "state",
-        },
-      ],
     };
   },
   computed: {
@@ -213,6 +189,32 @@ export default {
       set(val) {
         this.$emit("input", val);
       },
+    },
+    headers() {
+      return [
+        {
+          text: "",
+          value: "indicator",
+          sortable: false,
+          filterable: false,
+        },
+        {
+          text: this.$t("component.presentationExList.table.label"),
+          value: "label",
+        },
+        {
+          text: this.$t("component.presentationExList.table.role"),
+          value: "role",
+        },
+        {
+          text: this.$t("component.presentationExList.table.updatedAt"),
+          value: "updatedAt",
+        },
+        {
+          text: this.$t("component.presentationExList.table.state"),
+          value: "state",
+        },
+      ];
     },
     showV2() {
       return (
@@ -249,7 +251,10 @@ export default {
       const payload = this.prepareApprovePayload();
       try {
         await proofExService.approveProofRequest(this.record.id, payload);
-        EventBus.$emit("success", "Proof has been sent");
+        EventBus.$emit(
+          "success",
+          this.$t("component.presentationExList.eventSuccessApprove")
+        );
         this.closeDialog();
         this.$emit("changed");
       } catch (e) {
@@ -262,7 +267,10 @@ export default {
           this.record.id,
           this.declineReasonText
         );
-        EventBus.$emit("success", "Presentation request declined");
+        EventBus.$emit(
+          "success",
+          this.$t("component.presentationExList.eventSuccessDecline")
+        );
         this.closeDialog();
         this.$emit("changed");
       } catch (e) {
@@ -310,7 +318,10 @@ export default {
             (item) => item.id === this.record.id
           );
           this.items.splice(idx, 1);
-          EventBus.$emit("success", "Presentation record deleted");
+          EventBus.$emit(
+            "success",
+            this.$t("component.presentationExList.eventSuccessDelete")
+          );
           this.closeDialog();
         }
       } catch (e) {
@@ -419,7 +430,6 @@ export default {
         });
 
         this.record.canBeFullfilled = this.canBeFullfilled();
-
         this.isWaitingForMatchingCreds = false;
       });
     },

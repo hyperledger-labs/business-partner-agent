@@ -14,7 +14,10 @@
           >$vuetify.icons.partnerState</v-icon
         >
       </template>
-      <span>Aries connection state: {{ this.state }}</span>
+      <span
+        >{{ $t("component.partnerStateIndicator.connectionState") }}
+        {{ this.state }}</span
+      >
     </v-tooltip>
   </span>
 </template>
@@ -27,7 +30,6 @@ export default {
   props: {
     state: String,
   },
-  created() {},
   data: () => {
     return {};
   },
@@ -36,6 +38,5 @@ export default {
       return partnerUtils.getPartnerStateColor(this.state);
     },
   },
-  methods: {},
 };
 </script>

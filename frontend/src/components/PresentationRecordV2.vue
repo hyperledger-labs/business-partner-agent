@@ -11,16 +11,16 @@
     <!-- Valid/Invalid info for role verifier -->
     <v-container v-if="isStateVerified">
       <v-alert v-if="record.valid" dense border="left" type="success">
-        Presentation is valid
+        {{ $t("view.presentationRecord.presentationValid") }}
       </v-alert>
 
       <v-alert v-else dense border="left" type="error">
-        Presentation is not valid
+        {{ $t("view.presentationRecord.presentationNotValid") }}
       </v-alert>
     </v-container>
 
     <!-- Request Content -->
-    <h4 class="my-4">Request Content:</h4>
+    <h4 class="my-4">{{ $t("view.presentationRecord.requestContent") }}</h4>
     <v-container
       v-if="!isStateProposalSent"
       class="d-flex flex-wrap justify-space-between"
@@ -46,7 +46,7 @@
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
           >
-            Role
+            {{ $t("view.presentationRecord.role") }}
           </v-list-item-title>
           <v-list-item-subtitle align="">
             {{ record.role | capitalize }}
@@ -57,7 +57,7 @@
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
           >
-            State
+            {{ $t("view.presentationRecord.state") }}
           </v-list-item-title>
           <v-list-item-subtitle align="">
             {{
@@ -72,7 +72,7 @@
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
           >
-            Request Name
+            {{ $t("view.presentationRecord.requestName") }}
           </v-list-item-title>
           <v-list-item-subtitle align="">
             {{ record.proofRequest ? record.proofRequest.name : "" }}
@@ -181,7 +181,9 @@ export default {
           return credInfo.credentialId;
         }
       } else {
-        return "No info found";
+        return this.$t(
+          "view.presentationRecord.matchingCredentials.noInfoFound"
+        );
       }
     },
     renderSchemaLabel(attrGroupName) {

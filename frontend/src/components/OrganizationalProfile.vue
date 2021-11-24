@@ -16,8 +16,7 @@
       </v-col>
       <v-col cols="8" class="pb-0">
         <v-text-field
-          label="Organization Type"
-          placeholder
+          :label="$t('component.organizationProfile.companyInfo.type')"
           v-model="documentData.type"
           outlined
           disabled
@@ -25,9 +24,8 @@
         ></v-text-field>
         <v-text-field
           :label="$t('component.organizationProfile.companyInfo.companyName')"
-          placeholder
           :disabled="isReadOnly"
-          :rules="[(v) => !!v || 'Item is required']"
+          :rules="[(v) => !!v || $t('app.rules.required')]"
           required
           outlined
           dense
@@ -38,7 +36,6 @@
           :label="
             $t('component.organizationProfile.companyInfo.companyAltName')
           "
-          placeholder
           v-model="documentData.altName"
           :disabled="isReadOnly"
           required
@@ -51,7 +48,9 @@
         >
           <v-col cols="4" class="py-0">
             <v-select
-              label="Identifier"
+              :label="
+                $t('component.organizationProfile.companyInfo.identifier')
+              "
               v-model="identifier.type"
               :items="identifierTypes"
               :disabled="isReadOnly"
@@ -61,7 +60,6 @@
           </v-col>
           <v-col class="py-0">
             <v-text-field
-              placeholder
               v-model="identifier.id"
               :disabled="isReadOnly"
               outlined
@@ -101,8 +99,7 @@
       </v-col>
       <v-col cols="8" class="pb-0">
         <v-text-field
-          label="Street (with number)"
-          placeholder
+          :label="$t('component.organizationProfile.addressInfo.street')"
           v-model="documentData.registeredSite.address.streetAddress"
           :disabled="isReadOnly"
           outlined
@@ -111,8 +108,9 @@
         <v-row>
           <v-col cols="4" class="py-0">
             <v-text-field
-              label="Postal Code"
-              placeholder
+              :label="
+                $t('component.organizationProfile.addressInfo.postalCode')
+              "
               v-model="documentData.registeredSite.address.zipCode"
               :disabled="isReadOnly"
               outlined
@@ -121,8 +119,7 @@
           </v-col>
           <v-col cols="8" class="py-0">
             <v-text-field
-              label="City"
-              placeholder
+              :label="$t('component.organizationProfile.addressInfo.city')"
               v-model="documentData.registeredSite.address.city"
               :disabled="isReadOnly"
               outlined
@@ -133,8 +130,7 @@
         <v-row>
           <v-col cols="6" class="py-0">
             <v-text-field
-              label="Country"
-              placeholder
+              :label="$t('component.organizationProfile.addressInfo.country')"
               v-model="documentData.registeredSite.address.country"
               :disabled="isReadOnly"
               outlined
@@ -143,8 +139,7 @@
           </v-col>
           <v-col cols="6" class="py-0">
             <v-text-field
-              label="Region"
-              placeholder
+              :label="$t('component.organizationProfile.addressInfo.region')"
               v-model="documentData.registeredSite.address.region"
               :disabled="isReadOnly"
               outlined

@@ -56,11 +56,11 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
-import { getPartnerState } from "../utils/partnerUtils";
+import { EventBus } from "@/main";
+import { getPartnerState } from "@/utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import NewMessageIcon from "@/components/NewMessageIcon";
-import { CredentialTypes, PartnerStates } from "../constants";
+import { CredentialTypes, PartnerStates } from "@/constants";
 
 export default {
   name: "PartnerList",
@@ -69,18 +69,13 @@ export default {
     NewMessageIcon,
   },
   props: {
-    selectable: {
+    showAllHeaders: {
       type: Boolean,
       default: false,
     },
-    headers: {
-      type: Array,
-      default: () => [
-        {
-          text: "Name",
-          value: "name",
-        },
-      ],
+    selectable: {
+      type: Boolean,
+      default: false,
     },
     onlyAries: {
       type: Boolean,
@@ -115,6 +110,32 @@ export default {
     };
   },
   computed: {
+    headers() {
+      return [
+        {
+          text: "Name",
+          value: "name",
+        },
+        this.showAllHeaders
+          ? {
+              text: "Address",
+              value: "address",
+            }
+          : {},
+        this.showAllHeaders
+          ? {
+              text: "Updated at",
+              value: "updatedAt",
+            }
+          : {},
+        this.showAllHeaders
+          ? {
+              text: "State",
+              value: "state",
+            }
+          : {},
+      ];
+    },
     expertMode() {
       return this.$store.state.expertMode;
     },

@@ -80,8 +80,7 @@ import { EventBus } from "@/main";
 import PartnerList from "@/components/PartnerList";
 import VBpaButton from "@/components/BpaButton";
 import { getPartnerState } from "@/utils/partnerUtils";
-import { PartnerStates } from "@/constants";
-import { ExchangeVersion } from "@/constants";
+import { PartnerStates, ExchangeVersion } from "@/constants";
 import credentialService from "@/services/credentialService";
 
 export default {

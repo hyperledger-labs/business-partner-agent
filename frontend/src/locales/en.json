@@ -226,10 +226,20 @@
       }
     },
     "presentationRecord": {
+      "role": "Role",
+      "state": "State",
+      "requestName": "Request Name",
+      "requestContent": "Request Content:",
+      "issuer": "Issuer",
+      "dataFields": "Data fields",
+      "restrictions": "Restrictions",
+      "presentationValid": "Presentation is valid",
+      "presentationNotValid": "Presentation is not valid",
       "matchingCredentials": {
         "selectHeader": "Select data for presentation",
         "label": "Matching Credentials",
-        "credentialRevoked": " - credential is revoked"
+        "credentialRevoked": " - credential is revoked",
+        "noInfoFound": "No info found"
       }
     },
     "issueCredentials": {
@@ -253,6 +263,9 @@
     }
   },
   "component": {
+    "partnerStateIndicator": {
+      "connectionState": "Aries connection state:"
+    },
     "transactionAuthorAgreement": {
       "title": "Transaction Author Agreement",
       "text": "To allow other companies to communicate with this agent, some configuration has to be written to the ledger - the endpoint configuration. In order to do so, the transaction author has to accept the Transaction Author Agreement for this session which is the following:",
@@ -333,12 +346,19 @@
     },
     "organizationProfile": {
       "companyInfo": {
+        "type": "Organization Type",
+        "identifier": "Identifier",
         "sectionTitle": "Company Information",
         "companyName": "Company Legal Name",
-        "companyAltName":"Company Alternate Name"
+        "companyAltName": "Company Alternate Name"
       },
       "addressInfo": {
-        "sectionTitle": "Address Information"
+        "sectionTitle": "Address Information",
+        "street": "Street (with number)",
+        "postalCode": "Postal Code",
+        "city": "City",
+        "country": "Country",
+        "region": "Region"
       }
     },
     "issueCredential": {
@@ -400,7 +420,16 @@
         "title": "Presentation Exchange",
         "alertFulfill": "Request can't be fulfilled with credentials in wallet",
         "declineReasonLabel": "Decline reason (Optional)"
-      }
+      },
+      "table": {
+        "label": "Name",
+        "role": "Role",
+        "updatedAt": "Updated at",
+        "state": "State"
+      },
+      "eventSuccessApprove": "Proof has been sent",
+      "eventSuccessDecline": "Presentation request declined",
+      "eventSuccessDelete": "Presentation record deleted"
     },
     "profile": {
       "organizationalProfile": {

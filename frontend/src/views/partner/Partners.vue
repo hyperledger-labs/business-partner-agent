@@ -24,7 +24,7 @@
       </v-card-title>
 
       <PartnerList
-        :headers="headers"
+        show-all-headers
         :indicateNew="true"
         :showInvitations="showInvitations"
         :refresh="refresh"
