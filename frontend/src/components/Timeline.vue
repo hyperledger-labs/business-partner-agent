@@ -10,7 +10,7 @@
     <v-expansion-panel>
       <v-expansion-panel-header
         class="grey--text text--darken-2 font-weight-medium bg-light"
-        >Timeline</v-expansion-panel-header
+        >{{ $t("component.timeline.title") }}</v-expansion-panel-header
       >
       <v-expansion-panel-content class="bg-light">
         <v-timeline dense>

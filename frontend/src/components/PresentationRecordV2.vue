@@ -38,7 +38,9 @@
 
     <!-- About -->
     <v-card class="mb-3">
-      <v-card-title height="40"> About </v-card-title>
+      <v-card-title height="40">{{
+        $t("view.presentationRecord.about")
+      }}</v-card-title>
       <v-divider></v-divider>
 
       <v-list dense>

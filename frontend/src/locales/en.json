@@ -231,6 +231,7 @@
       "requestName": "Request Name",
       "requestContent": "Request Content:",
       "issuer": "Issuer",
+      "about": "About",
       "dataFields": "Data fields",
       "restrictions": "Restrictions",
       "presentationValid": "Presentation is valid",
@@ -266,12 +267,22 @@
     "partnerStateIndicator": {
       "connectionState": "Aries connection state:"
     },
+    "timeline": {
+      "title": "Timeline"
+    },
     "transactionAuthorAgreement": {
       "title": "Transaction Author Agreement",
       "text": "To allow other companies to communicate with this agent, some configuration has to be written to the ledger - the endpoint configuration. In order to do so, the transaction author has to accept the Transaction Author Agreement for this session which is the following:",
       "loading": "Loading",
       "labelVersion": "Version:",
       "labelCheckbox": "As transaction author I reviewed and accept the above Transaction Author Agreement for this session"
+    },
+    "trustedIssuers": {
+      "labelDid": "DID",
+      "labelName": "Name",
+      "addTrustedIssuer": "Add trusted issuer",
+      "eventSuccessCreate": "New trusted issuer added",
+      "eventSuccessUpdate": "Trusted issuer updated"
     },
     "newMessageIcon": {
       "activity": "New activity",
@@ -281,6 +292,14 @@
       "task": "New task requires attention",
       "default": "New activity on item"
     },
+    "updatePartner": {
+      "title": "Update Partner",
+      "name": "Name",
+      "tags": "Tags",
+      "labelName": "Name",
+      "labelTags": "Tags",
+      "eventSuccess": "Partner updated successfully"
+    },
     "addSchema": {
       "title": "Import Schema",
       "schemaName": "Schema Name:",
@@ -288,6 +307,12 @@
       "placeholderName": "Name",
       "placeholderId": "Schema ID",
       "eventSuccess": "Schema added successfully"
+    },
+    "schemaList": {
+      "label": "Name",
+      "canIssue": "Can Issue",
+      "isMine": "Mine",
+      "trustedIssuer": "Trusted Issuers"
     },
     "manageSchema": {
       "labelSchemaId": "Schema ID",

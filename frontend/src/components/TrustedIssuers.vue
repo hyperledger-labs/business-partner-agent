@@ -11,7 +11,7 @@
     <v-row v-for="(entry, index) in items" v-bind:key="index">
       <v-col cols="4" class="py-0">
         <v-text-field
-          label="DID"
+          :label="$t('component.trustedIssuers.labelDid')"
           :disabled="entry.isReadOnly || !isNew(entry)"
           v-model="entry.issuerDid"
           outlined
@@ -21,7 +21,7 @@
       </v-col>
       <v-col class="py-0">
         <v-text-field
-          label="Name"
+          :label="$t('component.trustedIssuers.labelName')"
           :disabled="entry.isReadOnly || !entry.isEdit"
           v-model="entry.label"
           outlined
@@ -38,7 +38,6 @@
           @click="editTrustedIssuer(index)"
           ><v-icon>$vuetify.icons.pencil</v-icon></v-btn
         >
-
         <v-btn
           v-if="!entry.isReadOnly && entry.isEdit"
           :loading="isBusy"
@@ -47,7 +46,6 @@
           @click="saveTrustedIssuer(entry)"
           ><v-icon>$vuetify.icons.save</v-icon></v-btn
         >
-
         <v-btn
           v-if="!entry.isReadOnly && entry.isEdit"
           color="error"
@@ -55,7 +53,6 @@
           @click="cancelEditTrustedIssuer(index)"
           ><v-icon>$vuetify.icons.cancel</v-icon></v-btn
         >
-
         <v-btn
           icon
           v-if="!entry.isReadOnly && !entry.isEdit"
@@ -70,14 +67,14 @@
         :disabled="isEdit"
         color="secondary"
         @click="addTrustedIssuer"
-        >Add trusted issuer</v-bpa-button
+        >{{ $t("component.trustedIssuers.addTrustedIssuer") }}</v-bpa-button
       >
     </v-row>
   </v-container>
 </template>
 
 <script>
-import { EventBus } from "../main";
+import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 export default {
   components: { VBpaButton },
@@ -116,7 +113,6 @@ export default {
       }
     },
   },
-  created() {},
   mounted() {
     this.items = Array.from(this.trustedIssuers);
   },
@@ -199,7 +195,6 @@ export default {
         trustedIssuer.isEdit = false;
       }
     },
-
     createNewTrustedIssuer(trustedIssuer) {
       this.isBusy = true;
       let data = Object.assign({}, trustedIssuer);
@@ -217,7 +212,10 @@ export default {
             this.isEdit = false;
             trustedIssuer.isEdit = false;
             this.editingTrustedIssuer = null;
-            EventBus.$emit("success", "New trusted issuer added");
+            EventBus.$emit(
+              "success",
+              this.$t("component.trustedIssuers.eventSuccessCreate")
+            );
             this.$emit("changed");
           }
         })
@@ -226,7 +224,6 @@ export default {
           EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
-
     updateTrustedIssuer(trustedIssuer) {
       this.isBusy = true;
       let data = Object.assign({}, trustedIssuer);
@@ -244,7 +241,10 @@ export default {
           this.editingTrustedIssuer = null;
 
           if (result.status === 200) {
-            EventBus.$emit("success", "Trusted issuer updated");
+            EventBus.$emit(
+              "success",
+              this.$t("component.trustedIssuers.eventSuccessUpdate")
+            );
             this.$emit("changed");
           }
         })

@@ -87,15 +87,14 @@
 </template>
 
 <script>
-import { CredentialTypes } from "../constants";
+import { CredentialTypes } from "@/constants";
 import OrganizationalProfile from "@/components/OrganizationalProfile";
 import Credential from "@/components/Credential";
 import {
   getPartnerProfile,
   getPartnerProfileRoute,
 } from "@/utils/partnerUtils";
-import { mdiCalendarCheck } from "@mdi/js";
-import { mdiCalendarRemove } from "@mdi/js";
+import { mdiCalendarCheck, mdiCalendarRemove } from "@mdi/js";
 import VBpaButton from "@/components/BpaButton";
 
 export default {
@@ -146,8 +145,8 @@ export default {
             credential.id = value;
             delete credential.credentialData.id;
           } else if (typeof value === "object" && value !== null) {
-            Object.keys(value).map(function (key) {
-              credential.credentialData[key] = value[key];
+            Object.keys(value).map(function (key2) {
+              credential.credentialData[key2] = value[key2];
             });
             delete credential.credentialData[key];
           }

@@ -1,7 +1,7 @@
 import moment from "moment";
-import { CredentialTypes, PartnerStates } from "../constants";
+import { CredentialTypes, PartnerStates } from "@/constants";
 import { EventBus, axios, apiBaseUrl } from "../main";
-import { getPartnerProfile } from "../utils/partnerUtils";
+import { getPartnerProfile } from "@/utils/partnerUtils";
 import adminService from "@/services/adminService";
 import proofTemplateService from "@/services/proofTemplateService";
 import partnerService from "@/services/partnerService";

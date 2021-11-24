@@ -6,7 +6,7 @@
  SPDX-License-Identifier: Apache-2.0
 */
 
-import { CredentialTypes, PartnerStates } from "../constants";
+import { CredentialTypes, PartnerStates } from "@/constants";
 
 export const getPartnerProfile = (partner) => {
   if (partner && {}.hasOwnProperty.call(partner, "credential")) {

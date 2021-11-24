@@ -47,27 +47,6 @@ import ManageSchema from "@/components/ManageSchema";
 import store from "@/store";
 export default {
   props: {
-    headers: {
-      type: Array,
-      default: () => [
-        {
-          text: "Name",
-          value: "label",
-        },
-        {
-          text: "Can Issue",
-          value: "canIssue",
-        },
-        {
-          text: "Mine",
-          value: "isMine",
-        },
-        {
-          text: "Trusted Issuers",
-          value: "trustedIssuer",
-        },
-      ],
-    },
     isLoading: Boolean,
     manageTrustedIssuers: {
       type: Boolean,
@@ -86,6 +65,26 @@ export default {
     };
   },
   computed: {
+    headers() {
+      return [
+        {
+          text: this.$t("component.schemaList.label"),
+          value: "label",
+        },
+        {
+          text: this.$t("component.schemaList.canIssue"),
+          value: "canIssue",
+        },
+        {
+          text: this.$t("component.schemaList.isMine"),
+          value: "isMine",
+        },
+        {
+          text: this.$t("component.schemaList.trustedIssuer"),
+          value: "trustedIssuer",
+        },
+      ];
+    },
     schemas: {
       get() {
         return this.$store.getters.getSchemaBasedSchemas;

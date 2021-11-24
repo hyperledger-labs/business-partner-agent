@@ -1,21 +1,20 @@
-import { CredentialTypes } from "../constants";
+import { CredentialTypes } from "@/constants";
 
 export const istBusy = (state) => {
   return state.busyStack > 0;
 };
 
 export const publicDocumentsAndCredentials = (state) => {
-  var retval = state.credentials
+  return state.credentials
     .concat(state.documents)
-    .filter((d) => d.isPublic == true);
-  return retval;
+    .filter((d) => d.isPublic === true);
 };
 
 export const getOrganizationalProfile = (state) => {
-  var documents = state.documents.filter(
-    (d) => d.type == CredentialTypes.PROFILE.type
+  const documents = state.documents.filter(
+    (d) => d.type === CredentialTypes.PROFILE.type
   );
-  if (documents.length == 1) return documents[0];
+  if (documents.length === 1) return documents[0];
   else return undefined;
 };
 

@@ -130,7 +130,6 @@ const routes = [
     component: SendPresentation,
     props: true,
   },
-  // TODO
   {
     path: "/app/partners/:id/request-credential",
     name: "RequestCredential",
