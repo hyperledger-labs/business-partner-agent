@@ -97,6 +97,10 @@
       "title": "Public Profile",
       "subtitle": "You can change the visibility settings of documents and verified credentials in the <strong>wallet</strong> to update your public profile."
     },
+    "comingSoon": {
+      "title": "Coming Soon",
+      "text": "This functionality is coming soon."
+    },
     "wallet": {
       "title": "Wallet",
       "credentials": {
@@ -109,6 +113,15 @@
         "title": "Public Profile",
         "subtitle": "Visible in Public Profile"
       }
+    },
+    "addSchema": {
+      "title": "Add Schema",
+      "schemaName": "Schema Name",
+      "schemaId": "Schema ID",
+      "placeholderName": "Name",
+      "placeholderSchemaId": "Schema ID",
+      "eventSuccessSchemaAdd": "Schema added successfully",
+      "eventErrorSchemaExists": "Schema already exists"
     },
     "schemaSettings": {
       "title": "Schema Settings",

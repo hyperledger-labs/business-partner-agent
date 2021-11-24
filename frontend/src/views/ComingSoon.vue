@@ -1,20 +1,19 @@
 <template>
   <v-container>
-    <p>This functionality is coming soon.</p>
+    <p>{{ $t("view.comingSoon.text") }}</p>
   </v-container>
 </template>
 
 <script>
-import { EventBus } from "../main";
+import { EventBus } from "@/main";
 export default {
   name: "ComingSoon",
   components: {},
   created() {
-    EventBus.$emit("title", "Coming Soon");
+    EventBus.$emit("title", this.$t("view.comingSoon.title"));
   },
   data: () => {
     return {};
   },
-  methods: {},
 };
 </script>
