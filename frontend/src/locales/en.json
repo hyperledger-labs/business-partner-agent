@@ -81,6 +81,18 @@
         "title": "Tasks"
       }
     },
+    "about": {
+      "title": "About",
+      "textLicense": "The Business Partner Agent is a Hyperledger Labs Open Source Project under Apache 2.0 license.",
+      "textRepo": "If you find an issue you can file it at",
+      "titleImages": "Images",
+      "titlePackages": "Libraries and Packages",
+      "illustrationsBy": "Illustrations are provided by",
+      "logoBy": "The default logo is provided by",
+      "labelVersion": "Version",
+      "labelLicense": "License",
+      "labelLicenseText": "License Text"
+    },
     "profile": {
       "title": "Public Profile",
       "subtitle": "You can change the visibility settings of documents and verified credentials in the <strong>wallet</strong> to update your public profile."
@@ -97,6 +109,22 @@
         "title": "Public Profile",
         "subtitle": "Visible in Public Profile"
       }
+    },
+    "schemaSettings": {
+      "title": "Schema Settings",
+      "buttonCreateSchema": "Create Schema",
+      "buttonImportSchema": "Import Schema"
+    },
+    "tagManagement": {
+      "title": "Tag Management",
+      "availableTags": "Available tags",
+      "addNewTag": "Add a new tag",
+      "addTag": "Add tag",
+      "deleteTag": "Delete tag",
+      "labelName": "Name",
+      "confirmMessageDeleteTag": "Do you really want to the delete this tag from all business partners?",
+      "eventSuccessTagAdded": "Tag successfully added",
+      "eventSuccessTagRemoved": "Tag successfully removed"
     },
     "proofTemplates":{
       "title": "Proof Templates",
@@ -274,7 +302,7 @@
         }
       }
     },
-    "settings":{
+    "settings": {
       "walletDID": "Wallet DID",
       "schemaManagement": "Schemas and Trusted Issuers",
       "expertMode": "Expert Mode"
