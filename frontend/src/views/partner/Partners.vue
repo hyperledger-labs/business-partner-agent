@@ -15,14 +15,13 @@
             class="mr-4"
             v-model="showInvitations"
             inset
-            label="Show Invitations"
+            :label="$t('view.partners.showInvitations')"
           ></v-switch>
           <v-bpa-button color="primary" icon @click="refresh = true">
             <v-icon dark>$vuetify.icons.refresh</v-icon>
           </v-bpa-button>
         </v-layout>
       </v-card-title>
-
       <PartnerList
         show-all-headers
         :indicateNew="true"
@@ -79,27 +78,8 @@ export default {
       search: "",
       refresh: false,
       showInvitations: false,
-      headers: [
-        {
-          text: "Name",
-          value: "name",
-        },
-        {
-          text: "Address",
-          value: "address",
-        },
-        {
-          text: "Updated at",
-          value: "updatedAt",
-        },
-        {
-          text: "State",
-          value: "state",
-        },
-      ],
       partners: [],
     };
   },
-  methods: {},
 };
 </script>

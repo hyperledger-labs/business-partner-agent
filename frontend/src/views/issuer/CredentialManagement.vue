@@ -73,7 +73,9 @@
                 v-on="on"
                 color="primary"
                 :disabled="issueCredentialDisabled"
-                >Issue Credential</v-bpa-button
+                >{{
+                  $t("view.issueCredentials.cards.action.button")
+                }}</v-bpa-button
               >
             </template>
             <IssueCredential
@@ -103,7 +105,6 @@
           :is-loading="isLoadingCredentials"
         ></CredExList>
       </v-card-text>
-      <v-card-actions> </v-card-actions>
     </v-card>
   </v-container>
 </template>

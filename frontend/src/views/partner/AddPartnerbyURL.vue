@@ -26,8 +26,7 @@
           </v-col>
           <v-col cols="8">
             <v-text-field
-              label="Name"
-              placeholder=""
+              :label="$t('view.addPartnerbyURL.labelName')"
               v-model="alias"
               outlined
               dense
@@ -118,9 +117,9 @@
       </v-container>
       <v-card-actions>
         <v-layout justify-space-between>
-          <v-bpa-button color="secondary" to="/app/partners"
-            >Return</v-bpa-button
-          >
+          <v-bpa-button color="secondary" to="/app/partners">{{
+            $t("button.return")
+          }}</v-bpa-button>
         </v-layout>
       </v-card-actions>
     </v-card>
@@ -134,7 +133,6 @@ import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
 export default {
   name: "AddPartnerbyURL",
-  created: () => {},
   components: {
     VBpaButton,
     QrcodeVue,
@@ -183,7 +181,7 @@ export default {
             store.dispatch("loadPartnerSelectList");
             EventBus.$emit(
               "success",
-              "Partner Invitation created successfully"
+              this.$t("view.addPartnerbyURL.eventSuccessCreatePartnerInvite")
             );
           }
         })

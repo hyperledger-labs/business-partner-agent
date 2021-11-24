@@ -76,7 +76,6 @@
                 $vuetify.icons.connectionAlert
               </v-icon>
             </v-avatar>
-
             <v-row>
               <span class="font-weight-medium">
                 {{ $t("view.partner.requestReceived") }}
@@ -117,7 +116,6 @@
         <Profile v-if="isReady" v-bind:partner="partner"></Profile>
       </v-card-text>
 
-      <v-card-actions> </v-card-actions>
       <v-expansion-panels v-if="expertMode" accordion flat>
         <v-expansion-panel>
           <v-expansion-panel-header
@@ -157,7 +155,6 @@
         @changed="refreshPresentationRecords"
       />
       <v-card-actions>
-        <!-- TODO: Implement based on Proof Template -->
         <v-bpa-button small color="secondary" @click="sendPresentation">{{
           $t("view.partner.presentationExchanges.button.send")
         }}</v-bpa-button>
@@ -218,7 +215,6 @@
           >
           </IssueCredential>
         </v-dialog>
-        <!-- TODO -->
         <v-bpa-button
           style="margin-left: 8px"
           small
@@ -236,20 +232,16 @@
         <v-card-title class="headline"
           >{{ $t("view.partner.stateDialog.title", { state: partner.state }) }}
         </v-card-title>
-
         <v-card-text>
           {{ $t("view.partner.stateDialog.text", { state: partner.state }) }}
         </v-card-text>
-
         <v-card-actions>
           <v-spacer></v-spacer>
-
           <v-bpa-button
             color="secondary"
             @click="attentionPartnerStateDialog = false"
             >{{ $t("view.partner.stateDialog.no") }}</v-bpa-button
           >
-
           <v-bpa-button color="primary" @click="proceed">{{
             $t("view.partner.stateDialog.yes")
           }}</v-bpa-button>
@@ -314,7 +306,7 @@ export default {
       presentationExRecords: [],
       issuedCredentials: [],
       rules: {
-        required: (value) => !!value || "Can't be empty",
+        required: (value) => !!value || this.$t("app.rules.required"),
       },
       PartnerStates: PartnerStates,
       issueCredentialDialog: false,
@@ -402,8 +394,7 @@ export default {
         .then((result) => {
           this.isLoadingCredExRecords = false;
           if ({}.hasOwnProperty.call(result, "data")) {
-            let data = result.data;
-            this.issuedCredentials = data;
+            this.issuedCredentials = result.data;
           }
         })
         .catch((e) => {
@@ -415,7 +406,6 @@ export default {
     refreshIssuedCredentialRecords() {
       this.getIssuedCredentials(this.id);
     },
-    // TODO
     requestCredential() {
       if (this.isActive) {
         this.$router.push({
@@ -451,7 +441,6 @@ export default {
             };
 
             this.partner.bpa_state = getPartnerState(this.partner);
-
             this.alias = this.partner.name;
             this.did = this.partner.did;
             this.isReady = true;
@@ -472,7 +461,10 @@ export default {
           console.log(result);
           if (result.status === 200) {
             store.dispatch("loadPartners");
-            EventBus.$emit("success", "Partner deleted");
+            EventBus.$emit(
+              "success",
+              this.$t("view.partner.eventSuccessPartnerDelete")
+            );
             this.$router.push({
               name: "Partners",
             });
@@ -488,7 +480,10 @@ export default {
         .then((result) => {
           console.log(result);
           if (result.status === 200) {
-            EventBus.$emit("success", "Connection request accepted");
+            EventBus.$emit(
+              "success",
+              this.$t("view.partner.eventSuccessConnectionAccepted")
+            );
             // allow a little time for the partner state to change, so the remove/accept panel will not be displayed
             setTimeout(() => this.getPartner(), 1000);
           }

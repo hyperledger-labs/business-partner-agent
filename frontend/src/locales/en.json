@@ -63,6 +63,7 @@
     "yes": "Yes",
     "no": "No",
     "close": "Close",
+    "return": "Return",
     "sendCounterOffer": "Send Counter Offer",
     "refresh": "Refresh",
     "revoke": "Revoke",
@@ -102,7 +103,8 @@
       "tableTitle": "Proof Templates"
     },
     "partners": {
-      "title": "Business Partners"
+      "title": "Business Partners",
+      "showInvitations": "Show Invitations"
     },
     "partner": {
       "title": "Partner",
@@ -113,6 +115,8 @@
       "acceptPartner": "Accept",
       "requestSent": "Connection request sent",
       "requestSentSubtitle": "Waiting for response...",
+      "eventSuccessPartnerDelete": "Partner deleted",
+      "eventSuccessConnectionAccepted": "Connection request accepted",
       "presentationExchanges": {
         "title": "Presentation Exchanges",
         "button": {
@@ -143,19 +147,32 @@
     },
     "addPartner": {
       "title": "Add new Business Partner",
+      "radioDid": "By DID",
+      "radioInvitation": "By Invitation",
+      "labelName": "Name",
+      "placeholderUrl": "URL received from an agent you want to connect to",
       "setName": "Set a name",
       "setTags": "Set tags",
       "trustPing": "Auto Ping",
       "lookupPartnerBtnLabel": "Lookup Partner",
       "formDIDLabel": "Decentralized Identifier (DID)",
       "formInvitationLabel": "Invitation",
-      "addPartnerBtnLabel": "Add Partner"
+      "addPartnerBtnLabel": "Add Partner",
+      "buttonCheckInvitation": "Check Invitation",
+      "buttonAcceptInvitation": "Accept Invitation",
+      "messageLookupNoPublic": "Partner has no public profile. You can add him to get more information using Aries protocols.",
+      "messageLookupNoPublicNoAries": "Partner has no public profile and no Aries support.",
+      "messageDidNoResolve": "Could not resolve",
+      "eventSuccessAdd": "Partner added successfully",
+      "eventErrorAlreadyExists": "Partner already exists"
     },
     "addPartnerbyURL": {
       "title": "Invite new Business Partner",
+      "labelName": "Name",
       "createInvitation": "Generate Invitation (QR Code)",
       "invitationURL": "Invitation URL",
-      "useOOB": "Use Out of Band"
+      "useOOB": "Use Out of Band",
+      "eventSuccessCreatePartnerInvite": "Partner Invitation created successfully"
     },
     "proofTemplate": {
       "title": "Proof Templates",
