@@ -390,7 +390,7 @@
       "role": "Role",
       "state": "State",
       "requestName": "Request Name",
-      "requestContent": "Request Content:",
+      "requestContent": "Request Content",
       "issuer": "Issuer",
       "about": "About",
       "dataFields": "Data fields",
@@ -426,16 +426,16 @@
   },
   "component": {
     "partnerStateIndicator": {
-      "connectionState": "Aries connection state:"
+      "connectionState": "Aries connection state"
     },
     "timeline": {
       "title": "Timeline"
     },
     "transactionAuthorAgreement": {
       "title": "Transaction Author Agreement",
-      "text": "To allow other companies to communicate with this agent, some configuration has to be written to the ledger - the endpoint configuration. In order to do so, the transaction author has to accept the Transaction Author Agreement for this session which is the following:",
+      "text": "To allow other companies to communicate with this agent, some configuration has to be written to the ledger - the endpoint configuration. In order to do so, the transaction author has to accept the Transaction Author Agreement for this session which is the following",
       "loading": "Loading",
-      "labelVersion": "Version:",
+      "labelVersion": "Version",
       "labelCheckbox": "As transaction author I reviewed and accept the above Transaction Author Agreement for this session"
     },
     "trustedIssuers": {
@@ -463,8 +463,8 @@
     },
     "addSchema": {
       "title": "Import Schema",
-      "schemaName": "Schema Name:",
-      "schemaId": "Schema ID:",
+      "schemaName": "Schema Name",
+      "schemaId": "Schema ID",
       "placeholderName": "Name",
       "placeholderId": "Schema ID",
       "eventSuccess": "Schema added successfully"

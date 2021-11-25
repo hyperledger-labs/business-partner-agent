@@ -7,8 +7,7 @@
             {{ $t("component.transactionAuthorAgreement.title") }}
           </v-card-title>
           <v-card-text>
-            {{ $t("component.transactionAuthorAgreement.text") }}
-            <br /><br />
+            {{ $t("component.transactionAuthorAgreement.text") }}: <br /><br />
             <hr />
             <br />
             <span v-if="isTaaLoaded()">
@@ -28,7 +27,7 @@
             </span>
             <hr />
             <small v-show="isTaaLoaded()"
-              >{{ $t("component.transactionAuthorAgreement.labelVersion") }}
+              >{{ $t("component.transactionAuthorAgreement.labelVersion") }}:
               {{ getTaaVersion() }}</small
             >
             <v-checkbox

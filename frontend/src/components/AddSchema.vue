@@ -16,7 +16,7 @@
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
           >
-            {{ $t("component.addSchema.schemaName") }}
+            {{ $t("component.addSchema.schemaName") }}:
           </v-list-item-title>
           <v-list-item-subtitle>
             <v-text-field
@@ -35,7 +35,7 @@
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
           >
-            {{ $t("component.addSchema.schemaId") }}
+            {{ $t("component.addSchema.schemaId") }}:
           </v-list-item-title>
           <v-list-item-subtitle>
             <v-text-field

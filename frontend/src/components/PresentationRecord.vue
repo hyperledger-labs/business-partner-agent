@@ -39,7 +39,7 @@
 
     <!-- Request Content -->
     <template v-if="!isStateProposalSent">
-      <h4 class="my-4">{{ $t("view.presentationRecord.requestContent") }}</h4>
+      <h4 class="my-4">{{ $t("view.presentationRecord.requestContent") }}:</h4>
 
       <!-- Requested Attributes -->
 

@@ -15,7 +15,7 @@
         >
       </template>
       <span
-        >{{ $t("component.partnerStateIndicator.connectionState") }}
+        >{{ $t("component.partnerStateIndicator.connectionState") }}:
         {{ this.state }}</span
       >
     </v-tooltip>
