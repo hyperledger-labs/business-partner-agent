@@ -28,7 +28,7 @@ import io.micronaut.websocket.annotation.ServerWebSocket;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.bpa.impl.MessageService;
+import org.hyperledger.bpa.impl.messaging.MessageService;
 
 /**
  * Handles frontend websocket connections. TODO: does not work when scaled to
@@ -53,8 +53,8 @@ public class WebsocketController {
     @OnOpen
     public void onOpen(WebSocketSession session) {
         log.debug("New websocket session: {}", session.getId());
-        msg.addSession(session);
-        msg.sendStored(session);
+        msg.subscribe(session);
+        msg.sendStored();
     }
 
     @OnMessage
@@ -65,6 +65,6 @@ public class WebsocketController {
     @OnClose
     public void onClose(WebSocketSession session) {
         log.debug("Websocket session disconnected: {}", session.getId());
-        msg.removeSession(session);
+        msg.unsubscribe(session);
     }
 }
