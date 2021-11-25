@@ -114,7 +114,7 @@ Learn how to contribute in [Contributing](CONTRIBUTING.md). You can also start b
 Regarding release process, we do not follow a strict process yet, nevertheless we follow the guidelines described in [Publishing](PUBLISHING.md).
 
 ## Business Partner Agent in Action
-- [COP26 Presented by BC Goverment and OpenEarth Foundation](https://www.youtube.com/watch?v=q0Jml3isSh)
+- [COP26 Presented by BC Goverment and OpenEarth Foundation](https://www.youtube.com/watch?v=q0Jml3isSh8)
 - [Use Case and Technical Demonstration Playlist](https://www.youtube.com/watch?v=TGiiNOoVoJs&list=PL9CV_8JBQHiooHv05idOTrR2eBAJM89LX)
 
 # Hyperledger Labs Sponsor
