@@ -43,18 +43,11 @@
     "signout": "Sign out",
     "requestPresentation": "Request Presentation"
   },
-  "dashboard": {
-    "credentialsSent": "Credentials Issued",
-    "credentialsReceived": "Credentials in Wallet",
-    "presentationRequestsSent": "Presentation Requests Sent",
-    "presentationRequestsReceived": "Presentation Requests Received",
-    "partners": "Business Partners",
-    "tasks": "Pending Tasks"
-  },
   "button": {
     "accept": "Accept",
     "save": "Save",
     "saveAndSend": "Save and Send",
+    "saveAndClose": "Save and Close",
     "submit": "Submit",
     "create": "Create",
     "createAndSend": "Create and Send",
@@ -81,6 +74,10 @@
         "title": "Tasks"
       }
     },
+    "identity": {
+      "title": "Identity",
+      "titleInfo": "Identity Information"
+    },
     "about": {
       "title": "About",
       "textLicense": "The Business Partner Agent is a Hyperledger Labs Open Source Project under Apache 2.0 license.",
@@ -92,6 +89,62 @@
       "labelVersion": "Version",
       "labelLicense": "License",
       "labelLicenseText": "License Text"
+    },
+    "credential": {
+      "title": "Credential Details",
+      "eventSuccessUpdate": "Credential updated",
+      "eventSuccessDelete": "Credential deleted"
+    },
+    "document": {
+      "verification": "Verification",
+      "verificationSubtitle": "Request a verification",
+      "modified": "Document modified, please save before start verification",
+      "titleExisting": "Edit Document",
+      "titleEdit": "Edit",
+      "titleNew": "Create new Document",
+      "eventSuccessSaveEdit": "Saved changes",
+      "eventSuccessSaveNew": "Saved new document",
+      "eventSuccessDelete": "Deleted document"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "setupMessage": "Hi, we've already set up an identity for you!",
+      "setupProfile": "Setup your Profile",
+      "credentialsSent": "Credentials Issued",
+      "credentialsReceived": "Credentials in Wallet",
+      "presentationRequestsSent": "Presentation Requests Sent",
+      "presentationRequestsReceived": "Presentation Requests Received",
+      "partners": "Business Partners",
+      "tasks": "Pending Tasks"
+    },
+    "contactPerson": {
+      "title": "Contact Person",
+      "labelSelect": "Contact Person",
+      "labelSalutation": "Salutation",
+      "labelAcademicTitle": "Academic Title",
+      "labelFirstName": "First Name",
+      "labelLastName": "Last Name",
+      "labelMail": "E-Mail",
+      "labelPhone": "Phone",
+      "labelMobile": "Mobile Phone",
+      "labelCountry": "Country",
+      "contactPersonTypes": {
+        "ceo": "CEO",
+        "directorLogistics": "Director Logistics",
+        "directorQuality": "Director Quality",
+        "complianceResponsible": "Compliance Responsible",
+        "productSafetyExpert": "Product Safety Expert",
+        "directorFinance": "Director Finance",
+        "hseResponsible": "HSE-Responsible"
+      },
+      "salutationTypes": {
+        "mr": "Mr.",
+        "mrs": "Mrs."
+      },
+      "academicTitleTypes": {
+        "dr": "Dr.",
+        "profDr": "Prof. Dr."
+      }
     },
     "profile": {
       "title": "Public Profile",

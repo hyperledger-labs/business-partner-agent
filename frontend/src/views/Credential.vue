@@ -9,12 +9,7 @@
   <v-container>
     <v-card v-if="isReady" class="mx-auto">
       <v-card-title class="bg-light">
-        <v-btn
-          depressed
-          color="secondary"
-          icon
-          @click="$router.go(-1)"
-        >
+        <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
         <div v-if="credential.type === CredentialTypes.UNKNOWN.type">
@@ -54,14 +49,14 @@
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-bpa-button color="secondary" @click="cancel()"
-            >Cancel</v-bpa-button
-          >
+          <v-bpa-button color="secondary" @click="cancel()">{{
+            $t("button.cancel")
+          }}</v-bpa-button>
           <v-bpa-button
             :loading="this.isBusy"
             color="primary"
             @click="saveChanges()"
-            >Save</v-bpa-button
+            >{{ $t("button.save") }}</v-bpa-button
           >
         </v-layout>
       </v-card-actions>
@@ -69,7 +64,7 @@
         <v-expansion-panel>
           <v-expansion-panel-header
             class="grey--text text--darken-2 font-weight-medium bg-light"
-            >Show raw data</v-expansion-panel-header
+            >{{ $t("showRawData") }}</v-expansion-panel-header
           >
           <v-expansion-panel-content class="bg-light">
             <vue-json-pretty :data="credential"></vue-json-pretty>
@@ -81,9 +76,9 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
+import { EventBus } from "@/main";
 import Cred from "@/components/Credential";
-import { CredentialTypes } from "../constants";
+import { CredentialTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
 
 export default {
@@ -93,7 +88,7 @@ export default {
     type: String,
   },
   created() {
-    EventBus.$emit("title", "Credential Details");
+    EventBus.$emit("title", this.$t("view.credential.title"));
     this.getCredential();
     this.$store.commit("credentialNotificationSeen", { id: this.id });
   },
@@ -159,7 +154,10 @@ export default {
               return response.status === 200;
             });
             if (allResponsesTrue) {
-              EventBus.$emit("success", "Credential updated");
+              EventBus.$emit(
+                "success",
+                this.$t("view.credential.eventSuccessUpdate")
+              );
               this.$router.push({
                 name: "Wallet",
               });
@@ -180,7 +178,10 @@ export default {
         .then((result) => {
           console.log(result);
           if (result.status === 200) {
-            EventBus.$emit("success", "Credential deleted");
+            EventBus.$emit(
+              "success",
+              this.$t("view.credential.eventSuccessDelete")
+            );
             this.$router.push({
               name: "Wallet",
             });
@@ -196,12 +197,9 @@ export default {
       });
     },
     fieldModified(keyValue) {
-      const isModified = Object.keys(this.intDoc).find((key) => {
-        return this.credential[key] != this.intDoc[key];
-      })
-        ? true
-        : false;
-      this.docChanged = isModified;
+      this.docChanged = Object.keys(this.intDoc).find((key) => {
+        return this.credential[key] !== this.intDoc[key];
+      });
       if (this.docChanged) {
         this.credential[keyValue.key] = keyValue.value;
       }

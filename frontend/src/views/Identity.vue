@@ -9,7 +9,7 @@
   <v-container justify-center>
     <v-card class="mx-auto" max-width="400" flat>
       <v-card-title class="grey--text text--darken-2">
-        Identity Information
+        {{ $t("view.identity.titleInfo") }}
       </v-card-title>
 
       <vue-json-pretty v-if="didDocLoaded" :data="didDoc"> </vue-json-pretty>
@@ -18,12 +18,12 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
+import { EventBus } from "@/main";
 export default {
   name: "Identity",
   components: {},
   created() {
-    EventBus.$emit("title", "Identity");
+    EventBus.$emit("title", this.$t("view.identity.title"));
     this.getIdentity();
   },
   data: () => {
