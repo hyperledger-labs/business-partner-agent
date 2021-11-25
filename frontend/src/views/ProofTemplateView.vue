@@ -130,7 +130,10 @@ export default {
         .deleteProofTemplate(this.proofTemplate.id)
         .then((result) => {
           if (result.status === 200) {
-            EventBus.$emit("success", "Proof Template Deleted");
+            EventBus.$emit(
+              "success",
+              this.$t("view.proofTemplate.view.eventSuccessDelete")
+            );
             this.$router.push({
               name: "ProofTemplates",
               params: {},

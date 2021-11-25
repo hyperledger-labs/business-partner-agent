@@ -98,6 +98,10 @@ export default {
       type: Boolean,
       default: () => true,
     },
+    showRole: {
+      type: Boolean,
+      default: () => false,
+    },
   },
   mounted() {
     this.filter = null;
@@ -158,6 +162,12 @@ export default {
           text: this.$t("component.activityList.tableHeaders.updatedAt"),
           value: "updatedAt",
         },
+        this.showRole
+          ? {
+              text: this.$t("component.activityList.tableHeaders.role"),
+              value: "role",
+            }
+          : {},
         {
           text: this.$t("component.activityList.tableHeaders.state"),
           value: "state",

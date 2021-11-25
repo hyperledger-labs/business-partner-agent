@@ -14,7 +14,7 @@
       <v-card class="mx-auto" flat>
         <Profile
           v-bind:partner="{ credential: publicDocumentsAndCredentials }"
-          :organization-profile-edit-visible="true"
+          organization-profile-edit-visible
         />
       </v-card>
     </div>
@@ -36,7 +36,7 @@
 
 <script>
 import Profile from "@/components/Profile";
-import { EventBus } from "../main";
+import { EventBus } from "@/main";
 export default {
   name: "PublicProfile",
   props: {},

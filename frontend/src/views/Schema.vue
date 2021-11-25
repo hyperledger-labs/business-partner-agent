@@ -33,14 +33,16 @@
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
           >
-            Schema ID:
+            {{ $t("view.schema.id") }}:
           </v-list-item-title>
           <v-list-item-subtitle>
             {{ data.schemaId }}
           </v-list-item-subtitle>
         </v-list-item>
 
-        <h4 class="my-4 grey--text text--darken-3">Schema Attributes</h4>
+        <h4 class="my-4 grey--text text--darken-3">
+          {{ $t("view.schema.attributes") }}
+        </h4>
 
         <v-list-item
           v-for="attribute in data.schemaAttributeNames"
@@ -55,9 +57,9 @@
       </v-container>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-bpa-button color="primary" :to="{ name: 'SchemaSettings' }"
-            >Close</v-bpa-button
-          >
+          <v-bpa-button color="primary" :to="{ name: 'SchemaSettings' }">{{
+            $t("button.close")
+          }}</v-bpa-button>
         </v-layout>
       </v-card-actions>
     </v-card>
@@ -65,7 +67,7 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
+import { EventBus } from "@/main";
 import TrustedIssuers from "../components/TrustedIssuers";
 import VBpaButton from "@/components/BpaButton";
 export default {
@@ -79,7 +81,7 @@ export default {
     TrustedIssuers,
   },
   mounted() {
-    EventBus.$emit("title", "Schema");
+    EventBus.$emit("title", this.$t("view.schema.title"));
     console.log("SCHEMA", this.schema);
     this.fetch();
   },
@@ -122,7 +124,10 @@ export default {
         .then((result) => {
           console.log(result);
           if (result.status === 200) {
-            EventBus.$emit("success", "Schema deleted");
+            EventBus.$emit(
+              "success",
+              this.$t("view.schema.eventSuccessDelete")
+            );
             this.$router.push({
               name: "SchemaSettings",
             });

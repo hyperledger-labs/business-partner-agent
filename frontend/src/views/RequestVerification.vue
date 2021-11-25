@@ -12,12 +12,11 @@
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
-        Select Business Partner
+        {{ $t("view.requestVerification.titleSelect") }}
       </v-card-title>
       <v-card-text>
         <h4 class="pt-4">
-          Select the business partner you would like to request a verification
-          from
+          {{ $t("view.requestVerification.subtitleSelect") }}
         </h4>
         <PartnerList
           v-bind:selectable="true"
@@ -33,14 +32,14 @@
             v-model="useV2Exchange"
             :label="$t('button.useV2')"
           ></v-switch>
-          <v-bpa-button color="secondary" @click="cancel()"
-            >Cancel</v-bpa-button
-          >
+          <v-bpa-button color="secondary" @click="cancel()">{{
+            $t("button.cancel")
+          }}</v-bpa-button>
           <v-bpa-button
             :loading="this.isBusy"
             color="primary"
             @click="checkRequest"
-            >Submit</v-bpa-button
+            >{{ $t("button.submit") }}</v-bpa-button
           >
         </v-layout>
       </v-card-actions>
@@ -48,13 +47,19 @@
     <v-dialog v-model="attentionPartnerStateDialog" max-width="500">
       <v-card>
         <v-card-title class="headline"
-          >Connection State {{ partner.state }}
+          >{{
+            $t("view.requestVerification.connectionState", {
+              state: partner.state,
+            })
+          }}
         </v-card-title>
 
         <v-card-text>
-          The connection with your Business Partner is marked as
-          {{ partner.state }}. This could mean that your request will fail. Do
-          you want to try anyways?
+          {{
+            $t("view.requestVerification.connectionWarning", {
+              state: partner.state,
+            })
+          }}
         </v-card-text>
 
         <v-card-actions>
@@ -63,12 +68,12 @@
           <v-bpa-button
             color="secondary"
             @click="attentionPartnerStateDialog = false"
-            >No</v-bpa-button
+            >{{ $t("button.no") }}</v-bpa-button
           >
 
-          <v-bpa-button color="primary" @click="submitRequest"
-            >Yes</v-bpa-button
-          >
+          <v-bpa-button color="primary" @click="submitRequest">{{
+            $t("button.yes")
+          }}</v-bpa-button>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -94,9 +99,12 @@ export default {
     schemaId: String,
   },
   created() {
-    EventBus.$emit("title", "Request Verification");
+    EventBus.$emit("title", this.$t("view.requestVerification.title"));
     if (!this.schemaId) {
-      EventBus.$emit("success", "Can't start verification");
+      EventBus.$emit(
+        "success",
+        this.$t("view.requestVerification.eventSuccessNoVerification")
+      );
       this.$router.push({ name: "Wallet" });
     }
   },
@@ -131,7 +139,10 @@ export default {
           }
         }
       } else {
-        EventBus.$emit("error", "No partner for verification request selected");
+        EventBus.$emit(
+          "error",
+          this.$t("view.requestVerification.eventErrorSelect")
+        );
       }
     },
     submitRequest() {
@@ -149,7 +160,10 @@ export default {
         .then((res) => {
           console.log(res);
           this.isBusy = false;
-          EventBus.$emit("success", "Credential verification request sent");
+          EventBus.$emit(
+            "success",
+            this.$t("view.requestVerification.eventSuccessSend")
+          );
           this.$router.go(-2);
         })
         .catch((e) => {

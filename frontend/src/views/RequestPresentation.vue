@@ -97,7 +97,10 @@ export default {
       proofTemplateService
         .sendProofTemplate(this.selectedProofTemplate[0].id, this.id, data)
         .then(() => {
-          EventBus.$emit("success", "Presentation request sent");
+          EventBus.$emit(
+            "success",
+            this.$t("view.requestPresentation.eventSuccessSend")
+          );
           this.isBusy = false;
           this.$router.go(-1);
         })

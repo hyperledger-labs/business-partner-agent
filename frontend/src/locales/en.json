@@ -95,6 +95,12 @@
       "eventSuccessUpdate": "Credential updated",
       "eventSuccessDelete": "Credential deleted"
     },
+    "schema": {
+      "title": "Schema",
+      "id": "Schema ID",
+      "attributes": "Schema Attributes",
+      "eventSuccessDelete": "Schema deleted"
+    },
     "document": {
       "verification": "Verification",
       "verificationSubtitle": "Request a verification",
@@ -148,7 +154,9 @@
     },
     "profile": {
       "title": "Public Profile",
-      "subtitle": "You can change the visibility settings of documents and verified credentials in the <strong>wallet</strong> to update your public profile."
+      "subtitle": "You can change the visibility settings of documents and verified credentials in the <strong>wallet</strong> to update your public profile.",
+      "noProfileTitle": "You don't have set up a public profile yet",
+      "buttonNoProfile": "Setup your Profile"
     },
     "comingSoon": {
       "title": "Coming Soon",
@@ -157,10 +165,25 @@
     "wallet": {
       "title": "Wallet",
       "credentials": {
-        "title": "Verifiable Credentials"
+        "title": "Verifiable Credentials",
+        "headers": {
+          "label": "Label",
+          "type": "Type",
+          "issuer": "Issued by",
+          "issuedAt": "Issued at",
+          "revoked": "Revocation",
+          "isPublic": "Public"
+        }
       },
       "documents": {
-        "title": "Documents"
+        "title": "Documents",
+        "headers": {
+          "label" : "Label",
+          "type" : "Type",
+          "createdDate" : "Created at",
+          "updatedDate" : "Updated at",
+          "isPublic" : "Public"
+        }
       },
       "visibility": {
         "title": "Public Profile",
@@ -234,7 +257,12 @@
     },
     "sendPresentation": {
       "title": "Send Presentation",
-      "selectCredential": "Select a credential to send"
+      "selectCredential": "Select a credential to send",
+      "eventSuccessSend": "Presentation sent",
+      "label": "Label",
+      "type": "Type",
+      "issuedBy": "Issued by",
+      "issuedAt": "Issued at"
     },
     "presentationRequestDetails": {
       "header": "Presentation Request Details"
@@ -306,6 +334,7 @@
         "attributeGroupsTitle": "Data to be requested",
         "attributeGroupsSubtitle": "Grouped by Schema",
         "createProofRequest": "Create Proof Request",
+        "eventSuccessDelete": "Proof Template Deleted",
         "attributeGroup": {
           "issuerTitle": "Issuer",
           "titleAttributes": "Data fields",
@@ -318,6 +347,7 @@
       },
       "create": {
         "title": "Create Proof Template",
+        "labelName": "Name",
         "requestedDataTitle": "Data to be requested",
         "requestedDataSubtitle": "Add data to be requested by Schema",
         "snackbarContent": "Removed attribute group",
@@ -326,15 +356,34 @@
     },
     "requestPresentation": {
       "title": "Create a Presentation Request",
-      "sendRequest": "Send Request"
+      "sendRequest": "Send Request",
+      "eventSuccessSend": "Presentation request sent"
     },
     "requestCredential": {
       "title": "Create a Credential Request",
       "createDocument": "Create Document",
       "sendRequest": "Send Request",
+      "eventSuccessSend": "Credential verification request sent",
+      "headers": {
+        "label": "Label",
+        "type": "Type",
+        "createdDate": "Created at",
+        "updatedDate": "Updated at",
+        "isPublic": "Public"
+      },
       "createDocumentView": {
         "selectSchemaLabel": "Select schema as document base"
       }
+    },
+    "requestVerification": {
+      "title": "Request Verification",
+      "titleSelect": "Select Business Partner",
+      "subtitleSelect": "Select the business partner you would like to request a verification from",
+      "connectionState": "Connection State {state}",
+      "connectionWarning": "The connection with your Business Partner is marked as {state}. This could mean that your request will fail. Do you want to try anyways?",
+      "eventSuccessNoVerification": "Can't start verification",
+      "eventSuccessSend": "Credential verification request sent",
+      "eventErrorSelect": "No partner for verification request selected"
     },
     "presentationRecord": {
       "role": "Role",
@@ -476,6 +525,7 @@
         "type":  "Type",
         "partner": "Connection",
         "updatedAt": "Updated at",
+        "role": "Role",
         "state": "State"
       },
       "labelPartnerUnknown": "Unknown"

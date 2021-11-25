@@ -66,7 +66,10 @@ export default {
       credentialService
         .sendCredentialRequest(this.id, data)
         .then(() => {
-          EventBus.$emit("success", "Credential verification request sent");
+          EventBus.$emit(
+            "success",
+            this.$t("view.requestCredential.eventSuccessSend")
+          );
           this.isBusy = false;
           this.$router.go(-1);
         })

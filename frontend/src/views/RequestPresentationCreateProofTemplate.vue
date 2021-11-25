@@ -44,7 +44,10 @@ export default {
           data
         )
         .then(() => {
-          EventBus.$emit("success", "Presentation request sent");
+          EventBus.$emit(
+            "success",
+            this.$t("view.requestPresentation.eventSuccessSend")
+          );
           this.$router.go(-2);
         })
         .catch((e) => {

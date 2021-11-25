@@ -22,7 +22,7 @@
             id="proofTemplateName"
             v-model="proofTemplate.name"
             dense
-            label="Name"
+            :label="$t('view.proofTemplate.create.labelName')"
             :rules="[rules.required]"
           ></v-text-field>
         </v-list-item>
