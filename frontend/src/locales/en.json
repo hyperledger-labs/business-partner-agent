@@ -1,4 +1,8 @@
 {
+  "meta": {
+    "langNameEnglish": "English",
+    "langNameNative": "English"
+  },
   "app": {
     "bpaDefaultName": "Business Partner Agent",
     "snackBar": {
