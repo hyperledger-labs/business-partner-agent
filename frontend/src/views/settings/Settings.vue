@@ -11,6 +11,18 @@
       <v-card-title class="bg-light">Settings</v-card-title>
       <v-list-item v-if="!isLoading">
         <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
+          Language
+        </v-list-item-title>
+        <v-select
+          v-model="selectedLocale"
+          :items="availableLocales"
+          item-text="label"
+          item-value="locale"
+          @change="changeLanguage($event)"
+        ></v-select>
+      </v-list-item>
+      <v-list-item v-if="!isLoading">
+        <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
           {{ $t("view.settings.walletDID") }}
         </v-list-item-title>
         <v-list-item-subtitle align="end" id="did">
@@ -107,14 +119,12 @@
         v-for="setting in settings"
         :key="setting.text"
       >
-        <!-- <v-list-item-content> -->
         <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
           {{ setting.text }}
         </v-list-item-title>
         <v-list-item-subtitle align="end">
           {{ setting.value }}
         </v-list-item-subtitle>
-        <!-- </v-list-item-content> -->
       </v-list-item>
     </v-card>
   </v-container>
@@ -123,6 +133,7 @@
 <script>
 import { EventBus } from "@/main";
 import TextFieldColorPicker from "@/components/helper/TextFieldColorPicker";
+import i18n from "@/plugins/i18n";
 
 export default {
   name: "Settings",
@@ -133,6 +144,9 @@ export default {
   data: () => {
     return {
       isLoading: true,
+      selectedLocale: {
+        locale: i18n.locale,
+      },
       settingsHeader: [
         {
           text: "BPA Name",
@@ -168,6 +182,34 @@ export default {
     };
   },
   computed: {
+    availableLocales() {
+      return i18n.availableLocales.map((availableLocale) => {
+        const { meta } = i18n.getLocaleMessage(availableLocale);
+
+        let selectLabel = availableLocale;
+        if (meta) {
+          if (meta.label !== undefined && meta.label !== "") {
+            selectLabel = meta.label;
+          } else if (
+            meta.langNameNative !== undefined &&
+            meta.langNameNative !== ""
+          ) {
+            selectLabel = meta.langNameNative;
+            if (
+              meta.langNameEnglish !== undefined &&
+              meta.langNameEnglish !== ""
+            ) {
+              selectLabel += ` (${meta.langNameEnglish})`;
+            }
+          }
+        }
+
+        return {
+          locale: availableLocale,
+          label: selectLabel,
+        };
+      });
+    },
     expertMode: {
       set(body) {
         this.$store.commit({
@@ -191,6 +233,9 @@ export default {
     },
   },
   methods: {
+    changeLanguage(event) {
+      i18n.locale = event;
+    },
     onPickColor(c) {
       this.$vuetify.theme.themes.light.primary = c;
       localStorage.setItem("uiColor", c);
