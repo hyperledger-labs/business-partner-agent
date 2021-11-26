@@ -423,9 +423,25 @@
       }
     },
     "settings": {
+      "title": "Settings",
+      "language": "Language",
       "walletDID": "Wallet DID",
       "schemaManagement": "Schemas and Trusted Issuers",
-      "expertMode": "Expert Mode"
+      "tags": "Tags",
+      "frontendColor": "Frontend Color",
+      "iconsColor": "Icons Color",
+      "expertMode": "Expert Mode",
+      "header": {
+        "agentName": "BPA Name",
+        "host": "Host",
+        "uniResolverUrl": "Universal Resolver",
+        "ledgerBrowser": "Ledger Browser",
+        "ledgerPrefix": "Ledger DID Prefix",
+        "uptime": "Uptime HH:mm:ss.SSS",
+        "buildVersion": "Version"
+      },
+      "eventSuccessCopy": "DID copied",
+      "eventErrorCopy": "Can't copy DID"
     }
   },
   "component": {

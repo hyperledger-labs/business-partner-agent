@@ -8,10 +8,12 @@
 <template>
   <v-container justify-center>
     <v-card class="my-4 mx-auto">
-      <v-card-title class="bg-light">Settings</v-card-title>
+      <v-card-title class="bg-light">{{
+        $t("view.settings.title")
+      }}</v-card-title>
       <v-list-item v-if="!isLoading">
         <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
-          Language
+          {{ $t("view.settings.language") }}
         </v-list-item-title>
         <v-select
           v-model="selectedLocale"
@@ -49,7 +51,7 @@
         <v-list-item-content>
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
-            >Tags</v-list-item-title
+            >{{ $t("view.settings.tags") }}</v-list-item-title
           >
         </v-list-item-content>
         <v-list-item-action>
@@ -60,7 +62,7 @@
       </v-list-item>
       <v-list-item>
         <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
-          Frontend Color
+          {{ $t("view.settings.frontendColor") }}
         </v-list-item-title>
         <v-list-item-subtitle align="end">
           <text-field-color-picker
@@ -80,7 +82,7 @@
       </v-list-item>
       <v-list-item>
         <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
-          Icons Color
+          {{ $t("view.settings.iconsColor") }}
         </v-list-item-title>
         <v-list-item-subtitle align="end">
           <text-field-color-picker
@@ -138,7 +140,7 @@ import i18n from "@/plugins/i18n";
 export default {
   name: "Settings",
   created() {
-    EventBus.$emit("title", "Settings");
+    EventBus.$emit("title", this.$t("view.settings.title"));
     this.getStatus();
   },
   data: () => {
@@ -147,41 +149,43 @@ export default {
       selectedLocale: {
         locale: i18n.locale,
       },
-      settingsHeader: [
-        {
-          text: "BPA Name",
-          value: "agentName",
-        },
-        {
-          text: "Host",
-          value: "host",
-        },
-        {
-          text: "Universal Resolver",
-          value: "uniResolverUrl",
-        },
-        {
-          text: "Ledger Browser",
-          value: "ledgerBrowser",
-        },
-        {
-          text: "Ledger DID Prefix",
-          value: "ledgerPrefix",
-        },
-        {
-          text: "Uptime HH:mm:ss.SSS",
-          value: "uptime",
-        },
-        {
-          text: "Version",
-          value: "buildVersion",
-        },
-      ],
       isEditingColor: false,
       isEditingColorIcons: false,
     };
   },
   computed: {
+    settingsHeader() {
+      return [
+        {
+          text: this.$t("view.settings.header.agentName"),
+          value: "agentName",
+        },
+        {
+          text: this.$t("view.settings.header.host"),
+          value: "host",
+        },
+        {
+          text: this.$t("view.settings.header.uniResolverUrl"),
+          value: "uniResolverUrl",
+        },
+        {
+          text: this.$t("view.settings.header.ledgerBrowser"),
+          value: "ledgerBrowser",
+        },
+        {
+          text: this.$t("view.settings.header.ledgerPrefix"),
+          value: "ledgerPrefix",
+        },
+        {
+          text: this.$t("view.settings.header.uptime"),
+          value: "uptime",
+        },
+        {
+          text: this.$t("view.settings.header.buildVersion"),
+          value: "buildVersion",
+        },
+      ];
+    },
     availableLocales() {
       return i18n.availableLocales.map((availableLocale) => {
         const { meta } = i18n.getLocaleMessage(availableLocale);
@@ -275,8 +279,8 @@ export default {
         successful = false;
       }
       successful
-        ? EventBus.$emit("success", "DID copied")
-        : EventBus.$emit("error", "Can't copy DID");
+        ? EventBus.$emit("success", this.$t("view.settings.eventSuccessCopy"))
+        : EventBus.$emit("error", this.$t("view.settings.eventErrorCopy"));
       document.body.removeChild(el);
       window.getSelection().removeAllRanges();
     },
