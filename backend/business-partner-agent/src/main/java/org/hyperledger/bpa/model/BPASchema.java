@@ -23,6 +23,7 @@ import io.micronaut.data.annotation.DateCreated;
 import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
 import lombok.*;
+import org.hyperledger.bpa.api.CredentialType;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -45,6 +46,9 @@ public class BPASchema {
     @DateCreated
     private Instant createdAt;
 
+    @Enumerated(EnumType.STRING)
+    private CredentialType type;
+
     @Nullable
     private String label;
 
@@ -57,6 +61,7 @@ public class BPASchema {
     @Nullable
     private String defaultAttributeName;
 
+    @Nullable
     private Integer seqNo;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
@@ -64,4 +69,8 @@ public class BPASchema {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     private List<BPACredentialDefinition> credentialDefinitions;
+
+    public boolean typeIsIndy() {
+        return CredentialType.INDY.equals(type);
+    }
 }

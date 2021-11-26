@@ -30,7 +30,7 @@ import java.util.List;
 public enum CredentialType {
 
     /**
-     * A document that can never be a credential and that is not linked to a schema.
+     * A document that can never be a credential, and is not linked to a schema.
      * Typed documents use a static context, like it is defined here.
      */
     ORGANIZATIONAL_PROFILE_CREDENTIAL(
@@ -43,14 +43,19 @@ public enum CredentialType {
                     "LabeledCredential",
                     "OrganizationalProfileCredential")),
     /**
-     * A document or indy credential that is linked to a schema and uses an ad hoc
+     * A document or indy credential that is linked to a schema and uses an embedded
      * context
      */
     INDY(
             List.of(ApiConstants.CREDENTIALS_V1),
-            List.of("VerifiableCredential"));
+            List.of("VerifiableCredential")),
 
-    // json-ld
+    /**
+     * A document or json-ld credential
+     */
+    JSON_LD(
+            List.of(ApiConstants.CREDENTIALS_V1),
+            List.of("VerifiableCredential"));
 
     private final List<Object> context;
     private final List<String> type;

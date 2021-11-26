@@ -176,7 +176,7 @@ public class AdminControllerTest {
     private HttpResponse<SchemaAPI> addSchemaWithRestriction(String schemaId) {
         return client.toBlocking()
                 .exchange(HttpRequest.POST("",
-                        AddSchemaRequest.builder()
+                        AddSchemaRequest.AddIndySchema.builder()
                                 .schemaId(schemaId)
                                 .defaultAttributeName("name")
                                 .label("Demo Bank")
@@ -192,7 +192,7 @@ public class AdminControllerTest {
     private HttpResponse<SchemaAPI> addSchemaNoRestriction() {
         return client.toBlocking()
                 .exchange(HttpRequest.POST("",
-                        AddSchemaRequest.builder()
+                        AddSchemaRequest.AddIndySchema.builder()
                                 .schemaId(schemaId3)
                                 .defaultAttributeName("other")
                                 .label("Demo Corp")

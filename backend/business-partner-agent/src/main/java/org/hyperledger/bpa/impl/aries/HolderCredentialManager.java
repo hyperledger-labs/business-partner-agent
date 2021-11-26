@@ -340,7 +340,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
             // issuer started with offer, no preexisting proposal
             BPASchema bpaSchema = schemaService.getSchemaFor(credEx.getSchemaId()).orElse(null);
             if (bpaSchema == null) {
-                SchemaAPI schemaAPI = schemaService.addSchema(credEx.getSchemaId(), null, null);
+                SchemaAPI schemaAPI = schemaService.addIndySchema(credEx.getSchemaId(), null, null);
                 if (schemaAPI != null) {
                     bpaSchema = BPASchema.builder().id(schemaAPI.getId()).build();
                 }

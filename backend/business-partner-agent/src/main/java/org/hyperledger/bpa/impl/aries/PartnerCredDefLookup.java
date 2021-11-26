@@ -35,6 +35,7 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Singleton
 public class PartnerCredDefLookup {
@@ -117,7 +118,7 @@ public class PartnerCredDefLookup {
     void lookupTypesForAllPartners() {
         ledger.ifPresent(l -> {
             Map<String, List<PartnerCredentialType>> didToTypes = new HashMap<>();
-            schemaRepo.findAll().forEach(
+            StreamSupport.stream(schemaRepo.findAll().spliterator(), false).filter(s -> s.typeIsIndy()).forEach(
                     s -> l.queryCredentialDefinitions(s.getSeqNo().toString()).ifPresent(defs -> defs.forEach(def -> {
                         String did = AriesStringUtil.credDefIdGetDid(def.getCredentialDefinitionId());
                         if (didToTypes.containsKey(did)) {

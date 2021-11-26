@@ -96,8 +96,14 @@ public class AdminController {
      */
     @Post("/schema")
     public HttpResponse<SchemaAPI> addSchema(@Body AddSchemaRequest req) {
-        return HttpResponse.ok(schemaService.addSchema(req.getSchemaId(), req.getLabel(),
-                req.getDefaultAttributeName(), req.getTrustedIssuer()));
+        if (req.typeIsIndy()) {
+            return HttpResponse.ok(schemaService.addIndySchema(req.getSchemaId(), req.getLabel(),
+                    req.getDefaultAttributeName(), ((AddSchemaRequest.AddIndySchema) req).getTrustedIssuer()));
+        } else if (req.typeIsJsonLD()) {
+            return HttpResponse.ok(schemaService.addJsonLDSchema(req.getSchemaId(), req.getLabel(),
+                    req.getDefaultAttributeName(), ((AddSchemaRequest.AddJsonLDSchema) req).getAttributes()));
+        }
+        return HttpResponse.badRequest();
     }
 
     /**

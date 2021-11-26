@@ -1,0 +1,2 @@
+ALTER TABLE bpaschema ADD COLUMN type character varying(255) NOT NULL DEFAULT 'INDY';
+ALTER TABLE bpaschema ALTER COLUMN seq_no DROP NOT NULL;

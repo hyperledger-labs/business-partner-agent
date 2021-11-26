@@ -80,7 +80,7 @@ public class StartupTasks {
     Optional<IndyStartupTasks> indyTasks;
 
     @Inject
-    ApplicationEventPublisher eventPublisher;
+    ApplicationEventPublisher<AcaPyReady> eventPublisher;
 
     @EventListener
     public void onServiceStartedEvent(@SuppressWarnings("unused") StartupEvent startEvent) {

@@ -127,7 +127,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
             Optional<BPASchema> bpaSchema = schemaService.getSchemaFor(sId);
             if (bpaSchema.isEmpty()) {
                 // schema exists on ledger, but no in db, let's add it.
-                SchemaAPI schema = schemaService.addSchema(ariesSchema.get().getId(), null, null, null);
+                SchemaAPI schema = schemaService.addIndySchema(ariesSchema.get().getId(), null, null, null);
                 if (schema == null) {
                     throw new IssuerException(msg.getMessage("api.issuer.schema.failure", Map.of("id", sId)));
                 }
