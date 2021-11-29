@@ -304,6 +304,7 @@ import { EventBus } from "./main";
 import Taa from "./components/taa/TransactionAuthorAgreement";
 import BasicMessages from "@/components/messages/BasicMessages";
 import merge from "deepmerge";
+import i18n from "@/plugins/i18n";
 
 export default {
   components: {
@@ -431,16 +432,27 @@ export default {
           this.ux.theme.themes.light
         );
       }
+
       const uiColor = localStorage.getItem("uiColor");
+
       if (uiColor) {
         // if the user stored an override of the primary color, load it.
         this.$vuetify.theme.themes.light.primary = uiColor;
       }
+
       const uiColorIcons = localStorage.getItem("uiColorIcons");
+
       if (uiColorIcons) {
         // if the user stored an override of the icons color, load it.
         this.$vuetify.theme.themes.light.icons = uiColorIcons;
       }
+
+      const locale = localStorage.getItem("locale");
+
+      if (locale) {
+        i18n.locale = locale;
+      }
+
       // Load up an alternate favicon
       if (this.ux.favicon) {
         const favicon = document.getElementById("favicon");

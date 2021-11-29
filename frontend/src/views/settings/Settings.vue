@@ -237,8 +237,9 @@ export default {
     },
   },
   methods: {
-    changeLanguage(event) {
-      i18n.locale = event;
+    changeLanguage(locale) {
+      i18n.locale = locale;
+      localStorage.setItem("locale", locale);
     },
     onPickColor(c) {
       this.$vuetify.theme.themes.light.primary = c;
