@@ -1,0 +1,697 @@
+{
+  "meta": {
+    "langNameEnglish": "German",
+    "langNameNative": "Deutsch"
+  },
+  "app": {
+    "bpaDefaultName": "Business Partner Agent",
+    "snackBar": {
+      "close": "Schließen"
+    },
+    "chat": {
+      "usernameDefault": "Ich"
+    },
+    "search": "Suche",
+    "rules": {
+      "required": "Erforderlich",
+      "onlyInteger": "Wert ist keine ganze Zahl",
+      "valueMin": "Der Wert muss höher sein als",
+      "valueMax":  "Der Wert darf nicht höher sein als",
+      "colorPrefix": "Farbwert sollte mit # beginnen",
+      "colorInvalid": "Ungültige Farbe (e.g. #FF00FF)",
+      "agree": "Sie müssen zustimmen um fortzufahren",
+      "validVersion": "Muss der allgemeinen Versionsnummerierung entsprechen (e.g. 1.2 oder 1.2.3)",
+      "validSchema": "Muss alphanumerisch sein mit optionalem '_' oder '-'.",
+      "validAttributeName": "Darf nur aus Kleinbuchstaben bestehen mit optionalem '_'."
+    },
+    "sessionDialog": {
+      "headline": "Sitzung abgelaufen",
+      "text": "Ihre Sitzung ist abgelaufen. Möchten Sie sich erneut anmelden?",
+      "yes": "Ja",
+      "no": "Nein"
+    },
+    "footer": {
+      "imprintUrl": {
+        "text": "Unternehmensdaten"
+      },
+      "privacyPolicyUrl": {
+        "text": "Datenschutzrichtlinie"
+      }
+    }
+  },
+  "nav": {
+    "identity": "Identität",
+    "dashboard": "Übersicht",
+    "wallet": "Wallet",
+    "settings": "Einstellungen",
+    "about": "Über",
+    "signout": "Abmelden",
+    "requestPresentation": "Präsentationsanfrage"
+  },
+  "button": {
+    "accept": "Akzeptieren",
+    "save": "Speichern",
+    "saveAndSend": "Speichern und senden",
+    "saveAndClose": "Speichern und schließen",
+    "submit": "Abschicken",
+    "create": "Erstellen",
+    "createAndSend": "Erstellen und schicken",
+    "cancel": "Abbrechen",
+    "decline": "Ablehnen",
+    "yes": "Ja",
+    "no": "Nein",
+    "close": "Schließen",
+    "return": "Zurück",
+    "sendCounterOffer": "Gegenvorschlag senden",
+    "refresh": "Aktualisieren",
+    "revoke": "Widerrufen",
+    "reissue": "Neu ausstellen",
+    "useV2": "V2 verwenden",
+    "writeToLedger": "Endpunkte auf Register schreiben"
+  },
+  "view": {
+    "notifications": {
+      "title": "Mitteilungen",
+      "activities": {
+        "title": "Aktivitätsprotokoll"
+      },
+      "tasks": {
+        "title": "Aufgaben"
+      }
+    },
+    "identity": {
+      "title": "Identität",
+      "titleInfo": "Informationen zur Identität"
+    },
+    "about": {
+      "title": "Über",
+      "textLicense": "Der Business Partner Agent ist ein Hyperledger Labs Open Source Projekt, lizenziert unter Apache 2.0.",
+      "textRepo": "Wenn Sie ein Problem finden, können Sie es unter folgender Adresse melden:",
+      "titleImages": "Grafiken",
+      "titlePackages": "Bibliotheken und Abhängigkeiten",
+      "illustrationsBy": "Illustrationen werden zur Verfügung gestellt von",
+      "logoBy": "Das Standardlogo wird bereitgestellt von",
+      "labelVersion": "Version",
+      "labelLicense": "Lizenz",
+      "labelLicenseText": "Lizenztext"
+    },
+    "credential": {
+      "title": "Details Berechtigungsnachweis",
+      "eventSuccessUpdate": "Berechtigungsnachweis aktualisiert",
+      "eventSuccessDelete": "Berechtigungsnachweis gelöscht"
+    },
+    "schema": {
+      "title": "Schema",
+      "id": "Schema ID",
+      "attributes": "Schema-Attribute",
+      "eventSuccessDelete": "Schema gelöscht"
+    },
+    "document": {
+      "verification": "Verifizierung",
+      "verificationSubtitle": "Verifizierung anfordern",
+      "modified": "Dokument wurde geändert, bitte vor der Verifizierung speichern",
+      "titleExisting": "Dokument bearbeiten",
+      "titleEdit": "Bearbeiten",
+      "titleNew": "Neues Dokument anlegen",
+      "eventSuccessSaveEdit": "Änderungen wurden gespeichert",
+      "eventSuccessSaveNew": "Neues Dokument wurde gespeichert",
+      "eventSuccessDelete": "Dokument wurde gelöscht"
+    },
+    "dashboard": {
+      "title": "Übersicht",
+      "setupMessage": "Hallo, wir haben bereits eine Identität für Sie eingerichtet!",
+      "setupProfile": "Ihr Profil einrichten",
+      "credentialsSent": "Ausgestellte Berechtigungsnachweise",
+      "credentialsReceived": "Wallet Berechtigungsnachweise",
+      "presentationRequestsSent": "Präsentationsanfrage gesendet",
+      "presentationRequestsReceived": "Präsentationsanfrage erhalten",
+      "partners": "Geschäftspartner",
+      "tasks": "Ausstehende Aufgaben"
+    },
+    "contactPerson": {
+      "title": "Kontaktperson",
+      "labelSelect": "Kontaktperson",
+      "labelSalutation": "Anrede",
+      "labelAcademicTitle": "Akademischer Titel",
+      "labelFirstName": "Vorname",
+      "labelLastName": "Nachname",
+      "labelMail": "E-Mail",
+      "labelPhone": "Telefon",
+      "labelMobile": "Mobiltelefon",
+      "labelCountry": "Land",
+      "contactPersonTypes": {
+        "ceo": "CEO",
+        "directorLogistics": "Direktor Logistik",
+        "directorQuality": "Direktor Qualität",
+        "complianceResponsible": "Compliance Verantwortlicher",
+        "productSafetyExpert": "Experte für Produktsicherheit",
+        "directorFinance": "Direktor Finanzen",
+        "hseResponsible": "Arbeitsschutz Verantwortlicher"
+      },
+      "salutationTypes": {
+        "mr": "Herr",
+        "mrs": "Frau"
+      },
+      "academicTitleTypes": {
+        "dr": "Dr.",
+        "profDr": "Prof. Dr."
+      }
+    },
+    "profile": {
+      "title": "Öffentliches Profil",
+      "subtitle": "Sie können die Sichtbarkeit von Dokumenten und verifizierten Berechtigungsnachweisen unter <strong>Wallet</strong> ändern, um Ihr öffentliches Profil zu aktualisieren.",
+      "noProfileTitle": "Sie haben noch kein öffentliches Profil eingerichtet",
+      "buttonNoProfile": "Profil erstellen"
+    },
+    "comingSoon": {
+      "title": "Demnächst verfügbar",
+      "text": "Diese Funktion wird in Kürze verfügbar sein."
+    },
+    "wallet": {
+      "title": "Wallet",
+      "credentials": {
+        "title": "Verifizierbare Berechtigungsnachweise",
+        "headers": {
+          "label": "Label",
+          "type": "Typ",
+          "issuer": "Ausgestellt von",
+          "issuedAt": "Ausgestellt am",
+          "revoked": "Widerruf",
+          "isPublic": "Öffentlich"
+        }
+      },
+      "documents": {
+        "title": "Dokumente",
+        "headers": {
+          "label" : "Label",
+          "type" : "Typ",
+          "createdDate" : "Erstellt am",
+          "updatedDate" : "Aktualisiert am",
+          "isPublic" : "Öffentlich"
+        }
+      },
+      "visibility": {
+        "title": "Öffentliches Profil",
+        "subtitle": "Sichtbar im öffentlichen Profil"
+      }
+    },
+    "addSchema": {
+      "title": "Schema hinzufügen",
+      "schemaName": "Schema Name",
+      "schemaId": "Schema ID",
+      "placeholderName": "Name",
+      "placeholderSchemaId": "Schema ID",
+      "eventSuccessSchemaAdd": "Schema erfolgreich hinzugefügt",
+      "eventErrorSchemaExists": "Schema existiert bereits"
+    },
+    "schemaSettings": {
+      "title": "Schema Einstellungen",
+      "buttonCreateSchema": "Schema erstellen",
+      "buttonImportSchema": "Schema importieren"
+    },
+    "tagManagement": {
+      "title": "Tag Verwaltung",
+      "availableTags": "Verfügbare Tags",
+      "addNewTag": "Neues Tag erstellen",
+      "addTag": "Tag hinzufügen",
+      "deleteTag": "Tag entfernen",
+      "labelName": "Name",
+      "confirmMessageDeleteTag": "Wollen Sie dieses Tag wirklich bei allen Geschäftspartnern entfernen?",
+      "eventSuccessTagAdded": "Tag erfolgreich hinzugefügt",
+      "eventSuccessTagRemoved": "Tag erfolgreich entfernt"
+    },
+    "proofTemplates":{
+      "title": "Nachweisvorlagen",
+      "tableTitle": "Nachweisvorlagen"
+    },
+    "partners": {
+      "title": "Geschäftspartner",
+      "showInvitations": "Einladungen anzeigen"
+    },
+    "partner": {
+      "title": "Partner",
+      "refreshProfile": "Profil aktualisieren",
+      "requestReceived": "Verbindungsanfrage erhalten",
+      "requestReceivedSubtitle": "{alias} möchte eine Verbindung zu Ihnen herstellen.",
+      "removePartner": "Partner entfernen",
+      "acceptPartner": "Akzeptieren",
+      "requestSent": "Verbindungsanfrage gesendet",
+      "requestSentSubtitle": "Warten auf Antwort...",
+      "eventSuccessPartnerDelete": "Partner entfernt",
+      "eventSuccessConnectionAccepted": "Verbindungsanfrage akzeptiert",
+      "presentationExchanges": {
+        "title": "Austausch von Präsentationen",
+        "button": {
+          "send": "Präsentation senden",
+          "request": "Präsentation anfordern"
+        }
+      },
+      "credentialExchanges": {
+        "title": "Austausch von Berechtigungsnachweisen",
+        "button": {
+          "issueCredential": "Berechtigungsnachweis ausstellen",
+          "requestCredential": "Berechtigungsnachweis anfordern"
+        }
+      },
+      "stateDialog": {
+        "title": "Verbindungsstatus {state}",
+        "text": "Die Verbindung mit Ihrem Geschäftspartner ist als {state} gekennzeichnet. Dies könnte bedeuten, dass Ihre Anfrage fehlschlägt. Möchten Sie es trotzdem versuchen?",
+        "yes": "Ja",
+        "no": "Nein"
+      }
+    },
+    "sendPresentation": {
+      "title": "Präsentation senden",
+      "selectCredential": "Wählen Sie einen Berechtigungsnachweis zum Senden",
+      "eventSuccessSend": "Präsentation gesendet",
+      "label": "Label",
+      "type": "Typ",
+      "issuedBy": "Ausgestellt von",
+      "issuedAt": "Ausgestellt am"
+    },
+    "presentationRequestDetails": {
+      "header": "Details Präsentationsanforderung"
+    },
+    "addPartner": {
+      "title": "Neuen Geschäftspartner hinzufügen",
+      "radioDid": "Mit DID",
+      "radioInvitation": "Mit Einladung",
+      "labelName": "Name",
+      "placeholderUrl": "URL (Einladung) von Agenten, mit dem Sie eine Verbindung herstellen möchten",
+      "setName": "Einen Namen festlegen",
+      "setTags": "Tags setzen",
+      "trustPing": "Auto Ping",
+      "lookupPartnerBtnLabel": "Partner suchen",
+      "formDIDLabel": "Decentralized Identifier (DID)",
+      "formInvitationLabel": "Einladung",
+      "addPartnerBtnLabel": "Partner hinzufügen",
+      "buttonCheckInvitation": "Einladung prüfen",
+      "buttonAcceptInvitation": "Einladung akzeptieren",
+      "messageLookupNoPublic": "Partner hat kein öffentliches Profil. Sie können ihn hinzufügen, um mehr Informationen mittels Aries-Protokollen zu erhalten",
+      "messageLookupNoPublicNoAries": "Der Partner hat kein öffentliches Profil und keine Aries Unterstützung",
+      "messageDidNoResolve": "Konnte nicht aufgelöst werden",
+      "eventSuccessAdd": "Partner erfolgreich hinzugefügt",
+      "eventErrorAlreadyExists": "Partner existiert bereits"
+    },
+    "addPartnerbyURL": {
+      "title": "Neuen Geschäftspartner einladen",
+      "labelName": "Name",
+      "createInvitation": "Einladung generieren (QR Code)",
+      "invitationURL": "Einladung URL",
+      "useOOB": "Out of Band verwenden",
+      "eventSuccessCreatePartnerInvite": "Einladung erfolgreich erstellt"
+    },
+    "proofTemplate": {
+      "title": "Nachweisvorlagen",
+      "tableTitle": "Nachweisvorlagen",
+      "createProofTemplate": "Nachweisvorlage erstellen",
+      "restrictions": {
+        "title": "Einschränkungen",
+        "errorNoTrustedIssuer": "Es ist keine DID vertrauenswürdiger Aussteller ausgewählt",
+        "schemaId": "Schema ID",
+        "schemaName": "Schema Name",
+        "schemaVersion": "Schema Version",
+        "schemaIssuerDid": "Schema Aussteller DID",
+        "trustedIssuerDid": "Vertrauenswürdiger Aussteller DID",
+        "credentialDefinitionId": "Berechtigungsnachweis Definition ID",
+        "header": {
+          "trustedIssuerLabel": "Vertrauenswürdiger Aussteller",
+          "trustedIssuerDid": "DID"
+        },
+        "dialog": {
+          "addTrustedIssuer": "Vertrauenswürdigen Aussteller hinzufügen",
+          "label": "DID",
+          "hint": "Die dezentrale ID eines vertrauenswürdigen Ausstellers"
+        }
+      },
+      "attributes": {
+        "title": "Datenfelder",
+        "errorNoAttributes": "Es muss mindestens ein ausgewähltes Datenfeld vorhanden sein",
+        "header": {
+          "name": "Name",
+          "operator": "Operator",
+          "value": "Wert"
+        }
+      },
+      "view": {
+        "name": "Name",
+        "createdAt": "Erstellt am",
+        "attributeGroupsTitle": "Anzufordernde Daten",
+        "attributeGroupsSubtitle": "Gruppiert nach Schema",
+        "createProofRequest": "Nachweisanforderung erstellen",
+        "eventSuccessDelete": "Nachweisvorlage entfernt",
+        "attributeGroup": {
+          "issuerTitle": "Aussteller",
+          "titleAttributes": "Datenfelder",
+          "titleRestrictions": "Einschränkungen"
+        }
+      },
+      "list": {
+        "name": "Name",
+        "createdAt": "Erstellt am"
+      },
+      "create": {
+        "title": "Nachweisvorlage erstellen",
+        "labelName": "Name",
+        "requestedDataTitle": "Anzufordernde Daten",
+        "requestedDataSubtitle": "Anzufordernde Daten nach Schema auswählen",
+        "snackbarContent": "Attribut-Gruppe wurde entfernt",
+        "success": "Nachweisvorlage erstellt"
+      }
+    },
+    "requestPresentation": {
+      "title": "Eine Anfrage für eine Präsentation erstellen",
+      "sendRequest": "Anfrage senden",
+      "eventSuccessSend": "Präsentationsanfrage gesendet"
+    },
+    "requestCredential": {
+      "title": "Eine Anfrage für einen Berechtigungsnachweis erstellen",
+      "createDocument": "Erstelle Dokument",
+      "sendRequest": "Anfrage senden",
+      "eventSuccessSend": "Anfrage zur Verifizierung des Berechtigungsnachweises gesendet",
+      "headers": {
+        "label": "Label",
+        "type": "Typ",
+        "createdDate": "Erstellt am",
+        "updatedDate": "Aktualisiert am",
+        "isPublic": "Öffentlich"
+      },
+      "createDocumentView": {
+        "selectSchemaLabel": "Schema als Basis für Dokument auswählen"
+      }
+    },
+    "requestVerification": {
+      "title": "Verifizierung anfordern",
+      "titleSelect": "Geschäftspartner auswählen",
+      "subtitleSelect": "Wählen Sie den Geschäftspartner aus, von dem Sie eine Verifizierung anfordern möchten",
+      "connectionState": "Verbindungsstatus {state}",
+      "connectionWarning": "Die Verbindung mit Ihrem Geschäftspartner ist als {state} gekennzeichnet. Dies könnte bedeuten, dass Ihre Anfrage fehlschlägt. Möchten Sie es trotzdem versuchen?",
+      "eventSuccessNoVerification": "Verifizierung kann nicht gestartet werden",
+      "eventSuccessSend": "Anfrage zur Verifizierung des Berechtigungsnachweises gesendet",
+      "eventErrorSelect": "Kein Partner für Anfrage für Verifizierung ausgewählt"
+    },
+    "presentationRecord": {
+      "role": "Rolle",
+      "state": "Zustand",
+      "requestName": "Name der Anfrage",
+      "requestContent": "Inhalt der Anfrage",
+      "issuer": "Aussteller",
+      "about": "Über",
+      "dataFields": "Datenfelder",
+      "restrictions": "Einschränkungen",
+      "presentationValid": "Präsentation ist gültig",
+      "presentationNotValid": "Präsentation ist nicht gültig",
+      "matchingCredentials": {
+        "selectHeader": "Daten für die Präsentation auswählen",
+        "label": "Passende Berechtigungsnachweise",
+        "credentialRevoked": " - Berechtigungsnachweis wurde widerrufen",
+        "noInfoFound": "Keine Informationen gefunden"
+      }
+    },
+    "issueCredentials": {
+      "title": "Nachweise ausstellen",
+      "cards": {
+        "action": {
+          "title": "Berechtigungsnachweis ausstellen",
+          "button": "Berechtigungsnachweis ausstellen",
+          "partnerLabel": "Partner auswählen",
+          "credDefLabel": "Berechtigungsnachweis-Definition auswählen"
+        },
+        "table": {
+          "title": "Ausgestellte Berechtigungsnachweise"
+        }
+      }
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "language": "Sprache",
+      "walletDID": "Wallet DID",
+      "schemaManagement": "Schemata und vertrauenswürdige Aussteller",
+      "tags": "Tags",
+      "frontendColor": "UI Farbe",
+      "iconsColor": "Icon-Farbe",
+      "expertMode": "Expertenmodus",
+      "header": {
+        "agentName": "BPA Name",
+        "host": "Host",
+        "uniResolverUrl": "Universal Resolver",
+        "ledgerBrowser": "Ledger Browser",
+        "ledgerPrefix": "Ledger DID Prefix",
+        "uptime": "Betriebszeit HH:mm:ss.SSS",
+        "buildVersion": "Version"
+      },
+      "eventSuccessCopy": "DID kopiert",
+      "eventErrorCopy": "DID kann nicht kopiert werden"
+    }
+  },
+  "component": {
+    "partnerStateIndicator": {
+      "connectionState": "Aries-Verbindungsstatus"
+    },
+    "timeline": {
+      "title": "Zeitleiste"
+    },
+    "transactionAuthorAgreement": {
+      "title": "Transaktionsautorenvereinbarung",
+      "text": "Damit andere Unternehmen mit diesem Agenten kommunizieren können, muss eine Konfiguration in das Register geschrieben werden - die Endpunktkonfiguration. Um dies zu tun, muss der Autor der Transaktion die folgende Vereinbarung für diese Sitzung akzeptieren",
+      "loading": "Laden",
+      "labelVersion": "Version",
+      "labelCheckbox": "Als Transaktionsautor habe ich die obige Transaktionsautorenvereinbarung für diese Sitzung gelesen und akzeptiere sie"
+    },
+    "trustedIssuers": {
+      "labelDid": "DID",
+      "labelName": "Name",
+      "addTrustedIssuer": "Vertrauenswürdigen Aussteller hinzufügen",
+      "eventSuccessCreate": "Neuer vertrauenswürdiger Aussteller hinzugefügt",
+      "eventSuccessUpdate": "Vertrauenswürdiger Aussteller aktualisiert"
+    },
+    "newMessageIcon": {
+      "activity": "Neue Aktivität",
+      "credential": "Neue Aktivität auf dem Berechtigungsnachweis",
+      "partner": "Neue Aktivität in Bezug auf diesen Partner",
+      "presentation": "Neue Aktivität auf der Präsentation",
+      "task": "Neue Aufgabe",
+      "default": "Neue Aktivität"
+    },
+    "updatePartner": {
+      "title": "Partner aktualisieren",
+      "name": "Name",
+      "tags": "Tags",
+      "labelName": "Name",
+      "labelTags": "Tags",
+      "eventSuccess": "Partner erfolgreich aktualisiert"
+    },
+    "addSchema": {
+      "title": "Schema importieren",
+      "schemaName": "Schema Name",
+      "schemaId": "Schema ID",
+      "placeholderName": "Name",
+      "placeholderId": "Schema ID",
+      "eventSuccess": "Schema erfolgreich hinzugefügt"
+    },
+    "schemaList": {
+      "label": "Name",
+      "canIssue": "Ausstellbar",
+      "isMine": "Besitzer",
+      "trustedIssuer": "Vertrauenswürdige Aussteller"
+    },
+    "manageSchema": {
+      "labelSchemaId": "Schema ID",
+      "labelCheckbox": "Mein Schema",
+      "eventSuccessCopy": "Schema ID kopiert",
+      "eventErrorCopy": "Schema ID kann nicht kopiert werden",
+      "eventSuccessDelete": "Schema entfernt",
+      "tabs": {
+        "schemaAttributes": "Schema Attribute",
+        "credentialDefinitions": "Nachweisdefinitionen",
+        "trustedIssuers": "Vertrauenswürdige Aussteller"
+      }
+    },
+    "credential": {
+      "label": "Label (Optional)",
+      "issuerTitle": "Aussteller",
+      "issuerLabel": "Aussteller Decentralized Identifier (DID)",
+      "issuedAt": "Ausgestellt am"
+    },
+    "credentialCard": {
+      "details": "Details"
+    },
+    "credentialDefinitions": {
+      "label": "Tag",
+      "labelCheckbox": "Widerrufbar",
+      "buttonAddCredDef": "Nachweisdefinition hinzufügen",
+      "eventSuccess": "Neue Berechtigungsnachweisdefinition hinzugefügt"
+    },
+    "createSchema": {
+      "title": "Schema erstellen",
+      "schemaInformation": "Schema Information",
+      "labelSchema": "Schema Label",
+      "labelName": "Schema Name",
+      "labelVersion": "Schema Version",
+      "placeholderSchema": "Label für dieses Schema",
+      "placeholderName": "Name des veröffentlichten Schemas (e.g. my-schema)",
+      "placeholderVersion": "Version des veröffentlichten Schemas (e.g. 1.2 oder 1.2.3)",
+      "schemaAttributes": "Schema Attribute",
+      "placeholderAttribute": "E.g. unternehmen, name oder unternehmen_name",
+      "eventSuccess": "Schema erfolgreich erstellt",
+      "headersColumn": {
+        "name": "Name",
+        "isDefault": "Default",
+        "action": "Aktion"
+      }
+    },
+    "activityList": {
+      "labelFilterCombobox": "Filtern nach",
+      "tableHeaders": {
+        "type":  "Typ",
+        "partner": "Verbindung",
+        "updatedAt": "Aktualisiert am",
+        "role": "Rolle",
+        "state": "Zustand"
+      },
+      "labelPartnerUnknown": "Unbekannt"
+    },
+    "organizationProfile": {
+      "companyInfo": {
+        "type": "Organisations-Typ",
+        "identifier": "Kennung",
+        "sectionTitle": "Informationen zum Unternehmen",
+        "companyName": "Rechtlicher Name der Firma",
+        "companyAltName": "Unternehmen Alternativer Name"
+      },
+      "addressInfo": {
+        "sectionTitle": "Informationen zur Anschrift",
+        "street": "Straße (mit Hausnummer)",
+        "postalCode": "Postleitzahl",
+        "city": "Stadt",
+        "country": "Land",
+        "region": "Region"
+      }
+    },
+    "issueCredential": {
+      "title": "Berechtigungsnachweis ausstellen",
+      "partnerLabel": "Geschäftspartner",
+      "credDefLabel": "Berechtigungsnachweis Definition",
+      "successMessage": "Berechtigungsnachweis ausgestellt",
+      "attributesTitle": "Berechtigungsnachweis Inhalt",
+      "options": {
+        "title": "Optionen"
+      },
+      "expertLoad": {
+        "title": "Berechtigungsnachweisdaten laden",
+        "dataPlaceholder": "Nachweisdaten eingeben, einfügen oder hochladen...",
+        "filePlaceholder": "Datei hochladen",
+        "buttons": {
+          "load": "Laden",
+          "clear": "Löschen"
+        },
+        "errorMessages": {
+          "format": {
+            "json": "Stellen Sie sicher, dass die Daten im JSON-Format vorliegen.",
+            "csv": "Stellen Sie sicher, dass die Daten im CSV-Format (Comma Separated Value) vorliegen."
+          },
+          "attributes": "Es konnten keine passenden Berechtigungsnachweis-Attribute gefunden werden.",
+          "parse": "Daten konnten nicht geparst werden.",
+          "readFile": "Fehler beim Lesen der Datei"
+        }
+      }
+    },
+    "credExList": {
+      "headers": {
+        "displayText": "Typ",
+        "partnerName": "Ausgestellt an",
+        "role": "Rolle",
+        "updatedAt": "Aktualisiert am",
+        "state": "Zustand",
+        "revocable": "Widerruf"
+      },
+      "table": {
+        "iconCredIssued": "Berechtigungsnachweis ausgestellt",
+        "iconCredRevoked": "Berechtigungsnachweis widerrufen",
+        "iconRevokeCred": "Berechtigungsnachweis widerrufen",
+        "revoked": "Widerrufen",
+        "holderNotRevoked": "Berechtigungsnachweis gültig und nicht widerrufen",
+        "holderNotRevocable": "Berechtigungsnachweis gültig und nicht widerrufbar"
+      },
+      "dialog": {
+        "title": "Berechtigungsnachweis",
+        "timeline": "Zeitleiste",
+        "partnerLabel": "Geschäftspartner",
+        "credDefLabel": "Berechtigungsnachweis Definition",
+        "attributesTitle": "Berechtigungsnachweis Inhalt",
+        "declineReasonLabel": "Grund der Ablehnung (Optional)"
+      }
+    },
+    "presentationExList": {
+      "dialog": {
+        "title": "Austausch von Präsentationen",
+        "alertFulfill": "Anfrage kann nicht mit Berechtigungsnachweisen aus der Wallet erfüllt werden",
+        "declineReasonLabel": "Grund der Ablehnung (Optional)"
+      },
+      "table": {
+        "label": "Name",
+        "role": "Rolle",
+        "updatedAt": "Aktualisiert am",
+        "state": "Zustand"
+      },
+      "eventSuccessApprove": "Der Nachweis wurde gesendet",
+      "eventSuccessDecline": "Präsentationsanfrage wurde abgelehnt",
+      "eventSuccessDelete": "Präsentation wurde entfernt"
+    },
+    "profile": {
+      "organizationalProfile": {
+        "title": "Organisationsprofil",
+        "edit": "Bearbeiten"
+      },
+      "credential": {
+        "verifiedByLabel": "verifiziert durch"
+      },
+      "noProfileMsg": "Partner hat kein gemeinsames öffentliches Profil"
+    }
+  },
+  "constants": {
+    "activityTypes": {
+      "connectionRequest": "Verbindungsanfrage",
+      "credentialExchange": "Austausch von Berechtigungsnachweisen",
+      "presentationExchange": "Präsentation von Nachweisen"
+    },
+    "activityStates": {
+      "connectionRequest": {
+        "accepted": "Verbindungsanfrage akzeptiert",
+        "received": "Verbindungsanfrage erhalten",
+        "sent": "Verbindungsanfrage gesendet"
+      },
+      "credentialExchange": {
+        "accepted": "Nachweisvorschlag akzeptiert",
+        "declined": "Nachweisvorschlag wurde abgelehnt",
+        "problem": "Problem mit Nachweisvorschlag",
+        "received": "Nachweisvorschlag erhalten",
+        "sent": "Nachweisvorschlag wurde gesendet"
+      },
+      "presentationExchange": {
+        "accepted": "Präsentation akzeptiert",
+        "declined": "Präsentation abgelehnt",
+        "received": "Präsentation angefordert",
+        "sent": "Anfrage für Präsentation gesendet"
+      }
+    },
+    "activityRoles": {
+      "connectionRequest": {
+        "sender": "Absender",
+        "recipient": "Empfänger"
+      },
+      "credentialExchange": {
+        "holder": "Inhaber",
+        "issuer": "Aussteller"
+      },
+      "presentationExchange": {
+        "prover": "Beweiser",
+        "verifier": "Prüfer"
+      }
+    }
+  },
+  "showRawData": "Rohdaten anzeigen",
+  "error": {
+    "axios": "Anfrage mit Status {statusText} fehlgeschlagen"
+  }
+}
