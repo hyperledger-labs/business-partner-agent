@@ -240,6 +240,7 @@ export default {
     changeLanguage(locale) {
       i18n.locale = locale;
       localStorage.setItem("locale", locale);
+      EventBus.$emit("title", this.$t("view.settings.title"));
     },
     onPickColor(c) {
       this.$vuetify.theme.themes.light.primary = c;
