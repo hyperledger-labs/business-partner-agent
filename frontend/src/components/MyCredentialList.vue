@@ -116,6 +116,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    useIndy: {
+      type: Boolean,
+      default: false,
+    },
   },
   components: {
     NewMessageIcon,
@@ -155,7 +159,11 @@ export default {
   methods: {
     fetch(type) {
       this.$axios
-        .get(`${this.$apiBaseUrl}/wallet/${type}`)
+        .get(
+          `${this.$apiBaseUrl}/wallet/${type}${
+            this.useIndy ? "?types=INDY" : ""
+          }`
+        )
         .then((result) => {
           if ({}.hasOwnProperty.call(result, "data")) {
             this.isBusy = false;
