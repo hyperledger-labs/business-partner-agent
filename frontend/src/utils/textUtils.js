@@ -1,10 +1,10 @@
 /*
- Copyright (c) 2021 - for information on the respective copyright owner
- see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
-
- SPDX-License-Identifier: Apache-2.0
-*/
+ * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * see the NOTICE file and/or the repository at
+ * https://github.com/hyperledger-labs/business-partner-agent
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 export const schemaAttributeLabel = (key) => {
   if (!key) return "";
@@ -17,8 +17,11 @@ export const schemaAttributeLabel = (key) => {
   return key;
 };
 
-export const isValidSchemaName = (value) => (value && /^[a-zA-Z\d-_]+$/.test(value));
+export const isValidSchemaName = (value) =>
+  value && /^[a-zA-Z\d-_]+$/.test(value);
 
-export const isValidSchemaAttributeName = (value) => (value && /^[a-z_]+$/.test(value));
+export const isValidSchemaAttributeName = (value) =>
+  value && /^[a-z_]+$/.test(value);
 
-export const isValidSchemaVersion = (value) => (value && /^(\d+)\.(\d+)(?:\.\d+)?$/.test(value));
+export const isValidSchemaVersion = (value) =>
+  value && /^(\d+)\.(\d+)(?:\.\d+)?$/.test(value);

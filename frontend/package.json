@@ -7,6 +7,7 @@
     "test:unit": "vue-cli-service test:unit",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
+    "license-file-headers-add": "license-check-and-add add -f licenses/config.json -r 2021",
     "license-check": "license-checker --production --json --onlyAllow 'MIT;Python-2.0;Apache-2.0;BSD-2-Clause;BSD-3-Clause' --excludePackages 'company-agent-frontend@0.1.0'",
     "license": "generate-attribution -o ./licenses",
     "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'"
@@ -48,6 +49,7 @@
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-vue": "^8.1.0",
     "husky": "^4.3.0",
+    "license-check-and-add": "^4.0.3",
     "license-checker": "25.0.1",
     "lint-staged": "^10.4.2",
     "node-sass": "^5.0.0",

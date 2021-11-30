@@ -1,3 +1,10 @@
+<!--
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
+ see the NOTICE file and/or the repository at
+ https://github.com/hyperledger-labs/business-partner-agent
+
+ SPDX-License-Identifier: Apache-2.0
+-->
 <template>
   <v-form ref="form" v-model="valid" lazy-validation>
     <div style="min-width: 250px">
