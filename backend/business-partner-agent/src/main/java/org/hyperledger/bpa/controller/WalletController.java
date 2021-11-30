@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.controller;
 
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.convert.format.Format;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
@@ -25,8 +26,10 @@ import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.controller.api.issuer.DeclineExchangeRequest;
@@ -59,11 +62,15 @@ public class WalletController {
     /**
      * List wallet documents
      *
+     * @param types {@link CredentialType} multi value list of types to filter
      * @return list of {@link MyDocumentAPI}
      */
     @Get("/document")
-    public HttpResponse<List<MyDocumentAPI>> getDocuments() {
-        final List<MyDocumentAPI> myCreds = docMgmt.getMyDocuments();
+    public HttpResponse<List<MyDocumentAPI>> getDocuments(
+            @Parameter(
+                    description = "types filter") @Nullable @QueryValue @Format("MULTI") List<CredentialType> types) {
+        final List<MyDocumentAPI> myCreds = docMgmt
+                .getMyDocuments(types != null ? types.toArray(new CredentialType[0]) : null);
         return HttpResponse.ok(myCreds);
     }
 

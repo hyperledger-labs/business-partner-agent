@@ -38,6 +38,8 @@ public interface MyDocumentRepository extends CrudRepository<MyDocument, UUID> {
      */
     List<MyDocument> findByIsPublicTrue();
 
+    List<MyDocument> findByTypeIn(List<CredentialType> type);
+
     boolean existsByTypeEqualsAndIsPublicTrue(CredentialType type);
 
     // this one is for migration of old agent versions only
