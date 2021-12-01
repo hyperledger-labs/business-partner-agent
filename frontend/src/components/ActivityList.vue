@@ -51,6 +51,7 @@
       :sort-desc="[true]"
       @click:row="openItem"
     >
+      <template v-slot:no-data>{{ $t("app.emptyTable") }}</template>
       <template v-slot:[`item.indicator`]="{ item }">
         <new-message-icon
           :type="newMessageIconType"

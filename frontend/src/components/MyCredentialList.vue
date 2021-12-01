@@ -28,6 +28,7 @@
       :sort-desc="[false]"
       @click:row="open"
     >
+      <template v-slot:no-data>{{ $t("app.emptyTable") }}</template>
       <template v-slot:[`item.label`]="{ item }">
         <new-message-icon :type="'credential'" :id="item.id"></new-message-icon>
         <span v-bind:class="{ 'font-weight-medium': item.new }">

@@ -11,6 +11,7 @@
     "chat": {
       "usernameDefault": "Ich"
     },
+    "emptyTable": "Keine Daten verfügbar",
     "search": "Suche",
     "rules": {
       "required": "Erforderlich",
@@ -594,6 +595,14 @@
           "parse": "Daten konnten nicht geparst werden.",
           "readFile": "Fehler beim Lesen der Datei"
         }
+      }
+    },
+    "partnerList": {
+      "headers": {
+        "name": "Name",
+        "address": "Adresse",
+        "updatedAt": "Aktualisiert am",
+        "state": "Zustand"
       }
     },
     "credExList": {

@@ -34,6 +34,7 @@
       item-key="name"
       class="elevation-1"
     >
+      <template v-slot:no-data>{{ $t("app.emptyTable") }}</template>
       <!-- attribute conditions -->
       <template v-slot:[`item.operator`]="{ item }">
         <v-select

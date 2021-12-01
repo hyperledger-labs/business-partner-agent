@@ -35,6 +35,7 @@
         class="elevation-1"
         show-expand
       >
+        <template v-slot:no-data>{{ $t("app.emptyTable") }}</template>
         <template v-slot:expanded-item="{ headers, item }">
           <td :colspan="headers.length" style="padding: 0">
             <v-simple-table>
