@@ -596,6 +596,14 @@
         }
       }
     },
+    "partnerList": {
+      "headers": {
+        "name": "Name",
+        "address": "Address",
+        "updatedAt": "Updated at",
+        "state": "State"
+      }
+    },
     "credExList": {
       "headers": {
         "displayText": "Type",

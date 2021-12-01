@@ -8,6 +8,9 @@
 // style.scss imports our font awesome styles and material design styles
 import Vue from "vue";
 import Vuetify from "vuetify";
+import en from "vuetify/lib/locale/en";
+import de from "vuetify/lib/locale/de";
+import pl from "vuetify/lib/locale/pl";
 
 import {
   mdiViewDashboard,
@@ -103,6 +106,13 @@ export default new Vuetify({
       invitation: mdiTicketConfirmationOutline,
       validationError: mdiAlert,
       attachment: mdiAttachment,
+    },
+  },
+  lang: {
+    locales: {
+      en,
+      de,
+      pl,
     },
   },
   theme: {

@@ -451,6 +451,7 @@ export default {
 
       if (locale) {
         i18n.locale = locale;
+        this.$vuetify.lang.current = locale;
       }
 
       // Load up an alternate favicon

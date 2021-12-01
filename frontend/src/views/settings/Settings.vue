@@ -239,6 +239,7 @@ export default {
   methods: {
     changeLanguage(locale) {
       i18n.locale = locale;
+      this.$vuetify.lang.current = locale;
       localStorage.setItem("locale", locale);
       EventBus.$emit("title", this.$t("view.settings.title"));
     },

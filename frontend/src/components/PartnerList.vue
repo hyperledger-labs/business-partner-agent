@@ -113,24 +113,24 @@ export default {
     headers() {
       return [
         {
-          text: "Name",
+          text: this.$t("component.partnerList.headers.name"),
           value: "name",
         },
         this.showAllHeaders
           ? {
-              text: "Address",
+              text: this.$t("component.partnerList.headers.address"),
               value: "address",
             }
           : {},
         this.showAllHeaders
           ? {
-              text: "Updated at",
+              text: this.$t("component.partnerList.headers.updatedAt"),
               value: "updatedAt",
             }
           : {},
         this.showAllHeaders
           ? {
-              text: "State",
+              text: this.$t("component.partnerList.headers.state"),
               value: "state",
             }
           : {},
