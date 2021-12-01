@@ -18,7 +18,9 @@
     >
       <template v-slot:[`item.trustedIssuer`]="{ item }">
         <v-icon
-          v-if="Array.isArray(item.trustedIssuer) && item.trustedIssuer.length"
+          v-if="
+            Array.isArray(item.trustedIssuer) && item.trustedIssuer.length > 0
+          "
           >$vuetify.icons.check</v-icon
         >
       </template>

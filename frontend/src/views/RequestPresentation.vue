@@ -104,8 +104,8 @@ export default {
           this.isBusy = false;
           this.$router.go(-1);
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
           this.isBusy = false;
         });
     },

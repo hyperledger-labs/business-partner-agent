@@ -153,13 +153,13 @@ export default {
       ];
     },
     newDocumentTypes() {
-      let docTypes = this.$store.getters.getSchemas;
+      let documentTypes = this.$store.getters.getSchemas;
       if (this.$store.getters.getOrganizationalProfile) {
-        docTypes = docTypes.filter(
+        documentTypes = documentTypes.filter(
           (schema) => schema.type !== CredentialTypes.PROFILE.type
         );
       }
-      return docTypes;
+      return documentTypes;
     },
   },
 };

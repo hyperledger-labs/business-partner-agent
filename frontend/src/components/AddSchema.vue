@@ -114,9 +114,9 @@ export default {
             this.$emit("success");
           }
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isBusy = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     cancel() {

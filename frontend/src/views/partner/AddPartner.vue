@@ -250,14 +250,14 @@ export default {
           this.partnerLoading = false;
           console.log(result);
           if (
-            {}.hasOwnProperty.call(result, "status") &&
+            Object.prototype.hasOwnProperty.call(result, "status") &&
             result.status === 200
           ) {
             let partner = result.data;
-            if ({}.hasOwnProperty.call(partner, "credential")) {
+            if (Object.prototype.hasOwnProperty.call(partner, "credential")) {
               this.partner = partner;
               this.aliasPlaceholder = partner.name;
-              if ({}.hasOwnProperty.call(partner, "credential"))
+              if (Object.prototype.hasOwnProperty.call(partner, "credential"))
                 this.partnerLoaded = true;
             } else if (partner.ariesSupport) {
               this.msg = this.$t("view.addPartner.messageLookupNoPublic");
@@ -269,12 +269,12 @@ export default {
             }
           }
         })
-        .catch((e) => {
+        .catch((error) => {
           this.msg = `${this.$t("view.addPartner.messageDidNoResolve")} ${
             this.did
           }.`;
           this.partnerLoading = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     addPartner() {
@@ -306,14 +306,14 @@ export default {
             });
           }
         })
-        .catch((e) => {
-          if (e.response.status === 412) {
+        .catch((error) => {
+          if (error.response.status === 412) {
             EventBus.$emit(
               "error",
               this.$t("view.addPartner.eventErrorAlreadyExists")
             );
           } else {
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           }
         });
     },
@@ -334,14 +334,14 @@ export default {
             this.invitationUrlLoading = false;
             this.receivedInvitation = Object.assign({}, result.data);
             this.invitationUrlLoaded =
-              this.receivedInvitation.invitationBlock != null;
+              this.receivedInvitation.invitationBlock != undefined;
             // add in their label as the default alias for adding
             this.aliasPlaceholder = this.receivedInvitation.label;
             //this.alias = this.receivedInvitation.label;
           })
-          .catch((e) => {
+          .catch((error) => {
             this.invitationUrlLoading = false;
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           });
       }
     },
@@ -376,8 +376,8 @@ export default {
               name: "Partners",
             });
           })
-          .catch((e) => {
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+          .catch((error) => {
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           });
       }
     },

@@ -100,21 +100,23 @@ export default {
         .get(`${this.$apiBaseUrl}/admin/schema/${this.id}`)
         .then((result) => {
           console.log(result);
-          if ({}.hasOwnProperty.call(result, "data")) {
+          if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.data = result.data;
             // Init trusted issuers
-            if ({}.hasOwnProperty.call(this.data, "trustedIssuer")) {
+            if (
+              Object.prototype.hasOwnProperty.call(this.data, "trustedIssuer")
+            ) {
               this.trustedIssuers = this.data.trustedIssuer;
             }
             this.isLoading = false;
           }
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isLoading = false;
-          if (e.response.status === 404) {
+          if (error.response.status === 404) {
             this.data = [];
           } else {
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           }
         });
     },
@@ -133,8 +135,8 @@ export default {
             });
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
   },

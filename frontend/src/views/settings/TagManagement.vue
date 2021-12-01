@@ -128,8 +128,8 @@ export default {
             EventBus.$emit("error", res.status.text);
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     deleteTag(tag, hardDelete = false) {
@@ -149,14 +149,14 @@ export default {
             EventBus.$emit("error", res.status.text);
           }
         })
-        .catch((e) => {
-          console.error(e.response);
-          if (e.response.status === 400) {
+        .catch((error) => {
+          console.error(error.response);
+          if (error.response.status === 400) {
             this.hardDeleteDialog = true;
-            this.deleteErrorMsg = e.response.data.message;
+            this.deleteErrorMsg = error.response.data.message;
             this.selectedTag = tag;
           } else {
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           }
         });
     },

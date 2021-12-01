@@ -224,7 +224,7 @@ export default {
       this.$axios
         .get(`${this.$apiBaseUrl}/wallet/document/${this.id}`)
         .then((result) => {
-          if ({}.hasOwnProperty.call(result, "data")) {
+          if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.document = result.data;
             this.intDoc = { ...this.document };
             this.isReady = true;
@@ -236,8 +236,8 @@ export default {
             );
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     saveDocument(closeDocument) {
@@ -266,14 +266,14 @@ export default {
               this.$t("view.document.eventSuccessSaveEdit")
             );
           })
-          .catch((e) => {
+          .catch((error) => {
             this.isBusy = false;
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           });
 
         // create new document
       } else {
-        const docForSave = {
+        const documentForSave = {
           document: this.$refs.doc.intDoc.documentData,
           label: this.$refs.doc.intDoc.label,
           isPublic: this.document.isPublic,
@@ -281,7 +281,7 @@ export default {
           schemaId: this.schemaId,
         };
         this.$axios
-          .post(`${this.$apiBaseUrl}/wallet/document`, docForSave)
+          .post(`${this.$apiBaseUrl}/wallet/document`, documentForSave)
           .then((res) => {
             console.log(res);
             this.$emit("received-document-id", {
@@ -295,9 +295,9 @@ export default {
               this.$t("view.document.eventSuccessSaveNew")
             );
           })
-          .catch((e) => {
+          .catch((error) => {
             this.isBusy = false;
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           });
       }
     },
@@ -313,8 +313,8 @@ export default {
             this.$router.go(-1);
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     cancel() {

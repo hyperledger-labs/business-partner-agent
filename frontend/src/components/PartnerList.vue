@@ -140,13 +140,11 @@ export default {
       return this.$store.state.expertMode;
     },
     filteredData() {
-      if (!this.showInvitations) {
-        return this.data.filter((partner) => {
-          return partner.state !== PartnerStates.INVITATION.value;
-        });
-      } else {
-        return this.data;
-      }
+      return !this.showInvitations
+        ? this.data.filter((partner) => {
+            return partner.state !== PartnerStates.INVITATION.value;
+          })
+        : this.data;
     },
     partnerNotifications() {
       return this.$store.getters.partnerNotifications;
@@ -179,15 +177,15 @@ export default {
     fetch() {
       this.$store.dispatch("loadPartnerSelectList");
       // Query only for partners that can issue credentials of specified schema
-      let queryParam = "";
+      let queryParameter = "";
       if (this.onlyIssuersForSchema.length > 0) {
-        queryParam = `?schemaId=${this.onlyIssuersForSchema}`;
+        queryParameter = `?schemaId=${this.onlyIssuersForSchema}`;
       }
       this.$axios
-        .get(`${this.$apiBaseUrl}/partners${queryParam}`)
+        .get(`${this.$apiBaseUrl}/partners${queryParameter}`)
         .then((result) => {
           console.log("Partner List", result);
-          if ({}.hasOwnProperty.call(result, "data")) {
+          if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.isBusy = false;
 
             if (this.onlyAries) {
@@ -202,9 +200,9 @@ export default {
             });
           }
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isBusy = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     getProfileAddress(credential) {

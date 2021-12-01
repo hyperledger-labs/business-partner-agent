@@ -93,8 +93,8 @@ export default {
       get() {
         return this.value;
       },
-      set(val) {
-        this.$emit("input", val);
+      set(value) {
+        this.$emit("input", value);
       },
     },
     attributeGroupHeaders() {
@@ -120,10 +120,11 @@ export default {
             ? true
             : /^-?\d+$/.test(value) || this.$t("app.rules.onlyInteger"),
         valueMin: (value) =>
-          value >= -2147483648 ||
+          value >= -2_147_483_648 ||
           `${this.$t("app.rules.valueMin")} -2147483648`,
         valueMax: (value) =>
-          value <= 2147483647 || `${this.$t("app.rules.valueMax")} 2147483647`,
+          value <= 2_147_483_647 ||
+          `${this.$t("app.rules.valueMax")} 2147483647`,
       };
     },
   },

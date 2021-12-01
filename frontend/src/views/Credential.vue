@@ -109,13 +109,16 @@ export default {
   },
   methods: {
     getCredential() {
-      console.log("Get Credential ID: ", this.id);
+      console.log("Get Credential ID:", this.id);
       this.$axios
         .get(`${this.$apiBaseUrl}/wallet/credential/${this.id}`)
         .then((result) => {
-          if ({}.hasOwnProperty.call(result, "data")) {
+          if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.credential = result.data;
-            this.credential.label = {}.hasOwnProperty.call(result.data, "label")
+            this.credential.label = Object.prototype.hasOwnProperty.call(
+              result.data,
+              "label"
+            )
               ? result.data.label
               : "";
             this.isPublic = this.credential.isPublic;
@@ -123,8 +126,8 @@ export default {
             this.intDoc = { ...this.credential };
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     saveChanges() {
@@ -164,12 +167,12 @@ export default {
             }
           })
         )
-        .catch((errors) => {
-          errors.forEach((error) => {
+        .catch((error) => {
+          error.forEach((error) => {
             console.error(error);
           });
           // react on errors.
-          EventBus.$emit("errors", errors);
+          EventBus.$emit("errors", error);
         });
     },
     deleteCredential() {
@@ -187,8 +190,8 @@ export default {
             });
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     cancel() {

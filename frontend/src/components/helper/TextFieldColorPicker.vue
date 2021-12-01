@@ -79,7 +79,7 @@ export default {
       hexReg: [
         (value) => !!value || this.$t("app.rules.colorPrefix"),
         (value) => {
-          const pattern = /^#([0-9A-F]{3}){1,2}$/i;
+          const pattern = /^#([\da-f]{3}){1,2}$/i;
           return pattern.test(value) || this.$t("app.rules.colorInvalid");
         },
       ],

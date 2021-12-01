@@ -42,8 +42,8 @@ export default {
           this.didDocLoaded = true;
           this.didDoc = result.data;
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
   },

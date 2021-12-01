@@ -20,9 +20,9 @@ export default {
   actions: {},
   mutations: {
     onMessageReceived(state, payload) {
-      let basicMsg = payload.message.info;
+      let basicMessage = payload.message.info;
       let msgs = state.messages ? state.messages : [];
-      msgs.push(basicMsg);
+      msgs.push(basicMessage);
       state.messages = msgs;
     },
     markMessagesSeen(state, partnerId) {

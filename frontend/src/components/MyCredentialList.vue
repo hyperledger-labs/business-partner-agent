@@ -143,8 +143,8 @@ export default {
       get() {
         return this.value;
       },
-      set(val) {
-        this.$emit("input", val);
+      set(value) {
+        this.$emit("input", value);
       },
     },
   },
@@ -165,34 +165,33 @@ export default {
           }`
         )
         .then((result) => {
-          if ({}.hasOwnProperty.call(result, "data")) {
+          if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.isBusy = false;
 
-            if (type === "credential") {
-              this.data = result.data.filter((item) => {
-                return item.issuer;
-              });
-            } else {
-              this.data = result.data;
-            }
+            this.data =
+              type === "credential"
+                ? result.data.filter((item) => {
+                    return item.issuer;
+                  })
+                : result.data;
           }
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isBusy = false;
-          if (e.response.status === 404) {
+          if (error.response.status === 404) {
             this.data = [];
           } else {
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           }
         });
     },
-    open(doc) {
-      console.log("Open Document: ", doc);
+    open(document_) {
+      console.log("Open Document:", document_);
       if (this.type === "document") {
         this.$router.push({
           name: "Document",
           params: {
-            id: doc.id,
+            id: document_.id,
             disableVerificationRequest: this.disableVerificationRequest,
             // type: doc.type,
           },
@@ -201,8 +200,8 @@ export default {
         this.$router.push({
           name: "Credential",
           params: {
-            id: doc.id,
-            type: doc.type,
+            id: document_.id,
+            type: document_.type,
           },
         });
       }

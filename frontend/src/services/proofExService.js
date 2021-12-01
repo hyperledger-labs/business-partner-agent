@@ -14,7 +14,7 @@ export default {
   // Presentation/Proof Exchange API
   //
 
-  declineProofRequest(id, reasonMessage = undefined) {
+  declineProofRequest(id, reasonMessage) {
     const message =
       reasonMessage === undefined || "" ? undefined : reasonMessage;
 

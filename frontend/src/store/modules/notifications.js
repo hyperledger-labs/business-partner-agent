@@ -10,29 +10,29 @@ const addItem = (collection, id, payload) => {
 };
 
 const removeItem = (collection, id) => {
-  if ({}.hasOwnProperty.call(collection, id)) {
-    const tmp = { ...collection };
-    delete tmp[id];
-    return tmp;
+  if (Object.prototype.hasOwnProperty.call(collection, id)) {
+    const temporary = { ...collection };
+    delete temporary[id];
+    return temporary;
   }
   return collection;
 };
 
 const removeItemByMessageInfoLinkId = (collection, linkId) => {
-  const tmp = { ...collection };
-  const keys = Object.keys(tmp);
-  let k = undefined;
-  keys.forEach((key, index) => {
+  const temporary = { ...collection };
+  const keys = Object.keys(temporary);
+  let k;
+  for (const [index, key] of keys.entries()) {
     const o = collection[key];
     console.log(`${index} ${key} ${linkId}`);
     console.log(o);
     if (o?.message?.info?.linkId === linkId) {
       k = key;
     }
-  });
+  }
   if (k) {
-    delete tmp[k];
-    return tmp;
+    delete temporary[k];
+    return temporary;
   }
   return collection;
 };

@@ -99,22 +99,22 @@ export default {
       this.isEdit = false;
       this.editingItem = false;
     },
-    trustedIssuers(val) {
-      this.items = Array.from(val);
+    trustedIssuers(value) {
+      this.items = [...value];
       this.isEdit = false;
       this.editingTrustedIssuer = null;
     },
-    reset(newVal, oldVal) {
+    reset(newValue, oldValue) {
       // use this to reset the form, remove any outstanding items that are not saved.
-      if (newVal !== oldVal) {
-        this.items = Array.from(this.trustedIssuers);
+      if (newValue !== oldValue) {
+        this.items = [...this.trustedIssuers];
         this.isEdit = false;
         this.editingTrustedIssuer = null;
       }
     },
   },
   mounted() {
-    this.items = Array.from(this.trustedIssuers);
+    this.items = [...this.trustedIssuers];
   },
   data: () => {
     return {
@@ -128,7 +128,7 @@ export default {
   computed: {},
   methods: {
     isNew(entry) {
-      return !{}.hasOwnProperty.call(entry, "id");
+      return !Object.prototype.hasOwnProperty.call(entry, "id");
     },
     onDidChanged() {
       this.isDirty = true;
@@ -171,8 +171,8 @@ export default {
             this.items.splice(index, 1);
             this.$emit("changed");
           })
-          .catch((e) => {
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+          .catch((error) => {
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           });
       } else {
         this.items.splice(index, 1);
@@ -219,9 +219,9 @@ export default {
             this.$emit("changed");
           }
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isBusy = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     updateTrustedIssuer(trustedIssuer) {
@@ -248,10 +248,10 @@ export default {
             this.$emit("changed");
           }
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isBusy = false;
           trustedIssuer.isEdit = true;
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
   },

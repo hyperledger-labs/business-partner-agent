@@ -69,7 +69,7 @@ export default {
   acceptCredentialOffer(id) {
     return appAxios().put(`${ApiRoutes.WALLET}/credential/${id}/accept-offer`);
   },
-  async declineCredentialOffer(id, reasonMessage = undefined) {
+  async declineCredentialOffer(id, reasonMessage) {
     const message =
       reasonMessage === undefined || "" ? undefined : reasonMessage;
 
@@ -80,7 +80,7 @@ export default {
       }
     );
   },
-  async declineCredentialProposal(id, reasonMessage = undefined) {
+  async declineCredentialProposal(id, reasonMessage) {
     const message =
       reasonMessage === undefined || "" ? undefined : reasonMessage;
 

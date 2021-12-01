@@ -123,7 +123,7 @@ export default {
     },
     credentials: function () {
       let creds = [];
-      if ({}.hasOwnProperty.call(this.partner, "credential")) {
+      if (Object.prototype.hasOwnProperty.call(this.partner, "credential")) {
         creds = this.partner.credential.filter((cred) => {
           if (cred.type !== CredentialTypes.PROFILE.type) {
             return this.prepareCredential(cred);
@@ -136,7 +136,7 @@ export default {
   methods: {
     prepareCredential(credential) {
       if (
-        {}.hasOwnProperty.call(credential, "credentialData") &&
+        Object.prototype.hasOwnProperty.call(credential, "credentialData") &&
         typeof credential.credentialData === "object" &&
         credential.credentialData !== null
       ) {

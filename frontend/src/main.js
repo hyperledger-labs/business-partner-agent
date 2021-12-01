@@ -51,23 +51,21 @@ Vue.use(VueNativeSock, socketApi, {
       return;
     }
     console.log(event);
-    let msg = event;
+    let message = event;
     let method = "commit";
     let target = eventName.toUpperCase();
-    if (target === "SOCKET_ONMESSAGE") {
-      if (this.format === "json" && event.data) {
-        msg = JSON.parse(event.data);
-        // method = 'dispatch';
-        switch (msg.message.type) {
-          case "ON_MESSAGE_RECEIVED":
-            target = "onMessageReceived";
-            break;
-          default:
-            target = "onNotification";
-        }
+    if (target === "SOCKET_ONMESSAGE" && this.format === "json" && event.data) {
+      message = JSON.parse(event.data);
+      // method = 'dispatch';
+      switch (message.message.type) {
+        case "ON_MESSAGE_RECEIVED":
+          target = "onMessageReceived";
+          break;
+        default:
+          target = "onNotification";
       }
     }
-    this.store[method](target, msg);
+    this.store[method](target, message);
   },
 });
 
@@ -84,10 +82,12 @@ Vue.prototype.$config = {
 // We need to load the configuration before the Vue application, so we can use the UX configuration
 (async () => {
   console.log("Loading configuration...");
-  const result = await axios.get(`${apiBaseUrl}/admin/config`).catch((e) => {
-    console.error(e);
-  });
-  if ({}.hasOwnProperty.call(result, "data")) {
+  const result = await axios
+    .get(`${apiBaseUrl}/admin/config`)
+    .catch((error) => {
+      console.error(error);
+    });
+  if (Object.prototype.hasOwnProperty.call(result, "data")) {
     Vue.prototype.$config = result.data;
     let ledgerPrefix = Vue.prototype.$config.ledgerPrefix;
     let splitted = ledgerPrefix.split(":");
@@ -105,14 +105,14 @@ Vue.prototype.$config = {
     `i18n.locale = ${i18n.locale}, i18n.fallbackLocale = ${i18n.fallbackLocale}`
   );
 
-  Vue.prototype.$axiosErrorMessage = function (err) {
-    console.error(err);
-    if (!err) return "";
+  Vue.prototype.$axiosErrorMessage = function (error) {
+    console.error(error);
+    if (!error) return "";
     // exceptions thrown from micronaut (ex. WrongApiUsageExceptionHandler)
     // will have the detail message in err.response.data._embedded.errors[N].message
     // check there first
-    if (Array.isArray(err.response?.data?._embedded?.errors)) {
-      return err.response?.data?._embedded?.errors
+    if (Array.isArray(error.response?.data?._embedded?.errors)) {
+      return error.response?.data?._embedded?.errors
         .map((x) => x.message)
         .join(" ");
     }
@@ -122,11 +122,11 @@ Vue.prototype.$config = {
     // controller returning something like HttpResponse.notFound() sets err.message = "Request failed with status code 404"
     // but in err.response.statusText is a bit more understandable... "Not Found"
     // do we want to use the status text before the default message?
-    if (err.response) {
-      return i18n.t("error.axios", { statusText: err.response.statusText });
+    if (error.response) {
+      return i18n.t("error.axios", { statusText: error.response.statusText });
     }
-    if (err.message) return err.message;
-    return err.toString();
+    if (error.message) return error.message;
+    return error.toString();
   };
 
   store.dispatch("loadSettings");
@@ -149,4 +149,6 @@ Vue.prototype.$config = {
 })();
 
 const EventBus = new Vue();
-export { EventBus, axios, apiBaseUrl };
+export { EventBus, apiBaseUrl };
+
+export { default as axios } from "axios";

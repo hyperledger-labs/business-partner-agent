@@ -129,9 +129,9 @@ export default {
     TrustedIssuers,
   },
   watch: {
-    dialog(val) {
+    dialog(value) {
       // if dialog is opening, reset to first tab
-      if (val) {
+      if (value) {
         this.tab = "schema-attributes";
       }
     },
@@ -147,8 +147,8 @@ export default {
       get() {
         return this.value;
       },
-      set(val) {
-        this.$emit("input", val);
+      set(value) {
+        this.$emit("input", value);
       },
     },
     items() {
@@ -173,12 +173,12 @@ export default {
   },
   methods: {
     copySchemaId() {
-      let idEl = document.querySelector("#schemaId");
-      idEl.select();
+      let idElement = document.querySelector("#schemaId");
+      idElement.select();
       let successful;
       try {
         successful = document.execCommand("copy");
-      } catch (err) {
+      } catch {
         successful = false;
       }
       successful
@@ -190,7 +190,7 @@ export default {
             "error",
             this.$t("component.manageSchema.eventErrorCopy")
           );
-      idEl.blur();
+      idElement.blur();
       window.getSelection().removeAllRanges();
     },
     deleteSchema() {
@@ -207,8 +207,8 @@ export default {
             this.$emit("deleted");
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     onChanged() {

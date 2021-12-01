@@ -10,18 +10,18 @@ export const schemaAttributeLabel = (key) => {
   if (!key) return "";
   if (key.trim().length > 1) {
     return (
-      key.substring(0, 1).toUpperCase() +
-      key.substring(1).replace(/([a-z])([A-Z])/g, "$1 $2")
+      key.slice(0, 1).toUpperCase() +
+      key.slice(1).replace(/([a-z])([A-Z])/g, "$1 $2")
     );
   }
   return key;
 };
 
 export const isValidSchemaName = (value) =>
-  value && /^[a-zA-Z\d-_]+$/.test(value);
+  value && /^[A-Za-z\d-_]+$/.test(value);
 
 export const isValidSchemaAttributeName = (value) =>
-  value && /^[a-z_]+$/.test(value);
+  value && /^[_a-z]+$/.test(value);
 
 export const isValidSchemaVersion = (value) =>
   value && /^(\d+)\.(\d+)(?:\.\d+)?$/.test(value);

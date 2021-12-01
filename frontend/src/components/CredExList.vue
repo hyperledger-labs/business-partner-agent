@@ -410,9 +410,9 @@ export default {
     };
   },
   watch: {
-    items(val) {
+    items(value) {
       console.log("Credential Exchange Item refresh");
-      console.log(val);
+      console.log(value);
     },
   },
   methods: {
@@ -523,8 +523,8 @@ export default {
           EventBus.$emit("success", this.$axiosErrorMessage(res));
           this.closeDialog();
         })
-        .catch((err) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(err));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         })
         .finally(() => {
           this.isLoadingSendCounterOffer = false;

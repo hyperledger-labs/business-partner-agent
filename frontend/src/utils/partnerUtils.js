@@ -9,14 +9,18 @@
 import { CredentialTypes, PartnerStates } from "@/constants";
 
 export const getPartnerProfile = (partner) => {
-  if (partner && {}.hasOwnProperty.call(partner, "credential")) {
+  if (partner && Object.prototype.hasOwnProperty.call(partner, "credential")) {
     let partnerProfile = partner.credential.find((cred) => {
       return cred.type === CredentialTypes.PROFILE.type;
     });
     if (partnerProfile) {
-      if ({}.hasOwnProperty.call(partnerProfile, "credentialData")) {
+      if (
+        Object.prototype.hasOwnProperty.call(partnerProfile, "credentialData")
+      ) {
         return partnerProfile.credentialData;
-      } else if ({}.hasOwnProperty.call(partnerProfile, "documentData")) {
+      } else if (
+        Object.prototype.hasOwnProperty.call(partnerProfile, "documentData")
+      ) {
         return partnerProfile.documentData;
       }
     }
@@ -25,14 +29,18 @@ export const getPartnerProfile = (partner) => {
 };
 
 export const getPartnerProfileRoute = (partner) => {
-  if (partner && {}.hasOwnProperty.call(partner, "credential")) {
+  if (partner && Object.prototype.hasOwnProperty.call(partner, "credential")) {
     let partnerProfile = partner.credential.find((cred) => {
       return cred.type === CredentialTypes.PROFILE.type;
     });
     if (partnerProfile) {
-      if ({}.hasOwnProperty.call(partnerProfile, "credentialData")) {
+      if (
+        Object.prototype.hasOwnProperty.call(partnerProfile, "credentialData")
+      ) {
         return { name: "Credential", params: { id: partnerProfile.id } };
-      } else if ({}.hasOwnProperty.call(partnerProfile, "documentData")) {
+      } else if (
+        Object.prototype.hasOwnProperty.call(partnerProfile, "documentData")
+      ) {
         return { name: "Document", params: { id: partnerProfile.id } };
       }
     }
@@ -41,13 +49,11 @@ export const getPartnerProfileRoute = (partner) => {
 };
 
 export const getPartnerState = (partner) => {
-  if ({}.hasOwnProperty.call(partner, "state")) {
+  if (Object.prototype.hasOwnProperty.call(partner, "state")) {
     if (partner.state === PartnerStates.REQUEST.value) {
-      if (partner.incoming) {
-        return PartnerStates.CONNECTION_REQUEST_RECEIVED;
-      } else {
-        return PartnerStates.CONNECTION_REQUEST_SENT;
-      }
+      return partner.incoming
+        ? PartnerStates.CONNECTION_REQUEST_RECEIVED
+        : PartnerStates.CONNECTION_REQUEST_SENT;
     } else if (
       partner.state === PartnerStates.ACTIVE.value ||
       partner.state === PartnerStates.RESPONSE.value ||
@@ -69,22 +75,23 @@ export const getPartnerState = (partner) => {
 };
 
 export const getPartnerStateColor = (state) => {
-  if (state === PartnerStates.REQUEST.value) {
-    return "yellow";
-  } else if (
-    state === PartnerStates.ABANDONED.value ||
-    state === PartnerStates.PING_NO_RESPONSE.value
-  ) {
-    return "red";
-  } else if (
-    state === PartnerStates.ACTIVE_OR_RESPONSE ||
-    state === PartnerStates.ACTIVE.value ||
-    state === PartnerStates.RESPONSE.value ||
-    state === PartnerStates.COMPLETED.value ||
-    state === PartnerStates.PING_RESPONSE.value
-  ) {
-    return "green";
-  } else {
-    return "grey";
+  switch (state) {
+    case PartnerStates.REQUEST.value: {
+      return "yellow";
+    }
+    case PartnerStates.ABANDONED.value:
+    case PartnerStates.PING_NO_RESPONSE.value: {
+      return "red";
+    }
+    case PartnerStates.ACTIVE_OR_RESPONSE:
+    case PartnerStates.ACTIVE.value:
+    case PartnerStates.RESPONSE.value:
+    case PartnerStates.COMPLETED.value:
+    case PartnerStates.PING_RESPONSE.value: {
+      return "green";
+    }
+    default: {
+      return "grey";
+    }
   }
 };

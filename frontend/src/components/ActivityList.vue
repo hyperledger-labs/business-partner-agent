@@ -119,10 +119,10 @@ export default {
     };
   },
   watch: {
-    filter(val) {
+    filter(value) {
       this.filterValue = null;
       this.filterValueList = [];
-      if (val && val.value === "type") {
+      if (value && value.value === "type") {
         this.filterValueList = [];
         for (let k in ActivityTypes) {
           this.filterValueList.push({
@@ -180,24 +180,24 @@ export default {
   },
   methods: {
     fetchItems() {
-      let filter = undefined;
+      let filter;
       if (this.filter && this.filterValue) {
         filter = { name: this.filter.value, value: this.filterValue.value };
       }
       activitiesService
         .listActivities(this.tasks, this.activities, filter)
         .then((result) => {
-          if ({}.hasOwnProperty.call(result, "data")) {
+          if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.isBusy = false;
             this.items = result.data;
           }
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isBusy = false;
-          if (e.response.status === 404) {
+          if (error.response.status === 404) {
             this.items = [];
           } else {
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           }
         });
     },
@@ -208,49 +208,60 @@ export default {
 
       console.log(item);
 
-      if (item.type === ActivityTypes.CONNECTION_REQUEST.value) {
-        this.$router.push({
-          name: "Partner",
-          params: {
-            id: item.linkId,
-          },
-        });
-      } else if (item.type === ActivityTypes.CREDENTIAL_EXCHANGE.value) {
-        if (
-          item.role === ActivityRoles.CREDENTIAL_EXCHANGE_ISSUER.value ||
-          item.state === ActivityStates.CREDENTIAL_EXCHANGE_RECEIVED.value
-        ) {
-          // this isn't a credential... either we issued it, or it is just at an offer state
+      switch (item.type) {
+        case ActivityTypes.CONNECTION_REQUEST.value: {
+          this.$router.push({
+            name: "Partner",
+            params: {
+              id: item.linkId,
+            },
+          });
+
+          break;
+        }
+        case ActivityTypes.CREDENTIAL_EXCHANGE.value: {
+          if (
+            item.role === ActivityRoles.CREDENTIAL_EXCHANGE_ISSUER.value ||
+            item.state === ActivityStates.CREDENTIAL_EXCHANGE_RECEIVED.value
+          ) {
+            // this isn't a credential... either we issued it, or it is just at an offer state
+            let route = {
+              name: "Partner",
+              params: {
+                id: item.partner.id,
+                credExId: item.linkId,
+              },
+            };
+
+            this.$router.push(route);
+          } else {
+            let route = {
+              name: "Credential",
+              params: {
+                id: item.linkId,
+                type: "credential",
+              },
+            };
+
+            this.$router.push(route);
+          }
+
+          break;
+        }
+        case ActivityTypes.PRESENTATION_EXCHANGE.value: {
           let route = {
             name: "Partner",
             params: {
               id: item.partner.id,
-              credExId: item.linkId,
+              presExId: item.linkId,
             },
           };
 
           this.$router.push(route);
-        } else {
-          let route = {
-            name: "Credential",
-            params: {
-              id: item.linkId,
-              type: "credential",
-            },
-          };
 
-          this.$router.push(route);
+          break;
         }
-      } else if (item.type === ActivityTypes.PRESENTATION_EXCHANGE.value) {
-        let route = {
-          name: "Partner",
-          params: {
-            id: item.partner.id,
-            presExId: item.linkId,
-          },
-        };
-
-        this.$router.push(route);
+        // No default
       }
     },
     activityTypeLabel(type) {

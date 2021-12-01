@@ -321,17 +321,17 @@ export default {
 
       this.closeOtherPanelsOnOpen();
     },
-    deleteAttributeGroup(attributeGroupIdx) {
+    deleteAttributeGroup(attributeGroupIndex) {
       const schema = this.$store.getters.getSchemas.find(
         (s) =>
           s.id ===
-          this.proofTemplate.attributeGroups[attributeGroupIdx].schemaId
+          this.proofTemplate.attributeGroups[attributeGroupIndex].schemaId
       );
 
       this.snackbar.text = `${this.$t(
         "view.proofTemplate.create.snackbarContent"
       )} ${schema.label} (${schema.schemaId})`;
-      this.proofTemplate.attributeGroups.splice(attributeGroupIdx, 1);
+      this.proofTemplate.attributeGroups.splice(attributeGroupIndex, 1);
       this.snackbar.deleteShow = true;
     },
     prepareProofTemplateData() {
@@ -357,26 +357,27 @@ export default {
         }
 
         // sanitize restrictions (remove empty restrictions)
-        ag.schemaLevelRestrictions.forEach(
-          (schemaLevelRestrictionObject, index) => {
-            ag.schemaLevelRestrictions[index] = Object.fromEntries(
-              Object.entries(schemaLevelRestrictionObject).filter(
-                ([, v]) => v !== ""
-              )
-            );
+        for (const [
+          index,
+          schemaLevelRestrictionObject,
+        ] of ag.schemaLevelRestrictions.entries()) {
+          ag.schemaLevelRestrictions[index] = Object.fromEntries(
+            Object.entries(schemaLevelRestrictionObject).filter(
+              ([, v]) => v !== ""
+            )
+          );
 
-            ag.ui.selectedRestrictionsByTrustedIssuer.map(
-              (selectedRestrictions) => {
-                if (
-                  selectedRestrictions.issuerDid ===
-                  schemaLevelRestrictionObject.issuerDid
-                ) {
-                  restrictionsInGroup.push(schemaLevelRestrictionObject);
-                }
+          ag.ui.selectedRestrictionsByTrustedIssuer.map(
+            (selectedRestrictions) => {
+              if (
+                selectedRestrictions.issuerDid ===
+                schemaLevelRestrictionObject.issuerDid
+              ) {
+                restrictionsInGroup.push(schemaLevelRestrictionObject);
               }
-            );
-          }
-        );
+            }
+          );
+        }
 
         // add empty restrictions object to satisfy backend
         if (ag.schemaLevelRestrictions.length === 0) {
@@ -422,8 +423,8 @@ export default {
 
           this.createButtonIsBusy = false;
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
           this.createButtonIsBusy = false;
         });
     },

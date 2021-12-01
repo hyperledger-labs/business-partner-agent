@@ -21,8 +21,7 @@ export const getOrganizationalProfile = (state) => {
   const documents = state.documents.filter(
     (d) => d.type === CredentialTypes.PROFILE.type
   );
-  if (documents.length === 1) return documents[0];
-  else return undefined;
+  return documents.length === 1 ? documents[0] : undefined;
 };
 
 export const getPartners = (state) => {
@@ -71,7 +70,7 @@ export const getSchemaByType = (state) => (schemaType) => {
   });
 };
 
-export const getSchemaLabel = (state) => (typeName, schemaId = undefined) => {
+export const getSchemaLabel = (state) => (typeName, schemaId) => {
   let schemaType = { label: "" };
   if (schemaId) {
     schemaType = state.schemas.find((schema) => {
@@ -83,7 +82,7 @@ export const getSchemaLabel = (state) => (typeName, schemaId = undefined) => {
     });
   }
 
-  if (schemaType && {}.hasOwnProperty.call(schemaType, "label")) {
+  if (schemaType && Object.prototype.hasOwnProperty.call(schemaType, "label")) {
     return schemaType.label;
   }
 
@@ -95,7 +94,10 @@ export const getSchemaLabel = (state) => (typeName, schemaId = undefined) => {
 };
 
 export const getSettingByKey = (state) => (key) => {
-  if (state.settings && {}.hasOwnProperty.call(state.settings, key)) {
+  if (
+    state.settings &&
+    Object.prototype.hasOwnProperty.call(state.settings, key)
+  ) {
     return state.settings[key];
   }
 };

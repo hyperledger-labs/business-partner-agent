@@ -54,31 +54,31 @@ export default {
       let result;
       switch (this.type) {
         case "activity":
-          result = {}.hasOwnProperty.call(
+          result = Object.prototype.hasOwnProperty.call(
             this.$store.getters.activityNotifications,
             this.id
           );
           break;
         case "credential":
-          result = {}.hasOwnProperty.call(
+          result = Object.prototype.hasOwnProperty.call(
             this.$store.getters.credentialNotifications,
             this.id
           );
           break;
         case "partner":
-          result = {}.hasOwnProperty.call(
+          result = Object.prototype.hasOwnProperty.call(
             this.$store.getters.partnerNotifications,
             this.id
           );
           break;
         case "presentation":
-          result = {}.hasOwnProperty.call(
+          result = Object.prototype.hasOwnProperty.call(
             this.$store.getters.presentationNotifications,
             this.id
           );
           break;
         case "task":
-          result = {}.hasOwnProperty.call(
+          result = Object.prototype.hasOwnProperty.call(
             this.$store.getters.taskNotifications,
             this.id
           );

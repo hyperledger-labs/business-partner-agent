@@ -157,7 +157,7 @@ export default {
     // Open Item directly. Is used for links from notifications/activity
     if (this.openItemById) {
       // FIXME: items observable is typically not resolved yet. Then items is empty
-      const item = this.items.find((i) => i.id === this.openItemById);
+      const item = this.items.find((index) => index.id === this.openItemById);
       if (item) {
         this.openItem(item);
       } else {
@@ -186,8 +186,8 @@ export default {
       get() {
         return this.value;
       },
-      set(val) {
-        this.$emit("input", val);
+      set(value) {
+        this.$emit("input", value);
       },
     },
     headers() {
@@ -257,8 +257,8 @@ export default {
         );
         this.closeDialog();
         this.$emit("changed");
-      } catch (e) {
-        EventBus.$emit("error", this.$axiosErrorMessage(e));
+      } catch (error) {
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
       }
     },
     async decline() {
@@ -273,8 +273,8 @@ export default {
         );
         this.closeDialog();
         this.$emit("changed");
-      } catch (e) {
-        EventBus.$emit("error", this.$axiosErrorMessage(e));
+      } catch (error) {
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
       }
     },
     openItem(item) {
@@ -314,18 +314,18 @@ export default {
       try {
         const resp = await proofExService.deleteProofExRecord(this.record.id);
         if (resp.status === 200) {
-          const idx = this.items.findIndex(
+          const index = this.items.findIndex(
             (item) => item.id === this.record.id
           );
-          this.items.splice(idx, 1);
+          this.items.splice(index, 1);
           EventBus.$emit(
             "success",
             this.$t("component.presentationExList.eventSuccessDelete")
           );
           this.closeDialog();
         }
-      } catch (e) {
-        EventBus.$emit("error", this.$axiosErrorMessage(e));
+      } catch (error) {
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
       }
     },
     addProofData() {
@@ -366,13 +366,13 @@ export default {
     },
     // Checks if proof request can be fullfilled
     canBeFullfilled() {
-      const canAttrsFullfilled = Object.values(
+      const canAttributesFullfilled = Object.values(
         this.record.proofRequest.requestedAttributes
       )
-        .map((attrGroup) => {
+        .map((attributeGroup) => {
           return (
-            Object.hasOwnProperty.call(attrGroup, "matchingCredentials") &&
-            attrGroup.matchingCredentials.length > 0
+            Object.hasOwnProperty.call(attributeGroup, "matchingCredentials") &&
+            attributeGroup.matchingCredentials.length > 0
           );
         })
         .reduce((x, y) => {
@@ -382,35 +382,40 @@ export default {
       const canPredicatesFullfilled = Object.values(
         this.record.proofRequest.requestedPredicates
       )
-        .map((attrGroup) => {
-          return attrGroup.matchingCredentials;
+        .map((attributeGroup) => {
+          return attributeGroup.matchingCredentials;
         })
         .reduce((x, y) => {
           return x && y;
         }, true);
 
-      return canAttrsFullfilled && canPredicatesFullfilled;
+      return canAttributesFullfilled && canPredicatesFullfilled;
     },
     getMatchingCredentials() {
       this.isWaitingForMatchingCreds = true;
       proofExService.getMatchingCredentials(this.record.id).then((result) => {
         const matchingCreds = result.data;
         // Match to request
-        matchingCreds.forEach((cred) => {
-          cred.presentationReferents.forEach((c) => {
-            const attr = this.record.proofRequest.requestedAttributes[c];
+        for (const cred of matchingCreds) {
+          for (const c of cred.presentationReferents) {
+            const attribute = this.record.proofRequest.requestedAttributes[c];
             const pred = this.record.proofRequest.requestedPredicates[c];
-            if (attr) {
-              if (!Object.hasOwnProperty.call(attr, "matchingCredentials")) {
-                attr.matchingCredentials = [];
+            if (attribute) {
+              if (
+                !Object.hasOwnProperty.call(attribute, "matchingCredentials")
+              ) {
+                attribute.matchingCredentials = [];
               }
-              const hasMatchingCred = attr.matchingCredentials.some((item) => {
-                return (
-                  item.credentialInfo.referent === cred.credentialInfo.referent
-                );
-              });
+              const hasMatchingCred = attribute.matchingCredentials.some(
+                (item) => {
+                  return (
+                    item.credentialInfo.referent ===
+                    cred.credentialInfo.referent
+                  );
+                }
+              );
               if (!hasMatchingCred) {
-                attr.matchingCredentials.push(cred);
+                attribute.matchingCredentials.push(cred);
               }
             } else if (pred) {
               if (!Object.hasOwnProperty.call(pred, "matchingCredentials")) {
@@ -426,8 +431,8 @@ export default {
                 pred.matchingCredentials.push(cred);
               }
             }
-          });
-        });
+          }
+        }
 
         this.record.canBeFullfilled = this.canBeFullfilled();
         this.isWaitingForMatchingCreds = false;

@@ -130,9 +130,9 @@ export default {
           this.status = result.data;
           this.isLoading = false;
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isLoading = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
   },

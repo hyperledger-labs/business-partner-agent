@@ -73,21 +73,21 @@ export default {
           this.isBusy = false;
           this.$router.go(-1);
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
           this.isBusy = false;
         });
     },
   },
   computed: {
     newDocumentTypes() {
-      let docTypes = this.$store.getters.getSchemas;
+      let documentTypes = this.$store.getters.getSchemas;
       if (this.$store.getters.getOrganizationalProfile) {
-        docTypes = docTypes.filter(
+        documentTypes = documentTypes.filter(
           (schema) => schema.type !== CredentialTypes.PROFILE.type
         );
       }
-      return docTypes;
+      return documentTypes;
     },
   },
   mounted() {

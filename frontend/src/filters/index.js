@@ -35,7 +35,7 @@ export function formatDateLong(value) {
 export function credentialTag(credDefId) {
   if (!credDefId) return "";
   let pos = credDefId.lastIndexOf(":");
-  return credDefId.substring(pos + 1);
+  return credDefId.slice(Math.max(0, pos + 1));
 }
 
 export function capitalize(string) {

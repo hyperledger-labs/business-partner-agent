@@ -9,10 +9,16 @@ module.exports = {
   root: true,
   env: {
     node: true,
+    browser: true,
   },
-  extends: ["plugin:vue/essential", "eslint:recommended"],
+  plugins: ["unicorn"],
+  extends: [
+    "plugin:vue/essential",
+    "eslint:recommended",
+    "plugin:unicorn/recommended",
+  ],
   parserOptions: {
-    parser: "babel-eslint",
+    parser: "@babel/eslint-parser",
   },
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
@@ -20,5 +26,9 @@ module.exports = {
     "vue/multi-word-component-names": "off",
     "vue/no-mutating-props": "warn",
     "vue/valid-v-slot": "warn",
+    "unicorn/prefer-module": "off",
+    "unicorn/filename-case": "off",
+    "unicorn/prevent-abbreviations": "off",
+    "unicorn/no-null": "off",
   },
 };

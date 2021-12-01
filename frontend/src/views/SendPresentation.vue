@@ -122,9 +122,9 @@ export default {
               params: { id: this.id },
             });
           })
-          .catch((e) => {
+          .catch((error) => {
             this.isBusy = false;
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           });
       } else {
         this.isBusy = false;

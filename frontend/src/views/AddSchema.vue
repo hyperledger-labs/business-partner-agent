@@ -108,9 +108,9 @@ export default {
       let trustedIssuers = this.$refs.trustedIssuers.$props.trustedIssuers;
       console.log(trustedIssuers);
       if (trustedIssuers.length > 0) {
-        trustedIssuers.forEach((entry) => {
+        for (const entry of trustedIssuers) {
           delete entry.isEdit;
-        });
+        }
         this.schema.trustedIssuer = trustedIssuers;
       }
       console.log(this.schema);
@@ -129,15 +129,15 @@ export default {
             this.$router.push({ name: "SchemaSettings" });
           }
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isBusyAddSchema = false;
-          if (e.response.status === 400) {
+          if (error.response.status === 400) {
             EventBus.$emit(
               "error",
               this.$t("view.addSchema.eventErrorSchemaExists")
             );
           } else {
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           }
         });
     },
