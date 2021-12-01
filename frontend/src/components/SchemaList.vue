@@ -16,7 +16,6 @@
       single-select
       @click:row="openItem"
     >
-      <template v-slot:no-data>{{ $t("app.emptyTable") }}</template>
       <template v-slot:[`item.trustedIssuer`]="{ item }">
         <v-icon
           v-if="Array.isArray(item.trustedIssuer) && item.trustedIssuer.length"

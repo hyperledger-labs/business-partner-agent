@@ -20,7 +20,6 @@
       single-select
       @click:row="open"
     >
-      <template v-slot:no-data>{{ $t("app.emptyTable") }}</template>
       <template v-slot:[`item.name`]="{ item }">
         <new-message-icon :type="'partner'" :id="item.id"></new-message-icon>
         <PartnerStateIndicator
@@ -114,24 +113,24 @@ export default {
     headers() {
       return [
         {
-          text: this.$t("component.partnerList.headers.name"),
+          text: "Name",
           value: "name",
         },
         this.showAllHeaders
           ? {
-              text: this.$t("component.partnerList.headers.address"),
+              text: "Address",
               value: "address",
             }
           : {},
         this.showAllHeaders
           ? {
-              text: this.$t("component.partnerList.headers.updatedAt"),
+              text: "Updated at",
               value: "updatedAt",
             }
           : {},
         this.showAllHeaders
           ? {
-              text: this.$t("component.partnerList.headers.state"),
+              text: "State",
               value: "state",
             }
           : {},
