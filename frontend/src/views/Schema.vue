@@ -14,9 +14,6 @@
         </v-btn>
         <span>{{ data.label }}</span>
         <v-layout align-end justify-end>
-          <!-- <v-btn depressed icon @click="isUpdatingName = !isUpdatingName">
-                    <v-icon dark>$vuetify.icons.pencil</v-icon>
-                </v-btn> -->
           <v-btn
             depressed
             color="red"

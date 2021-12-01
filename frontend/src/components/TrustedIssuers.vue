@@ -102,14 +102,14 @@ export default {
     trustedIssuers(value) {
       this.items = [...value];
       this.isEdit = false;
-      this.editingTrustedIssuer = null;
+      this.editingTrustedIssuer = undefined;
     },
     reset(newValue, oldValue) {
       // use this to reset the form, remove any outstanding items that are not saved.
       if (newValue !== oldValue) {
         this.items = [...this.trustedIssuers];
         this.isEdit = false;
-        this.editingTrustedIssuer = null;
+        this.editingTrustedIssuer = undefined;
       }
     },
   },
@@ -121,7 +121,7 @@ export default {
       items: [],
       isEdit: false,
       isDirty: false,
-      editingTrustedIssuer: null,
+      editingTrustedIssuer: undefined,
       isBusy: false,
     };
   },
@@ -157,7 +157,7 @@ export default {
         this.items[index] = this.editingTrustedIssuer;
         this.items[index].isEdit = false;
       }
-      this.editingTrustedIssuer = null;
+      this.editingTrustedIssuer = undefined;
     },
     deleteTrustedIssuer(index) {
       let trustedIssuer = this.items[index];
@@ -190,7 +190,7 @@ export default {
 
         this.$emit("changed");
       } else {
-        this.editingTrustedIssuer = null;
+        this.editingTrustedIssuer = undefined;
         this.isEdit = false;
         trustedIssuer.isEdit = false;
       }
@@ -211,7 +211,7 @@ export default {
           if (result.status === 200) {
             this.isEdit = false;
             trustedIssuer.isEdit = false;
-            this.editingTrustedIssuer = null;
+            this.editingTrustedIssuer = undefined;
             EventBus.$emit(
               "success",
               this.$t("component.trustedIssuers.eventSuccessCreate")
@@ -238,7 +238,7 @@ export default {
           console.log(result);
           this.isBusy = false;
           trustedIssuer.isEdit = false;
-          this.editingTrustedIssuer = null;
+          this.editingTrustedIssuer = undefined;
 
           if (result.status === 200) {
             EventBus.$emit(

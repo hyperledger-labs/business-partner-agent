@@ -131,7 +131,7 @@ export default {
         });
     },
     saveChanges() {
-      var requests = [];
+      const requests = [];
       if (this.credential.isPublic !== this.isPublic) {
         requests.push(
           this.$axios.put(
@@ -152,7 +152,7 @@ export default {
         .all(requests)
         .then(
           this.$axios.spread((...responses) => {
-            var allResponsesTrue = responses.every((response) => {
+            const allResponsesTrue = responses.every((response) => {
               console.log(response);
               return response.status === 200;
             });
@@ -168,9 +168,9 @@ export default {
           })
         )
         .catch((error) => {
-          error.forEach((error) => {
-            console.error(error);
-          });
+          for (const errorElement of error) {
+            console.error(errorElement);
+          }
           // react on errors.
           EventBus.$emit("errors", error);
         });

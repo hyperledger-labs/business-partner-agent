@@ -110,8 +110,8 @@ export default {
               ? ExchangeVersion.V2
               : ExchangeVersion.V1,
           })
-          .then((res) => {
-            console.log(res);
+          .then((response) => {
+            console.log(response);
             this.isBusy = false;
             EventBus.$emit(
               "success",

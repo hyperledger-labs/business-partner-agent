@@ -109,7 +109,7 @@ export default {
     return {
       items: [],
       isEdit: false,
-      editingItem: null,
+      editingItem: undefined,
       isBusy: false,
     };
   },

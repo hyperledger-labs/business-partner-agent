@@ -108,14 +108,14 @@
           <v-bpa-button
             :loading="this.isBusy"
             color="primary"
-            @click="saveDocument(false || isProfile(intDoc.type))"
+            @click="saveDocument(isProfile(intDoc.type))"
             >{{ getCreateButtonLabel }}</v-bpa-button
           >
           <v-bpa-button
             v-show="this.id && !isProfile(intDoc.type)"
             :loading="this.isBusy"
             color="primary"
-            @click="saveDocument(true && !isProfile(intDoc.type))"
+            @click="saveDocument(!isProfile(intDoc.type))"
             >{{ $t("button.saveAndClose") }}</v-bpa-button
           >
         </v-layout>
@@ -208,9 +208,9 @@ export default {
         return this.$store.getters.getSchemaById(this.schemaId).label;
       } else if (this.type) {
         return this.$store.getters.getSchemaByType(this.type).label;
-      } else {
-        return null;
       }
+
+      return "";
     },
     getCreateButtonLabel() {
       return this.createButtonLabel
@@ -253,8 +253,8 @@ export default {
             type: this.document.type,
             schemaId: this.document.schemaId,
           })
-          .then((res) => {
-            console.log(res);
+          .then((response) => {
+            console.log(response);
             this.isBusy = false;
             if (closeDocument) {
               this.$router.go(-1);
@@ -282,10 +282,10 @@ export default {
         };
         this.$axios
           .post(`${this.$apiBaseUrl}/wallet/document`, documentForSave)
-          .then((res) => {
-            console.log(res);
+          .then((response) => {
+            console.log(response);
             this.$emit("received-document-id", {
-              documentId: res.data.id,
+              documentId: response.data.id,
               useV2Exchange: this.useV2Exchange,
             });
             this.isBusy = false;
@@ -324,7 +324,7 @@ export default {
       return !this.schemaId && schemaType === CredentialTypes.PROFILE.type;
     },
     fieldModified() {
-      this.docChanged = !!Object.keys(this.intDoc).find((key) => {
+      this.docChanged = !!Object.keys(this.intDoc).some((key) => {
         return this.document[key] !== this.intDoc[key];
       });
       this.docModified();

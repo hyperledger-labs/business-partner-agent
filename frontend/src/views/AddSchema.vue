@@ -80,7 +80,6 @@ export default {
     VBpaButton,
     TrustedIssuer,
   },
-  created: () => {},
   data: () => {
     return {
       schema: {

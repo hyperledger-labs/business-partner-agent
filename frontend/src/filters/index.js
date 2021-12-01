@@ -32,10 +32,10 @@ export function formatDateLong(value) {
   }
 }
 
-export function credentialTag(credDefId) {
-  if (!credDefId) return "";
-  let pos = credDefId.lastIndexOf(":");
-  return credDefId.slice(Math.max(0, pos + 1));
+export function credentialTag(credDefinitionId) {
+  if (!credDefinitionId) return "";
+  let pos = credDefinitionId.lastIndexOf(":");
+  return credDefinitionId.slice(Math.max(0, pos + 1));
 }
 
 export function capitalize(string) {

@@ -157,8 +157,8 @@ export default {
 
       credentialService
         .sendCredentialRequest(this.partner.id, data)
-        .then((res) => {
-          console.log(res);
+        .then((response) => {
+          console.log(response);
           this.isBusy = false;
           EventBus.$emit(
             "success",

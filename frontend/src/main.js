@@ -14,7 +14,6 @@ import VueNativeSock from "vue-native-websocket";
 import App from "./App.vue";
 import i18n from "./plugins/i18n";
 import vuetify from "./plugins/vuetify";
-import "@babel/polyfill";
 import router from "./router";
 import store from "./store";
 import SortUtil from "./utils/sortUtils";
@@ -27,11 +26,11 @@ Vue.component("vue-json-pretty", VueJsonPretty);
 Vue.use(require("vue-moment"));
 Vue.use(SortUtil);
 
-var apiBaseUrl = process.env.VUE_APP_API_BASE_URL;
-var eventsHost = process.env.VUE_APP_EVENTS_HOST
+const apiBaseUrl = process.env.VUE_APP_API_BASE_URL;
+const eventsHost = process.env.VUE_APP_EVENTS_HOST
   ? process.env.VUE_APP_EVENTS_HOST
   : window.location.host;
-var socketApi = `${
+const socketApi = `${
   window.location.protocol === "https:" ? "wss" : "ws"
 }://${eventsHost}/${process.env.VUE_APP_EVENTS_PATH}`;
 

@@ -135,7 +135,9 @@ export default {
 
           return this.record.state ===
             PresentationExchangeStates.REQUEST_RECEIVED
-            ? [...new Array(nPanels).keys()].map((k, index) => index)
+            ? [...Array.from({ length: nPanels }).keys()].map(
+                (k, index) => index
+              )
             : [];
         } else {
           return [];
@@ -201,7 +203,7 @@ export default {
   },
   data: () => {
     return {
-      matchingCredentials: null,
+      matchingCredentials: undefined,
       Predicates,
       Restrictions,
       RequestTypes,

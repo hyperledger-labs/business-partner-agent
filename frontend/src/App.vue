@@ -316,7 +316,7 @@ export default {
   },
   data: () => ({
     title: "",
-    drawer: null,
+    drawer: undefined,
     logo: process.env.VUE_APP_LOGO_URL,
 
     // snackbar stuff
@@ -367,7 +367,7 @@ export default {
         ? this.$store.state.settings.imprint.length +
             this.$store.state.settings.dataPrivacyPolicy.length >
             0
-        : null;
+        : undefined;
     },
     imprintUrl() {
       return this.$store.state.settings.imprint;

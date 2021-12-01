@@ -101,7 +101,7 @@ export default {
           !this.depressed &&
           !this.disabled &&
           !this.plain &&
-          (this.elevation == undefined || Number(this.elevation) > 0)
+          (this.elevation === undefined || Number(this.elevation) > 0)
       );
     },
   },

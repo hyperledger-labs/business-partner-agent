@@ -334,10 +334,9 @@ export default {
             this.invitationUrlLoading = false;
             this.receivedInvitation = Object.assign({}, result.data);
             this.invitationUrlLoaded =
-              this.receivedInvitation.invitationBlock != undefined;
+              this.receivedInvitation.invitationBlock !== undefined;
             // add in their label as the default alias for adding
             this.aliasPlaceholder = this.receivedInvitation.label;
-            //this.alias = this.receivedInvitation.label;
           })
           .catch((error) => {
             this.invitationUrlLoading = false;

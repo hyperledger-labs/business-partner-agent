@@ -28,8 +28,7 @@ export default {
     markMessagesSeen(state, partnerId) {
       // seen means we remove them from the store for a given partner/room
       let msgs = state.messages ? state.messages : [];
-      const unseen = msgs.filter((m) => m.partnerId !== partnerId);
-      state.messages = unseen;
+      state.messages = msgs.filter((m) => m.partnerId !== partnerId);
     },
   },
 };

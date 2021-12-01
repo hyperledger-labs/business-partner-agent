@@ -50,7 +50,7 @@ export default {
       responsiveBreakpoint: 9999,
       rooms: [],
       roomsLoaded: true,
-      currentRoomId: null,
+      currentRoomId: undefined,
       messages: [],
       messagesLoaded: true,
       messageActions: [],
@@ -88,7 +88,7 @@ export default {
       console.log("loadRooms()");
       this.roomsLoaded = false;
       this.rooms = [];
-      this.currentRoomId = null;
+      this.currentRoomId = undefined;
       const _rooms = [];
       const partners = await partnerService.listPartners();
       if (Array.isArray(partners.data)) {
@@ -181,7 +181,7 @@ export default {
       // if the room list is open, clear out the room id...
       // we don't want to refresh a room's message list if we are on the partner/room list
       if (opened) {
-        this.currentRoomId = null;
+        this.currentRoomId = undefined;
       }
     },
     markSeen(id) {

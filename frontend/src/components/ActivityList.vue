@@ -104,8 +104,8 @@ export default {
     },
   },
   mounted() {
-    this.filter = null;
-    this.filterValue = null;
+    this.filter = undefined;
+    this.filterValue = undefined;
     this.filterValueList = [];
     this.fetchItems();
   },
@@ -113,14 +113,14 @@ export default {
     return {
       isBusy: true,
       items: [],
-      filter: null,
-      filterValue: null,
+      filter: undefined,
+      filterValue: undefined,
       filterValueList: [],
     };
   },
   watch: {
     filter(value) {
-      this.filterValue = null;
+      this.filterValue = undefined;
       this.filterValueList = [];
       if (value && value.value === "type") {
         this.filterValueList = [];

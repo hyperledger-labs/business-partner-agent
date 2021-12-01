@@ -138,14 +138,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.newHighlight {
-  color: #2ecc71;
-  padding-left: 4px;
-  font-size: 200%;
-}
-.cardTitle {
-  font-size: 400%;
-  margin-bottom: 2;
-}
-</style>

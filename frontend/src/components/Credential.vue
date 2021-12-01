@@ -133,7 +133,7 @@ export default {
 
       const isDirty = !!Object.keys(
         this.origIntDoc[this.documentDataType]
-      ).find((key) => {
+      ).some((key) => {
         return (
           this.intDoc[this.documentDataType][key] !==
           this.origIntDoc[this.documentDataType][key]
@@ -145,7 +145,7 @@ export default {
     createTemplateFromSchemaId(schemaId) {
       // as a holder, i may not know the schema - schemaID is set only if we have stored the schema
       // return null if we do not have a schema id.
-      if (!schemaId) return null;
+      if (!schemaId) return;
       const schemas = this.$store.getters.getSchemas;
       let schema = schemas.find((s) => {
         return s.schemaId === schemaId;
@@ -161,7 +161,6 @@ export default {
           }),
         });
       }
-      return null;
     },
 
     createTemplateFromSchema(objectData) {
@@ -189,11 +188,7 @@ export default {
     },
 
     docFieldChanged(propertyName, event) {
-      if (this.origIntDoc[propertyName] !== event) {
-        this.intDoc[propertyName] = event;
-      } else {
-        this.intDoc[propertyName] = event;
-      }
+      this.intDoc[propertyName] = event;
       this.$emit("doc-field-changed", { key: propertyName, value: event });
     },
 

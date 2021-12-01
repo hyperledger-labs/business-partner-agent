@@ -519,8 +519,8 @@ export default {
 
       issuerService
         .sendCredentialOffer(this.document.credentialExchangeId, counterOffer)
-        .then((res) => {
-          EventBus.$emit("success", this.$axiosErrorMessage(res));
+        .then((response) => {
+          EventBus.$emit("success", this.$axiosErrorMessage(response));
           this.closeDialog();
         })
         .catch((error) => {

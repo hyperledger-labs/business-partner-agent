@@ -28,7 +28,5 @@ module.exports = {
     "vue/valid-v-slot": "warn",
     "unicorn/prefer-module": "off",
     "unicorn/filename-case": "off",
-    "unicorn/prevent-abbreviations": "off",
-    "unicorn/no-null": "off",
   },
 };

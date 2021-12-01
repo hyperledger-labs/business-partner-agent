@@ -404,9 +404,9 @@ export default {
 
       proofTemplateService
         .createProofTemplate(proofTemplate)
-        .then((res) => {
+        .then((response) => {
           this.$emit("received-proof-template-id", {
-            documentId: res.data.id,
+            documentId: response.data.id,
             useV2Exchange: this.useV2Exchange,
           });
           EventBus.$emit(

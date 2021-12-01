@@ -189,11 +189,11 @@ export default {
       credential: {},
       credentialFields: {},
       submitDisabled: true,
-      useV2Credential: null,
+      useV2Credential: undefined,
       expertLoad: {
         show: false,
         data: "",
-        file: null,
+        file: undefined,
         type: "json",
         fileAccept: "text/plain,application/json",
       },
@@ -276,7 +276,7 @@ export default {
       this.isLoading = false;
     },
     async issueCredential() {
-      let exVersion = null;
+      let exVersion;
       if (this.useV2Credential) {
         exVersion = ExchangeVersion.V2;
       }
@@ -387,7 +387,7 @@ export default {
       this.expertLoad = {
         show: true,
         data: "",
-        file: null,
+        file: undefined,
         type: "json",
         fileAccept: "text/plain,application/json",
       };

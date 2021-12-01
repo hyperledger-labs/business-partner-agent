@@ -12,9 +12,9 @@ export const istBusy = (state) => {
 };
 
 export const publicDocumentsAndCredentials = (state) => {
-  return state.credentials
-    .concat(state.documents)
-    .filter((d) => d.isPublic === true);
+  return [...state.credentials, ...state.documents].filter(
+    (d) => d.isPublic === true
+  );
 };
 
 export const getOrganizationalProfile = (state) => {
@@ -54,7 +54,7 @@ export const getSchemaBasedSchemas = (state) => {
 
 export const getSchemaById = (state) => (schemaId) => {
   if (!schemaId) {
-    return null;
+    return;
   }
   return state.schemas.find((schema) => {
     return schema.schemaId === schemaId;
@@ -63,7 +63,7 @@ export const getSchemaById = (state) => (schemaId) => {
 
 export const getSchemaByType = (state) => (schemaType) => {
   if (!schemaType) {
-    return null;
+    return;
   }
   return state.schemas.find((schema) => {
     return schema.type === schemaType;
@@ -114,6 +114,7 @@ export const getPartnerSelectList = (state) => {
   return state.partnerSelectList;
 };
 
+// eslint-disable-next-line unicorn/prevent-abbreviations
 export const getCredDefSelectList = (state) => {
   return state.credDefSelectList;
 };

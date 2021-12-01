@@ -130,7 +130,6 @@
     </v-card>
 
     <!-- Presentation Exchanges -->
-
     <v-card v-if="partner.ariesSupport" class="mb-4">
       <v-card-title class="bg-light">
         {{ $t("view.partner.presentationExchanges.title") }}
@@ -176,7 +175,6 @@
     </v-card>
 
     <!-- Credential Exchanges -->
-
     <v-card v-if="partner.ariesSupport" class="mb-4">
       <v-card-title class="bg-light"
         >{{ $t("view.partner.credentialExchanges.title") }}
@@ -381,7 +379,6 @@ export default {
         .catch((error) => {
           this.isLoadingPresExRecords = false;
           console.error(error);
-          // EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
 
@@ -400,7 +397,6 @@ export default {
         .catch((error) => {
           this.isLoadingCredExRecords = false;
           console.error(error);
-          // EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
     },
     refreshIssuedCredentialRecords() {

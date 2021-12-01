@@ -29,7 +29,7 @@ export default {
     return appAxios().post(`${ApiRoutes.ADMIN}/tag`, data);
   },
   deleteTag(id, hardDelete) {
-    let parameters = null;
+    let parameters;
     if (hardDelete) {
       parameters = new URLSearchParams([["force", true]]);
     }

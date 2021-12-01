@@ -31,7 +31,7 @@ export const loadSchemas = async ({ commit }) => {
         }
         schema.canIssue =
           Array.isArray(schema.credentialDefinitions) &&
-          schema.credentialDefinitions.length;
+          schema.credentialDefinitions.length > 0;
       });
       schemas.unshift(CredentialTypes.PROFILE);
       commit({
@@ -113,7 +113,7 @@ export const loadCredentials = async ({ commit }) => {
     .get(`${apiBaseUrl}/wallet/credential`)
     .then((result) => {
       if (Object.prototype.hasOwnProperty.call(result, "data")) {
-        var credentials = [];
+        const credentials = [];
         for (const credentialReference of result.data) {
           axios
             .get(`${apiBaseUrl}/wallet/credential/${credentialReference.id}`)
@@ -197,6 +197,7 @@ export const loadPartnerSelectList = async ({ commit }) => {
     });
 };
 
+// eslint-disable-next-line unicorn/prevent-abbreviations
 export const loadCredDefSelectList = async ({ commit }) => {
   issuerService
     .listCredDefs()

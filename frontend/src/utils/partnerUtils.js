@@ -25,7 +25,6 @@ export const getPartnerProfile = (partner) => {
       }
     }
   }
-  return null;
 };
 
 export const getPartnerProfileRoute = (partner) => {
@@ -45,7 +44,6 @@ export const getPartnerProfileRoute = (partner) => {
       }
     }
   }
-  return null;
 };
 
 export const getPartnerState = (partner) => {

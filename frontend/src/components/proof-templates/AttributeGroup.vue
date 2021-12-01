@@ -253,8 +253,8 @@ export default {
     renderSchemaLabelId(attributeGroup) {
       // FIXME: This needs refactoring
       // This tries to show a schema and label but will show the attribute group if
-      let schemaId = null;
-      let internalSchemaId = null;
+      let schemaId;
+      let internalSchemaId;
       if (attributeGroup.schemaId) {
         internalSchemaId = attributeGroup.schemaId;
       } else if (
@@ -264,7 +264,7 @@ export default {
         schemaId = attributeGroup.schemaLevelRestrictions.schemaId;
       }
 
-      let schema = null;
+      let schema;
       if (schemaId) {
         schema = this.$store.getters.getSchemas.find(
           (s) => s.schemaId === schemaId

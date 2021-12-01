@@ -13,7 +13,6 @@
     "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.11.5",
     "axios": "^0.21.1",
     "core-js": "^3.6.4",
     "csv-string": "^4.0.1",

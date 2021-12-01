@@ -138,7 +138,7 @@ export default {
   },
   data: () => {
     return {
-      tab: null,
+      tab: undefined,
       resetChildForms: false,
     };
   },

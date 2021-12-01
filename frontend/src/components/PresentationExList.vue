@@ -236,6 +236,7 @@ export default {
             return Object.hasOwnProperty.call(group, "selectedCredential");
           });
         });
+        // eslint-disable-next-line unicorn/no-array-reduce
         return groupsWithCredentials.flat().reduce((x, y) => x && y);
       } else {
         return false;
@@ -375,6 +376,7 @@ export default {
             attributeGroup.matchingCredentials.length > 0
           );
         })
+        // eslint-disable-next-line unicorn/no-array-reduce
         .reduce((x, y) => {
           return x && y;
         }, true);
@@ -385,6 +387,7 @@ export default {
         .map((attributeGroup) => {
           return attributeGroup.matchingCredentials;
         })
+        // eslint-disable-next-line unicorn/no-array-reduce
         .reduce((x, y) => {
           return x && y;
         }, true);

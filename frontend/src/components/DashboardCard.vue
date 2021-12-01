@@ -59,7 +59,6 @@ export default {
     },
     destination: {
       type: String,
-      default: () => null,
     },
     count: {
       type: Number,
