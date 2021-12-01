@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2021 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -32,7 +32,7 @@
     <v-dialog v-model="dialog" persistent max-width="800px">
       <ManageSchema
         :dialog="dialog"
-        :schema="schema"
+        v-model="schema"
         :credential-definitions="manageCredentialDefinitions"
         :trusted-issuers="manageTrustedIssuers"
         @closed="onClosed"
@@ -47,27 +47,6 @@ import ManageSchema from "@/components/ManageSchema";
 import store from "@/store";
 export default {
   props: {
-    headers: {
-      type: Array,
-      default: () => [
-        {
-          text: "Name",
-          value: "label",
-        },
-        {
-          text: "Can Issue",
-          value: "canIssue",
-        },
-        {
-          text: "Mine",
-          value: "isMine",
-        },
-        {
-          text: "Trusted Issuers",
-          value: "trustedIssuer",
-        },
-      ],
-    },
     isLoading: Boolean,
     manageTrustedIssuers: {
       type: Boolean,
@@ -86,6 +65,26 @@ export default {
     };
   },
   computed: {
+    headers() {
+      return [
+        {
+          text: this.$t("component.schemaList.label"),
+          value: "label",
+        },
+        {
+          text: this.$t("component.schemaList.canIssue"),
+          value: "canIssue",
+        },
+        {
+          text: this.$t("component.schemaList.isMine"),
+          value: "isMine",
+        },
+        {
+          text: this.$t("component.schemaList.trustedIssuer"),
+          value: "trustedIssuer",
+        },
+      ];
+    },
     schemas: {
       get() {
         return this.$store.getters.getSchemaBasedSchemas;

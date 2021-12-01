@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2020 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -17,28 +17,32 @@
           >
             <v-list-item-content>
               <v-list-item-title v-if="ux.navigation.avatar.agent.default">
-                <v-img v-if="logo"
-                    contain
-                    max-height="100"
-                    max-width="228"
-                    :src="logo"
+                <v-img
+                  v-if="logo"
+                  contain
+                  max-height="100"
+                  max-width="228"
+                  :src="logo"
                 ></v-img>
-                <v-img v-else
-                       contain
-                       max-height="100"
-                       max-width="228"
-                       src="@/assets/logo_default.svg"
+                <v-img
+                  v-else
+                  contain
+                  max-height="100"
+                  max-width="228"
+                  src="@/assets/logo_default.svg"
                 ></v-img>
               </v-list-item-title>
               <v-list-item-title v-else>
                 <v-img
-                    contain
-                    max-height="100"
-                    max-width="228"
-                    :src="ux.navigation.avatar.agent.src"
+                  contain
+                  max-height="100"
+                  max-width="228"
+                  :src="ux.navigation.avatar.agent.src"
                 ></v-img
-                ></v-list-item-title>
-              <v-list-item-subtitle class="mt-2 text-wrap nav-display-name">{{ getNavDisplayName }}</v-list-item-subtitle>
+              ></v-list-item-title>
+              <v-list-item-subtitle class="mt-2 text-wrap nav-display-name">{{
+                getNavDisplayName
+              }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </router-link>
@@ -140,10 +144,10 @@
       <template v-slot:append>
         <v-list dense>
           <v-list-item
-              v-if="ux.navigation.settings.location === 'bottom'"
-              bottom
-              link
-              :to="{ name: 'Settings' }"
+            v-if="ux.navigation.settings.location === 'bottom'"
+            bottom
+            link
+            :to="{ name: 'Settings' }"
           >
             <v-list-item-action>
               <v-icon>$vuetify.icons.settings</v-icon>
@@ -182,14 +186,15 @@
     </v-navigation-drawer>
 
     <v-app-bar color="primary" app flat dark>
-      <v-badge v-if="!drawer"
-          overlap
-          bordered
-          :content="notificationsCount"
-          :value="notificationsCount"
-          color="red"
-          offset-x="53"
-          offset-y="53"
+      <v-badge
+        v-if="!drawer"
+        overlap
+        bordered
+        :content="notificationsCount"
+        :value="notificationsCount"
+        color="red"
+        offset-x="53"
+        offset-y="53"
       >
         <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       </v-badge>
@@ -298,7 +303,8 @@
 import { EventBus } from "./main";
 import Taa from "./components/taa/TransactionAuthorAgreement";
 import BasicMessages from "@/components/messages/BasicMessages";
-import merge from 'deepmerge';
+import merge from "deepmerge";
+import i18n from "@/plugins/i18n";
 
 export default {
   components: {
@@ -333,7 +339,7 @@ export default {
           agent: {
             enabled: true,
             default: true,
-            'show-name': true
+            "show-name": true,
           },
         },
         about: {
@@ -379,10 +385,13 @@ export default {
       return this.$store.getters.messagesCount;
     },
     notificationsCount() {
-      return this.$store.getters.taskNotificationsCount + this.$store.getters.activityNotificationsCount;
+      return (
+        this.$store.getters.taskNotificationsCount +
+        this.$store.getters.activityNotificationsCount
+      );
     },
     getAgentName() {
-      let bpaName = "Business Partner Agent";
+      let bpaName = this.$t("app.bpaDefaultName");
       const nameSettingValue = this.$store.getters.getSettingByKey("agentName");
       if (nameSettingValue) {
         bpaName = nameSettingValue;
@@ -397,7 +406,7 @@ export default {
       return "";
     },
     getNavDisplayName() {
-      if (this.ux.navigation.avatar.agent['show-name']) {
+      if (this.ux.navigation.avatar.agent["show-name"]) {
         const result = this.getOrganizationName;
         return result ? result : this.getAgentName;
       }
@@ -418,18 +427,34 @@ export default {
         this.$vuetify.theme.dark = this.ux.theme.dark
           ? this.ux.theme.dark
           : false;
-        this.$vuetify.theme.themes.light = merge(this.$vuetify.theme.themes.light, this.ux.theme.themes.light);
+        this.$vuetify.theme.themes.light = merge(
+          this.$vuetify.theme.themes.light,
+          this.ux.theme.themes.light
+        );
       }
+
       const uiColor = localStorage.getItem("uiColor");
+
       if (uiColor) {
         // if the user stored an override of the primary color, load it.
         this.$vuetify.theme.themes.light.primary = uiColor;
       }
+
       const uiColorIcons = localStorage.getItem("uiColorIcons");
+
       if (uiColorIcons) {
         // if the user stored an override of the icons color, load it.
         this.$vuetify.theme.themes.light.icons = uiColorIcons;
       }
+
+      const locale =
+        localStorage.getItem("locale") ||
+        navigator.language.split("-")[0] ||
+        process.env.VUE_APP_I18N_LOCALE ||
+        "en";
+      i18n.locale = locale;
+      this.$vuetify.lang.current = locale;
+
       // Load up an alternate favicon
       if (this.ux.favicon) {
         const favicon = document.getElementById("favicon");
@@ -487,7 +512,7 @@ export default {
       }
       // now, open or close it
       this.chatWindow = !this.chatWindow;
-    }
+    },
   },
 };
 </script>

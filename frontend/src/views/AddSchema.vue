@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2020 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -12,17 +12,17 @@
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
-        <span>Add Schema</span>
+        <span>{{ $t("view.addSchema.title") }}</span>
       </v-card-title>
 
       <v-list-item>
         <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
-          Schema Name:
+          {{ $t("view.addSchema.schemaName") }}:
         </v-list-item-title>
         <v-list-item-subtitle>
           <v-text-field
             class="mt-6"
-            placeholder="Name"
+            :placeholder="$t('view.addSchema.placeholderName')"
             v-model="schema.label"
             :rules="[rules.required]"
             outlined
@@ -34,12 +34,12 @@
       </v-list-item>
       <v-list-item>
         <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
-          Schema ID:
+          {{ $t("view.addSchema.schemaId") }}:
         </v-list-item-title>
         <v-list-item-subtitle>
           <v-text-field
             class="mt-6"
-            placeholder="Schema ID"
+            :placeholder="$t('view.addSchema.placeholderSchemaId')"
             v-model="schema.schemaId"
             :rules="[rules.required]"
             outlined
@@ -62,7 +62,7 @@
             color="primary"
             @click="addSchema"
           >
-            Submit
+            {{ $t("button.submit") }}
           </v-bpa-button>
         </v-layout>
       </v-card-actions>
@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
+import { EventBus } from "@/main";
 import TrustedIssuer from "../components/TrustedIssuers.vue";
 import VBpaButton from "@/components/BpaButton";
 export default {
@@ -81,7 +81,6 @@ export default {
     TrustedIssuer,
   },
   created: () => {},
-
   data: () => {
     return {
       schema: {
@@ -89,12 +88,14 @@ export default {
         schemaId: "",
       },
       isBusyAddSchema: false,
-      rules: {
-        required: (value) => !!value || "Can't be empty",
-      },
     };
   },
   computed: {
+    rules() {
+      return {
+        required: (value) => !!value || this.$t("app.rules.required"),
+      };
+    },
     fieldsEmpty() {
       return (
         this.schema.label.length === 0 || this.schema.schemaId.length === 0
@@ -121,14 +122,20 @@ export default {
           this.isBusyAddSchema = false;
 
           if (result.status === 200) {
-            EventBus.$emit("success", "Schema added successfully");
+            EventBus.$emit(
+              "success",
+              this.$t("view.addSchema.eventSuccessSchemaAdd")
+            );
             this.$router.push({ name: "SchemaSettings" });
           }
         })
         .catch((e) => {
           this.isBusyAddSchema = false;
           if (e.response.status === 400) {
-            EventBus.$emit("error", "Schema already exists");
+            EventBus.$emit(
+              "error",
+              this.$t("view.addSchema.eventErrorSchemaExists")
+            );
           } else {
             EventBus.$emit("error", this.$axiosErrorMessage(e));
           }

@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2021 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -66,7 +66,10 @@ export default {
       credentialService
         .sendCredentialRequest(this.id, data)
         .then(() => {
-          EventBus.$emit("success", "Credential verification request sent");
+          EventBus.$emit(
+            "success",
+            this.$t("view.requestCredential.eventSuccessSend")
+          );
           this.isBusy = false;
           this.$router.go(-1);
         })

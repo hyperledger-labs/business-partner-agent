@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2020 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -12,7 +12,7 @@
         <v-btn depressed color="secondary" icon @click="$router.go(-1)">
           <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
-        <span>Schemas</span>
+        <span>{{ $t("view.schemaSettings.title") }}</span>
       </v-card-title>
       <v-card-text>
         <SchemaList
@@ -24,9 +24,9 @@
         <v-layout align-end justify-end>
           <v-dialog v-model="createSchemaDialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
-              <v-bpa-button v-bind="attrs" v-on="on" color="secondary"
-                >Create Schema</v-bpa-button
-              >
+              <v-bpa-button v-bind="attrs" v-on="on" color="secondary">{{
+                $t("view.schemaSettings.buttonCreateSchema")
+              }}</v-bpa-button>
             </template>
             <CreateSchema
               @success="onSchemaCreated"
@@ -35,9 +35,9 @@
           </v-dialog>
           <v-dialog v-model="addSchemaDialog" persistent max-width="600px">
             <template v-slot:activator="{ on, attrs }">
-              <v-bpa-button v-bind="attrs" v-on="on" color="primary"
-                >Import Schema</v-bpa-button
-              >
+              <v-bpa-button v-bind="attrs" v-on="on" color="primary">{{
+                $t("view.schemaSettings.buttonImportSchema")
+              }}</v-bpa-button>
             </template>
             <AddSchema
               @success="onSchemaAdded"
@@ -55,7 +55,6 @@ import { EventBus } from "@/main";
 import SchemaList from "@/components/SchemaList";
 import AddSchema from "@/components/AddSchema";
 import CreateSchema from "@/components/CreateSchema";
-
 import store from "@/store";
 import VBpaButton from "@/components/BpaButton";
 
@@ -68,7 +67,7 @@ export default {
     SchemaList,
   },
   created() {
-    EventBus.$emit("title", "Schema Settings");
+    EventBus.$emit("title", this.$t("view.schemaSettings.title"));
   },
   data: () => {
     return {
@@ -76,7 +75,6 @@ export default {
       createSchemaDialog: false,
     };
   },
-  computed: {},
   methods: {
     onSchemaAdded() {
       store.dispatch("loadSchemas");

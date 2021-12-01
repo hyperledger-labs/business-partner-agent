@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2021 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -17,6 +17,7 @@
         v-bind:headers="docHeaders"
         v-model="selectedDocument"
         disable-verification-request
+        use-indy
         selectable
         type="document"
       ></MyCredentialList>
@@ -51,7 +52,6 @@
 import { EventBus } from "@/main";
 import { ExchangeVersion } from "@/constants";
 import MyCredentialList from "@/components/MyCredentialList";
-import { docHeaders } from "@/components/tableHeaders/WalletHeaders";
 import VBpaButton from "@/components/BpaButton";
 import credentialService from "@/services/credentialService";
 
@@ -73,12 +73,35 @@ export default {
       selectedSchema: [],
       selectedIssuer: [],
       useV2Exchange: false,
-      docHeaders: docHeaders,
     };
   },
   computed: {
     expertMode() {
       return this.$store.state.expertMode;
+    },
+    docHeaders() {
+      return [
+        {
+          text: this.$t("view.requestCredential.headers.label"),
+          value: "label",
+        },
+        {
+          text: this.$t("view.requestCredential.headers.type"),
+          value: "type",
+        },
+        {
+          text: this.$t("view.requestCredential.headers.createdDate"),
+          value: "createdDate",
+        },
+        {
+          text: this.$t("view.requestCredential.headers.updatedDate"),
+          value: "updatedDate",
+        },
+        {
+          text: this.$t("view.requestCredential.headers.isPublic"),
+          value: "isPublic",
+        },
+      ];
     },
   },
   methods: {
@@ -102,7 +125,10 @@ export default {
       credentialService
         .sendCredentialRequest(this.id, data)
         .then(() => {
-          EventBus.$emit("success", "Credential verification request sent");
+          EventBus.$emit(
+            "success",
+            this.$t("view.requestCredential.eventSuccessSend")
+          );
           this.isBusy = false;
           this.$router.go(-1);
         })

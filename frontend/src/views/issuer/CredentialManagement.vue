@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2021 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -73,7 +73,9 @@
                 v-on="on"
                 color="primary"
                 :disabled="issueCredentialDisabled"
-                >Issue Credential</v-bpa-button
+                >{{
+                  $t("view.issueCredentials.cards.action.button")
+                }}</v-bpa-button
               >
             </template>
             <IssueCredential
@@ -103,7 +105,6 @@
           :is-loading="isLoadingCredentials"
         ></CredExList>
       </v-card-text>
-      <v-card-actions> </v-card-actions>
     </v-card>
   </v-container>
 </template>

@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2021 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -130,7 +130,10 @@ export default {
         .deleteProofTemplate(this.proofTemplate.id)
         .then((result) => {
           if (result.status === 200) {
-            EventBus.$emit("success", "Proof Template Deleted");
+            EventBus.$emit(
+              "success",
+              this.$t("view.proofTemplate.view.eventSuccessDelete")
+            );
             this.$router.push({
               name: "ProofTemplates",
               params: {},

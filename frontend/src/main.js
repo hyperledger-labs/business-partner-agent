@@ -1,10 +1,11 @@
 /*
- Copyright (c) 2020 - for information on the respective copyright owner
- see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * see the NOTICE file and/or the repository at
+ * https://github.com/hyperledger-labs/business-partner-agent
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
- SPDX-License-Identifier: Apache-2.0
-*/
 import "@/assets/scss/style.scss";
 
 import Vue from "vue";
@@ -111,7 +112,9 @@ Vue.prototype.$config = {
     // will have the detail message in err.response.data._embedded.errors[N].message
     // check there first
     if (Array.isArray(err.response?.data?._embedded?.errors)) {
-      return err.response?.data?._embedded?.errors.map(x => x.message).join(" ");
+      return err.response?.data?._embedded?.errors
+        .map((x) => x.message)
+        .join(" ");
     }
     // what other error message structures will we encounter?
     // add logic here...
@@ -120,7 +123,7 @@ Vue.prototype.$config = {
     // but in err.response.statusText is a bit more understandable... "Not Found"
     // do we want to use the status text before the default message?
     if (err.response) {
-      return i18n.t("error.axios", {statusText: err.response.statusText});
+      return i18n.t("error.axios", { statusText: err.response.statusText });
     }
     if (err.message) return err.message;
     return err.toString();

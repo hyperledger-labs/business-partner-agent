@@ -1,3 +1,10 @@
+<!--
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
+ see the NOTICE file and/or the repository at
+ https://github.com/hyperledger-labs/business-partner-agent
+
+ SPDX-License-Identifier: Apache-2.0
+-->
 <template>
   <v-form ref="form" v-model="valid" lazy-validation>
     <div style="min-width: 250px">
@@ -35,9 +42,11 @@
             </v-card>
           </v-menu>
           <span justify>
-            <v-btn class="" x-small text @click="cancel()"> Cancel </v-btn>
+            <v-btn class="" x-small text @click="cancel()">{{
+              $t("button.cancel")
+            }}</v-btn>
             <v-btn class="" color="#000" x-small text @click="saveColor()">
-              Save
+              {{ $t("button.save") }}
             </v-btn>
           </span>
         </template>
@@ -68,11 +77,10 @@ export default {
       intColor: "",
       menu: false,
       hexReg: [
-        (value) => !!value || "Color should begin with #",
-
+        (value) => !!value || this.$t("app.rules.colorPrefix"),
         (value) => {
           const pattern = /^#([0-9A-F]{3}){1,2}$/i;
-          return pattern.test(value) || "Invalid color (e.g. #FF00FF)";
+          return pattern.test(value) || this.$t("app.rules.colorInvalid");
         },
       ],
     };

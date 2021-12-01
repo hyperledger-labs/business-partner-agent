@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2020 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -31,7 +31,7 @@
       <v-expansion-panels flat>
         <v-expansion-panel>
           <v-expansion-panel-header class="font-weight-medium">
-            Details
+            {{ $t("component.credentialCard.details") }}
             <template v-slot:actions>
               <v-icon color="primary"> $expand </v-icon>
             </template>

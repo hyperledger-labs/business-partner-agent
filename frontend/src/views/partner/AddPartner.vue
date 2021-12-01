@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2020 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -13,8 +13,8 @@
       </v-card-title>
       <v-container fluid>
         <v-radio-group v-model="radios" row>
-          <v-radio value="did" label="By DID" />
-          <v-radio value="url" label="By Invitation" />
+          <v-radio value="did" :label="$t('view.addPartner.radioDid')" />
+          <v-radio value="url" :label="$t('view.addPartner.radioInvitation')" />
         </v-radio-group>
       </v-container>
 
@@ -57,7 +57,7 @@
           </v-col>
           <v-col cols="8">
             <v-text-field
-              label="Name"
+              :label="$t('view.addPartner.labelName')"
               persistent-placeholder
               :placeholder="aliasPlaceholder"
               v-model.trim="alias"
@@ -88,7 +88,6 @@
               class="grey--text text--darken-2 font-weight-medium"
               >{{ $t("view.addPartner.trustPing") }}</v-list-item-title
             >
-
             <v-list-item-action>
               <v-switch v-model="trustPing"></v-switch>
             </v-list-item-action>
@@ -102,7 +101,6 @@
           <v-bpa-button color="secondary" to="/app/partners">
             {{ $t("button.cancel") }}
           </v-bpa-button>
-
           <v-bpa-button v-if="!partnerLoaded" color="primary" @click="lookup()">
             {{ $t("view.addPartner.lookupPartnerBtnLabel") }}
           </v-bpa-button>
@@ -118,7 +116,7 @@
             <v-text-field
               prepend-icon="$vuetify.icons.invitation"
               :label="$t('view.addPartner.formInvitationLabel')"
-              placeholder="URL received from an agent you want to connect to"
+              :placeholder="$t('view.addPartner.placeholderUrl')"
               v-model="invitationUrl"
               @change="invitationUrlLoaded = false"
               outlined
@@ -146,7 +144,7 @@
           </v-col>
           <v-col cols="8">
             <v-text-field
-              label="Name"
+              :label="$t('view.addPartner.labelName')"
               persistent-placeholder
               :placeholder="aliasPlaceholder"
               v-model.trim="alias"
@@ -177,7 +175,6 @@
               class="grey--text text--darken-2 font-weight-medium"
               >{{ $t("view.addPartner.trustPing") }}</v-list-item-title
             >
-
             <v-list-item-action>
               <v-switch v-model="trustPing"></v-switch>
             </v-list-item-action>
@@ -194,11 +191,11 @@
             color="primary"
             @click="checkInvitation()"
             :disabled="invitationUrl === ''"
-            >Check Invitation</v-bpa-button
+            >{{ $t("view.addPartner.buttonCheckInvitation") }}</v-bpa-button
           >
-          <v-bpa-button v-else color="primary" @click="acceptInvitation()"
-            >Accept Invitation</v-bpa-button
-          >
+          <v-bpa-button v-else color="primary" @click="acceptInvitation()">{{
+            $t("view.addPartner.buttonAcceptInvitation")
+          }}</v-bpa-button>
         </v-layout>
       </v-card-actions>
     </v-card>
@@ -217,7 +214,6 @@ export default {
     VBpaButton,
     Profile,
   },
-  created() {},
   data: () => {
     return {
       partnerLoading: false,
@@ -264,16 +260,19 @@ export default {
               if ({}.hasOwnProperty.call(partner, "credential"))
                 this.partnerLoaded = true;
             } else if (partner.ariesSupport) {
-              this.msg =
-                "Partner has no public profile. You can add him to get more information using Aries protocols.";
+              this.msg = this.$t("view.addPartner.messageLookupNoPublic");
               this.partnerLoaded = true;
             } else {
-              this.msg = "Partner has no public profile and no Aries support.";
+              this.msg = this.$t(
+                "view.addPartner.messageLookupNoPublicNoAries"
+              );
             }
           }
         })
         .catch((e) => {
-          this.msg = `Could not resolve ${this.did}.`;
+          this.msg = `${this.$t("view.addPartner.messageDidNoResolve")} ${
+            this.did
+          }.`;
           this.partnerLoading = false;
           EventBus.$emit("error", this.$axiosErrorMessage(e));
         });
@@ -298,7 +297,10 @@ export default {
           if (result.status === 201) {
             store.dispatch("loadPartners");
             store.dispatch("loadPartnerSelectList");
-            EventBus.$emit("success", "Partner added successfully");
+            EventBus.$emit(
+              "success",
+              this.$t("view.addPartner.eventSuccessAdd")
+            );
             this.$router.push({
               name: "Partners",
             });
@@ -306,7 +308,10 @@ export default {
         })
         .catch((e) => {
           if (e.response.status === 412) {
-            EventBus.$emit("error", "Partner already exists");
+            EventBus.$emit(
+              "error",
+              this.$t("view.addPartner.eventErrorAlreadyExists")
+            );
           } else {
             EventBus.$emit("error", this.$axiosErrorMessage(e));
           }
@@ -363,7 +368,10 @@ export default {
             store.dispatch("loadPartners");
             this.receivedInvitation = {};
             this.invitationUrlLoaded = false;
-            EventBus.$emit("success", "Partner added successfully");
+            EventBus.$emit(
+              "success",
+              this.$t("view.addPartner.eventSuccessAdd")
+            );
             this.$router.push({
               name: "Partners",
             });
