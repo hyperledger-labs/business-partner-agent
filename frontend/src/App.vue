@@ -447,12 +447,13 @@ export default {
         this.$vuetify.theme.themes.light.icons = uiColorIcons;
       }
 
-      const locale = localStorage.getItem("locale");
-
-      if (locale) {
-        i18n.locale = locale;
-        this.$vuetify.lang.current = locale;
-      }
+      const locale =
+        localStorage.getItem("locale") ||
+        navigator.language.split("-")[0] ||
+        process.env.VUE_APP_I18N_LOCALE ||
+        "en";
+      i18n.locale = locale;
+      this.$vuetify.lang.current = locale;
 
       // Load up an alternate favicon
       if (this.ux.favicon) {
