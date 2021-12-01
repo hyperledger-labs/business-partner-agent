@@ -1,5 +1,5 @@
 <!--
- Copyright (c) 2021 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/business-partner-agent
 
@@ -108,7 +108,7 @@
             </v-simple-table>
           </td>
         </template>
-        <template v-slot:item.issuerLabel="{ item }">
+        <template v-slot:[`item.issuerLabel`]="{ item }">
           {{ getIssuerLabel(item) }}
         </template>
       </v-data-table>
@@ -164,7 +164,7 @@ export default {
   name: "RestrictionsEdit",
   components: { VBpaButton },
   props: {
-    attributeGroup: {},
+    value: {},
   },
   data: () => {
     return {
@@ -175,6 +175,14 @@ export default {
     };
   },
   computed: {
+    attributeGroup: {
+      get() {
+        return this.value;
+      },
+      set(val) {
+        this.$emit("input", val);
+      },
+    },
     restrictionsHeaders() {
       return [
         {

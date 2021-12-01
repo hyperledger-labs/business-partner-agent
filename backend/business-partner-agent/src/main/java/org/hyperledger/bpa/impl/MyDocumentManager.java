@@ -17,10 +17,12 @@
  */
 package org.hyperledger.bpa.impl;
 
+import io.micronaut.core.util.ArrayUtils;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.Setter;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
@@ -84,9 +86,12 @@ public class MyDocumentManager {
         throw new WrongApiUsageException(ms.getMessage("api.document.not.found", Map.of("id", id)));
     }
 
-    public List<MyDocumentAPI> getMyDocuments() {
+    public List<MyDocumentAPI> getMyDocuments(CredentialType... types) {
         List<MyDocumentAPI> result = new ArrayList<>();
-        docRepo.findAll().forEach(dbDoc -> result.add(converter.toApiObject(dbDoc)));
+        List<CredentialType> search = Arrays.asList(Objects.requireNonNullElseGet(
+                ArrayUtils.isEmpty(types) ? null : types,
+                CredentialType::values));
+        docRepo.findByTypeIn(search).forEach(dbDoc -> result.add(converter.toApiObject(dbDoc)));
         return result;
     }
 

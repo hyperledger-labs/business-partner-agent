@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2020 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -28,7 +28,7 @@
       <v-card-text>
         <OrganizationalProfile
           v-if="isProfile(intDoc.type)"
-          v-bind:documentData="document.documentData"
+          v-model="document.documentData"
           ref="doc"
         ></OrganizationalProfile>
         <Credential
@@ -67,14 +67,14 @@
             <v-tooltip right v-model="showTooltip">
               <template v-slot:activator="{ attrs }">
                 <v-list-item-content>
-                  <v-list-item-title>Verification</v-list-item-title>
-                  <v-list-item-subtitle
-                    >Request a verification</v-list-item-subtitle
-                  >
+                  <v-list-item-title>{{
+                    $t("view.document.verification")
+                  }}</v-list-item-title>
+                  <v-list-item-subtitle>{{
+                    $t("view.document.verificationSubtitle")
+                  }}</v-list-item-subtitle>
                 </v-list-item-content>
-
                 <v-list-item-action>
-                  <!-- TODO übergabe der parameter mit schemaId params {type: { type: meinType schemaId: schemaId }}-->
                   <v-btn
                     v-bind="attrs"
                     icon
@@ -88,9 +88,7 @@
                   </v-btn>
                 </v-list-item-action>
               </template>
-              <span
-                >Document modified, please save before start verification</span
-              >
+              <span>{{ $t("view.document.modified") }}</span>
             </v-tooltip>
           </v-list-item>
           <v-divider></v-divider>
@@ -104,9 +102,9 @@
             v-model="useV2Exchange"
             :label="$t('button.useV2')"
           ></v-switch>
-          <v-bpa-button color="secondary" @click="cancel()"
-            >Cancel</v-bpa-button
-          >
+          <v-bpa-button color="secondary" @click="cancel()">{{
+            $t("button.cancel")
+          }}</v-bpa-button>
           <v-bpa-button
             :loading="this.isBusy"
             color="primary"
@@ -118,7 +116,7 @@
             :loading="this.isBusy"
             color="primary"
             @click="saveDocument(true && !isProfile(intDoc.type))"
-            >Save & Close</v-bpa-button
+            >{{ $t("button.saveAndClose") }}</v-bpa-button
           >
         </v-layout>
       </v-card-actions>
@@ -127,7 +125,7 @@
         <v-expansion-panel>
           <v-expansion-panel-header
             class="grey--text text--darken-2 font-weight-medium bg-light"
-            >Show raw data</v-expansion-panel-header
+            >{{ $t("showRawData") }}</v-expansion-panel-header
           >
           <v-expansion-panel-content class="bg-light">
             <vue-json-pretty :data="document"></vue-json-pretty>
@@ -177,10 +175,10 @@ export default {
   },
   created() {
     if (this.id && !this.type) {
-      EventBus.$emit("title", "Edit Document");
+      EventBus.$emit("title", this.$t("view.document.titleExisting"));
       this.getDocument();
     } else {
-      EventBus.$emit("title", "Create new Document");
+      EventBus.$emit("title", this.$t("view.document.titleNew"));
       this.document.type = this.type;
       this.document.schemaId = this.schemaId;
       this.document.isPublic = this.isProfile(this.document.type);
@@ -230,7 +228,12 @@ export default {
             this.document = result.data;
             this.intDoc = { ...this.document };
             this.isReady = true;
-            EventBus.$emit("title", "Edit (" + this.document.typeLabel + ")");
+            EventBus.$emit(
+              "title",
+              `${this.$t("view.document.titleEdit")} (${
+                this.document.typeLabel
+              })`
+            );
           }
         })
         .catch((e) => {
@@ -258,7 +261,10 @@ export default {
             } else {
               this.$router.go(this.$router.currentRoute);
             }
-            EventBus.$emit("success", "Success");
+            EventBus.$emit(
+              "success",
+              this.$t("view.document.eventSuccessSaveEdit")
+            );
           })
           .catch((e) => {
             this.isBusy = false;
@@ -284,7 +290,10 @@ export default {
             });
             this.isBusy = false;
             this.$router.go(-1);
-            EventBus.$emit("success", "Success");
+            EventBus.$emit(
+              "success",
+              this.$t("view.document.eventSuccessSaveNew")
+            );
           })
           .catch((e) => {
             this.isBusy = false;
@@ -297,7 +306,10 @@ export default {
         .delete(`${this.$apiBaseUrl}/wallet/document/${this.id}`)
         .then((result) => {
           if (result.status === 200) {
-            EventBus.$emit("success", "Document deleted");
+            EventBus.$emit(
+              "success",
+              this.$t("view.document.eventSuccessDelete")
+            );
             this.$router.go(-1);
           }
         })

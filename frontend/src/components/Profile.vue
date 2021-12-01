@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2020 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -13,7 +13,7 @@
         $t("component.profile.organizationalProfile.title")
       }}</v-card-title>
       <OrganizationalProfile
-        v-bind:documentData="profile"
+        v-model="profile"
         v-if="profile"
         isReadOnly
       ></OrganizationalProfile>
@@ -87,15 +87,14 @@
 </template>
 
 <script>
-import { CredentialTypes } from "../constants";
+import { CredentialTypes } from "@/constants";
 import OrganizationalProfile from "@/components/OrganizationalProfile";
 import Credential from "@/components/Credential";
 import {
   getPartnerProfile,
   getPartnerProfileRoute,
 } from "@/utils/partnerUtils";
-import { mdiCalendarCheck } from "@mdi/js";
-import { mdiCalendarRemove } from "@mdi/js";
+import { mdiCalendarCheck, mdiCalendarRemove } from "@mdi/js";
 import VBpaButton from "@/components/BpaButton";
 
 export default {
@@ -109,9 +108,8 @@ export default {
     organizationProfileEditVisible: {
       type: Boolean,
       default: false,
-    }
+    },
   },
-  created() {},
   data: () => {
     return {
       CredentialTypes: CredentialTypes,
@@ -147,8 +145,8 @@ export default {
             credential.id = value;
             delete credential.credentialData.id;
           } else if (typeof value === "object" && value !== null) {
-            Object.keys(value).map(function (key) {
-              credential.credentialData[key] = value[key];
+            Object.keys(value).map(function (key2) {
+              credential.credentialData[key2] = value[key2];
             });
             delete credential.credentialData[key];
           }
@@ -157,7 +155,7 @@ export default {
       return credential;
     },
     editProfile() {
-      let route = getPartnerProfileRoute(this.partner);
+      const route = getPartnerProfileRoute(this.partner);
       if (route) {
         this.$router.push(route);
       }

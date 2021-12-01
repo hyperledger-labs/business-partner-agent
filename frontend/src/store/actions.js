@@ -1,7 +1,14 @@
+/*
+ * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * see the NOTICE file and/or the repository at
+ * https://github.com/hyperledger-labs/business-partner-agent
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import moment from "moment";
-import { CredentialTypes, PartnerStates } from "../constants";
+import { CredentialTypes, PartnerStates } from "@/constants";
 import { EventBus, axios, apiBaseUrl } from "../main";
-import { getPartnerProfile } from "../utils/partnerUtils";
+import { getPartnerProfile } from "@/utils/partnerUtils";
 import adminService from "@/services/adminService";
 import proofTemplateService from "@/services/proofTemplateService";
 import partnerService from "@/services/partnerService";

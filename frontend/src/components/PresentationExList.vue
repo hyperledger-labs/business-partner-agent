@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2020 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -150,14 +150,14 @@ import PresentationRecordV2 from "@/components/PresentationRecordV2";
 import VBpaButton from "@/components/BpaButton";
 export default {
   props: {
-    items: Array,
+    value: Array,
     openItemById: String,
   },
   mounted() {
     // Open Item directly. Is used for links from notifications/activity
     if (this.openItemById) {
       // FIXME: items observable is typically not resolved yet. Then items is empty
-      const item = this.items.find((item) => item.id === this.openItemById);
+      const item = this.items.find((i) => i.id === this.openItemById);
       if (item) {
         this.openItem(item);
       } else {
@@ -179,7 +179,19 @@ export default {
       isLoading: false,
       isWaitingForMatchingCreds: false,
       declineReasonText: "",
-      headers: [
+    };
+  },
+  computed: {
+    items: {
+      get() {
+        return this.value;
+      },
+      set(val) {
+        this.$emit("input", val);
+      },
+    },
+    headers() {
+      return [
         {
           text: "",
           value: "indicator",
@@ -187,25 +199,23 @@ export default {
           filterable: false,
         },
         {
-          text: "Name",
+          text: this.$t("component.presentationExList.table.label"),
           value: "label",
         },
         {
-          text: "Role",
+          text: this.$t("component.presentationExList.table.role"),
           value: "role",
         },
         {
-          text: "Updated at",
+          text: this.$t("component.presentationExList.table.updatedAt"),
           value: "updatedAt",
         },
         {
-          text: "State",
+          text: this.$t("component.presentationExList.table.state"),
           value: "state",
         },
-      ],
-    };
-  },
-  computed: {
+      ];
+    },
     showV2() {
       return (
         this.record.state &&
@@ -241,7 +251,10 @@ export default {
       const payload = this.prepareApprovePayload();
       try {
         await proofExService.approveProofRequest(this.record.id, payload);
-        EventBus.$emit("success", "Proof has been sent");
+        EventBus.$emit(
+          "success",
+          this.$t("component.presentationExList.eventSuccessApprove")
+        );
         this.closeDialog();
         this.$emit("changed");
       } catch (e) {
@@ -254,7 +267,10 @@ export default {
           this.record.id,
           this.declineReasonText
         );
-        EventBus.$emit("success", "Presentation request declined");
+        EventBus.$emit(
+          "success",
+          this.$t("component.presentationExList.eventSuccessDecline")
+        );
         this.closeDialog();
         this.$emit("changed");
       } catch (e) {
@@ -302,7 +318,10 @@ export default {
             (item) => item.id === this.record.id
           );
           this.items.splice(idx, 1);
-          EventBus.$emit("success", "Presentation record deleted");
+          EventBus.$emit(
+            "success",
+            this.$t("component.presentationExList.eventSuccessDelete")
+          );
           this.closeDialog();
         }
       } catch (e) {
@@ -411,7 +430,6 @@ export default {
         });
 
         this.record.canBeFullfilled = this.canBeFullfilled();
-
         this.isWaitingForMatchingCreds = false;
       });
     },

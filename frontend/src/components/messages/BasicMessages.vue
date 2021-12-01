@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2020 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -92,8 +92,7 @@ export default {
       const _rooms = [];
       const partners = await partnerService.listPartners();
       if (Array.isArray(partners.data)) {
-        for (let i = 0; i < partners.data.length; i++) {
-          const p = partners.data[i];
+        for (const p of partners.data) {
           // assume they have a connection id, but check to make sure this partner is ARIES
           if (p.ariesSupport && p.state !== PartnerStates.INVITATION.value) {
             const name = p.name;
@@ -111,7 +110,7 @@ export default {
                 },
                 {
                   _id: CHAT_CURRENT_USERID,
-                  username: "Me",
+                  username: this.$t("app.chat.usernameDefault"),
                 },
               ],
             };
@@ -140,8 +139,7 @@ export default {
 
         let newMessages = false;
         if (Array.isArray(_pms.data)) {
-          for (let i = 0; i < _pms.data.length; i++) {
-            const msg = _pms.data[i];
+          for (const msg of _pms.data) {
             const _seen = this.markSeen(msg.id);
             if (!_seen) {
               newMessages = true;

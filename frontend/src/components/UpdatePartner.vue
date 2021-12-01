@@ -1,39 +1,45 @@
 <!--
- Copyright (c) 2021 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
 <template>
   <v-container>
     <v-card class="mx-auto">
-      <v-card-title class="bg-light mb-4"> Update Partner </v-card-title>
+      <v-card-title class="bg-light mb-4">{{
+        $t("component.updatePartner.title")
+      }}</v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="4">
-            <p class="grey--text text--darken-2 font-weight-medium">Name</p>
+            <p class="grey--text text--darken-2 font-weight-medium">
+              {{ $t("component.updatePartner.name") }}
+            </p>
           </v-col>
           <v-col cols="8">
             <v-text-field
-              label="Name"
-              placeholder=""
+              :label="$t('component.updatePartner.labelName')"
               v-model="alias"
               outlined
               dense
+              :rules="[rules.required]"
             >
             </v-text-field>
           </v-col>
         </v-row>
         <v-row>
           <v-col cols="4">
-            <p class="grey--text text--darken-2 font-weight-medium">Tags</p>
+            <p class="grey--text text--darken-2 font-weight-medium">
+              {{ $t("component.updatePartner.tags") }}
+            </p>
           </v-col>
           <v-col cols="8">
             <v-autocomplete
               multiple
               v-model="selectedTags"
-              label="Tags"
+              :label="$t('component.updatePartner.labelTags')"
               :items="tags"
               chips
               deletable-chips
@@ -45,7 +51,6 @@
               class="grey--text text--darken-2 font-weight-medium"
               >{{ $t("view.addPartner.trustPing") }}</v-list-item-title
             >
-
             <v-list-item-action>
               <v-switch v-model="trustPing"></v-switch>
             </v-list-item-action>
@@ -54,11 +59,15 @@
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-bpa-button color="secondary" @click="cancel()"
-            >Cancel</v-bpa-button
-          >
-          <v-btn :loading="this.isBusy" color="primary" text @click="submit()"
-            >Submit</v-btn
+          <v-bpa-button color="secondary" @click="cancel()">{{
+            $t("button.cancel")
+          }}</v-bpa-button>
+          <v-btn
+            :loading="this.isBusy"
+            color="primary"
+            text
+            @click="submit()"
+            >{{ $t("button.submit") }}</v-btn
           >
         </v-layout>
       </v-card-actions>
@@ -84,9 +93,6 @@ export default {
     return {
       isBusy: false,
       updatedTags: [],
-      rules: {
-        required: (value) => !!value || "Can't be empty",
-      },
     };
   },
   mounted() {
@@ -95,6 +101,11 @@ export default {
     this.updatedTrustPing = this.trustPing;
   },
   computed: {
+    rules() {
+      return {
+        required: (value) => !!value || this.$t("app.rules.required"),
+      };
+    },
     alias: {
       get() {
         return this.partner.alias;
@@ -128,7 +139,6 @@ export default {
         : [];
     },
   },
-  watch: {},
   methods: {
     async submit() {
       this.isBusy = true;
@@ -146,7 +156,10 @@ export default {
         .then((result) => {
           this.isBusy = false;
           if (result.status === 200) {
-            EventBus.$emit("success", "Partner updated successfully");
+            EventBus.$emit(
+              "success",
+              this.$t("component.updatePartner.eventSuccess")
+            );
             this.$emit("success");
           }
         })

@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2020 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -71,29 +71,31 @@ export default {
       isBusy: false,
       useV2Exchange: false,
       selectedCredentials: [],
-      credHeaders: [
-        {
-          text: "Label",
-          value: "label",
-        },
-        {
-          text: "Type",
-          value: "type",
-        },
-        {
-          text: "Issued by",
-          value: "issuer",
-        },
-        {
-          text: "Issued at",
-          value: "issuedAt",
-        },
-      ],
     };
   },
   computed: {
     expertMode() {
       return this.$store.state.expertMode;
+    },
+    credHeaders() {
+      return [
+        {
+          text: this.$t("view.sendPresentation.label"),
+          value: "label",
+        },
+        {
+          text: this.$t("view.sendPresentation.type"),
+          value: "type",
+        },
+        {
+          text: this.$t("view.sendPresentation.issuedBy"),
+          value: "issuer",
+        },
+        {
+          text: this.$t("view.sendPresentation.issuedAt"),
+          value: "issuedAt",
+        },
+      ];
     },
   },
   methods: {
@@ -111,7 +113,10 @@ export default {
           .then((res) => {
             console.log(res);
             this.isBusy = false;
-            EventBus.$emit("success", "Presentation sent");
+            EventBus.$emit(
+              "success",
+              this.$t("view.sendPresentation.eventSuccessSend")
+            );
             this.$router.push({
               name: "Partner",
               params: { id: this.id },

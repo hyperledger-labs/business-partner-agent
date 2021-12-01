@@ -1,11 +1,10 @@
 /*
- Copyright (c) 2020 - for information on the respective copyright owner
- see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
- 
- SPDX-License-Identifier: Apache-2.0
-*/
-
+ * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * see the NOTICE file and/or the repository at
+ * https://github.com/hyperledger-labs/business-partner-agent
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 /*
     Sample for params
     var keyToSort = {
@@ -30,7 +29,7 @@ export default Object.defineProperty(Array.prototype, "sortByKeys", {
         key;
       for (key in obj) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
-          if (size == ix) return key;
+          if (size === ix) return key;
           size++;
         }
       }
@@ -45,7 +44,7 @@ export default Object.defineProperty(Array.prototype, "sortByKeys", {
       d = d !== null ? d : 1;
       a = isNumberValue(a) ? a * 1 : String(a).toLowerCase(); // restore numbers
       b = isNumberValue(b) ? b * 1 : String(b).toLowerCase();
-      if (a == b) return 0;
+      if (a === b) return 0;
       return a > b ? 1 * d : -1 * d;
     };
 
@@ -56,9 +55,9 @@ export default Object.defineProperty(Array.prototype, "sortByKeys", {
     for (var k in keys) {
       // asc unless desc or skip
       keys[k] =
-        keys[k] == "desc" || keys[k] == -1
+        keys[k] === "desc" || keys[k] === -1
           ? -1
-          : keys[k] == "skip" || keys[k] === 0
+          : keys[k] === "skip" || keys[k] === 0
           ? 0
           : 1;
     }

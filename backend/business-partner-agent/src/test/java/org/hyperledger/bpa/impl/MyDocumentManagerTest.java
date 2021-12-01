@@ -173,7 +173,8 @@ class MyDocumentManagerTest extends RunWithAries {
         MyDocumentAPI myCred = mgmt.saveNewDocument(credential);
         UUID ID = myCred.getId();
 
-        assertEquals(1, mgmt.getMyDocuments().size());
+        assertEquals(0, mgmt.getMyDocuments(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL).size());
+        assertEquals(1, mgmt.getMyDocuments(CredentialType.INDY).size());
         Optional<MyDocumentAPI> result = mgmt.getMyDocumentById(ID);
         assertTrue(result.isPresent());
 

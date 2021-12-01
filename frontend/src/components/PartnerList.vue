@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2020 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -56,11 +56,11 @@
 </template>
 
 <script>
-import { EventBus } from "../main";
-import { getPartnerState } from "../utils/partnerUtils";
+import { EventBus } from "@/main";
+import { getPartnerState } from "@/utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator";
 import NewMessageIcon from "@/components/NewMessageIcon";
-import { CredentialTypes, PartnerStates } from "../constants";
+import { CredentialTypes, PartnerStates } from "@/constants";
 
 export default {
   name: "PartnerList",
@@ -69,18 +69,13 @@ export default {
     NewMessageIcon,
   },
   props: {
-    selectable: {
+    showAllHeaders: {
       type: Boolean,
       default: false,
     },
-    headers: {
-      type: Array,
-      default: () => [
-        {
-          text: "Name",
-          value: "name",
-        },
-      ],
+    selectable: {
+      type: Boolean,
+      default: false,
     },
     onlyAries: {
       type: Boolean,
@@ -115,6 +110,32 @@ export default {
     };
   },
   computed: {
+    headers() {
+      return [
+        {
+          text: this.$t("component.partnerList.headers.name"),
+          value: "name",
+        },
+        this.showAllHeaders
+          ? {
+              text: this.$t("component.partnerList.headers.address"),
+              value: "address",
+            }
+          : {},
+        this.showAllHeaders
+          ? {
+              text: this.$t("component.partnerList.headers.updatedAt"),
+              value: "updatedAt",
+            }
+          : {},
+        this.showAllHeaders
+          ? {
+              text: this.$t("component.partnerList.headers.state"),
+              value: "state",
+            }
+          : {},
+      ];
+    },
     expertMode() {
       return this.$store.state.expertMode;
     },

@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2020 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -95,8 +95,8 @@
 </template>
 
 <script>
-import { CredentialTypes } from "../constants";
-import { EventBus } from "../main";
+import { CredentialTypes } from "@/constants";
+import { EventBus } from "@/main";
 import NewMessageIcon from "@/components/NewMessageIcon";
 
 export default {
@@ -113,6 +113,10 @@ export default {
       default: false,
     },
     indicateNew: {
+      type: Boolean,
+      default: false,
+    },
+    useIndy: {
       type: Boolean,
       default: false,
     },
@@ -155,7 +159,11 @@ export default {
   methods: {
     fetch(type) {
       this.$axios
-        .get(`${this.$apiBaseUrl}/wallet/${type}`)
+        .get(
+          `${this.$apiBaseUrl}/wallet/${type}${
+            this.useIndy ? "?types=INDY" : ""
+          }`
+        )
         .then((result) => {
           if ({}.hasOwnProperty.call(result, "data")) {
             this.isBusy = false;

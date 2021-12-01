@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2021 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -9,7 +9,7 @@
   <v-container>
     <v-layout align-end justify-end>
       <v-combobox
-        label="Filter by"
+        :label="$t('component.activityList.labelFilterCombobox')"
         v-model="filter"
         :items="filterList"
         class="mx-4"
@@ -37,7 +37,9 @@
         clearable
         clear-icon="$vuetify.icons.delete"
       ></v-combobox>
-      <v-bpa-button color="primary" @click="fetchItems()">Refresh</v-bpa-button>
+      <v-bpa-button color="primary" @click="fetchItems()">{{
+        $t("button.refresh")
+      }}</v-bpa-button>
     </v-layout>
     <v-data-table
       :hide-default-footer="items.length < 10"
@@ -96,32 +98,9 @@ export default {
       type: Boolean,
       default: () => true,
     },
-    headers: {
-      type: Array,
-      default: () => [
-        {
-          text: "",
-          value: "indicator",
-          sortable: false,
-          filterable: false,
-        },
-        {
-          text: "Type",
-          value: "type",
-        },
-        {
-          text: "Connection",
-          value: "partner",
-        },
-        {
-          text: "Update at",
-          value: "updatedAt",
-        },
-        {
-          text: "State",
-          value: "state",
-        },
-      ],
+    showRole: {
+      type: Boolean,
+      default: () => false,
     },
   },
   mounted() {
@@ -135,7 +114,6 @@ export default {
       isBusy: true,
       items: [],
       filter: null,
-      filterList: [{ text: "Type", value: "type" }],
       filterValue: null,
       filterValueList: [],
     };
@@ -156,6 +134,46 @@ export default {
     },
   },
   computed: {
+    filterList() {
+      return [
+        {
+          text: this.headers.find((x) => x.value === "type").text,
+          value: "type",
+        },
+      ];
+    },
+    headers() {
+      return [
+        {
+          text: "",
+          value: "indicator",
+          sortable: false,
+          filterable: false,
+        },
+        {
+          text: this.$t("component.activityList.tableHeaders.type"),
+          value: "type",
+        },
+        {
+          text: this.$t("component.activityList.tableHeaders.partner"),
+          value: "partner",
+        },
+        {
+          text: this.$t("component.activityList.tableHeaders.updatedAt"),
+          value: "updatedAt",
+        },
+        this.showRole
+          ? {
+              text: this.$t("component.activityList.tableHeaders.role"),
+              value: "role",
+            }
+          : {},
+        {
+          text: this.$t("component.activityList.tableHeaders.state"),
+          value: "state",
+        },
+      ];
+    },
     newMessageIconType() {
       return this.tasks ? "task" : "activity";
     },
@@ -248,7 +266,9 @@ export default {
       return o ? o.label : role;
     },
     partnerLabel(partner) {
-      return partner ? partner.name : "Unknown";
+      return partner
+        ? partner.name
+        : this.$t("component.activityList.labelPartnerUnknown");
     },
   },
 };

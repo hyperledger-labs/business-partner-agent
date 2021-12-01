@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2021 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -22,7 +22,7 @@
             id="proofTemplateName"
             v-model="proofTemplate.name"
             dense
-            label="Name"
+            :label="$t('view.proofTemplate.create.labelName')"
             :rules="[rules.required]"
           ></v-text-field>
         </v-list-item>
@@ -74,10 +74,12 @@
                   </div>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                  <AttributeEdit :attribute-group="attributeGroup" />
+                  <AttributeEdit v-model="proofTemplate.attributeGroups[idx]" />
 
                   <!-- Schema Restrictions -->
-                  <RestrictionsEdit :attribute-group="attributeGroup" />
+                  <RestrictionsEdit
+                    v-model="proofTemplate.attributeGroups[idx]"
+                  />
 
                   <v-card-actions>
                     <v-bpa-button

@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2020 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -38,11 +38,7 @@
       <v-expand-transition>
         <div v-show="showActivities">
           <v-card-text>
-            <activity-list
-              :activities="true"
-              :tasks="false"
-              :headers="activityHeaders"
-            />
+            <activity-list :activities="true" :tasks="false" show-role />
           </v-card-text>
         </div>
       </v-expand-transition>
@@ -64,34 +60,6 @@ export default {
   },
   data: () => {
     return {
-      activityHeaders: [
-        {
-          text: "",
-          value: "indicator",
-          sortable: false,
-          filterable: false,
-        },
-        {
-          text: "Type",
-          value: "type",
-        },
-        {
-          text: "Connection",
-          value: "partner",
-        },
-        {
-          text: "Update at",
-          value: "updatedAt",
-        },
-        {
-          text: "Role",
-          value: "role",
-        },
-        {
-          text: "State",
-          value: "state",
-        },
-      ],
       showTasks: true,
       showActivities: false,
     };

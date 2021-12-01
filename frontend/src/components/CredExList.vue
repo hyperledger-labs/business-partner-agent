@@ -1,7 +1,7 @@
 <!--
- Copyright (c) 2021 - for information on the respective copyright owner
+ Copyright (c) 2020-2021 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
- https://github.com/hyperledger-labs/organizational-agent
+ https://github.com/hyperledger-labs/business-partner-agent
 
  SPDX-License-Identifier: Apache-2.0
 -->
@@ -270,37 +270,6 @@ import { CredentialExchangeRoles, CredentialExchangeStates } from "@/constants";
 export default {
   props: {
     items: Array,
-    headers: {
-      type: Array,
-      default: () => [
-        {
-          text: "",
-          value: "indicator",
-          sortable: false,
-          filterable: false,
-        },
-        {
-          text: "Type",
-          value: "displayText",
-        },
-        {
-          text: "Issued to",
-          value: "partner.name",
-        },
-        {
-          text: "Updated at",
-          value: "updatedAt",
-        },
-        {
-          text: "State",
-          value: "state",
-        },
-        {
-          text: "Revocation",
-          value: "revocable",
-        },
-      ],
-    },
     isActiveFn: {
       type: Function,
       default: (item) =>
@@ -309,6 +278,10 @@ export default {
         item.state === CredentialExchangeStates.DONE,
     },
     isLoading: Boolean,
+    headerRole: {
+      type: Boolean,
+      default: false,
+    },
     openItemById: String,
   },
   created() {
@@ -333,6 +306,39 @@ export default {
     }
   },
   computed: {
+    headers() {
+      return [
+        {
+          text: "",
+          value: "indicator",
+          sortable: false,
+          filterable: false,
+        },
+        {
+          text: this.$t("component.credExList.headers.displayText"),
+          value: "displayText",
+        },
+        {
+          text:
+            this.headerRole === true
+              ? this.$t("component.credExList.headers.role")
+              : this.$t("component.credExList.headers.partnerName"),
+          value: this.headerRole === true ? "role" : "partner.name",
+        },
+        {
+          text: this.$t("component.credExList.headers.updatedAt"),
+          value: "updatedAt",
+        },
+        {
+          text: this.$t("component.credExList.headers.state"),
+          value: "state",
+        },
+        {
+          text: this.$t("component.credExList.headers.revocable"),
+          value: "revocable",
+        },
+      ];
+    },
     partnerList: {
       get() {
         return this.$store.getters.getPartnerSelectList;
