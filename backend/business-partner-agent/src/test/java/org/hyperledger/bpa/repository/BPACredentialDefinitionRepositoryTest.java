@@ -19,6 +19,7 @@ package org.hyperledger.bpa.repository;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.model.BPACredentialDefinition;
 import org.hyperledger.bpa.model.BPASchema;
 import org.junit.jupiter.api.Assertions;
@@ -45,6 +46,7 @@ public class BPACredentialDefinitionRepositoryTest {
                 .schemaId(schemaId)
                 .schemaAttributeNames(Set.of("name"))
                 .seqNo(1)
+                .type(CredentialType.INDY)
                 .build());
         credRepo.save(BPACredentialDefinition
                 .builder()

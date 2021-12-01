@@ -107,7 +107,12 @@ public class Converter {
         List<PartnerCredential> pc = new ArrayList<>();
         if (partner.getVerifiableCredential() != null) {
             for (VerifiableIndyCredential c : partner.getVerifiableCredential()) {
-                JsonNode node = mapper.convertValue(c.getCredentialSubject(), JsonNode.class);
+                JsonNode node;
+                try {
+                    node = mapper.readTree(c.getCredentialSubject().toString());
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
 
                 boolean indyCredential = false;
                 if (CollectionUtils.isNotEmpty(c.getType())) {

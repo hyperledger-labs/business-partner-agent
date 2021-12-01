@@ -83,7 +83,7 @@ class VPManagerTest {
         final VerifiableCredential vp = vpm.buildFromDocument(doc, "xxyyyzzz");
 
         assertNotNull(vp.getCredentialSubject());
-        assertEquals("{type=LegalEntity, id=xxyyyzzz}",
+        assertEquals("{\"type\":\"LegalEntity\",\"id\":\"xxyyyzzz\"}",
                 vp.getCredentialSubject().toString());
         assertEquals(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.getContext(), vp.getContext());
     }
@@ -100,7 +100,7 @@ class VPManagerTest {
         final VerifiableCredential vp = vpm.buildFromDocument(doc, myDid);
 
         assertNotNull(vp.getCredentialSubject());
-        assertEquals("{iban=1234, bic=4321, id=xxyyyzzz}",
+        assertEquals("{\"iban\":\"1234\",\"bic\":\"4321\",\"id\":\"xxyyyzzz\"}",
                 vp.getCredentialSubject().toString());
         assertEquals(myDid, vp.getIssuer());
         assertEquals(CredentialType.INDY.getContext(), vp.getContext());
@@ -153,7 +153,7 @@ class VPManagerTest {
                 .build();
         VerifiableCredential.VerifiableIndyCredential indyCred = vpm.buildFromCredential(myCredential);
         assertNotNull(indyCred.getCredentialSubject());
-        assertEquals(2, c.toMap(indyCred.getCredentialSubject()).size());
+        assertEquals(2, indyCred.getCredentialSubject().size());
         assertEquals(2, indyCred.getType().size());
         assertEquals(2, indyCred.getContext().size());
         // System.out.println(GsonConfig.prettyPrinter().toJson(indyCred));

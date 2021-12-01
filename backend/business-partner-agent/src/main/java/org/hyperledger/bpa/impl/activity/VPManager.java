@@ -115,7 +115,7 @@ public class VPManager {
 
         // this is needed because the java client serializes with GSON
         // and cannot handle Jackson ObjectNode
-        Object subj = GsonConfig.defaultConfig().fromJson(on.toString(), Object.class);
+        JsonObject subj = GsonConfig.defaultConfig().fromJson(on.toString(), JsonObject.class);
 
         return VerifiableIndyCredential
                 .builder()
@@ -148,7 +148,7 @@ public class VPManager {
                 .credDefId(ariesCred.getCredentialDefinitionId())
                 .label(cred.getLabel())
                 .indyIssuer(id.getDidPrefix() + AriesStringUtil.credDefIdGetDid(ariesCred.getCredentialDefinitionId()))
-                .credentialSubject(ariesCred.getAttrs());
+                .credentialSubject(GsonConfig.defaultConfig().toJsonTree(ariesCred.getAttrs()).getAsJsonObject());
         return builder.build();
     }
 

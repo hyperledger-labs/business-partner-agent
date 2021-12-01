@@ -19,6 +19,7 @@ package org.hyperledger.bpa.repository;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.model.BPARestrictions;
 import org.hyperledger.bpa.model.BPASchema;
 import org.junit.jupiter.api.Assertions;
@@ -48,6 +49,7 @@ public class BPARestrictionsRepositoryTest {
                 .schemaId(schema1Id)
                 .schemaAttributeNames(List.of("name"))
                 .seqNo(1)
+                .type(CredentialType.INDY)
                 .build());
 
         BPASchema schema2 = schemaRepo.save(BPASchema
@@ -55,6 +57,7 @@ public class BPARestrictionsRepositoryTest {
                 .schemaId(schema2Id)
                 .schemaAttributeNames(List.of("other"))
                 .seqNo(1)
+                .type(CredentialType.INDY)
                 .build());
 
         BPARestrictions restriction = repo.save(BPARestrictions

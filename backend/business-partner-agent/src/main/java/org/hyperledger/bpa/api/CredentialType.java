@@ -43,15 +43,16 @@ public enum CredentialType {
                     "LabeledCredential",
                     "OrganizationalProfileCredential")),
     /**
-     * A document or indy credential that is linked to a schema and uses an embedded
-     * context
+     * A document or indy credential that is linked to a ledger schema and uses an
+     * embedded context
      */
     INDY(
             List.of(ApiConstants.CREDENTIALS_V1),
             List.of("VerifiableCredential")),
 
     /**
-     * A document or json-ld credential
+     * A document or json-ld credential that is not linked to any ledger and uses an
+     * external or embedded context
      */
     JSON_LD(
             List.of(ApiConstants.CREDENTIALS_V1),
