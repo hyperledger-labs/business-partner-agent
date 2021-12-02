@@ -29,15 +29,15 @@
     "vue-moment": "^4.1.0",
     "vue-native-websocket": "^2.0.14",
     "vue-router": "^3.4.9",
-    "vuetify": "^2.5.8",
+    "vuetify": "2.6.1",
     "vuex": "^3.6.0"
   },
   "devDependencies": {
     "@babel/core": "7.16.0",
     "@babel/eslint-parser": "7.16.3",
-    "@fortawesome/fontawesome-free": "^5.15.3",
-    "@mdi/font": "^5.7.55",
-    "@mdi/js": "^5.8.55",
+    "@fortawesome/fontawesome-free": "5.15.4",
+    "@mdi/font": "6.5.95",
+    "@mdi/js": "6.5.95",
     "@vue/cli-plugin-babel": "4.5.15",
     "@vue/cli-plugin-eslint": "4.5.15",
     "@vue/cli-plugin-router": "4.5.15",
@@ -52,18 +52,16 @@
     "husky": "^4.3.0",
     "license-check-and-add": "4.0.3",
     "license-checker": "25.0.1",
-    "lint-staged": "^10.4.2",
-    "node-sass": "^5.0.0",
+    "lint-staged": "12.1.2",
     "oss-attribution-generator": "^1.7.1",
-    "prettier": "2.1.2",
-    "sass": "~1.32.12",
-    "sass-loader": "^10",
+    "prettier": "2.5.0",
+    "sass": "1.44.0",
+    "sass-loader": "10.2.0",
     "vue-cli-plugin-i18n": "2.3.1",
     "vue-cli-plugin-vuetify": "2.4.4",
     "vue-jest": "3.0.7",
     "vue-template-compiler": "2.6.14",
-    "vuetify-loader": "^1.7.2",
-    "xml-js": "^1.6.11"
+    "vuetify-loader": "1.7.3"
   },
   "husky": {
     "hooks": {
