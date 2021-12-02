@@ -8,5 +8,5 @@
     "vue-cli-service lint",
     "prettier --write"
   ],
-  "**/*.{json}": ["vue-cli-service lint", "prettier --write"]
+  "**/*.{json}": ["prettier --write"]
 }
