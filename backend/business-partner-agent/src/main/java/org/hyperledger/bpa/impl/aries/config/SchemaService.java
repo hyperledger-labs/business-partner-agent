@@ -155,13 +155,14 @@ public class SchemaService {
 
     @Nullable
     public SchemaAPI addJsonLDSchema(@NonNull String schemaId, @Nullable String label,
-            @Nullable String defaultAttributeName, @NonNull Set<String> attributes) {
+            @Nullable String defaultAttributeName, @NonNull String ldType, @NonNull Set<String> attributes) {
         BPASchema dbS = BPASchema.builder()
                 .label(label)
                 .schemaId(schemaId)
                 .schemaAttributeNames(attributes)
                 .defaultAttributeName(defaultAttributeName)
                 .type(CredentialType.JSON_LD)
+                .ldType(ldType)
                 .build();
         BPASchema saved = schemaRepo.save(dbS);
         return SchemaAPI.from(saved);

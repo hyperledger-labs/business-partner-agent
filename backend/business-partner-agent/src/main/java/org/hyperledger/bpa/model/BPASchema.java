@@ -61,8 +61,17 @@ public class BPASchema {
     @Nullable
     private String defaultAttributeName;
 
+    /**
+     * Indy schema sequence number
+     */
     @Nullable
     private Integer seqNo;
+
+    /**
+     * Referenced json-ld type
+     */
+    @Nullable
+    private String ldType;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     private List<BPARestrictions> restrictions;

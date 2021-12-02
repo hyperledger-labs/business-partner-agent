@@ -48,15 +48,21 @@ public class SchemaAPI {
 
     private String schemaId;
 
-    private String version;
+    private Boolean isMine;
 
     private Set<String> schemaAttributeNames;
 
     private List<TrustedIssuer> trustedIssuer;
 
-    private List<CredDef> credentialDefinitions;
+    // ld only
 
-    private Boolean isMine;
+    private String ldType;
+
+    // indy only
+
+    private String version;
+
+    private List<CredDef> credentialDefinitions;
 
     public static SchemaAPI from(BPASchema s) {
         return from(s, true, true, null);
@@ -93,6 +99,7 @@ public class SchemaAPI {
         return builder
                 .id(s.getId())
                 .type(s.getType())
+                .ldType(s.getLdType())
                 .label(s.getLabel())
                 .schemaId(s.getSchemaId())
                 .schemaAttributeNames(s.getSchemaAttributeNames() != null ? s.getSchemaAttributeNames() : Set.of())

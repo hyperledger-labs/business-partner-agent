@@ -29,6 +29,7 @@ import org.hyperledger.acy_py.generated.model.DID;
 import org.hyperledger.acy_py.generated.model.DIDCreate;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.resolver.DIDDocument;
+import org.hyperledger.aries.api.wallet.ListWalletDidFilter;
 import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.client.CachingAriesClient;
@@ -64,7 +65,7 @@ public class Identity {
     @Inject
     DidDocClient ur;
 
-    public @io.micronaut.core.annotation.NonNull String getMyDid() {
+    public @io.micronaut.core.annotation.NonNull String getMyPublicDid() {
         String myDid = null;
         if (webOnly) {
             myDid = ApiConstants.DID_METHOD_WEB + host;
@@ -109,7 +110,11 @@ public class Identity {
             Optional<DID> walletDid = acaCache.walletDidPublic();
             if (walletDid.isEmpty()) {
                 log.warn("No public did available, falling back to local did. VP can only be validated locally.");
-                final Optional<List<DID>> walletDids = acaPy.walletDid();
+                final Optional<List<DID>> walletDids = acaPy.walletDid(ListWalletDidFilter
+                        .builder()
+                        .keyType(DID.KeyTypeEnum.ED25519)
+                        .method(DID.MethodEnum.SOV)
+                        .build());
                 if (walletDids.isPresent() && !walletDids.get().isEmpty()) {
                     walletDid = Optional.of(walletDids.get().get(0));
                 } else {
@@ -137,7 +142,7 @@ public class Identity {
     }
 
     public boolean isMySchema(@NonNull String schemaId) {
-        String myDid = this.getMyDid();
+        String myDid = this.getMyPublicDid();
         if (StringUtils.isNotEmpty(myDid)) {
             return this.isSchemaCreator(schemaId, myDid);
         }

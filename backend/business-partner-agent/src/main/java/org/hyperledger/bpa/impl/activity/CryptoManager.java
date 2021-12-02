@@ -55,7 +55,7 @@ public class CryptoManager {
         Optional<VerifiablePresentation<VerifiableIndyCredential>> result = Optional.empty();
         try {
             final Optional<String> verkey = id.getVerkey();
-            String myDid = id.getMyDid();
+            String myDid = id.getMyPublicDid();
             String myVerkey = id.getMyKeyId(myDid);
             if (verkey.isPresent()) {
                 SignRequest sr = SignRequest.from(

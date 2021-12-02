@@ -86,6 +86,7 @@ public abstract class AddSchemaRequest {
     @ToString(callSuper = true)
     public static final class AddJsonLDSchema extends AddSchemaRequest {
         private Set<String> attributes;
+        private String ldType;
 
         public AddJsonLDSchema() {
             super(CredentialType.JSON_LD);
