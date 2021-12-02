@@ -45,6 +45,8 @@ import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 @Slf4j
@@ -156,6 +158,13 @@ public class SchemaService {
     @Nullable
     public SchemaAPI addJsonLDSchema(@NonNull String schemaId, @Nullable String label,
             @Nullable String defaultAttributeName, @NonNull String ldType, @NonNull Set<String> attributes) {
+
+        try {
+            new URI(schemaId);
+        } catch (URISyntaxException e) {
+            throw new WrongApiUsageException(ms.getMessage("api.schema.ld.id.parse.error"));
+        }
+
         BPASchema dbS = BPASchema.builder()
                 .label(label)
                 .schemaId(schemaId)
