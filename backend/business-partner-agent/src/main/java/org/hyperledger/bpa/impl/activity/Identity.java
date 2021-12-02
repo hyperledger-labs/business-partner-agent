@@ -65,7 +65,7 @@ public class Identity {
     @Inject
     DidDocClient ur;
 
-    public @io.micronaut.core.annotation.NonNull String getMyPublicDid() {
+    public @io.micronaut.core.annotation.NonNull String getMyDid() {
         String myDid = null;
         if (webOnly) {
             myDid = ApiConstants.DID_METHOD_WEB + host;
@@ -142,7 +142,7 @@ public class Identity {
     }
 
     public boolean isMySchema(@NonNull String schemaId) {
-        String myDid = this.getMyPublicDid();
+        String myDid = this.getMyDid();
         if (StringUtils.isNotEmpty(myDid)) {
             return this.isSchemaCreator(schemaId, myDid);
         }

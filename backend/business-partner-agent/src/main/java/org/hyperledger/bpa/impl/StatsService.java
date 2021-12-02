@@ -90,7 +90,7 @@ public class StatsService {
 
         return BPAStats
                 .builder()
-                .did(identity.getMyPublicDid())
+                .did(identity.getMyDid())
                 .profile(docRepo
                         .existsByTypeEqualsAndIsPublicTrue(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL))
                 .totals(totals)

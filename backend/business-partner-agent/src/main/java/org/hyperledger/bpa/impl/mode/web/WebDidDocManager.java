@@ -66,7 +66,7 @@ public class WebDidDocManager implements DidDocManager {
             verkey = ver.get();
         }
 
-        String myDid = id.getMyPublicDid();
+        String myDid = id.getMyDid();
         String myKeyId = id.getMyKeyId(myDid);
 
         DIDDocument didDoc = DIDDocument.builder()

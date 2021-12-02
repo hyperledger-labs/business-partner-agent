@@ -78,7 +78,7 @@ public class VPManager {
     public void recreateVerifiablePresentation() {
         List<VerifiableIndyCredential> vcs = new ArrayList<>();
 
-        String myDid = id.getMyPublicDid();
+        String myDid = id.getMyDid();
 
         docRepo.findByIsPublicTrue().forEach(doc -> vcs.add(buildFromDocument(doc, myDid)));
 
