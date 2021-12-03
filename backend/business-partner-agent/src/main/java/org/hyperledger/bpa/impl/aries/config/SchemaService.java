@@ -235,7 +235,7 @@ public class SchemaService {
         if (schema.isPresent()) {
             result = schema.get().getLabel();
         }
-        if (StringUtils.isEmpty(result)) {
+        if (AriesStringUtil.isIndySchemaId(schemaId) && StringUtils.isEmpty(result)) {
             result = AriesStringUtil.schemaGetName(schemaId);
         }
         return result;

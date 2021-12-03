@@ -35,8 +35,8 @@ import java.util.Set;
         property = "credentialType",
         defaultImpl = AddSchemaRequest.AddIndySchema.class)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = AddSchemaRequest.AddIndySchema.class, names = {"INDY", "indy"}),
-        @JsonSubTypes.Type(value = AddSchemaRequest.AddJsonLDSchema.class, names = {"JSON_LD", "json_ld", "json-ld"}),
+        @JsonSubTypes.Type(value = AddSchemaRequest.AddIndySchema.class, names = { "INDY", "indy" }),
+        @JsonSubTypes.Type(value = AddSchemaRequest.AddJsonLDSchema.class, names = { "JSON_LD", "json_ld", "json-ld" }),
 })
 public abstract class AddSchemaRequest {
 

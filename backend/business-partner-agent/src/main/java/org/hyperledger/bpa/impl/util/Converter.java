@@ -299,7 +299,7 @@ public class Converter {
 
     private String resolveTypeLabel(@NonNull CredentialType type, @Nullable String schemaId) {
         String result = null;
-        if (CredentialType.INDY.equals(type)
+        if (!CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(type)
                 && StringUtils.isNotEmpty(schemaId)) {
             result = schemaService.getSchemaLabel(schemaId);
         } else if (CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(type)) {
