@@ -70,7 +70,6 @@ export default {
   props: {
     schema: {
       type: Object,
-      default: () => {},
     },
     credentialDefinitions: {
       type: Array,

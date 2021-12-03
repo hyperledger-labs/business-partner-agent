@@ -143,7 +143,6 @@ export default {
           return [];
         }
       },
-      set: function () {},
     },
   },
   methods: {

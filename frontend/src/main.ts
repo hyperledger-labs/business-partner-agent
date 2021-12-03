@@ -89,11 +89,14 @@ Vue.prototype.$config = {
     .catch((error) => {
       console.error(error);
     });
+
   if (Object.prototype.hasOwnProperty.call(result, "data")) {
+    // @ts-ignore
     Vue.prototype.$config = result?.data;
     const ledgerPrefix = Vue.prototype.$config.ledgerPrefix;
     const splitted = ledgerPrefix.split(":");
     Vue.prototype.$config.ledger = splitted[splitted.length - 2];
+    // @ts-ignore
     if (result?.data.ux) {
       Object.assign(Vue.prototype.$config.ux, result.data.ux);
       console.log("...Configuration loaded");

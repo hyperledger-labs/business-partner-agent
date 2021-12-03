@@ -81,7 +81,6 @@ export default {
   props: {
     schema: {
       type: Object,
-      default: () => {},
     },
     trustedIssuers: {
       type: Array,

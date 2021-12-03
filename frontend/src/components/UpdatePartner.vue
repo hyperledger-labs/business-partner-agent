@@ -86,7 +86,6 @@ export default {
   props: {
     partner: {
       type: Object,
-      default: () => {},
     },
   },
   data: () => {
