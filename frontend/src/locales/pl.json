@@ -1,0 +1,705 @@
+{
+  "meta": {
+    "langNameEnglish": "Polish",
+    "langNameNative": "Polski"
+  },
+  "app": {
+    "bpaDefaultName": "Agent partnera biznesowego",
+    "snackBar": {
+      "close": "Zamknij"
+    },
+    "chat": {
+      "usernameDefault": "Me"
+    },
+    "search": "Search",
+    "rules": {
+      "required": "wymagane",
+      "onlyInteger": "Value is not an integer",
+      "valueMin": "Value must be above",
+      "valueMax":  "Value must not be above",
+      "colorPrefix": "Color should begin with #",
+      "colorInvalid": "Invalid color (e.g. #FF00FF)",
+      "agree": "You must agree to continue",
+      "validVersion": "Must be follow common version numbering (ex. 1.2 or 1.2.3)",
+      "validSchema": "Must be alphanumeric with optional '_' or '-'.",
+      "validAttributeName": "Must be lowercase alpha with optional '_'."
+    },
+    "sessionDialog": {
+      "headline": "Sesja wygasła",
+      "text": "Wygląda na to, że Twoja sesja wygasła. Czy chcesz zalogować się ponownie?",
+      "yes": "Tak",
+      "no": "Nie"
+    },
+    "footer": {
+      "imprintUrl": {
+        "text": "Informacje korporacyjne"
+      },
+      "privacyPolicyUrl": {
+        "text": "Polityka prywatności"
+      }
+    }
+  },
+  "nav": {
+    "identity": "Tożsamość",
+    "dashboard": "Pulpit",
+    "wallet": "Portfel",
+    "settings": "Ustawienia",
+    "about": "Informacje",
+    "signout": "Wyloguj się",
+    "requestPresentation": "Wniosek o prezentację"
+  },
+  "button": {
+    "accept": "Akceptuj",
+    "save": "Zapisz",
+    "saveAndSend": "Zapisz i wyślij",
+    "saveAndClose": "Save and Close",    
+    "submit": "Submit",
+    "create": "Create",
+    "createAndSend": "Utwórz i wyślij",
+    "cancel": "Anuluj",
+    "decline": "Odrzucenie",
+    "yes": "Tak",
+    "no": "Nie",
+    "close": "Zamknij",
+    "return": "Return",    
+    "sendCounterOffer": "Wyślij kontrofertę",
+    "refresh": "Refresh",
+    "revoke": "Odwołać",
+    "reissue": "Ponowne wydanie",
+    "useV2": "Zastosowanie V2",
+    "writeToLedger": "Write endpoints to ledger"    
+  },
+  "view": {
+    "notifications": {
+      "title": "Powiadomienia",
+      "activities": {
+        "title": "Dziennik działań"
+      },
+      "tasks": {
+        "title": "Zadania"
+      }
+    },
+    "identity": {
+      "title": "Identity",
+      "titleInfo": "Identity Information"
+    },
+    "about": {
+      "title": "About",
+      "textLicense": "The Business Partner Agent is a Hyperledger Labs Open Source Project under Apache 2.0 license.",
+      "textRepo": "If you find an issue you can file it at",
+      "titleImages": "Images",
+      "titlePackages": "Libraries and Packages",
+      "illustrationsBy": "Illustrations are provided by",
+      "logoBy": "The default logo is provided by",
+      "labelVersion": "Version",
+      "labelLicense": "License",
+      "labelLicenseText": "License Text"
+    },
+    "credential": {
+      "title": "Credential Details",
+      "eventSuccessUpdate": "Credential updated",
+      "eventSuccessDelete": "Credential deleted"
+    },
+    "schema": {
+      "title": "Schema",
+      "id": "Schema ID",
+      "attributes": "Schema Attributes",
+      "eventSuccessDelete": "Schema deleted"
+    },
+    "document": {
+      "verification": "Verification",
+      "verificationSubtitle": "Request a verification",
+      "modified": "Document modified, please save before start verification",
+      "titleExisting": "Edit Document",
+      "titleEdit": "Edit",
+      "titleNew": "Create new Document",
+      "eventSuccessSaveEdit": "Saved changes",
+      "eventSuccessSaveNew": "Saved new document",
+      "eventSuccessDelete": "Deleted document"
+    },  
+    "dashboard": {
+      "title": "Dashboard",
+      "setupMessage": "Hi, we've already set up an identity for you!",
+      "setupProfile": "Setup your Profile",
+      "credentialsSent": "Wydane uprawnienia",
+      "credentialsReceived": "Dane uwierzytelniające w portfelu",
+      "presentationRequestsSent": "Wysłane wnioski o prezentację",
+      "presentationRequestsReceived": "Otrzymane wnioski o prezentację",
+      "partners": "Partnerzy biznesowi",
+      "tasks": "Zadania oczekujące"
+    },
+    "contactPerson": {
+      "title": "Contact Person",
+      "labelSelect": "Contact Person",
+      "labelSalutation": "Salutation",
+      "labelAcademicTitle": "Academic Title",
+      "labelFirstName": "First Name",
+      "labelLastName": "Last Name",
+      "labelMail": "E-Mail",
+      "labelPhone": "Phone",
+      "labelMobile": "Mobile Phone",
+      "labelCountry": "Country",
+      "contactPersonTypes": {
+        "ceo": "CEO",
+        "directorLogistics": "Director Logistics",
+        "directorQuality": "Director Quality",
+        "complianceResponsible": "Compliance Responsible",
+        "productSafetyExpert": "Product Safety Expert",
+        "directorFinance": "Director Finance",
+        "hseResponsible": "HSE-Responsible"
+      },
+      "salutationTypes": {
+        "mr": "Mr.",
+        "mrs": "Mrs."
+      },
+      "academicTitleTypes": {
+        "dr": "Dr.",
+        "profDr": "Prof. Dr."
+      }
+    },    
+    "profile": {
+      "title": "Public Profile",
+      "subtitle": "Możesz zmienić ustawienia widoczności dokumentów i zweryfikowanych poświadczeń w <strong>portfelu</strong>, aby zaktualizować swój profil publiczny.",
+      "noProfileTitle": "You don't have set up a public profile yet",
+      "buttonNoProfile": "Setup your Profile"
+    },
+    "comingSoon": {
+      "title": "Coming Soon",
+      "text": "This functionality is coming soon."
+    },
+    "wallet": {
+      "title": "Portfel",
+      "credentials": {
+        "title": "Weryfikowalne poświadczenia",
+        "headers": {
+          "label": "Label",
+          "type": "Type",
+          "issuer": "Issued by",
+          "issuedAt": "Issued at",
+          "revoked": "Revocation",
+          "isPublic": "Public"
+        }
+      },
+      "documents": {
+        "title": "Dokumenty",
+        "headers": {
+          "label" : "Label",
+          "type" : "Type",
+          "createdDate" : "Created at",
+          "updatedDate" : "Updated at",
+          "isPublic" : "Public"
+        }
+      },
+      "visibility": {
+        "title": "Profil publiczny",
+        "subtitle": "Widoczny w profilu publicznym"
+      }
+    },
+	"addSchema": {
+      "title": "Add Schema",
+      "schemaName": "Schema Name",
+      "schemaId": "Schema ID",
+      "placeholderName": "Name",
+      "placeholderSchemaId": "Schema ID",
+      "eventSuccessSchemaAdd": "Schema added successfully",
+      "eventErrorSchemaExists": "Schema already exists"
+    },
+    "schemaSettings": {
+      "title": "Schema Settings",
+      "buttonCreateSchema": "Create Schema",
+      "buttonImportSchema": "Import Schema"
+    },
+    "tagManagement": {
+      "title": "Tag Management",
+      "availableTags": "Available tags",
+      "addNewTag": "Add a new tag",
+      "addTag": "Add tag",
+      "deleteTag": "Delete tag",
+      "labelName": "Name",
+      "confirmMessageDeleteTag": "Do you really want to the delete this tag from all business partners?",
+      "eventSuccessTagAdded": "Tag successfully added",
+      "eventSuccessTagRemoved": "Tag successfully removed"
+    },    
+    "proofTemplates":{
+      "title": "Szablony dowodów",
+      "tableTitle": "Szablony dowodów"
+    },
+    "partners": {
+      "title": "Partnerzy biznesowi",
+      "showInvitations": "Show Invitations"
+    },
+    "partner": {
+      "title": "Partner",
+      "refreshProfile": "Odświeżanie profilu od źródła",
+      "requestReceived": "Otrzymano żądanie połączenia",
+      "requestReceivedSubtitle": "{alias} chce nawiązać z Tobą kontakt", 
+      "removePartner": "Usuń partnera",
+      "acceptPartner": "Akceptuj",
+      "requestSent": "Wysłano żądanie połączenia",
+      "requestSentSubtitle": "Czekam na odpowiedź....",
+      "eventSuccessPartnerDelete": "Partner deleted",
+      "eventSuccessConnectionAccepted": "Connection request accepted",
+      "presentationExchanges": {
+        "title": "Wymiana prezentacji",
+        "button": {
+          "send": "Wyślij prezentację",
+          "request": "Prośba o prezentację"
+        }
+      },
+      "credentialExchanges": {
+        "title": "Credential Exchanges",
+        "button": {
+          "issueCredential": "Wydanie uprawnień",
+          "requestCredential": "Żądanie uprawnień"
+        }
+      },
+      "stateDialog": {
+        "title": "Stan połączenia {state}",
+        "text": "Połączenie z Twoim partnerem biznesowym jest oznaczone jako {state}. Może to oznaczać, że Twoje żądanie nie powiedzie się. Czy mimo to chcesz spróbować?",
+        "yes": "Tak",
+        "no": "Nie"
+      }
+    },
+    "sendPresentation": {
+      "title": "Wyślij prezentację",
+      "selectCredential": "Wybierz uprawnienia do wysłania",
+      "eventSuccessSend": "Presentation sent",
+      "label": "Label",
+      "type": "Type",
+      "issuedBy": "Issued by",
+      "issuedAt": "Issued at"
+    },
+    "presentationRequestDetails": {
+      "header": "Szczegóły zapytania o prezentację"
+    },
+    "addPartner": {
+      "title": "Dodaj nowego partnera biznesowego",
+      "radioDid": "By DID",
+      "radioInvitation": "By Invitation",
+      "labelName": "Name",
+      "placeholderUrl": "URL received from an agent you want to connect to",      
+      "setName": "Wpisz nazwę",
+      "setTags": "Wpisz tags",
+      "trustPing": "Automatyczny Ping",
+      "lookupPartnerBtnLabel": "Szukaj Partnera",
+      "formDIDLabel": "Zdecentralizowany identyfikator (DID)",
+      "formInvitationLabel": "Zaproszenie",
+      "addPartnerBtnLabel": "Dodaj partnera",
+      "buttonCheckInvitation": "Check Invitation",
+      "buttonAcceptInvitation": "Accept Invitation",
+      "messageLookupNoPublic": "Partner has no public profile. You can add him to get more information using Aries protocols.",
+      "messageLookupNoPublicNoAries": "Partner has no public profile and no Aries support.",
+      "messageDidNoResolve": "Could not resolve",
+      "eventSuccessAdd": "Partner added successfully",
+      "eventErrorAlreadyExists": "Partner already exists"
+    },
+    "addPartnerbyURL": {
+      "title": "Zaproś nowego partnera biznesowego",
+      "labelName": "Name",      
+      "createInvitation": "Wygeneruj zaproszenie (kod QR)",
+      "invitationURL": "Adres URL zaproszenia",
+      "useOOB": "Wykorzystanie poza pasmem",
+      "eventSuccessCreatePartnerInvite": "Partner Invitation created successfully"
+    },
+    "proofTemplate": {
+      "title": "Szablony dowodów",
+      "tableTitle": "Szablony dowodów",
+      "createProofTemplate": "Utwórz szablon dowodu",
+      "restrictions": {
+        "title": "Ograniczenia",
+        "errorNoTrustedIssuer": "Nie ma zaufanego wystawcy",
+        "schemaId": "Identyfikator schematu",
+        "schemaName": "Nazwa schematu",
+        "schemaVersion": "Wersja schematu",
+        "schemaIssuerDid": "Identyfikator wydawca schematu",
+        "trustedIssuerDid": "Identyfikator wystawcy zaufanego",
+        "credentialDefinitionId": "Identyfikator poświadczenia",
+        "header": {
+          "trustedIssuerLabel": "Zaufany wydawca",
+          "trustedIssuerDid": "Identyfikator zaufanego wydawcy"
+          },
+        "dialog": {
+          "addTrustedIssuer": "Dodaj zaufanego wydawcę",
+          "label": "DID",
+          "hint": "Zdecentralizowany identyfikator zaufanego wystawcy."
+        }
+      },
+      "attributes": {
+        "title": "Pola danych",
+        "errorNoAttributes": "Musi istnieć co najmniej jedno wybrane pole danych",
+        "header": {
+          "name": "Nazwa",
+          "operator": "Operator",
+          "value": "Wartość"
+        }
+      },
+      "view": {
+        "name": "Nazwa",
+        "createdAt": "Utworzono w",
+        "attributeGroupsTitle": "Dane, o które należy wystąpić",
+        "attributeGroupsSubtitle": "Pogrupowane według schematu",
+        "createProofRequest": "Utwórz wniosek o dowód",
+        "eventSuccessDelete": "Proof Template Deleted",        
+        "attributeGroup": {
+          "issuerTitle": "Wydawca",
+          "titleAttributes": "Pola danych",
+          "titleRestrictions": "Ograniczenia"
+        }
+      },
+      "list": {
+        "name": "Nazwa",
+        "createdAt": "Utworzono w"
+      },
+      "create": {
+        "title": "Utwórz szablon dowodu",
+        "labelName": "Name",
+        "requestedDataTitle": "Dane, o które należy wystąpić",
+        "requestedDataSubtitle": "Dodaj dane, które mają być wymagane",
+        "snackbarContent": "Usunięto grupę atrybutów",
+        "success": "Utworzono szablon dowodu"
+      }
+    },
+    "requestPresentation": {
+      "title": "Utwórz wniosek o prezentację",
+      "sendRequest": "Wyślij zapytanie",
+      "eventSuccessCreatePartnerInvite": "Partner Invitation created successfully"
+    },
+    "requestCredential": {
+      "title": "Utwórz wniosek o uwierzytelnienie",
+      "createDocument": "Utwórz dokument",
+      "sendRequest": "Wyślij zapytanie",
+      "eventSuccessSend": "Credential verification request sent",
+      "headers": {
+        "label": "Label",
+        "type": "Type",
+        "createdDate": "Created at",
+        "updatedDate": "Updated at",
+        "isPublic": "Public"
+      },      
+      "createDocumentView": {
+        "selectSchemaLabel": "Wybierz schemat jako podstawę dokumentu"
+      }
+    },
+	"requestVerification": {
+      "title": "Request Verification",
+      "titleSelect": "Select Business Partner",
+      "subtitleSelect": "Select the business partner you would like to request a verification from",
+      "connectionState": "Connection State {state}",
+      "connectionWarning": "The connection with your Business Partner is marked as {state}. This could mean that your request will fail. Do you want to try anyways?",
+      "eventSuccessNoVerification": "Can't start verification",
+      "eventSuccessSend": "Credential verification request sent",
+      "eventErrorSelect": "No partner for verification request selected"
+    },    
+    "presentationRecord": {
+      "role": "Role",
+      "state": "State",
+      "requestName": "Request Name",
+      "requestContent": "Request Content",
+      "issuer": "Issuer",
+      "about": "About",
+      "dataFields": "Data fields",
+      "restrictions": "Restrictions",
+      "presentationValid": "Presentation is valid",
+      "presentationNotValid": "Presentation is not valid",    
+      "matchingCredentials": {
+        "selectHeader": "Wybierz dane do prezentacj",
+        "label": "Dopasowanie poświadczeń",
+        "credentialRevoked": " - poświadczenie jest unieważnione",
+        "noInfoFound": "No info found"
+      }
+    },
+    "issueCredentials": {
+      "title": "Wystawienie uprawnień",
+      "cards": {
+        "action": {
+          "title": "Wystawienie uprawnień",
+          "button": "Wystawienie uprawnień",
+          "partnerLabel": "Wybierz partnera",
+          "credDefLabel": "Wybierz definicję uprawnień "
+        },
+        "table": {
+          "title": "Wydane uprawnienia"
+        }
+      }
+    },
+    "settings":{
+	  "title": "Settings",
+      "language": "Language",    
+      "walletDID": "Portfel DID",
+      "schemaManagement": "Schematy i zaufani wydawcy",
+      "tags": "Tags",
+      "frontendColor": "Frontend Color",
+      "iconsColor": "Icons Color",      
+      "expertMode": "Tryb eksperta",
+      "header": {
+        "agentName": "BPA Name",
+        "host": "Host",
+        "uniResolverUrl": "Universal Resolver",
+        "ledgerBrowser": "Ledger Browser",
+        "ledgerPrefix": "Ledger DID Prefix",
+        "uptime": "Uptime HH:mm:ss.SSS",
+        "buildVersion": "Version"
+      },
+      "eventSuccessCopy": "DID copied",
+      "eventErrorCopy": "Can't copy DID"
+    }
+  },
+  "component": {
+    "partnerStateIndicator": {
+      "connectionState": "Aries connection state"
+    },
+    "timeline": {
+      "title": "Timeline"
+    },
+    "transactionAuthorAgreement": {
+      "title": "Transaction Author Agreement",
+      "text": "Aby umożliwić innym firmom komunikowanie się z tym agentem, w księdze musi zostać zapisana pewna konfiguracja — konfiguracja punktu końcowego. W tym celu autor transakcji musi zaakceptować Umowę Autora Transakcji dla tej sesji, która jest następująca",
+      "loading": "Ładowanie",
+      "labelVersion": "Version",
+      "labelCheckbox": "As transaction author I reviewed and accept the above Transaction Author Agreement for this session"
+    },
+    "trustedIssuers": {
+      "labelDid": "DID",
+      "labelName": "Name",
+      "addTrustedIssuer": "Add trusted issuer",
+      "eventSuccessCreate": "New trusted issuer added",
+      "eventSuccessUpdate": "Trusted issuer updated"
+    },
+    "newMessageIcon": {
+      "activity": "New activity",
+      "credential": "New activity on Credential",
+      "partner": "New activity related to this Partner",
+      "presentation": "New activity on Presentation 2",
+      "task": "New task requires attention",
+      "default": "New activity on item"
+    },
+    "updatePartner": {
+      "title": "Update Partner",
+      "name": "Name",
+      "tags": "Tags",
+      "labelName": "Name",
+      "labelTags": "Tags",
+      "eventSuccess": "Partner updated successfully"
+    },
+    "addSchema": {
+      "title": "Import Schema",
+      "schemaName": "Schema Name",
+      "schemaId": "Schema ID",
+      "placeholderName": "Name",
+      "placeholderId": "Schema ID",
+      "eventSuccess": "Schema added successfully"
+    },
+    "schemaList": {
+      "label": "Name",
+      "canIssue": "Can Issue",
+      "isMine": "Mine",
+      "trustedIssuer": "Trusted Issuers"
+    },
+    "manageSchema": {
+      "labelSchemaId": "Schema ID",
+      "labelCheckbox": "My Schema",
+      "eventSuccessCopy": "Schema ID copied",
+      "eventErrorCopy": "Can't copy Schema ID",
+      "eventSuccessDelete": "Schema deleted",
+      "tabs": {
+        "schemaAttributes": "Schema Attributes",
+        "credentialDefinitions": "Credential Definitions",
+        "trustedIssuers": "Trusted Issuers"
+      }
+    },
+    "credential": {
+      "label": "Label (Optional)",
+      "issuerTitle": "Issuer",
+      "issuerLabel": "Issuer Decentralized Identifier (DID)",
+      "issuedAt": "Issued at"
+    },
+    "credentialCard": {
+      "details": "Details"
+    },
+    "credentialDefinitions": {
+      "label": "Tag",
+      "labelCheckbox": "Revocable",
+      "buttonAddCredDef": "Add Credential Definition",
+      "eventSuccess": "New credential definition added"
+    },
+    "createSchema": {
+      "title": "Create Schema",
+      "schemaInformation": "Schema Information",
+      "labelSchema": "Schema Label",
+      "labelName": "Schema Name",
+      "labelVersion": "Schema Version",
+      "placeholderSchema": "Label in your application for this schema",
+      "placeholderName": "Published schema name (ex. my-schema)",
+      "placeholderVersion": "Published schema version (ex. 1.2 or 1.2.3)",
+      "schemaAttributes": "Schema Attributes",
+      "placeholderAttribute": "E.g. company, name or company_name",
+      "eventSuccess": "Schema created successfully",
+      "headersColumn": {
+        "name": "Name",
+        "isDefault": "Is Default",
+        "action": "Action"
+      }
+    },
+    "activityList": {
+      "labelFilterCombobox": "Filter by",
+      "tableHeaders": {
+        "type":  "Type",
+        "partner": "Connection",
+        "updatedAt": "Updated at",
+        "role": "Role",
+        "state": "State"
+      },
+      "labelPartnerUnknown": "Unknown"
+    },  
+    "organizationProfile": {
+      "companyInfo": {
+		"type": "Organization Type",
+        "identifier": "Identifier",      
+        "sectionTitle": "Informacje o firmie",
+        "companyName": "Nazwa prawna firmy",
+        "companyAltName":"Alternatywna nazwa firmy"
+      },
+      "addressInfo": {
+        "sectionTitle": "Dane adresowe",
+        "street": "Street (with number)",
+        "postalCode": "Postal Code",
+        "city": "City",
+        "country": "Country",
+        "region": "Region"        
+      }
+    },
+    "issueCredential": {
+      "title": "Wystaw uprawnienia",
+      "partnerLabel": "Partner",
+      "credDefLabel": "Definicja uprawnień",
+      "successMessage": "Wydano uprawnienia",
+      "attributesTitle": "Zawartość uprawnień",
+      "options": {
+        "title": "Opcje"
+      },
+      "expertLoad": {
+        "title": "Załaduj dane uwierzytelniające",
+        "dataPlaceholder": "Wprowadź, wklej lub prześlij dane uwierzytelniające...",
+        "filePlaceholder": "Prześlij plik",
+        "buttons": {
+          "load": "Załaduj",
+          "clear": "Wyczyść"
+        },
+        "errorMessages": {
+          "format": {
+            "json": "Upewnij się, że dane są poprawne w formacie JSON",
+            "csv": "Upewnij się, że dane mają poprawny format Comma Separated Value (CSV)."
+          },
+          "attributes": "Nie można znaleźć żadnych pasujących atrybutów poświadczeń.",
+          "parse": "Nie można przetworzyć danych.",
+          "readFile": "Error reading file"
+        }
+      }
+    },
+    "partnerList": {
+      "headers": {
+        "name": "Name",
+        "address": "Address",
+        "updatedAt": "Updated at",
+        "state": "State"
+      }
+    },
+    "credExList": {
+	  "headers": {
+        "displayText": "Type",
+        "partnerName": "Issued to",
+        "role": "Role",
+        "updatedAt": "Updated at",
+        "state": "State",
+        "revocable": "Revocation"
+      },
+      "table": {
+        "iconCredIssued": "Wydane uprawnienia",
+        "iconCredRevoked": "Unieważnione uprawnienia",
+        "iconRevokeCred": "Odwołaj uprawnienia",
+        "revoked": "Odwołane",
+        "holderNotRevoked": "Uprawnienia ważne i nie odwołane",
+        "holderNotRevocable": "Poświadczenie jest ważne i nie podlega odwołaniu"
+      },
+      "dialog": {
+        "title": "Uprawnienia",
+        "timeline": "Linia czasu",
+        "partnerLabel": "Partner",
+        "credDefLabel": "Definicja uprawnień",
+        "attributesTitle": "Zawartość uprawnień ",
+        "declineReasonLabel": "Powód odrzucenia (nieobowiązkowo)"
+      }
+    },
+    "presentationExList": {
+      "dialog": {
+        "title": "Wymiana prezentacji",
+        "alertFulfill": "Wniosek nie może być zrealizowany z poświadczeniami w portfelu",
+        "declineReasonLabel": "Powód odrzucenia (nieobowiązkowo)"
+      },
+      "table": {
+        "label": "Name",
+        "role": "Role",
+        "updatedAt": "Updated at",
+        "state": "State"
+      },
+      "eventSuccessApprove": "Proof has been sent",
+      "eventSuccessDecline": "Presentation request declined",
+      "eventSuccessDelete": "Presentation record deleted"
+    },
+    "profile": {
+      "organizationalProfile": {
+        "title": "Profil organizacyjny",
+        "edit": "Edytuj"
+      },
+      "credential": {
+        "verifiedByLabel": "zweryfikowany przez"
+      },
+      "noProfileMsg": "Partner nie ma wspólnego profilu publicznego"
+    }
+  },
+  "constants": {
+    "activityTypes": {
+      "connectionRequest": "Żądanie połączenia",
+      "credentialExchange": "Wymiana danych uwierzytelniających",
+      "presentationExchange": "Przedstawienie dowodu"
+    },
+    "activityStates": {
+      "connectionRequest": {
+        "accepted": "Żądanie połączenia przyjęte",
+        "received": "Otrzymano żądanie połączenia",
+        "sent": "Otrzymano żądanie połączenia"
+      },
+      "credentialExchange": {
+        "accepted": "Zaakceptowano treść certyfikatu",
+        "declined": "Poświadczenie zostało odrzucone",
+        "problem": "Problem z wystawieniem uprawnień",
+        "received": "Poświadczenie uprawnień zostało przyjęte",
+        "sent": "Poświadczenie uprawnień wysłano"
+      },
+      "presentationExchange": {
+        "accepted": "Przedstawienie dowodu zaakceptowano",
+        "declined": "Przedstawienie dowódu zostało odrzucone",
+        "received": "Wystąpiono o przedstawienie dowodu",
+        "sent": "Przesłano wniosek o przedstawienie dowodu"
+      }
+    },
+    "activityRoles": {
+      "connectionRequest": {
+        "sender": "Nadawca",
+        "recipient": "Odbiorca"
+      },
+      "credentialExchange": {
+        "holder": "Posiadacz",
+        "issuer": "Wydawca"
+      },
+      "presentationExchange": {
+        "prover": "Osoba sprawdzająca",
+        "verifier": "Osoba potwierdzająca"
+      }
+    }
+  },
+  "showRawData": "Pokaż dane nieprzetworzone",
+  "error": {
+    "axios": "Żądanie nie powiodło się z statusem {statusText}"
+  }
+}
