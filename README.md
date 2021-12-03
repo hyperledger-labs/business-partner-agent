@@ -113,7 +113,7 @@ Learn how to contribute in [Contributing](CONTRIBUTING.md). You can also start b
 
 Regarding release process, we do not follow a strict process yet, nevertheless we follow the guidelines described in [Publishing](PUBLISHING.md).
 
-Learn exactly what aries protocols can be controlled by the BPA in [aca-py-args](scripts/aca-py-args.md)
+Learn what aries protocols can be controlled by the BPA in [aca-py-args](scripts/aca-py-args.md)
 
 ## Business Partner Agent in Action
 - [COP26 Presented by BC Goverment and OpenEarth Foundation](https://www.youtube.com/watch?v=q0Jml3isSh8)
