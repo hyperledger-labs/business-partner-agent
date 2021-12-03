@@ -1,0 +1,31 @@
+{
+  "ignore": ["**/*.md", "**/*.svg", "license-header/license-header"],
+  "license": "license-header/license-header",
+  "regexIdentifier": "##",
+  "defaultFormat": {
+    "prepend": "/*",
+    "append": "*/"
+  },
+  "licenseFormats": {
+    "js|ts|css|scss": {
+      "prepend": "/*",
+      "append": " */",
+      "eachLine": {
+        "prepend": " * "
+      }
+    },
+    "vue|html|xml": {
+      "prepend": "<!--",
+      "append": "-->",
+      "eachLine": {
+        "prepend": " "
+      }
+    },
+    "gitignore|npmignore|eslintignore|dockerignore|sh|dotfile|^Dockerfile|^.env|npmrc": {
+      "eachLine": {
+        "prepend": "# "
+      }
+    }
+  },
+  "trailingWhitespace": "TRIM"
+}
