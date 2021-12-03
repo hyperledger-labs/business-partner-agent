@@ -4,13 +4,13 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "test:unit": "vue-cli-service test:unit",
     "build": "vue-cli-service build",
+    "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint && npm run license-file-headers-add",
-    "license-file-headers-add": "license-check-and-add add -f licenses/config.json -r 2021",
-    "license-check": "license-checker --production --json --onlyAllow 'MIT;Python-2.0;Apache-2.0;BSD-2-Clause;BSD-3-Clause' --excludePackages 'business-partner-agent-frontend@0.1.0'",
-    "license": "generate-attribution -o ./licenses",
     "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'",
+    "license": "generate-attribution -o ./licenses",
+    "license-check": "license-checker --production --json --onlyAllow 'MIT;Python-2.0;Apache-2.0;BSD-2-Clause;BSD-3-Clause' --excludePackages 'business-partner-agent-frontend@0.1.0'",
+    "license-file-headers-add": "license-check-and-add add -f licenses/config.json -r 2021",
     "prepare": "cd ../ && husky install ./frontend/.husky"
   },
   "dependencies": {
@@ -59,8 +59,8 @@
     "lint-staged": "12.1.2",
     "oss-attribution-generator": "1.7.1",
     "prettier": "2.5.0",
-    "sass": "1.44.0",
-    "sass-loader": "10.2.0",
+    "sass": "1.32.0",
+    "sass-loader": "8.0.2",
     "typescript": "4.5.2",
     "vue-cli-plugin-i18n": "2.3.1",
     "vue-cli-plugin-vuetify": "2.4.4",
