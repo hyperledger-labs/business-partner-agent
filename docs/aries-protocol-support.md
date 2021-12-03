@@ -12,6 +12,7 @@ Options that are 'NOT-SUPPORTED' must be left true, so aca-py can automatically 
 Feature should be built to allow the BPA to control protocols labelled 'NOT-SUPPORTED'
 
 ```
+docker run bcgovimages/aries-cloudagent:py36-1.16-1_0.7.1 start --help
 ...
 Debug:
 ...
