@@ -55,12 +55,11 @@ export default Object.defineProperty(Array.prototype, "sortByKeys", {
 
     for (const k in keys) {
       // asc unless desc or skip
-      keys[k] =
-        keys[k] === "desc" || keys[k] === -1
-          ? -1
-          : (keys[k] === "skip" || keys[k] === 0
-          ? 0
-          : 1);
+      if (keys[k] === "desc" || keys[k] === -1) {
+        keys[k] = -1;
+      } else {
+        keys[k] = keys[k] === "skip" || keys[k] === 0 ? 0 : 1;
+      }
     }
 
     this.sort(function (a, b) {

@@ -167,7 +167,7 @@ export default {
       }
       this.currentRoomId = room.roomId;
     },
-    // eslint-disable-next-line no-unused-vars
+
     async sendMessage({ content, roomId, file, replyMessage }) {
       // we are sending content to currentRoomId (partner)...
       await partnerService.sendMessage(roomId, content);
