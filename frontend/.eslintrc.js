@@ -20,7 +20,7 @@ module.exports = {
     "plugin:unicorn/recommended",
   ],
   parserOptions: {
-    ecmaVersion: 2020
+    ecmaVersion: 2020,
   },
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
@@ -30,5 +30,6 @@ module.exports = {
     "vue/valid-v-slot": "warn",
     "unicorn/prefer-module": "off",
     "unicorn/filename-case": "off",
+    "@typescript-eslint/ban-ts-comment": "warn",
   },
 };

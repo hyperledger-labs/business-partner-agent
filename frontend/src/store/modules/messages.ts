@@ -20,14 +20,14 @@ export default {
   actions: {},
   mutations: {
     onMessageReceived(state, payload) {
-      let basicMessage = payload.message.info;
-      let msgs = state.messages ? state.messages : [];
+      const basicMessage = payload.message.info;
+      const msgs = state.messages ? state.messages : [];
       msgs.push(basicMessage);
       state.messages = msgs;
     },
     markMessagesSeen(state, partnerId) {
       // seen means we remove them from the store for a given partner/room
-      let msgs = state.messages ? state.messages : [];
+      const msgs = state.messages ? state.messages : [];
       state.messages = msgs.filter((m) => m.partnerId !== partnerId);
     },
   },

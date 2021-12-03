@@ -70,7 +70,7 @@ const actions = {
       .catch((error) => {
         commit({
           type: "setTaa",
-          taa: { digest: "", version: state.version, text: state.taaText },
+          taa: { digest: "", version: state.taaVersion, text: state.taaText },
         });
         console.error(error);
         EventBus.$emit("error", error);

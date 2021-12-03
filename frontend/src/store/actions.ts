@@ -19,7 +19,7 @@ export const loadSchemas = async ({ commit }) => {
   adminService
     .listSchemas()
     .then((result) => {
-      let schemas = result.data;
+      const schemas = result.data;
       schemas.map((schema) => {
         if (Object.prototype.hasOwnProperty.call(schema, "schemaId")) {
           schema.type = CredentialTypes.INDY.type;
@@ -49,7 +49,7 @@ export const loadTags = async ({ commit }) => {
   adminService
     .listTags()
     .then((result) => {
-      let tags = result.data;
+      const tags = result.data;
       console.log(tags);
       commit({
         type: "setTags",
@@ -90,7 +90,7 @@ export const loadDocuments = async ({ commit }) => {
     .get(`${apiBaseUrl}/wallet/document`)
     .then((result) => {
       if (Object.prototype.hasOwnProperty.call(result, "data")) {
-        var documents = result.data;
+        const documents = result.data;
         documents.map((documentIn) => {
           documentIn.createdDate = moment(documentIn.createdDate);
           documentIn.updatedDate = moment(documentIn.updatedDate);
@@ -113,7 +113,7 @@ export const loadCredentials = async ({ commit }) => {
     .get(`${apiBaseUrl}/wallet/credential`)
     .then((result) => {
       if (Object.prototype.hasOwnProperty.call(result, "data")) {
-        const credentials = [];
+        const credentials: Array<any> = [];
         for (const credentialReference of result.data) {
           axios
             .get(`${apiBaseUrl}/wallet/credential/${credentialReference.id}`)
@@ -142,7 +142,7 @@ export const loadSettings = async ({ commit }) => {
     .get(`${apiBaseUrl}/admin/config`)
     .then((result) => {
       if (Object.prototype.hasOwnProperty.call(result, "data")) {
-        let settings = result.data;
+        const settings = result.data;
         commit({
           type: "setSettings",
           settings: settings,
@@ -159,7 +159,7 @@ export const loadProofTemplates = async ({ commit }) => {
   proofTemplateService
     .getProofTemplates()
     .then((result) => {
-      let proofTemplates = result.data;
+      const proofTemplates = result.data;
 
       commit({
         type: "setProofTemplates",
@@ -178,7 +178,7 @@ export const loadPartnerSelectList = async ({ commit }) => {
     .then((result) => {
       if (result.status === 200) {
         // filter out partners that are only at the invitation stage, we can't do anything until they accept.
-        let partners = result.data
+        const partners = result.data
           .filter((partner) => {
             return partner.state !== PartnerStates.INVITATION.value;
           })
@@ -203,7 +203,7 @@ export const loadCredDefSelectList = async ({ commit }) => {
     .listCredDefs()
     .then((result) => {
       if (result.status === 200) {
-        let credDefs = result.data.map((c) => {
+        const credDefs = result.data.map((c) => {
           return {
             value: c.id,
             text: c.displayText,

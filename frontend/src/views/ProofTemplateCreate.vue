@@ -245,9 +245,10 @@ export default {
       const attributeGroupsInvalid = this.proofTemplate.attributeGroups.some(
         (ag) => ag.ui.selectedAttributes.length === 0
       );
-      const predicateConditionsInvalid = this.proofTemplate.attributeGroups.some(
-        (ag) => ag.ui.predicateConditionsErrorCount > 0
-      );
+      const predicateConditionsInvalid =
+        this.proofTemplate.attributeGroups.some(
+          (ag) => ag.ui.predicateConditionsErrorCount > 0
+        );
 
       return (
         proofTemplateNameInvalid ||

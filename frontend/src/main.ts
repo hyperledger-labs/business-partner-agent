@@ -21,9 +21,12 @@ import "@/filters";
 
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
+import vue_moment from "vue-moment";
+
 Vue.component("vue-json-pretty", VueJsonPretty);
 
-Vue.use(require("vue-moment"));
+Vue.use(vue_moment);
+// @ts-ignore
 Vue.use(SortUtil);
 
 const apiBaseUrl = process.env.VUE_APP_API_BASE_URL;
@@ -51,7 +54,7 @@ Vue.use(VueNativeSock, socketApi, {
     }
     console.log(event);
     let message = event;
-    let method = "commit";
+    const method = "commit";
     let target = eventName.toUpperCase();
     if (target === "SOCKET_ONMESSAGE" && this.format === "json" && event.data) {
       message = JSON.parse(event.data);
@@ -87,11 +90,11 @@ Vue.prototype.$config = {
       console.error(error);
     });
   if (Object.prototype.hasOwnProperty.call(result, "data")) {
-    Vue.prototype.$config = result.data;
-    let ledgerPrefix = Vue.prototype.$config.ledgerPrefix;
-    let splitted = ledgerPrefix.split(":");
+    Vue.prototype.$config = result?.data;
+    const ledgerPrefix = Vue.prototype.$config.ledgerPrefix;
+    const splitted = ledgerPrefix.split(":");
     Vue.prototype.$config.ledger = splitted[splitted.length - 2];
-    if (result.data.ux) {
+    if (result?.data.ux) {
       Object.assign(Vue.prototype.$config.ux, result.data.ux);
       console.log("...Configuration loaded");
     }
@@ -104,7 +107,7 @@ Vue.prototype.$config = {
     `i18n.locale = ${i18n.locale}, i18n.fallbackLocale = ${i18n.fallbackLocale}`
   );
 
-  Vue.prototype.$axiosErrorMessage = function (error) {
+  Vue.prototype.$axiosErrorMessage = function (error: any) {
     console.error(error);
     if (!error) return "";
     // exceptions thrown from micronaut (ex. WrongApiUsageExceptionHandler)
@@ -112,7 +115,7 @@ Vue.prototype.$config = {
     // check there first
     if (Array.isArray(error.response?.data?._embedded?.errors)) {
       return error.response?.data?._embedded?.errors
-        .map((x) => x.message)
+        .map((x: any) => x.message)
         .join(" ");
     }
     // what other error message structures will we encounter?

@@ -17,7 +17,7 @@ export default {
     // we will use the color property to determine our config
     // ux.buttons.primary or ux.buttons.secondary...
     getRuntimeConfiguration() {
-      let runtimeConfig = {
+      const runtimeConfig = {
         primary: {
           text: false,
           outlined: false,
@@ -44,14 +44,14 @@ export default {
     },
     // since we are mutating properties, we have to compute our value and use it wherever VBtn was performing logic with the property
     _text() {
-      let config = this.getRuntimeConfiguration;
+      const config = this.getRuntimeConfiguration;
       if (config) {
         return config.text;
       }
       return this.text;
     },
     _outlined() {
-      let config = this.getRuntimeConfiguration;
+      const config = this.getRuntimeConfiguration;
       if (config) {
         return config.outlined;
       }

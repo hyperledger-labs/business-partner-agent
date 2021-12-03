@@ -10,7 +10,7 @@ import { CredentialTypes, PartnerStates } from "@/constants";
 
 export const getPartnerProfile = (partner) => {
   if (partner && Object.prototype.hasOwnProperty.call(partner, "credential")) {
-    let partnerProfile = partner.credential.find((cred) => {
+    const partnerProfile = partner.credential.find((cred) => {
       return cred.type === CredentialTypes.PROFILE.type;
     });
     if (partnerProfile) {
@@ -29,7 +29,7 @@ export const getPartnerProfile = (partner) => {
 
 export const getPartnerProfileRoute = (partner) => {
   if (partner && Object.prototype.hasOwnProperty.call(partner, "credential")) {
-    let partnerProfile = partner.credential.find((cred) => {
+    const partnerProfile = partner.credential.find((cred) => {
       return cred.type === CredentialTypes.PROFILE.type;
     });
     if (partnerProfile) {

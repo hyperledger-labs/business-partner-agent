@@ -14,6 +14,7 @@
     "prepare": "cd ../ && husky install ./frontend/.husky"
   },
   "dependencies": {
+    "@types/vue-moment": "4.0.3",
     "axios": "0.24.0",
     "core-js": "3.19.2",
     "csv-string": "4.0.1",

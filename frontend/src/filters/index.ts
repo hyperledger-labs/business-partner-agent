@@ -34,7 +34,7 @@ export function formatDateLong(value) {
 
 export function credentialTag(credDefinitionId) {
   if (!credDefinitionId) return "";
-  let pos = credDefinitionId.lastIndexOf(":");
+  const pos = credDefinitionId.lastIndexOf(":");
   return credDefinitionId.slice(Math.max(0, pos + 1));
 }
 

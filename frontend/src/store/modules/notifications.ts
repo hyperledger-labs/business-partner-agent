@@ -82,8 +82,8 @@ const actions = {};
 
 const mutations = {
   onNotification(state, payload) {
-    let type = payload.message.type;
-    let id = payload.message.linkId;
+    const type = payload.message.type;
+    const id = payload.message.linkId;
     console.log(`onNotification(type=${type}, id=${id})`);
     switch (type) {
       case "ACTIVITY_NOTIFICATION":
@@ -145,11 +145,11 @@ const mutations = {
     }
   },
   activityNotificationSeen(state, payload) {
-    let id = payload.id;
+    const id = payload.id;
     state.activityNotifications = removeItem(state.activityNotifications, id);
   },
   credentialNotificationSeen(state, payload) {
-    let id = payload.id;
+    const id = payload.id;
     state.credentialNotifications = removeItem(
       state.credentialNotifications,
       id
@@ -160,18 +160,18 @@ const mutations = {
     );
   },
   partnerNotificationSeen(state, payload) {
-    let id = payload.id;
+    const id = payload.id;
     state.partnerNotifications = removeItem(state.partnerNotifications, id);
   },
   presentationNotificationSeen(state, payload) {
-    let id = payload.id;
+    const id = payload.id;
     state.presentationNotifications = removeItem(
       state.presentationNotifications,
       id
     );
   },
   taskNotificationSeen(state, payload) {
-    let id = payload.id;
+    const id = payload.id;
     state.taskNotifications = removeItem(state.taskNotifications, id);
   },
   activityNotificationClear(state) {

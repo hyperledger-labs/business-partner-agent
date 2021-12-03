@@ -31,7 +31,7 @@ export default {
   deleteTag(id, hardDelete) {
     let parameters;
     if (hardDelete) {
-      parameters = new URLSearchParams([["force", true]]);
+      parameters = new URLSearchParams([["force", "true"]]);
     }
     return appAxios().delete(`${ApiRoutes.ADMIN}/tag/${id}`, {
       params: parameters,
