@@ -11,12 +11,13 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900");
 @import url("https://fonts.googleapis.com/css?family=Material+Icons");
 @import "~material-design-icons-iconfont/dist/material-design-icons.css";
-@import '~@fortawesome/fontawesome-free/css/all.css';
+@import "~@fortawesome/fontawesome-free/css/all.css";
 @import "~vuetify/src/styles/styles.sass";
 
 // Typography
 .v-application {
-  font-family: -apple-system, BlinkMacSystemFont, Roboto, Verdana, Arial, sans-serif !important;
+  font-family: -apple-system, BlinkMacSystemFont, Roboto, Verdana, Arial,
+    sans-serif !important;
   line-height: 1.4;
   font-size: 0.875rem;
 }
@@ -344,7 +345,7 @@ div {
   .dashboard-card {
     // just need it a little smaller until we collapse our columns from 3 to 2.
     .card-title {
-      font-size: .85rem !important;
+      font-size: 0.85rem !important;
     }
   }
 }

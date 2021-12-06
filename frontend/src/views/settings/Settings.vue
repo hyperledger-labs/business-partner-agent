@@ -136,7 +136,7 @@
 import { EventBus } from "@/main";
 import TextFieldColorPicker from "@/components/helper/TextFieldColorPicker.vue";
 import i18n from "@/plugins/i18n";
-import {LocaleMetaType} from "@/views/settings/locale-meta-type";
+import { LocaleMetaType } from "@/views/settings/locale-meta-type";
 
 export default {
   name: "Settings",

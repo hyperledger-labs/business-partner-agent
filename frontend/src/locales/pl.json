@@ -16,7 +16,7 @@
       "required": "wymagane",
       "onlyInteger": "Value is not an integer",
       "valueMin": "Value must be above",
-      "valueMax":  "Value must not be above",
+      "valueMax": "Value must not be above",
       "colorPrefix": "Color should begin with #",
       "colorInvalid": "Invalid color (e.g. #FF00FF)",
       "agree": "You must agree to continue",
@@ -52,7 +52,7 @@
     "accept": "Akceptuj",
     "save": "Zapisz",
     "saveAndSend": "Zapisz i wyślij",
-    "saveAndClose": "Save and Close",    
+    "saveAndClose": "Save and Close",
     "submit": "Submit",
     "create": "Create",
     "createAndSend": "Utwórz i wyślij",
@@ -61,13 +61,13 @@
     "yes": "Tak",
     "no": "Nie",
     "close": "Zamknij",
-    "return": "Return",    
+    "return": "Return",
     "sendCounterOffer": "Wyślij kontrofertę",
     "refresh": "Refresh",
     "revoke": "Odwołać",
     "reissue": "Ponowne wydanie",
     "useV2": "Zastosowanie V2",
-    "writeToLedger": "Write endpoints to ledger"    
+    "writeToLedger": "Write endpoints to ledger"
   },
   "view": {
     "notifications": {
@@ -116,7 +116,7 @@
       "eventSuccessSaveEdit": "Saved changes",
       "eventSuccessSaveNew": "Saved new document",
       "eventSuccessDelete": "Deleted document"
-    },  
+    },
     "dashboard": {
       "title": "Dashboard",
       "setupMessage": "Hi, we've already set up an identity for you!",
@@ -156,7 +156,7 @@
         "dr": "Dr.",
         "profDr": "Prof. Dr."
       }
-    },    
+    },
     "profile": {
       "title": "Public Profile",
       "subtitle": "Możesz zmienić ustawienia widoczności dokumentów i zweryfikowanych poświadczeń w <strong>portfelu</strong>, aby zaktualizować swój profil publiczny.",
@@ -183,11 +183,11 @@
       "documents": {
         "title": "Dokumenty",
         "headers": {
-          "label" : "Label",
-          "type" : "Type",
-          "createdDate" : "Created at",
-          "updatedDate" : "Updated at",
-          "isPublic" : "Public"
+          "label": "Label",
+          "type": "Type",
+          "createdDate": "Created at",
+          "updatedDate": "Updated at",
+          "isPublic": "Public"
         }
       },
       "visibility": {
@@ -195,7 +195,7 @@
         "subtitle": "Widoczny w profilu publicznym"
       }
     },
-	"addSchema": {
+    "addSchema": {
       "title": "Add Schema",
       "schemaName": "Schema Name",
       "schemaId": "Schema ID",
@@ -219,8 +219,8 @@
       "confirmMessageDeleteTag": "Do you really want to the delete this tag from all business partners?",
       "eventSuccessTagAdded": "Tag successfully added",
       "eventSuccessTagRemoved": "Tag successfully removed"
-    },    
-    "proofTemplates":{
+    },
+    "proofTemplates": {
       "title": "Szablony dowodów",
       "tableTitle": "Szablony dowodów"
     },
@@ -232,7 +232,7 @@
       "title": "Partner",
       "refreshProfile": "Odświeżanie profilu od źródła",
       "requestReceived": "Otrzymano żądanie połączenia",
-      "requestReceivedSubtitle": "{alias} chce nawiązać z Tobą kontakt", 
+      "requestReceivedSubtitle": "{alias} chce nawiązać z Tobą kontakt",
       "removePartner": "Usuń partnera",
       "acceptPartner": "Akceptuj",
       "requestSent": "Wysłano żądanie połączenia",
@@ -277,7 +277,7 @@
       "radioDid": "By DID",
       "radioInvitation": "By Invitation",
       "labelName": "Name",
-      "placeholderUrl": "URL received from an agent you want to connect to",      
+      "placeholderUrl": "URL received from an agent you want to connect to",
       "setName": "Wpisz nazwę",
       "setTags": "Wpisz tags",
       "trustPing": "Automatyczny Ping",
@@ -295,7 +295,7 @@
     },
     "addPartnerbyURL": {
       "title": "Zaproś nowego partnera biznesowego",
-      "labelName": "Name",      
+      "labelName": "Name",
       "createInvitation": "Wygeneruj zaproszenie (kod QR)",
       "invitationURL": "Adres URL zaproszenia",
       "useOOB": "Wykorzystanie poza pasmem",
@@ -317,7 +317,7 @@
         "header": {
           "trustedIssuerLabel": "Zaufany wydawca",
           "trustedIssuerDid": "Identyfikator zaufanego wydawcy"
-          },
+        },
         "dialog": {
           "addTrustedIssuer": "Dodaj zaufanego wydawcę",
           "label": "DID",
@@ -339,7 +339,7 @@
         "attributeGroupsTitle": "Dane, o które należy wystąpić",
         "attributeGroupsSubtitle": "Pogrupowane według schematu",
         "createProofRequest": "Utwórz wniosek o dowód",
-        "eventSuccessDelete": "Proof Template Deleted",        
+        "eventSuccessDelete": "Proof Template Deleted",
         "attributeGroup": {
           "issuerTitle": "Wydawca",
           "titleAttributes": "Pola danych",
@@ -375,12 +375,12 @@
         "createdDate": "Created at",
         "updatedDate": "Updated at",
         "isPublic": "Public"
-      },      
+      },
       "createDocumentView": {
         "selectSchemaLabel": "Wybierz schemat jako podstawę dokumentu"
       }
     },
-	"requestVerification": {
+    "requestVerification": {
       "title": "Request Verification",
       "titleSelect": "Select Business Partner",
       "subtitleSelect": "Select the business partner you would like to request a verification from",
@@ -389,7 +389,7 @@
       "eventSuccessNoVerification": "Can't start verification",
       "eventSuccessSend": "Credential verification request sent",
       "eventErrorSelect": "No partner for verification request selected"
-    },    
+    },
     "presentationRecord": {
       "role": "Role",
       "state": "State",
@@ -400,7 +400,7 @@
       "dataFields": "Data fields",
       "restrictions": "Restrictions",
       "presentationValid": "Presentation is valid",
-      "presentationNotValid": "Presentation is not valid",    
+      "presentationNotValid": "Presentation is not valid",
       "matchingCredentials": {
         "selectHeader": "Wybierz dane do prezentacj",
         "label": "Dopasowanie poświadczeń",
@@ -422,14 +422,14 @@
         }
       }
     },
-    "settings":{
-	  "title": "Settings",
-      "language": "Language",    
+    "settings": {
+      "title": "Settings",
+      "language": "Language",
       "walletDID": "Portfel DID",
       "schemaManagement": "Schematy i zaufani wydawcy",
       "tags": "Tags",
       "frontendColor": "Frontend Color",
-      "iconsColor": "Icons Color",      
+      "iconsColor": "Icons Color",
       "expertMode": "Tryb eksperta",
       "header": {
         "agentName": "BPA Name",
@@ -543,21 +543,21 @@
     "activityList": {
       "labelFilterCombobox": "Filter by",
       "tableHeaders": {
-        "type":  "Type",
+        "type": "Type",
         "partner": "Connection",
         "updatedAt": "Updated at",
         "role": "Role",
         "state": "State"
       },
       "labelPartnerUnknown": "Unknown"
-    },  
+    },
     "organizationProfile": {
       "companyInfo": {
-		"type": "Organization Type",
-        "identifier": "Identifier",      
+        "type": "Organization Type",
+        "identifier": "Identifier",
         "sectionTitle": "Informacje o firmie",
         "companyName": "Nazwa prawna firmy",
-        "companyAltName":"Alternatywna nazwa firmy"
+        "companyAltName": "Alternatywna nazwa firmy"
       },
       "addressInfo": {
         "sectionTitle": "Dane adresowe",
@@ -565,7 +565,7 @@
         "postalCode": "Postal Code",
         "city": "City",
         "country": "Country",
-        "region": "Region"        
+        "region": "Region"
       }
     },
     "issueCredential": {
@@ -605,7 +605,7 @@
       }
     },
     "credExList": {
-	  "headers": {
+      "headers": {
         "displayText": "Type",
         "partnerName": "Issued to",
         "role": "Role",

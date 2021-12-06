@@ -28,6 +28,7 @@ module.exports = {
     "vue/multi-word-component-names": "off",
     "vue/no-mutating-props": "warn",
     "vue/valid-v-slot": "warn",
+    "vue/comment-directive": "warn",
     "unicorn/prefer-module": "off",
     "unicorn/filename-case": "off",
     "@typescript-eslint/ban-ts-comment": "warn",

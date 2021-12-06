@@ -1,12 +1,8 @@
 {
-  "**/*.{html,xml,ts,css,scss,env,dockerignore,sh}": [
-    "license-check-and-add add -f licenses/config.json -r 2021",
+  "**/*.{js,vue,html,xml,ts,css,scss,env,dockerignore,sh}": [
+    "license-check-and-add add -f license-header/config.json -r 2021",
+    "prettier --write",
     "vue-cli-service lint"
   ],
-  "**/*.{js,vue}": [
-    "license-check-and-add add -f licenses/config.json -r 2021",
-    "vue-cli-service lint",
-    "prettier --write"
-  ],
-  "**/*.{json}": ["prettier --write"]
+  "**/*.json": ["prettier --write"]
 }

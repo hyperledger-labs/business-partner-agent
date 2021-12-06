@@ -173,7 +173,9 @@ export default {
   },
   methods: {
     copySchemaId() {
-      let idElement = document.querySelector("#schemaId") as HTMLTextAreaElement;
+      let idElement = document.querySelector(
+        "#schemaId"
+      ) as HTMLTextAreaElement;
       idElement.select();
       let successful;
       try {
