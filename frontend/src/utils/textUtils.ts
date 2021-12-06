@@ -6,7 +6,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export const schemaAttributeLabel = (key) => {
+export const schemaAttributeLabel = (key: string): string => {
   if (!key) return "";
   if (key.trim().length > 1) {
     return (
@@ -17,11 +17,11 @@ export const schemaAttributeLabel = (key) => {
   return key;
 };
 
-export const isValidSchemaName = (value) =>
+export const isValidSchemaName = (value: string): boolean =>
   value && /^[A-Za-z\d-_]+$/.test(value);
 
-export const isValidSchemaAttributeName = (value) =>
+export const isValidSchemaAttributeName = (value: string): boolean =>
   value && /^[_a-z]+$/.test(value);
 
-export const isValidSchemaVersion = (value) =>
+export const isValidSchemaVersion = (value: string): boolean =>
   value && /^(\d+)\.(\d+)(?:\.\d+)?$/.test(value);

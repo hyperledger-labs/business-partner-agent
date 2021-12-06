@@ -7,8 +7,9 @@
  */
 
 import { CredentialTypes, PartnerStates } from "@/constants";
+import { Partner } from "@/services/partner-types";
 
-export const getPartnerProfile = (partner) => {
+export const getPartnerProfile = (partner: Partner) => {
   if (partner && Object.prototype.hasOwnProperty.call(partner, "credential")) {
     const partnerProfile = partner.credential.find((cred) => {
       return cred.type === CredentialTypes.PROFILE.type;
@@ -27,7 +28,7 @@ export const getPartnerProfile = (partner) => {
   }
 };
 
-export const getPartnerProfileRoute = (partner) => {
+export const getPartnerProfileRoute = (partner: Partner) => {
   if (partner && Object.prototype.hasOwnProperty.call(partner, "credential")) {
     const partnerProfile = partner.credential.find((cred) => {
       return cred.type === CredentialTypes.PROFILE.type;
@@ -46,7 +47,7 @@ export const getPartnerProfileRoute = (partner) => {
   }
 };
 
-export const getPartnerState = (partner) => {
+export const getPartnerState = (partner: Partner) => {
   if (Object.prototype.hasOwnProperty.call(partner, "state")) {
     if (partner.state === PartnerStates.REQUEST.value) {
       return partner.incoming
@@ -72,7 +73,7 @@ export const getPartnerState = (partner) => {
   }
 };
 
-export const getPartnerStateColor = (state) => {
+export const getPartnerStateColor = (state: string) => {
   switch (state) {
     case PartnerStates.REQUEST.value: {
       return "yellow";
@@ -81,7 +82,7 @@ export const getPartnerStateColor = (state) => {
     case PartnerStates.PING_NO_RESPONSE.value: {
       return "red";
     }
-    case PartnerStates.ACTIVE_OR_RESPONSE:
+    case PartnerStates.ACTIVE_OR_RESPONSE.value:
     case PartnerStates.ACTIVE.value:
     case PartnerStates.RESPONSE.value:
     case PartnerStates.COMPLETED.value:

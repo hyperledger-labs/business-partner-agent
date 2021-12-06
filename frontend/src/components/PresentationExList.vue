@@ -249,9 +249,9 @@ export default {
       this.dialog = false;
     },
     async approve() {
-      const payload = this.prepareApprovePayload();
+      const referents = this.prepareReferents();
       try {
-        await proofExService.approveProofRequest(this.record.id, payload);
+        await proofExService.approveProofRequest(this.record.id, referents);
         EventBus.$emit(
           "success",
           this.$t("component.presentationExList.eventSuccessApprove")
@@ -347,23 +347,19 @@ export default {
         });
       }
     },
-    prepareApprovePayload() {
-      const payload = {
-        referents: [],
-      };
+    prepareReferents() {
+      const referents = [];
 
       RequestTypes.map((type) => {
         Object.entries(this.record.proofRequest[type]).map(
           ([groupName, group]) => {
             console.log(groupName);
-            payload.referents.push(
-              group.selectedCredential?.credentialInfo?.referent
-            );
+            referents.push(group.selectedCredential?.credentialInfo?.referent);
           }
         );
       });
 
-      return payload;
+      return referents;
     },
     // Checks if proof request can be fullfilled
     canBeFullfilled() {

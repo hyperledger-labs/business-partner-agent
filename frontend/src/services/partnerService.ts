@@ -8,6 +8,7 @@
 
 import { appAxios } from "@/services/interceptors";
 import { ApiRoutes } from "@/constants";
+import { UpdatePartnerRequest } from "@/services/partner-types";
 
 export default {
   //
@@ -17,18 +18,18 @@ export default {
   listPartners() {
     return appAxios().get(`${ApiRoutes.PARTNERS}`);
   },
-  updatePartner({ id, data }) {
+  updatePartner(id: string, data: UpdatePartnerRequest) {
     return appAxios().put(`${ApiRoutes.PARTNERS}/${id}`, data);
   },
-  sendMessage(id, content) {
+  sendMessage(id: string, content: string) {
     return appAxios().post(`${ApiRoutes.PARTNERS}/${id}/messages`, {
       content: content,
     });
   },
-  getMessages(id) {
+  getMessages(id: string) {
     return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/messages`);
   },
-  getPresentationExRecords(id) {
+  getPresentationExRecords(id: string) {
     return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/proof-exchanges`);
   },
 };
