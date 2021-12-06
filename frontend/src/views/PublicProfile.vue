@@ -34,8 +34,8 @@
   </v-container>
 </template>
 
-<script>
-import Profile from "@/components/Profile";
+<script lang="ts">
+import Profile from "@/components/Profile.vue";
 import { EventBus } from "@/main";
 export default {
   name: "PublicProfile",

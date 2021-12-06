@@ -249,17 +249,17 @@
   </v-container>
 </template>
 
-<script>
-import Profile from "@/components/Profile";
-import PartnerStateIndicator from "@/components/PartnerStateIndicator";
+<script lang="ts">
+import Profile from "@/components/Profile.vue";
+import PartnerStateIndicator from "@/components/PartnerStateIndicator.vue";
 import { CredentialTypes, PartnerStates } from "@/constants";
 import { getPartnerProfile, getPartnerState } from "@/utils/partnerUtils";
 import { EventBus } from "@/main";
 import { issuerService, partnerService } from "@/services";
-import CredExList from "@/components/CredExList";
-import PresentationExList from "@/components/PresentationExList";
-import IssueCredential from "@/components/IssueCredential";
-import UpdatePartner from "@/components/UpdatePartner";
+import CredExList from "@/components/CredExList.vue";
+import PresentationExList from "@/components/PresentationExList.vue";
+import IssueCredential from "@/components/IssueCredential.vue";
+import UpdatePartner from "@/components/UpdatePartner.vue";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
 

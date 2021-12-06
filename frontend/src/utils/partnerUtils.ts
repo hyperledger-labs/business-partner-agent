@@ -7,7 +7,7 @@
  */
 
 import { CredentialTypes, PartnerStates } from "@/constants";
-import { Partner } from "@/services/partner-types";
+import {Partner} from "@/services/partner-types";
 
 export const getPartnerProfile = (partner: Partner) => {
   if (partner && Object.prototype.hasOwnProperty.call(partner, "credential")) {
@@ -22,6 +22,8 @@ export const getPartnerProfile = (partner: Partner) => {
       } else if (
         Object.prototype.hasOwnProperty.call(partnerProfile, "documentData")
       ) {
+        // FIXME: This value should not exist on type Partner
+        // @ts-ignore
         return partnerProfile.documentData;
       }
     }
@@ -37,10 +39,14 @@ export const getPartnerProfileRoute = (partner: Partner) => {
       if (
         Object.prototype.hasOwnProperty.call(partnerProfile, "credentialData")
       ) {
+        // FIXME: This value should not exist on type Partner
+        // @ts-ignore
         return { name: "Credential", params: { id: partnerProfile.id } };
       } else if (
         Object.prototype.hasOwnProperty.call(partnerProfile, "documentData")
       ) {
+        // FIXME: This value should not exist on type Partner
+        // @ts-ignore
         return { name: "Document", params: { id: partnerProfile.id } };
       }
     }

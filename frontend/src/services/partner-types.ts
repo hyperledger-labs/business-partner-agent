@@ -11,14 +11,15 @@ export interface Partner {
   updatedAt: number;
   lastSeen: number;
   trustPing: boolean;
-  valid: boolean;
+  valid?: boolean;
   ariesSupport: boolean;
   incoming: boolean;
-  state: string;
+  state: string; // Connection state
   stateToTimestamp: StateToTimestamp;
+  alias: string;
   did: string;
-  credential?: CredentialEntity[] | null;
-  tag?: null[] | null;
+  credential?: CredentialEntity[]; // Needs to be revised in the backend
+  tag: Tag[];
   name: string;
 }
 
@@ -33,7 +34,20 @@ export interface CredentialEntity {
   typeLabel: string;
   indyCredential: boolean;
   issuer: string;
+  schemaId: string;
   credentialData: CredentialData;
+}
+
+export interface MyDocumentApi {
+  id: string;
+  createdDate: number;
+  updatedDate: number;
+  type: string;
+  typeLabel: string;
+  schemaId: string;
+  isPublic: boolean;
+  label: string;
+  documentData: never;
 }
 
 export interface CredentialData {
@@ -76,4 +90,12 @@ export interface UpdatePartnerRequest {
 
 export interface DeclineExchangeRequest {
   message: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  content: string;
+  incoming: boolean;
+  createdAtTs: number;
+  partner: Partner;
 }

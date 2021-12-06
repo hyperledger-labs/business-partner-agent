@@ -8,20 +8,20 @@
 
 import { appAxios } from "@/services/interceptors";
 import { ApiRoutes } from "@/constants";
-import { UpdatePartnerRequest } from "@/services/partner-types";
+import {Partner, UpdatePartnerRequest} from "@/services/partner-types";
 
 export default {
   //
   // Partner API
   //
 
-  listPartners() {
+  listPartners(): Promise<Partner[]> {
     return appAxios().get(`${ApiRoutes.PARTNERS}`);
   },
   updatePartner(id: string, data: UpdatePartnerRequest) {
     return appAxios().put(`${ApiRoutes.PARTNERS}/${id}`, data);
   },
-  sendMessage(id: string, content: string) {
+  sendMessage(id: string, content: string): Promise<void> {
     return appAxios().post(`${ApiRoutes.PARTNERS}/${id}/messages`, {
       content: content,
     });

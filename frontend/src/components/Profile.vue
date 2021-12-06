@@ -86,10 +86,10 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { CredentialTypes } from "@/constants";
-import OrganizationalProfile from "@/components/OrganizationalProfile";
-import Credential from "@/components/Credential";
+import OrganizationalProfile from "@/components/OrganizationalProfile.vue";
+import Credential from "@/components/Credential.vue";
 import {
   getPartnerProfile,
   getPartnerProfileRoute,
