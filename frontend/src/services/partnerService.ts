@@ -8,14 +8,14 @@
 
 import { appAxios } from "@/services/interceptors";
 import { ApiRoutes } from "@/constants";
-import {Partner, UpdatePartnerRequest} from "@/services/partner-types";
+import { UpdatePartnerRequest } from "@/services/partner-types";
 
 export default {
   //
   // Partner API
   //
 
-  listPartners(): Promise<Partner[]> {
+  listPartners() {
     return appAxios().get(`${ApiRoutes.PARTNERS}`);
   },
   updatePartner(id: string, data: UpdatePartnerRequest) {

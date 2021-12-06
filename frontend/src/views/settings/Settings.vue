@@ -132,10 +132,11 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
-import TextFieldColorPicker from "@/components/helper/TextFieldColorPicker";
+import TextFieldColorPicker from "@/components/helper/TextFieldColorPicker.vue";
 import i18n from "@/plugins/i18n";
+import {LocaleMetaType} from "@/views/settings/locale-meta-type";
 
 export default {
   name: "Settings",
@@ -188,7 +189,9 @@ export default {
     },
     availableLocales() {
       return i18n.availableLocales.map((availableLocale) => {
-        const { meta } = i18n.getLocaleMessage(availableLocale);
+        const { meta } = i18n.getLocaleMessage(
+          availableLocale
+        ) as unknown as LocaleMetaType;
 
         let selectLabel = availableLocale;
         if (meta) {

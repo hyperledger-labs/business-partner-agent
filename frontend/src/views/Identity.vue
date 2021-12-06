@@ -17,7 +17,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 export default {
   name: "Identity",

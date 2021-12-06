@@ -176,12 +176,12 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import proofTemplateService from "@/services/proofTemplateService";
-import AttributeEdit from "@/components/proof-templates/AttributeEdit";
-import RestrictionsEdit from "@/components/proof-templates/RestrictionsEdit";
+import AttributeEdit from "@/components/proof-templates/AttributeEdit.vue";
+import RestrictionsEdit from "@/components/proof-templates/RestrictionsEdit.vue";
 
 export default {
   name: "ProofTemplates",

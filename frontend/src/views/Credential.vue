@@ -75,9 +75,9 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
-import Cred from "@/components/Credential";
+import Cred from "@/components/Credential.vue";
 import { CredentialTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
 

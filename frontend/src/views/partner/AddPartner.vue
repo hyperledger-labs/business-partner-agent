@@ -202,8 +202,8 @@
   </v-container>
 </template>
 
-<script>
-import Profile from "@/components/Profile";
+<script lang="ts">
+import Profile from "@/components/Profile.vue";
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
@@ -278,7 +278,7 @@ export default {
         });
     },
     addPartner() {
-      let partnerToAdd = {
+      let partnerToAdd: any = {
         did: `${this.did}`,
       };
 
@@ -347,7 +347,7 @@ export default {
     acceptInvitation() {
       if (this.invitationUrlLoaded) {
         // build up our accept request using the invitation block from check and user entered data...
-        let request = {
+        let request: any = {
           invitationBlock: this.receivedInvitation.invitationBlock,
         };
         if (this.alias && this.alias !== "") {

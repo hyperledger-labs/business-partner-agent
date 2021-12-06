@@ -91,11 +91,11 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import { CredentialTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
-import DashboardCard from "@/components/DashboardCard";
+import DashboardCard from "@/components/DashboardCard.vue";
 
 export default {
   name: "Dashboard",

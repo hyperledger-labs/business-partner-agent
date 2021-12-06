@@ -7,7 +7,7 @@
  */
 
 import { CredentialTypes, PartnerStates } from "@/constants";
-import {Partner} from "@/services/partner-types";
+import { Partner } from "@/services/partner-types";
 
 export const getPartnerProfile = (partner: Partner) => {
   if (partner && Object.prototype.hasOwnProperty.call(partner, "credential")) {

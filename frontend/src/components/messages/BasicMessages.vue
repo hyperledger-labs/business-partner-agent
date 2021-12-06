@@ -29,7 +29,7 @@
   />
 </template>
 
-<script>
+<script lang="ts">
 import ChatWindow from "vue-advanced-chat";
 import "vue-advanced-chat/dist/vue-advanced-chat.css";
 import partnerService from "@/services/partnerService";
@@ -123,7 +123,13 @@ export default {
       this.roomsLoaded = true;
     },
     // eslint-disable-next-line no-unused-vars
-    async fetchMessages({ room, options = {} }) {
+    async fetchMessages({
+      room,
+      options,
+    }: {
+      room: { roomId: string };
+      options: { reset: boolean };
+    }) {
       // this event is fired twice, bug in the chat component...
       console.log(
         `fetchMessages(room = ${room.roomId}, options = ${options.reset})`

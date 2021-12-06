@@ -52,7 +52,7 @@ export default {
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges/${id}`);
   },
 
-  listCredentialExchangesAsIssuer(id) {
+  listCredentialExchangesAsIssuer(id?) {
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
       params: { role: CredentialExchangeRoles.ISSUER, partnerId: id },
     });

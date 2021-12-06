@@ -36,7 +36,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import Document from "@/views/Document.vue";
 import { CredentialTypes, ExchangeVersion } from "@/constants";

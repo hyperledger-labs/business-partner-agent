@@ -83,7 +83,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import adminService from "@/services/adminService";
 import VBpaButton from "@/components/BpaButton";
@@ -125,7 +125,7 @@ export default {
             this.newTag = "";
             this.$store.dispatch("loadTags");
           } else {
-            EventBus.$emit("error", response.status.text);
+            EventBus.$emit("error", response.statusText);
           }
         })
         .catch((error) => {
@@ -146,7 +146,7 @@ export default {
             this.deleteErrorMsg = "";
             this.selectedTag = undefined;
           } else {
-            EventBus.$emit("error", response.status.text);
+            EventBus.$emit("error", response.statusText);
           }
         })
         .catch((error) => {

@@ -190,14 +190,14 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import {
   PresentationExchangeStates,
   Predicates,
   RequestTypes,
   Restrictions,
 } from "@/constants";
-import Timeline from "@/components/Timeline";
+import Timeline from "@/components/Timeline.vue";
 export default {
   name: "PresentationRecord",
   props: {

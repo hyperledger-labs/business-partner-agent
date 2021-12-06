@@ -152,7 +152,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { profileModel } from "@/models/model";
 import VBpaButton from "@/components/BpaButton";
 export default {

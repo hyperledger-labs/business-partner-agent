@@ -44,8 +44,8 @@
     </v-dialog>
   </v-container>
 </template>
-<script>
-import ManageSchema from "@/components/ManageSchema";
+<script lang="ts">
+import ManageSchema from "@/components/ManageSchema.vue";
 import store from "@/store";
 export default {
   props: {

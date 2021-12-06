@@ -303,9 +303,6 @@ export default {
       credentials: [],
       presentationExRecords: [],
       issuedCredentials: [],
-      rules: {
-        required: (value) => !!value || this.$t("app.rules.required"),
-      },
       PartnerStates: PartnerStates,
       issueCredentialDialog: false,
     };

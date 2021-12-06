@@ -79,12 +79,12 @@
     </v-data-table>
   </v-container>
 </template>
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import { ActivityRoles, ActivityStates, ActivityTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
 import activitiesService from "@/services/activitiesService";
-import NewMessageIcon from "@/components/NewMessageIcon";
+import NewMessageIcon from "@/components/NewMessageIcon.vue";
 
 export default {
   name: "ActivityList",

@@ -70,7 +70,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import TrustedIssuer from "../components/TrustedIssuers.vue";
 import VBpaButton from "@/components/BpaButton";

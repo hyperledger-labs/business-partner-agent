@@ -68,7 +68,7 @@
     </v-data-table>
   </v-container>
 </template>
-<script>
+<script lang="ts">
 import proofTemplateService from "@/services/proofTemplateService";
 
 export default {

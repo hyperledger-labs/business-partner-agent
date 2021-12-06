@@ -46,9 +46,9 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
-import ActivityList from "@/components/ActivityList";
+import ActivityList from "@/components/ActivityList.vue";
 
 export default {
   name: "Notifications",

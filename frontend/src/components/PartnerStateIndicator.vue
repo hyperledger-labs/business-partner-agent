@@ -22,7 +22,7 @@
   </span>
 </template>
 
-<script>
+<script lang="ts">
 import * as partnerUtils from "@/utils/partnerUtils";
 
 export default {

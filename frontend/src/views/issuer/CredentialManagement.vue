@@ -109,11 +109,11 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import { issuerService } from "@/services";
-import CredExList from "@/components/CredExList";
-import IssueCredential from "@/components/IssueCredential";
+import CredExList from "@/components/CredExList.vue";
+import IssueCredential from "@/components/IssueCredential.vue";
 import * as partnerUtils from "@/utils/partnerUtils";
 import VBpaButton from "@/components/BpaButton";
 

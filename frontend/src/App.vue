@@ -299,10 +299,10 @@
   </v-app>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "./main";
-import Taa from "./components/taa/TransactionAuthorAgreement";
-import BasicMessages from "@/components/messages/BasicMessages";
+import Taa from "./components/taa/TransactionAuthorAgreement.vue";
+import BasicMessages from "@/components/messages/BasicMessages.vue";
 import merge from "deepmerge";
 import i18n from "@/plugins/i18n";
 
@@ -451,8 +451,9 @@ export default {
 
       // Load up an alternate favicon
       if (this.ux.favicon) {
-        const favicon = document.querySelector("#favicon");
-        favicon.href = this.ux.favicon.href;
+        document
+          .querySelector("#favicon")
+          .setAttribute("href", this.ux.favicon.href);
       }
     }
 

@@ -157,7 +157,7 @@
     </v-dialog>
   </div>
 </template>
-<script>
+<script lang="ts">
 import VBpaButton from "@/components/BpaButton";
 
 export default {

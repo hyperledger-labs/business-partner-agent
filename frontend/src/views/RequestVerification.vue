@@ -80,9 +80,9 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
-import PartnerList from "@/components/PartnerList";
+import PartnerList from "@/components/PartnerList.vue";
 import VBpaButton from "@/components/BpaButton";
 import { getPartnerState } from "@/utils/partnerUtils";
 import { PartnerStates, ExchangeVersion } from "@/constants";

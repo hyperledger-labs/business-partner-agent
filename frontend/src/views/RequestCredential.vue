@@ -48,10 +48,10 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import { ExchangeVersion } from "@/constants";
-import MyCredentialList from "@/components/MyCredentialList";
+import MyCredentialList from "@/components/MyCredentialList.vue";
 import VBpaButton from "@/components/BpaButton";
 import credentialService from "@/services/credentialService";
 

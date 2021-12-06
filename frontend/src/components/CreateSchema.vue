@@ -140,7 +140,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import { issuerService } from "@/services";
 import VBpaButton from "@/components/BpaButton";

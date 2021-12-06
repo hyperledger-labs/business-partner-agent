@@ -94,10 +94,10 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { CredentialTypes } from "@/constants";
 import { EventBus } from "@/main";
-import NewMessageIcon from "@/components/NewMessageIcon";
+import NewMessageIcon from "@/components/NewMessageIcon.vue";
 
 export default {
   props: {

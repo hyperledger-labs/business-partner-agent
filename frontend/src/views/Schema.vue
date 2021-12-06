@@ -63,9 +63,9 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
-import TrustedIssuers from "../components/TrustedIssuers";
+import TrustedIssuers from "../components/TrustedIssuers.vue";
 import VBpaButton from "@/components/BpaButton";
 export default {
   name: "Schema",

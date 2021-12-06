@@ -35,7 +35,7 @@ create new ones
     </v-data-table>
   </v-container>
 </template>
-<script>
+<script lang="ts">
 import store from "@/store";
 import { EventBus } from "@/main";
 

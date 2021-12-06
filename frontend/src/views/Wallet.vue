@@ -64,9 +64,9 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { CredentialTypes } from "@/constants";
-import MyCredentialList from "@/components/MyCredentialList";
+import MyCredentialList from "@/components/MyCredentialList.vue";
 import { EventBus } from "@/main";
 
 export default {

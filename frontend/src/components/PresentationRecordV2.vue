@@ -76,7 +76,7 @@
           >
             {{ $t("view.presentationRecord.requestName") }}
           </v-list-item-title>
-          <v-list-item-subtitle align="">
+          <v-list-item-subtitle>
             {{ record.proofRequest ? record.proofRequest.name : "" }}
           </v-list-item-subtitle>
         </v-list-item>
@@ -101,15 +101,15 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import {
   PresentationExchangeStates,
   Predicates,
   RequestTypes,
   Restrictions,
 } from "@/constants";
-import CredentialCard from "@/components/CredentialCard";
-import Timeline from "@/components/Timeline";
+import CredentialCard from "@/components/CredentialCard.vue";
+import Timeline from "@/components/Timeline.vue";
 
 export default {
   name: "PresentationRecord",

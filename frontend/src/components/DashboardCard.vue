@@ -44,7 +44,7 @@
   </v-card>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: "DashboardCard",
   components: {},

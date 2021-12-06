@@ -136,11 +136,11 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import { CredentialTypes } from "@/constants";
-import OrganizationalProfile from "@/components/OrganizationalProfile";
-import Credential from "@/components/Credential";
+import OrganizationalProfile from "@/components/OrganizationalProfile.vue";
+import Credential from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
 
 export default {

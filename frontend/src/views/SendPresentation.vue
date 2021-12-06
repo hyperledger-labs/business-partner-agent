@@ -48,9 +48,9 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
-import MyCredentialList from "@/components/MyCredentialList";
+import MyCredentialList from "@/components/MyCredentialList.vue";
 import VBpaButton from "@/components/BpaButton";
 import { ExchangeVersion } from "@/constants";
 

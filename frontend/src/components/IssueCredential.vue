@@ -160,7 +160,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue";
 import { EventBus } from "@/main";
 import { issuerService } from "@/services";
@@ -365,12 +365,12 @@ export default {
           reader.addEventListener("load", (event_) => {
             this.expertLoad.data = event_.target.result;
           });
-          reader.addEventListener("error", (event_) => {
+          reader.addEventListener("error", () => {
             EventBus.$emit(
               "error",
               `${this.$t(
                 "component.issueCredential.expertLoad.errorMessages.readFile"
-              )} '${v.name}'. ${event_.message}`
+              )} '${v.name}'.`
             );
           });
         } catch (error) {

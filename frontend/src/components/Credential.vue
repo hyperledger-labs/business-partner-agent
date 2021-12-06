@@ -76,7 +76,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import * as textUtils from "@/utils/textUtils";
 
 export default {

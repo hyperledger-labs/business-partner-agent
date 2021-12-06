@@ -55,11 +55,11 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import { getPartnerState } from "@/utils/partnerUtils";
-import PartnerStateIndicator from "@/components/PartnerStateIndicator";
-import NewMessageIcon from "@/components/NewMessageIcon";
+import PartnerStateIndicator from "@/components/PartnerStateIndicator.vue";
+import NewMessageIcon from "@/components/NewMessageIcon.vue";
 import { CredentialTypes, PartnerStates } from "@/constants";
 
 export default {

@@ -100,11 +100,11 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import { adminService } from "@/services";
-import TrustedIssuers from "@/components/TrustedIssuers";
-import CredentialDefinitions from "@/components/CredentialDefinitions";
+import TrustedIssuers from "@/components/TrustedIssuers.vue";
+import CredentialDefinitions from "@/components/CredentialDefinitions.vue";
 import VBpaButton from "@/components/BpaButton";
 export default {
   name: "ManageSchema",
@@ -173,7 +173,7 @@ export default {
   },
   methods: {
     copySchemaId() {
-      let idElement = document.querySelector("#schemaId");
+      let idElement = document.querySelector("#schemaId") as HTMLTextAreaElement;
       idElement.select();
       let successful;
       try {

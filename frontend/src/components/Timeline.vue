@@ -40,12 +40,12 @@
   </v-expansion-panels>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: "Timeline",
   props: {
     timeEntries: {
-      type: Array[Object],
+      type: [],
       default: () => "Title",
     },
   },

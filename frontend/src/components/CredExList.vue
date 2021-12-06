@@ -258,12 +258,12 @@
   display: inherit;
 }
 </style>
-<script>
+<script lang="ts">
 import { issuerService } from "@/services";
 import Cred from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
-import NewMessageIcon from "@/components/NewMessageIcon";
-import Timeline from "@/components/Timeline";
+import NewMessageIcon from "@/components/NewMessageIcon.vue";
+import Timeline from "@/components/Timeline.vue";
 import { EventBus } from "@/main";
 import { CredentialExchangeRoles, CredentialExchangeStates } from "@/constants";
 
