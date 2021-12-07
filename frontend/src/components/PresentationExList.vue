@@ -140,13 +140,13 @@
   display: inherit;
 }
 </style>
-<script>
+<script lang="ts">
 import { proofExService } from "@/services";
 import { EventBus } from "@/main";
 import { PresentationExchangeStates, RequestTypes } from "@/constants";
-import NewMessageIcon from "@/components/NewMessageIcon";
-import PresentationRecord from "@/components/PresentationRecord";
-import PresentationRecordV2 from "@/components/PresentationRecordV2";
+import NewMessageIcon from "@/components/NewMessageIcon.vue";
+import PresentationRecord from "@/components/PresentationRecord.vue";
+import PresentationRecordV2 from "@/components/PresentationRecordV2.vue";
 import VBpaButton from "@/components/BpaButton";
 export default {
   props: {
@@ -279,7 +279,7 @@ export default {
       }
     },
     openItem(item) {
-      const itemCopy = {};
+      const itemCopy: any = {};
       Object.assign(itemCopy, item);
 
       const presentationStateToTimestamp = Object.entries(
@@ -336,7 +336,7 @@ export default {
       ) {
         RequestTypes.map((type) => {
           Object.entries(this.record.proofRequest[type]).map(
-            ([groupName, group]) => {
+            ([groupName, group]: [string, any]) => {
               if (
                 Object.hasOwnProperty.call(this.record.proofData, groupName)
               ) {
@@ -352,7 +352,7 @@ export default {
 
       RequestTypes.map((type) => {
         Object.entries(this.record.proofRequest[type]).map(
-          ([groupName, group]) => {
+          ([groupName, group]: [string, any]) => {
             console.log(groupName);
             referents.push(group.selectedCredential?.credentialInfo?.referent);
           }
@@ -366,7 +366,7 @@ export default {
       const canAttributesFullfilled = Object.values(
         this.record.proofRequest.requestedAttributes
       )
-        .map((attributeGroup) => {
+        .map((attributeGroup: any) => {
           return (
             Object.hasOwnProperty.call(attributeGroup, "matchingCredentials") &&
             attributeGroup.matchingCredentials.length > 0
@@ -380,7 +380,7 @@ export default {
       const canPredicatesFullfilled = Object.values(
         this.record.proofRequest.requestedPredicates
       )
-        .map((attributeGroup) => {
+        .map((attributeGroup: any) => {
           return attributeGroup.matchingCredentials;
         })
         // eslint-disable-next-line unicorn/no-array-reduce

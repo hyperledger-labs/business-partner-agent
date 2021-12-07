@@ -41,11 +41,11 @@
       </template>
 
       <template v-slot:[`item.createdAt`]="{ item }">
-        {{ item.createdAt | moment("YYYY-MM-DD HH:mm") }}
+        {{ item.createdAt | formatDateLong }}
       </template>
 
       <template v-slot:[`item.updatedAt`]="{ item }">
-        {{ item.updatedAt | moment("YYYY-MM-DD HH:mm") }}
+        {{ item.updatedAt | formatDateLong }}
       </template>
 
       <template v-slot:[`item.state`]="{ item }">

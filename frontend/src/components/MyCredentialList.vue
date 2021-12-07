@@ -51,15 +51,15 @@
       </template>
 
       <template v-slot:[`item.createdDate`]="{ item }">
-        {{ item.createdDate | moment("YYYY-MM-DD HH:mm") }}
+        {{ item.createdDate | formatDateLong }}
       </template>
 
       <template v-slot:[`item.updatedDate`]="{ item }">
-        {{ item.updatedDate | moment("YYYY-MM-DD HH:mm") }}
+        {{ item.updatedDate | formatDateLong }}
       </template>
 
       <template v-slot:[`item.issuedAt`]="{ item }">
-        {{ item.issuedAt | moment("YYYY-MM-DD HH:mm") }}
+        {{ item.issuedAt | formatDateLong }}
       </template>
 
       <template v-slot:[`item.revoked`]="{ item }">
@@ -95,7 +95,7 @@
 </template>
 
 <script lang="ts">
-import { CredentialTypes } from "@/constants";
+import { CredentialExchangeStates, CredentialTypes } from "@/constants";
 import { EventBus } from "@/main";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
 
@@ -171,7 +171,9 @@ export default {
             this.data =
               type === "credential"
                 ? result.data.filter((item) => {
-                    return item.issuer;
+                    return (
+                      item.state === CredentialExchangeStates.CREDENTIAL_ACKED
+                    );
                   })
                 : result.data;
           }

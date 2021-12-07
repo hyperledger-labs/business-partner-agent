@@ -49,7 +49,7 @@
             >
               <v-icon small class="mt-1 ml-1 mr-2">{{ validFrom }}</v-icon>
               <span class="text-caption mt-1">{{
-                item.credentialData.validFrom | moment("YYYY-MM-DD")
+                item.credentialData.validFrom | formatDate
               }}</span>
             </v-row>
             <v-row
@@ -58,7 +58,7 @@
             >
               <v-icon small class="mt-1 ml-1 mr-2">{{ validUntil }}</v-icon>
               <span class="text-caption mt-1">{{
-                item.credentialData.validUntil | moment("YYYY-MM-DD")
+                item.credentialData.validUntil | formatDate
               }}</span>
             </v-row>
           </v-col>
