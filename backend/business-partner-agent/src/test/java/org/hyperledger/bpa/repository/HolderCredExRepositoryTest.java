@@ -127,6 +127,22 @@ class HolderCredExRepositoryTest extends BaseTest {
         Assertions.assertEquals(2, holderCredExRepo.findNotRevoked().size());
     }
 
+    @Test
+    void testFindByTypeAndState() {
+        Partner p = createRandomPartner();
+        holderCredExRepo.save(createDummyCredEx(p));
+        holderCredExRepo.save(createDummyCredEx(p).setState(CredentialExchangeState.CREDENTIAL_ISSUED));
+        holderCredExRepo.save(createDummyCredEx(createRandomPartner()).setState(CredentialExchangeState.DONE));
+
+        assertEquals(2, holderCredExRepo.findByRoleEqualsAndStateIn(
+                CredentialExchangeRole.HOLDER,
+                List.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE)).size());
+
+        assertEquals(1, holderCredExRepo.findByRoleEqualsAndStateIn(
+                CredentialExchangeRole.HOLDER,
+                List.of(CredentialExchangeState.CREDENTIAL_ISSUED)).size());
+    }
+
     private static BPACredentialExchange createDummyCredEx(Partner partner) {
         return BPACredentialExchange
                 .builder()
