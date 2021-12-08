@@ -298,8 +298,7 @@ public class ConnectionManager {
     }
 
     private void resolveAndSend(ConnectionRecord record, Partner p) {
-        // only incoming connections in state request
-        if (record.protocolIsConnectionV1()) {
+        if (record.isConnectionInvitation()) {
             // handle Connection Invitations...
             // if we generate, and they accept, we do not get a COMPLETED or ACTIVE state,
             // only get to RESPONSE
@@ -315,10 +314,8 @@ public class ConnectionManager {
             if (record.isIncomingConnection()) {
                 eventPublisher.publishEventAsync(PartnerRequestReceivedEvent.builder().partner(p).build());
             }
-        } else if (record.stateIsCompleted() && record.isIncomingConnection()) {
+        } else if (record.stateIsActive() && record.isIncomingConnection()) {
             eventPublisher.publishEventAsync(PartnerRequestCompletedEvent.builder().partner(p).build());
-        }
-        if (record.stateIsCompleted() || record.stateIsActive() && record.isIncomingConnection()) {
             partnerCredDefLookup.lookupTypesForAllPartnersAsync();
         }
     }
