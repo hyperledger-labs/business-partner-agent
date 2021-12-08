@@ -40,7 +40,8 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     // find
 
-    List<BPACredentialExchange> findByRoleEqualsAndStateIn(CredentialExchangeRole role, List<CredentialExchangeState> state);
+    List<BPACredentialExchange> findByRoleEqualsAndStateIn(CredentialExchangeRole role,
+            List<CredentialExchangeState> state);
 
     Optional<BPACredentialExchange> findByReferent(String referent);
 

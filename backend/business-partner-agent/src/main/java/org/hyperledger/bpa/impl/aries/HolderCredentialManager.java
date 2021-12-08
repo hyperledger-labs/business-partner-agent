@@ -181,8 +181,8 @@ public class HolderCredentialManager extends BaseCredentialManager {
 
     public List<AriesCredential> listCredentials() {
         return holderCredExRepo.findByRoleEqualsAndStateIn(
-                        CredentialExchangeRole.HOLDER,
-                        List.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE))
+                CredentialExchangeRole.HOLDER,
+                List.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE))
                 .stream()
                 .map(this::buildCredential)
                 .collect(Collectors.toList());

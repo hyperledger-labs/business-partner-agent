@@ -32,6 +32,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.controller.api.issuer.*;
 import org.hyperledger.bpa.impl.IssuerCredentialManager;
+import org.hyperledger.bpa.impl.aries.ConnectionLessCredential;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 
 import javax.validation.Valid;
@@ -39,15 +40,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Controller("/api/issuer")
+import static org.hyperledger.bpa.controller.IssuerController.ISSUER_CONTROLLER_BASE_URL;
+
+@Controller(ISSUER_CONTROLLER_BASE_URL)
 @Tag(name = "Credential Issuance Management")
 @Validated
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @ExecuteOn(TaskExecutors.IO)
 public class IssuerController {
 
+    public static final String ISSUER_CONTROLLER_BASE_URL = "/api/issuer";
+
     @Inject
     IssuerCredentialManager im;
+
+    @Inject
+    ConnectionLessCredential connectionLess;
 
     @Inject
     SchemaService schemaService;
@@ -135,6 +143,30 @@ public class IssuerController {
         // just return the id and not the full Aries Object.
         // Event handlers will create the db cred ex records
         return HttpResponse.ok(exchange);
+    }
+
+    /**
+     * Issue connection-less credential step 1 - prepares credential offer and
+     * returns URL for use within the barcode
+     * 
+     * @param req {@link IssueConnectionLessRequest}
+     * @return {@link IssueConnectionLessResponse}
+     */
+    @Post("/issue-credential/connection-less")
+    public HttpResponse<IssueConnectionLessResponse> issueCredentialConnectionLess(
+            @Valid @Body IssueConnectionLessRequest req) {
+        return HttpResponse.ok(new IssueConnectionLessResponse(connectionLess.issueConnectionLess(req).toString()));
+    }
+
+    /**
+     * Issue connection-less credential step 2 - redirect with encoded offer
+     * 
+     * @param id {@link UUID}
+     * @return Redirect with encoded credential offer in the location header
+     */
+    @Get("/issue-credential/connection-less/{id}")
+    public HttpResponse<Void> handleConnectionLess(@PathVariable UUID id) {
+        return HttpResponse.redirect(connectionLess.handleConnectionLess(id));
     }
 
     /**
