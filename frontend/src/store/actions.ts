@@ -19,19 +19,19 @@ export const loadSchemas = async ({ commit }) => {
   adminService
     .listSchemas()
     .then((result) => {
-      let schemas = result.data;
+      const schemas = result.data;
       schemas.map((schema) => {
-        if ({}.hasOwnProperty.call(schema, "schemaId")) {
+        if (Object.prototype.hasOwnProperty.call(schema, "schemaId")) {
           schema.type = CredentialTypes.INDY.type;
         } else if (
-          !{}.hasOwnProperty.call(schema, "schemaId") &&
-          !{}.hasOwnProperty.call(schema, "type")
+          !Object.prototype.hasOwnProperty.call(schema, "schemaId") &&
+          !Object.prototype.hasOwnProperty.call(schema, "type")
         ) {
           schema.type = CredentialTypes.UNKNOWN.type;
         }
         schema.canIssue =
           Array.isArray(schema.credentialDefinitions) &&
-          schema.credentialDefinitions.length;
+          schema.credentialDefinitions.length > 0;
       });
       schemas.unshift(CredentialTypes.PROFILE);
       commit({
@@ -39,9 +39,9 @@ export const loadSchemas = async ({ commit }) => {
         schemas: schemas,
       });
     })
-    .catch((e) => {
-      console.error(e);
-      EventBus.$emit("error", e);
+    .catch((error) => {
+      console.error(error);
+      EventBus.$emit("error", error);
     });
 };
 
@@ -49,16 +49,16 @@ export const loadTags = async ({ commit }) => {
   adminService
     .listTags()
     .then((result) => {
-      let tags = result.data;
+      const tags = result.data;
       console.log(tags);
       commit({
         type: "setTags",
         tags: tags,
       });
     })
-    .catch((e) => {
-      console.error(e);
-      EventBus.$emit("error", e);
+    .catch((error) => {
+      console.error(error);
+      EventBus.$emit("error", error);
     });
 };
 
@@ -66,7 +66,7 @@ export const loadPartners = async ({ commit }) => {
   axios
     .get(`${apiBaseUrl}/partners`)
     .then((result) => {
-      if ({}.hasOwnProperty.call(result, "data")) {
+      if (Object.prototype.hasOwnProperty.call(result, "data")) {
         let partners = result.data;
         partners = partners.map((partner) => {
           partner.profile = getPartnerProfile(partner);
@@ -79,9 +79,9 @@ export const loadPartners = async ({ commit }) => {
         });
       }
     })
-    .catch((e) => {
-      console.error(e);
-      EventBus.$emit("error", e);
+    .catch((error) => {
+      console.error(error);
+      EventBus.$emit("error", error);
     });
 };
 
@@ -89,8 +89,8 @@ export const loadDocuments = async ({ commit }) => {
   axios
     .get(`${apiBaseUrl}/wallet/document`)
     .then((result) => {
-      if ({}.hasOwnProperty.call(result, "data")) {
-        var documents = result.data;
+      if (Object.prototype.hasOwnProperty.call(result, "data")) {
+        const documents = result.data;
         documents.map((documentIn) => {
           documentIn.createdDate = moment(documentIn.createdDate);
           documentIn.updatedDate = moment(documentIn.updatedDate);
@@ -102,9 +102,9 @@ export const loadDocuments = async ({ commit }) => {
         });
       }
     })
-    .catch((e) => {
-      console.error(e);
-      EventBus.$emit("error", e);
+    .catch((error) => {
+      console.error(error);
+      EventBus.$emit("error", error);
     });
 };
 
@@ -112,28 +112,28 @@ export const loadCredentials = async ({ commit }) => {
   axios
     .get(`${apiBaseUrl}/wallet/credential`)
     .then((result) => {
-      if ({}.hasOwnProperty.call(result, "data")) {
-        var credentials = [];
-        result.data.forEach((credentialRef) => {
+      if (Object.prototype.hasOwnProperty.call(result, "data")) {
+        const credentials: Array<any> = [];
+        for (const credentialReference of result.data) {
           axios
-            .get(`${apiBaseUrl}/wallet/credential/${credentialRef.id}`)
+            .get(`${apiBaseUrl}/wallet/credential/${credentialReference.id}`)
             .then((result) => {
               credentials.push(result.data);
             })
-            .catch((e) => {
-              console.error(e);
-              EventBus.$emit("error", e);
+            .catch((error) => {
+              console.error(error);
+              EventBus.$emit("error", error);
             });
-        });
+        }
         commit({
           type: "loadCredentialsFinished",
           credentials: credentials,
         });
       }
     })
-    .catch((e) => {
-      console.error(e);
-      EventBus.$emit("error", e);
+    .catch((error) => {
+      console.error(error);
+      EventBus.$emit("error", error);
     });
 };
 
@@ -141,17 +141,17 @@ export const loadSettings = async ({ commit }) => {
   axios
     .get(`${apiBaseUrl}/admin/config`)
     .then((result) => {
-      if ({}.hasOwnProperty.call(result, "data")) {
-        let settings = result.data;
+      if (Object.prototype.hasOwnProperty.call(result, "data")) {
+        const settings = result.data;
         commit({
           type: "setSettings",
           settings: settings,
         });
       }
     })
-    .catch((e) => {
-      console.error(e);
-      EventBus.$emit("error", e);
+    .catch((error) => {
+      console.error(error);
+      EventBus.$emit("error", error);
     });
 };
 
@@ -159,16 +159,16 @@ export const loadProofTemplates = async ({ commit }) => {
   proofTemplateService
     .getProofTemplates()
     .then((result) => {
-      let proofTemplates = result.data;
+      const proofTemplates = result.data;
 
       commit({
         type: "setProofTemplates",
         proofTemplates: proofTemplates,
       });
     })
-    .catch((e) => {
-      console.error(e);
-      EventBus.$emit("error", e);
+    .catch((error) => {
+      console.error(error);
+      EventBus.$emit("error", error);
     });
 };
 
@@ -178,7 +178,7 @@ export const loadPartnerSelectList = async ({ commit }) => {
     .then((result) => {
       if (result.status === 200) {
         // filter out partners that are only at the invitation stage, we can't do anything until they accept.
-        let partners = result.data
+        const partners = result.data
           .filter((partner) => {
             return partner.state !== PartnerStates.INVITATION.value;
           })
@@ -191,18 +191,19 @@ export const loadPartnerSelectList = async ({ commit }) => {
         });
       }
     })
-    .catch((e) => {
-      console.error(e);
-      EventBus.$emit("error", e);
+    .catch((error) => {
+      console.error(error);
+      EventBus.$emit("error", error);
     });
 };
 
+// eslint-disable-next-line unicorn/prevent-abbreviations
 export const loadCredDefSelectList = async ({ commit }) => {
   issuerService
     .listCredDefs()
     .then((result) => {
       if (result.status === 200) {
-        let credDefs = result.data.map((c) => {
+        const credDefs = result.data.map((c) => {
           return {
             value: c.id,
             text: c.displayText,
@@ -222,8 +223,8 @@ export const loadCredDefSelectList = async ({ commit }) => {
         });
       }
     })
-    .catch((e) => {
-      console.error(e);
-      EventBus.$emit("error", e);
+    .catch((error) => {
+      console.error(error);
+      EventBus.$emit("error", error);
     });
 };

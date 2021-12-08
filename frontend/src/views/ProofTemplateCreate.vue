@@ -176,12 +176,12 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import proofTemplateService from "@/services/proofTemplateService";
-import AttributeEdit from "@/components/proof-templates/AttributeEdit";
-import RestrictionsEdit from "@/components/proof-templates/RestrictionsEdit";
+import AttributeEdit from "@/components/proof-templates/AttributeEdit.vue";
+import RestrictionsEdit from "@/components/proof-templates/RestrictionsEdit.vue";
 
 export default {
   name: "ProofTemplates",
@@ -245,9 +245,10 @@ export default {
       const attributeGroupsInvalid = this.proofTemplate.attributeGroups.some(
         (ag) => ag.ui.selectedAttributes.length === 0
       );
-      const predicateConditionsInvalid = this.proofTemplate.attributeGroups.some(
-        (ag) => ag.ui.predicateConditionsErrorCount > 0
-      );
+      const predicateConditionsInvalid =
+        this.proofTemplate.attributeGroups.some(
+          (ag) => ag.ui.predicateConditionsErrorCount > 0
+        );
 
       return (
         proofTemplateNameInvalid ||
@@ -321,17 +322,17 @@ export default {
 
       this.closeOtherPanelsOnOpen();
     },
-    deleteAttributeGroup(attributeGroupIdx) {
+    deleteAttributeGroup(attributeGroupIndex) {
       const schema = this.$store.getters.getSchemas.find(
         (s) =>
           s.id ===
-          this.proofTemplate.attributeGroups[attributeGroupIdx].schemaId
+          this.proofTemplate.attributeGroups[attributeGroupIndex].schemaId
       );
 
       this.snackbar.text = `${this.$t(
         "view.proofTemplate.create.snackbarContent"
       )} ${schema.label} (${schema.schemaId})`;
-      this.proofTemplate.attributeGroups.splice(attributeGroupIdx, 1);
+      this.proofTemplate.attributeGroups.splice(attributeGroupIndex, 1);
       this.snackbar.deleteShow = true;
     },
     prepareProofTemplateData() {
@@ -357,26 +358,27 @@ export default {
         }
 
         // sanitize restrictions (remove empty restrictions)
-        ag.schemaLevelRestrictions.forEach(
-          (schemaLevelRestrictionObject, index) => {
-            ag.schemaLevelRestrictions[index] = Object.fromEntries(
-              Object.entries(schemaLevelRestrictionObject).filter(
-                ([, v]) => v !== ""
-              )
-            );
+        for (const [
+          index,
+          schemaLevelRestrictionObject,
+        ] of ag.schemaLevelRestrictions.entries()) {
+          ag.schemaLevelRestrictions[index] = Object.fromEntries(
+            Object.entries(schemaLevelRestrictionObject).filter(
+              ([, v]) => v !== ""
+            )
+          );
 
-            ag.ui.selectedRestrictionsByTrustedIssuer.map(
-              (selectedRestrictions) => {
-                if (
-                  selectedRestrictions.issuerDid ===
-                  schemaLevelRestrictionObject.issuerDid
-                ) {
-                  restrictionsInGroup.push(schemaLevelRestrictionObject);
-                }
+          ag.ui.selectedRestrictionsByTrustedIssuer.map(
+            (selectedRestrictions) => {
+              if (
+                selectedRestrictions.issuerDid ===
+                schemaLevelRestrictionObject.issuerDid
+              ) {
+                restrictionsInGroup.push(schemaLevelRestrictionObject);
               }
-            );
-          }
-        );
+            }
+          );
+        }
 
         // add empty restrictions object to satisfy backend
         if (ag.schemaLevelRestrictions.length === 0) {
@@ -403,9 +405,9 @@ export default {
 
       proofTemplateService
         .createProofTemplate(proofTemplate)
-        .then((res) => {
+        .then((response) => {
           this.$emit("received-proof-template-id", {
-            documentId: res.data.id,
+            documentId: response.data.id,
             useV2Exchange: this.useV2Exchange,
           });
           EventBus.$emit(
@@ -422,8 +424,8 @@ export default {
 
           this.createButtonIsBusy = false;
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
           this.createButtonIsBusy = false;
         });
     },

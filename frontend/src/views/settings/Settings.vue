@@ -132,10 +132,11 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
-import TextFieldColorPicker from "@/components/helper/TextFieldColorPicker";
+import TextFieldColorPicker from "@/components/helper/TextFieldColorPicker.vue";
 import i18n from "@/plugins/i18n";
+import { LocaleMetaType } from "@/views/settings/locale-meta-type";
 
 export default {
   name: "Settings",
@@ -188,7 +189,9 @@ export default {
     },
     availableLocales() {
       return i18n.availableLocales.map((availableLocale) => {
-        const { meta } = i18n.getLocaleMessage(availableLocale);
+        const { meta } = i18n.getLocaleMessage(
+          availableLocale
+        ) as unknown as LocaleMetaType;
 
         let selectLabel = availableLocale;
         if (meta) {
@@ -263,28 +266,28 @@ export default {
           this.status = result.data;
           this.isLoading = false;
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isLoading = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     copyDid() {
-      let didEl = document.querySelector("#did");
-      const el = document.createElement("textarea");
-      el.value = didEl.innerHTML.trim();
-      document.body.appendChild(el);
-      el.select();
+      let didElement = document.querySelector("#did");
+      const element = document.createElement("textarea");
+      element.value = didElement.innerHTML.trim();
+      document.body.append(element);
+      element.select();
 
       let successful;
       try {
         successful = document.execCommand("copy");
-      } catch (err) {
+      } catch {
         successful = false;
       }
       successful
         ? EventBus.$emit("success", this.$t("view.settings.eventSuccessCopy"))
         : EventBus.$emit("error", this.$t("view.settings.eventErrorCopy"));
-      document.body.removeChild(el);
+      element.remove();
       window.getSelection().removeAllRanges();
     },
   },

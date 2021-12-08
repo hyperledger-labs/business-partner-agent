@@ -55,7 +55,7 @@
     </v-dialog>
   </v-row>
 </template>
-<script>
+<script lang="ts">
 import { mapActions, mapGetters } from "vuex";
 import VueMarkdown from "vue-markdown-render";
 import VBpaButton from "@/components/BpaButton";

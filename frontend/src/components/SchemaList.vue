@@ -18,7 +18,9 @@
     >
       <template v-slot:[`item.trustedIssuer`]="{ item }">
         <v-icon
-          v-if="Array.isArray(item.trustedIssuer) && item.trustedIssuer.length"
+          v-if="
+            Array.isArray(item.trustedIssuer) && item.trustedIssuer.length > 0
+          "
           >$vuetify.icons.check</v-icon
         >
       </template>
@@ -42,8 +44,8 @@
     </v-dialog>
   </v-container>
 </template>
-<script>
-import ManageSchema from "@/components/ManageSchema";
+<script lang="ts">
+import ManageSchema from "@/components/ManageSchema.vue";
 import store from "@/store";
 export default {
   props: {

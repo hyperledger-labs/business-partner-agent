@@ -48,9 +48,9 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
-import MyCredentialList from "@/components/MyCredentialList";
+import MyCredentialList from "@/components/MyCredentialList.vue";
 import VBpaButton from "@/components/BpaButton";
 import { ExchangeVersion } from "@/constants";
 
@@ -110,8 +110,8 @@ export default {
               ? ExchangeVersion.V2
               : ExchangeVersion.V1,
           })
-          .then((res) => {
-            console.log(res);
+          .then((response) => {
+            console.log(response);
             this.isBusy = false;
             EventBus.$emit(
               "success",
@@ -122,9 +122,9 @@ export default {
               params: { id: this.id },
             });
           })
-          .catch((e) => {
+          .catch((error) => {
             this.isBusy = false;
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           });
       } else {
         this.isBusy = false;

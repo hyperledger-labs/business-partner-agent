@@ -69,7 +69,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import adminService from "@/services/adminService";
 import VBpaButton from "@/components/BpaButton";
@@ -114,9 +114,9 @@ export default {
             this.$emit("success");
           }
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isBusy = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     cancel() {

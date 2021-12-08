@@ -76,7 +76,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import * as textUtils from "@/utils/textUtils";
 
 export default {
@@ -90,15 +90,15 @@ export default {
     isNew: Boolean,
   },
   watch: {
-    document(val) {
+    document(value) {
       // document has been updated...
-      if (val) {
+      if (value) {
         this.prepareDocument();
       }
     },
   },
   created() {
-    console.log("Credential: ", this.document);
+    console.log("Credential:", this.document);
     this.prepareDocument();
   },
   data: () => {
@@ -133,7 +133,7 @@ export default {
 
       const isDirty = !!Object.keys(
         this.origIntDoc[this.documentDataType]
-      ).find((key) => {
+      ).some((key) => {
         return (
           this.intDoc[this.documentDataType][key] !==
           this.origIntDoc[this.documentDataType][key]
@@ -145,7 +145,7 @@ export default {
     createTemplateFromSchemaId(schemaId) {
       // as a holder, i may not know the schema - schemaID is set only if we have stored the schema
       // return null if we do not have a schema id.
-      if (!schemaId) return null;
+      if (!schemaId) return;
       const schemas = this.$store.getters.getSchemas;
       let schema = schemas.find((s) => {
         return s.schemaId === schemaId;
@@ -161,20 +161,22 @@ export default {
           }),
         });
       }
-      return null;
     },
 
-    createTemplateFromSchema(objData) {
+    createTemplateFromSchema(objectData) {
       const documentDataTypes = ["documentData", "credentialData", "proofData"];
-      const dataType = documentDataTypes.find((val) => {
-        if (objData && {}.hasOwnProperty.call(objData, val)) {
-          return val;
+      const dataType = documentDataTypes.find((value) => {
+        if (
+          objectData &&
+          Object.prototype.hasOwnProperty.call(objectData, value)
+        ) {
+          return value;
         }
       });
       return {
-        type: objData.type,
+        type: objectData.type,
         label: "",
-        fields: Object.keys(dataType ? objData[dataType] : objData).map(
+        fields: Object.keys(dataType ? objectData[dataType] : objectData).map(
           (key) => {
             return {
               type: key,
@@ -186,11 +188,7 @@ export default {
     },
 
     docFieldChanged(propertyName, event) {
-      if (this.origIntDoc[propertyName] !== event) {
-        this.intDoc[propertyName] = event;
-      } else {
-        this.intDoc[propertyName] = event;
-      }
+      this.intDoc[propertyName] = event;
       this.$emit("doc-field-changed", { key: propertyName, value: event });
     },
 
@@ -208,13 +206,13 @@ export default {
       }
       //Existing Document, extract Data
       else {
-        this.documentDataTypes.forEach((field) => {
-          if ({}.hasOwnProperty.call(this.document, field)) {
+        for (const field of this.documentDataTypes) {
+          if (Object.prototype.hasOwnProperty.call(this.document, field)) {
             this.documentDataType = field;
             this.intDoc = this.document;
             this.intCopy();
           }
-        });
+        }
       }
     },
 

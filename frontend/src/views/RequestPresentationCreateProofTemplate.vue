@@ -14,9 +14,9 @@
   ></proof-template-create>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
-import ProofTemplateCreate from "@/views/ProofTemplateCreate";
+import ProofTemplateCreate from "@/views/ProofTemplateCreate.vue";
 import proofTemplateService from "@/services/proofTemplateService";
 import { ExchangeVersion } from "@/constants";
 
@@ -50,8 +50,8 @@ export default {
           );
           this.$router.go(-2);
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
   },

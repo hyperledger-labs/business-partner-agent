@@ -23,13 +23,13 @@
     :show-files="false"
     :show-emojis="false"
     :show-reaction-emojis="false"
-    :text-formatting="false"
+    :text-formatting="{ disabled: true }"
     :text-messages="textMessages"
     :styles="{ room: { backgroundCounterBadge: 'red' } }"
   />
 </template>
 
-<script>
+<script lang="ts">
 import ChatWindow from "vue-advanced-chat";
 import "vue-advanced-chat/dist/vue-advanced-chat.css";
 import partnerService from "@/services/partnerService";
@@ -50,7 +50,7 @@ export default {
       responsiveBreakpoint: 9999,
       rooms: [],
       roomsLoaded: true,
-      currentRoomId: null,
+      currentRoomId: undefined,
       messages: [],
       messagesLoaded: true,
       messageActions: [],
@@ -70,13 +70,13 @@ export default {
   },
   watch: {
     // eslint-disable-next-line no-unused-vars
-    partnersCount(val) {
-      console.log(`partnersCount(${val})`);
+    partnersCount(value) {
+      console.log(`partnersCount(${value})`);
       this.loadRooms();
     },
     // eslint-disable-next-line no-unused-vars
-    messagesCount(val) {
-      console.log(`messagesCount(${val})`);
+    messagesCount(value) {
+      console.log(`messagesCount(${value})`);
       // update room message counts..
       this.updateRoomCounts();
     },
@@ -88,7 +88,7 @@ export default {
       console.log("loadRooms()");
       this.roomsLoaded = false;
       this.rooms = [];
-      this.currentRoomId = null;
+      this.currentRoomId = undefined;
       const _rooms = [];
       const partners = await partnerService.listPartners();
       if (Array.isArray(partners.data)) {
@@ -123,7 +123,13 @@ export default {
       this.roomsLoaded = true;
     },
     // eslint-disable-next-line no-unused-vars
-    async fetchMessages({ room, options = {} }) {
+    async fetchMessages({
+      room,
+      options,
+    }: {
+      room: { roomId: string };
+      options: { reset: boolean };
+    }) {
       // this event is fired twice, bug in the chat component...
       console.log(
         `fetchMessages(room = ${room.roomId}, options = ${options.reset})`
@@ -139,16 +145,18 @@ export default {
 
         let newMessages = false;
         if (Array.isArray(_pms.data)) {
-          for (const msg of _pms.data) {
-            const _seen = this.markSeen(msg.id);
+          for (const message of _pms.data) {
+            const _seen = this.markSeen(message.id);
             if (!_seen) {
               newMessages = true;
             }
             _msgs.push({
-              _id: msg.id,
-              content: msg.content,
-              senderId: msg.incoming ? msg.partner.id : CHAT_CURRENT_USERID,
-              timestamp: formatDateLong(msg.createdAtTs),
+              _id: message.id,
+              content: message.content,
+              senderId: message.incoming
+                ? message.partner.id
+                : CHAT_CURRENT_USERID,
+              timestamp: formatDateLong(message.createdAtTs),
               seen: _seen,
             });
           }
@@ -165,7 +173,7 @@ export default {
       }
       this.currentRoomId = room.roomId;
     },
-    // eslint-disable-next-line no-unused-vars
+
     async sendMessage({ content, roomId, file, replyMessage }) {
       // we are sending content to currentRoomId (partner)...
       await partnerService.sendMessage(roomId, content);
@@ -179,15 +187,14 @@ export default {
       // if the room list is open, clear out the room id...
       // we don't want to refresh a room's message list if we are on the partner/room list
       if (opened) {
-        this.currentRoomId = null;
+        this.currentRoomId = undefined;
       }
     },
     markSeen(id) {
       const _unseen = this.$store.getters.messages;
       if (Array.isArray(_unseen)) {
-        for (let i = 0; i < _unseen.length; i++) {
-          const _msg = _unseen[i];
-          if (_msg.messageId === id) {
+        for (const _message of _unseen) {
+          if (_message.messageId === id) {
             return false;
           }
         }
@@ -205,10 +212,9 @@ export default {
     updateRoomCounts() {
       let reloadCurrentRoom = false;
       const _rooms = this.rooms;
-      for (let i = 0; i < _rooms.length; i++) {
-        const _room = _rooms[i];
+      for (const [index, _room] of _rooms.entries()) {
         _room.unreadCount = this.getUnreadCount(_room.roomId);
-        this.$set(this.rooms, i, _room);
+        this.$set(this.rooms, index, _room);
 
         // if this room is open, and we have a new unread message, refresh the message list...
         if (_room.roomId === this.currentRoomId && _room.unreadCount > 0) {

@@ -55,9 +55,9 @@ const actions = {
         }
         commit({ type: "setTaaRequired", taaRequired: required });
       })
-      .catch((e) => {
-        console.error(e);
-        EventBus.$emit("error", e);
+      .catch((error) => {
+        console.error(error);
+        EventBus.$emit("error", error);
       });
   },
 
@@ -67,13 +67,13 @@ const actions = {
       .then((result) => {
         commit({ type: "setTaa", taa: result.data });
       })
-      .catch((e) => {
+      .catch((error) => {
         commit({
           type: "setTaa",
-          taa: { digest: "", version: state.version, text: state.taaText },
+          taa: { digest: "", version: state.taaVersion, text: state.taaText },
         });
-        console.error(e);
-        EventBus.$emit("error", e);
+        console.error(error);
+        EventBus.$emit("error", error);
       });
   },
 
@@ -86,9 +86,9 @@ const actions = {
         EventBus.$emit("success", "TAA registration fired");
         dispatch("validateTaa");
       })
-      .catch((e) => {
-        console.error(e);
-        EventBus.$emit("error", e);
+      .catch((error) => {
+        console.error(error);
+        EventBus.$emit("error", error);
       });
   },
 };

@@ -91,11 +91,11 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import { CredentialTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
-import DashboardCard from "@/components/DashboardCard";
+import DashboardCard from "@/components/DashboardCard.vue";
 
 export default {
   name: "Dashboard",
@@ -130,22 +130,11 @@ export default {
           this.status = result.data;
           this.isLoading = false;
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isLoading = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
   },
 };
 </script>
-<style scoped>
-.newHighlight {
-  color: #2ecc71;
-  padding-left: 4px;
-  font-size: 200%;
-}
-.cardTitle {
-  font-size: 400%;
-  margin-bottom: 2;
-}
-</style>

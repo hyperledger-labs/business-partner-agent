@@ -258,12 +258,12 @@
   display: inherit;
 }
 </style>
-<script>
+<script lang="ts">
 import { issuerService } from "@/services";
 import Cred from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
-import NewMessageIcon from "@/components/NewMessageIcon";
-import Timeline from "@/components/Timeline";
+import NewMessageIcon from "@/components/NewMessageIcon.vue";
+import Timeline from "@/components/Timeline.vue";
 import { EventBus } from "@/main";
 import { CredentialExchangeRoles, CredentialExchangeStates } from "@/constants";
 
@@ -410,9 +410,9 @@ export default {
     };
   },
   watch: {
-    items(val) {
+    items(value) {
       console.log("Credential Exchange Item refresh");
-      console.log(val);
+      console.log(value);
     },
   },
   methods: {
@@ -519,12 +519,12 @@ export default {
 
       issuerService
         .sendCredentialOffer(this.document.credentialExchangeId, counterOffer)
-        .then((res) => {
-          EventBus.$emit("success", this.$axiosErrorMessage(res));
+        .then((response) => {
+          EventBus.$emit("success", this.$axiosErrorMessage(response));
           this.closeDialog();
         })
-        .catch((err) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(err));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         })
         .finally(() => {
           this.isLoadingSendCounterOffer = false;

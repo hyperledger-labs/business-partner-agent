@@ -61,7 +61,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import Licenses from "../../licenses/licenseInfos.json";
 import { EventBus } from "@/main";
 export default {

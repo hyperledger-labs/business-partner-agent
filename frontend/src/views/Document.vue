@@ -108,14 +108,14 @@
           <v-bpa-button
             :loading="this.isBusy"
             color="primary"
-            @click="saveDocument(false || isProfile(intDoc.type))"
+            @click="saveDocument(isProfile(intDoc.type))"
             >{{ getCreateButtonLabel }}</v-bpa-button
           >
           <v-bpa-button
             v-show="this.id && !isProfile(intDoc.type)"
             :loading="this.isBusy"
             color="primary"
-            @click="saveDocument(true && !isProfile(intDoc.type))"
+            @click="saveDocument(!isProfile(intDoc.type))"
             >{{ $t("button.saveAndClose") }}</v-bpa-button
           >
         </v-layout>
@@ -136,11 +136,11 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import { CredentialTypes } from "@/constants";
-import OrganizationalProfile from "@/components/OrganizationalProfile";
-import Credential from "@/components/Credential";
+import OrganizationalProfile from "@/components/OrganizationalProfile.vue";
+import Credential from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
 
 export default {
@@ -208,9 +208,9 @@ export default {
         return this.$store.getters.getSchemaById(this.schemaId).label;
       } else if (this.type) {
         return this.$store.getters.getSchemaByType(this.type).label;
-      } else {
-        return null;
       }
+
+      return "";
     },
     getCreateButtonLabel() {
       return this.createButtonLabel
@@ -224,7 +224,7 @@ export default {
       this.$axios
         .get(`${this.$apiBaseUrl}/wallet/document/${this.id}`)
         .then((result) => {
-          if ({}.hasOwnProperty.call(result, "data")) {
+          if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.document = result.data;
             this.intDoc = { ...this.document };
             this.isReady = true;
@@ -236,8 +236,8 @@ export default {
             );
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     saveDocument(closeDocument) {
@@ -253,8 +253,8 @@ export default {
             type: this.document.type,
             schemaId: this.document.schemaId,
           })
-          .then((res) => {
-            console.log(res);
+          .then((response) => {
+            console.log(response);
             this.isBusy = false;
             if (closeDocument) {
               this.$router.go(-1);
@@ -266,14 +266,14 @@ export default {
               this.$t("view.document.eventSuccessSaveEdit")
             );
           })
-          .catch((e) => {
+          .catch((error) => {
             this.isBusy = false;
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           });
 
         // create new document
       } else {
-        const docForSave = {
+        const documentForSave = {
           document: this.$refs.doc.intDoc.documentData,
           label: this.$refs.doc.intDoc.label,
           isPublic: this.document.isPublic,
@@ -281,11 +281,11 @@ export default {
           schemaId: this.schemaId,
         };
         this.$axios
-          .post(`${this.$apiBaseUrl}/wallet/document`, docForSave)
-          .then((res) => {
-            console.log(res);
+          .post(`${this.$apiBaseUrl}/wallet/document`, documentForSave)
+          .then((response) => {
+            console.log(response);
             this.$emit("received-document-id", {
-              documentId: res.data.id,
+              documentId: response.data.id,
               useV2Exchange: this.useV2Exchange,
             });
             this.isBusy = false;
@@ -295,9 +295,9 @@ export default {
               this.$t("view.document.eventSuccessSaveNew")
             );
           })
-          .catch((e) => {
+          .catch((error) => {
             this.isBusy = false;
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           });
       }
     },
@@ -313,8 +313,8 @@ export default {
             this.$router.go(-1);
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     cancel() {
@@ -324,7 +324,7 @@ export default {
       return !this.schemaId && schemaType === CredentialTypes.PROFILE.type;
     },
     fieldModified() {
-      this.docChanged = !!Object.keys(this.intDoc).find((key) => {
+      this.docChanged = !!Object.keys(this.intDoc).some((key) => {
         return this.document[key] !== this.intDoc[key];
       });
       this.docModified();

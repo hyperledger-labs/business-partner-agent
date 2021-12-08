@@ -100,11 +100,11 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import { adminService } from "@/services";
-import TrustedIssuers from "@/components/TrustedIssuers";
-import CredentialDefinitions from "@/components/CredentialDefinitions";
+import TrustedIssuers from "@/components/TrustedIssuers.vue";
+import CredentialDefinitions from "@/components/CredentialDefinitions.vue";
 import VBpaButton from "@/components/BpaButton";
 export default {
   name: "ManageSchema",
@@ -129,16 +129,16 @@ export default {
     TrustedIssuers,
   },
   watch: {
-    dialog(val) {
+    dialog(value) {
       // if dialog is opening, reset to first tab
-      if (val) {
+      if (value) {
         this.tab = "schema-attributes";
       }
     },
   },
   data: () => {
     return {
-      tab: null,
+      tab: undefined,
       resetChildForms: false,
     };
   },
@@ -147,8 +147,8 @@ export default {
       get() {
         return this.value;
       },
-      set(val) {
-        this.$emit("input", val);
+      set(value) {
+        this.$emit("input", value);
       },
     },
     items() {
@@ -173,12 +173,14 @@ export default {
   },
   methods: {
     copySchemaId() {
-      let idEl = document.querySelector("#schemaId");
-      idEl.select();
+      let idElement = document.querySelector(
+        "#schemaId"
+      ) as HTMLTextAreaElement;
+      idElement.select();
       let successful;
       try {
         successful = document.execCommand("copy");
-      } catch (err) {
+      } catch {
         successful = false;
       }
       successful
@@ -190,7 +192,7 @@ export default {
             "error",
             this.$t("component.manageSchema.eventErrorCopy")
           );
-      idEl.blur();
+      idElement.blur();
       window.getSelection().removeAllRanges();
     },
     deleteSchema() {
@@ -207,8 +209,8 @@ export default {
             this.$emit("deleted");
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     onChanged() {

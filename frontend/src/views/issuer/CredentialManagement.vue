@@ -109,11 +109,11 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import { issuerService } from "@/services";
-import CredExList from "@/components/CredExList";
-import IssueCredential from "@/components/IssueCredential";
+import CredExList from "@/components/CredExList.vue";
+import IssueCredential from "@/components/IssueCredential.vue";
 import * as partnerUtils from "@/utils/partnerUtils";
 import VBpaButton from "@/components/BpaButton";
 
@@ -155,15 +155,15 @@ export default {
     },
   },
   watch: {
-    partner(val) {
+    partner(value) {
       this.issueCredentialDisabled =
-        !val || !val.id || !this.credDef || !this.credDef.id;
-      this.partnerId = val ? val.id : "";
+        !value || !value.id || !this.credDef || !this.credDef.id;
+      this.partnerId = value ? value.id : "";
     },
-    credDef(val) {
+    credDef(value) {
       this.issueCredentialDisabled =
-        !val || !val.id || !this.partner || !this.partner.id;
-      this.credDefId = val ? val.id : "";
+        !value || !value.id || !this.partner || !this.partner.id;
+      this.credDefId = value ? value.id : "";
     },
   },
   methods: {
@@ -181,8 +181,8 @@ export default {
         if (iresp.status === 200) {
           this.issuedCredentials = iresp.data;
         }
-      } catch (err) {
-        EventBus.$emit("error", this.$axiosErrorMessage(err));
+      } catch (error) {
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
       }
       this.isLoadingCredentials = false;
     },

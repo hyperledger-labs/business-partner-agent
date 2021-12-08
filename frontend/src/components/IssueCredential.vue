@@ -160,7 +160,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue";
 import { EventBus } from "@/main";
 import { issuerService } from "@/services";
@@ -189,11 +189,11 @@ export default {
       credential: {},
       credentialFields: {},
       submitDisabled: true,
-      useV2Credential: null,
+      useV2Credential: undefined,
       expertLoad: {
         show: false,
         data: "",
-        file: null,
+        file: undefined,
         type: "json",
         fileAccept: "text/plain,application/json",
       },
@@ -223,19 +223,19 @@ export default {
     },
   },
   watch: {
-    partnerId(val) {
-      if (val) {
-        this.partner = this.partnerList.find((p) => p.value === val);
+    partnerId(value) {
+      if (value) {
+        this.partner = this.partnerList.find((p) => p.value === value);
       }
     },
-    credDefId(val) {
-      if (val) {
-        this.credDef = this.credDefList.find((p) => p.value === val);
+    credDefId(value) {
+      if (value) {
+        this.credDef = this.credDefList.find((p) => p.value === value);
         this.credDefSelected();
       }
     },
-    open(val) {
-      if (val) {
+    open(value) {
+      if (value) {
         // load up our partner and cred def (if needed)
         if (!this.partner?.id) {
           this.partner = this.partnerList.find(
@@ -276,13 +276,13 @@ export default {
       this.isLoading = false;
     },
     async issueCredential() {
-      let exVersion = null;
+      let exVersion;
       if (this.useV2Credential) {
         exVersion = ExchangeVersion.V2;
       }
       // create an empty document, all empty strings...
       let document = {};
-      this.credDef.fields.forEach((x) => (document[x.type] = ""));
+      for (const x of this.credDef.fields) document[x.type] = "";
       //fill in whatever populated fields we have...
       Object.assign(document, this.credentialFields);
 
@@ -329,14 +329,17 @@ export default {
     },
     credDefSelected() {
       this.credentialFields = {};
-      this.credDef.fields.forEach((x) =>
-        Vue.set(this.credentialFields, x.type, "")
-      );
+      for (const x of this.credDef.fields)
+        Vue.set(this.credentialFields, x.type, "");
       this.submitDisabled = true;
     },
     enableSubmit() {
       let enabled = false;
-      if (this.credDef && this.credDef.fields && this.credDef.fields.length) {
+      if (
+        this.credDef &&
+        this.credDef.fields &&
+        this.credDef.fields.length > 0
+      ) {
         //ok, we have some fields to check.
         console.log(this.credentialFields);
         enabled = this.credDef.fields.some(
@@ -347,12 +350,11 @@ export default {
       }
       this.submitDisabled = !enabled;
     },
-    expertLoadTypeChanged(val) {
-      if (val === "json") {
-        this.expertLoad.fileAccept = "text/plain,application/json";
-      } else {
-        this.expertLoad.fileAccept = "text/plain,text/csv";
-      }
+    expertLoadTypeChanged(value) {
+      this.expertLoad.fileAccept =
+        value === "json"
+          ? "text/plain,application/json"
+          : "text/plain,text/csv";
     },
     uploadExpertLoadFile(v) {
       this.expertLoad.file = v;
@@ -360,23 +362,23 @@ export default {
         try {
           let reader = new FileReader();
           reader.readAsText(v, "UTF-8");
-          reader.onload = (evt) => {
-            this.expertLoad.data = evt.target.result;
-          };
-          reader.onerror = (evt) => {
+          reader.addEventListener("load", (event_) => {
+            this.expertLoad.data = event_.target.result;
+          });
+          reader.addEventListener("error", () => {
             EventBus.$emit(
               "error",
               `${this.$t(
                 "component.issueCredential.expertLoad.errorMessages.readFile"
-              )} '${v.name}'. ${evt.message}`
+              )} '${v.name}'.`
             );
-          };
-        } catch (e) {
+          });
+        } catch (error) {
           EventBus.$emit(
             "error",
             `${this.$t(
               "component.issueCredential.expertLoad.errorMessages.readFile"
-            )} '${v.name}'. ${e.message}`
+            )} '${v.name}'. ${error.message}`
           );
         }
       }
@@ -385,43 +387,43 @@ export default {
       this.expertLoad = {
         show: true,
         data: "",
-        file: null,
+        file: undefined,
         type: "json",
         fileAccept: "text/plain,application/json",
       };
     },
     parseExpertLoad() {
       if (this.expertLoad.data) {
-        let obj = undefined;
-        let formatErrMsg = this.$t(
+        let object;
+        let formatErrorMessage = this.$t(
           "component.issueCredential.expertLoad.errorMessages.format.json"
         );
         if (this.expertLoad.type === "json") {
-          obj = this.jsonToObject(this.expertLoad.data);
+          object = this.jsonToObject(this.expertLoad.data);
         } else {
-          formatErrMsg = this.$t(
+          formatErrorMessage = this.$t(
             "component.issueCredential.expertLoad.errorMessages.format.csv"
           );
-          obj = this.csvToObject(this.expertLoad.data);
+          object = this.csvToObject(this.expertLoad.data);
         }
 
-        if (obj) {
+        if (object) {
           let count = 0;
           // see if we can populate the credential fields...
-          this.credDef.fields.forEach((x) => {
+          for (const x of this.credDef.fields) {
             if (
-              obj[x.type] &&
+              object[x.type] &&
               !(
-                Object.prototype.toString.call(obj[x.type]) ===
+                Object.prototype.toString.call(object[x.type]) ===
                   "[object Object]" ||
-                Object.prototype.toString.call(obj[x.type]) ===
+                Object.prototype.toString.call(object[x.type]) ===
                   "[object Function]"
               )
             ) {
               count = count + 1;
-              Vue.set(this.credentialFields, x.type, obj[x.type].toString());
+              Vue.set(this.credentialFields, x.type, object[x.type].toString());
             }
-          });
+          }
           if (count) {
             this.enableSubmit();
           } else {
@@ -433,47 +435,47 @@ export default {
             );
           }
         } else {
-          let errMsg = this.$t(
+          let errorMessage = this.$t(
             "component.issueCredential.expertLoad.errorMessages.parse"
           );
-          EventBus.$emit("error", `${errMsg} ${formatErrMsg}`);
+          EventBus.$emit("error", `${errorMessage} ${formatErrorMessage}`);
         }
       }
     },
     jsonToObject(data) {
-      let obj = undefined;
+      let object;
       if (data && Object.prototype.toString.call(data) === "[object String]") {
         try {
-          obj = JSON.parse(data);
-        } catch (e) {
+          object = JSON.parse(data);
+        } catch {
           console.log("Error converting JSON string to Object");
         }
       }
-      return obj;
+      return object;
     },
     csvToObject(data) {
-      let obj = undefined;
+      let object;
       if (data && Object.prototype.toString.call(data) === "[object String]") {
         try {
-          const arr = CSV.parse(data);
-          if (arr?.length > 1) {
-            const names = arr[0];
-            const values = arr[1]; // only grab first row for now...
+          const array = CSV.parse(data);
+          if (array?.length > 1) {
+            const names = array[0];
+            const values = array[1]; // only grab first row for now...
             const namesOk = names.every((value) =>
               textUtils.isValidSchemaAttributeName(value)
             );
             if (namesOk) {
-              obj = {};
-              names.forEach((a, i) => {
-                obj[a] = values[i];
-              });
+              object = {};
+              for (const [index, a] of names.entries()) {
+                object[a] = values[index];
+              }
             }
           }
-        } catch (e) {
+        } catch {
           console.log("Error converting CSV string to Object");
         }
       }
-      return obj;
+      return object;
     },
   },
 };

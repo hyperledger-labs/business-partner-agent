@@ -86,9 +86,9 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
-import AttributeGroup from "@/components/proof-templates/AttributeGroup";
+import AttributeGroup from "@/components/proof-templates/AttributeGroup.vue";
 import proofTemplateService from "@/services/proofTemplateService";
 import VBpaButton from "@/components/BpaButton";
 
@@ -140,8 +140,8 @@ export default {
             });
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
   },

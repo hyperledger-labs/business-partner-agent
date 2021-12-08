@@ -126,7 +126,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import QrcodeVue from "qrcode.vue";
 import VBpaButton from "@/components/BpaButton";
@@ -185,8 +185,8 @@ export default {
             );
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
   },
