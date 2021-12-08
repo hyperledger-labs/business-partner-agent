@@ -299,10 +299,10 @@
   </v-app>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "./main";
-import Taa from "./components/taa/TransactionAuthorAgreement";
-import BasicMessages from "@/components/messages/BasicMessages";
+import Taa from "./components/taa/TransactionAuthorAgreement.vue";
+import BasicMessages from "@/components/messages/BasicMessages.vue";
 import merge from "deepmerge";
 import i18n from "@/plugins/i18n";
 
@@ -316,7 +316,7 @@ export default {
   },
   data: () => ({
     title: "",
-    drawer: null,
+    drawer: undefined,
     logo: process.env.VUE_APP_LOGO_URL,
 
     // snackbar stuff
@@ -360,20 +360,14 @@ export default {
       return this.$store.state.expertMode;
     },
     showFooter() {
-      if (
-        (this.$store.state.settings.imprint &&
-          typeof this.$store.state.settings.imprint === "string") ||
+      return (this.$store.state.settings.imprint &&
+        typeof this.$store.state.settings.imprint === "string") ||
         (this.$store.state.settings.dataPrivacyPolicy &&
           typeof this.$store.state.settings.dataPrivacyPolicy === "string")
-      ) {
-        return (
-          this.$store.state.settings.imprint.length +
+        ? this.$store.state.settings.imprint.length +
             this.$store.state.settings.dataPrivacyPolicy.length >
-          0
-        );
-      } else {
-        return null;
-      }
+            0
+        : undefined;
     },
     imprintUrl() {
       return this.$store.state.settings.imprint;
@@ -457,8 +451,9 @@ export default {
 
       // Load up an alternate favicon
       if (this.ux.favicon) {
-        const favicon = document.getElementById("favicon");
-        favicon.href = this.ux.favicon.href;
+        document
+          .querySelector("#favicon")
+          .setAttribute("href", this.ux.favicon.href);
       }
     }
 
@@ -472,31 +467,35 @@ export default {
       this.title = title;
     });
 
-    EventBus.$on("success", (msg) => {
-      (this.snackbarMsg = msg), (this.color = "green"), (this.snackbar = true);
+    EventBus.$on("success", (message) => {
+      (this.snackbarMsg = message),
+        (this.color = "green"),
+        (this.snackbar = true);
     });
 
-    EventBus.$on("error", (msg) => {
-      console.log(msg.response);
+    EventBus.$on("error", (message) => {
+      console.log(message.response);
 
       if (
-        {}.hasOwnProperty.call(msg, "response") &&
-        {}.hasOwnProperty.call(msg.response, "status")
+        Object.prototype.hasOwnProperty.call(message, "response") &&
+        Object.prototype.hasOwnProperty.call(message.response, "status")
       ) {
-        switch (msg.response.status) {
+        switch (message.response.status) {
           case 401:
             this.sessionDialog = true;
         }
 
         if (
-          {}.hasOwnProperty.call(msg.response, "data") &&
-          {}.hasOwnProperty.call(msg.response.data, "message")
+          Object.prototype.hasOwnProperty.call(message.response, "data") &&
+          Object.prototype.hasOwnProperty.call(message.response.data, "message")
         ) {
-          msg = msg.response.data.message;
+          message = message.response.data.message;
         }
       }
 
-      (this.snackbarMsg = msg), (this.color = "red"), (this.snackbar = true);
+      (this.snackbarMsg = message),
+        (this.color = "red"),
+        (this.snackbar = true);
     });
   },
   methods: {

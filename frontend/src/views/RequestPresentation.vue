@@ -47,10 +47,10 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
-import ProofTemplatesList from "@/components/proof-templates/ProofTemplatesList";
+import ProofTemplatesList from "@/components/proof-templates/ProofTemplatesList.vue";
 import proofTemplateService from "@/services/proofTemplateService";
 import { ExchangeVersion } from "@/constants";
 
@@ -104,8 +104,8 @@ export default {
           this.isBusy = false;
           this.$router.go(-1);
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
           this.isBusy = false;
         });
     },

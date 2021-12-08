@@ -76,7 +76,6 @@ frontend/licenses/**
 
 **/application-dev-*.yml
 node_modules
-package-lock.json
 **/*.local
 
 # --------------------------------------

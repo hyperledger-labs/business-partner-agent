@@ -12,17 +12,16 @@ export const istBusy = (state) => {
 };
 
 export const publicDocumentsAndCredentials = (state) => {
-  return state.credentials
-    .concat(state.documents)
-    .filter((d) => d.isPublic === true);
+  return [...state.credentials, ...state.documents].filter(
+    (d) => d.isPublic === true
+  );
 };
 
 export const getOrganizationalProfile = (state) => {
   const documents = state.documents.filter(
     (d) => d.type === CredentialTypes.PROFILE.type
   );
-  if (documents.length === 1) return documents[0];
-  else return undefined;
+  return documents.length === 1 ? documents[0] : undefined;
 };
 
 export const getPartners = (state) => {
@@ -55,7 +54,7 @@ export const getSchemaBasedSchemas = (state) => {
 
 export const getSchemaById = (state) => (schemaId) => {
   if (!schemaId) {
-    return null;
+    return;
   }
   return state.schemas.find((schema) => {
     return schema.schemaId === schemaId;
@@ -64,14 +63,14 @@ export const getSchemaById = (state) => (schemaId) => {
 
 export const getSchemaByType = (state) => (schemaType) => {
   if (!schemaType) {
-    return null;
+    return;
   }
   return state.schemas.find((schema) => {
     return schema.type === schemaType;
   });
 };
 
-export const getSchemaLabel = (state) => (typeName, schemaId = undefined) => {
+export const getSchemaLabel = (state) => (typeName, schemaId) => {
   let schemaType = { label: "" };
   if (schemaId) {
     schemaType = state.schemas.find((schema) => {
@@ -83,7 +82,7 @@ export const getSchemaLabel = (state) => (typeName, schemaId = undefined) => {
     });
   }
 
-  if (schemaType && {}.hasOwnProperty.call(schemaType, "label")) {
+  if (schemaType && Object.prototype.hasOwnProperty.call(schemaType, "label")) {
     return schemaType.label;
   }
 
@@ -95,7 +94,10 @@ export const getSchemaLabel = (state) => (typeName, schemaId = undefined) => {
 };
 
 export const getSettingByKey = (state) => (key) => {
-  if (state.settings && {}.hasOwnProperty.call(state.settings, key)) {
+  if (
+    state.settings &&
+    Object.prototype.hasOwnProperty.call(state.settings, key)
+  ) {
     return state.settings[key];
   }
 };
@@ -112,6 +114,7 @@ export const getPartnerSelectList = (state) => {
   return state.partnerSelectList;
 };
 
+// eslint-disable-next-line unicorn/prevent-abbreviations
 export const getCredDefSelectList = (state) => {
   return state.credDefSelectList;
 };

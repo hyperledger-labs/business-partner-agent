@@ -118,9 +118,9 @@
       }
     },
     "issueCredential": {
-      "attributesTitle":"Credential Details"
+      "attributesTitle": "Credential Details"
     },
-    "profile":{
+    "profile": {
       "noProfileMsg": "This organization does not share anything"
     }
   },

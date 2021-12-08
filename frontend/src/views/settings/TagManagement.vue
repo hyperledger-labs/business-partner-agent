@@ -83,7 +83,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import adminService from "@/services/adminService";
 import VBpaButton from "@/components/BpaButton";
@@ -116,8 +116,8 @@ export default {
         .addTag({
           name: this.newTag,
         })
-        .then((res) => {
-          if (res.status === 201 || res.status === 200) {
+        .then((response) => {
+          if (response.status === 201 || response.status === 200) {
             EventBus.$emit(
               "success",
               this.$t("view.tagManagement.eventSuccessTagAdded")
@@ -125,38 +125,38 @@ export default {
             this.newTag = "";
             this.$store.dispatch("loadTags");
           } else {
-            EventBus.$emit("error", res.status.text);
+            EventBus.$emit("error", response.statusText);
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     deleteTag(tag, hardDelete = false) {
       adminService
         .deleteTag(tag, hardDelete)
-        .then((res) => {
+        .then((response) => {
           this.hardDeleteDialog = false;
-          if (res.status === 201 || res.status === 200) {
+          if (response.status === 201 || response.status === 200) {
             EventBus.$emit(
               "success",
               this.$t("view.tagManagement.eventSuccessTagRemoved")
             );
             this.$store.dispatch("loadTags");
             this.deleteErrorMsg = "";
-            this.selectedTag = null;
+            this.selectedTag = undefined;
           } else {
-            EventBus.$emit("error", res.status.text);
+            EventBus.$emit("error", response.statusText);
           }
         })
-        .catch((e) => {
-          console.error(e.response);
-          if (e.response.status === 400) {
+        .catch((error) => {
+          console.error(error.response);
+          if (error.response.status === 400) {
             this.hardDeleteDialog = true;
-            this.deleteErrorMsg = e.response.data.message;
+            this.deleteErrorMsg = error.response.data.message;
             this.selectedTag = tag;
           } else {
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           }
         });
     },

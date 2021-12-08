@@ -61,7 +61,7 @@
   </v-card>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   props: {
     document: Object,

@@ -16,7 +16,7 @@
       "required": "Erforderlich",
       "onlyInteger": "Wert ist keine ganze Zahl",
       "valueMin": "Der Wert muss höher sein als",
-      "valueMax":  "Der Wert darf nicht höher sein als",
+      "valueMax": "Der Wert darf nicht höher sein als",
       "colorPrefix": "Farbwert sollte mit # beginnen",
       "colorInvalid": "Ungültige Farbe (e.g. #FF00FF)",
       "agree": "Sie müssen zustimmen um fortzufahren",
@@ -183,11 +183,11 @@
       "documents": {
         "title": "Dokumente",
         "headers": {
-          "label" : "Label",
-          "type" : "Typ",
-          "createdDate" : "Erstellt am",
-          "updatedDate" : "Aktualisiert am",
-          "isPublic" : "Öffentlich"
+          "label": "Label",
+          "type": "Typ",
+          "createdDate": "Erstellt am",
+          "updatedDate": "Aktualisiert am",
+          "isPublic": "Öffentlich"
         }
       },
       "visibility": {
@@ -220,7 +220,7 @@
       "eventSuccessTagAdded": "Tag erfolgreich hinzugefügt",
       "eventSuccessTagRemoved": "Tag erfolgreich entfernt"
     },
-    "proofTemplates":{
+    "proofTemplates": {
       "title": "Nachweisvorlagen",
       "tableTitle": "Nachweisvorlagen"
     },
@@ -543,7 +543,7 @@
     "activityList": {
       "labelFilterCombobox": "Filtern nach",
       "tableHeaders": {
-        "type":  "Typ",
+        "type": "Typ",
         "partner": "Verbindung",
         "updatedAt": "Aktualisiert am",
         "role": "Rolle",

@@ -23,19 +23,19 @@ import Partner from "@/views/partner/Partner.vue";
 import AddPartner from "@/views/partner/AddPartner.vue";
 import AddPartnerbyURL from "@/views/partner/AddPartnerbyURL.vue";
 import Settings from "@/views/settings/Settings.vue";
-import TagManagement from "@/views/settings/TagManagement";
+import TagManagement from "@/views/settings/TagManagement.vue";
 import SchemaSettings from "@/views/settings/SchemaSettings.vue";
 import Schema from "@/views/Schema.vue";
 import AddSchema from "@/views/AddSchema.vue";
 import About from "@/views/About.vue";
 import CredentialManagement from "@/views/issuer/CredentialManagement.vue";
 import Notifications from "@/views/Notifications.vue";
-import ProofTemplates from "@/views/ProofTemplates";
-import ProofTemplateCreate from "@/views/ProofTemplateCreate";
-import ProofTemplateView from "@/views/ProofTemplateView";
-import RequestPresentationCreateProofTemplate from "@/views/RequestPresentationCreateProofTemplate";
-import RequestCredential from "@/views/RequestCredential";
-import RequestCredentialCreateDocument from "@/views/RequestCredentialCreateDocument";
+import ProofTemplates from "@/views/ProofTemplates.vue";
+import ProofTemplateCreate from "@/views/ProofTemplateCreate.vue";
+import ProofTemplateView from "@/views/ProofTemplateView.vue";
+import RequestPresentationCreateProofTemplate from "@/views/RequestPresentationCreateProofTemplate.vue";
+import RequestCredential from "@/views/RequestCredential.vue";
+import RequestCredentialCreateDocument from "@/views/RequestCredentialCreateDocument.vue";
 
 Vue.use(VueRouter);
 

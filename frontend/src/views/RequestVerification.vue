@@ -80,9 +80,9 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
-import PartnerList from "@/components/PartnerList";
+import PartnerList from "@/components/PartnerList.vue";
 import VBpaButton from "@/components/BpaButton";
 import { getPartnerState } from "@/utils/partnerUtils";
 import { PartnerStates, ExchangeVersion } from "@/constants";
@@ -157,8 +157,8 @@ export default {
 
       credentialService
         .sendCredentialRequest(this.partner.id, data)
-        .then((res) => {
-          console.log(res);
+        .then((response) => {
+          console.log(response);
           this.isBusy = false;
           EventBus.$emit(
             "success",
@@ -166,9 +166,9 @@ export default {
           );
           this.$router.go(-2);
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isBusy = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     cancel() {

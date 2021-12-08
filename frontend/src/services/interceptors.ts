@@ -6,7 +6,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import Vue from "vue";
 
 /**
@@ -16,7 +16,7 @@ import Vue from "vue";
  * @returns {object} An axios instance
  */
 export function appAxios(timeout = 0) {
-  const axiosOptions = {
+  const axiosOptions: AxiosRequestConfig = {
     timeout: timeout,
   };
   if (Vue.prototype.$config) {

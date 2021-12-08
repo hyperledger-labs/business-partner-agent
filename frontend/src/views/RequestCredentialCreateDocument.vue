@@ -36,7 +36,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import Document from "@/views/Document.vue";
 import { CredentialTypes, ExchangeVersion } from "@/constants";
@@ -73,21 +73,21 @@ export default {
           this.isBusy = false;
           this.$router.go(-1);
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
           this.isBusy = false;
         });
     },
   },
   computed: {
     newDocumentTypes() {
-      let docTypes = this.$store.getters.getSchemas;
+      let documentTypes = this.$store.getters.getSchemas;
       if (this.$store.getters.getOrganizationalProfile) {
-        docTypes = docTypes.filter(
+        documentTypes = documentTypes.filter(
           (schema) => schema.type !== CredentialTypes.PROFILE.type
         );
       }
-      return docTypes;
+      return documentTypes;
     },
   },
   mounted() {
