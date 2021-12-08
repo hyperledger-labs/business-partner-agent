@@ -19,6 +19,7 @@ package org.hyperledger.bpa.controller;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
@@ -165,8 +166,9 @@ public class IssuerController {
      * @return Redirect with encoded credential offer in the location header
      */
     @Get("/issue-credential/connection-less/{id}")
-    public HttpResponse<Void> handleConnectionLess(@PathVariable UUID id) {
-        return HttpResponse.redirect(connectionLess.handleConnectionLess(id));
+    public HttpResponse<Object> handleConnectionLess(@PathVariable UUID id) {
+        return HttpResponse.status(HttpStatus.TEMPORARY_REDIRECT).header("location",
+                connectionLess.handleConnectionLess(id));
     }
 
     /**

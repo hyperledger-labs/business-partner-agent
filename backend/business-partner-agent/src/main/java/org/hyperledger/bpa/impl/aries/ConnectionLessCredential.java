@@ -67,6 +67,7 @@ public class ConnectionLessCredential {
 
     private final V1CredentialFreeOfferHelper h;
 
+    @Inject
     public ConnectionLessCredential(AriesClient ac) {
         this.ac = ac;
         this.h = new V1CredentialFreeOfferHelper(ac);
@@ -79,18 +80,18 @@ public class ConnectionLessCredential {
         V1CredentialFreeOffer freeOffer = h.buildFreeOffer(dbCredDef.getCredentialDefinitionId(), document);
         persistCredentialExchange(freeOffer, dbCredDef);
         removeTempConnectionRecord(freeOffer.getConnectionId());
-        return createURI(IssuerController.ISSUER_CONTROLLER_BASE_URL + "/connection-less/"
+        return createURI(IssuerController.ISSUER_CONTROLLER_BASE_URL + "/issue-credential/connection-less/"
                 + freeOffer.getCredentialExchangeId());
     }
 
-    public URI handleConnectionLess(@NonNull UUID credentialExchangeId) {
+    public String handleConnectionLess(@NonNull UUID credentialExchangeId) {
         BPACredentialExchange ex = credExRepo.findByCredentialExchangeId(credentialExchangeId.toString())
                 .orElseThrow(EntityNotFoundException::new);
         if (ex.getFreeCredentialOffer() == null) {
             // TODO nice exception
             throw new IllegalStateException();
         }
-        return createURI("?m_d=" + h.toBase64(ex.getFreeCredentialOffer()));
+        return "didcomm://" + host + "?m=" + h.toBase64(ex.getFreeCredentialOffer());
     }
 
     private void persistCredentialExchange(
