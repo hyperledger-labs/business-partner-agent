@@ -28,5 +28,11 @@ RUN mvn clean package -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
 FROM amazoncorretto:17-alpine
 COPY --from=MAVEN /home/maven/business-partner-agent/target/business-partner-agent*SNAPSHOT.jar business-partner-agent.jar
 
+# Overwrite frontend runtime variables
+RUN mkdir public
+COPY --from=VUE /frontend/dist/env.js /public/env.js
+COPY --from=VUE /frontend/setup-runtime.sh setup-runtime.sh
+RUN ["chmod", "a+x", "./setup-runtime.sh"]
+
 EXPOSE 8080
-CMD java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote ${JAVA_OPTS} -jar business-partner-agent.jar
+ENTRYPOINT ./setup-runtime.sh public/env.js business-partner-agent.jar && java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote ${JAVA_OPTS} -jar business-partner-agent.jar
