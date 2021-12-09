@@ -2,4 +2,4 @@ ALTER TABLE bpaschema ADD COLUMN type character varying(255) NOT NULL DEFAULT 'I
 ALTER TABLE bpaschema ADD COLUMN ld_type character varying(255);
 ALTER TABLE bpaschema ALTER COLUMN seq_no DROP NOT NULL;
 ALTER TABLE bpaschema DROP CONSTRAINT bpaschema_schema_id_key;
-ALTER TABLE bpa_credential_exchange ADD COLUMN free_credential_offer jsonb;
+ALTER TABLE partner ADD COLUMN invitation_record jsonb;

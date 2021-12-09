@@ -22,39 +22,47 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.acy_py.generated.model.InvitationRecord;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
-import org.hyperledger.aries.api.issue_credential_v1.V1CredentialFreeOffer;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialFreeOfferHelper;
+import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.controller.IssuerController;
 import org.hyperledger.bpa.controller.api.issuer.IssueConnectionLessRequest;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.BPACredentialDefinition;
 import org.hyperledger.bpa.model.BPACredentialExchange;
+import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.BPACredentialDefinitionRepository;
 import org.hyperledger.bpa.repository.IssuerCredExRepository;
+import org.hyperledger.bpa.repository.PartnerRepository;
 
-import java.io.IOException;
 import java.net.URI;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * First try on attaching a credential offer in the OOB invitation. As with the connection-less proof request
+ * the request consists of two parts. As there is no wallet that currently supports this the flow is not really
+ * tested.
+ */
 @Slf4j
 @Singleton
 public class ConnectionLessCredential {
+
+    @Value("${bpa.did.prefix}")
+    String didPrefix;
 
     @Value("${bpa.scheme}")
     String scheme;
 
     @Value("${bpa.host}")
     String host;
-
-    @Inject
-    AriesClient ac;
 
     @Inject
     Converter conv;
@@ -65,59 +73,79 @@ public class ConnectionLessCredential {
     @Inject
     IssuerCredExRepository credExRepo;
 
+    @Inject
+    PartnerRepository partnerRepo;
+
     private final V1CredentialFreeOfferHelper h;
 
     @Inject
     public ConnectionLessCredential(AriesClient ac) {
-        this.ac = ac;
         this.h = new V1CredentialFreeOfferHelper(ac);
     }
 
+    /**
+     * Step 1: Prepare offer und return URL
+     * @param request {@link IssueConnectionLessRequest}
+     * @return location of the offer
+     */
     public URI issueConnectionLess(@NonNull IssueConnectionLessRequest request) {
         // TODO nice exception and attribute check
         BPACredentialDefinition dbCredDef = credDefRepo.findById(request.getCredDefId()).orElseThrow();
         Map<String, String> document = conv.toStringMap(request.getDocument());
-        V1CredentialFreeOffer freeOffer = h.buildFreeOffer(dbCredDef.getCredentialDefinitionId(), document);
-        persistCredentialExchange(freeOffer, dbCredDef);
-        removeTempConnectionRecord(freeOffer.getConnectionId());
+        V1CredentialFreeOfferHelper.CredentialFreeOffer freeOffer = h.buildFreeOffer(dbCredDef.getCredentialDefinitionId(), document);
+        log.debug("{}", GsonConfig.prettyPrinter().toJson(freeOffer));
+        Partner p = persistPartner(freeOffer.getInvitationRecord());
+        persistCredentialExchange(freeOffer, dbCredDef, p);
         return createURI(IssuerController.ISSUER_CONTROLLER_BASE_URL + "/issue-credential/connection-less/"
-                + freeOffer.getCredentialExchangeId());
+                + freeOffer.getInvitationRecord().getInviMsgId());
     }
 
-    public String handleConnectionLess(@NonNull UUID credentialExchangeId) {
-        BPACredentialExchange ex = credExRepo.findByCredentialExchangeId(credentialExchangeId.toString())
+    /**
+     * Step 2: Return the base64 encoded invitation plus attachment
+     * @param invMessageId invitation message id
+     * @return base64 encoded invitation URL
+     */
+    public String handleConnectionLess(@NonNull UUID invMessageId) {
+        Partner ex = partnerRepo.findByInvitationMsgId(invMessageId.toString())
                 .orElseThrow(EntityNotFoundException::new);
-        if (ex.getFreeCredentialOffer() == null) {
+        if (ex.getInvitationRecord() == null) {
             // TODO nice exception
             throw new IllegalStateException();
         }
-        return "didcomm://" + host + "?m=" + h.toBase64(ex.getFreeCredentialOffer());
+        return "didcomm://" + host + "?m=" + ex.getInvitationRecord().getInvitationUrl();
     }
 
     private void persistCredentialExchange(
-            @NonNull V1CredentialFreeOffer offer, @NonNull BPACredentialDefinition dbCredDef) {
+            @NonNull V1CredentialFreeOfferHelper.CredentialFreeOffer r, @NonNull BPACredentialDefinition dbCredDef, @NonNull Partner p) {
         BPACredentialExchange.BPACredentialExchangeBuilder b = BPACredentialExchange
                 .builder()
                 .schema(dbCredDef.getSchema())
                 .credDef(dbCredDef)
+                .partner(p)
                 .role(CredentialExchangeRole.ISSUER)
                 .state(CredentialExchangeState.OFFER_SENT)
                 .pushStateChange(CredentialExchangeState.OFFER_SENT, Instant.now())
-                .freeCredentialOffer(offer)
-                .credentialExchangeId(offer.getCredentialExchangeId())
-                .threadId(offer.getThreadId())
-                .credentialOffer(offer.getCredentialPreview() != null
-                        ? offer.getCredentialPreview()
+                .credentialExchangeId(r.getCredentialExchangeId())
+                .threadId(r.getThreadId())
+                .credentialOffer(r.getCredentialProposalDict() != null
+                        ? r.getCredentialProposalDict().getCredentialProposal()
                         : null);
         credExRepo.save(b.build());
     }
 
-    private void removeTempConnectionRecord(@NonNull String connectionId) {
-        try {
-            ac.connectionsRemove(connectionId);
-        } catch (IOException | AriesException e) {
-            log.warn("Could not delete aries connection record.", e);
-        }
+    private Partner persistPartner(InvitationRecord r) {
+        return partnerRepo.save(Partner
+                .builder()
+                .ariesSupport(Boolean.TRUE)
+                .invitationMsgId(r.getInviMsgId())
+                .did(didPrefix + ConnectionManager.UNKNOWN_DID)
+                .state(ConnectionState.INVITATION)
+                .pushStateChange(ConnectionState.INVITATION, Instant.now())
+                .invitationRecord(r)
+                .incoming(Boolean.TRUE)
+                .tags(new HashSet<>())
+                .trustPing(Boolean.FALSE)
+                .build());
     }
 
     private URI createURI(String path) {

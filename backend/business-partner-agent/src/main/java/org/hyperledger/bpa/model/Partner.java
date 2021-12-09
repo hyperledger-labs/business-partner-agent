@@ -25,6 +25,7 @@ import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.hyperledger.acy_py.generated.model.InvitationRecord;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.api.PartnerAPI;
@@ -123,6 +124,11 @@ public class Partner extends StateChangeDecorator<Partner, ConnectionState> {
     @Nullable
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> verifiablePresentation;
+
+    /** credential offer or proof request when using OOB invitations with attachments */
+    @Nullable
+    @TypeDef(type = DataType.JSON)
+    private InvitationRecord invitationRecord;
 
     /**
      * Serialized {@link PartnerCredentialType} to allow filtering partners by

@@ -28,7 +28,6 @@ import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.acy_py.generated.model.InvitationCreateRequest;
 import org.hyperledger.acy_py.generated.model.InvitationRecord;
 import org.hyperledger.acy_py.generated.model.SendMessage;
 import org.hyperledger.aries.AriesClient;
@@ -36,6 +35,7 @@ import org.hyperledger.aries.api.connection.*;
 import org.hyperledger.aries.api.did_exchange.DidExchangeCreateRequestFilter;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
+import org.hyperledger.aries.api.out_of_band.InvitationCreateRequest;
 import org.hyperledger.aries.api.out_of_band.ReceiveInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
@@ -67,7 +67,7 @@ import java.util.stream.Collectors;
 @Singleton
 public class ConnectionManager {
 
-    private static final String UNKNOWN_DID = "unknown";
+    public static final String UNKNOWN_DID = "unknown";
 
     @Value("${bpa.did.prefix}")
     String didPrefix;
@@ -378,7 +378,6 @@ public class ConnectionManager {
                 InvitationCreateRequest.builder()
                         .alias(alias)
                         .usePublicDid(Boolean.TRUE)
-                        .handshakeProtocols(List.of(ConnectionRecord.ConnectionProtocol.DID_EXCHANGE_V1.getValue()))
                         .build(),
                 CreateInvitationFilter.builder()
                         .autoAccept(Boolean.TRUE)

@@ -115,11 +115,6 @@ public class BPACredentialExchange
     @TypeDef(type = DataType.JSON)
     private V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialOffer;
 
-    /** Offer sent in connection-less credential flow */
-    @Nullable
-    @TypeDef(type = DataType.JSON)
-    private V1CredentialFreeOffer freeCredentialOffer;
-
     @Nullable
     @TypeDef(type = DataType.JSON)
     private Credential credential;
