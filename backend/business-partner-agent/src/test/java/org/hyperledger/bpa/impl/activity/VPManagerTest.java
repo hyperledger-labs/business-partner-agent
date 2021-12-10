@@ -69,7 +69,7 @@ class VPManagerTest {
     void setup() {
         c.setMapper(m);
         vpm.setConverter(c);
-        vpm.setSchemaService(Optional.of(schemaService));
+        vpm.setSchemaService(schemaService);
     }
 
     @Test

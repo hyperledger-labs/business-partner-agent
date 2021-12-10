@@ -19,6 +19,8 @@ package org.hyperledger.bpa.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 
 import java.util.List;
 
@@ -55,23 +57,26 @@ public enum CredentialType {
      * external or embedded context
      */
     JSON_LD(
-            List.of(ApiConstants.CREDENTIALS_V1),
+            List.of(
+                    ApiConstants.CREDENTIALS_V1,
+                    ApiConstants.BBS_V1),
             List.of("VerifiableCredential"));
 
     private final List<Object> context;
     private final List<String> type;
 
     /**
-     * Tries to get the type from the type list
+     * Tries to determine the credential type from the VC
      *
-     * @param type the list of credential types
+     * @param c {@link VerifiableCredential.VerifiableIndyCredential}
      * @return {@link CredentialType} or null when no match was found
      */
-    public static CredentialType fromType(List<String> type) {
-        for (String t : type) {
-            if ("OrganizationalProfileCredential".equals(t)) {
-                return CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL;
-            }
+    public static CredentialType fromCredential(@NonNull VerifiableCredential.VerifiableIndyCredential c) {
+        if (c.getType().stream().anyMatch(t -> "OrganizationalProfileCredential".equals(t))) {
+            return CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL;
+        }
+        if (c.getContext().stream().anyMatch(ctx -> ApiConstants.BBS_V1.equals(ctx))) {
+            return CredentialType.JSON_LD;
         }
         return CredentialType.INDY;
     }

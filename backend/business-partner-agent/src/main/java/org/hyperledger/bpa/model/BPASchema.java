@@ -24,6 +24,7 @@ import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
 import lombok.*;
 import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.model.type.CredentialTypeTranslator;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -37,7 +38,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "bpaschema")
-public class BPASchema {
+public class BPASchema implements CredentialTypeTranslator {
 
     @Id
     @AutoPopulated
@@ -79,7 +80,4 @@ public class BPASchema {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     private List<BPACredentialDefinition> credentialDefinitions;
 
-    public boolean typeIsIndy() {
-        return CredentialType.INDY.equals(type);
-    }
 }

@@ -15,19 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.api;
+package org.hyperledger.bpa.model.type;
 
-public class ApiConstants {
+import org.hyperledger.bpa.api.CredentialType;
 
-    public static final String DID_METHOD_WEB = "did:web:";
+public interface CredentialTypeTranslator {
 
-    public static final String DEFAULT_KEY_ID = "#key-1";
+    CredentialType getType();
 
-    public static final String DEFAULT_VERIFICATION_KEY_TYPE = "Ed25519VerificationKey2018";
+    default boolean typeIsIndy() {
+        return CredentialType.INDY.equals(getType());
+    }
 
-    public static final String CREDENTIALS_V1 = "https://www.w3.org/2018/credentials/v1";
+    default boolean typeIsJsonLd() {
+        return CredentialType.JSON_LD.equals(getType());
+    }
 
-    public static final String BBS_V1 = "https://w3id.org/security/bbs/v1";
-
-    public static final String INDY_CREDENTIAL_SCHEMA = "https://raw.githubusercontent.com/iil-network/contexts/master/indycredential.jsonld";
+    default boolean typeIsOrgProfile() {
+        return CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(getType());
+    }
 }

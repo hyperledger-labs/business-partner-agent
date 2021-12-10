@@ -234,8 +234,11 @@ public class SchemaService {
         Optional<BPASchema> schema = schemaRepo.findBySchemaId(schemaId);
         if (schema.isPresent()) {
             result = schema.get().getLabel();
+            if (StringUtils.isEmpty(result) && schema.get().typeIsJsonLd()) {
+                result = schema.get().getLdType();
+            }
         }
-        if (AriesStringUtil.isIndySchemaId(schemaId) && StringUtils.isEmpty(result)) {
+        if (StringUtils.isEmpty(result) && AriesStringUtil.isIndySchemaId(schemaId)) {
             result = AriesStringUtil.schemaGetName(schemaId);
         }
         return result;

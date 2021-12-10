@@ -119,19 +119,34 @@ public class Converter {
                     indyCredential = c.getType().stream().anyMatch("IndyCredential"::equals);
                 }
 
-                CredentialType type = CredentialType.fromType(c.getType());
+                CredentialType type = CredentialType.fromCredential(c);
 
                 String schemaId = null;
                 if (indyCredential) {
                     schemaId = c.getSchemaId();
                 } else if (CredentialType.INDY.equals(type)) {
                     schemaId = getSchemaIdFromContext(c);
+                } else if (CredentialType.JSON_LD.equals(type)) {
+                    List<Object> ctx = new ArrayList<>(c.getContext());
+                    ctx.removeAll(CredentialType.JSON_LD.getContext());
+                    if (CollectionUtils.isNotEmpty(ctx)) {
+                        schemaId = String.valueOf(ctx.get(0));
+                    }
+                }
+
+                String typeLabel = resolveTypeLabel(type, schemaId);
+                if (StringUtils.isEmpty(typeLabel) && CredentialType.JSON_LD.equals(type)) {
+                    List<String> types = new ArrayList<>(c.getType());
+                    types.removeAll(CredentialType.JSON_LD.getType());
+                    if (CollectionUtils.isNotEmpty(types)) {
+                        typeLabel = types.get(0);
+                    }
                 }
 
                 final PartnerCredential pCred = PartnerCredential
                         .builder()
                         .type(type)
-                        .typeLabel(resolveTypeLabel(type, schemaId))
+                        .typeLabel(typeLabel)
                         .issuer(indyCredential ? c.getIndyIssuer() : c.getIssuer())
                         .schemaId(schemaId)
                         .credentialData(node)
@@ -175,6 +190,7 @@ public class Converter {
      */
     public MyDocument updateMyCredential(@NonNull MyDocumentAPI apiDoc, @NonNull MyDocument myDoc) {
         Map<String, Object> data = toMap(apiDoc.getDocumentData());
+        schemaService.getSchemaFor(apiDoc.getSchemaId()).ifPresent(myDoc::setSchema);
         myDoc
                 .setDocument(data)
                 .setIsPublic(apiDoc.getIsPublic())

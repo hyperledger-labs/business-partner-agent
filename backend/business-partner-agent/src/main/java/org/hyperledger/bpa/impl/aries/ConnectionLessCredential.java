@@ -47,9 +47,9 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * First try on attaching a credential offer in the OOB invitation. As with the connection-less proof request
- * the request consists of two parts. As there is no wallet that currently supports this the flow is not really
- * tested.
+ * First try on attaching a credential offer in the OOB invitation. As with the
+ * connection-less proof request the request consists of two parts. As there is
+ * no wallet that currently supports this the flow is not really tested.
  */
 @Slf4j
 @Singleton
@@ -85,6 +85,7 @@ public class ConnectionLessCredential {
 
     /**
      * Step 1: Prepare offer und return URL
+     * 
      * @param request {@link IssueConnectionLessRequest}
      * @return location of the offer
      */
@@ -92,7 +93,8 @@ public class ConnectionLessCredential {
         // TODO nice exception and attribute check
         BPACredentialDefinition dbCredDef = credDefRepo.findById(request.getCredDefId()).orElseThrow();
         Map<String, String> document = conv.toStringMap(request.getDocument());
-        V1CredentialFreeOfferHelper.CredentialFreeOffer freeOffer = h.buildFreeOffer(dbCredDef.getCredentialDefinitionId(), document);
+        V1CredentialFreeOfferHelper.CredentialFreeOffer freeOffer = h
+                .buildFreeOffer(dbCredDef.getCredentialDefinitionId(), document);
         log.debug("{}", GsonConfig.prettyPrinter().toJson(freeOffer));
         Partner p = persistPartner(freeOffer.getInvitationRecord());
         persistCredentialExchange(freeOffer, dbCredDef, p);
@@ -102,6 +104,7 @@ public class ConnectionLessCredential {
 
     /**
      * Step 2: Return the base64 encoded invitation plus attachment
+     * 
      * @param invMessageId invitation message id
      * @return base64 encoded invitation URL
      */
@@ -116,7 +119,8 @@ public class ConnectionLessCredential {
     }
 
     private void persistCredentialExchange(
-            @NonNull V1CredentialFreeOfferHelper.CredentialFreeOffer r, @NonNull BPACredentialDefinition dbCredDef, @NonNull Partner p) {
+            @NonNull V1CredentialFreeOfferHelper.CredentialFreeOffer r, @NonNull BPACredentialDefinition dbCredDef,
+            @NonNull Partner p) {
         BPACredentialExchange.BPACredentialExchangeBuilder b = BPACredentialExchange
                 .builder()
                 .schema(dbCredDef.getSchema())

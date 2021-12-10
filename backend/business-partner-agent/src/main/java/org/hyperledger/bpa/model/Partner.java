@@ -125,7 +125,9 @@ public class Partner extends StateChangeDecorator<Partner, ConnectionState> {
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> verifiablePresentation;
 
-    /** credential offer or proof request when using OOB invitations with attachments */
+    /**
+     * credential offer or proof request when using OOB invitations with attachments
+     */
     @Nullable
     @TypeDef(type = DataType.JSON)
     private InvitationRecord invitationRecord;

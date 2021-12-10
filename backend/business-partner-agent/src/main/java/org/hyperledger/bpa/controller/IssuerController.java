@@ -27,6 +27,7 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
@@ -165,6 +166,7 @@ public class IssuerController {
      * @param id {@link UUID}
      * @return Redirect with encoded credential offer in the location header
      */
+    @ApiResponse(responseCode = "307", description = "Redirect with encoded credential offer in the location header")
     @Get("/issue-credential/connection-less/{id}")
     public HttpResponse<Object> handleConnectionLess(@PathVariable UUID id) {
         return HttpResponse.status(HttpStatus.TEMPORARY_REDIRECT).header("location",

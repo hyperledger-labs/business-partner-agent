@@ -69,7 +69,7 @@ public class VPManager {
 
     @Inject
     @Setter
-    Optional<SchemaService> schemaService;
+    SchemaService schemaService;
 
     @Inject
     @Setter(AccessLevel.PROTECTED)
@@ -117,10 +117,15 @@ public class VPManager {
         // and cannot handle Jackson ObjectNode
         JsonObject subj = GsonConfig.defaultConfig().fromJson(on.toString(), JsonObject.class);
 
+        List<String> types = new ArrayList<>(doc.getType().getType());
+        if (doc.typeIsJsonLd() && doc.getSchema() != null && doc.getSchema().getLdType() != null) {
+            types.add(doc.getSchema().getLdType());
+        }
+
         return VerifiableIndyCredential
                 .builder()
                 .id("urn:" + doc.getId().toString())
-                .type(doc.getType().getType())
+                .type(types)
                 .context(resolveContext(doc.getType(), doc.getSchemaId()))
                 .issuanceDate(TimeUtil.currentTimeFormatted())
                 .issuer(myDid)
@@ -164,11 +169,15 @@ public class VPManager {
     protected List<Object> resolveContext(@NonNull CredentialType type, @Nullable String schemaId) {
         if (CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(type)) {
             return type.getContext();
+        } else if (CredentialType.JSON_LD.equals(type)) {
+            List<Object> res = new ArrayList<>(type.getContext());
+            res.add(schemaId);
+            return res;
         }
 
         final ArrayList<Object> context = new ArrayList<>(type.getContext());
 
-        schemaService.flatMap(s -> s.getSchemaFor(schemaId)).ifPresent(schema -> {
+        schemaService.getSchemaFor(schemaId).ifPresent(schema -> {
             Set<String> attributeNames = schema.getSchemaAttributeNames();
 
             JsonObject ctx = new JsonObject();
