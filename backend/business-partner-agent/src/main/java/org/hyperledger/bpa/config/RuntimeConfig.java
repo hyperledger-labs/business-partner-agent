@@ -26,8 +26,10 @@ import jakarta.inject.Singleton;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.bpa.api.aries.TransactionRole;
 import org.hyperledger.bpa.impl.StartupTasks;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 
@@ -127,14 +129,14 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
     }
 
     public boolean hasEndorserRole() {
-        return (getEndorserRole() != null && !getEndorserRole().trim().isEmpty());
+        return (StringUtils.isNotBlank(getEndorserRole()));
     }
 
     public boolean isEndorser() {
-        return (hasEndorserRole() && endorserRole.equalsIgnoreCase("Endorser"));
+        return (hasEndorserRole() && endorserRole.equalsIgnoreCase(TransactionRole.ENDORSER.name()));
     }
 
     public boolean isAuthor() {
-        return (hasEndorserRole() && endorserRole.equalsIgnoreCase("Author"));
+        return (hasEndorserRole() && endorserRole.equalsIgnoreCase(TransactionRole.AUTHOR.name()));
     }
 }

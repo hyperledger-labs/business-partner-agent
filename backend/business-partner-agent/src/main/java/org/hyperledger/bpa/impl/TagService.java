@@ -24,6 +24,7 @@ import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.api.TagAPI;
+import org.hyperledger.bpa.api.aries.TransactionRole;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
@@ -112,17 +113,15 @@ public class TagService {
         }
 
         // if an endorser/autor role is explicitely set ...
-        if (config.hasEndorserRole()) {
-            if (config.getEndorserRole().equalsIgnoreCase("Endorser")) {
-                // if BPA is an Endorser, can set connected partners as Authors
-                if (tagRepo.contByName("Author") == 0) {
-                    addTag("Author");
-                }
-            } else if (config.getEndorserRole().equalsIgnoreCase("Author")) {
-                // if BPA is an Author, can set connected partners as Endorsers
-                if (tagRepo.contByName("Endorser") == 0) {
-                    addTag("Endorser");
-                }
+        if (TransactionRole.ENDORSER.name().equalsIgnoreCase(config.getEndorserRole())) {
+            // if BPA is an Endorser, can set connected partners as Authors
+            if (tagRepo.contByName(TransactionRole.AUTHOR.name()) == 0) {
+                addTag(TransactionRole.AUTHOR.name());
+            }
+        } else if (TransactionRole.AUTHOR.name().equalsIgnoreCase(config.getEndorserRole())) {
+            // if BPA is an Author, can set connected partners as Endorsers
+            if (tagRepo.contByName(TransactionRole.ENDORSER.name()) == 0) {
+                addTag(TransactionRole.ENDORSER.name());
             }
         }
     }

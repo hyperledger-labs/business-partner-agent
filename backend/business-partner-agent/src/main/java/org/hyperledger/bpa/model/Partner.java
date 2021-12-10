@@ -28,6 +28,7 @@ import lombok.experimental.Accessors;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.api.PartnerAPI;
+import org.hyperledger.bpa.api.aries.TransactionRole;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 
 import javax.persistence.*;
@@ -151,6 +152,11 @@ public class Partner extends StateChangeDecorator<Partner, ConnectionState> {
             .filter(tag -> tag.getName().equalsIgnoreCase(name))
             .collect(Collectors.toSet());
         return (0 < filtered.size());
+    }
+
+    @Transient
+    public boolean hasTag(TransactionRole role) {
+        return hasTag(role.toString());
     }
 
     // extends lombok builder

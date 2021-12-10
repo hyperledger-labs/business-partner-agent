@@ -42,6 +42,7 @@ import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
 import org.hyperledger.aries.api.out_of_band.ReceiveInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.bpa.api.aries.TransactionRole;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.InvitationException;
 import org.hyperledger.bpa.api.exception.NetworkException;
@@ -229,15 +230,18 @@ public class ConnectionManager {
     public synchronized void addConnectionEndorserMetadata(Partner p) {
         log.info("TODO addConnectionEndorserMetadata() for: {}", p);
 
+        if (!config.hasEndorserRole())
+            return;
+
         //TransactionJobs.TransactionMyJobEnum txMyJob;
         //TransactionJobs.TransactionTheirJobEnum txTheirJob;
         String txMyJob;
-        if (p.hasTag("Author")) {
+        if (p.hasTag(TransactionRole.AUTHOR)) {
             // our partner is tagged as an "Author" so we set our role on the connection as "Author"
             log.info("TODO add connection metadata for Author connection: {}", p);
             txMyJob = TransactionJobs.TransactionMyJobEnum.TRANSACTION_ENDORSER.toString();
             //txTheirJob = TransactionJobs.TransactionTheirJobEnum.TRANSACTION_AUTHOR;
-        } else if (p.hasTag("Endorser")) {
+        } else if (p.hasTag(TransactionRole.ENDORSER)) {
             // our partner is tagged as an "Endorser" so we set our role on the connection as "Author"
             log.info("TODO add connection metadata for Endorser connection: {}", p);
             txMyJob = TransactionJobs.TransactionMyJobEnum.TRANSACTION_AUTHOR.toString();
@@ -293,9 +297,7 @@ public class ConnectionManager {
 
                     // if partner is tagged as "Author"/"Endorser" create appropriate meta-data
                     log.info("TODO check for outbound Endorser event for existing partner: {} {}", record, dbP);
-                    if (config.hasEndorserRole()) {
-                        addConnectionEndorserMetadata(dbP);
-                    }
+                    addConnectionEndorserMetadata(dbP);
                 });
     }
 
@@ -315,9 +317,7 @@ public class ConnectionManager {
 
                     // if partner is tagged as "Author"/"Endorser" create appropriate meta-data
                     log.info("TODO check for inbound Endorser event for existing partner: {} {}", record, dbP);
-                    if (config.hasEndorserRole()) {
-                        addConnectionEndorserMetadata(dbP);
-                    }
+                    addConnectionEndorserMetadata(dbP);
                 },
                 () -> {
                     Partner p = Partner
@@ -338,9 +338,7 @@ public class ConnectionManager {
 
                     // if partner is tagged as "Author"/"Endorser" create appropriate meta-data
                     log.info("TODO check for inbound Endorser event for new partner: {} {}", record, p);
-                    if (config.hasEndorserRole()) {
-                        addConnectionEndorserMetadata(p);
-                    }
+                    addConnectionEndorserMetadata(p);
                 });
     }
 
