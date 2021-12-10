@@ -17,7 +17,7 @@ This system is build on a distributed ledger (based on indy) that holds public c
 This is the web address the ACA-py agent will use to discover all the nodes on the Indy Ledger you wish to use.
 
 Example Values: 
-- **`http://host.docker.internal:9000/genesis`** will configure the agent that the Business Partner Agent uses to write to a VON network hosted directly on your local machine, this is great for local development/testing. That ledger can started by running `./start_infra.sh`  In [local-network](../scripts/local-network)
+- **`http://host.docker.internal:9000/genesis`** will configure the agent that the Business Partner Agent uses to write to a VON network hosted directly on your local machine, this is great for local development/testing. That ledger is started when using the [local-network](../scripts/scenarios/local-network) scenario.
 - **`http://test.bcovrin.vonx.io/genesis`** will configure the agent that the Business Partner Agent uses to write to a Sovrin ledger hosted by the BC Provincial Government that is for development purposes and is free to use.
 - For a production use case, you will need to pick your ledger carefully for one that meets your needs. [Sovrin MainNET](https://sovrin.org/transaction-endorsers/) is one ledger that would be appropriate in production. 
 
