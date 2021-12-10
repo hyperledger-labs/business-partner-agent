@@ -27,6 +27,7 @@ import org.hyperledger.bpa.api.TagAPI;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.config.TagConfig;
 import org.hyperledger.bpa.model.Tag;
 import org.hyperledger.bpa.repository.TagRepository;
@@ -39,6 +40,9 @@ public class TagService {
 
     @Inject
     TagRepository tagRepo;
+
+    @Inject
+    RuntimeConfig config;
 
     @Inject
     TagConfig configuredTags;
@@ -107,5 +111,19 @@ public class TagService {
             });
         }
 
+        // if an endorser/autor role is explicitely set ...
+        if (config.hasEndorserRole()) {
+            if (config.getEndorserRole().equalsIgnoreCase("Endorser")) {
+                // if BPA is an Endorser, can set connected partners as Authors
+                if (tagRepo.contByName("Author") == 0) {
+                    addTag("Author");
+                }
+            } else if (config.getEndorserRole().equalsIgnoreCase("Author")) {
+                // if BPA is an Author, can set connected partners as Endorsers
+                if (tagRepo.contByName("Endorser") == 0) {
+                    addTag("Endorser");
+                }
+            }
+        }
     }
 }

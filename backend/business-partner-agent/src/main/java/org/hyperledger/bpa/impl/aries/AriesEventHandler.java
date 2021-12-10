@@ -22,6 +22,7 @@ import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
+import org.hyperledger.aries.api.endorser.EndorseTransactionRecord;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
@@ -34,6 +35,7 @@ import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.impl.ChatMessageManager;
 import org.hyperledger.bpa.impl.IssuerCredentialManager;
+import org.hyperledger.bpa.impl.TransactionManager;
 
 import java.util.Optional;
 
@@ -49,6 +51,8 @@ public class AriesEventHandler extends EventHandler {
 
     private final IssuerCredentialManager issuerMgr;
 
+    private final TransactionManager transactionMgr;
+
     private final ProofEventHandler proofMgmt;
 
     private final ChatMessageManager chatMessageManager;
@@ -60,13 +64,15 @@ public class AriesEventHandler extends EventHandler {
             HolderCredentialManager holderMgr,
             ProofEventHandler proofMgmt,
             IssuerCredentialManager issuerMgr,
-            ChatMessageManager chatMessageManager) {
+            ChatMessageManager chatMessageManager,
+            TransactionManager transactionMgr) {
         this.conMgmt = conMgmt;
         this.pingMgmt = pingMgmt;
         this.holderMgr = holderMgr;
         this.issuerMgr = issuerMgr;
         this.proofMgmt = proofMgmt;
         this.chatMessageManager = chatMessageManager;
+        this.transactionMgr = transactionMgr;
     }
 
     @Override
@@ -169,6 +175,14 @@ public class AriesEventHandler extends EventHandler {
         log.debug("Issue Credential V2 Indy Event: {}", revocationInfo);
         synchronized (issuerMgr) {
             issuerMgr.handleIssueCredentialV2Indy(revocationInfo);
+        }
+    }
+
+    @Override
+    public void handleEndorseTransaction(EndorseTransactionRecord transaction) {
+        log.debug("Endorse Transaction (override): {}", transaction);
+        synchronized (transactionMgr) {
+            transactionMgr.handleEndorserTransactionEvent(transaction);
         }
     }
 

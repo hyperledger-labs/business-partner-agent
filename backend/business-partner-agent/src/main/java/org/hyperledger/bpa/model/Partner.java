@@ -36,6 +36,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Flat representation of a partner. In the web context a partner is just a
@@ -140,6 +141,16 @@ public class Partner extends StateChangeDecorator<Partner, ConnectionState> {
     @Transient
     public boolean hasConnectionId() {
         return connectionId != null;
+    }
+
+    @Transient
+    public boolean hasTag(String name) {
+        if (tags == null)
+            return false;
+        Set<Tag> filtered = tags.stream()
+            .filter(tag -> tag.getName().equalsIgnoreCase(name))
+            .collect(Collectors.toSet());
+        return (0 < filtered.size());
     }
 
     // extends lombok builder

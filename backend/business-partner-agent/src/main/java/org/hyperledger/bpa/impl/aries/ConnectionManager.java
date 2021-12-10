@@ -31,9 +31,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.acy_py.generated.model.InvitationCreateRequest;
 import org.hyperledger.acy_py.generated.model.InvitationRecord;
 import org.hyperledger.acy_py.generated.model.SendMessage;
+import org.hyperledger.acy_py.generated.model.TransactionJobs;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.*;
 import org.hyperledger.aries.api.did_exchange.DidExchangeCreateRequestFilter;
+import org.hyperledger.aries.api.endorser.SetEndorserInfoFilter;
+import org.hyperledger.aries.api.endorser.SetEndorserRoleFilter;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
 import org.hyperledger.aries.api.out_of_band.ReceiveInvitationFilter;
@@ -43,6 +46,7 @@ import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.InvitationException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.invitation.CheckInvitationResponse;
 import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
 import org.hyperledger.bpa.impl.InvitationParser;
@@ -102,6 +106,9 @@ public class ConnectionManager {
 
     @Inject
     PartnerCredDefLookup partnerCredDefLookup;
+
+    @Inject
+    RuntimeConfig config;
 
     /**
      * Creates a connection invitation to be used within a barcode
@@ -219,6 +226,53 @@ public class ConnectionManager {
         }
     }
 
+    public synchronized void addConnectionEndorserMetadata(Partner p) {
+        log.info("TODO addConnectionEndorserMetadata() for: {}", p);
+
+        //TransactionJobs.TransactionMyJobEnum txMyJob;
+        //TransactionJobs.TransactionTheirJobEnum txTheirJob;
+        String txMyJob;
+        if (p.hasTag("Author")) {
+            // our partner is tagged as an "Author" so we set our role on the connection as "Author"
+            log.info("TODO add connection metadata for Author connection: {}", p);
+            txMyJob = TransactionJobs.TransactionMyJobEnum.TRANSACTION_ENDORSER.toString();
+            //txTheirJob = TransactionJobs.TransactionTheirJobEnum.TRANSACTION_AUTHOR;
+        } else if (p.hasTag("Endorser")) {
+            // our partner is tagged as an "Endorser" so we set our role on the connection as "Author"
+            log.info("TODO add connection metadata for Endorser connection: {}", p);
+            txMyJob = TransactionJobs.TransactionMyJobEnum.TRANSACTION_AUTHOR.toString();
+            //txTheirJob = TransactionJobs.TransactionTheirJobEnum.TRANSACTION_ENDORSER;
+        } else {
+            log.info("TODO no connection role, return no-op");
+            return;
+        }
+
+        try {
+            // set the endorser role on the connection
+            SetEndorserRoleFilter serf = SetEndorserRoleFilter
+                .builder()
+                .transactionMyJob(txMyJob)
+                .build();
+            log.info("TODO set endorser role to: {} with {}", txMyJob, serf);
+            ac.endorseTransactionSetEndorserRole(p.getConnectionId(), serf);
+
+            if (p.hasTag("Endorser")) {
+                // we have to set the extra Endorser info
+                SetEndorserInfoFilter seif = SetEndorserInfoFilter
+                    .builder()
+                    .endorserDid(p.getDid())
+                    .endorserName(p.getAlias())
+                    .build();
+                log.info("TODO set endorser info to: {} {} with {}", p.getDid(), p.getAlias(), seif);
+                ac.endorseTransactionSetEndorserInfo(p.getConnectionId(), seif);
+            }
+        } catch (IOException e) {
+            String msg = messageSource.getMessage("acapy.unavailable");
+            log.error(msg, e);
+            throw new NetworkException(msg);
+        }
+    }
+
     // connection that originated from this agent
     public void handleOutgoingConnectionEvent(ConnectionRecord record) {
         partnerRepo.findByConnectionId(record.getConnectionId()).ifPresent(
@@ -236,6 +290,12 @@ public class ConnectionManager {
                     } else if (record.stateIsResponse() || record.stateIsCompleted()) {
                         eventPublisher.publishEventAsync(PartnerAcceptedEvent.builder().partner(dbP).build());
                     }
+
+                    // if partner is tagged as "Author"/"Endorser" create appropriate meta-data
+                    log.info("TODO check for outbound Endorser event for existing partner: {} {}", record, dbP);
+                    if (config.hasEndorserRole()) {
+                        addConnectionEndorserMetadata(dbP);
+                    }
                 });
     }
 
@@ -252,6 +312,12 @@ public class ConnectionManager {
                     dbP.pushStates(record.getState(), record.getUpdatedAt());
                     partnerRepo.update(dbP);
                     resolveAndSend(record, dbP);
+
+                    // if partner is tagged as "Author"/"Endorser" create appropriate meta-data
+                    log.info("TODO check for inbound Endorser event for existing partner: {} {}", record, dbP);
+                    if (config.hasEndorserRole()) {
+                        addConnectionEndorserMetadata(dbP);
+                    }
                 },
                 () -> {
                     Partner p = Partner
@@ -269,6 +335,12 @@ public class ConnectionManager {
                             .build();
                     p = partnerRepo.save(p);
                     resolveAndSend(record, p);
+
+                    // if partner is tagged as "Author"/"Endorser" create appropriate meta-data
+                    log.info("TODO check for inbound Endorser event for new partner: {} {}", record, p);
+                    if (config.hasEndorserRole()) {
+                        addConnectionEndorserMetadata(p);
+                    }
                 });
     }
 

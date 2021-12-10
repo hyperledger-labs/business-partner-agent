@@ -87,6 +87,9 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
     @Value("${bpa.i18n.fallbackLocale}")
     String fallbackLocale;
 
+    @Value("${bpa.endorser.role}")
+    String endorserRole;
+
     /** only set when running from .jar */
     String buildVersion;
 
@@ -121,5 +124,17 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
         } catch (IOException e) {
             log.warn("aca-py is not reachable");
         }
+    }
+
+    public boolean hasEndorserRole() {
+        return (getEndorserRole() != null && !getEndorserRole().trim().isEmpty());
+    }
+
+    public boolean isEndorser() {
+        return (hasEndorserRole() && endorserRole.equalsIgnoreCase("Endorser"));
+    }
+
+    public boolean isAuthor() {
+        return (hasEndorserRole() && endorserRole.equalsIgnoreCase("Author"));
     }
 }
