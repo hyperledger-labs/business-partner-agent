@@ -10,7 +10,7 @@
     "prettify": "prettier --write **/*.{css,html,js,json,mjs,scss,ts,tsx,yml,md,vue}",
     "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'",
     "license-file-headers-add": "license-check-and-add add -f license-header/config.json -r 2021",
-    "license": "generate-attribution -o ./licenses",
+    "license": "generate-attribution -o ./licenses && npm run prettify",
     "license-check": "license-checker --production --json --onlyAllow 'MIT;Python-2.0;Apache-2.0;BSD-2-Clause;BSD-3-Clause' --excludePackages 'business-partner-agent-frontend@0.1.0'",
     "prepare": "cd ../ && husky install ./frontend/.husky"
   },
