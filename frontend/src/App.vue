@@ -7,7 +7,11 @@
 -->
 <template>
   <v-app>
-    <v-navigation-drawer v-model="drawer" app>
+    <v-navigation-drawer
+      v-model="drawer"
+      app
+      :disable-resize-watcher="hideSidebar"
+    >
       <v-list dense>
         <router-link tag="span" :to="{ name: 'Dashboard' }">
           <v-list-item
@@ -187,7 +191,7 @@
 
     <v-app-bar color="primary" app flat dark>
       <v-badge
-        v-if="!drawer"
+        v-show="!hideBurgerButton && !drawer"
         overlap
         bordered
         :content="notificationsCount"
@@ -198,7 +202,10 @@
       >
         <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       </v-badge>
-      <v-app-bar-nav-icon v-if="drawer" @click.stop="drawer = !drawer" />
+      <v-app-bar-nav-icon
+        v-show="drawer && !hideBurgerButton"
+        @click.stop="drawer = !drawer"
+      />
       <v-toolbar-title>{{ getTitle }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn v-if="ux.header.logout.enabled" icon @click="logout()">
@@ -305,6 +312,7 @@ import Taa from "./components/taa/TransactionAuthorAgreement.vue";
 import BasicMessages from "@/components/messages/BasicMessages.vue";
 import merge from "deepmerge";
 import i18n from "@/plugins/i18n";
+import { getBooleanFromString } from "@/utils/textUtils";
 
 export default {
   components: {
@@ -316,7 +324,7 @@ export default {
   },
   data: () => ({
     title: "",
-    drawer: undefined,
+    drawer: !getBooleanFromString(window.env.SIDEBAR_CLOSE_ON_STARTUP),
     logo: process.env.VUE_APP_LOGO_URL,
 
     // snackbar stuff
@@ -383,6 +391,12 @@ export default {
         this.$store.getters.taskNotificationsCount +
         this.$store.getters.activityNotificationsCount
       );
+    },
+    hideBurgerButton() {
+      return getBooleanFromString(window.env.SIDEBAR_HIDE_BURGER_BUTTON);
+    },
+    hideSidebar() {
+      return getBooleanFromString(window.env.SIDEBAR_CLOSE_ON_STARTUP);
     },
     getAgentName() {
       let bpaName = this.$t("app.bpaDefaultName");

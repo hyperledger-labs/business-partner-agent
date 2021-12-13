@@ -25,3 +25,15 @@ export const isValidSchemaAttributeName = (value: string): boolean =>
 
 export const isValidSchemaVersion = (value: string): boolean =>
   value && /^(\d+)\.(\d+)(?:\.\d+)?$/.test(value);
+
+export const getBooleanFromString = (
+  inputString: string
+): boolean | undefined => {
+  if (inputString === "true") {
+    return true;
+  } else if (inputString === "false") {
+    return false;
+  } else {
+    return;
+  }
+};

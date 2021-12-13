@@ -31,6 +31,7 @@ module.exports = {
     "vue/comment-directive": "warn",
     "unicorn/prefer-module": "off",
     "unicorn/filename-case": "off",
+    "unicorn/prevent-abbreviations": "off",
     "@typescript-eslint/ban-ts-comment": "warn",
   },
 };
