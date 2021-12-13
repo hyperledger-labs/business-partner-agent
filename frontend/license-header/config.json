@@ -3,7 +3,8 @@
     "**/*.md",
     "**/*.svg",
     "license-header/license-header",
-    "licenses/attribution.txt"
+    "licenses/attribution.txt",
+    ".husky/_/**/*"
   ],
   "license": "license-header/license-header",
   "regexIdentifier": "_!##",
