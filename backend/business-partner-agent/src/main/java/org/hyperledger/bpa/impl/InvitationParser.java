@@ -57,7 +57,8 @@ public class InvitationParser {
     static final List<String> CONNECTION_INVITATION_TYPES = List.of(
             "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/invitation",
             "https://didcomm.org/connections/1.0/invitation");
-    static final List<String> OOB_INVITATION_TYPES = List.of("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/out-of-band/1.0/invitation",
+    static final List<String> OOB_INVITATION_TYPES = List.of(
+            "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/out-of-band/1.0/invitation",
             "https://didcomm.org/out-of-band/1.0/invitation");
 
     public InvitationParser() {
@@ -232,9 +233,10 @@ public class InvitationParser {
     }
 
     /**
-     * The location header can either be an HTTP URL or simply a URI, as we
-     * only process the query, and we do not want to rewrite the query parser
-     * the query is extracted from the URI and then wrapped again into a dummy HTTP URL
+     * The location header can either be an HTTP URL or simply a URI, as we only
+     * process the query, and we do not want to rewrite the query parser the query
+     * is extracted from the URI and then wrapped again into a dummy HTTP URL
+     * 
      * @param location the content of the location header
      * @return {@link HttpUrl} or null
      */
