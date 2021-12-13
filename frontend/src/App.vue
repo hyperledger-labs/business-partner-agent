@@ -7,7 +7,11 @@
 -->
 <template>
   <v-app>
-    <v-navigation-drawer v-model="drawer" app>
+    <v-navigation-drawer
+      v-model="drawer"
+      app
+      :disable-resize-watcher="hideSidebar"
+    >
       <v-list dense>
         <router-link tag="span" :to="{ name: 'Dashboard' }">
           <v-list-item
@@ -187,7 +191,7 @@
 
     <v-app-bar color="primary" app flat dark>
       <v-badge
-        v-if="!drawer"
+        v-show="!hideBurgerButton"
         overlap
         bordered
         :content="notificationsCount"
@@ -305,6 +309,7 @@ import Taa from "./components/taa/TransactionAuthorAgreement.vue";
 import BasicMessages from "@/components/messages/BasicMessages.vue";
 import merge from "deepmerge";
 import i18n from "@/plugins/i18n";
+import { getBooleanFromString } from "@/utils/textUtils";
 
 export default {
   components: {
@@ -316,7 +321,7 @@ export default {
   },
   data: () => ({
     title: "",
-    drawer: undefined,
+    drawer: !getBooleanFromString(window.env.SIDEBAR_CLOSE_ON_STARTUP),
     logo: process.env.VUE_APP_LOGO_URL,
 
     // snackbar stuff
@@ -383,6 +388,12 @@ export default {
         this.$store.getters.taskNotificationsCount +
         this.$store.getters.activityNotificationsCount
       );
+    },
+    hideBurgerButton() {
+      return getBooleanFromString(window.env.SIDEBAR_HIDE_BURGER_BUTTON);
+    },
+    hideSidebar() {
+      return getBooleanFromString(window.env.SIDEBAR_CLOSE_ON_STARTUP);
     },
     getAgentName() {
       let bpaName = this.$t("app.bpaDefaultName");

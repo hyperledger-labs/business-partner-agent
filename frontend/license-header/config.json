@@ -1,7 +1,7 @@
 {
   "ignore": ["**/*.md", "**/*.svg", "license-header/license-header"],
   "license": "license-header/license-header",
-  "regexIdentifier": "##",
+  "regexIdentifier": "_!##",
   "defaultFormat": {
     "eachLine": {
       "prepend": "# "
