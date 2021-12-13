@@ -1,5 +1,10 @@
 {
-  "ignore": ["**/*.md", "**/*.svg", "license-header/license-header"],
+  "ignore": [
+    "**/*.md",
+    "**/*.svg",
+    "license-header/license-header",
+    "licenses/attribution.txt"
+  ],
   "license": "license-header/license-header",
   "regexIdentifier": "_!##",
   "defaultFormat": {
