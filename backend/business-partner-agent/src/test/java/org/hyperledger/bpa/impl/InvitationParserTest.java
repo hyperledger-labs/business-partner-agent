@@ -18,16 +18,35 @@
 package org.hyperledger.bpa.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import org.hyperledger.bpa.controller.api.invitation.CheckInvitationResponse;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class InvitationParserTest {
 
-    @Test
-    void TestParseReceiveInvitation() {
-        InvitationParser p = new InvitationParser();
+    public static MockWebServer mockWebServer;
+    private InvitationParser p;
+
+    @BeforeEach
+    void init() throws Exception {
+        p = new InvitationParser();
         p.setMapper(new ObjectMapper());
 
+        mockWebServer = new MockWebServer();
+        mockWebServer.start();
+    }
+
+    @AfterEach
+    void tearDown() throws Exception {
+        mockWebServer.shutdown();
+    }
+
+    @Test
+    void TestParseReceiveInvitation() {
         InvitationParser.Invitation invitation = p.parseInvitation(this.invitation);
         Assertions.assertFalse(invitation.isOob());
         Assertions.assertTrue(invitation.isParsed());
@@ -36,9 +55,6 @@ public class InvitationParserTest {
 
     @Test
     void TestParseReceiveOOBInvitation() {
-        InvitationParser p = new InvitationParser();
-        p.setMapper(new ObjectMapper());
-
         InvitationParser.Invitation invitation = p.parseInvitation(oob);
         Assertions.assertTrue(invitation.isOob());
         Assertions.assertTrue(invitation.isParsed());
@@ -47,9 +63,6 @@ public class InvitationParserTest {
 
     @Test
     void TestParseReceiveDidCommInvitation() {
-        InvitationParser p = new InvitationParser();
-        p.setMapper(new ObjectMapper());
-
         InvitationParser.Invitation invitation = p.parseInvitation(this.didCommInvitation);
         Assertions.assertFalse(invitation.isOob());
         Assertions.assertTrue(invitation.isParsed());
@@ -58,13 +71,21 @@ public class InvitationParserTest {
 
     @Test
     void TestParseReceiveOOBDidCommInvitation() {
-        InvitationParser p = new InvitationParser();
-        p.setMapper(new ObjectMapper());
-
         InvitationParser.Invitation invitation = p.parseInvitation(didCommOob);
         Assertions.assertTrue(invitation.isOob());
         Assertions.assertTrue(invitation.isParsed());
         Assertions.assertNotNull(invitation.getInvitation());
+    }
+
+    @Test
+    void testStreetcredURI() {
+        MockResponse response = new MockResponse()
+                .setResponseCode(301)
+                .setHeader("location", streetCredRedirect);
+        mockWebServer.enqueue(response);
+        String httpUrl = mockWebServer.url("/46yG3VegpCqc").toString();
+        CheckInvitationResponse parsed = p.checkInvitation(httpUrl);
+        Assertions.assertEquals("Snapper", parsed.getLabel());
     }
 
     private final String invitation = "ewogICAgIkB0eXBlIjogImRpZDpzb3Y6QnpDYnNOWWhNcmpIaXFaRFRVQVNIZztzcGVjL2Nvbm5lY3Rpb25zLzEuMC9pbnZpdGF0aW9uIiwKICAgICJAaWQiOiAiNGQ1OGJhZjktZDIwOS00MTE4LThkOTQtNGE0OTBlNGEwNGFhIiwKICAgICJzZXJ2aWNlRW5kcG9pbnQiOiAiaHR0cDovL2hvc3QuZG9ja2VyLmludGVybmFsOjgwMzAiLAogICAgInJlY2lwaWVudEtleXMiOiBbCiAgICAgICAgIjZCTlF1dFJIalNWNmJwQ0E2djVkRVB2NW12dWlRS2hyc256cEN4dUgzdXdqIgogICAgXSwKICAgICJsYWJlbCI6ICJCdXNpbmVzcyBQYXJ0bmVyIEFnZW50IDEiCn0=";
@@ -73,4 +94,5 @@ public class InvitationParserTest {
     private final String didCommInvitation = "eyJAdHlwZSI6ICJodHRwczovL2RpZGNvbW0ub3JnL2Nvbm5lY3Rpb25zLzEuMC9pbnZpdGF0aW9uIiwgIkBpZCI6ICJkNGE5ZmY4YS1jNjlmLTRiMWQtODJlYi04NzQwYWRiMzE0MmEiLCAic2VydmljZUVuZHBvaW50IjogImh0dHBzOi8vaW52aXRlMS1icGEtYWNhcHktZGV2LmFwcHMuc2lsdmVyLmRldm9wcy5nb3YuYmMuY2EiLCAibGFiZWwiOiAiaW52aXRlMSIsICJyZWNpcGllbnRLZXlzIjogWyI5MnV2TTFFOG9RbXFUNGZLZkdtam5UTndiandqYUZXYVRpRmtMZXNvbnhSVCJdfQ==";
     private final String didCommOob = "eyJAdHlwZSI6ICJodHRwczovL2RpZGNvbW0ub3JnL291dC1vZi1iYW5kLzEuMC9pbnZpdGF0aW9uIiwgIkBpZCI6ICI2ZmYzY2UzNy1kYjM1LTRjYTctYTNkOS03MWJmNGYxYzhkYzQiLCAibGFiZWwiOiAiaW52aXRlMSIsICJzZXJ2aWNlcyI6IFsiZGlkOnNvdjpXc3FWaW4xWjRZdnZiODdzU1E3QzJtIl0sICJoYW5kc2hha2VfcHJvdG9jb2xzIjogWyJodHRwczovL2RpZGNvbW0ub3JnL2RpZGV4Y2hhbmdlLzEuMCJdfQ==";
 
+    private final String streetCredRedirect = "id.streetcred://launch/?d_m=eyJsYWJlbCI6IlNuYXBwZXIiLCJpbWFnZVVybCI6bnVsbCwic2VydmljZUVuZHBvaW50IjoiaHR0cHM6Ly90cmluc2ljLW1lZGlhdG9yLWFnZW50LWV1cm9wZS5henVyZXdlYnNpdGVzLm5ldC8iLCJyb3V0aW5nS2V5cyI6WyJDTFBmc3hVaDNMOWR2U2huNjRmYkZKZExrbzZHbmVhQkNEWkJQNjZpWVV3RCJdLCJyZWNpcGllbnRLZXlzIjpbIkc5cDVydVRqcDJiVHhWellIUVpySmZISkNDaENRVUpOVllrUWhTcGlmWTdkIl0sIkBpZCI6IjBiNTc1Zjc4LTNiNTQtNGFhNS1hMzMyLTcwNTljZDg5YzA1NiIsIkB0eXBlIjoiZGlkOnNvdjpCekNic05ZaE1yakhpcVpEVFVBU0hnO3NwZWMvY29ubmVjdGlvbnMvMS4wL2ludml0YXRpb24ifQ%3D%3D&orig=https%3a%2f%2fredir.trinsic.id%2f46yG3VegpCqc";
 }

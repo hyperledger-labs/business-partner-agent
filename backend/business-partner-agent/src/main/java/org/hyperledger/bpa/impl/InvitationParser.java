@@ -38,6 +38,8 @@ import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.invitation.CheckInvitationResponse;
 import org.hyperledger.bpa.impl.util.Converter;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -45,17 +47,22 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-@NoArgsConstructor
 @Singleton
 public class InvitationParser {
 
-    OkHttpClient httpClient = new OkHttpClient.Builder().followRedirects(false).build();
+    private final OkHttpClient httpClient;
 
-    static List<String> CONNECTION_INVITATION_TYPES = List.of(
+    private static final List<String> paramNames = List.of("c_i", "d_m", "oob");
+
+    static final List<String> CONNECTION_INVITATION_TYPES = List.of(
             "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/invitation",
             "https://didcomm.org/connections/1.0/invitation");
-    static List<String> OOB_INVITATION_TYPES = List.of("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/out-of-band/1.0/invitation",
+    static final List<String> OOB_INVITATION_TYPES = List.of("did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/out-of-band/1.0/invitation",
             "https://didcomm.org/out-of-band/1.0/invitation");
+
+    public InvitationParser() {
+        this.httpClient = new OkHttpClient.Builder().followRedirects(false).build();
+    }
 
     @Inject
     @Setter(AccessLevel.PACKAGE)
@@ -187,7 +194,6 @@ public class InvitationParser {
     }
 
     private String parseInvitationBlock(@NonNull HttpUrl url) {
-        List<String> paramNames = List.of("c_i", "d_m", "oob");
         for (String name : paramNames) {
             String invitationBlock = url.queryParameter(name);
             if (StringUtils.isNotEmpty(invitationBlock))
@@ -213,7 +219,7 @@ public class InvitationParser {
                 if (response.isRedirect()) {
                     String location = response.header("location");
                     if (StringUtils.isNotEmpty(location)) {
-                        HttpUrl locationUrl = HttpUrl.parse(location);
+                        HttpUrl locationUrl = getQueryFromLocation(location);
                         if (locationUrl != null)
                             return parseInvitationBlock(locationUrl);
                     }
@@ -223,6 +229,27 @@ public class InvitationParser {
             log.error(e.getMessage(), e);
         }
         return null;
+    }
+
+    /**
+     * The location header can either be an HTTP URL or simply a URI, as we
+     * only process the query, and we do not want to rewrite the query parser
+     * the query is extracted from the URI and then wrapped again into a dummy HTTP URL
+     * @param location the content of the location header
+     * @return {@link HttpUrl} or null
+     */
+    private HttpUrl getQueryFromLocation(String location) {
+        HttpUrl result = null;
+        try {
+            URI uri = new URI(location);
+            String query = uri.getQuery();
+            if (StringUtils.isNotEmpty(query)) {
+                result = HttpUrl.parse("https://placeholder.co?" + query);
+            }
+        } catch (URISyntaxException e) {
+            log.error("Location header contained a invalid URI", e);
+        }
+        return result;
     }
 
 }
