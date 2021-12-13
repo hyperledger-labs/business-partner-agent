@@ -191,7 +191,7 @@
 
     <v-app-bar color="primary" app flat dark>
       <v-badge
-        v-show="!hideBurgerButton"
+        v-show="!hideBurgerButton && !drawer"
         overlap
         bordered
         :content="notificationsCount"
@@ -202,7 +202,10 @@
       >
         <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       </v-badge>
-      <v-app-bar-nav-icon v-if="drawer" @click.stop="drawer = !drawer" />
+      <v-app-bar-nav-icon
+        v-show="drawer && !hideBurgerButton"
+        @click.stop="drawer = !drawer"
+      />
       <v-toolbar-title>{{ getTitle }}</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn v-if="ux.header.logout.enabled" icon @click="logout()">
