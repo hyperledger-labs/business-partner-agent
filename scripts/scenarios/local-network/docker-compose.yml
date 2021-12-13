@@ -176,7 +176,7 @@ services:
   #######
   tails-server:
     build:
-      context: https://github.com/bcgov/indy-tails-server.git#master
+      context: https://github.com/bcgov/indy-tails-server.git#main
       dockerfile: docker/Dockerfile.tails-server
     ports:
       - "6543:6543"

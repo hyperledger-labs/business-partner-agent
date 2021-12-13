@@ -6,10 +6,14 @@ auto-respond-credential-offer: false
 auto-respond-credential-request: false
 auto-respond-presentation-proposal: true
 auto-respond-presentation-request: false
+
 auto-store-credential: true
 auto-verify-presentation: true
+
 auto-ping-connection: true
+
 auto-provision: true
+
 monitor-ping: true
 preserve-exchange-records: false
 public-invites: true
