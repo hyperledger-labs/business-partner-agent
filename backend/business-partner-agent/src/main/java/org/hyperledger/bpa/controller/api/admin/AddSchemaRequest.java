@@ -17,19 +17,31 @@
  */
 package org.hyperledger.bpa.controller.api.admin;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.micronaut.core.annotation.Nullable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import org.hyperledger.bpa.api.CredentialType;
 
 import java.util.List;
+import java.util.Set;
 
-@Builder
+@SuperBuilder
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class AddSchemaRequest {
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "credentialType",
+        defaultImpl = AddSchemaRequest.AddIndySchema.class)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = AddSchemaRequest.AddIndySchema.class, names = { "INDY", "indy" }),
+        @JsonSubTypes.Type(value = AddSchemaRequest.AddJsonLDSchema.class, names = { "JSON_LD", "json_ld", "json-ld" }),
+})
+public abstract class AddSchemaRequest {
+
+    private CredentialType credentialType;
+
     @Nullable
     private String label;
 
@@ -38,6 +50,46 @@ public class AddSchemaRequest {
     @Nullable
     private String defaultAttributeName;
 
-    @Nullable
-    private List<AddTrustedIssuerRequest> trustedIssuer;
+    @SuppressWarnings("unused")
+    public AddSchemaRequest() {
+        this.credentialType = CredentialType.INDY;
+    }
+
+    public AddSchemaRequest(CredentialType credentialType) {
+        this.credentialType = credentialType;
+    }
+
+    public boolean typeIsIndy() {
+        return CredentialType.INDY.equals(credentialType);
+    }
+
+    public boolean typeIsJsonLD() {
+        return CredentialType.JSON_LD.equals(credentialType);
+    }
+
+    @SuperBuilder
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    @ToString(callSuper = true)
+    public static final class AddIndySchema extends AddSchemaRequest {
+        @Nullable
+        private List<AddTrustedIssuerRequest> trustedIssuer;
+
+        public AddIndySchema() {
+            super(CredentialType.INDY);
+        }
+    }
+
+    @SuperBuilder
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    @ToString(callSuper = true)
+    public static final class AddJsonLDSchema extends AddSchemaRequest {
+        private Set<String> attributes;
+        private String ldType;
+
+        public AddJsonLDSchema() {
+            super(CredentialType.JSON_LD);
+        }
+    }
 }

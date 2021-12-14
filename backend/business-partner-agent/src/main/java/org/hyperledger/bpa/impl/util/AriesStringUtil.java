@@ -70,6 +70,15 @@ public class AriesStringUtil {
         return parts;
     }
 
+    public static boolean isIndySchemaId(String schemaId) {
+        String sId = StringUtils.trimToNull(schemaId);
+        if (sId == null) {
+            return false;
+        }
+        final String[] parts = sId.split(":");
+        return parts.length == 4;
+    }
+
     public static String credDefIdGetSequenceNo(@NonNull String credDefId) {
         final String[] parts = credDefIdSplit(credDefId);
         return parts[3];

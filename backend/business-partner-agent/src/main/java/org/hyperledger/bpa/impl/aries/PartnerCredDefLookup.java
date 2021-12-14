@@ -29,12 +29,15 @@ import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.BPARestrictions;
+import org.hyperledger.bpa.model.BPASchema;
+import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.BPARestrictionsRepository;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Singleton
 public class PartnerCredDefLookup {
@@ -85,8 +88,17 @@ public class PartnerCredDefLookup {
      */
     void filterBySupportedCredential(String schemaId, List<PartnerAPI> result) {
         schemaRepo.findBySchemaId(schemaId)
-                .ifPresent(s -> partnerRepo.findBySupportedCredential(s.getSeqNo().toString()).forEach(
-                        dbPartner -> result.add(conv.toAPIObject(dbPartner))));
+                .ifPresent(s -> {
+                    if (s.typeIsIndy()) {
+                        partnerRepo.findBySupportedCredential(s.getSeqNo().toString()).forEach(
+                                dbPartner -> result.add(conv.toAPIObject(dbPartner)));
+                    } else {
+                        result.addAll(StreamSupport.stream(partnerRepo.findAll().spliterator(), false)
+                                .filter(Partner::getAriesSupport)
+                                .map(conv::toAPIObject)
+                                .collect(Collectors.toList()));
+                    }
+                });
     }
 
     /**
@@ -117,7 +129,7 @@ public class PartnerCredDefLookup {
     void lookupTypesForAllPartners() {
         ledger.ifPresent(l -> {
             Map<String, List<PartnerCredentialType>> didToTypes = new HashMap<>();
-            schemaRepo.findAll().forEach(
+            StreamSupport.stream(schemaRepo.findAll().spliterator(), false).filter(BPASchema::typeIsIndy).forEach(
                     s -> l.queryCredentialDefinitions(s.getSeqNo().toString()).ifPresent(defs -> defs.forEach(def -> {
                         String did = AriesStringUtil.credDefIdGetDid(def.getCredentialDefinitionId());
                         if (didToTypes.containsKey(did)) {

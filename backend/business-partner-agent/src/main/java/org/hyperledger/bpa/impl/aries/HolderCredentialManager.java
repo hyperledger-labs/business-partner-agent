@@ -43,6 +43,7 @@ import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.aries.api.ExchangeVersion;
@@ -179,7 +180,9 @@ public class HolderCredentialManager extends BaseCredentialManager {
     // credential CRUD operations
 
     public List<AriesCredential> listCredentials() {
-        return holderCredExRepo.findByRoleEquals(CredentialExchangeRole.HOLDER)
+        return holderCredExRepo.findByRoleEqualsAndStateIn(
+                CredentialExchangeRole.HOLDER,
+                List.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE))
                 .stream()
                 .map(this::buildCredential)
                 .collect(Collectors.toList());
@@ -278,7 +281,8 @@ public class HolderCredentialManager extends BaseCredentialManager {
                     Optional<VerifiableIndyCredential> profile = vp.getVerifiableCredential()
                             .stream().filter(ic -> ic.getType().contains("OrganizationalProfileCredential")).findAny();
                     if (profile.isPresent() && profile.get().getCredentialSubject() != null) {
-                        ProfileVC pVC = mapper.convertValue(profile.get().getCredentialSubject(), ProfileVC.class);
+                        ProfileVC pVC = GsonConfig.jacksonBehaviour().fromJson(profile.get().getCredentialSubject(),
+                                ProfileVC.class);
                         issuer = pVC.getLegalName();
                     }
                 }
@@ -340,7 +344,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
             // issuer started with offer, no preexisting proposal
             BPASchema bpaSchema = schemaService.getSchemaFor(credEx.getSchemaId()).orElse(null);
             if (bpaSchema == null) {
-                SchemaAPI schemaAPI = schemaService.addSchema(credEx.getSchemaId(), null, null);
+                SchemaAPI schemaAPI = schemaService.addIndySchema(credEx.getSchemaId(), null, null);
                 if (schemaAPI != null) {
                     bpaSchema = BPASchema.builder().id(schemaAPI.getId()).build();
                 }

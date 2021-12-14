@@ -19,6 +19,7 @@ package org.hyperledger.bpa.impl.aries;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.client.LedgerExplorerClient;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.model.BPASchema;
@@ -88,9 +89,9 @@ class MockPartnerCredDefLookupTest {
                 .build());
 
         when(schemaRepo.findAll()).thenReturn(List.of(
-                BPASchema.builder().seqNo(1077).build(),
-                BPASchema.builder().seqNo(977).build(),
-                BPASchema.builder().seqNo(9999).build()));
+                BPASchema.builder().seqNo(1077).type(CredentialType.INDY).build(),
+                BPASchema.builder().seqNo(977).type(CredentialType.INDY).build(),
+                BPASchema.builder().seqNo(9999).type(CredentialType.INDY).build()));
 
         when(ledger.queryCredentialDefinitions(anyString()))
                 .thenReturn(Optional.of(List.of(

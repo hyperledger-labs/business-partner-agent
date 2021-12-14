@@ -107,30 +107,43 @@ public class Converter {
         List<PartnerCredential> pc = new ArrayList<>();
         if (partner.getVerifiableCredential() != null) {
             for (VerifiableIndyCredential c : partner.getVerifiableCredential()) {
-                JsonNode node = mapper.convertValue(c.getCredentialSubject(), JsonNode.class);
-
-                boolean indyCredential = false;
-                if (CollectionUtils.isNotEmpty(c.getType())) {
-                    indyCredential = c.getType().stream().anyMatch("IndyCredential"::equals);
+                JsonNode node;
+                try {
+                    node = mapper.readTree(c.getCredentialSubject().toString());
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
                 }
 
-                CredentialType type = CredentialType.fromType(c.getType());
+                boolean verifiedCredential = false;
+                if (CollectionUtils.isNotEmpty(c.getType())) {
+                    verifiedCredential = c.getType().stream().anyMatch("IndyCredential"::equals);
+                }
+
+                CredentialType type = CredentialType.fromCredential(c);
 
                 String schemaId = null;
-                if (indyCredential) {
+                if (verifiedCredential) { // indy credential signed by 3rd party
                     schemaId = c.getSchemaId();
-                } else if (CredentialType.INDY.equals(type)) {
+                } else if (CredentialType.INDY.equals(type)) { // plain document, indy based and self-signed
                     schemaId = getSchemaIdFromContext(c);
+                } else if (CredentialType.JSON_LD.equals(type)) {
+                    List<Object> ctx = new ArrayList<>(c.getContext());
+                    ctx.removeAll(CredentialType.JSON_LD.getContext());
+                    if (CollectionUtils.isNotEmpty(ctx)) {
+                        schemaId = String.valueOf(ctx.get(0));
+                    }
                 }
+
+                String typeLabel = resolveTypeLabel(type, schemaId, c);
 
                 final PartnerCredential pCred = PartnerCredential
                         .builder()
                         .type(type)
-                        .typeLabel(resolveTypeLabel(type, schemaId))
-                        .issuer(indyCredential ? c.getIndyIssuer() : c.getIssuer())
+                        .typeLabel(typeLabel)
+                        .issuer(verifiedCredential ? c.getIndyIssuer() : c.getIssuer())
                         .schemaId(schemaId)
                         .credentialData(node)
-                        .indyCredential(indyCredential)
+                        .indyCredential(verifiedCredential)
                         .build();
                 pc.add(pCred);
             }
@@ -170,6 +183,7 @@ public class Converter {
      */
     public MyDocument updateMyCredential(@NonNull MyDocumentAPI apiDoc, @NonNull MyDocument myDoc) {
         Map<String, Object> data = toMap(apiDoc.getDocumentData());
+        schemaService.getSchemaFor(apiDoc.getSchemaId()).ifPresent(myDoc::setSchema);
         myDoc
                 .setDocument(data)
                 .setIsPublic(apiDoc.getIsPublic())
@@ -187,7 +201,7 @@ public class Converter {
                 .documentData(myDoc.getDocument() != null ? fromMap(myDoc.getDocument(), JsonNode.class) : null)
                 .isPublic(myDoc.getIsPublic())
                 .type(myDoc.getType())
-                .typeLabel(resolveTypeLabel(myDoc.getType(), myDoc.getSchemaId()))
+                .typeLabel(resolveTypeLabel(myDoc.getType(), myDoc.getSchemaId(), null))
                 .schemaId(myDoc.getSchemaId())
                 .label(myDoc.getLabel())
                 .build();
@@ -292,11 +306,22 @@ public class Converter {
         return defaultLabel;
     }
 
-    private String resolveTypeLabel(@NonNull CredentialType type, @Nullable String schemaId) {
+    private String resolveTypeLabel(@NonNull CredentialType type, @Nullable String schemaId,
+            @Nullable VerifiableIndyCredential c) {
         String result = null;
-        if (CredentialType.INDY.equals(type)
-                && StringUtils.isNotEmpty(schemaId)) {
+        if (CredentialType.INDY.equals(type) && StringUtils.isNotEmpty(schemaId)) {
             result = schemaService.getSchemaLabel(schemaId);
+        } else if (CredentialType.JSON_LD.equals(type)) {
+            if (StringUtils.isNotEmpty(schemaId)) {
+                result = schemaService.getSchemaLabel(schemaId);
+            }
+            if (result == null && c != null) {
+                List<String> types = new ArrayList<>(c.getType());
+                types.removeAll(CredentialType.JSON_LD.getType());
+                if (CollectionUtils.isNotEmpty(types)) {
+                    result = types.get(0);
+                }
+            }
         } else if (CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(type)) {
             result = msg.getMessage("api.org.profile.name");
         }

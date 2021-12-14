@@ -93,4 +93,19 @@ class CryptoManagerTest extends RunWithAries {
         assertEquals("did:sov:asdfsafs", signed.getVerifiableCredential().get(0).getIssuer());
     }
 
+    @Test
+    void testSignSchemaDotOrg() throws Exception {
+        VerifiableIndyCredential vc = loadAndConvertTo(
+                "files/VCUnsigned.json", VerifiableIndyCredential.class);
+        final VerifiablePresentationBuilder<VerifiableIndyCredential> builder = VerifiablePresentation.builder();
+        VerifiablePresentation<VerifiableIndyCredential> vp = builder
+                .verifiableCredential(List.of(vc))
+                .build();
+        VerifiablePresentation<VerifiableIndyCredential> signed = mgmt.sign(vp).orElseThrow();
+        assertNotNull(signed.getProof());
+
+        Boolean verified = mgmt.verify(id.getVerkey().orElseThrow(), signed);
+        assertTrue(verified);
+    }
+
 }

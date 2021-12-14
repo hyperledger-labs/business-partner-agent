@@ -20,6 +20,7 @@ package org.hyperledger.bpa.impl.aries;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.model.BPARestrictions;
 import org.hyperledger.bpa.model.BPASchema;
@@ -63,7 +64,8 @@ public class PartnerCredDefLookupTest {
         partnerRepo.save(Partner.builder().did(did2).ariesSupport(Boolean.TRUE).build());
 
         BPASchema dbSchema = schemaRepo.save(BPASchema.builder()
-                .schemaId(schemaId).seqNo(1).label("dummy").schemaAttributeNames(Set.of("name")).build());
+                .schemaId(schemaId).seqNo(1).label("dummy")
+                .type(CredentialType.INDY).schemaAttributeNames(Set.of("name")).build());
         restrictionsRepo.save(BPARestrictions.builder().schema(dbSchema).issuerDid(did1)
                 .build());
         restrictionsRepo.save(BPARestrictions.builder().schema(dbSchema).issuerDid(did2)
@@ -83,7 +85,8 @@ public class PartnerCredDefLookupTest {
     void testNoCredDefConfigured() {
         String schemaId = "schema_1";
         schemaRepo.save(BPASchema.builder()
-                .schemaId(schemaId).seqNo(1).label("dummy").schemaAttributeNames(Set.of("name")).build());
+                .schemaId(schemaId).seqNo(1).label("dummy")
+                .type(CredentialType.INDY).schemaAttributeNames(Set.of("name")).build());
 
         Optional<BPASchema> dbSchema = schemaRepo.findBySchemaId(schemaId);
         Assertions.assertTrue(dbSchema.isPresent());

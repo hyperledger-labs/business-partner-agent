@@ -1,0 +1,20 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://w3id.org/security/bbs/v1",
+    "https://schema.org/version/latest/schemaorg-current-https.jsonld"
+  ],
+  "type": [
+    "VerifiableCredential",
+    "Person"
+  ],
+  "credentialSubject": {
+    "id": "did:sov:F6dB7dMVHUQSC64qemnBi7",
+    "email": "test@test.co",
+    "familyName": "Test Person"
+  },
+  "id": "urn:f566a30c-42c1-47f2-98f2-a014ac4e4323",
+  "issuanceDate": "2021-12-10T11:53:32Z",
+  "issuer": "did:sov:F6dB7dMVHUQSC64qemnBi7",
+  "label": "test@test.co"
+}

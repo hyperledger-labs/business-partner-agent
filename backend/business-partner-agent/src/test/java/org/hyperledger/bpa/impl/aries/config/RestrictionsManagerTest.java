@@ -22,6 +22,7 @@ import jakarta.inject.Inject;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.ledger.DidVerkeyResponse;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
 import org.hyperledger.bpa.model.BPASchema;
@@ -66,6 +67,7 @@ public class RestrictionsManagerTest {
         BPASchema dbSchema = schemaRepo.save(BPASchema.builder()
                 .schemaId(schemaId)
                 .seqNo(571)
+                .type(CredentialType.INDY)
                 .build());
 
         Assertions.assertThrows(WrongApiUsageException.class,
@@ -81,6 +83,7 @@ public class RestrictionsManagerTest {
         BPASchema dbSchema = schemaRepo.save(BPASchema.builder()
                 .schemaId("1234")
                 .seqNo(571)
+                .type(CredentialType.INDY)
                 .build());
         Optional<TrustedIssuer> credDefId = mgmt
                 .addRestriction(dbSchema.getId(), "5mwQSWnRePrZ3oF67C4KqD", null);
@@ -101,6 +104,7 @@ public class RestrictionsManagerTest {
         BPASchema dbSchema = schemaRepo.save(BPASchema.builder()
                 .schemaId("1234")
                 .seqNo(571)
+                .type(CredentialType.INDY)
                 .build());
         String label = "myLabel123";
         String issuerDid = "5mwQSWnRePrZ3oF67C4KqD";

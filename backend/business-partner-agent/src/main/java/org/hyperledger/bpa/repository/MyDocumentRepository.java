@@ -19,6 +19,7 @@ package org.hyperledger.bpa.repository;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.Join;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
@@ -36,6 +37,7 @@ public interface MyDocumentRepository extends CrudRepository<MyDocument, UUID> {
      *
      * @return list of public credentials
      */
+    @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     List<MyDocument> findByIsPublicTrue();
 
     List<MyDocument> findByTypeIn(List<CredentialType> type);
