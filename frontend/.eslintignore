@@ -7,5 +7,6 @@
 **/*.scss
 **/*.sass
 **/*.html
+**/*.sh
 node_modules
 dist

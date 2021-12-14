@@ -5,3 +5,4 @@
 # SPDX-License-Identifier: Apache-2.0
 dist
 node_modules
+setup-runtime.sh
