@@ -190,14 +190,14 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import {
   PresentationExchangeStates,
   Predicates,
   RequestTypes,
   Restrictions,
 } from "@/constants";
-import Timeline from "@/components/Timeline";
+import Timeline from "@/components/Timeline.vue";
 export default {
   name: "PresentationRecord",
   props: {
@@ -220,18 +220,16 @@ export default {
             return Object.keys(this.record.proofRequest[type]).length;
           }).reduce((x, y) => x + y, 0);
 
-          if (
-            this.record.state === PresentationExchangeStates.REQUEST_RECEIVED
-          ) {
-            return [...Array(nPanels).keys()].map((k, i) => i);
-          } else {
-            return [];
-          }
+          return this.record.state ===
+            PresentationExchangeStates.REQUEST_RECEIVED
+            ? [...Array.from({ length: nPanels }).keys()].map(
+                (k, index) => index
+              )
+            : [];
         } else {
           return [];
         }
       },
-      set: function () {},
     },
   },
   methods: {
@@ -245,14 +243,12 @@ export default {
       return item.names ? item.names : [item.name];
     },
     toRestrictionLabel(restrType) {
-      const idx = Object.values(Restrictions).findIndex((restriction) => {
+      const index = Object.values(Restrictions).findIndex((restriction) => {
         return restriction.value === restrType;
       });
-      if (idx !== -1) {
-        return Object.values(Restrictions)[idx].label;
-      } else {
-        return restrType;
-      }
+      return index !== -1
+        ? Object.values(Restrictions)[index].label
+        : restrType;
     },
     toCredentialLabel(matchedCred) {
       if (matchedCred.credentialInfo) {
@@ -267,11 +263,9 @@ export default {
         if (credInfo.credentialLabel) {
           return `${credInfo.credentialLabel} (${credInfo.credentialId}) ${revokedLabel}`;
         } else if (credInfo.schemaLabel) {
-          if (credInfo.issuerLabel) {
-            return `${credInfo.schemaLabel} (${credInfo.credentialId}) - ${credInfo.issuerLabel} ${revokedLabel}`;
-          } else {
-            return `${credInfo.schemaLabel} ${revokedLabel}`;
-          }
+          return credInfo.issuerLabel
+            ? `${credInfo.schemaLabel} (${credInfo.credentialId}) - ${credInfo.issuerLabel} ${revokedLabel}`
+            : `${credInfo.schemaLabel} ${revokedLabel}`;
         } else {
           return `${credInfo.credentialId} ${revokedLabel}`;
         }
@@ -281,29 +275,27 @@ export default {
         );
       }
     },
-    renderSchemaLabel(attrGroupName) {
+    renderSchemaLabel(attributeGroupName) {
       // If groupName contains schema id, try to render label else show group name
-      const end = attrGroupName.lastIndexOf(".");
+      const end = attributeGroupName.lastIndexOf(".");
 
       if (end !== -1) {
-        const schemaId = attrGroupName.substring(0, end + 2);
+        const schemaId = attributeGroupName.slice(0, Math.max(0, end + 2));
         const schema = this.$store.getters.getSchemas.find(
           (s) => s.schemaId === schemaId
         );
 
-        if (schema && schema.label) {
-          return `<strong>${schema.label}</strong><i>&nbsp;(${schema.schemaId})</i>`;
-        } else {
-          return attrGroupName;
-        }
+        return schema && schema.label
+          ? `<strong>${schema.label}</strong><i>&nbsp;(${schema.schemaId})</i>`
+          : attributeGroupName;
       }
 
-      return attrGroupName;
+      return attributeGroupName;
     },
   },
   data: () => {
     return {
-      matchingCredentials: null,
+      matchingCredentials: undefined,
       Predicates,
       Restrictions,
       RequestTypes,

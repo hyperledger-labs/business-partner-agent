@@ -14,9 +14,6 @@
         </v-btn>
         <span>{{ data.label }}</span>
         <v-layout align-end justify-end>
-          <!-- <v-btn depressed icon @click="isUpdatingName = !isUpdatingName">
-                    <v-icon dark>$vuetify.icons.pencil</v-icon>
-                </v-btn> -->
           <v-btn
             depressed
             color="red"
@@ -66,9 +63,9 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
-import TrustedIssuers from "../components/TrustedIssuers";
+import TrustedIssuers from "../components/TrustedIssuers.vue";
 import VBpaButton from "@/components/BpaButton";
 export default {
   name: "Schema",
@@ -100,21 +97,23 @@ export default {
         .get(`${this.$apiBaseUrl}/admin/schema/${this.id}`)
         .then((result) => {
           console.log(result);
-          if ({}.hasOwnProperty.call(result, "data")) {
+          if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.data = result.data;
             // Init trusted issuers
-            if ({}.hasOwnProperty.call(this.data, "trustedIssuer")) {
+            if (
+              Object.prototype.hasOwnProperty.call(this.data, "trustedIssuer")
+            ) {
               this.trustedIssuers = this.data.trustedIssuer;
             }
             this.isLoading = false;
           }
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isLoading = false;
-          if (e.response.status === 404) {
+          if (error.response.status === 404) {
             this.data = [];
           } else {
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           }
         });
     },
@@ -133,8 +132,8 @@ export default {
             });
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
   },

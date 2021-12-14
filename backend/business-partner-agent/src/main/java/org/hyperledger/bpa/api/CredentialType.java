@@ -19,6 +19,8 @@ package org.hyperledger.bpa.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 
 import java.util.List;
 
@@ -30,42 +32,58 @@ import java.util.List;
 public enum CredentialType {
 
     /**
-     * A document that can never be a credential and that is not linked to a schema.
+     * A document that can never be a credential, and is not linked to a schema.
      * Typed documents use a static context, like it is defined here.
      */
     ORGANIZATIONAL_PROFILE_CREDENTIAL(
             List.of(
-                    ApiConstants.CREDENTIALS_V1,
-                    "https://raw.githubusercontent.com/iil-network/contexts/master/masterdata.jsonld",
-                    "https://raw.githubusercontent.com/iil-network/contexts/master/labeled-credential.jsonld"),
+                    ApiConstants.CREDENTIALS_V1_SCHEMA,
+                    ApiConstants.LABELED_CREDENTIAL_SCHEMA,
+                    ApiConstants.MASTER_DATA_SCHEMA),
             List.of(
-                    "VerifiableCredential",
-                    "LabeledCredential",
-                    "OrganizationalProfileCredential")),
+                    ApiConstants.VERIFIABLE_CREDENTIAL_NAME,
+                    ApiConstants.LABELED_CREDENTIAL_NAME,
+                    ApiConstants.ORG_PROFILE_NAME)),
     /**
-     * A document or indy credential that is linked to a schema and uses an ad hoc
-     * context
+     * A document or indy credential that is linked to a ledger schema and uses an
+     * embedded context
      */
     INDY(
-            List.of(ApiConstants.CREDENTIALS_V1),
-            List.of("VerifiableCredential"));
+            List.of(
+                    ApiConstants.CREDENTIALS_V1_SCHEMA,
+                    ApiConstants.LABELED_CREDENTIAL_SCHEMA),
+            List.of(
+                    ApiConstants.VERIFIABLE_CREDENTIAL_NAME,
+                    ApiConstants.LABELED_CREDENTIAL_NAME)),
 
-    // json-ld
+    /**
+     * A document or json-ld credential that is not linked to any ledger and uses an
+     * external or embedded context
+     */
+    JSON_LD(
+            List.of(
+                    ApiConstants.CREDENTIALS_V1_SCHEMA,
+                    ApiConstants.LABELED_CREDENTIAL_SCHEMA,
+                    ApiConstants.BBS_V1_SCHEMA),
+            List.of(
+                    ApiConstants.VERIFIABLE_CREDENTIAL_NAME,
+                    ApiConstants.LABELED_CREDENTIAL_NAME));
 
     private final List<Object> context;
     private final List<String> type;
 
     /**
-     * Tries to get the type from the type list
+     * Tries to determine the credential type from the VC
      *
-     * @param type the list of credential types
+     * @param c {@link VerifiableCredential.VerifiableIndyCredential}
      * @return {@link CredentialType} or null when no match was found
      */
-    public static CredentialType fromType(List<String> type) {
-        for (String t : type) {
-            if ("OrganizationalProfileCredential".equals(t)) {
-                return CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL;
-            }
+    public static CredentialType fromCredential(@NonNull VerifiableCredential.VerifiableIndyCredential c) {
+        if (c.getType().stream().anyMatch(ApiConstants.ORG_PROFILE_NAME::equals)) {
+            return CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL;
+        }
+        if (c.getContext().stream().anyMatch(ApiConstants.BBS_V1_SCHEMA::equals)) {
+            return CredentialType.JSON_LD;
         }
         return CredentialType.INDY;
     }

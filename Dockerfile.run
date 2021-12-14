@@ -3,10 +3,23 @@
 FROM adoptopenjdk/openjdk15:alpine
 
 RUN adduser --disabled-password app
+
+WORKDIR /home/app
+
+# Setup rights for overwriting frontend runtime variables
+COPY ./frontend/setup-runtime.sh setup-runtime.sh
+
+RUN \
+    mkdir public && \
+    chmod a+x ./setup-runtime.sh && \
+    chmod -R a+rw ./public
+
+# Non-root
 USER app
 WORKDIR /home/app
 
-EXPOSE 8080
-CMD java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote ${JAVA_OPTS} -jar business-partner-agent.jar
-
+COPY ./frontend/dist/env.js ./public/env.js
 COPY ./backend/business-partner-agent/target/business-partner-agent*.jar business-partner-agent.jar
+
+EXPOSE 8080
+CMD ./setup-runtime.sh public/env.js business-partner-agent.jar && java -XX:+UnlockExperimentalVMOptions -Dcom.sun.management.jmxremote ${JAVA_OPTS} -jar business-partner-agent.jar

@@ -17,7 +17,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 export default {
   name: "Identity",
@@ -42,8 +42,8 @@ export default {
           this.didDocLoaded = true;
           this.didDoc = result.data;
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
   },

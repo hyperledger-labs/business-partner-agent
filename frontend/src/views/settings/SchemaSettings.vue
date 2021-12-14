@@ -50,11 +50,11 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
-import SchemaList from "@/components/SchemaList";
-import AddSchema from "@/components/AddSchema";
-import CreateSchema from "@/components/CreateSchema";
+import SchemaList from "@/components/SchemaList.vue";
+import AddSchema from "@/components/AddSchema.vue";
+import CreateSchema from "@/components/CreateSchema.vue";
 import store from "@/store";
 import VBpaButton from "@/components/BpaButton";
 

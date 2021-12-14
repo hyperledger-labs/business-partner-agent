@@ -14,7 +14,7 @@ export default {
   // Presentation/Proof Exchange API
   //
 
-  declineProofRequest(id, reasonMessage = undefined) {
+  declineProofRequest(id: string, reasonMessage: string) {
     const message =
       reasonMessage === undefined || "" ? undefined : reasonMessage;
 
@@ -22,18 +22,22 @@ export default {
       message,
     });
   },
-  approveProofRequest(id, payload) {
-    return appAxios().post(`${ApiRoutes.PROOF_EXCHANGES}/${id}/prove`, payload);
+  approveProofRequest(id: string, referents: string[]) {
+    return appAxios().post(`${ApiRoutes.PROOF_EXCHANGES}/${id}/prove`, {
+      payload: {
+        referents: referents,
+      },
+    });
   },
-  getMatchingCredentials(id) {
+  getMatchingCredentials(id: string) {
     return appAxios().get(
       `${ApiRoutes.PROOF_EXCHANGES}/${id}/matching-credentials`
     );
   },
-  getProofExRecord(id) {
+  getProofExRecord(id: string) {
     return appAxios().get(`${ApiRoutes.PROOF_EXCHANGES}/${id}`);
   },
-  deleteProofExRecord(id) {
+  deleteProofExRecord(id: string) {
     return appAxios().delete(`${ApiRoutes.PROOF_EXCHANGES}/${id}`);
   },
 };

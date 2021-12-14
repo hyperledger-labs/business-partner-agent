@@ -28,7 +28,6 @@ import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.acy_py.generated.model.InvitationCreateRequest;
 import org.hyperledger.acy_py.generated.model.InvitationRecord;
 import org.hyperledger.acy_py.generated.model.SendMessage;
 import org.hyperledger.acy_py.generated.model.TransactionJobs;
@@ -39,6 +38,7 @@ import org.hyperledger.aries.api.endorser.SetEndorserInfoFilter;
 import org.hyperledger.aries.api.endorser.SetEndorserRoleFilter;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
+import org.hyperledger.aries.api.out_of_band.InvitationCreateRequest;
 import org.hyperledger.aries.api.out_of_band.ReceiveInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
@@ -66,14 +66,13 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
 public class ConnectionManager {
 
-    private static final String UNKNOWN_DID = "unknown";
+    public static final String UNKNOWN_DID = "unknown";
 
     @Value("${bpa.did.prefix}")
     String didPrefix;
@@ -131,19 +130,7 @@ public class ConnectionManager {
                 invitation = conInvite;
                 connId = conInvite.getConnectionId();
             }
-            partnerRepo.save(Partner
-                    .builder()
-                    .ariesSupport(Boolean.TRUE)
-                    .alias(StringUtils.trimToNull(req.getAlias()))
-                    .connectionId(connId)
-                    .invitationMsgId(invMsgId)
-                    .did(didPrefix + UNKNOWN_DID)
-                    .state(ConnectionState.INVITATION)
-                    .pushStateChange(ConnectionState.INVITATION, Instant.now())
-                    .incoming(Boolean.TRUE)
-                    .tags(req.getTag() != null ? new HashSet<>(req.getTag()) : null)
-                    .trustPing(req.getTrustPing() != null ? req.getTrustPing() : Boolean.FALSE)
-                    .build());
+            createNewPartner(req.getAlias(), connId, invMsgId, req.getTag(), req.getTrustPing());
         } catch (IOException e) {
             throw new NetworkException("acapy.unavailable");
         }
@@ -165,7 +152,8 @@ public class ConnectionManager {
                                     .alias(invitation.getInvitationRequest().getLabel())
                                     .autoAccept(true)
                                     .build())
-                            .ifPresent(persistPartner(alias, tags, trustPing));
+                            .ifPresent(r -> createNewPartner(alias, r.getConnectionId(), r.getInvitationMsgId(), tags,
+                                    trustPing));
                 } catch (IOException e) {
                     String msg = messageSource.getMessage("acapy.unavailable");
                     log.error(msg, e);
@@ -173,12 +161,22 @@ public class ConnectionManager {
                 }
             } else if (invitation.getInvitationMessage() != null) {
                 try {
+                    String invMsgId = invitation.getInvitationMessage().getAtId();
+                    boolean prePersist = StringUtils.isNotEmpty(invMsgId);
+                    if (prePersist) {
+                        createNewPartner(alias, null, invMsgId, tags, trustPing);
+                    }
                     ac.outOfBandReceiveInvitation(invitation.getInvitationMessage(),
                             ReceiveInvitationFilter.builder()
                                     .alias(invitation.getInvitationMessage().getLabel())
                                     .autoAccept(true)
                                     .build())
-                            .ifPresent(persistPartner(alias, tags, trustPing));
+                            .ifPresent(r -> {
+                                if (!prePersist) {
+                                    createNewPartner(alias, r.getConnectionId(), r.getInvitationMsgId(), tags,
+                                            trustPing);
+                                }
+                            });
                 } catch (IOException e) {
                     String msg = messageSource.getMessage("acapy.unavailable");
                     log.error(msg, e);
@@ -311,6 +309,9 @@ public class ConnectionManager {
                     if (StringUtils.isEmpty(dbP.getDid()) || dbP.getDid().endsWith(UNKNOWN_DID)) {
                         dbP.setDid(didPrefix + record.getTheirDid());
                     }
+                    if (StringUtils.isEmpty(dbP.getConnectionId())) {
+                        dbP.setConnectionId(record.getConnectionId());
+                    }
                     dbP.pushStates(record.getState(), record.getUpdatedAt());
                     partnerRepo.update(dbP);
                     resolveAndSend(record, dbP);
@@ -332,6 +333,7 @@ public class ConnectionManager {
                             .label(record.getTheirLabel())
                             .incoming(Boolean.TRUE)
                             .trustPing(Boolean.TRUE)
+                            .invitationMsgId(record.getInvitationMsgId())
                             .build();
                     p = partnerRepo.save(p);
                     resolveAndSend(record, p);
@@ -342,24 +344,31 @@ public class ConnectionManager {
                 });
     }
 
-    public void handleOOBInvitation(ConnectionRecord record) {
+    /**
+     * Handle received invitation events, meaning QR code or URLs created elsewhere
+     * but received here. When using the connection protocol all DIDs are peer DIDs
+     *
+     * @param record {@link ConnectionRecord}
+     */
+    public void handleInvitationEvent(ConnectionRecord record) {
         partnerRepo.findByInvitationMsgId(record.getInvitationMsgId()).ifPresent(dbP -> {
-            dbP.pushStates(record.getState(), record.getUpdatedAt());
-            if (StringUtils.isEmpty(dbP.getConnectionId())) {
-                dbP.setConnectionId(record.getConnectionId());
-                dbP.setDid(didPrefix + record.getTheirDid());
-                dbP.setLabel(record.getTheirLabel());
-                partnerRepo.update(dbP);
+            String did;
+            if (record.protocolIsIdDidExchangeV1()) {
+                did = record.getTheirPublicDid();
             } else {
-                partnerRepo.updateState(dbP.getId(), dbP.getState(), dbP.getStateToTimestamp());
+                did = record.getTheirDid();
             }
+            dbP.pushStates(record.getState(), record.getUpdatedAt());
+            dbP.setConnectionId(record.getConnectionId());
+            dbP.setDid(didPrefix + did);
+            dbP.setLabel(record.getTheirLabel());
+            partnerRepo.update(dbP);
             resolveAndSend(record, dbP);
         });
     }
 
     private void resolveAndSend(ConnectionRecord record, Partner p) {
-        // only incoming connections in state request
-        if (ConnectionRecord.ConnectionProtocol.CONNECTION_V1.equals(record.getConnectionProtocol())) {
+        if (record.isConnectionInvitation()) {
             // handle Connection Invitations...
             // if we generate, and they accept, we do not get a COMPLETED or ACTIVE state,
             // only get to RESPONSE
@@ -375,10 +384,8 @@ public class ConnectionManager {
             if (record.isIncomingConnection()) {
                 eventPublisher.publishEventAsync(PartnerRequestReceivedEvent.builder().partner(p).build());
             }
-        } else if (record.stateIsCompleted() && record.isIncomingConnection()) {
+        } else if (record.stateIsActive() && record.isIncomingConnection()) {
             eventPublisher.publishEventAsync(PartnerRequestCompletedEvent.builder().partner(p).build());
-        }
-        if (record.stateIsCompleted() || record.stateIsActive() && record.isIncomingConnection()) {
             partnerCredDefLookup.lookupTypesForAllPartnersAsync();
         }
     }
@@ -441,7 +448,6 @@ public class ConnectionManager {
                 InvitationCreateRequest.builder()
                         .alias(alias)
                         .usePublicDid(Boolean.TRUE)
-                        .handshakeProtocols(List.of(ConnectionRecord.ConnectionProtocol.DID_EXCHANGE_V1.getValue()))
                         .build(),
                 CreateInvitationFilter.builder()
                         .autoAccept(Boolean.TRUE)
@@ -460,20 +466,20 @@ public class ConnectionManager {
                 .orElseThrow();
     }
 
-    private Consumer<ConnectionRecord> persistPartner(
-            @Nullable String alias, @Nullable List<Tag> tags, @Nullable Boolean trustPing) {
-        return connectionRecord -> partnerRepo.save(Partner
+    private void createNewPartner(String alias, String connectionId, String invMsgId, List<Tag> tag,
+            Boolean trustPing) {
+        partnerRepo.save(Partner
                 .builder()
                 .ariesSupport(Boolean.TRUE)
                 .alias(StringUtils.trimToNull(alias))
-                .connectionId(connectionRecord.getConnectionId())
-                .invitationMsgId(connectionRecord.getInvitationMsgId())
+                .connectionId(connectionId)
+                .invitationMsgId(invMsgId)
                 .did(didPrefix + UNKNOWN_DID)
                 .state(ConnectionState.INVITATION)
                 .pushStateChange(ConnectionState.INVITATION, Instant.now())
                 .incoming(Boolean.TRUE)
-                .tags(tags != null ? new HashSet<>(tags) : null)
-                .trustPing(trustPing != null ? trustPing : Boolean.TRUE)
+                .tags(tag != null ? new HashSet<>(tag) : null)
+                .trustPing(trustPing != null ? trustPing : Boolean.FALSE)
                 .build());
     }
 }

@@ -75,9 +75,9 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
-import Cred from "@/components/Credential";
+import Cred from "@/components/Credential.vue";
 import { CredentialTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
 
@@ -109,13 +109,16 @@ export default {
   },
   methods: {
     getCredential() {
-      console.log("Get Credential ID: ", this.id);
+      console.log("Get Credential ID:", this.id);
       this.$axios
         .get(`${this.$apiBaseUrl}/wallet/credential/${this.id}`)
         .then((result) => {
-          if ({}.hasOwnProperty.call(result, "data")) {
+          if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.credential = result.data;
-            this.credential.label = {}.hasOwnProperty.call(result.data, "label")
+            this.credential.label = Object.prototype.hasOwnProperty.call(
+              result.data,
+              "label"
+            )
               ? result.data.label
               : "";
             this.isPublic = this.credential.isPublic;
@@ -123,12 +126,12 @@ export default {
             this.intDoc = { ...this.credential };
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     saveChanges() {
-      var requests = [];
+      const requests = [];
       if (this.credential.isPublic !== this.isPublic) {
         requests.push(
           this.$axios.put(
@@ -149,7 +152,7 @@ export default {
         .all(requests)
         .then(
           this.$axios.spread((...responses) => {
-            var allResponsesTrue = responses.every((response) => {
+            const allResponsesTrue = responses.every((response) => {
               console.log(response);
               return response.status === 200;
             });
@@ -164,12 +167,12 @@ export default {
             }
           })
         )
-        .catch((errors) => {
-          errors.forEach((error) => {
-            console.error(error);
-          });
+        .catch((error) => {
+          for (const errorElement of error) {
+            console.error(errorElement);
+          }
           // react on errors.
-          EventBus.$emit("errors", errors);
+          EventBus.$emit("errors", error);
         });
     },
     deleteCredential() {
@@ -187,8 +190,8 @@ export default {
             });
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     cancel() {

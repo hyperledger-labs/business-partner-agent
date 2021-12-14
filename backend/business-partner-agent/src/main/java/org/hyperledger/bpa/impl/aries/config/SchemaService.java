@@ -30,6 +30,7 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.schema.SchemaSendRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.NetworkException;
@@ -44,6 +45,8 @@ import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 @Slf4j
@@ -85,7 +88,7 @@ public class SchemaService {
             if (response.isPresent()) {
                 // save it to the db...
                 SchemaSendResponse ssr = response.get();
-                result = this.addSchema(ssr.getSchemaId(), schemaLabel, defaultAttributeName, null);
+                result = this.addIndySchema(ssr.getSchemaId(), schemaLabel, defaultAttributeName, null);
             } else {
                 log.error("Schema not created.");
                 throw new SchemaException(ms.getMessage("api.schema.creation.failed"));
@@ -100,9 +103,10 @@ public class SchemaService {
         return result;
     }
 
-    public @Nullable SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label,
+    @Nullable
+    public SchemaAPI addIndySchema(@NonNull String schemaId, @Nullable String label,
             @Nullable String defaultAttributeName, @Nullable List<AddTrustedIssuerRequest> restrictions) {
-        SchemaAPI schema = addSchema(schemaId, label, defaultAttributeName);
+        SchemaAPI schema = addIndySchema(schemaId, label, defaultAttributeName);
         if (schema == null) {
             throw new WrongApiUsageException(ms.getMessage("api.schema.creation.adding.failed"));
         }
@@ -115,7 +119,7 @@ public class SchemaService {
     }
 
     @Nullable
-    public SchemaAPI addSchema(@NonNull String schemaId, @Nullable String label,
+    public SchemaAPI addIndySchema(@NonNull String schemaId, @Nullable String label,
             @Nullable String defaultAttributeName) {
         SchemaAPI result;
         String sId = StringUtils.strip(schemaId);
@@ -133,6 +137,7 @@ public class SchemaService {
                         .schemaAttributeNames(new LinkedHashSet<>(ariesSchema.get().getAttrNames()))
                         .defaultAttributeName(defaultAttributeName)
                         .seqNo(ariesSchema.get().getSeqNo())
+                        .type(CredentialType.INDY)
                         .build();
                 BPASchema saved = schemaRepo.save(dbS);
                 result = SchemaAPI.from(saved);
@@ -148,6 +153,28 @@ public class SchemaService {
             throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
         }
         return result;
+    }
+
+    @Nullable
+    public SchemaAPI addJsonLDSchema(@NonNull String schemaId, @Nullable String label,
+            @Nullable String defaultAttributeName, @NonNull String ldType, @NonNull Set<String> attributes) {
+
+        try {
+            new URI(schemaId);
+        } catch (URISyntaxException e) {
+            throw new WrongApiUsageException(ms.getMessage("api.schema.ld.id.parse.error"));
+        }
+
+        BPASchema dbS = BPASchema.builder()
+                .label(label)
+                .schemaId(schemaId)
+                .schemaAttributeNames(attributes)
+                .defaultAttributeName(defaultAttributeName)
+                .type(CredentialType.JSON_LD)
+                .ldType(ldType)
+                .build();
+        BPASchema saved = schemaRepo.save(dbS);
+        return SchemaAPI.from(saved);
     }
 
     public SchemaAPI updateSchema(@NonNull UUID id, @Nullable String defaultAttribute) {
@@ -207,8 +234,11 @@ public class SchemaService {
         Optional<BPASchema> schema = schemaRepo.findBySchemaId(schemaId);
         if (schema.isPresent()) {
             result = schema.get().getLabel();
+            if (StringUtils.isEmpty(result) && schema.get().typeIsJsonLd()) {
+                result = schema.get().getLdType();
+            }
         }
-        if (StringUtils.isEmpty(result)) {
+        if (StringUtils.isEmpty(result) && AriesStringUtil.isIndySchemaId(schemaId)) {
             result = AriesStringUtil.schemaGetName(schemaId);
         }
         return result;
@@ -220,7 +250,7 @@ public class SchemaService {
                     dbSchema -> log.debug("Schema with id {} already exists", schema.getId()),
                     () -> {
                         try {
-                            SchemaAPI schemaAPI = addSchema(schema.getId(), schema.getLabel(),
+                            SchemaAPI schemaAPI = addIndySchema(schema.getId(), schema.getLabel(),
                                     schema.getDefaultAttributeName());
                             if (schemaAPI != null) {
                                 restrictionsManager.addRestriction(

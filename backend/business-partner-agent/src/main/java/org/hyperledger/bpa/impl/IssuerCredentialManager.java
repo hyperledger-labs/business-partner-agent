@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.acy_py.generated.model.*;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.credential_definition.CredentialDefinition;
 import org.hyperledger.aries.api.credential_definition.CredentialDefinition.CredentialDefinitionRequest;
 import org.hyperledger.aries.api.credentials.Credential;
@@ -40,7 +41,6 @@ import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.revocation.RevokeRequest;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
-import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
@@ -127,7 +127,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
             Optional<BPASchema> bpaSchema = schemaService.getSchemaFor(sId);
             if (bpaSchema.isEmpty()) {
                 // schema exists on ledger, but no in db, let's add it.
-                SchemaAPI schema = schemaService.addSchema(ariesSchema.get().getId(), null, null, null);
+                SchemaAPI schema = schemaService.addIndySchema(ariesSchema.get().getId(), null, null, null);
                 if (schema == null) {
                     throw new IssuerException(msg.getMessage("api.issuer.schema.failure", Map.of("id", sId)));
                 }

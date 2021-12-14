@@ -69,7 +69,7 @@ class VPManagerTest {
     void setup() {
         c.setMapper(m);
         vpm.setConverter(c);
-        vpm.setSchemaService(Optional.of(schemaService));
+        vpm.setSchemaService(schemaService);
     }
 
     @Test
@@ -83,7 +83,7 @@ class VPManagerTest {
         final VerifiableCredential vp = vpm.buildFromDocument(doc, "xxyyyzzz");
 
         assertNotNull(vp.getCredentialSubject());
-        assertEquals("{type=LegalEntity, id=xxyyyzzz}",
+        assertEquals("{\"type\":\"LegalEntity\",\"id\":\"xxyyyzzz\"}",
                 vp.getCredentialSubject().toString());
         assertEquals(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.getContext(), vp.getContext());
     }
@@ -100,7 +100,7 @@ class VPManagerTest {
         final VerifiableCredential vp = vpm.buildFromDocument(doc, myDid);
 
         assertNotNull(vp.getCredentialSubject());
-        assertEquals("{iban=1234, bic=4321, id=xxyyyzzz}",
+        assertEquals("{\"iban\":\"1234\",\"bic\":\"4321\",\"id\":\"xxyyyzzz\"}",
                 vp.getCredentialSubject().toString());
         assertEquals(myDid, vp.getIssuer());
         assertEquals(CredentialType.INDY.getContext(), vp.getContext());
@@ -131,8 +131,9 @@ class VPManagerTest {
         final VerifiableCredential vp = vpm.buildFromDocument(doc, "xxyyyzzz");
 
         String actual = gson.toJson(vp.getContext());
-        String expected = "[\"https://www.w3.org/2018/credentials/v1\",{\"@context\":{\"sc\":\"did:iil:1234\"," +
-                "\"key1\":{\"@id\":\"sc:key1\"},\"key2\":{\"@id\":\"sc:key2\"}}}]";
+        String expected = "[\"https://www.w3.org/2018/credentials/v1\",\"https://raw.githubusercontent.com/iil-network/contexts/master/labeled-credential.jsonld\""
+                +
+                ",{\"@context\":{\"sc\":\"did:iil:1234\",\"key1\":{\"@id\":\"sc:key1\"},\"key2\":{\"@id\":\"sc:key2\"}}}]";
 
         assertEquals(expected, actual);
     }
@@ -153,9 +154,9 @@ class VPManagerTest {
                 .build();
         VerifiableCredential.VerifiableIndyCredential indyCred = vpm.buildFromCredential(myCredential);
         assertNotNull(indyCred.getCredentialSubject());
-        assertEquals(2, c.toMap(indyCred.getCredentialSubject()).size());
-        assertEquals(2, indyCred.getType().size());
-        assertEquals(2, indyCred.getContext().size());
+        assertEquals(2, indyCred.getCredentialSubject().size());
+        assertEquals(3, indyCred.getType().size());
+        assertEquals(3, indyCred.getContext().size());
         // System.out.println(GsonConfig.prettyPrinter().toJson(indyCred));
     }
 

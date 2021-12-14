@@ -152,7 +152,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { profileModel } from "@/models/model";
 import VBpaButton from "@/components/BpaButton";
 export default {
@@ -178,8 +178,8 @@ export default {
       get() {
         return this.value;
       },
-      set(val) {
-        this.$emit("input", val);
+      set(value) {
+        this.$emit("input", value);
       },
     },
   },
@@ -190,8 +190,8 @@ export default {
         type: "",
       });
     },
-    deleteIdentifier(i) {
-      this.documentData.identifier.splice(i, 1);
+    deleteIdentifier(index) {
+      this.documentData.identifier.splice(index, 1);
     },
     onLegalNameChange(event) {
       this.documentData.legalName = event;

@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
 import org.hyperledger.bpa.controller.api.issuer.CredDef;
 import org.hyperledger.bpa.impl.activity.Identity;
@@ -41,19 +42,27 @@ public class SchemaAPI {
 
     private UUID id;
 
+    private CredentialType type;
+
     private String label;
 
     private String schemaId;
 
-    private String version;
+    private Boolean isMine;
 
     private Set<String> schemaAttributeNames;
 
     private List<TrustedIssuer> trustedIssuer;
 
-    private List<CredDef> credentialDefinitions;
+    // ld only
 
-    private Boolean isMine;
+    private String ldType;
+
+    // indy only
+
+    private String version;
+
+    private List<CredDef> credentialDefinitions;
 
     public static SchemaAPI from(BPASchema s) {
         return from(s, true, true, null);
@@ -74,20 +83,25 @@ public class SchemaAPI {
             s.getRestrictions().forEach(r -> ti.add(TrustedIssuer.from(r)));
             builder.trustedIssuer(ti);
         }
-        if (includeCredDefs && CollectionUtils.isNotEmpty(s.getCredentialDefinitions())) {
-            List<CredDef> cd = new ArrayList<>();
-            s.getCredentialDefinitions().forEach(r -> cd.add(CredDef.from(r)));
-            builder.credentialDefinitions(cd);
+        if (s.typeIsIndy()) {
+            if (includeCredDefs && CollectionUtils.isNotEmpty(s.getCredentialDefinitions())) {
+                List<CredDef> cd = new ArrayList<>();
+                s.getCredentialDefinitions().forEach(r -> cd.add(CredDef.from(r)));
+                builder.credentialDefinitions(cd);
+            }
+            if (identity != null) {
+                builder.isMine(identity.isMySchema(s.getSchemaId()));
+            }
+            builder.version(s.getSchemaId() == null ? "" : AriesStringUtil.schemaGetVersion(s.getSchemaId()));
+        } else {
+            builder.isMine(Boolean.TRUE);
         }
-        if (identity != null) {
-            builder.isMine(identity.isMySchema(s.getSchemaId()));
-        }
-        String version = s.getSchemaId() == null ? "" : AriesStringUtil.schemaGetVersion(s.getSchemaId());
         return builder
                 .id(s.getId())
+                .type(s.getType())
+                .ldType(s.getLdType())
                 .label(s.getLabel())
                 .schemaId(s.getSchemaId())
-                .version(version)
                 .schemaAttributeNames(s.getSchemaAttributeNames() != null ? s.getSchemaAttributeNames() : Set.of())
                 .build();
     }

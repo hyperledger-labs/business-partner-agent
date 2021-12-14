@@ -20,19 +20,19 @@ package org.hyperledger.bpa.impl.aries;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.endorser.EndorseTransactionRecord;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.message.BasicMessage;
-import org.hyperledger.aries.api.trustping.PingEvent;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof_v2.V20PresExRecord;
 import org.hyperledger.aries.api.present_proof_v2.V20PresExRecordToV1Converter;
+import org.hyperledger.aries.api.trustping.PingEvent;
 import org.hyperledger.aries.webhook.EventHandler;
-import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.impl.ChatMessageManager;
 import org.hyperledger.bpa.impl.IssuerCredentialManager;
 import org.hyperledger.bpa.impl.TransactionManager;
@@ -78,15 +78,17 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleConnection(ConnectionRecord connection) {
         log.debug("Connection Event: {}", connection);
+        // all events in state invitation are handled in the managers
+        if (connection.stateIsInvitation()) {
+            return;
+        }
         synchronized (conMgmt) {
-            if (connection.isOutgoingConnection()) {
+            if (connection.isConnectionInvitation()) {
+                conMgmt.handleInvitationEvent(connection);
+            } else if (connection.isOutgoingConnection()) {
                 conMgmt.handleOutgoingConnectionEvent(connection);
             } else {
-                if (connection.isNotConnectionInvitation()) {
-                    conMgmt.handleIncomingConnectionEvent(connection);
-                } else if (connection.isOOBInvitation()) {
-                    conMgmt.handleOOBInvitation(connection);
-                }
+                conMgmt.handleIncomingConnectionEvent(connection);
             }
         }
     }

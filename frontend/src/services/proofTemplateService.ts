@@ -13,7 +13,7 @@ export default {
   getProofTemplates() {
     return appAxios().get(`${ApiRoutes.PROOF_TEMPLATES}`);
   },
-  getProofTemplate(id) {
+  getProofTemplate(id: string) {
     return appAxios().get(`${ApiRoutes.PROOF_TEMPLATES}/${id}`);
   },
   getKnownConditionOperators() {
@@ -24,10 +24,10 @@ export default {
   createProofTemplate(data) {
     return appAxios().post(`${ApiRoutes.PROOF_TEMPLATES}`, data);
   },
-  deleteProofTemplate(id) {
+  deleteProofTemplate(id: string) {
     return appAxios().delete(`${ApiRoutes.PROOF_TEMPLATES}/${id}`);
   },
-  sendProofTemplate(id, partnerId, data) {
+  sendProofTemplate(id: string, partnerId: string, data) {
     return appAxios().put(
       `${ApiRoutes.PARTNERS}/${partnerId}/proof-request/${id}`,
       data

@@ -75,10 +75,11 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import partnerService from "@/services/partnerService";
+import { Tag, UpdatePartnerRequest } from "@/services/partner-types";
 
 export default {
   name: "UpdatePartner",
@@ -86,13 +87,12 @@ export default {
   props: {
     partner: {
       type: Object,
-      default: () => {},
     },
   },
   data: () => {
     return {
       isBusy: false,
-      updatedTags: [],
+      updatedTags: new Array<string>(),
     };
   },
   mounted() {
@@ -103,25 +103,25 @@ export default {
   computed: {
     rules() {
       return {
-        required: (value) => !!value || this.$t("app.rules.required"),
+        required: (value: string) => !!value || this.$t("app.rules.required"),
       };
     },
     alias: {
       get() {
         return this.partner.alias;
       },
-      set(data) {
+      set(data: string) {
         this.updatedAlias = data;
       },
     },
     selectedTags: {
       get() {
         return this.partner && this.partner.tag
-          ? this.partner.tag.map((tag) => tag.name)
+          ? this.partner.tag.map((tag: Tag) => tag.name)
           : [];
       },
 
-      set(data) {
+      set(data: string[]) {
         this.updatedTags = data;
       },
     },
@@ -129,13 +129,13 @@ export default {
       get() {
         return this.partner.trustPing;
       },
-      set(data) {
+      set(data: boolean) {
         this.updatedTrustPing = data;
       },
     },
     tags() {
       return this.$store.state.tags
-        ? this.$store.state.tags.map((tag) => tag.name)
+        ? this.$store.state.tags.map((tag: Tag) => tag.name)
         : [];
     },
   },
@@ -143,16 +143,16 @@ export default {
     async submit() {
       this.isBusy = true;
 
-      const data = {
+      const data: UpdatePartnerRequest = {
         alias: this.updatedAlias,
-        tag: this.$store.state.tags.filter((tag) => {
+        tag: this.$store.state.tags.filter((tag: Tag) => {
           return this.updatedTags.includes(tag.name);
         }),
         trustPing: this.updatedTrustPing,
       };
 
       partnerService
-        .updatePartner({ id: this.partner.id, data })
+        .updatePartner(this.partner.id, data)
         .then((result) => {
           this.isBusy = false;
           if (result.status === 200) {
@@ -163,9 +163,9 @@ export default {
             this.$emit("success");
           }
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isBusy = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     cancel() {

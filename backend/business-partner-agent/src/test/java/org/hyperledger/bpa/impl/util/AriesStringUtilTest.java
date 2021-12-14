@@ -36,6 +36,14 @@ class AriesStringUtilTest {
     }
 
     @Test
+    void testIsSchemaId() {
+        assertTrue(AriesStringUtil.isIndySchemaId("3kigpmNVRJyj1NpCkqJqpa:2:a-schema:1.0"));
+        assertFalse(AriesStringUtil.isIndySchemaId("something:else"));
+        assertFalse(AriesStringUtil.isIndySchemaId("   "));
+        assertFalse(AriesStringUtil.isIndySchemaId(null));
+    }
+
+    @Test
     void testGetDidAcyPyFormat() {
         assertEquals("44XuhwdnXMqxbQw9tFMQAp", AriesStringUtil.getLastSegment("did:sov:44XuhwdnXMqxbQw9tFMQAp"));
         assertEquals("44XuhwdnXMqxbQw9tFMQAp", AriesStringUtil.getLastSegment("44XuhwdnXMqxbQw9tFMQAp"));

@@ -1,10 +1,17 @@
 {
-  "ignore": ["**/*.md", "**/*.svg", "license-header/license-header"],
+  "ignore": [
+    "**/*.md",
+    "**/*.svg",
+    "license-header/license-header",
+    "licenses/attribution.txt",
+    ".husky/_/**/*"
+  ],
   "license": "license-header/license-header",
-  "regexIdentifier": "##",
+  "regexIdentifier": "_!##",
   "defaultFormat": {
-    "prepend": "/*",
-    "append": "*/"
+    "eachLine": {
+      "prepend": "# "
+    }
   },
   "licenseFormats": {
     "js|ts|css|scss": {

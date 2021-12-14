@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl.activity;
 
 import io.micronaut.context.annotation.Value;
+import io.micronaut.core.util.CollectionUtils;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.Getter;
@@ -27,8 +28,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.acy_py.generated.model.DID;
 import org.hyperledger.acy_py.generated.model.DIDCreate;
+import org.hyperledger.acy_py.generated.model.DIDCreateOptions;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.resolver.DIDDocument;
+import org.hyperledger.aries.api.wallet.ListWalletDidFilter;
 import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.client.CachingAriesClient;
@@ -109,7 +112,11 @@ public class Identity {
             Optional<DID> walletDid = acaCache.walletDidPublic();
             if (walletDid.isEmpty()) {
                 log.warn("No public did available, falling back to local did. VP can only be validated locally.");
-                final Optional<List<DID>> walletDids = acaPy.walletDid();
+                final Optional<List<DID>> walletDids = acaPy.walletDid(ListWalletDidFilter
+                        .builder()
+                        .keyType(DID.KeyTypeEnum.ED25519)
+                        .method(DID.MethodEnum.SOV)
+                        .build());
                 if (walletDids.isPresent() && !walletDids.get().isEmpty()) {
                     walletDid = Optional.of(walletDids.get().get(0));
                 } else {
@@ -142,6 +149,32 @@ public class Identity {
             return this.isSchemaCreator(schemaId, myDid);
         }
         return false;
+    }
+
+    public String getDidKey() {
+        try {
+            Optional<List<DID>> didKey = acaPy.walletDid(ListWalletDidFilter
+                    .builder()
+                    .keyType(DID.KeyTypeEnum.BLS12381G2)
+                    .method(DID.MethodEnum.KEY)
+                    .build());
+            if (didKey.isEmpty() || CollectionUtils.isEmpty(didKey.get())) {
+                DID did = acaPy.walletDidCreate(DIDCreate
+                        .builder()
+                        .method(DIDCreate.MethodEnum.KEY)
+                        .options(DIDCreateOptions.builder()
+                                .keyType(DIDCreateOptions.KeyTypeEnum.BLS12381G2)
+                                .build())
+                        .build())
+                        .orElseThrow();
+                return did.getDid();
+            } else {
+                return didKey.get().get(0).getDid();
+            }
+        } catch (IOException e) {
+            log.error("");
+        }
+        return null;
     }
 
 }

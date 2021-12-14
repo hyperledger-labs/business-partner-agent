@@ -60,7 +60,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import issuerService from "@/services/issuerService";
 import VBpaButton from "@/components/BpaButton";
@@ -70,7 +70,6 @@ export default {
   props: {
     schema: {
       type: Object,
-      default: () => {},
     },
     credentialDefinitions: {
       type: Array,
@@ -88,28 +87,28 @@ export default {
       this.isEdit = false;
       this.editingItem = false;
     },
-    credentialDefinitions(val) {
-      this.items = Array.from(val);
+    credentialDefinitions(value) {
+      this.items = [...value];
       this.isEdit = false;
       this.editingItem = false;
     },
-    reset(newVal, oldVal) {
+    reset(newValue, oldValue) {
       // use this to reset the form, remove any outstanding items that are not saved.
-      if (newVal !== oldVal) {
-        this.items = Array.from(this.credentialDefinitions);
+      if (newValue !== oldValue) {
+        this.items = [...this.credentialDefinitions];
         this.isEdit = false;
         this.editingItem = false;
       }
     },
   },
   mounted() {
-    this.items = Array.from(this.credentialDefinitions);
+    this.items = [...this.credentialDefinitions];
   },
   data: () => {
     return {
       items: [],
       isEdit: false,
-      editingItem: null,
+      editingItem: undefined,
       isBusy: false,
     };
   },
@@ -138,8 +137,8 @@ export default {
             this.items.splice(index, 1);
             this.$emit("changed");
           })
-          .catch((e) => {
-            EventBus.$emit("error", this.$axiosErrorMessage(e));
+          .catch((error) => {
+            EventBus.$emit("error", this.$axiosErrorMessage(error));
           });
       } else {
         this.items.splice(index, 1);
@@ -171,9 +170,9 @@ export default {
             this.$store.dispatch("loadCredDefSelectList");
           }
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isBusy = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
 

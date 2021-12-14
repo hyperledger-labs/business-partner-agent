@@ -44,7 +44,7 @@
   </v-card>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: "DashboardCard",
   components: {},
@@ -59,7 +59,6 @@ export default {
     },
     destination: {
       type: String,
-      default: () => null,
     },
     count: {
       type: Number,

@@ -140,7 +140,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import { issuerService } from "@/services";
 import VBpaButton from "@/components/BpaButton";
@@ -192,12 +192,11 @@ export default {
     },
   },
   methods: {
-    makeDefaultAttribute(idx, val) {
+    makeDefaultAttribute(index, value) {
       // if setting true, set all others to false...
-      if (val) {
-        this.schemaAttributes.forEach(
-          (v, i) => (v.defaultAttribute = idx === i)
-        );
+      if (value) {
+        for (const [index_, v] of this.schemaAttributes.entries())
+          v.defaultAttribute = index === index_;
       }
     },
     addAttribute() {
@@ -206,23 +205,27 @@ export default {
         text: "",
       });
     },
-    deleteAttribute(i) {
-      this.schemaAttributes.splice(i, 1);
+    deleteAttribute(index) {
+      this.schemaAttributes.splice(index, 1);
     },
     fixSchemaParams(s) {
       return s.trim().replace(/ /g, "_");
     },
     getSchemaFormData() {
-      const attrs = this.schemaAttributes
+      const attributes = this.schemaAttributes
         .filter((x) => x.text.trim().length)
         .map((x) => this.fixSchemaParams(x.text));
-      const defaultAttr = this.schemaAttributes.find((x) => x.defaultAttribute);
+      const defaultAttribute = this.schemaAttributes.find(
+        (x) => x.defaultAttribute
+      );
       return {
         schemaLabel: this.schemaLabel,
         schemaName: this.fixSchemaParams(this.schemaName),
         schemaVersion: this.fixSchemaParams(this.schemaVersion),
-        attributes: attrs,
-        defaultAttributeName: defaultAttr ? defaultAttr.text : undefined,
+        attributes: attributes,
+        defaultAttributeName: defaultAttribute
+          ? defaultAttribute.text
+          : undefined,
       };
     },
     resetForm() {

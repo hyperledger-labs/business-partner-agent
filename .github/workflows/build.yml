@@ -8,7 +8,10 @@ on:
     branches:
       - main
     tags:
-      - '**'  
+      - '**'
+  release:
+    types:
+      - created
 
 jobs:
   build:
@@ -70,8 +73,10 @@ jobs:
             type=edge,branch=main,priority=700
 
       # Test Phase
+      - name: Test frontend license headers
+        run: npm --prefix frontend run license-file-headers-check
 
-      - name: Test with npm
+      - name: Test frontend dependency licenses
         ## TODO are there any frontend tests?
         run: npm --prefix frontend run license-check
 

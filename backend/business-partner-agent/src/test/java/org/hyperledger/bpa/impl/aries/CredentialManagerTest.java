@@ -86,7 +86,7 @@ class CredentialManagerTest extends BaseTest {
                 .build());
 
         String iss = mgmt.resolveIssuer(c);
-        assertEquals("Bosch Healthcare", iss);
+        assertEquals("Test Corp", iss);
     }
 
     @Test

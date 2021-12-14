@@ -34,8 +34,8 @@
   </v-container>
 </template>
 
-<script>
-import Profile from "@/components/Profile";
+<script lang="ts">
+import Profile from "@/components/Profile.vue";
 import { EventBus } from "@/main";
 export default {
   name: "PublicProfile",
@@ -53,7 +53,7 @@ export default {
   },
   created() {
     EventBus.$emit("title", this.$t("view.profile.title"));
-    //console.log("first load credentials");
+
     this.$store.dispatch("loadDocuments");
     this.$store.dispatch("loadCredentials");
   },

@@ -60,10 +60,10 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
-import PartnerList from "@/components/PartnerList";
+import PartnerList from "@/components/PartnerList.vue";
 export default {
   name: "Partners",
   components: {

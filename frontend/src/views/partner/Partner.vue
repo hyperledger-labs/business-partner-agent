@@ -130,7 +130,6 @@
     </v-card>
 
     <!-- Presentation Exchanges -->
-
     <v-card v-if="partner.ariesSupport" class="mb-4">
       <v-card-title class="bg-light">
         {{ $t("view.partner.presentationExchanges.title") }}
@@ -176,7 +175,6 @@
     </v-card>
 
     <!-- Credential Exchanges -->
-
     <v-card v-if="partner.ariesSupport" class="mb-4">
       <v-card-title class="bg-light"
         >{{ $t("view.partner.credentialExchanges.title") }}
@@ -251,17 +249,17 @@
   </v-container>
 </template>
 
-<script>
-import Profile from "@/components/Profile";
-import PartnerStateIndicator from "@/components/PartnerStateIndicator";
+<script lang="ts">
+import Profile from "@/components/Profile.vue";
+import PartnerStateIndicator from "@/components/PartnerStateIndicator.vue";
 import { CredentialTypes, PartnerStates } from "@/constants";
 import { getPartnerProfile, getPartnerState } from "@/utils/partnerUtils";
 import { EventBus } from "@/main";
 import { issuerService, partnerService } from "@/services";
-import CredExList from "@/components/CredExList";
-import PresentationExList from "@/components/PresentationExList";
-import IssueCredential from "@/components/IssueCredential";
-import UpdatePartner from "@/components/UpdatePartner";
+import CredExList from "@/components/CredExList.vue";
+import PresentationExList from "@/components/PresentationExList.vue";
+import IssueCredential from "@/components/IssueCredential.vue";
+import UpdatePartner from "@/components/UpdatePartner.vue";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
 
@@ -305,9 +303,6 @@ export default {
       credentials: [],
       presentationExRecords: [],
       issuedCredentials: [],
-      rules: {
-        required: (value) => !!value || this.$t("app.rules.required"),
-      },
       PartnerStates: PartnerStates,
       issueCredentialDialog: false,
     };
@@ -372,16 +367,15 @@ export default {
         .getPresentationExRecords(this.id)
         .then((result) => {
           this.isLoadingPresExRecords = false;
-          if ({}.hasOwnProperty.call(result, "data")) {
+          if (Object.prototype.hasOwnProperty.call(result, "data")) {
             let data = result.data;
             console.log(data);
             this.presentationExRecords = data;
           }
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isLoadingPresExRecords = false;
-          console.error(e);
-          // EventBus.$emit("error", this.$axiosErrorMessage(e));
+          console.error(error);
         });
     },
 
@@ -393,14 +387,13 @@ export default {
         .listCredentialExchanges(id)
         .then((result) => {
           this.isLoadingCredExRecords = false;
-          if ({}.hasOwnProperty.call(result, "data")) {
+          if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.issuedCredentials = result.data;
           }
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isLoadingCredExRecords = false;
-          console.error(e);
-          // EventBus.$emit("error", this.$axiosErrorMessage(e));
+          console.error(error);
         });
     },
     refreshIssuedCredentialRecords() {
@@ -431,13 +424,12 @@ export default {
         .get(`${this.$apiBaseUrl}/partners/${this.id}`)
         .then((result) => {
           console.log(result);
-          if ({}.hasOwnProperty.call(result, "data")) {
+          if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.rawData = result.data;
             this.partner = {
               ...result.data,
-              ...{
-                profile: getPartnerProfile(result.data),
-              },
+
+              profile: getPartnerProfile(result.data),
             };
 
             this.partner.bpa_state = getPartnerState(this.partner);
@@ -449,9 +441,9 @@ export default {
             console.log(this.partner);
           }
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isLoading = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     deletePartner() {
@@ -470,8 +462,8 @@ export default {
             });
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     acceptPartnerRequest() {
@@ -488,8 +480,8 @@ export default {
             setTimeout(() => this.getPartner(), 1000);
           }
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     refreshPartner() {
@@ -497,35 +489,37 @@ export default {
       this.$axios
         .get(`${this.$apiBaseUrl}/partners/${this.id}/refresh`)
         .then(async (result) => {
-          if (result.status === 200) {
-            if ({}.hasOwnProperty.call(result, "data")) {
-              console.log(result.data);
-              this.rawData = result.data;
-              this.partner = {
-                ...result.data,
-                ...{
-                  profile: getPartnerProfile(result.data),
-                },
-              };
-              if ({}.hasOwnProperty.call(this.partner, "credential")) {
-                // Show only creds other than OrgProfile in credential list
-                this.credentials = this.partner.credential.filter((cred) => {
-                  return cred.type !== CredentialTypes.PROFILE.type;
-                });
-              }
+          if (
+            result.status === 200 &&
+            Object.prototype.hasOwnProperty.call(result, "data")
+          ) {
+            console.log(result.data);
+            this.rawData = result.data;
+            this.partner = {
+              ...result.data,
 
-              this.partner.bpa_state = getPartnerState(this.partner);
-              this.alias = this.partner.name;
-              this.did = this.partner.did;
-              console.log(this.partner);
-              this.isReady = true;
-              this.isLoading = false;
+              profile: getPartnerProfile(result.data),
+            };
+            if (
+              Object.prototype.hasOwnProperty.call(this.partner, "credential")
+            ) {
+              // Show only creds other than OrgProfile in credential list
+              this.credentials = this.partner.credential.filter((cred) => {
+                return cred.type !== CredentialTypes.PROFILE.type;
+              });
             }
+
+            this.partner.bpa_state = getPartnerState(this.partner);
+            this.alias = this.partner.name;
+            this.did = this.partner.did;
+            console.log(this.partner);
+            this.isReady = true;
+            this.isLoading = false;
           }
         })
-        .catch((e) => {
+        .catch((error) => {
           this.isLoading = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
     onUpdatePartner() {

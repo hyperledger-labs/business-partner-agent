@@ -112,18 +112,13 @@ class ConnectionManagerTest extends BaseTest {
         final ConnectionRecord invite = gson.fromJson(oobInvitationReceive, ConnectionRecord.class);
         eventHandler.handleConnection(invite);
 
-        // not handled here
-        Optional<Partner> p = repo.findByInvitationMsgId(invite.getInvitationMsgId());
-        assertFalse(p.isPresent());
-
-        repo.save(Partner.builder()
-                .invitationMsgId(invite.getInvitationMsgId())
-                .ariesSupport(Boolean.TRUE)
-                .did(invite.getTheirDid())
-                .build());
+        Optional<Partner> p = repo.findByConnectionId(invite.getConnectionId());
+        assertTrue(p.isPresent());
 
         final ConnectionRecord response = gson.fromJson(oobInvitationCompleted, ConnectionRecord.class);
         eventHandler.handleConnection(response);
+
+        assertEquals(1, repo.count());
 
         p = repo.findByInvitationMsgId(response.getInvitationMsgId());
         assertTrue(p.isPresent());

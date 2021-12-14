@@ -18,19 +18,15 @@
 package org.hyperledger.bpa.model;
 
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.data.annotation.AutoPopulated;
-import io.micronaut.data.annotation.DateCreated;
-import io.micronaut.data.annotation.DateUpdated;
-import io.micronaut.data.annotation.TypeDef;
+import io.micronaut.data.annotation.*;
 import io.micronaut.data.model.DataType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.model.type.CredentialTypeTranslator;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.*;
 import javax.persistence.Id;
 import java.time.Instant;
 import java.util.Map;
@@ -47,7 +43,7 @@ import java.util.UUID;
 @Data
 @Accessors(chain = true)
 @Entity
-public class MyDocument {
+public class MyDocument implements CredentialTypeTranslator {
 
     @Id
     @AutoPopulated
@@ -62,8 +58,14 @@ public class MyDocument {
     @Enumerated(EnumType.STRING)
     private CredentialType type;
 
+    /** There for backwards compatibility, use reference to schema instead */
     @Nullable
     private String schemaId;
+
+    @Nullable
+    @ManyToOne
+    @MappedProperty("fk_schema_id")
+    private BPASchema schema;
 
     private Boolean isPublic = Boolean.FALSE;
 

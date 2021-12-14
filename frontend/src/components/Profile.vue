@@ -49,7 +49,7 @@
             >
               <v-icon small class="mt-1 ml-1 mr-2">{{ validFrom }}</v-icon>
               <span class="text-caption mt-1">{{
-                item.credentialData.validFrom | moment("YYYY-MM-DD")
+                item.credentialData.validFrom | formatDate
               }}</span>
             </v-row>
             <v-row
@@ -58,7 +58,7 @@
             >
               <v-icon small class="mt-1 ml-1 mr-2">{{ validUntil }}</v-icon>
               <span class="text-caption mt-1">{{
-                item.credentialData.validUntil | moment("YYYY-MM-DD")
+                item.credentialData.validUntil | formatDate
               }}</span>
             </v-row>
           </v-col>
@@ -86,10 +86,10 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { CredentialTypes } from "@/constants";
-import OrganizationalProfile from "@/components/OrganizationalProfile";
-import Credential from "@/components/Credential";
+import OrganizationalProfile from "@/components/OrganizationalProfile.vue";
+import Credential from "@/components/Credential.vue";
 import {
   getPartnerProfile,
   getPartnerProfileRoute,
@@ -123,7 +123,7 @@ export default {
     },
     credentials: function () {
       let creds = [];
-      if ({}.hasOwnProperty.call(this.partner, "credential")) {
+      if (Object.prototype.hasOwnProperty.call(this.partner, "credential")) {
         creds = this.partner.credential.filter((cred) => {
           if (cred.type !== CredentialTypes.PROFILE.type) {
             return this.prepareCredential(cred);
@@ -136,7 +136,7 @@ export default {
   methods: {
     prepareCredential(credential) {
       if (
-        {}.hasOwnProperty.call(credential, "credentialData") &&
+        Object.prototype.hasOwnProperty.call(credential, "credentialData") &&
         typeof credential.credentialData === "object" &&
         credential.credentialData !== null
       ) {

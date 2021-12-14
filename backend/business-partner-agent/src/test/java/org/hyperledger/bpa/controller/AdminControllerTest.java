@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.DidVerkeyResponse;
 import org.hyperledger.aries.api.schema.SchemaSendResponse;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.controller.api.admin.AddSchemaRequest;
 import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
@@ -43,10 +44,7 @@ import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @MicronautTest
@@ -168,6 +166,23 @@ public class AdminControllerTest {
         Assertions.assertThrows(HttpClientResponseException.class, () -> addRestriction(uri, "something", null));
     }
 
+    @Test
+    void testAddLDSchema() throws Exception {
+        HttpResponse<SchemaAPI> ldSchema = client.toBlocking()
+                .exchange(HttpRequest.POST("",
+                        AddSchemaRequest.AddJsonLDSchema.builder()
+                                .schemaId("https://schema.org/Person")
+                                .defaultAttributeName("email")
+                                .label("Person")
+                                .attributes(Set.of("email"))
+                                .credentialType(CredentialType.JSON_LD)
+                                .ldType("Person")
+                                .build()),
+                        SchemaAPI.class);
+        SchemaAPI api = getSchema(ldSchema.getBody().get().getId());
+        Assertions.assertEquals("Person", api.getLdType());
+    }
+
     private SchemaAPI getSchema(@NonNull UUID id) {
         return client.toBlocking()
                 .retrieve(HttpRequest.GET("/" + id), SchemaAPI.class);
@@ -176,7 +191,7 @@ public class AdminControllerTest {
     private HttpResponse<SchemaAPI> addSchemaWithRestriction(String schemaId) {
         return client.toBlocking()
                 .exchange(HttpRequest.POST("",
-                        AddSchemaRequest.builder()
+                        AddSchemaRequest.AddIndySchema.builder()
                                 .schemaId(schemaId)
                                 .defaultAttributeName("name")
                                 .label("Demo Bank")
@@ -192,7 +207,7 @@ public class AdminControllerTest {
     private HttpResponse<SchemaAPI> addSchemaNoRestriction() {
         return client.toBlocking()
                 .exchange(HttpRequest.POST("",
-                        AddSchemaRequest.builder()
+                        AddSchemaRequest.AddIndySchema.builder()
                                 .schemaId(schemaId3)
                                 .defaultAttributeName("other")
                                 .label("Demo Corp")

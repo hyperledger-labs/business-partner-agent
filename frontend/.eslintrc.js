@@ -10,9 +10,17 @@ module.exports = {
   env: {
     node: true,
   },
-  extends: ["plugin:vue/essential", "eslint:recommended"],
+  plugins: ["unicorn"],
+  extends: [
+    "plugin:vue/essential",
+    "eslint:recommended",
+    "@vue/typescript/recommended",
+    "@vue/prettier",
+    "@vue/prettier/@typescript-eslint",
+    "plugin:unicorn/recommended",
+  ],
   parserOptions: {
-    parser: "babel-eslint",
+    ecmaVersion: 2020,
   },
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
@@ -20,5 +28,10 @@ module.exports = {
     "vue/multi-word-component-names": "off",
     "vue/no-mutating-props": "warn",
     "vue/valid-v-slot": "warn",
+    "vue/comment-directive": "warn",
+    "unicorn/prefer-module": "off",
+    "unicorn/filename-case": "off",
+    "unicorn/prevent-abbreviations": "off",
+    "@typescript-eslint/ban-ts-comment": "warn",
   },
 };

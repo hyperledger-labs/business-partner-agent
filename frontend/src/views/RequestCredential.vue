@@ -48,10 +48,10 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { EventBus } from "@/main";
 import { ExchangeVersion } from "@/constants";
-import MyCredentialList from "@/components/MyCredentialList";
+import MyCredentialList from "@/components/MyCredentialList.vue";
 import VBpaButton from "@/components/BpaButton";
 import credentialService from "@/services/credentialService";
 
@@ -132,8 +132,8 @@ export default {
           this.isBusy = false;
           this.$router.go(-1);
         })
-        .catch((e) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(e));
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
           this.isBusy = false;
         });
     },
