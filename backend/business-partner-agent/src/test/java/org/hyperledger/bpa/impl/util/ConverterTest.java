@@ -64,28 +64,48 @@ class ConverterTest extends BaseTest {
 
     @Test
     void testConvertVPToPartnerApi() throws Exception {
+        String issuerIsSelf = "did:sov:F6dB7dMVHUQSC64qemnBi7";
+        String expectedIndySchemaId = "M6Mbe3qx7vB4wpZF4sBRjt:2:bank_account:1.0";
         VerifiablePresentation<VerifiableIndyCredential> vp = loadAndConvertTo("files/verifiablePresentation.json",
                 Converter.VP_TYPEREF);
         final PartnerAPI partner = conv.toAPIObject(vp);
 
-        assertEquals(3, partner.getCredential().size());
+        // expecting all four types that are currently supported
+        assertEquals(4, partner.getCredential().size());
 
+        // JSON-LD Type Document
         PartnerAPI.PartnerCredential c1 = partner.getCredential().get(0);
-        assertEquals(CredentialType.INDY, c1.getType());
-        assertEquals("did:sov:Ni2hE7fEHJ25xUBc7ZESf6", c1.getIssuer());
+        assertEquals(CredentialType.JSON_LD, c1.getType());
+        assertEquals(issuerIsSelf, c1.getIssuer());
         assertFalse(c1.getIndyCredential());
-        assertNotNull(c1.getTypeLabel());
+        assertEquals("Person", c1.getTypeLabel());
+        assertTrue(c1.getSchemaId().startsWith("https://schema.org/"));
 
+        // Org Profile Document
         PartnerAPI.PartnerCredential c2 = partner.getCredential().get(1);
         assertEquals(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL, c2.getType());
+        assertEquals(issuerIsSelf, c2.getIssuer());
         assertFalse(c2.getIndyCredential());
-        assertNotNull(c2.getTypeLabel());
+        assertEquals("Organizational Profile", c2.getTypeLabel());
+        assertNull(c2.getSchemaId());
 
+        // Indy based Document
         PartnerAPI.PartnerCredential c3 = partner.getCredential().get(2);
         assertEquals(CredentialType.INDY, c3.getType());
-        assertEquals("did:sov:M6Mbe3qx7vB4wpZF4sBRjt", c3.getIssuer());
+        assertEquals(issuerIsSelf, c3.getIssuer());
         assertNotNull(c3.getTypeLabel());
-        assertTrue(c3.getIndyCredential());
+        assertEquals("bank_account", c3.getTypeLabel());
+        assertFalse(c3.getIndyCredential());
+        assertEquals(expectedIndySchemaId, c3.getSchemaId());
+
+        // Indy based credential
+        PartnerAPI.PartnerCredential c4 = partner.getCredential().get(3);
+        assertEquals(CredentialType.INDY, c4.getType());
+        assertEquals("did:sov:Uv53vZ1SnS3NPYMMSr4BaQ", c4.getIssuer());
+        assertNotNull(c4.getTypeLabel());
+        assertEquals("bank_account", c4.getTypeLabel());
+        assertTrue(c4.getIndyCredential());
+        assertEquals(expectedIndySchemaId, c4.getSchemaId());
     }
 
     @Test

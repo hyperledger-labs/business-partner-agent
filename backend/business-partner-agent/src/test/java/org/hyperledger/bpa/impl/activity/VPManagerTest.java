@@ -131,8 +131,9 @@ class VPManagerTest {
         final VerifiableCredential vp = vpm.buildFromDocument(doc, "xxyyyzzz");
 
         String actual = gson.toJson(vp.getContext());
-        String expected = "[\"https://www.w3.org/2018/credentials/v1\",{\"@context\":{\"sc\":\"did:iil:1234\"," +
-                "\"key1\":{\"@id\":\"sc:key1\"},\"key2\":{\"@id\":\"sc:key2\"}}}]";
+        String expected = "[\"https://www.w3.org/2018/credentials/v1\",\"https://raw.githubusercontent.com/iil-network/contexts/master/labeled-credential.jsonld\""
+                +
+                ",{\"@context\":{\"sc\":\"did:iil:1234\",\"key1\":{\"@id\":\"sc:key1\"},\"key2\":{\"@id\":\"sc:key2\"}}}]";
 
         assertEquals(expected, actual);
     }
@@ -154,8 +155,8 @@ class VPManagerTest {
         VerifiableCredential.VerifiableIndyCredential indyCred = vpm.buildFromCredential(myCredential);
         assertNotNull(indyCred.getCredentialSubject());
         assertEquals(2, indyCred.getCredentialSubject().size());
-        assertEquals(2, indyCred.getType().size());
-        assertEquals(2, indyCred.getContext().size());
+        assertEquals(3, indyCred.getType().size());
+        assertEquals(3, indyCred.getContext().size());
         // System.out.println(GsonConfig.prettyPrinter().toJson(indyCred));
     }
 

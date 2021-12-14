@@ -25,9 +25,20 @@ public class ApiConstants {
 
     public static final String DEFAULT_VERIFICATION_KEY_TYPE = "Ed25519VerificationKey2018";
 
-    public static final String CREDENTIALS_V1 = "https://www.w3.org/2018/credentials/v1";
+    public static final String VERIFIABLE_CREDENTIAL_NAME = "VerifiableCredential";
 
-    public static final String BBS_V1 = "https://w3id.org/security/bbs/v1";
+    public static final String LABELED_CREDENTIAL_NAME = "LabeledCredential";
+
+    public static final String ORG_PROFILE_NAME = "OrganizationalProfileCredential";
+
+    // Schema Links
+    public static final String CREDENTIALS_V1_SCHEMA = "https://www.w3.org/2018/credentials/v1";
+
+    public static final String BBS_V1_SCHEMA = "https://w3id.org/security/bbs/v1";
 
     public static final String INDY_CREDENTIAL_SCHEMA = "https://raw.githubusercontent.com/iil-network/contexts/master/indycredential.jsonld";
+
+    public static final String LABELED_CREDENTIAL_SCHEMA = "https://raw.githubusercontent.com/iil-network/contexts/master/labeled-credential.jsonld";
+
+    public static final String MASTER_DATA_SCHEMA = "https://raw.githubusercontent.com/iil-network/contexts/master/masterdata.jsonld";
 }

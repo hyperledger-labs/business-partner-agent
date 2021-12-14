@@ -37,20 +37,24 @@ public enum CredentialType {
      */
     ORGANIZATIONAL_PROFILE_CREDENTIAL(
             List.of(
-                    ApiConstants.CREDENTIALS_V1,
-                    "https://raw.githubusercontent.com/iil-network/contexts/master/masterdata.jsonld",
-                    "https://raw.githubusercontent.com/iil-network/contexts/master/labeled-credential.jsonld"),
+                    ApiConstants.CREDENTIALS_V1_SCHEMA,
+                    ApiConstants.LABELED_CREDENTIAL_SCHEMA,
+                    ApiConstants.MASTER_DATA_SCHEMA),
             List.of(
-                    "VerifiableCredential",
-                    "LabeledCredential",
-                    "OrganizationalProfileCredential")),
+                    ApiConstants.VERIFIABLE_CREDENTIAL_NAME,
+                    ApiConstants.LABELED_CREDENTIAL_NAME,
+                    ApiConstants.ORG_PROFILE_NAME)),
     /**
      * A document or indy credential that is linked to a ledger schema and uses an
      * embedded context
      */
     INDY(
-            List.of(ApiConstants.CREDENTIALS_V1),
-            List.of("VerifiableCredential")),
+            List.of(
+                    ApiConstants.CREDENTIALS_V1_SCHEMA,
+                    ApiConstants.LABELED_CREDENTIAL_SCHEMA),
+            List.of(
+                    ApiConstants.VERIFIABLE_CREDENTIAL_NAME,
+                    ApiConstants.LABELED_CREDENTIAL_NAME)),
 
     /**
      * A document or json-ld credential that is not linked to any ledger and uses an
@@ -58,9 +62,12 @@ public enum CredentialType {
      */
     JSON_LD(
             List.of(
-                    ApiConstants.CREDENTIALS_V1,
-                    ApiConstants.BBS_V1),
-            List.of("VerifiableCredential"));
+                    ApiConstants.CREDENTIALS_V1_SCHEMA,
+                    ApiConstants.LABELED_CREDENTIAL_SCHEMA,
+                    ApiConstants.BBS_V1_SCHEMA),
+            List.of(
+                    ApiConstants.VERIFIABLE_CREDENTIAL_NAME,
+                    ApiConstants.LABELED_CREDENTIAL_NAME));
 
     private final List<Object> context;
     private final List<String> type;
@@ -72,10 +79,10 @@ public enum CredentialType {
      * @return {@link CredentialType} or null when no match was found
      */
     public static CredentialType fromCredential(@NonNull VerifiableCredential.VerifiableIndyCredential c) {
-        if (c.getType().stream().anyMatch(t -> "OrganizationalProfileCredential".equals(t))) {
+        if (c.getType().stream().anyMatch(ApiConstants.ORG_PROFILE_NAME::equals)) {
             return CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL;
         }
-        if (c.getContext().stream().anyMatch(ctx -> ApiConstants.BBS_V1.equals(ctx))) {
+        if (c.getContext().stream().anyMatch(ApiConstants.BBS_V1_SCHEMA::equals)) {
             return CredentialType.JSON_LD;
         }
         return CredentialType.INDY;
