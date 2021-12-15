@@ -157,8 +157,8 @@ public class Partner extends StateChangeDecorator<Partner, ConnectionState> {
         if (tags == null)
             return false;
         Set<Tag> filtered = tags.stream()
-            .filter(tag -> tag.getName().equalsIgnoreCase(name))
-            .collect(Collectors.toSet());
+                .filter(tag -> tag.getName().equalsIgnoreCase(name))
+                .collect(Collectors.toSet());
         return (0 < filtered.size());
     }
 

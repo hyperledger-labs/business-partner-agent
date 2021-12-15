@@ -231,19 +231,21 @@ public class ConnectionManager {
         if (!config.hasEndorserRole())
             return;
 
-        //TransactionJobs.TransactionMyJobEnum txMyJob;
-        //TransactionJobs.TransactionTheirJobEnum txTheirJob;
+        // TransactionJobs.TransactionMyJobEnum txMyJob;
+        // TransactionJobs.TransactionTheirJobEnum txTheirJob;
         String txMyJob;
         if (p.hasTag(TransactionRole.AUTHOR)) {
-            // our partner is tagged as an "Author" so we set our role on the connection as "Author"
+            // our partner is tagged as an "Author" so we set our role on the connection as
+            // "Author"
             log.info("TODO add connection metadata for Author connection: {}", p);
             txMyJob = TransactionJobs.TransactionMyJobEnum.TRANSACTION_ENDORSER.toString();
-            //txTheirJob = TransactionJobs.TransactionTheirJobEnum.TRANSACTION_AUTHOR;
+            // txTheirJob = TransactionJobs.TransactionTheirJobEnum.TRANSACTION_AUTHOR;
         } else if (p.hasTag(TransactionRole.ENDORSER)) {
-            // our partner is tagged as an "Endorser" so we set our role on the connection as "Author"
+            // our partner is tagged as an "Endorser" so we set our role on the connection
+            // as "Author"
             log.info("TODO add connection metadata for Endorser connection: {}", p);
             txMyJob = TransactionJobs.TransactionMyJobEnum.TRANSACTION_AUTHOR.toString();
-            //txTheirJob = TransactionJobs.TransactionTheirJobEnum.TRANSACTION_ENDORSER;
+            // txTheirJob = TransactionJobs.TransactionTheirJobEnum.TRANSACTION_ENDORSER;
         } else {
             log.info("TODO no connection role, return no-op");
             return;
@@ -252,19 +254,19 @@ public class ConnectionManager {
         try {
             // set the endorser role on the connection
             SetEndorserRoleFilter serf = SetEndorserRoleFilter
-                .builder()
-                .transactionMyJob(txMyJob)
-                .build();
+                    .builder()
+                    .transactionMyJob(txMyJob)
+                    .build();
             log.info("TODO set endorser role to: {} with {}", txMyJob, serf);
             ac.endorseTransactionSetEndorserRole(p.getConnectionId(), serf);
 
             if (p.hasTag("Endorser")) {
                 // we have to set the extra Endorser info
                 SetEndorserInfoFilter seif = SetEndorserInfoFilter
-                    .builder()
-                    .endorserDid(p.getDid())
-                    .endorserName(p.getAlias())
-                    .build();
+                        .builder()
+                        .endorserDid(p.getDid())
+                        .endorserName(p.getAlias())
+                        .build();
                 log.info("TODO set endorser info to: {} {} with {}", p.getDid(), p.getAlias(), seif);
                 ac.endorseTransactionSetEndorserInfo(p.getConnectionId(), seif);
             }

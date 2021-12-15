@@ -82,36 +82,36 @@ public class TransactionManager {
         result = transactionRepo.findByTransactionId(transaction.getTransactionId());
 
         result.ifPresentOrElse(
-            txn -> {
-                // if yes the update the state
-                transactionRepo.updateState(txn.getId(), transaction.getState());
-            },
-            () -> {
-                // if no then add it
-                Optional<Partner> partner = Optional.empty();
-                partner = partnerRepo.findByConnectionId(transaction.getConnectionId());
-                partner.ifPresentOrElse(
-                    p -> {
-                        BPATransaction txn = BPATransaction
-                            .builder()
-                            .createdAt(TimeUtil.fromISOInstant(transaction.getCreatedAt()))
-                            .partner(p)
-                            .role(config.isAuthor() ? TransactionRole.AUTHOR : TransactionRole.ENDORSER)
-                            .threadId(transaction.getThreadId())
-                            .transactionId(transaction.getTransactionId())
-                            .state(transaction.getState())
-                            .endorserWriteTransaction(transaction.getEndorserWriteTxn() != null ? transaction.getEndorserWriteTxn() : Boolean.FALSE)
-                            .updatedAt(TimeUtil.fromISOInstant(transaction.getUpdatedAt()))
-                            .build();
-                        transactionRepo.save(txn);
-                    },
-                    () -> {
-                        // TODO raise exception if partner is not found
+                txn -> {
+                    // if yes the update the state
+                    transactionRepo.updateState(txn.getId(), transaction.getState());
+                },
+                () -> {
+                    // if no then add it
+                    Optional<Partner> partner = Optional.empty();
+                    partner = partnerRepo.findByConnectionId(transaction.getConnectionId());
+                    partner.ifPresentOrElse(
+                            p -> {
+                                BPATransaction txn = BPATransaction
+                                        .builder()
+                                        .createdAt(TimeUtil.fromISOInstant(transaction.getCreatedAt()))
+                                        .partner(p)
+                                        .role(config.isAuthor() ? TransactionRole.AUTHOR : TransactionRole.ENDORSER)
+                                        .threadId(transaction.getThreadId())
+                                        .transactionId(transaction.getTransactionId())
+                                        .state(transaction.getState())
+                                        .endorserWriteTransaction(transaction.getEndorserWriteTxn() != null
+                                                ? transaction.getEndorserWriteTxn()
+                                                : Boolean.FALSE)
+                                        .updatedAt(TimeUtil.fromISOInstant(transaction.getUpdatedAt()))
+                                        .build();
+                                transactionRepo.save(txn);
+                            },
+                            () -> {
+                                // TODO raise exception if partner is not found
 
-                    }
-                );
-            }
-        );
+                            });
+                });
 
     }
 

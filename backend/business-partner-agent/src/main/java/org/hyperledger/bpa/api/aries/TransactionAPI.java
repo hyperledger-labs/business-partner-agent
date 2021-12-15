@@ -68,12 +68,12 @@ public class TransactionAPI {
                 .connectionId(UUID.fromString(s.getConnectionId()))
                 .endorserWriteTxn(s.getEndorserWriteTxn())
                 // TODO convert from List<Map<String, String>> to appropriate object
-                //.formats(s.getFormats())
-                //.messagesAttach(s.getMessagesAttach())
-                //.signatureRequest(s.getSignatureRequest())
-                //.signatureResponse(s.getSignatureResponse())
+                // .formats(s.getFormats())
+                // .messagesAttach(s.getMessagesAttach())
+                // .signatureRequest(s.getSignatureRequest())
+                // .signatureResponse(s.getSignatureResponse())
                 .state(s.getState())
-                //.threadId(UUID.fromString(s.getThreadId()))
+                // .threadId(UUID.fromString(s.getThreadId()))
                 .timing(s.getTiming())
                 .createdAt(TimeUtil.fromISOInstant(s.getCreatedAt()).toEpochMilli())
                 .updatedAt(TimeUtil.fromISOInstant(s.getUpdatedAt()).toEpochMilli());
