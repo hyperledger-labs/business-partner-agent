@@ -253,6 +253,7 @@
                 <configuration>
                     <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                     <skip>true</skip>
+                    <excludes>io.netty:netty-tcnative-classes</excludes>
                 </configuration>
                 <executions>
                     <execution>
