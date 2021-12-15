@@ -105,18 +105,12 @@ public enum ValueOperators {
     }
 
     public static ValueOperators fromPType(@NonNull IndyProofReqPredSpec.PTypeEnum pType) {
-        switch (pType) {
-        case GREATER_THAN:
-            return GREATER_THAN;
-        case GREATER_THAN_OR_EQUAL_TO:
-            return GREATER_THAN_OR_EQUAL_TO;
-        case LESS_THAN:
-            return LESS_THAN;
-        case LESS_THAN_OR_EQUAL_TO:
-            return LESS_THAN_OR_EQUAL_TO;
-        default:
-            return null;
-        }
+        return switch (pType) {
+        case GREATER_THAN -> GREATER_THAN;
+        case GREATER_THAN_OR_EQUAL_TO -> GREATER_THAN_OR_EQUAL_TO;
+        case LESS_THAN -> LESS_THAN;
+        case LESS_THAN_OR_EQUAL_TO -> LESS_THAN_OR_EQUAL_TO;
+        };
     }
 
 }
