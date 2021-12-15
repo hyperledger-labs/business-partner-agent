@@ -251,9 +251,8 @@
                 <artifactId>dependency-check-maven</artifactId>
                 <version>6.5.0</version>
                 <configuration>
-                    <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
+                    <failBuildOnAnyVulnerability>false</failBuildOnAnyVulnerability>
                     <skip>true</skip>
-                    <excludes>io.netty:netty-tcnative-classes</excludes>
                 </configuration>
                 <executions>
                     <execution>
