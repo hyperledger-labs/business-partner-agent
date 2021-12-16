@@ -14,8 +14,16 @@ auto-ping-connection: true
 
 auto-provision: true
 
+auto-disclose-features: true
+
+exch-use-unencrypted-tags: true # upper lower case fix?
+
+notify-revocation: true
+monitor-revocation-notification: true
 monitor-ping: true
+
 preserve-exchange-records: false
+genesis-transactions-list: './genesis-transaction-list.yml'
 public-invites: true
 plugin: 'aries_cloudagent.messaging.jsonld'
 outbound-transport: http
