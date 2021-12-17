@@ -43,6 +43,7 @@ import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.api.revocation.RevocationNotificationEvent;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.AriesCredential;
@@ -408,6 +409,10 @@ public class HolderCredentialManager extends BaseCredentialManager {
                             BPACredentialExchange dbCredential = holderCredExRepo.update(dbCred);
                             fireCredentialAddedEvent(dbCredential);
                         }));
+    }
+
+    public void handleRevocationNotification(RevocationNotificationEvent revocationNotification) {
+        // TODO do something with the thread_id?
     }
 
     private void fireCredentialAddedEvent(@NonNull BPACredentialExchange updated) {

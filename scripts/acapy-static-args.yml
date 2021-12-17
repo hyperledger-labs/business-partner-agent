@@ -22,6 +22,7 @@ notify-revocation: true
 monitor-revocation-notification: true
 monitor-ping: true
 
+enable-undelivered-queue: true
 preserve-exchange-records: false
 genesis-transactions-list: './genesis-transaction-list.yml'
 public-invites: true

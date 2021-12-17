@@ -338,6 +338,8 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                     .credRevId(credEx.getCredRevId())
                     .revRegId(credEx.getRevRegId())
                     .publish(Boolean.TRUE)
+                    .connectionId(credEx.getPartner().getConnectionId())
+                    .notify(Boolean.TRUE)
                     .build());
             credEx.setRevoked(Boolean.TRUE);
             credEx.pushStates(CredentialExchangeState.REVOKED);
