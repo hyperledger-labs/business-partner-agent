@@ -18,6 +18,8 @@
 package org.hyperledger.bpa.impl.util;
 
 import io.micronaut.core.annotation.Nullable;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
@@ -143,5 +145,23 @@ public class AriesStringUtil {
         } catch (IllegalArgumentException e) {
             return false;
         }
+    }
+
+    public static RevocationInfo revocationEventToRevocationInfo(@NonNull String threadId) {
+        RevocationInfo.RevocationInfoBuilder b = RevocationInfo.builder();
+        if (StringUtils.isNotEmpty(threadId)) {
+            String[] parts = threadId.split("::");
+            if (parts.length != 3) {
+                throw new IllegalArgumentException("Not a valid revocation notification");
+            }
+            b.revRegId(parts[1]);
+            b.credRevId(parts[2]);
+        }
+        return b.build();
+    }
+    @Data @Builder
+    public static final class RevocationInfo {
+        private String revRegId;
+        private String credRevId;
     }
 }
