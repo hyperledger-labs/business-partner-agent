@@ -400,8 +400,8 @@
                                 </goals>
                                 <configuration>
                                     <!-- See https://nodejs.org/en/download/ -->
-                                    <nodeVersion>v14.18.1</nodeVersion>
-                                    <npmVersion>6.14.15</npmVersion>
+                                    <nodeVersion>v16.13.1</nodeVersion>
+                                    <npmVersion>8.1.2</npmVersion>
                                 </configuration>
                             </execution>
                             <execution>
