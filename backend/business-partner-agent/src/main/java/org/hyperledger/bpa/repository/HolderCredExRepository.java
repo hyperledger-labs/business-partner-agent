@@ -52,6 +52,8 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     List<BPACredentialExchange> findByRoleAndIsPublicTrue(CredentialExchangeRole role);
 
+    Optional<BPACredentialExchange> findByRevRegIdAndCredRevId(String revRegId, String credRefId);
+
     @Query("SELECT * FROM bpa_credential_exchange WHERE credential->>'schemaId' = :schemaId "
             + "AND credential->>'credentialDefinitionId' = :credentialDefinitionId "
             + "AND role = 'HOLDER'")
