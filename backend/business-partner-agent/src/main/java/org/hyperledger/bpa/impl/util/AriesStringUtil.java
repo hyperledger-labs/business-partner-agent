@@ -159,7 +159,9 @@ public class AriesStringUtil {
         }
         return b.build();
     }
-    @Data @Builder
+
+    @Data
+    @Builder
     public static final class RevocationInfo {
         private String revRegId;
         private String credRevId;

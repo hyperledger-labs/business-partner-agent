@@ -117,7 +117,8 @@ class AriesStringUtilTest {
     void testParseRevocationNotification() {
         assertEquals("test", AriesStringUtil.revocationEventToRevocationInfo("indy::test::12").getRevRegId());
         assertEquals("12", AriesStringUtil.revocationEventToRevocationInfo("indy::test::12").getCredRevId());
-        assertThrows(IllegalArgumentException.class, () -> AriesStringUtil.revocationEventToRevocationInfo("12:foo:1::12"));
+        assertThrows(IllegalArgumentException.class,
+                () -> AriesStringUtil.revocationEventToRevocationInfo("12:foo:1::12"));
     }
 
 }

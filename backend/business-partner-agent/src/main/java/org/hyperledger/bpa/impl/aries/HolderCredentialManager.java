@@ -412,11 +412,13 @@ public class HolderCredentialManager extends BaseCredentialManager {
     }
 
     public void handleRevocationNotification(RevocationNotificationEvent revocationNotification) {
-        AriesStringUtil.RevocationInfo revocationInfo = AriesStringUtil.revocationEventToRevocationInfo(revocationNotification.getThreadId());
-        holderCredExRepo.findByRevRegIdAndCredRevId(revocationInfo.getRevRegId(), revocationInfo.getCredRevId()).ifPresent(credEx -> {
-            credEx.pushStates(CredentialExchangeState.REVOKED, Instant.now());
-            holderCredExRepo.updateRevoked(credEx.getId(), true, credEx.getStateToTimestamp());
-        });
+        AriesStringUtil.RevocationInfo revocationInfo = AriesStringUtil
+                .revocationEventToRevocationInfo(revocationNotification.getThreadId());
+        holderCredExRepo.findByRevRegIdAndCredRevId(revocationInfo.getRevRegId(), revocationInfo.getCredRevId())
+                .ifPresent(credEx -> {
+                    credEx.pushStates(CredentialExchangeState.REVOKED, Instant.now());
+                    holderCredExRepo.updateRevoked(credEx.getId(), true, credEx.getStateToTimestamp());
+                });
     }
 
     private void fireCredentialAddedEvent(@NonNull BPACredentialExchange updated) {
