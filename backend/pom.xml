@@ -53,13 +53,13 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <skip.docker.build>true</skip.docker.build>
         <!-- Dependency Versions -->
-        <log4j2.version>2.16.0</log4j2.version>
+        <log4j2.version>2.17.1</log4j2.version>
         <lombok.version>1.18.22</lombok.version>
         <lombok.maven.plugin.version>1.18.20.0</lombok.maven.plugin.version>
-        <micronaut.version>3.2.1</micronaut.version>
-        <micronaut.data.version>3.2.1</micronaut.data.version>
+        <micronaut.version>3.2.4</micronaut.version>
+        <micronaut.data.version>3.2.2</micronaut.data.version>
         <micronaut.openapi.version>3.2.0</micronaut.openapi.version>
-        <micronaut.security.version>3.2.0</micronaut.security.version>
+        <micronaut.security.version>3.2.1</micronaut.security.version>
         <mockito.version>4.1.0</mockito.version>
         <okhttp.version>4.9.3</okhttp.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
