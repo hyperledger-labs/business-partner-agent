@@ -33,13 +33,18 @@ services:
       - ${BPA_PORT}:${BPA_PORT}
     restart: always
   bpa-agent1:
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.3-rc0
+    # image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.3-rc0
+    # docker build -f docker/Dockerfile.run -t scripts_bpa-agent1:latest .
+    build:
+      context: https://github.com/hyperledger/aries-cloudagent-python.git#main
+      dockerfile: docker/Dockerfile.run
     ports:
       - ${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}
       - ${ACAPY_HTTP_PORT}:${ACAPY_HTTP_PORT}
     depends_on:
       - bpa-wallet-db1
     entrypoint: /bin/bash
+    #         --genesis-url '${ACAPY_GENESIS_URL}' \
     command: [
         "-c",
         "sleep 15;
