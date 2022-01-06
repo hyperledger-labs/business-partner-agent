@@ -48,6 +48,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Singleton
@@ -185,14 +187,21 @@ public class SchemaService {
     }
 
     public List<SchemaAPI> listSchemas() {
-        List<SchemaAPI> result = new ArrayList<>();
-        schemaRepo.findAll().forEach(dbS -> result.add(SchemaAPI.from(dbS, id)));
-        return result;
+        return StreamSupport.stream(schemaRepo.findAll().spliterator(), false)
+                .map(dbS -> SchemaAPI.from(dbS, id))
+                .collect(Collectors.toList());
+    }
+
+    public List<SchemaAPI> listLdSchemas() {
+        return schemaRepo
+                .findByType(CredentialType.JSON_LD)
+                .stream()
+                .map(s -> SchemaAPI.from(s, false, false))
+                .collect(Collectors.toList());
     }
 
     public Optional<SchemaAPI> getSchema(@NonNull UUID id) {
-        Optional<BPASchema> schema = schemaRepo.findById(id);
-        return schema.map(SchemaAPI::from);
+        return schemaRepo.findById(id).map(SchemaAPI::from);
     }
 
     public void deleteSchema(@NonNull UUID id) {

@@ -33,10 +33,8 @@ import java.util.UUID;
 public class CredDef {
     private UUID id;
     private String schemaId;
-    private String credentialDefinitionId;
     private String tag;
     private Boolean supportRevocation;
-    private Integer revocationRegistrySize;
     private Long createdAt;
     private SchemaAPI schema;
     private String displayText;
@@ -49,10 +47,8 @@ public class CredDef {
                 .id(db.getId())
                 .schemaId(db.getSchema().getSchemaId())
                 .schema(SchemaAPI.from(db.getSchema(), true, false))
-                .credentialDefinitionId(db.getCredentialDefinitionId())
                 .tag(db.getTag())
                 .supportRevocation(db.getIsSupportRevocation())
-                .revocationRegistrySize(db.getRevocationRegistrySize())
                 .createdAt(db.getCreatedAt().toEpochMilli())
                 .displayText(displayText)
                 .build();

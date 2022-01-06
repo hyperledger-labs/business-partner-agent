@@ -73,7 +73,7 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     void updateOnCredentialOfferEvent(@Id UUID id, CredentialExchangeState state,
             StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp,
-            V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialOffer);
+                                      BPACredentialExchange.ExchangePayload credentialOffer);
 
     void updateLabel(@Id UUID id, String label);
 

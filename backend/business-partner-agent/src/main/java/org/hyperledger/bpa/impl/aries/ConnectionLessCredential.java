@@ -132,7 +132,8 @@ public class ConnectionLessCredential {
                 .credentialExchangeId(r.getCredentialExchangeId())
                 .threadId(r.getThreadId())
                 .credentialOffer(r.getCredentialProposalDict() != null
-                        ? r.getCredentialProposalDict().getCredentialProposal()
+                        ? BPACredentialExchange.ExchangePayload
+                                .indy(r.getCredentialProposalDict().getCredentialProposal())
                         : null);
         credExRepo.save(b.build());
     }

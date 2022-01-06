@@ -76,7 +76,7 @@ public class IssuerController {
      * Create a new schema configuration
      *
      * @param req {@link CreateSchemaRequest}
-     * @return {@link HttpResponse}
+     * @return {@link SchemaAPI}
      */
     @Post("/schema")
     public HttpResponse<SchemaAPI> createSchema(@Body CreateSchemaRequest req) {
@@ -88,7 +88,7 @@ public class IssuerController {
      * Get a configured schema by id
      *
      * @param id {@link UUID} the schema id
-     * @return {@link HttpResponse}
+     * @return {@link SchemaAPI}
      */
     @Get("/schema/{id}")
     public HttpResponse<SchemaAPI> readSchema(@PathVariable UUID id) {
@@ -100,20 +100,25 @@ public class IssuerController {
     }
 
     /**
-     * List credential definitions, items that I can issue
+     * List configured indy credential definitions
      *
-     * @return list of {@link SchemaAPI}
+     * @return list of {@link CredDef}
      */
     @Get("/creddef")
     public HttpResponse<List<CredDef>> listCredDefs() {
         return HttpResponse.ok(im.listCredDefs());
     }
 
+    @Get("/templates")
+    public HttpResponse<List<IssuanceTemplate>> listIssuanceTemplates() {
+        return HttpResponse.ok(im.listIssuanceTemplates());
+    }
+
     /**
-     * Create a new credential definition
+     * Create a new indy credential definition
      *
      * @param req {@link CreateCredDefRequest}
-     * @return {@link HttpResponse}
+     * @return {@link CredDef}
      */
     @Post("/creddef")
     public HttpResponse<CredDef> createCredDef(@Body CreateCredDefRequest req) {
@@ -199,7 +204,7 @@ public class IssuerController {
      * Revoke an issued credential
      *
      * @param id credential exchange id
-     * @return {@link HttpResponse}
+     * @return {@link CredEx}
      */
     @Put("/exchanges/{id}/revoke")
     public HttpResponse<CredEx> revokeCredential(@PathVariable UUID id) {

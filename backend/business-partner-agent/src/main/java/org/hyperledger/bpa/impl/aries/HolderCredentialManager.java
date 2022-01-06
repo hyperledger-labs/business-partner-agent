@@ -155,14 +155,16 @@ public class HolderCredentialManager extends BaseCredentialManager {
                 ac.issueCredentialSendProposal(v1CredentialProposalRequest).ifPresent(v1 -> dbCredEx
                         .threadId(v1.getThreadId())
                         .credentialExchangeId(v1.getCredentialExchangeId())
-                        .credentialProposal(v1.getCredentialProposalDict().getCredentialProposal()));
+                        .credentialProposal(BPACredentialExchange.ExchangePayload
+                                .indy(v1.getCredentialProposalDict().getCredentialProposal())));
             } else {
                 ac.issueCredentialV2SendProposal(v1CredentialProposalRequest).ifPresent(v2 -> dbCredEx
                         .threadId(v2.getThreadId())
                         .credentialExchangeId(v2.getCredExId())
                         .exchangeVersion(ExchangeVersion.V2)
-                        .credentialProposal(v2.toV1CredentialExchangeFromProposal().getCredentialProposalDict()
-                                .getCredentialProposal()));
+                        .credentialProposal(BPACredentialExchange.ExchangePayload
+                                .indy(v2.toV1CredentialExchangeFromProposal().getCredentialProposalDict()
+                                        .getCredentialProposal())));
             }
             holderCredExRepo.save(dbCredEx.build());
         } catch (IOException e) {
@@ -335,7 +337,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
             V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialOffer = credEx
                     .getCredentialProposalDict().getCredentialProposal();
             holderCredExRepo.updateOnCredentialOfferEvent(db.getId(), db.getState(), db.getStateToTimestamp(),
-                    credentialOffer);
+                    BPACredentialExchange.ExchangePayload.indy(credentialOffer));
             // if offer equals proposal send request immediately
             if (CryptoUtil.hashCompare(db.getCredentialProposal(), credentialOffer)) {
                 this.sendCredentialRequest(db.getId());
@@ -356,7 +358,8 @@ public class HolderCredentialManager extends BaseCredentialManager {
                     .threadId(credEx.getThreadId())
                     .credentialExchangeId(credEx.getCredentialExchangeId())
                     .state(credEx.getState())
-                    .credentialOffer(credEx.getCredentialProposalDict().getCredentialProposal())
+                    .credentialOffer(BPACredentialExchange.ExchangePayload
+                            .indy(credEx.getCredentialProposalDict().getCredentialProposal()))
                     .pushStateChange(credEx.getState(), TimeUtil.fromISOInstant(credEx.getUpdatedAt()))
                     .role(CredentialExchangeRole.HOLDER)
                     .exchangeVersion(version)

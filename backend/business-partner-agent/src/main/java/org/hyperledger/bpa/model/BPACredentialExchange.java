@@ -29,8 +29,10 @@ import lombok.experimental.Accessors;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v1.*;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.bpa.model.converter.ExchangePayloadConverter;
 import org.hyperledger.bpa.model.type.CredentialTypeTranslator;
 
 import javax.persistence.*;
@@ -109,12 +111,12 @@ public class BPACredentialExchange
     private StateToTimestamp<CredentialExchangeState> stateToTimestamp;
 
     @Nullable
-    @TypeDef(type = DataType.JSON)
-    private V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialProposal;
+    @TypeDef(type = DataType.JSON, converter = ExchangePayloadConverter.class)
+    private ExchangePayload credentialProposal;
 
     @Nullable
-    @TypeDef(type = DataType.JSON)
-    private V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialOffer;
+    @TypeDef(type = DataType.JSON, converter = ExchangePayloadConverter.class)
+    private ExchangePayload credentialOffer;
 
     @Nullable
     @TypeDef(type = DataType.JSON)
@@ -143,6 +145,24 @@ public class BPACredentialExchange
     @Nullable
     private String referent;
 
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static final class ExchangePayload implements CredentialTypeTranslator {
+        private CredentialType type;
+        private V1CredentialExchange.CredentialProposalDict.CredentialProposal indy;
+        private V20CredExRecordByFormat.LdProof ldProof;
+
+        public static ExchangePayload indy(V1CredentialExchange.CredentialProposalDict.CredentialProposal indy) {
+            return ExchangePayload.builder().indy(indy).type(CredentialType.INDY).build();
+        }
+
+        public static ExchangePayload jsonLD(V20CredExRecordByFormat.LdProof ldProof) {
+            return ExchangePayload.builder().ldProof(ldProof).type(CredentialType.JSON_LD).build();
+        }
+    }
+
     public boolean checkIfPublic() {
         return isPublic != null && isPublic;
     }
@@ -160,11 +180,11 @@ public class BPACredentialExchange
     }
 
     public @io.micronaut.core.annotation.NonNull Map<String, String> proposalAttributesToMap() {
-        return attributesToMap(credentialProposal);
+        return attributesToMap(credentialProposal.getIndy());
     }
 
     public @io.micronaut.core.annotation.NonNull Map<String, String> offerAttributesToMap() {
-        return attributesToMap(credentialOffer);
+        return attributesToMap(credentialOffer.getIndy());
     }
 
     private Map<String, String> attributesToMap(V1CredentialExchange.CredentialProposalDict.CredentialProposal p) {

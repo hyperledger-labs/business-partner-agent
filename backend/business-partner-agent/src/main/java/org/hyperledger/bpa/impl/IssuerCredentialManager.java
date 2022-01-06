@@ -50,10 +50,7 @@ import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.AcaPyConfig;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.config.RuntimeConfig;
-import org.hyperledger.bpa.controller.api.issuer.CredDef;
-import org.hyperledger.bpa.controller.api.issuer.CredEx;
-import org.hyperledger.bpa.controller.api.issuer.CredentialOfferRequest;
-import org.hyperledger.bpa.controller.api.issuer.IssueCredentialSendRequest;
+import org.hyperledger.bpa.controller.api.issuer.*;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.notification.CredentialAcceptedEvent;
 import org.hyperledger.bpa.impl.notification.CredentialIssuedEvent;
@@ -70,7 +67,10 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.RecursiveTask;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Singleton
@@ -111,6 +111,13 @@ public class IssuerCredentialManager extends BaseCredentialManager {
     public List<CredDef> listCredDefs() {
         List<CredDef> result = new ArrayList<>();
         credDefRepo.findAll().forEach(db -> result.add(CredDef.from(db)));
+        return result;
+    }
+
+    public List<IssuanceTemplate> listIssuanceTemplates() {
+        List<IssuanceTemplate> result = new ArrayList<>();
+        credDefRepo.findAll().forEach(db -> result.add(IssuanceTemplate.from(db)));
+        // schemaService.listSchemas()
         return result;
     }
 
@@ -365,7 +372,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
         List<CredentialAttributes> attributes;
         if (counterOffer.acceptAll()) {
             attributes = credEx.getCredentialProposal() != null
-                    ? credEx.getCredentialProposal().getAttributes()
+                    ? credEx.getCredentialProposal().getIndy().getAttributes()
                     : List.of();
         } else {
             attributes = counterOffer.toCredentialAttributes();
@@ -447,7 +454,8 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                     .credentialExchangeId(ex.getCredentialExchangeId())
                     .threadId(ex.getThreadId())
                     .credentialProposal(ex.getCredentialProposalDict() != null
-                            ? ex.getCredentialProposalDict().getCredentialProposal()
+                            ? BPACredentialExchange.ExchangePayload
+                                    .indy(ex.getCredentialProposalDict().getCredentialProposal())
                             : null);
             // preselecting first match
             credDefRepo.findBySchemaId(ex.getCredentialProposalDict().getSchemaId()).stream().findFirst()
