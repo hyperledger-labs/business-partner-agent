@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -160,10 +160,11 @@ public class HolderCredentialManager extends BaseCredentialManager {
             } else {
                 ac.issueCredentialV2SendProposal(v1CredentialProposalRequest).ifPresent(v2 -> dbCredEx
                         .threadId(v2.getThreadId())
-                        .credentialExchangeId(v2.getCredExId())
+                        .credentialExchangeId(v2.getCredentialExchangeId())
                         .exchangeVersion(ExchangeVersion.V2)
                         .credentialProposal(BPACredentialExchange.ExchangePayload
-                                .indy(v2.toV1CredentialExchangeFromProposal().getCredentialProposalDict()
+                                .indy(V2ToV1IndyCredentialConverter.INSTANCE().toV1Proposal(v2)
+                                        .getCredentialProposalDict()
                                         .getCredentialProposal())));
             }
             holderCredExRepo.save(dbCredEx.build());
@@ -399,7 +400,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
 
     // v2 credential, signed and stored in wallet
     public void handleV2CredentialReceived(@NonNull V20CredExRecord credEx) {
-        holderCredExRepo.findByCredentialExchangeId(credEx.getCredExId()).ifPresent(
+        holderCredExRepo.findByCredentialExchangeId(credEx.getCredentialExchangeId()).ifPresent(
                 dbCred -> V2ToV1IndyCredentialConverter.INSTANCE().toV1Credential(credEx)
                         .ifPresent(c -> {
                             String label = labelStrategy.apply(c);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -30,7 +30,7 @@ import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
-import org.hyperledger.bpa.repository.IssuerCredExRepository;
+import org.hyperledger.bpa.repository.HolderCredExRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.time.Instant;
@@ -41,7 +41,7 @@ import java.util.Optional;
 public class HolderLDManager {
 
     @Inject
-    IssuerCredExRepository credExRepo;
+    HolderCredExRepository credExRepo;
 
     @Inject
     PartnerRepository partnerRepo;
@@ -76,17 +76,23 @@ public class HolderLDManager {
             BPACredentialExchange cex = BPACredentialExchange.builder()
                     .schema(schema)
                     .partner(p)
-                    .role(CredentialExchangeRole.ISSUER)
-                    .state(CredentialExchangeState.OFFER_SENT)
-                    .pushStateChange(CredentialExchangeState.OFFER_SENT, Instant.now())
-                    .credentialOffer(BPACredentialExchange.ExchangePayload.builder()
-                            .ldProof(offer)
-                            .build())
-                    .credentialExchangeId(v2.getCredExId())
+                    .type(CredentialType.JSON_LD)
+                    .role(CredentialExchangeRole.HOLDER)
+                    .state(CredentialExchangeState.OFFER_RECEIVED)
+                    .pushStateChange(CredentialExchangeState.OFFER_RECEIVED, Instant.now())
+                    .credentialOffer(BPACredentialExchange.ExchangePayload.jsonLD(offer))
+                    .credentialExchangeId(v2.getCredentialExchangeId())
                     .threadId(v2.getThreadId())
                     .exchangeVersion(ExchangeVersion.V2)
                     .build();
             credExRepo.save(cex);
+        });
+    }
+
+    void handleStateChanges(V20CredExRecord v2) {
+        credExRepo.findByCredentialExchangeId(v2.getCredentialExchangeId()).ifPresent(db -> {
+            db.pushStates(v2.getState());
+            credExRepo.updateStates(db.getId(), db.getState(), db.getStateToTimestamp(), v2.getErrorMsg());
         });
     }
 }

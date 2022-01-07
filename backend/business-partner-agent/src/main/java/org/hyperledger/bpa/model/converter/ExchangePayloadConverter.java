@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -42,14 +42,14 @@ public class ExchangePayloadConverter implements AttributeConverter<BPACredentia
 
     @Override
     public String convertToPersistedValue(BPACredentialExchange.ExchangePayload entityValue,
-                                          @NonNull ConversionContext context) {
+            @NonNull ConversionContext context) {
         if (entityValue == null) {
             return null;
         }
         try {
             if (entityValue.typeIsIndy()) {
                 return mapper.writeValueAsString(entityValue.getIndy());
-            } else if (entityValue.typeIsJsonLd()){
+            } else if (entityValue.typeIsJsonLd()) {
                 return mapper.writeValueAsString(entityValue.getLdProof());
             }
             return mapper.writeValueAsString(entityValue);
@@ -60,8 +60,9 @@ public class ExchangePayloadConverter implements AttributeConverter<BPACredentia
 
     @Override
     public BPACredentialExchange.ExchangePayload convertToEntityValue(String persistedValue,
-                                                                      @NonNull ConversionContext context) {
-        BPACredentialExchange.ExchangePayload.ExchangePayloadBuilder b = BPACredentialExchange.ExchangePayload.builder();
+            @NonNull ConversionContext context) {
+        BPACredentialExchange.ExchangePayload.ExchangePayloadBuilder b = BPACredentialExchange.ExchangePayload
+                .builder();
         if (persistedValue == null) {
             return null;
         }
@@ -72,7 +73,7 @@ public class ExchangePayloadConverter implements AttributeConverter<BPACredentia
                         .convertValue(node, V1CredentialExchange.CredentialProposalDict.CredentialProposal.class);
                 b.indy(credentialProposal);
                 b.type(CredentialType.INDY);
-            } else if (node.has("credential")){
+            } else if (node.has("credential")) {
                 V20CredExRecordByFormat.LdProof ldProof = mapper.convertValue(node,
                         V20CredExRecordByFormat.LdProof.class);
                 b.ldProof(ldProof);

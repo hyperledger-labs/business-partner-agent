@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -151,9 +151,10 @@ class HolderCredExRepositoryTest extends BaseTest {
         BPACredentialExchange saved = holderCredExRepo.save(createDummyCredEx(p));
         saved.pushStates(CredentialExchangeState.OFFER_RECEIVED);
         holderCredExRepo.updateOnCredentialOfferEvent(saved.getId(), saved.getState(), saved.getStateToTimestamp(),
-                BPACredentialExchange.ExchangePayload.indy(V1CredentialExchange.CredentialProposalDict.CredentialProposal.builder()
-                        .attributes(CredentialAttributes.from(Map.of("attr1", "value1")))
-                        .build()));
+                BPACredentialExchange.ExchangePayload
+                        .indy(V1CredentialExchange.CredentialProposalDict.CredentialProposal.builder()
+                                .attributes(CredentialAttributes.from(Map.of("attr1", "value1")))
+                                .build()));
         BPACredentialExchange exchange = holderCredExRepo.findById(saved.getId()).orElseThrow();
         assertNotNull(exchange.getCredentialOffer());
         assertTrue(exchange.getCredentialOffer().typeIsIndy());

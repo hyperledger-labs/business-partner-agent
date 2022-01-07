@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -25,6 +25,7 @@ import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
+import org.hyperledger.aries.api.issue_credential_v2.V2IssueLDCredentialEvent;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
@@ -34,6 +35,7 @@ import org.hyperledger.aries.api.trustping.PingEvent;
 import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.impl.ChatMessageManager;
 import org.hyperledger.bpa.impl.IssuerCredentialManager;
+import org.hyperledger.bpa.impl.jsonld.LDEventHandler;
 
 import java.util.Optional;
 
@@ -41,32 +43,36 @@ import java.util.Optional;
 @Singleton
 public class AriesEventHandler extends EventHandler {
 
-    private final ConnectionManager conMgmt;
+    private final ConnectionManager connection;
 
-    private final Optional<PingManager> pingMgmt;
+    private final Optional<PingManager> ping;
 
-    private final HolderCredentialManager holderMgr;
+    private final HolderCredentialManager credHolder;
 
-    private final IssuerCredentialManager issuerMgr;
+    private final IssuerCredentialManager credIssuer;
 
-    private final ProofEventHandler proofMgmt;
+    private final ProofEventHandler proof;
 
-    private final ChatMessageManager chatMessageManager;
+    private final LDEventHandler jsonLD;
+
+    private final ChatMessageManager chatMessage;
 
     @Inject
     public AriesEventHandler(
-            ConnectionManager conMgmt,
-            Optional<PingManager> pingMgmt,
-            HolderCredentialManager holderMgr,
-            ProofEventHandler proofMgmt,
-            IssuerCredentialManager issuerMgr,
+            ConnectionManager connectionManager,
+            Optional<PingManager> pingManager,
+            HolderCredentialManager holderCredentialManager,
+            ProofEventHandler proofEventHandler,
+            LDEventHandler jsonLD,
+            IssuerCredentialManager issuerCredentialManager,
             ChatMessageManager chatMessageManager) {
-        this.conMgmt = conMgmt;
-        this.pingMgmt = pingMgmt;
-        this.holderMgr = holderMgr;
-        this.issuerMgr = issuerMgr;
-        this.proofMgmt = proofMgmt;
-        this.chatMessageManager = chatMessageManager;
+        this.connection = connectionManager;
+        this.ping = pingManager;
+        this.credHolder = holderCredentialManager;
+        this.credIssuer = issuerCredentialManager;
+        this.proof = proofEventHandler;
+        this.jsonLD = jsonLD;
+        this.chatMessage = chatMessageManager;
     }
 
     @Override
@@ -76,27 +82,27 @@ public class AriesEventHandler extends EventHandler {
         if (connection.stateIsInvitation()) {
             return;
         }
-        synchronized (conMgmt) {
+        synchronized (this.connection) {
             if (connection.isConnectionInvitation()) {
-                conMgmt.handleInvitationEvent(connection);
+                this.connection.handleInvitationEvent(connection);
             } else if (connection.isOutgoingConnection()) {
-                conMgmt.handleOutgoingConnectionEvent(connection);
+                this.connection.handleOutgoingConnectionEvent(connection);
             } else {
-                conMgmt.handleIncomingConnectionEvent(connection);
+                this.connection.handleIncomingConnectionEvent(connection);
             }
         }
     }
 
     @Override
     public void handlePing(PingEvent ping) {
-        pingMgmt.ifPresent(mgmt -> mgmt.handlePingEvent(ping));
+        this.ping.ifPresent(mgmt -> mgmt.handlePingEvent(ping));
     }
 
     @Override
-    public void handleProof(PresentationExchangeRecord proof) {
-        log.debug("Present Proof Event: {}", proof);
-        synchronized (proofMgmt) {
-            proofMgmt.dispatch(proof);
+    public void handleProof(PresentationExchangeRecord presExRecord) {
+        log.debug("Present Proof Event: {}", presExRecord);
+        synchronized (proof) {
+            proof.dispatch(presExRecord);
         }
     }
 
@@ -111,26 +117,26 @@ public class AriesEventHandler extends EventHandler {
         log.debug("Credential Event: {}", v1CredEx);
         // holder events
         if (v1CredEx.roleIsHolder()) {
-            synchronized (holderMgr) {
+            synchronized (credHolder) {
                 if (v1CredEx.stateIsCredentialAcked()) {
-                    holderMgr.handleV1CredentialExchangeAcked(v1CredEx);
+                    credHolder.handleV1CredentialExchangeAcked(v1CredEx);
                 } else if (v1CredEx.stateIsOfferReceived()) {
-                    holderMgr.handleOfferReceived(v1CredEx, ExchangeVersion.V1);
+                    credHolder.handleOfferReceived(v1CredEx, ExchangeVersion.V1);
                 } else {
-                    holderMgr.handleStateChangesOnly(
+                    credHolder.handleStateChangesOnly(
                             v1CredEx.getCredentialExchangeId(), v1CredEx.getState(),
                             v1CredEx.getUpdatedAt(), v1CredEx.getErrorMsg());
                 }
             }
             // issuer events
         } else if (v1CredEx.roleIsIssuer()) {
-            synchronized (issuerMgr) {
+            synchronized (credIssuer) {
                 if (v1CredEx.stateIsProposalReceived()) {
-                    issuerMgr.handleCredentialProposal(v1CredEx, ExchangeVersion.V1);
+                    credIssuer.handleCredentialProposal(v1CredEx, ExchangeVersion.V1);
                 } else if (v1CredEx.stateIsRequestReceived()) {
-                    issuerMgr.handleV1CredentialRequest(v1CredEx);
+                    credIssuer.handleV1CredentialRequest(v1CredEx);
                 } else {
-                    issuerMgr.handleV1CredentialExchange(v1CredEx);
+                    credIssuer.handleV1CredentialExchange(v1CredEx);
                 }
             }
         }
@@ -139,27 +145,31 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleCredentialV2(V20CredExRecord v2CredEx) {
         log.debug("Credential V2 Event: {}", v2CredEx);
-        if (v2CredEx.roleIsIssuer()) {
-            synchronized (issuerMgr) {
+        if (v2CredEx.payloadIsLdProof()) {
+            synchronized (jsonLD) {
+                jsonLD.dispatch(v2CredEx);
+            }
+        } else if (v2CredEx.roleIsIssuer()) {
+            synchronized (credIssuer) {
                 if (v2CredEx.stateIsProposalReceived()) {
-                    issuerMgr.handleCredentialProposal(v2CredEx.toV1CredentialExchangeFromProposal(),
+                    credIssuer.handleCredentialProposal(V2ToV1IndyCredentialConverter.INSTANCE().toV1Proposal(v2CredEx),
                             ExchangeVersion.V2);
                 } else if (v2CredEx.stateIsRequestReceived()) {
-                    issuerMgr.handleV2CredentialRequest(v2CredEx);
+                    credIssuer.handleV2CredentialRequest(v2CredEx);
                 } else {
-                    issuerMgr.handleV2CredentialExchange(v2CredEx);
+                    credIssuer.handleV2CredentialExchange(v2CredEx);
                 }
             }
         } else if (v2CredEx.roleIsHolder()) {
-            synchronized (holderMgr) {
+            synchronized (credHolder) {
                 if (v2CredEx.stateIsOfferReceived()) {
-                    holderMgr.handleOfferReceived(
+                    credHolder.handleOfferReceived(
                             V2ToV1IndyCredentialConverter.INSTANCE().toV1Offer(v2CredEx), ExchangeVersion.V2);
                 } else if (v2CredEx.stateIsCredentialReceived()) {
-                    holderMgr.handleV2CredentialReceived(v2CredEx);
+                    credHolder.handleV2CredentialReceived(v2CredEx);
                 } else {
-                    holderMgr.handleStateChangesOnly(
-                            v2CredEx.getCredExId(), v2CredEx.getState(),
+                    credHolder.handleStateChangesOnly(
+                            v2CredEx.getCredentialExchangeId(), v2CredEx.getState(),
                             v2CredEx.getUpdatedAt(), v2CredEx.getErrorMsg());
                 }
             }
@@ -169,8 +179,16 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleIssueCredentialV2Indy(V2IssueIndyCredentialEvent revocationInfo) {
         log.debug("Issue Credential V2 Indy Event: {}", revocationInfo);
-        synchronized (issuerMgr) {
-            issuerMgr.handleIssueCredentialV2Indy(revocationInfo);
+        synchronized (credIssuer) {
+            credIssuer.handleIssueCredentialV2Indy(revocationInfo);
+        }
+    }
+
+    @Override
+    public void handleIssueCredentialV2LD(V2IssueLDCredentialEvent credentialInfo) {
+        log.debug("Issue LD Credential V2 Event: {}", credentialInfo);
+        synchronized (jsonLD) {
+            // jsonLD.handleIssueCredentialV2LD(credentialInfo);
         }
     }
 
@@ -178,7 +196,7 @@ public class AriesEventHandler extends EventHandler {
     public void handleBasicMessage(BasicMessage message) {
         // since basic message handling is so simple (only one way to handle it), let
         // the manager handle it.
-        chatMessageManager.handleIncomingMessage(message);
+        chatMessage.handleIncomingMessage(message);
     }
 
     @Override

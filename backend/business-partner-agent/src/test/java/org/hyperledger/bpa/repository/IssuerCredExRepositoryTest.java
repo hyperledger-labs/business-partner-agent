@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -76,10 +76,10 @@ public class IssuerCredExRepositoryTest {
                 .builder()
                 .threadId(UUID.randomUUID().toString())
                 .credentialExchangeId(UUID.randomUUID().toString())
-                .credentialProposal(BPACredentialExchange.ExchangePayload.indy(V1CredentialExchange
-                        .CredentialProposalDict.CredentialProposal.builder()
+                .credentialProposal(BPACredentialExchange.ExchangePayload
+                        .indy(V1CredentialExchange.CredentialProposalDict.CredentialProposal.builder()
                                 .attributes(CredentialAttributes.from(Map.of("attr1", "value1")))
-                        .build()))
+                                .build()))
                 .state(CredentialExchangeState.PROPOSAL_SENT)
                 .partner(p)
                 .build());

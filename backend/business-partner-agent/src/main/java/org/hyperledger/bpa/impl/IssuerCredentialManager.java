@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -67,10 +67,7 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.RecursiveTask;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Slf4j
 @Singleton
@@ -526,7 +523,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
      * @param ex {@link V20CredExRecord}
      */
     public void handleV2CredentialExchange(@NonNull V20CredExRecord ex) {
-        credExRepo.findByCredentialExchangeId(ex.getCredExId())
+        credExRepo.findByCredentialExchangeId(ex.getCredentialExchangeId())
                 .ifPresent(bpaEx -> {
                     if (bpaEx.stateIsNotDeclined()) {
                         CredentialExchangeState state = ex.getState();
@@ -572,10 +569,11 @@ public class IssuerCredentialManager extends BaseCredentialManager {
      * @param ex {@link V20CredExRecord v2CredEx}
      */
     public void handleV2CredentialRequest(@NonNull V20CredExRecord ex) {
-        credExRepo.findByCredentialExchangeId(ex.getCredExId()).ifPresentOrElse(db -> {
+        credExRepo.findByCredentialExchangeId(ex.getCredentialExchangeId()).ifPresentOrElse(db -> {
             try {
                 if (Boolean.FALSE.equals(acaPyConfig.getAutoRespondCredentialRequest())) {
-                    ac.issueCredentialV2RecordsIssue(ex.getCredExId(), V20CredIssueRequest.builder().build());
+                    ac.issueCredentialV2RecordsIssue(ex.getCredentialExchangeId(),
+                            V20CredIssueRequest.builder().build());
                 }
                 db.pushStates(ex.getState(), ex.getUpdatedAt());
                 credExRepo.updateAfterEventNoRevocationInfo(db.getId(),
@@ -585,7 +583,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
             }
         }, () -> {
             try {
-                ac.issueCredentialV2RecordsProblemReport(ex.getCredExId(), V20CredIssueProblemReportRequest
+                ac.issueCredentialV2RecordsProblemReport(ex.getCredentialExchangeId(), V20CredIssueProblemReportRequest
                         .builder()
                         .description(
                                 "starting a credential exchange without prior negotiation is not supported by this agent")
@@ -665,7 +663,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
         public static ExchangeResult fromV2(@NonNull V20CredExRecord ex) {
             return ExchangeResult
                     .builder()
-                    .credentialExchangeId(ex.getCredExId())
+                    .credentialExchangeId(ex.getCredentialExchangeId())
                     .threadId(ex.getThreadId())
                     .build();
         }

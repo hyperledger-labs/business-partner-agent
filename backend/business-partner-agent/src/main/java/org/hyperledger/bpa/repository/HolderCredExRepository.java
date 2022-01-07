@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -73,7 +73,7 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     void updateOnCredentialOfferEvent(@Id UUID id, CredentialExchangeState state,
             StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp,
-                                      BPACredentialExchange.ExchangePayload credentialOffer);
+            BPACredentialExchange.ExchangePayload credentialOffer);
 
     void updateLabel(@Id UUID id, String label);
 

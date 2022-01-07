@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -180,14 +180,28 @@ public class BPACredentialExchange
     }
 
     public @io.micronaut.core.annotation.NonNull Map<String, String> proposalAttributesToMap() {
-        return attributesToMap(credentialProposal.getIndy());
+        if (typeIsJsonLd()) {
+            return ldAttributesToMap(credentialProposal != null ? credentialProposal.getLdProof() : null);
+        }
+        return indyAttributesToMap(credentialProposal != null ? credentialProposal.getIndy() : null);
     }
 
     public @io.micronaut.core.annotation.NonNull Map<String, String> offerAttributesToMap() {
-        return attributesToMap(credentialOffer.getIndy());
+        if (typeIsJsonLd()) {
+            return ldAttributesToMap(credentialOffer != null ? credentialOffer.ldProof : null);
+        }
+        return indyAttributesToMap(credentialOffer != null ? credentialOffer.getIndy() : null);
     }
 
-    private Map<String, String> attributesToMap(V1CredentialExchange.CredentialProposalDict.CredentialProposal p) {
+    private Map<String, String> ldAttributesToMap(V20CredExRecordByFormat.LdProof ldProof) {
+        if (ldProof == null) {
+            return Map.of();
+        }
+        return ldProof.getCredential().getCredentialSubject().entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue().getAsString()));
+    }
+
+    private Map<String, String> indyAttributesToMap(V1CredentialExchange.CredentialProposalDict.CredentialProposal p) {
         if (p == null || CollectionUtils.isEmpty(p.getAttributes())) {
             return Map.of();
         }
