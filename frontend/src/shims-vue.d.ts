@@ -5,6 +5,8 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-declare module "*.vue" {}
-
-export { default } from "vue";
+/* eslint-disable unicorn/prefer-export-from */
+declare module "*.vue" {
+  import Vue from "vue";
+  export default Vue;
+}
