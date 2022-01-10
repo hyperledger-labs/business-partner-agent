@@ -62,7 +62,7 @@ class HolderCredExRepositoryTest extends BaseTest {
                 .partner(createRandomPartner())
                 .state(CredentialExchangeState.CREDENTIAL_ACKED)
                 .threadId("1")
-                .credential(ex.getCredential())
+                .indyCredential(ex.getCredential())
                 .role(CredentialExchangeRole.HOLDER)
                 .credentialExchangeId(UUID.randomUUID().toString())
                 .build();

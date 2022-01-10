@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -17,8 +17,10 @@
  */
 package org.hyperledger.bpa.util;
 
+import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.config.GsonConfig;
 import org.springframework.security.crypto.codec.Hex;
 
@@ -29,7 +31,10 @@ import java.security.NoSuchAlgorithmException;
 @Slf4j
 public class CryptoUtil {
 
-    public static boolean hashCompare(@NonNull Object base, @NonNull Object other) {
+    public static boolean hashCompare(@Nullable Object base, @Nullable Object other) {
+        if (base == null || other == null) {
+            return false;
+        }
         return hashCompare(GsonConfig.defaultConfig().toJson(base), GsonConfig.defaultConfig().toJson(other));
     }
 

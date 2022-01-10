@@ -19,41 +19,43 @@ package org.hyperledger.bpa.impl.jsonld;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import org.hyperledger.aries.api.ExchangeVersion;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.BaseCredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.impl.BaseHolderManager;
+import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPASchemaRepository;
 import org.hyperledger.bpa.repository.HolderCredExRepository;
-import org.hyperledger.bpa.repository.PartnerRepository;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
 @Singleton
-public class HolderLDManager {
+public class HolderLDManager extends BaseHolderManager {
 
     @Inject
     HolderCredExRepository credExRepo;
 
     @Inject
-    PartnerRepository partnerRepo;
+    BPASchemaRepository schemaRepo;
 
     @Inject
-    BPASchemaRepository schemaRepo;
+    HolderCredExRepository holderCredExRepo;
 
     @Inject
     SchemaService schemaService;
 
-    void handleOfferReceived(V20CredExRecord v2) {
-        V20CredExRecordByFormat.LdProof offer = v2.resolveLDCredOffer();
+    @Inject
+    LabelStrategy labelStrategy;
+
+    @Override
+    public BPASchema checkSchema(BaseCredExRecord credExBase) {
+        V20CredExRecordByFormat.LdProof offer = ((V20CredExRecord) credExBase).resolveLDCredOffer();
 
         // TODO this does not consider all use cases
         List<Object> context = offer.getCredential().getContext();
@@ -71,28 +73,19 @@ public class HolderLDManager {
                     offer.getCredential().getCredentialSubject().keySet());
             schema = schemaRepo.findById(schemaApi.getId()).orElseThrow();
         }
-
-        partnerRepo.findByConnectionId(v2.getConnectionId()).ifPresent(p -> {
-            BPACredentialExchange cex = BPACredentialExchange.builder()
-                    .schema(schema)
-                    .partner(p)
-                    .type(CredentialType.JSON_LD)
-                    .role(CredentialExchangeRole.HOLDER)
-                    .state(CredentialExchangeState.OFFER_RECEIVED)
-                    .pushStateChange(CredentialExchangeState.OFFER_RECEIVED, Instant.now())
-                    .credentialOffer(BPACredentialExchange.ExchangePayload.jsonLD(offer))
-                    .credentialExchangeId(v2.getCredentialExchangeId())
-                    .threadId(v2.getThreadId())
-                    .exchangeVersion(ExchangeVersion.V2)
-                    .build();
-            credExRepo.save(cex);
-        });
+        return schema;
     }
 
-    void handleStateChanges(V20CredExRecord v2) {
-        credExRepo.findByCredentialExchangeId(v2.getCredentialExchangeId()).ifPresent(db -> {
-            db.pushStates(v2.getState());
-            credExRepo.updateStates(db.getId(), db.getState(), db.getStateToTimestamp(), v2.getErrorMsg());
+    public void handleCredentialReceived(V20CredExRecord v2) {
+        holderCredExRepo.findByCredentialExchangeId(v2.getCredentialExchangeId()).ifPresent(dbCred -> {
+            String label = labelStrategy.apply(dbCred.getLdCredential());
+            dbCred
+                    .pushStates(v2.getState(), v2.getUpdatedAt())
+                    .setLdCredential(BPACredentialExchange.ExchangePayload.jsonLD(v2.resolveLDCredOffer()))
+                    // .setIssuer(resolveIssuer(c))
+                    .setLabel(label);
+            BPACredentialExchange dbCredential = holderCredExRepo.update(dbCred);
+            fireCredentialAddedEvent(dbCredential);
         });
     }
 }

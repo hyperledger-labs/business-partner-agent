@@ -36,6 +36,7 @@ import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.impl.ChatMessageManager;
 import org.hyperledger.bpa.impl.IssuerCredentialManager;
 import org.hyperledger.bpa.impl.jsonld.LDEventHandler;
+import org.hyperledger.bpa.model.BPACredentialExchange;
 
 import java.util.Optional;
 
@@ -121,7 +122,8 @@ public class AriesEventHandler extends EventHandler {
                 if (v1CredEx.stateIsCredentialAcked()) {
                     credHolder.handleV1CredentialExchangeAcked(v1CredEx);
                 } else if (v1CredEx.stateIsOfferReceived()) {
-                    credHolder.handleOfferReceived(v1CredEx, ExchangeVersion.V1);
+                    credHolder.handleOfferReceived(v1CredEx, BPACredentialExchange.ExchangePayload
+                            .indy(v1CredEx.getCredentialProposalDict().getCredentialProposal()), ExchangeVersion.V1);
                 } else {
                     credHolder.handleStateChangesOnly(
                             v1CredEx.getCredentialExchangeId(), v1CredEx.getState(),
@@ -163,8 +165,10 @@ public class AriesEventHandler extends EventHandler {
         } else if (v2CredEx.roleIsHolder()) {
             synchronized (credHolder) {
                 if (v2CredEx.stateIsOfferReceived()) {
-                    credHolder.handleOfferReceived(
-                            V2ToV1IndyCredentialConverter.INSTANCE().toV1Offer(v2CredEx), ExchangeVersion.V2);
+                    credHolder.handleOfferReceived(v2CredEx,
+                            BPACredentialExchange.ExchangePayload.indy(V2ToV1IndyCredentialConverter.INSTANCE()
+                                    .toV1Offer(v2CredEx).getCredentialProposalDict().getCredentialProposal()),
+                            ExchangeVersion.V2);
                 } else if (v2CredEx.stateIsCredentialReceived()) {
                     credHolder.handleV2CredentialReceived(v2CredEx);
                 } else {

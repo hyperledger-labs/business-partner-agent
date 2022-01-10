@@ -19,10 +19,7 @@ package org.hyperledger.bpa.model;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
-import io.micronaut.data.annotation.AutoPopulated;
-import io.micronaut.data.annotation.DateCreated;
-import io.micronaut.data.annotation.DateUpdated;
-import io.micronaut.data.annotation.TypeDef;
+import io.micronaut.data.annotation.*;
 import io.micronaut.data.model.DataType;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -36,6 +33,7 @@ import org.hyperledger.bpa.model.converter.ExchangePayloadConverter;
 import org.hyperledger.bpa.model.type.CredentialTypeTranslator;
 
 import javax.persistence.*;
+import javax.persistence.Id;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
@@ -119,8 +117,13 @@ public class BPACredentialExchange
     private ExchangePayload credentialOffer;
 
     @Nullable
+    @TypeDef(type = DataType.JSON, converter = ExchangePayloadConverter.class)
+    private ExchangePayload ldCredential;
+
+    @Nullable
     @TypeDef(type = DataType.JSON)
-    private Credential credential;
+    @MappedProperty("credential")
+    private Credential indyCredential;
 
     @Nullable
     private String errorMsg;
@@ -211,10 +214,10 @@ public class BPACredentialExchange
     }
 
     public @io.micronaut.core.annotation.NonNull Map<String, String> credentialAttributesToMap() {
-        if (credential == null || CollectionUtils.isEmpty(credential.getAttrs())) {
+        if (indyCredential == null || CollectionUtils.isEmpty(indyCredential.getAttrs())) {
             return Map.of();
         }
-        return credential.getAttrs();
+        return indyCredential.getAttrs();
     }
 
     // extends lombok builder

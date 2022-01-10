@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -120,8 +120,8 @@ public class CredEx {
     }
 
     private static Boolean checkIfRevocable(@NonNull BPACredentialExchange db) {
-        if (db.roleIsHolder() && db.getCredential() != null) {
-            return StringUtils.isNotEmpty(db.getCredential().getRevRegId());
+        if (db.roleIsHolder() && db.getIndyCredential() != null) {
+            return StringUtils.isNotEmpty(db.getIndyCredential().getRevRegId());
         }
         return StringUtils.isNotEmpty(db.getRevRegId());
     }

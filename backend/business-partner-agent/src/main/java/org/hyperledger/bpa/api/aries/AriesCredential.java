@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -52,12 +52,12 @@ public class AriesCredential {
     public static AriesCredential fromBPACredentialExchange(@NonNull BPACredentialExchange c,
             @Nullable String typeLabel) {
         AriesCredentialBuilder b = AriesCredential.builder();
-        if (c.getCredential() != null) {
+        if (c.getIndyCredential() != null) {
             b
-                    .schemaId(c.getCredential().getSchemaId())
-                    .credentialDefinitionId(c.getCredential().getCredentialDefinitionId())
-                    .revocable(StringUtils.isNotEmpty(c.getCredential().getRevRegId()))
-                    .credentialData(c.getCredential().getAttrs());
+                    .schemaId(c.getIndyCredential().getSchemaId())
+                    .credentialDefinitionId(c.getIndyCredential().getCredentialDefinitionId())
+                    .revocable(StringUtils.isNotEmpty(c.getIndyCredential().getRevRegId()))
+                    .credentialData(c.getIndyCredential().getAttrs());
         }
         return b
                 .id(c.getId())

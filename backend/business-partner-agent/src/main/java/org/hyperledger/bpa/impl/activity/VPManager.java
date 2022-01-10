@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -138,7 +138,7 @@ public class VPManager {
         final ArrayList<String> type = new ArrayList<>(cred.getType().getType());
         type.add("IndyCredential");
 
-        Credential ariesCred = cred.getCredential();
+        Credential ariesCred = cred.getIndyCredential();
         final ArrayList<Object> context = new ArrayList<>(
                 resolveContext(cred.getType(), Objects.requireNonNull(ariesCred).getSchemaId()));
         context.add(ApiConstants.INDY_CREDENTIAL_SCHEMA);

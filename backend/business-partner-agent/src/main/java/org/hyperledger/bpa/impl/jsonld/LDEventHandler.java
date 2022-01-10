@@ -19,7 +19,9 @@ package org.hyperledger.bpa.impl.jsonld;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
+import org.hyperledger.bpa.model.BPACredentialExchange;
 
 @Singleton
 public class LDEventHandler {
@@ -30,12 +32,16 @@ public class LDEventHandler {
     @Inject
     IssuerLDManager issuer;
 
-    public void dispatch(V20CredExRecord v20CredExRecord) {
-        if (v20CredExRecord.roleIsHolder()) {
-            if (v20CredExRecord.stateIsOfferReceived()) {
-                holder.handleOfferReceived(v20CredExRecord);
+    public void dispatch(V20CredExRecord v2) {
+        if (v2.roleIsHolder()) {
+            if (v2.stateIsOfferReceived()) {
+                holder.handleOfferReceived(v2, BPACredentialExchange.ExchangePayload.jsonLD(v2.resolveLDCredOffer()),
+                        ExchangeVersion.V2);
+            } else if (v2.stateIsCredentialReceived()) {
+                holder.handleCredentialReceived(v2);
             } else {
-                holder.handleStateChanges(v20CredExRecord);
+                holder.handleStateChangesOnly(v2.getCredentialExchangeId(), v2.getState(), v2.getUpdatedAt(),
+                        v2.getErrorMsg());
             }
         }
     }

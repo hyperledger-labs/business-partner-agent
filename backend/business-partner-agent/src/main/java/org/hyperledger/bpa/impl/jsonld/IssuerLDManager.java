@@ -108,7 +108,7 @@ public class IssuerLDManager {
                     .role(CredentialExchangeRole.ISSUER)
                     .state(CredentialExchangeState.OFFER_SENT)
                     .pushStateChange(CredentialExchangeState.OFFER_SENT, Instant.now())
-                    .credential(Credential.builder()
+                    .indyCredential(Credential.builder()
                             .attrs(cred)
                             .build())
                     .credentialExchangeId(exRecord.getCredentialExchangeId())

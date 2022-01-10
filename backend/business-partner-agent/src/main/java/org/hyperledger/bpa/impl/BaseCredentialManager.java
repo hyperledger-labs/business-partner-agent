@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -18,34 +18,33 @@
 package org.hyperledger.bpa.impl;
 
 import io.micronaut.core.annotation.Nullable;
-import jakarta.inject.Inject;
 import lombok.NonNull;
 import org.hyperledger.acy_py.generated.model.V10CredentialProblemReportRequest;
 import org.hyperledger.acy_py.generated.model.V20CredIssueProblemReportRequest;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
-import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 import org.hyperledger.bpa.repository.IssuerCredExRepository;
+import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 
-public abstract class BaseCredentialManager {
+public interface BaseCredentialManager {
 
-    @Inject
-    AriesClient ac;
+    AriesClient getAc();
 
-    @Inject
-    IssuerCredExRepository credExRepo;
+    PartnerRepository getPartnerRepo();
 
-    @Inject
-    BPAMessageSource.DefaultMessageSource msg;
+    BPAMessageSource.DefaultMessageSource getMsg();
+
+    IssuerCredExRepository getIssuerCredExRepo();
 
     /**
      * The only way to stop or decline a credential exchange is for any side (issuer
@@ -56,17 +55,17 @@ public abstract class BaseCredentialManager {
      * @param credEx  {@link BPACredentialExchange}
      * @param message to sent to the other party
      */
-    public void declineCredentialExchange(@NonNull BPACredentialExchange credEx, @Nullable String message) {
+    default void declineCredentialExchange(@NonNull BPACredentialExchange credEx, @Nullable String message) {
         try {
             if (ExchangeVersion.V1.equals(credEx.getExchangeVersion())) {
-                ac.issueCredentialRecordsProblemReport(credEx.getCredentialExchangeId(),
+                getAc().issueCredentialRecordsProblemReport(credEx.getCredentialExchangeId(),
                         V10CredentialProblemReportRequest.builder().description(message).build());
             } else {
-                ac.issueCredentialV2RecordsProblemReport(credEx.getCredentialExchangeId(),
+                getAc().issueCredentialV2RecordsProblemReport(credEx.getCredentialExchangeId(),
                         V20CredIssueProblemReportRequest.builder().description(message).build());
             }
         } catch (IOException e) {
-            throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
+            throw new NetworkException(getMsg().getMessage("acapy.unavailable"), e);
         } catch (AriesException e) {
             if (e.getCode() == 404) {
                 throw new EntityNotFoundException();
@@ -83,21 +82,21 @@ public abstract class BaseCredentialManager {
      * @param id credential exchange id
      * @return {@link BPACredentialExchange}
      */
-    public BPACredentialExchange getCredentialExchange(@NonNull UUID id) {
-        BPACredentialExchange credEx = credExRepo.findById(id).orElseThrow(EntityNotFoundException::new);
+    default BPACredentialExchange getCredentialExchange(@NonNull UUID id) {
+        BPACredentialExchange credEx = getIssuerCredExRepo().findById(id).orElseThrow(EntityNotFoundException::new);
         try {
             if (ExchangeVersion.V1.equals(credEx.getExchangeVersion())) {
-                ac.issueCredentialRecordsGetById(credEx.getCredentialExchangeId());
+                getAc().issueCredentialRecordsGetById(credEx.getCredentialExchangeId());
             } else {
-                ac.issueCredentialV2RecordsGetById(credEx.getCredentialExchangeId());
+                getAc().issueCredentialV2RecordsGetById(credEx.getCredentialExchangeId());
             }
         } catch (IOException e) {
-            throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
+            throw new NetworkException(getMsg().getMessage("acapy.unavailable"), e);
         } catch (AriesException e) {
             if (e.getCode() == 404) {
                 credEx.pushStates(CredentialExchangeState.PROBLEM, Instant.now());
-                credExRepo.updateAfterEventNoRevocationInfo(credEx.getId(), credEx.getState(),
-                        credEx.getStateToTimestamp(), msg.getMessage("api.credential.no.match"));
+                getIssuerCredExRepo().updateAfterEventNoRevocationInfo(credEx.getId(), credEx.getState(),
+                        credEx.getStateToTimestamp(), getMsg().getMessage("api.credential.no.match"));
                 throw new EntityNotFoundException();
             }
             throw e;

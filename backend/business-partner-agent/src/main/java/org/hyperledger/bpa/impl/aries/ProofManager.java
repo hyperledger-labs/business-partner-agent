@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -167,7 +167,7 @@ public class ProofManager {
             @Nullable ExchangeVersion version) {
         partnerRepo.findById(partnerId).ifPresent(p -> holderCredExRepo.findById(myCredentialId).ifPresent(c -> {
             ExchangeVersion v = version != null ? version : ExchangeVersion.V1;
-            Credential cred = Objects.requireNonNull(c.getCredential());
+            Credential cred = Objects.requireNonNull(c.getIndyCredential());
             try {
                 if (v.isV1()) {
                     ac.presentProofSendProposal(PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred))
