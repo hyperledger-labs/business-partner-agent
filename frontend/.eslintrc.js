@@ -34,4 +34,15 @@ module.exports = {
     "unicorn/prevent-abbreviations": "off",
     "@typescript-eslint/ban-ts-comment": "warn",
   },
+  overrides: [
+    {
+      files: [
+        "**/__tests__/*.{j,t}s?(x)",
+        "**/tests/unit/**/*.spec.{j,t}s?(x)",
+      ],
+      env: {
+        jest: true,
+      },
+    },
+  ],
 };

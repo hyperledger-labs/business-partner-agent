@@ -4,7 +4,8 @@
     "**/*.svg",
     "license-header/license-header",
     "licenses/attribution.txt",
-    ".husky/_/**/*"
+    ".husky/_/**/*",
+    "coverage"
   ],
   "license": "license-header/license-header",
   "regexIdentifier": "_!##",

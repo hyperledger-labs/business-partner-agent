@@ -18,7 +18,7 @@ export const CredentialTypes = Object.freeze({
     type: "INDY",
   },
   JSON_LD: {
-    type: "JSON_LD"
+    type: "JSON_LD",
   },
   UNKNOWN: {
     type: "UNKNOWN",
