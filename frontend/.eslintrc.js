@@ -29,6 +29,7 @@ module.exports = {
     "vue/no-mutating-props": "warn",
     "vue/valid-v-slot": "warn",
     "vue/comment-directive": "warn",
+    "unicorn/no-empty-file": "warn",
     "unicorn/prefer-module": "off",
     "unicorn/filename-case": "off",
     "unicorn/prevent-abbreviations": "off",
