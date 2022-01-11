@@ -10,6 +10,7 @@ import Timeline from "@/components/Timeline.vue";
 import VueI18n from "vue-i18n";
 import localeGerman from "@/locales/de.json";
 import { renderWithVuetify } from "@/setup-jest";
+import { VueConstructor } from "vue";
 
 test("should set [data-app] attribute on outer most div.", () => {
   const { container } = renderWithVuetify(Timeline, {});
@@ -24,17 +25,21 @@ test("should have 'Timeline' as title when rendering the timeline component with
 });
 
 test("should have 'Zeitleiste' as title when rendering the timeline component in German.", () => {
-  const { getByText } = renderWithVuetify(Timeline, {}, (vue) => {
-    vue.use(VueI18n);
+  const { getByText } = renderWithVuetify(
+    Timeline,
+    {},
+    (vue: VueConstructor) => {
+      vue.use(VueI18n);
 
-    const i18n = new VueI18n({
-      locale: "de",
-      fallbackLocale: "de",
-      messages: { de: localeGerman },
-    });
+      const i18n = new VueI18n({
+        locale: "de",
+        fallbackLocale: "de",
+        messages: { de: localeGerman },
+      });
 
-    return { i18n };
-  });
+      return { i18n };
+    }
+  );
 
   expect(getByText("Zeitleiste")).toBeInTheDocument();
 });
