@@ -12,9 +12,9 @@ import {
   Wrapper,
 } from "@vue/test-utils";
 import VueI18n from "vue-i18n";
-import localeEnglish from "../../src/locales/en.json";
-import localeGerman from "../../src/locales/de.json";
-import localePolish from "../../src/locales/pl.json";
+import localeEnglish from "@/locales/en.json";
+import localeGerman from "@/locales/de.json";
+import localePolish from "@/locales/pl.json";
 import Vue from "vue";
 
 export function shallowMountWithI18n(

@@ -10,7 +10,7 @@ import { capitalize, formatDateLong } from "@/filters";
 import Timeline from "@/components/Timeline.vue";
 import localeEnglish from "@/locales/en.json";
 import localeGerman from "@/locales/de.json";
-import { shallowMountWithI18n } from "../../../test-config/test-helper";
+import { shallowMountWithI18n } from "@@/test-helper";
 
 describe("Timeline", () => {
   test(`should have '${localeEnglish.component.timeline.title}' as title and no entries when rendering the timeline component without values.`, () => {

@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "types": ["webpack-env", "jest"],
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@@/*": ["test-config/*"]
     },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },

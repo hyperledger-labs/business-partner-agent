@@ -8,6 +8,10 @@
 module.exports = {
   preset: "@vue/cli-plugin-unit-jest/presets/typescript-and-babel",
   verbose: true,
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "^@@/(.*)$": "<rootDir>/test-config/$1",
+  },
   collectCoverage: false,
   coverageDirectory: "coverage",
   collectCoverageFrom: [
