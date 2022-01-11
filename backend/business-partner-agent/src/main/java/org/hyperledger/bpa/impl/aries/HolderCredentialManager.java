@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -160,9 +160,10 @@ public class HolderCredentialManager extends BaseCredentialManager {
             } else {
                 ac.issueCredentialV2SendProposal(v1CredentialProposalRequest).ifPresent(v2 -> dbCredEx
                         .threadId(v2.getThreadId())
-                        .credentialExchangeId(v2.getCredExId())
+                        .credentialExchangeId(v2.getCredentialExchangeId())
                         .exchangeVersion(ExchangeVersion.V2)
-                        .credentialProposal(v2.toV1CredentialExchangeFromProposal().getCredentialProposalDict()
+                        .credentialProposal(V2ToV1IndyCredentialConverter.INSTANCE().toV1Proposal(v2)
+                                .getCredentialProposalDict()
                                 .getCredentialProposal()));
             }
             holderCredExRepo.save(dbCredEx.build());
@@ -310,7 +311,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
                 log.trace("Running revocation check for credential exchange: {}", cred.getReferent());
                 ac.credentialRevoked(Objects.requireNonNull(cred.getReferent())).ifPresent(isRevoked -> {
                     if (isRevoked.getRevoked() != null && isRevoked.getRevoked()) {
-                        cred.pushStates(CredentialExchangeState.REVOKED, Instant.now());
+                        cred.pushStates(CredentialExchangeState.CREDENTIAL_REVOKED, Instant.now());
                         holderCredExRepo.updateRevoked(cred.getId(), Boolean.TRUE, cred.getStateToTimestamp());
                         log.debug("Credential with referent id: {} has been revoked", cred.getReferent());
                     }
@@ -397,7 +398,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
 
     // v2 credential, signed and stored in wallet
     public void handleV2CredentialReceived(@NonNull V20CredExRecord credEx) {
-        holderCredExRepo.findByCredentialExchangeId(credEx.getCredExId()).ifPresent(
+        holderCredExRepo.findByCredentialExchangeId(credEx.getCredentialExchangeId()).ifPresent(
                 dbCred -> V2ToV1IndyCredentialConverter.INSTANCE().toV1Credential(credEx)
                         .ifPresent(c -> {
                             String label = labelStrategy.apply(c);
@@ -416,7 +417,7 @@ public class HolderCredentialManager extends BaseCredentialManager {
                 .revocationEventToRevocationInfo(revocationNotification.getThreadId());
         holderCredExRepo.findByRevRegIdAndCredRevId(revocationInfo.getRevRegId(), revocationInfo.getCredRevId())
                 .ifPresent(credEx -> {
-                    credEx.pushStates(CredentialExchangeState.REVOKED, Instant.now());
+                    credEx.pushStates(CredentialExchangeState.CREDENTIAL_REVOKED, Instant.now());
                     holderCredExRepo.updateRevoked(credEx.getId(), true, credEx.getStateToTimestamp());
                 });
     }

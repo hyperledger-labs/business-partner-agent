@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -184,7 +184,8 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
         eventHandler.handleCredentialV2(received);
         eventHandler.handleCredentialV2(done);
 
-        BPACredentialExchange ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredExId()).orElseThrow();
+        BPACredentialExchange ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredentialExchangeId())
+                .orElseThrow();
         assertEquals(CredentialExchangeState.DONE, ex.getState());
         assertNotNull(ex.getStateToTimestamp());
         assertNotNull(ex.getStateToTimestamp().getStateToTimestamp());
@@ -219,13 +220,14 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
 
         eventHandler.handleCredentialV2(offer);
 
-        BPACredentialExchange ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredExId()).orElseThrow();
+        BPACredentialExchange ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredentialExchangeId())
+                .orElseThrow();
         assertEquals(CredentialExchangeState.OFFER_RECEIVED, ex.getState());
 
         holderMgmt.declineCredentialOffer(ex.getId(), "declined");
         eventHandler.handleCredentialV2(problem);
 
-        ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredExId()).orElseThrow();
+        ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredentialExchangeId()).orElseThrow();
         assertEquals(CredentialExchangeState.DECLINED, ex.getState());
     }
 

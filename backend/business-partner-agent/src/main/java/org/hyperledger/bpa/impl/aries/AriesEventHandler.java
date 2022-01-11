@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -143,7 +143,7 @@ public class AriesEventHandler extends EventHandler {
         if (v2CredEx.roleIsIssuer()) {
             synchronized (issuerMgr) {
                 if (v2CredEx.stateIsProposalReceived()) {
-                    issuerMgr.handleCredentialProposal(v2CredEx.toV1CredentialExchangeFromProposal(),
+                    issuerMgr.handleCredentialProposal(V2ToV1IndyCredentialConverter.INSTANCE().toV1Proposal(v2CredEx),
                             ExchangeVersion.V2);
                 } else if (v2CredEx.stateIsRequestReceived()) {
                     issuerMgr.handleV2CredentialRequest(v2CredEx);
@@ -160,7 +160,7 @@ public class AriesEventHandler extends EventHandler {
                     holderMgr.handleV2CredentialReceived(v2CredEx);
                 } else {
                     holderMgr.handleStateChangesOnly(
-                            v2CredEx.getCredExId(), v2CredEx.getState(),
+                            v2CredEx.getCredentialExchangeId(), v2CredEx.getState(),
                             v2CredEx.getUpdatedAt(), v2CredEx.getErrorMsg());
                 }
             }
