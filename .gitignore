@@ -72,6 +72,7 @@ frontend/node/**
 frontend/node_modules/**
 frontend/dist/**
 
+frontend/coverage/**
 frontend/licenses/**
 
 **/application-dev-*.yml
