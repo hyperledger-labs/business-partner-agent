@@ -554,6 +554,15 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                         revocationInfo.getCredRevId());
             } else if (bpaEx.roleIsHolder() && StringUtils.isNotEmpty(revocationInfo.getCredIdStored())) {
                 credExRepo.updateReferent(bpaEx.getId(), revocationInfo.getCredIdStored());
+                // holder event is missing the credRevId
+                try {
+                    ac.credential(revocationInfo.getCredIdStored()).ifPresent(c -> {
+                        credExRepo.updateRevocationInfo(bpaEx.getId(), c.getRevRegId(),
+                                c.getCredRevId());
+                    });
+                } catch (IOException e) {
+                    log.error(msg.getMessage("acapy.unavailable"));
+                }
             }
         });
     }

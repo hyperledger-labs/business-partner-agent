@@ -312,7 +312,8 @@ public class HolderCredentialManager extends BaseCredentialManager {
                 ac.credentialRevoked(Objects.requireNonNull(cred.getReferent())).ifPresent(isRevoked -> {
                     if (isRevoked.getRevoked() != null && isRevoked.getRevoked()) {
                         cred.pushStates(CredentialExchangeState.CREDENTIAL_REVOKED, Instant.now());
-                        holderCredExRepo.updateRevoked(cred.getId(), Boolean.TRUE, cred.getStateToTimestamp());
+                        holderCredExRepo.updateRevoked(cred.getId(), Boolean.TRUE, cred.getState(),
+                                cred.getStateToTimestamp());
                         log.debug("Credential with referent id: {} has been revoked", cred.getReferent());
                     }
                 });
@@ -388,6 +389,8 @@ public class HolderCredentialManager extends BaseCredentialManager {
             db
                     .setReferent(credEx.getCredential() != null ? credEx.getCredential().getReferent() : null)
                     .setCredential(credEx.getCredential())
+                    .setCredRevId(credEx.getCredential() != null ? credEx.getCredential().getCredRevId() : null)
+                    .setRevRegId(credEx.getCredential() != null ? credEx.getCredential().getRevRegId() : null)
                     .setLabel(label)
                     .setIssuer(resolveIssuer(credEx.getCredential()))
                     .pushStates(credEx.getState(), TimeUtil.fromISOInstant(credEx.getUpdatedAt()));
@@ -418,7 +421,8 @@ public class HolderCredentialManager extends BaseCredentialManager {
         holderCredExRepo.findByRevRegIdAndCredRevId(revocationInfo.getRevRegId(), revocationInfo.getCredRevId())
                 .ifPresent(credEx -> {
                     credEx.pushStates(CredentialExchangeState.CREDENTIAL_REVOKED, Instant.now());
-                    holderCredExRepo.updateRevoked(credEx.getId(), true, credEx.getStateToTimestamp());
+                    holderCredExRepo.updateRevoked(credEx.getId(), true, credEx.getState(),
+                            credEx.getStateToTimestamp());
                 });
     }
 
