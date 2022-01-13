@@ -69,7 +69,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
-public class IssuerCredentialManager implements BaseCredentialManager {
+public class IssuerCredentialManager extends BaseCredentialManager {
 
     @Inject
     @Getter
@@ -346,7 +346,7 @@ public class IssuerCredentialManager implements BaseCredentialManager {
                     .publish(Boolean.TRUE)
                     .build());
             credEx.setRevoked(Boolean.TRUE);
-            credEx.pushStates(CredentialExchangeState.REVOKED);
+            credEx.pushStates(CredentialExchangeState.CREDENTIAL_REVOKED);
             issuerCredExRepo.update(credEx);
             return CredEx.from(credEx);
         } catch (IOException e) {

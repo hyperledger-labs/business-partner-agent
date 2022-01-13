@@ -82,7 +82,7 @@ public class HolderLDManager extends BaseHolderManager {
             dbCred
                     .pushStates(v2.getState(), v2.getUpdatedAt())
                     .setLdCredential(BPACredentialExchange.ExchangePayload.jsonLD(v2.resolveLDCredOffer()))
-                    // .setIssuer(resolveIssuer(c))
+                    .setIssuer(resolveIssuer(dbCred.getPartner()))
                     .setLabel(label);
             BPACredentialExchange dbCredential = holderCredExRepo.update(dbCred);
             fireCredentialAddedEvent(dbCredential);

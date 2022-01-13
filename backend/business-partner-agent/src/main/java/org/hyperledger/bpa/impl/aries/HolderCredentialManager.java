@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.aries;
 
-import io.micronaut.context.annotation.Value;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.scheduling.annotation.Scheduled;
 import jakarta.inject.Inject;
@@ -30,19 +29,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
-import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.credentials.CredentialPreview;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.issue_credential_v1.*;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
-import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
-import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
-import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.AriesCredential;
-import org.hyperledger.bpa.api.aries.ProfileVC;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.NetworkException;
@@ -53,8 +47,6 @@ import org.hyperledger.bpa.impl.BaseHolderManager;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.activity.VPManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
-import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 import org.hyperledger.bpa.model.BPASchema;
@@ -67,15 +59,15 @@ import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
-public class HolderCredentialManager extends BaseHolderManager implements BaseCredentialManager {
-
-    @Value("${bpa.did.prefix}")
-    String didPrefix;
+public class HolderCredentialManager extends BaseHolderManager {
 
     @Inject
     @Setter(AccessLevel.PROTECTED)
@@ -102,9 +94,6 @@ public class HolderCredentialManager extends BaseHolderManager implements BaseCr
     @Inject
     @Setter(AccessLevel.PROTECTED)
     SchemaService schemaService;
-
-    @Inject
-    Converter conv;
 
     @Inject
     LabelStrategy labelStrategy;
@@ -242,46 +231,6 @@ public class HolderCredentialManager extends BaseHolderManager implements BaseCr
     }
 
     /**
-     * Tries to resolve the issuers DID into a human-readable name. Resolution order
-     * is: 1. Partner alias the user gave 2. Legal name from the partners public
-     * profile 3. ACA-PY Label 4. DID
-     *
-     * @param ariesCred {@link Credential}
-     * @return the issuer or null when the credential or the credential definition
-     *         id is null
-     */
-    @Nullable
-    String resolveIssuer(@Nullable Credential ariesCred) {
-        String issuer = null;
-        if (ariesCred != null && StringUtils.isNotEmpty(ariesCred.getCredentialDefinitionId())) {
-            String did = didPrefix + AriesStringUtil.credDefIdGetDid(ariesCred.getCredentialDefinitionId());
-            Optional<Partner> p = partnerRepo.findByDid(did);
-            if (p.isPresent()) {
-                if (StringUtils.isNotEmpty(p.get().getAlias())) {
-                    issuer = p.get().getAlias();
-                } else if (p.get().getVerifiablePresentation() != null) {
-                    VerifiablePresentation<VerifiableIndyCredential> vp = conv
-                            .fromMap(Objects.requireNonNull(p.get().getVerifiablePresentation()), Converter.VP_TYPEREF);
-                    Optional<VerifiableIndyCredential> profile = vp.getVerifiableCredential()
-                            .stream().filter(ic -> ic.getType().contains("OrganizationalProfileCredential")).findAny();
-                    if (profile.isPresent() && profile.get().getCredentialSubject() != null) {
-                        ProfileVC pVC = GsonConfig.jacksonBehaviour().fromJson(profile.get().getCredentialSubject(),
-                                ProfileVC.class);
-                        issuer = pVC.getLegalName();
-                    }
-                }
-                if (issuer == null && p.get().getIncoming() != null && Boolean.TRUE.equals(p.get().getIncoming())) {
-                    issuer = p.get().getLabel();
-                }
-            }
-            if (issuer == null) {
-                issuer = did;
-            }
-        }
-        return issuer;
-    }
-
-    /**
      * Scheduled task that checks the revocation status of all credentials issued to
      * this BPA.
      */
@@ -293,7 +242,7 @@ public class HolderCredentialManager extends BaseHolderManager implements BaseCr
                 log.trace("Running revocation check for credential exchange: {}", cred.getReferent());
                 ac.credentialRevoked(Objects.requireNonNull(cred.getReferent())).ifPresent(isRevoked -> {
                     if (isRevoked.getRevoked() != null && isRevoked.getRevoked()) {
-                        cred.pushStates(CredentialExchangeState.REVOKED, Instant.now());
+                        cred.pushStates(CredentialExchangeState.CREDENTIAL_REVOKED, Instant.now());
                         holderCredExRepo.updateRevoked(cred.getId(), Boolean.TRUE, cred.getStateToTimestamp());
                         log.debug("Credential with referent id: {} has been revoked", cred.getReferent());
                     }
@@ -313,7 +262,13 @@ public class HolderCredentialManager extends BaseHolderManager implements BaseCr
 
     @Override
     public BPASchema checkSchema(BaseCredExRecord credEx) {
-        String schemaId = ((V1CredentialExchange) credEx).getSchemaId();
+        String schemaId;
+        if (credEx instanceof V1CredentialExchange) {
+            schemaId = ((V1CredentialExchange) credEx).getSchemaId();
+        } else {
+            schemaId = V2ToV1IndyCredentialConverter.INSTANCE()
+                    .toV1Offer(((V20CredExRecord) credEx)).getCredentialProposalDict().getSchemaId();
+        }
         BPASchema bpaSchema = schemaService.getSchemaFor(schemaId).orElse(null);
         if (bpaSchema == null) {
             SchemaAPI schemaAPI = schemaService.addIndySchema(schemaId, null, null);
@@ -332,7 +287,7 @@ public class HolderCredentialManager extends BaseHolderManager implements BaseCr
                     .setReferent(credEx.getCredential() != null ? credEx.getCredential().getReferent() : null)
                     .setIndyCredential(credEx.getCredential())
                     .setLabel(label)
-                    .setIssuer(resolveIssuer(credEx.getCredential()))
+                    .setIssuer(resolveIssuer(db.getPartner()))
                     .pushStates(credEx.getState(), TimeUtil.fromISOInstant(credEx.getUpdatedAt()));
             holderCredExRepo.update(db);
             fireCredentialAddedEvent(db);
@@ -349,7 +304,7 @@ public class HolderCredentialManager extends BaseHolderManager implements BaseCr
                                     .pushStates(credEx.getState(), credEx.getUpdatedAt())
                                     .setIndyCredential(c)
                                     .setLabel(label)
-                                    .setIssuer(resolveIssuer(c));
+                                    .setIssuer(resolveIssuer(dbCred.getPartner()));
                             BPACredentialExchange dbCredential = holderCredExRepo.update(dbCred);
                             fireCredentialAddedEvent(dbCredential);
                         }));

@@ -24,31 +24,40 @@ import jakarta.inject.Singleton;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.acy_py.generated.model.V20CredRequestRequest;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.issue_credential_v1.BaseCredExRecord;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential;
+import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.aries.AriesCredential;
+import org.hyperledger.bpa.api.aries.ProfileVC;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.impl.notification.CredentialAddedEvent;
 import org.hyperledger.bpa.impl.notification.CredentialOfferedEvent;
+import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 import org.hyperledger.bpa.model.BPASchema;
+import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.HolderCredExRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 import org.hyperledger.bpa.util.CryptoUtil;
 
 import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Singleton
-public abstract class BaseHolderManager {
+public abstract class BaseHolderManager extends BaseCredentialManager {
 
     @Inject
     @Setter(AccessLevel.PACKAGE)
@@ -68,6 +77,9 @@ public abstract class BaseHolderManager {
 
     @Inject
     ApplicationEventPublisher eventPublisher;
+
+    @Inject
+    Converter conv;
 
     public abstract BPASchema checkSchema(BaseCredExRecord credExBase);
 
@@ -126,6 +138,42 @@ public abstract class BaseHolderManager {
         } catch (IOException e) {
             throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
         }
+    }
+
+    /**
+     * Tries to resolve the issuers DID into a human-readable name. Resolution order
+     * is: 1. Partner alias the user gave 2. Legal name from the partners public
+     * profile 3. ACA-PY Label 4. DID
+     *
+     * @param p {@link Partner}
+     * @return the issuer or null when the credential or the credential definition
+     *         id is null
+     */
+    @Nullable
+    public String resolveIssuer(@Nullable Partner p) {
+        String issuer = null;
+        if (p != null) {
+            if (StringUtils.isNotEmpty(p.getAlias())) {
+                issuer = p.getAlias();
+            } else if (p.getVerifiablePresentation() != null) {
+                VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential> vp = conv
+                        .fromMap(Objects.requireNonNull(p.getVerifiablePresentation()), Converter.VP_TYPEREF);
+                Optional<VerifiableCredential.VerifiableIndyCredential> profile = vp.getVerifiableCredential()
+                        .stream().filter(ic -> ic.getType().contains("OrganizationalProfileCredential")).findAny();
+                if (profile.isPresent() && profile.get().getCredentialSubject() != null) {
+                    ProfileVC pVC = GsonConfig.jacksonBehaviour().fromJson(profile.get().getCredentialSubject(),
+                            ProfileVC.class);
+                    issuer = pVC.getLegalName();
+                }
+            }
+            if (issuer == null && Boolean.TRUE.equals(p.getIncoming())) {
+                issuer = p.getLabel();
+            }
+            if (issuer == null) {
+                issuer = p.getDid();
+            }
+        }
+        return issuer;
     }
 
     public void fireCredentialOfferedEvent(@NonNull BPACredentialExchange updated) {
