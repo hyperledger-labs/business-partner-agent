@@ -29,6 +29,7 @@ import org.hyperledger.acy_py.generated.model.InvitationRecord;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.api.PartnerAPI;
+import org.hyperledger.bpa.api.aries.TransactionRole;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 
 import javax.persistence.*;
@@ -37,6 +38,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Flat representation of a partner. In the web context a partner is just a
@@ -148,6 +150,21 @@ public class Partner extends StateChangeDecorator<Partner, ConnectionState> {
     @Transient
     public boolean hasConnectionId() {
         return connectionId != null;
+    }
+
+    @Transient
+    public boolean hasTag(String name) {
+        if (tags == null)
+            return false;
+        Set<Tag> filtered = tags.stream()
+                .filter(tag -> tag.getName().equalsIgnoreCase(name))
+                .collect(Collectors.toSet());
+        return (0 < filtered.size());
+    }
+
+    @Transient
+    public boolean hasTag(TransactionRole role) {
+        return hasTag(role.toString());
     }
 
     // extends lombok builder

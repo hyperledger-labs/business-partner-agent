@@ -24,9 +24,11 @@ import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.api.TagAPI;
+import org.hyperledger.bpa.api.aries.TransactionRole;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.config.TagConfig;
 import org.hyperledger.bpa.model.Tag;
 import org.hyperledger.bpa.repository.TagRepository;
@@ -39,6 +41,9 @@ public class TagService {
 
     @Inject
     TagRepository tagRepo;
+
+    @Inject
+    RuntimeConfig config;
 
     @Inject
     TagConfig configuredTags;
@@ -107,5 +112,17 @@ public class TagService {
             });
         }
 
+        // if an endorser/autor role is explicitely set ...
+        if (TransactionRole.ENDORSER.name().equalsIgnoreCase(config.getEndorserRole())) {
+            // if BPA is an Endorser, can set connected partners as Authors
+            if (tagRepo.contByName(TransactionRole.AUTHOR.name()) == 0) {
+                addTag(TransactionRole.AUTHOR.name());
+            }
+        } else if (TransactionRole.AUTHOR.name().equalsIgnoreCase(config.getEndorserRole())) {
+            // if BPA is an Author, can set connected partners as Endorsers
+            if (tagRepo.contByName(TransactionRole.ENDORSER.name()) == 0) {
+                addTag(TransactionRole.ENDORSER.name());
+            }
+        }
     }
 }

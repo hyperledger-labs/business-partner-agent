@@ -23,6 +23,7 @@ import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.api.PartnerAPI;
@@ -45,6 +46,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Slf4j
 @Singleton
 public class PartnerManager {
 
@@ -142,6 +144,7 @@ public class PartnerManager {
             p.setAlias(req.getAlias());
             p.setTrustPing(req.getTrustPing());
             tagRepo.updateAllPartnerToTagMappings(id, req.getTag());
+            cm.addConnectionEndorserMetadata(p);
             repo.updateAlias(id, req.getAlias(), req.getTrustPing());
             if (StringUtils.isNotBlank(req.getAlias())) {
                 holderCredExRepo.updateIssuerByPartnerId(dbP.get().getId(), req.getAlias());

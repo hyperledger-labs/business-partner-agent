@@ -50,10 +50,13 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
     @Join(value = "tags", type = Join.Type.LEFT_FETCH)
     Iterable<Partner> findAll();
 
+    @Join(value = "tags", type = Join.Type.LEFT_FETCH)
     Optional<Partner> findByConnectionId(String connectionId);
 
+    @Join(value = "tags", type = Join.Type.LEFT_FETCH)
     Optional<Partner> findByDid(String did);
 
+    @Join(value = "tags", type = Join.Type.LEFT_FETCH)
     List<Partner> findByDidIn(List<String> did);
 
     Optional<Partner> findByInvitationMsgId(String invitationMsgId);

@@ -40,13 +40,14 @@ register_did() {
     # arg 1 is the env file var we are replacing
     echo "Registering DID for $1"
 # Set random alias
-ALIAS=BPA-$(cat /dev/urandom | env LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 4 | head -n 1)
+ALIAS=BPA-$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32 | base64 | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 4)
 # Generate random seed
-SEED=$(cat /dev/urandom | env LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+SEED=$(cat /dev/urandom | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32 | base64 | LC_CTYPE=C tr -dc 'a-zA-Z0-9' | head -c 32)
 
 PAYLOAD='{"alias":"'"$ALIAS"'","seed":"'"$SEED"'","role":"ENDORSER"}'
 
 # Register DID
+echo "curl --fail -s -d $PAYLOAD  -H \"Content-Type: application/json\" -X POST ${URL}/register"
 if curl --fail -s -d $PAYLOAD  -H "Content-Type: application/json" -X POST ${URL}/register; then
     echo ""
     echo ""Registration on $URL successful""

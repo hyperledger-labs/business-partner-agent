@@ -26,8 +26,10 @@ import jakarta.inject.Singleton;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.bpa.api.aries.TransactionRole;
 import org.hyperledger.bpa.impl.StartupTasks;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 
@@ -87,6 +89,9 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
     @Value("${bpa.i18n.fallbackLocale}")
     String fallbackLocale;
 
+    @Value("${bpa.endorser.role}")
+    String endorserRole;
+
     /** only set when running from .jar */
     String buildVersion;
 
@@ -121,5 +126,17 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
         } catch (IOException e) {
             log.warn("aca-py is not reachable");
         }
+    }
+
+    public boolean hasEndorserRole() {
+        return (StringUtils.isNotBlank(getEndorserRole()));
+    }
+
+    public boolean isEndorser() {
+        return (hasEndorserRole() && endorserRole.equalsIgnoreCase(TransactionRole.ENDORSER.name()));
+    }
+
+    public boolean isAuthor() {
+        return (hasEndorserRole() && endorserRole.equalsIgnoreCase(TransactionRole.AUTHOR.name()));
     }
 }

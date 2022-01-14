@@ -29,6 +29,7 @@ services:
       BPA_PRIVACY_POLICY_URL: ${BPA_PRIVACY_POLICY_URL}
       BPA_CREDDEF_REVOCATION_REGISTRY_SIZE: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE}
       BPA_WEBHOOK_KEY: ${BPA_WEBHOOK_KEY}
+      BPA_ENDORSER_ROLE: ${BPA1_ENDORSER_ROLE}
     ports:
       - ${BPA_PORT}:${BPA_PORT}
     restart: always
@@ -61,6 +62,7 @@ services:
         ${ACAPY_READ_ONLY_MODE} \
         ${ACAPY_TAILS_BASE_URL} \
         ${ACAPY_TAILS_UPLOAD_URL} \
+        ${BPA1_ENDORSER_ACAPY_PARAMS} \
         "
     ]
     volumes:
@@ -107,6 +109,7 @@ services:
       BPA_PRIVACY_POLICY_URL: ${BPA_PRIVACY_POLICY_URL}
       BPA_CREDDEF_REVOCATION_REGISTRY_SIZE: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE}
       BPA_WEBHOOK_KEY: ${BPA_WEBHOOK_KEY}
+      BPA_ENDORSER_ROLE: ${BPA2_ENDORSER_ROLE}
     ports:
       - "${BPA2_PORT}:${BPA2_PORT}"
     restart: always
@@ -141,6 +144,7 @@ services:
         ${ACAPY_READ_ONLY_MODE} \
         ${ACAPY_TAILS_BASE_URL} \
         ${ACAPY_TAILS_UPLOAD_URL} \
+        ${BPA2_ENDORSER_ACAPY_PARAMS} \
         "
     ]
     volumes:
