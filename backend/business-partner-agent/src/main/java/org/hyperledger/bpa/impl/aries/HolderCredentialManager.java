@@ -22,7 +22,6 @@ import io.micronaut.scheduling.annotation.Scheduled;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +53,6 @@ import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.HolderCredExRepository;
-import org.hyperledger.bpa.repository.IssuerCredExRepository;
 import org.hyperledger.bpa.repository.MyDocumentRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
@@ -72,11 +70,9 @@ public class HolderCredentialManager extends BaseHolderManager {
 
     @Inject
     @Setter(AccessLevel.PROTECTED)
-    @Getter
     AriesClient ac;
 
     @Inject
-    @Getter
     PartnerRepository partnerRepo;
 
     @Inject
@@ -84,10 +80,6 @@ public class HolderCredentialManager extends BaseHolderManager {
 
     @Inject
     HolderCredExRepository holderCredExRepo;
-
-    @Inject
-    @Getter
-    IssuerCredExRepository issuerCredExRepo;
 
     @Inject
     VPManager vpMgmt;
@@ -100,7 +92,6 @@ public class HolderCredentialManager extends BaseHolderManager {
     LabelStrategy labelStrategy;
 
     @Inject
-    @Getter
     BPAMessageSource.DefaultMessageSource msg;
 
     // request credential from issuer (partner)
@@ -158,6 +149,16 @@ public class HolderCredentialManager extends BaseHolderManager {
         }
     }
 
+    public void declineCredentialOffer(@NonNull UUID id, @Nullable String message) {
+        if (StringUtils.isEmpty(message)) {
+            message = msg.getMessage("api.holder.credential.exchange.declined");
+        }
+        BPACredentialExchange dbEx = getCredentialExchange(id);
+        dbEx.pushStates(CredentialExchangeState.DECLINED, Instant.now());
+        holderCredExRepo.updateStates(dbEx.getId(), dbEx.getState(), dbEx.getStateToTimestamp(), message);
+        declineCredentialExchange(dbEx, message);
+    }
+
     // credential visible in public profile
     public void toggleVisibility(UUID id) {
         BPACredentialExchange cred = holderCredExRepo.findById(id).orElseThrow(EntityNotFoundException::new);
@@ -178,14 +179,6 @@ public class HolderCredentialManager extends BaseHolderManager {
 
     public AriesCredential getCredentialById(@NonNull UUID id) {
         return holderCredExRepo.findById(id).map(this::buildCredential).orElseThrow(EntityNotFoundException::new);
-    }
-
-    private AriesCredential buildCredential(@NonNull BPACredentialExchange dbCred) {
-        String typeLabel = null;
-        if (dbCred.getIndyCredential() != null) {
-            typeLabel = schemaService.getSchemaLabel(dbCred.getIndyCredential().getSchemaId());
-        }
-        return AriesCredential.fromBPACredentialExchange(dbCred, typeLabel);
     }
 
     /**
@@ -221,16 +214,6 @@ public class HolderCredentialManager extends BaseHolderManager {
         });
     }
 
-    public void declineCredentialOffer(@NonNull UUID id, @Nullable String message) {
-        if (StringUtils.isEmpty(message)) {
-            message = msg.getMessage("api.holder.credential.exchange.declined");
-        }
-        BPACredentialExchange dbEx = getCredentialExchange(id);
-        dbEx.pushStates(CredentialExchangeState.DECLINED, Instant.now());
-        holderCredExRepo.updateStates(dbEx.getId(), dbEx.getState(), dbEx.getStateToTimestamp(), message);
-        declineCredentialExchange(dbEx, message);
-    }
-
     /**
      * Scheduled task that checks the revocation status of all credentials issued to
      * this BPA.
@@ -261,28 +244,6 @@ public class HolderCredentialManager extends BaseHolderManager {
     }
 
     // credential event handling
-
-    @Override
-    public BPASchema checkSchema(BaseCredExRecord credEx) {
-        String schemaId = null;
-        BPASchema bpaSchema = null;
-        if (credEx instanceof V1CredentialExchange) {
-            schemaId = ((V1CredentialExchange) credEx).getSchemaId();
-        } else if (credEx instanceof V20CredExRecord) {
-            schemaId = V2ToV1IndyCredentialConverter.INSTANCE()
-                    .toV1Offer((V20CredExRecord) credEx).getCredentialProposalDict().getSchemaId();
-        }
-        if (schemaId != null) {
-            bpaSchema = schemaService.getSchemaFor(schemaId).orElse(null);
-            if (bpaSchema == null) {
-                SchemaAPI schemaAPI = schemaService.addIndySchema(schemaId, null, null);
-                if (schemaAPI != null) {
-                    bpaSchema = BPASchema.builder().id(schemaAPI.getId()).build();
-                }
-            }
-        }
-        return bpaSchema;
-    }
 
     // v1 credential, signed and stored in wallet
     public void handleV1CredentialExchangeAcked(@NonNull V1CredentialExchange credEx) {
@@ -326,5 +287,27 @@ public class HolderCredentialManager extends BaseHolderManager {
                     holderCredExRepo.updateRevoked(credEx.getId(), true, credEx.getState(),
                             credEx.getStateToTimestamp());
                 });
+    }
+
+    @Override
+    public BPASchema checkSchema(BaseCredExRecord credEx) {
+        String schemaId = null;
+        BPASchema bpaSchema = null;
+        if (credEx instanceof V1CredentialExchange) {
+            schemaId = ((V1CredentialExchange) credEx).getSchemaId();
+        } else if (credEx instanceof V20CredExRecord) {
+            schemaId = V2ToV1IndyCredentialConverter.INSTANCE()
+                    .toV1Offer((V20CredExRecord) credEx).getCredentialProposalDict().getSchemaId();
+        }
+        if (schemaId != null) {
+            bpaSchema = schemaService.getSchemaFor(schemaId).orElse(null);
+            if (bpaSchema == null) {
+                SchemaAPI schemaAPI = schemaService.addIndySchema(schemaId, null, null);
+                if (schemaAPI != null) {
+                    bpaSchema = BPASchema.builder().id(schemaAPI.getId()).build();
+                }
+            }
+        }
+        return bpaSchema;
     }
 }

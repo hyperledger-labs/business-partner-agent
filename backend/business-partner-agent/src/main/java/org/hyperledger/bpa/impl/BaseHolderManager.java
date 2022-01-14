@@ -190,7 +190,7 @@ public abstract class BaseHolderManager extends BaseCredentialManager {
                 .build());
     }
 
-    private AriesCredential buildCredential(@NonNull BPACredentialExchange dbCred) {
+    public AriesCredential buildCredential(@NonNull BPACredentialExchange dbCred) {
         String typeLabel = null;
         if (dbCred.getIndyCredential() != null) {
             typeLabel = schemaService.getSchemaLabel(dbCred.getIndyCredential().getSchemaId());

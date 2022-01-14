@@ -78,19 +78,19 @@ public class AriesEventHandler extends EventHandler {
     }
 
     @Override
-    public void handleConnection(ConnectionRecord connection) {
-        log.debug("Connection Event: {}", connection);
+    public void handleConnection(ConnectionRecord connectionRecord) {
+        log.debug("Connection Event: {}", connectionRecord);
         // all events in state invitation are handled in the managers
-        if (connection.stateIsInvitation()) {
+        if (connectionRecord.stateIsInvitation()) {
             return;
         }
-        synchronized (this.connection) {
-            if (connection.isConnectionInvitation()) {
-                this.connection.handleInvitationEvent(connection);
-            } else if (connection.isOutgoingConnection()) {
-                this.connection.handleOutgoingConnectionEvent(connection);
+        synchronized (connection) {
+            if (connectionRecord.isConnectionInvitation()) {
+                connection.handleInvitationEvent(connectionRecord);
+            } else if (connectionRecord.isOutgoingConnection()) {
+                connection.handleOutgoingConnectionEvent(connectionRecord);
             } else {
-                this.connection.handleIncomingConnectionEvent(connection);
+                connection.handleIncomingConnectionEvent(connectionRecord);
             }
         }
     }

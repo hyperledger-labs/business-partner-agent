@@ -72,7 +72,6 @@ import java.util.stream.Collectors;
 public class IssuerCredentialManager extends BaseCredentialManager {
 
     @Inject
-    @Getter
     AriesClient ac;
 
     @Inject
@@ -85,11 +84,9 @@ public class IssuerCredentialManager extends BaseCredentialManager {
     BPACredentialDefinitionRepository credDefRepo;
 
     @Inject
-    @Getter
     PartnerRepository partnerRepo;
 
     @Inject
-    @Getter
     IssuerCredExRepository issuerCredExRepo;
 
     @Inject
@@ -99,7 +96,6 @@ public class IssuerCredentialManager extends BaseCredentialManager {
     RuntimeConfig config;
 
     @Inject
-    @Getter
     BPAMessageSource.DefaultMessageSource msg;
 
     @Inject
@@ -564,10 +560,8 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                 issuerCredExRepo.updateReferent(bpaEx.getId(), revocationInfo.getCredIdStored());
                 // holder event is missing the credRevId
                 try {
-                    ac.credential(revocationInfo.getCredIdStored()).ifPresent(c -> {
-                        issuerCredExRepo.updateRevocationInfo(bpaEx.getId(), c.getRevRegId(),
-                                c.getCredRevId());
-                    });
+                    ac.credential(revocationInfo.getCredIdStored()).ifPresent(c -> issuerCredExRepo.updateRevocationInfo(bpaEx.getId(), c.getRevRegId(),
+                            c.getCredRevId()));
                 } catch (IOException e) {
                     log.error(msg.getMessage("acapy.unavailable"));
                 }
