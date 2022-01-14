@@ -157,7 +157,6 @@ public class SchemaService {
         return result;
     }
 
-    @Nullable
     public SchemaAPI addJsonLDSchema(@NonNull String schemaId, @Nullable String label,
             @Nullable String defaultAttributeName, @NonNull String ldType, @NonNull Set<String> attributes) {
 

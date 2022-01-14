@@ -20,7 +20,6 @@ package org.hyperledger.bpa.util;
 import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.config.GsonConfig;
 import org.springframework.security.crypto.codec.Hex;
 

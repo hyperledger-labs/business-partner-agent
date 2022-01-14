@@ -26,7 +26,6 @@ import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
-import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 import org.hyperledger.bpa.model.StateChangeDecorator;
 

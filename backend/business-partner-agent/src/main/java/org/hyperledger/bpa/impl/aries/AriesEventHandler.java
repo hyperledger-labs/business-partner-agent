@@ -193,7 +193,7 @@ public class AriesEventHandler extends EventHandler {
     public void handleIssueCredentialV2LD(V2IssueLDCredentialEvent credentialInfo) {
         log.debug("Issue LD Credential V2 Event: {}", credentialInfo);
         synchronized (jsonLD) {
-            // jsonLD.handleIssueCredentialV2LD(credentialInfo);
+            jsonLD.handleIssueCredentialV2LD(credentialInfo);
         }
     }
 

@@ -55,23 +55,24 @@ public class HolderLDManager extends BaseHolderManager {
 
     @Override
     public BPASchema checkSchema(BaseCredExRecord credExBase) {
-        V20CredExRecordByFormat.LdProof offer = ((V20CredExRecord) credExBase).resolveLDCredOffer();
+        BPASchema schema = null;
+        if (credExBase instanceof V20CredExRecord) {
+            V20CredExRecordByFormat.LdProof offer = ((V20CredExRecord) credExBase).resolveLDCredOffer();
+            // TODO this does not consider all use cases
+            List<Object> context = offer.getCredential().getContext();
+            context.removeAll(CredentialType.JSON_LD.getContext());
+            List<String> type = offer.getCredential().getType();
+            type.removeAll(CredentialType.JSON_LD.getType());
 
-        // TODO this does not consider all use cases
-        List<Object> context = offer.getCredential().getContext();
-        context.removeAll(CredentialType.JSON_LD.getContext());
-        List<String> type = offer.getCredential().getType();
-        type.removeAll(CredentialType.JSON_LD.getType());
-
-        String schemaId = (String) context.get(0);
-        BPASchema schema;
-        Optional<BPASchema> bpaSchema = schemaRepo.findBySchemaId(schemaId);
-        if (bpaSchema.isPresent()) {
-            schema = bpaSchema.get();
-        } else {
-            SchemaAPI schemaApi = schemaService.addJsonLDSchema(schemaId, null, null, type.get(0),
-                    offer.getCredential().getCredentialSubject().keySet());
-            schema = schemaRepo.findById(schemaApi.getId()).orElseThrow();
+            String schemaId = (String) context.get(0);
+            Optional<BPASchema> bpaSchema = schemaRepo.findBySchemaId(schemaId);
+            if (bpaSchema.isPresent()) {
+                schema = bpaSchema.get();
+            } else {
+                SchemaAPI schemaApi = schemaService.addJsonLDSchema(schemaId, null, null, type.get(0),
+                        offer.getCredential().getCredentialSubject().keySet());
+                schema = schemaRepo.findById(schemaApi.getId()).orElseThrow();
+            }
         }
         return schema;
     }

@@ -21,6 +21,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
+import org.hyperledger.aries.api.issue_credential_v2.V2IssueLDCredentialEvent;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 
 @Singleton
@@ -44,5 +45,9 @@ public class LDEventHandler {
                         v2.getErrorMsg());
             }
         }
+    }
+
+    public void handleIssueCredentialV2LD(V2IssueLDCredentialEvent credentialInfo) {
+        //
     }
 }

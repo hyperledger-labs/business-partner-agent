@@ -264,18 +264,21 @@ public class HolderCredentialManager extends BaseHolderManager {
 
     @Override
     public BPASchema checkSchema(BaseCredExRecord credEx) {
-        String schemaId;
+        String schemaId = null;
+        BPASchema bpaSchema = null;
         if (credEx instanceof V1CredentialExchange) {
             schemaId = ((V1CredentialExchange) credEx).getSchemaId();
-        } else {
+        } else if (credEx instanceof V20CredExRecord) {
             schemaId = V2ToV1IndyCredentialConverter.INSTANCE()
-                    .toV1Offer(((V20CredExRecord) credEx)).getCredentialProposalDict().getSchemaId();
+                    .toV1Offer((V20CredExRecord) credEx).getCredentialProposalDict().getSchemaId();
         }
-        BPASchema bpaSchema = schemaService.getSchemaFor(schemaId).orElse(null);
-        if (bpaSchema == null) {
-            SchemaAPI schemaAPI = schemaService.addIndySchema(schemaId, null, null);
-            if (schemaAPI != null) {
-                bpaSchema = BPASchema.builder().id(schemaAPI.getId()).build();
+        if (schemaId != null) {
+            bpaSchema = schemaService.getSchemaFor(schemaId).orElse(null);
+            if (bpaSchema == null) {
+                SchemaAPI schemaAPI = schemaService.addIndySchema(schemaId, null, null);
+                if (schemaAPI != null) {
+                    bpaSchema = BPASchema.builder().id(schemaAPI.getId()).build();
+                }
             }
         }
         return bpaSchema;
