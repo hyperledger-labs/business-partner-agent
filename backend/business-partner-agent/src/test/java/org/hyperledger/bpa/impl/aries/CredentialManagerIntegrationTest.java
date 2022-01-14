@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -25,6 +25,7 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
+import org.hyperledger.aries.api.revocation.RevocationNotificationEvent;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.RunWithAries;
 import org.hyperledger.bpa.client.CachingAriesClient;
@@ -184,7 +185,8 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
         eventHandler.handleCredentialV2(received);
         eventHandler.handleCredentialV2(done);
 
-        BPACredentialExchange ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredExId()).orElseThrow();
+        BPACredentialExchange ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredentialExchangeId())
+                .orElseThrow();
         assertEquals(CredentialExchangeState.DONE, ex.getState());
         assertNotNull(ex.getStateToTimestamp());
         assertNotNull(ex.getStateToTimestamp().getStateToTimestamp());
@@ -219,14 +221,41 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
 
         eventHandler.handleCredentialV2(offer);
 
-        BPACredentialExchange ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredExId()).orElseThrow();
+        BPACredentialExchange ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredentialExchangeId())
+                .orElseThrow();
         assertEquals(CredentialExchangeState.OFFER_RECEIVED, ex.getState());
 
         holderMgmt.declineCredentialOffer(ex.getId(), "declined");
         eventHandler.handleCredentialV2(problem);
 
-        ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredExId()).orElseThrow();
+        ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredentialExchangeId()).orElseThrow();
         assertEquals(CredentialExchangeState.DECLINED, ex.getState());
+    }
+
+    @Test
+    void testHandleV1RevocationNotification() {
+        final V1CredentialExchange offer = loadV1FileByStateName("01-offer");
+        final V1CredentialExchange request = loadV1FileByStateName("02-request");
+        final V1CredentialExchange received = loadV1FileByStateName("03-received");
+        final V1CredentialExchange acked = loadV1FileByStateName("04-acked");
+        createRandomPartner(offer.getConnectionId());
+
+        eventHandler.handleCredential(offer);
+        eventHandler.handleCredential(request);
+        eventHandler.handleCredential(received);
+        eventHandler.handleCredential(acked);
+
+        BPACredentialExchange ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredentialExchangeId())
+                .orElseThrow();
+        assertEquals(CredentialExchangeState.CREDENTIAL_ACKED, ex.getState());
+        RevocationNotificationEvent rev = new RevocationNotificationEvent();
+        rev.setThreadId("dummy::" + acked.getCredential().getRevRegId() + "::" + acked.getCredential().getCredRevId());
+        eventHandler.handleRevocationNotification(rev);
+
+        ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredentialExchangeId())
+                .orElseThrow();
+        assertTrue(ex.getRevoked());
+        assertEquals(CredentialExchangeState.CREDENTIAL_REVOKED, ex.getState());
     }
 
     private V1CredentialExchange loadV1FileByStateName(@NonNull String state) {

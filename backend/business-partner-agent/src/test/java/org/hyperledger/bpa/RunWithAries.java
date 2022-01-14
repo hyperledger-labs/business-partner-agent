@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -33,7 +33,7 @@ import java.net.URL;
 @Testcontainers
 public abstract class RunWithAries extends BaseTest {
 
-    private static final String ARIES_VERSION = "bcgovimages/aries-cloudagent:py36-1.16-1_0.7.2";
+    private static final String ARIES_VERSION = "bcgovimages/aries-cloudagent:py36-1.16-1_0.7.3";
     /** Container local port, the mapped port is random */
     private static final Integer ARIES_ADMIN_PORT = 8031;
 

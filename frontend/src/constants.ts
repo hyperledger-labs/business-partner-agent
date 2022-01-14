@@ -55,7 +55,7 @@ export const CredentialExchangeStates = Object.freeze({
   CREDENTIAL_RECEIVED: "credential_received",
   CREDENTIAL_ACKED: "credential_acked",
   DONE: "done",
-  REVOKED: "revoked",
+  REVOKED: "credential_revoked",
 });
 
 export const PresentationExchangeStates = Object.freeze({

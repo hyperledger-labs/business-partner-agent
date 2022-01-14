@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -111,6 +111,14 @@ class AriesStringUtilTest {
         assertFalse(AriesStringUtil.isCredDef("test:1"));
         assertFalse(AriesStringUtil.isCredDef("test:1:2"));
         assertTrue(AriesStringUtil.isCredDef("EraYCDJUPsChbkw7S1vV96:3:CL:571:bob-bank-04"));
+    }
+
+    @Test
+    void testParseRevocationNotification() {
+        assertEquals("test", AriesStringUtil.revocationEventToRevocationInfo("indy::test::12").getRevRegId());
+        assertEquals("12", AriesStringUtil.revocationEventToRevocationInfo("indy::test::12").getCredRevId());
+        assertThrows(IllegalArgumentException.class,
+                () -> AriesStringUtil.revocationEventToRevocationInfo("12:foo:1::12"));
     }
 
 }
