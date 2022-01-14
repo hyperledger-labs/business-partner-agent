@@ -35,6 +35,7 @@ import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.issue_credential_v1.*;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
+import org.hyperledger.aries.api.revocation.RevocationNotificationEvent;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
@@ -42,11 +43,11 @@ import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.config.BPAMessageSource;
-import org.hyperledger.bpa.impl.BaseCredentialManager;
 import org.hyperledger.bpa.impl.BaseHolderManager;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.activity.VPManager;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 import org.hyperledger.bpa.model.BPASchema;
@@ -243,7 +244,8 @@ public class HolderCredentialManager extends BaseHolderManager {
                 ac.credentialRevoked(Objects.requireNonNull(cred.getReferent())).ifPresent(isRevoked -> {
                     if (isRevoked.getRevoked() != null && isRevoked.getRevoked()) {
                         cred.pushStates(CredentialExchangeState.CREDENTIAL_REVOKED, Instant.now());
-                        holderCredExRepo.updateRevoked(cred.getId(), Boolean.TRUE, cred.getStateToTimestamp());
+                        holderCredExRepo.updateRevoked(cred.getId(), Boolean.TRUE, cred.getState(),
+                                cred.getStateToTimestamp());
                         log.debug("Credential with referent id: {} has been revoked", cred.getReferent());
                     }
                 });
@@ -286,6 +288,8 @@ public class HolderCredentialManager extends BaseHolderManager {
             db
                     .setReferent(credEx.getCredential() != null ? credEx.getCredential().getReferent() : null)
                     .setIndyCredential(credEx.getCredential())
+                    .setCredRevId(credEx.getCredential() != null ? credEx.getCredential().getCredRevId() : null)
+                    .setRevRegId(credEx.getCredential() != null ? credEx.getCredential().getRevRegId() : null)
                     .setLabel(label)
                     .setIssuer(resolveIssuer(db.getPartner()))
                     .pushStates(credEx.getState(), TimeUtil.fromISOInstant(credEx.getUpdatedAt()));
@@ -308,5 +312,16 @@ public class HolderCredentialManager extends BaseHolderManager {
                             BPACredentialExchange dbCredential = holderCredExRepo.update(dbCred);
                             fireCredentialAddedEvent(dbCredential);
                         }));
+    }
+
+    public void handleRevocationNotification(RevocationNotificationEvent revocationNotification) {
+        AriesStringUtil.RevocationInfo revocationInfo = AriesStringUtil
+                .revocationEventToRevocationInfo(revocationNotification.getThreadId());
+        holderCredExRepo.findByRevRegIdAndCredRevId(revocationInfo.getRevRegId(), revocationInfo.getCredRevId())
+                .ifPresent(credEx -> {
+                    credEx.pushStates(CredentialExchangeState.CREDENTIAL_REVOKED, Instant.now());
+                    holderCredExRepo.updateRevoked(credEx.getId(), true, credEx.getState(),
+                            credEx.getStateToTimestamp());
+                });
     }
 }

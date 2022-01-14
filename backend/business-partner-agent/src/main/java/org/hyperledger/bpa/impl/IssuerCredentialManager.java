@@ -124,6 +124,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
         CredDef result;
         try {
             String sId = StringUtils.strip(schemaId);
+            String t = StringUtils.trim(tag);
             Optional<SchemaSendResponse.Schema> ariesSchema = ac.schemasGetById(sId);
             if (ariesSchema.isEmpty()) {
                 throw new WrongApiUsageException(msg.getMessage("api.schema.restriction.schema.not.found.on.ledger",
@@ -143,7 +144,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
             // will create if needed, otherwise return existing...
             CredentialDefinitionRequest request = CredentialDefinitionRequest.builder()
                     .schemaId(schemaId)
-                    .tag(tag)
+                    .tag(t)
                     .supportRevocation(supportRevocation)
                     .revocationRegistrySize(config.getRevocationRegistrySize())
                     .build();
@@ -158,13 +159,13 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                             .credentialDefinitionId(response.get().getCredentialDefinitionId())
                             .isSupportRevocation(supportRevocation)
                             .revocationRegistrySize(config.getRevocationRegistrySize())
-                            .tag(tag)
+                            .tag(t)
                             .build();
                     BPACredentialDefinition saved = credDefRepo.save(credDef);
                     result = CredDef.from(saved);
                 } else {
                     throw new WrongApiUsageException(msg.getMessage("api.issuer.creddef.already.exists",
-                            Map.of("id", sId, "tag", tag)));
+                            Map.of("id", sId, "tag", t)));
                 }
             } else {
                 log.error("Credential Definition not created.");
@@ -344,6 +345,8 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                     .credRevId(credEx.getCredRevId())
                     .revRegId(credEx.getRevRegId())
                     .publish(Boolean.TRUE)
+                    .connectionId(credEx.getPartner() != null ? credEx.getPartner().getConnectionId() : null)
+                    .notify(Boolean.TRUE)
                     .build());
             credEx.setRevoked(Boolean.TRUE);
             credEx.pushStates(CredentialExchangeState.CREDENTIAL_REVOKED);
@@ -559,6 +562,15 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                         revocationInfo.getCredRevId());
             } else if (bpaEx.roleIsHolder() && StringUtils.isNotEmpty(revocationInfo.getCredIdStored())) {
                 issuerCredExRepo.updateReferent(bpaEx.getId(), revocationInfo.getCredIdStored());
+                // holder event is missing the credRevId
+                try {
+                    ac.credential(revocationInfo.getCredIdStored()).ifPresent(c -> {
+                        issuerCredExRepo.updateRevocationInfo(bpaEx.getId(), c.getRevRegId(),
+                                c.getCredRevId());
+                    });
+                } catch (IOException e) {
+                    log.error(msg.getMessage("acapy.unavailable"));
+                }
             }
         });
     }

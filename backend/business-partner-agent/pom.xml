@@ -155,7 +155,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>5.6.0</version>
+            <version>5.6.1</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
@@ -387,7 +387,7 @@
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
                         <artifactId>frontend-maven-plugin</artifactId>
-                        <version>1.12.0</version>
+                        <version>1.12.1</version>
                         <configuration>
                             <workingDirectory>../../frontend</workingDirectory>
                         </configuration>

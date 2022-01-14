@@ -31,6 +31,7 @@ import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof_v2.V20PresExRecord;
 import org.hyperledger.aries.api.present_proof_v2.V20PresExRecordToV1Converter;
+import org.hyperledger.aries.api.revocation.RevocationNotificationEvent;
 import org.hyperledger.aries.api.trustping.PingEvent;
 import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.impl.ChatMessageManager;
@@ -201,6 +202,11 @@ public class AriesEventHandler extends EventHandler {
         // since basic message handling is so simple (only one way to handle it), let
         // the manager handle it.
         chatMessage.handleIncomingMessage(message);
+    }
+
+    @Override
+    public void handleRevocationNotification(RevocationNotificationEvent revocationNotification) {
+        credHolder.handleRevocationNotification(revocationNotification);
     }
 
     @Override
