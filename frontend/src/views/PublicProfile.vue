@@ -23,11 +23,15 @@
       <v-row align="center" justify="center">
         <v-col>
           <h1 class="grey--text text--lighten-2">
-            You don't have set up a public profile yet
+            <span v-html="$t('view.profile.noProfileTitle')" />
           </h1>
-          <v-btn color="primary" :to="{ name: 'Wallet' }" text
-            >Setup your Profile</v-btn
-          >
+          <span
+            class="grey--text text--lighten"
+            v-html="$t('view.profile.noProfileSubTitle')"
+          /><br />
+          <v-btn color="primary" :to="{ name: 'Wallet' }" text>{{
+            $t("view.profile.buttonNoProfile")
+          }}</v-btn>
         </v-col>
       </v-row>
     </v-container>

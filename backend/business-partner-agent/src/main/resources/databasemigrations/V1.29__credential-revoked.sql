@@ -1,0 +1,1 @@
+UPDATE bpa_credential_exchange set state = 'CREDENTIAL_REVOKED' where state = 'REVOKED';

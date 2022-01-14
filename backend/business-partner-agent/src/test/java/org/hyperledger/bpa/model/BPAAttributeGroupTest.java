@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.hyperledger.bpa.model;
 
 import io.micronaut.test.annotation.MockBean;
@@ -126,7 +125,7 @@ class BPAAttributeGroupTest {
 
         Set<ConstraintViolation<BPAAttributeGroup>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(1, constraintViolations.size());
-        Assertions.assertEquals(List.of(invalidCondition),
+        Assertions.assertEquals(invalidCondition,
                 constraintViolations.stream().findFirst().map(ConstraintViolation::getInvalidValue).orElse(null));
     }
 }

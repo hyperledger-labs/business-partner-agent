@@ -73,10 +73,10 @@
     "notifications": {
       "title": "Notifications",
       "activities": {
-        "title": "Activity Log"
+        "title": "Event History"
       },
       "tasks": {
-        "title": "Tasks"
+        "title": "Pending Actions"
       }
     },
     "identity": {
@@ -120,13 +120,13 @@
     "dashboard": {
       "title": "Dashboard",
       "setupMessage": "Hi, we've already set up an identity for you!",
-      "setupProfile": "Setup your Profile",
-      "credentialsSent": "Credentials Issued",
-      "credentialsReceived": "Credentials in Wallet",
-      "presentationRequestsSent": "Presentation Requests Sent",
-      "presentationRequestsReceived": "Presentation Requests Received",
-      "partners": "Business Partners",
-      "tasks": "Pending Tasks"
+      "setupProfile": "Setup your Organization",
+      "credentialsSent": "Credentials Your Organization Issued",
+      "credentialsReceived": "Credentials Issued to Your Organization",
+      "presentationRequestsSent": "Proof Requests Sent",
+      "presentationRequestsReceived": "Proof Requests Received",
+      "partners": "Secure Connections",
+      "tasks": "Pending Actions"
     },
     "contactPerson": {
       "title": "Contact Person",
@@ -158,19 +158,20 @@
       }
     },
     "profile": {
-      "title": "Public Profile",
-      "subtitle": "You can change the visibility settings of documents and verified credentials in the <strong>wallet</strong> to update your public profile.",
-      "noProfileTitle": "You don't have set up a public profile yet",
-      "buttonNoProfile": "Setup your Profile"
+      "title": "Your Organization",
+      "subtitle": "This is the public information of your organization.",
+      "noProfileTitle": "You don't have any public information yet.",
+      "noProfileSubTitle": "To make information public you can change the visibility settings of documents and verified credentials in the <strong>Held Credentials</strong>.",
+      "buttonNoProfile": "Setup your Organization"
     },
     "comingSoon": {
       "title": "Coming Soon",
       "text": "This functionality is coming soon."
     },
     "wallet": {
-      "title": "Wallet",
+      "title": "Held Credentials",
       "credentials": {
-        "title": "Verifiable Credentials",
+        "title": "Verified Credentials Issued to Your Organization",
         "headers": {
           "label": "Label",
           "type": "Type",
@@ -181,7 +182,7 @@
         }
       },
       "documents": {
-        "title": "Documents",
+        "title": "Unverified Information of Your Organization",
         "headers": {
           "label": "Label",
           "type": "Type",
@@ -191,8 +192,8 @@
         }
       },
       "visibility": {
-        "title": "Public Profile",
-        "subtitle": "Visible in Public Profile"
+        "title": "Public",
+        "subtitle": ""
       }
     },
     "addSchema": {
@@ -222,10 +223,10 @@
     },
     "proofTemplates": {
       "title": "Proof Templates",
-      "tableTitle": "Proof Templates"
+      "tableTitle": "Templates for Requesting Proofs"
     },
     "partners": {
-      "title": "Business Partners",
+      "title": "Secure Connections",
       "showInvitations": "Show Invitations"
     },
     "partner": {
@@ -240,14 +241,14 @@
       "eventSuccessPartnerDelete": "Partner deleted",
       "eventSuccessConnectionAccepted": "Connection request accepted",
       "presentationExchanges": {
-        "title": "Presentation Exchanges",
+        "title": "Proof Exchanges With This Organization",
         "button": {
-          "send": "Send Presentation",
-          "request": "Request Presentation"
+          "send": "Send Proof",
+          "request": "Request Proof"
         }
       },
       "credentialExchanges": {
-        "title": "Credential Exchanges",
+        "title": "Credential Exchanges With This Organization",
         "button": {
           "issueCredential": "Issue Credential",
           "requestCredential": "Request Credential"
@@ -261,7 +262,7 @@
       }
     },
     "sendPresentation": {
-      "title": "Send Presentation",
+      "title": "Send Proof",
       "selectCredential": "Select a credential to send",
       "eventSuccessSend": "Presentation sent",
       "label": "Label",
@@ -270,10 +271,10 @@
       "issuedAt": "Issued at"
     },
     "presentationRequestDetails": {
-      "header": "Presentation Request Details"
+      "header": "Proof Request Details"
     },
     "addPartner": {
-      "title": "Add new Business Partner",
+      "title": "Add New Secure Connection",
       "radioDid": "By DID",
       "radioInvitation": "By Invitation",
       "labelName": "Name",
@@ -281,10 +282,10 @@
       "setName": "Set a name",
       "setTags": "Set tags",
       "trustPing": "Auto Ping",
-      "lookupPartnerBtnLabel": "Lookup Partner",
-      "formDIDLabel": "Decentralized Identifier (DID)",
-      "formInvitationLabel": "Invitation",
-      "addPartnerBtnLabel": "Add Partner",
+      "lookupPartnerBtnLabel": "Search Organization",
+      "formDIDLabel": "Decentralized Identifier (DID) of the organization you want to connect with",
+      "formInvitationLabel": "URL received from the organization you want to connect with",
+      "addPartnerBtnLabel": "Add Organization",
       "buttonCheckInvitation": "Check Invitation",
       "buttonAcceptInvitation": "Accept Invitation",
       "messageLookupNoPublic": "Partner has no public profile. You can add him to get more information using Aries protocols.",
@@ -294,16 +295,16 @@
       "eventErrorAlreadyExists": "Partner already exists"
     },
     "addPartnerbyURL": {
-      "title": "Invite new Business Partner",
+      "title": "Invite new Secure Connection",
       "labelName": "Name",
-      "createInvitation": "Generate Invitation (QR Code)",
-      "invitationURL": "Invitation URL",
-      "useOOB": "Use Out of Band",
+      "createInvitation": "Create Invitation",
+      "invitationURL": "Send the QR code or the equivalent URL below as the connection invitation",
+      "useOOB": "Out of Band",
       "eventSuccessCreatePartnerInvite": "Partner Invitation created successfully"
     },
     "proofTemplate": {
       "title": "Proof Templates",
-      "tableTitle": "Proof Templates",
+      "tableTitle": "Templates for Requesting Proofs",
       "createProofTemplate": "Create Proof Template",
       "restrictions": {
         "title": "Restrictions",
@@ -409,24 +410,24 @@
       }
     },
     "issueCredentials": {
-      "title": "Issue Credentials",
+      "title": "Credential Issuance",
       "cards": {
         "action": {
           "title": "Issue Credential",
           "button": "Issue Credential",
-          "partnerLabel": "Select Partner",
-          "credDefLabel": "Select Credential Definition"
+          "partnerLabel": "Select a connection to issue credential to",
+          "credDefLabel": "Select a template to issue credential with"
         },
         "table": {
-          "title": "Issued Credentials"
+          "title": "Credentials Your Organization Issued"
         }
       }
     },
     "settings": {
       "title": "Settings",
       "language": "Language",
-      "walletDID": "Wallet DID",
-      "schemaManagement": "Schemas and Trusted Issuers",
+      "walletDID": "Your Organization's Decentralized Identifier (DID)",
+      "schemaManagement": "Schema, Credentials Definition, and Trusted Issuer Configuration",
       "tags": "Tags",
       "frontendColor": "Frontend Color",
       "iconsColor": "Icons Color",
@@ -555,12 +556,12 @@
       "companyInfo": {
         "type": "Organization Type",
         "identifier": "Identifier",
-        "sectionTitle": "Company Information",
-        "companyName": "Company Legal Name",
-        "companyAltName": "Company Alternate Name"
+        "sectionTitle": "Administrative Information",
+        "companyName": "Organization Legal Name",
+        "companyAltName": "Organization Alternate Name"
       },
       "addressInfo": {
-        "sectionTitle": "Address Information",
+        "sectionTitle": "Address",
         "street": "Street (with number)",
         "postalCode": "Postal Code",
         "city": "City",
@@ -573,7 +574,7 @@
       "partnerLabel": "Partner",
       "credDefLabel": "Credential Definition",
       "successMessage": "Credential issued",
-      "attributesTitle": "Credential Content",
+      "attributesTitle": "Credential Details",
       "options": {
         "title": "Options"
       },
@@ -654,14 +655,14 @@
       "credential": {
         "verifiedByLabel": "verified by"
       },
-      "noProfileMsg": "Partner does not share a public profile"
+      "noProfileMsg": "This organization does not share anything"
     }
   },
   "constants": {
     "activityTypes": {
       "connectionRequest": "Connection Request",
       "credentialExchange": "Credential Exchange",
-      "presentationExchange": "Presentation of Proof"
+      "presentationExchange": "Proof Request"
     },
     "activityStates": {
       "connectionRequest": {
@@ -677,10 +678,10 @@
         "sent": "Credential Offer sent"
       },
       "presentationExchange": {
-        "accepted": "Proof Presentation accepted",
-        "declined": "A Presentation of Proof has been declined",
-        "received": "A Presentation of Proof has been requested",
-        "sent": "Request for Presentation of Proof sent"
+        "accepted": "Proof accepted",
+        "declined": "Request for proof has been declined",
+        "received": "A Proof has been requested",
+        "sent": "Request for Proof sent"
       }
     },
     "activityRoles": {

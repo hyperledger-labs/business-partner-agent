@@ -46,7 +46,6 @@ export default {
   props: {
     timeEntries: {
       type: [],
-      default: () => "Title",
     },
   },
 };

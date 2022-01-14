@@ -128,7 +128,7 @@
         <dependency>
             <groupId>network.idu.acapy</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.7.17</version>
+            <version>0.7.20</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>
@@ -155,7 +155,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>5.6.0</version>
+            <version>5.6.1</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
@@ -296,6 +296,7 @@
                 </executions>
                 <configuration>
                     <licenseFile>${project.basedir}/licenses.xml</licenseFile>
+                    <excludedMissingLicensesFile>${project.basedir}/allowed-missing-licenses.xml</excludedMissingLicensesFile>
                     <failOnForbidden>true</failOnForbidden>
                     <failOnMissing>true</failOnMissing>
                     <failOnUnknown>true</failOnUnknown>
@@ -386,7 +387,7 @@
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
                         <artifactId>frontend-maven-plugin</artifactId>
-                        <version>1.12.0</version>
+                        <version>1.12.1</version>
                         <configuration>
                             <workingDirectory>../../frontend</workingDirectory>
                         </configuration>
@@ -399,8 +400,8 @@
                                 </goals>
                                 <configuration>
                                     <!-- See https://nodejs.org/en/download/ -->
-                                    <nodeVersion>v14.18.1</nodeVersion>
-                                    <npmVersion>6.14.15</npmVersion>
+                                    <nodeVersion>v16.13.1</nodeVersion>
+                                    <npmVersion>8.1.2</npmVersion>
                                 </configuration>
                             </execution>
                             <execution>

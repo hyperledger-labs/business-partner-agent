@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -118,6 +118,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
         CredDef result;
         try {
             String sId = StringUtils.strip(schemaId);
+            String t = StringUtils.trim(tag);
             Optional<SchemaSendResponse.Schema> ariesSchema = ac.schemasGetById(sId);
             if (ariesSchema.isEmpty()) {
                 throw new WrongApiUsageException(msg.getMessage("api.schema.restriction.schema.not.found.on.ledger",
@@ -137,7 +138,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
             // will create if needed, otherwise return existing...
             CredentialDefinitionRequest request = CredentialDefinitionRequest.builder()
                     .schemaId(schemaId)
-                    .tag(tag)
+                    .tag(t)
                     .supportRevocation(supportRevocation)
                     .revocationRegistrySize(config.getRevocationRegistrySize())
                     .build();
@@ -152,13 +153,13 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                             .credentialDefinitionId(response.get().getCredentialDefinitionId())
                             .isSupportRevocation(supportRevocation)
                             .revocationRegistrySize(config.getRevocationRegistrySize())
-                            .tag(tag)
+                            .tag(t)
                             .build();
                     BPACredentialDefinition saved = credDefRepo.save(credDef);
                     result = CredDef.from(saved);
                 } else {
                     throw new WrongApiUsageException(msg.getMessage("api.issuer.creddef.already.exists",
-                            Map.of("id", sId, "tag", tag)));
+                            Map.of("id", sId, "tag", t)));
                 }
             } else {
                 log.error("Credential Definition not created.");
@@ -338,9 +339,11 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                     .credRevId(credEx.getCredRevId())
                     .revRegId(credEx.getRevRegId())
                     .publish(Boolean.TRUE)
+                    .connectionId(credEx.getPartner() != null ? credEx.getPartner().getConnectionId() : null)
+                    .notify(Boolean.TRUE)
                     .build());
             credEx.setRevoked(Boolean.TRUE);
-            credEx.pushStates(CredentialExchangeState.REVOKED);
+            credEx.pushStates(CredentialExchangeState.CREDENTIAL_REVOKED);
             credExRepo.update(credEx);
             return CredEx.from(credEx);
         } catch (IOException e) {
@@ -518,7 +521,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
      * @param ex {@link V20CredExRecord}
      */
     public void handleV2CredentialExchange(@NonNull V20CredExRecord ex) {
-        credExRepo.findByCredentialExchangeId(ex.getCredExId())
+        credExRepo.findByCredentialExchangeId(ex.getCredentialExchangeId())
                 .ifPresent(bpaEx -> {
                     if (bpaEx.stateIsNotDeclined()) {
                         CredentialExchangeState state = ex.getState();
@@ -551,6 +554,15 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                         revocationInfo.getCredRevId());
             } else if (bpaEx.roleIsHolder() && StringUtils.isNotEmpty(revocationInfo.getCredIdStored())) {
                 credExRepo.updateReferent(bpaEx.getId(), revocationInfo.getCredIdStored());
+                // holder event is missing the credRevId
+                try {
+                    ac.credential(revocationInfo.getCredIdStored()).ifPresent(c -> {
+                        credExRepo.updateRevocationInfo(bpaEx.getId(), c.getRevRegId(),
+                                c.getCredRevId());
+                    });
+                } catch (IOException e) {
+                    log.error(msg.getMessage("acapy.unavailable"));
+                }
             }
         });
     }
@@ -564,10 +576,11 @@ public class IssuerCredentialManager extends BaseCredentialManager {
      * @param ex {@link V20CredExRecord v2CredEx}
      */
     public void handleV2CredentialRequest(@NonNull V20CredExRecord ex) {
-        credExRepo.findByCredentialExchangeId(ex.getCredExId()).ifPresentOrElse(db -> {
+        credExRepo.findByCredentialExchangeId(ex.getCredentialExchangeId()).ifPresentOrElse(db -> {
             try {
                 if (Boolean.FALSE.equals(acaPyConfig.getAutoRespondCredentialRequest())) {
-                    ac.issueCredentialV2RecordsIssue(ex.getCredExId(), V20CredIssueRequest.builder().build());
+                    ac.issueCredentialV2RecordsIssue(ex.getCredentialExchangeId(),
+                            V20CredIssueRequest.builder().build());
                 }
                 db.pushStates(ex.getState(), ex.getUpdatedAt());
                 credExRepo.updateAfterEventNoRevocationInfo(db.getId(),
@@ -577,7 +590,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
             }
         }, () -> {
             try {
-                ac.issueCredentialV2RecordsProblemReport(ex.getCredExId(), V20CredIssueProblemReportRequest
+                ac.issueCredentialV2RecordsProblemReport(ex.getCredentialExchangeId(), V20CredIssueProblemReportRequest
                         .builder()
                         .description(
                                 "starting a credential exchange without prior negotiation is not supported by this agent")
@@ -657,7 +670,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
         public static ExchangeResult fromV2(@NonNull V20CredExRecord ex) {
             return ExchangeResult
                     .builder()
-                    .credentialExchangeId(ex.getCredExId())
+                    .credentialExchangeId(ex.getCredentialExchangeId())
                     .threadId(ex.getThreadId())
                     .build();
         }

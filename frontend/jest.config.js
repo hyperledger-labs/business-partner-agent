@@ -6,21 +6,20 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 module.exports = {
-  preset: "@vue/cli-plugin-unit-jest",
+  preset: "@vue/cli-plugin-unit-jest/presets/typescript-and-babel",
   verbose: true,
-  moduleFileExtensions: [
-    "js",
-    "json",
-    // tell Jest to handle `*.vue` files
-    "vue",
-  ],
-  transform: {
-    // process `*.vue` files with `vue-jest`
-    //".*\\.(vue)$": "vue-jest"
-    "^.+\\.vue$": "vue-jest",
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "^@@/(.*)$": "<rootDir>/test-config/$1",
   },
-  collectCoverage: true,
-  collectCoverageFrom: ["**/*.{js,vue}", "!**/node_modules/**"],
-  //testMatch: ['<rootDir>/(src/**/*.spec.(ts|tsx|js)|**/__tests__/*.(ts|tsx|js))']
-  testMatch: ["<rootDir>/src/**/*.(spec|test).(ts|js)"],
+  collectCoverage: false,
+  coverageDirectory: "coverage",
+  collectCoverageFrom: [
+    "src/**/*.{ts,js,vue}",
+    "public/**/*.{ts,js,vue}",
+    "!**/node_modules/**",
+    "!**/dist/**",
+  ],
+  testMatch: ["**/*.spec.{ts,js}", "!**/node_modules/**"],
+  setupFiles: ["<rootDir>/test-config/setup-jest.ts"],
 };

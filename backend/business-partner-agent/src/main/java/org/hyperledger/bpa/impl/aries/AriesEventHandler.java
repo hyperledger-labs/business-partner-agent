@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -30,6 +30,7 @@ import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof_v2.V20PresExRecord;
 import org.hyperledger.aries.api.present_proof_v2.V20PresExRecordToV1Converter;
+import org.hyperledger.aries.api.revocation.RevocationNotificationEvent;
 import org.hyperledger.aries.api.trustping.PingEvent;
 import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.impl.ChatMessageManager;
@@ -142,7 +143,7 @@ public class AriesEventHandler extends EventHandler {
         if (v2CredEx.roleIsIssuer()) {
             synchronized (issuerMgr) {
                 if (v2CredEx.stateIsProposalReceived()) {
-                    issuerMgr.handleCredentialProposal(v2CredEx.toV1CredentialExchangeFromProposal(),
+                    issuerMgr.handleCredentialProposal(V2ToV1IndyCredentialConverter.INSTANCE().toV1Proposal(v2CredEx),
                             ExchangeVersion.V2);
                 } else if (v2CredEx.stateIsRequestReceived()) {
                     issuerMgr.handleV2CredentialRequest(v2CredEx);
@@ -159,7 +160,7 @@ public class AriesEventHandler extends EventHandler {
                     holderMgr.handleV2CredentialReceived(v2CredEx);
                 } else {
                     holderMgr.handleStateChangesOnly(
-                            v2CredEx.getCredExId(), v2CredEx.getState(),
+                            v2CredEx.getCredentialExchangeId(), v2CredEx.getState(),
                             v2CredEx.getUpdatedAt(), v2CredEx.getErrorMsg());
                 }
             }
@@ -179,6 +180,11 @@ public class AriesEventHandler extends EventHandler {
         // since basic message handling is so simple (only one way to handle it), let
         // the manager handle it.
         chatMessageManager.handleIncomingMessage(message);
+    }
+
+    @Override
+    public void handleRevocationNotification(RevocationNotificationEvent revocationNotification) {
+        holderMgr.handleRevocationNotification(revocationNotification);
     }
 
     @Override
