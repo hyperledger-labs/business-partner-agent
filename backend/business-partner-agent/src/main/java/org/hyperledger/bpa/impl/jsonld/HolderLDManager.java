@@ -58,13 +58,10 @@ public class HolderLDManager extends BaseHolderManager {
         BPASchema schema = null;
         if (credExBase instanceof V20CredExRecord) {
             V20CredExRecordByFormat.LdProof offer = ((V20CredExRecord) credExBase).resolveLDCredOffer();
-            // TODO this does not consider all use cases
-            List<Object> context = offer.getCredential().getContext();
-            context.removeAll(CredentialType.JSON_LD.getContext());
             List<String> type = offer.getCredential().getType();
             type.removeAll(CredentialType.JSON_LD.getType());
 
-            String schemaId = (String) context.get(0);
+            String schemaId = LDContextHelper.findSchemaId(offer);
             Optional<BPASchema> bpaSchema = schemaRepo.findBySchemaId(schemaId);
             if (bpaSchema.isPresent()) {
                 schema = bpaSchema.get();

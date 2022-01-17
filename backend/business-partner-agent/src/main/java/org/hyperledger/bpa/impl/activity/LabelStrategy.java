@@ -18,6 +18,8 @@
 package org.hyperledger.bpa.impl.activity;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -25,9 +27,11 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.jsonld.LDContextHelper;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 import org.hyperledger.bpa.model.BPASchema;
@@ -68,25 +72,25 @@ public class LabelStrategy {
         return null;
     }
 
-    public @Nullable String apply(@Nullable Credential credential) {
-        if (credential != null) {
-            Optional<String> attr = findDefaultAttribute(credential.getSchemaId());
-            if (attr.isPresent() && credential.getAttrs() != null) {
-                Map<String, String> attrs = credential.getAttrs();
+    public @Nullable String apply(@Nullable Credential ariesCredential) {
+        if (ariesCredential != null) {
+            Optional<String> attr = findDefaultAttribute(ariesCredential.getSchemaId());
+            if (attr.isPresent() && ariesCredential.getAttrs() != null) {
+                Map<String, String> attrs = ariesCredential.getAttrs();
                 return attrs.get(attr.get());
             }
         }
         return null;
     }
 
-    public @Nullable String apply(@Nullable String newLabel, @NonNull AriesCredential credential) {
+    public @Nullable String apply(@Nullable String newLabel, @NonNull AriesCredential ariesCredential) {
         String mergedLabel = null;
         if (StringUtils.isNotBlank(newLabel)) {
             mergedLabel = newLabel;
         } else {
-            Optional<String> attr = findDefaultAttribute(credential.getSchemaId());
-            if (attr.isPresent() && credential.getCredentialData() != null) {
-                Map<String, String> attrs = credential.getCredentialData();
+            Optional<String> attr = findDefaultAttribute(ariesCredential.getSchemaId());
+            if (attr.isPresent() && ariesCredential.getCredentialData() != null) {
+                Map<String, String> attrs = ariesCredential.getCredentialData();
                 mergedLabel = attrs.get(attr.get());
             }
         }
@@ -94,7 +98,22 @@ public class LabelStrategy {
     }
 
     public String apply(BPACredentialExchange.ExchangePayload ldCredential) {
-        return null;
+        String result = null;
+        if (ldCredential.typeIsJsonLd()) {
+            V20CredExRecordByFormat.LdProof ldProof = ldCredential.getLdProof();
+            String schemaId = LDContextHelper.findSchemaId(ldProof);
+            if (StringUtils.isNotEmpty(schemaId)) {
+                Optional<String> defaultAttribute = findDefaultAttribute(schemaId);
+                if (defaultAttribute.isPresent()) {
+                    JsonObject credentialSubject = ldProof.getCredential().getCredentialSubject();
+                    JsonElement je = credentialSubject.get(defaultAttribute.get());
+                    if (je != null) {
+                        result = je.getAsString();
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     private Optional<String> findDefaultAttribute(@Nullable String schemaId) {
