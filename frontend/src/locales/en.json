@@ -69,6 +69,10 @@
     "useV2": "Use V2",
     "writeToLedger": "Write endpoints to ledger"
   },
+  "credentialType": {
+    "indy": "Indy",
+    "jsonLd": "JSON-LD"
+  },
   "view": {
     "notifications": {
       "title": "Notifications",

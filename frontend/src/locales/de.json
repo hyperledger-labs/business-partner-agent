@@ -69,6 +69,10 @@
     "useV2": "V2 verwenden",
     "writeToLedger": "Endpunkte auf Register schreiben"
   },
+  "credentialType": {
+    "indy": "Indy",
+    "jsonLd": "JSON-LD"
+  },
   "view": {
     "notifications": {
       "title": "Mitteilungen",
