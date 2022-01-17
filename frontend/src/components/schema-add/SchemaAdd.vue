@@ -89,10 +89,10 @@
 import { EventBus } from "@/main";
 import adminService from "@/services/adminService";
 import VBpaButton from "@/components/BpaButton";
-import CredentialTypeTabs from "@/components/CredentialTypeTabs.vue";
+import CredentialTypeTabs from "@/components/schema-add/CredentialTypeTabs.vue";
 
 export default {
-  name: "AddSchema",
+  name: "SchemaAdd",
   components: { CredentialTypeTabs, VBpaButton },
   props: {},
   data: () => {

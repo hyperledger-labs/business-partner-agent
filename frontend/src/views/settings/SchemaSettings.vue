@@ -39,7 +39,7 @@
                 $t("view.schemaSettings.buttonImportSchema")
               }}</v-bpa-button>
             </template>
-            <AddSchema
+            <SchemaAdd
               @success="onSchemaAdded"
               @cancelled="addSchemaDialog = false"
             />
@@ -53,7 +53,7 @@
 <script lang="ts">
 import { EventBus } from "@/main";
 import SchemaList from "@/components/SchemaList.vue";
-import AddSchema from "@/components/AddSchema.vue";
+import SchemaAdd from "@/components/schema-add/SchemaAdd.vue";
 import CreateSchema from "@/components/CreateSchema.vue";
 import store from "@/store";
 import VBpaButton from "@/components/BpaButton";
@@ -62,7 +62,7 @@ export default {
   name: "SchemaSettings",
   components: {
     VBpaButton,
-    AddSchema,
+    SchemaAdd,
     CreateSchema,
     SchemaList,
   },
