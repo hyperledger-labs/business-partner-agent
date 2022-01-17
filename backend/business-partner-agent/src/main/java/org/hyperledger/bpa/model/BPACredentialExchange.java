@@ -196,6 +196,16 @@ public class BPACredentialExchange
         return indyAttributesToMap(credentialOffer != null ? credentialOffer.getIndy() : null);
     }
 
+    public @io.micronaut.core.annotation.NonNull Map<String, String> credentialAttributesToMap() {
+        if (typeIsJsonLd()) {
+            return ldAttributesToMap(ldCredential != null ? ldCredential.ldProof : null);
+        }
+        if (indyCredential == null || CollectionUtils.isEmpty(indyCredential.getAttrs())) {
+            return Map.of();
+        }
+        return indyCredential.getAttrs();
+    }
+
     private Map<String, String> ldAttributesToMap(V20CredExRecordByFormat.LdProof ldProof) {
         if (ldProof == null) {
             return Map.of();
@@ -211,13 +221,6 @@ public class BPACredentialExchange
         return p.getAttributes()
                 .stream()
                 .collect(Collectors.toMap(CredentialAttributes::getName, CredentialAttributes::getValue));
-    }
-
-    public @io.micronaut.core.annotation.NonNull Map<String, String> credentialAttributesToMap() {
-        if (indyCredential == null || CollectionUtils.isEmpty(indyCredential.getAttrs())) {
-            return Map.of();
-        }
-        return indyCredential.getAttrs();
     }
 
     // extends lombok builder

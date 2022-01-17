@@ -51,7 +51,10 @@ public class AriesStringUtil {
         return null;
     }
 
-    public static String schemaGetName(@NonNull String schemaId) {
+    public static String schemaGetName(@Nullable String schemaId) {
+        if (StringUtils.isEmpty(schemaId)) {
+            return null;
+        }
         return splitSchemaId(schemaId)[2];
     }
 

@@ -191,10 +191,7 @@ public abstract class BaseHolderManager extends BaseCredentialManager {
     }
 
     public AriesCredential buildCredential(@NonNull BPACredentialExchange dbCred) {
-        String typeLabel = null;
-        if (dbCred.getIndyCredential() != null) {
-            typeLabel = schemaService.getSchemaLabel(dbCred.getIndyCredential().getSchemaId());
-        }
-        return AriesCredential.fromBPACredentialExchange(dbCred, typeLabel);
+        // TODO dbCred is not fully initialised
+        return AriesCredential.fromBPACredentialExchange(dbCred,  dbCred.getSchema().resolveSchemaLabel());
     }
 }

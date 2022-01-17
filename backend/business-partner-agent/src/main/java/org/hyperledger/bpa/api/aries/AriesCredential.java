@@ -22,6 +22,7 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.bpa.impl.jsonld.LDContextHelper;
 import org.hyperledger.bpa.model.BPACredentialExchange;
 
 import java.util.Map;
@@ -52,12 +53,17 @@ public class AriesCredential {
     public static AriesCredential fromBPACredentialExchange(@NonNull BPACredentialExchange c,
             @Nullable String typeLabel) {
         AriesCredentialBuilder b = AriesCredential.builder();
-        if (c.getIndyCredential() != null) {
+        if (c.typeIsIndy() && c.getIndyCredential() != null) {
             b
                     .schemaId(c.getIndyCredential().getSchemaId())
                     .credentialDefinitionId(c.getIndyCredential().getCredentialDefinitionId())
                     .revocable(StringUtils.isNotEmpty(c.getIndyCredential().getRevRegId()))
-                    .credentialData(c.getIndyCredential().getAttrs());
+                    .credentialData(c.credentialAttributesToMap());
+        } else if (c.typeIsJsonLd()) {
+            b
+                    .schemaId(LDContextHelper.findSchemaId(c.getLdCredential().getLdProof()))
+                    .revocable(false) // TODO not tested
+                    .credentialData(c.credentialAttributesToMap());
         }
         return b
                 .id(c.getId())
