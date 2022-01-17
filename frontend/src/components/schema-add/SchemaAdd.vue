@@ -68,7 +68,13 @@
           </v-card-actions>
         </template>
         <template v-slot:json-ld>
-          TODO
+          <br />
+          <v-textarea
+            rows="5"
+            outlined
+            dense
+            :label="$t('component.addSchema.placeholderJsonLd')"
+          ></v-textarea>
           <v-card-actions>
             <v-layout align-end justify-end>
               <v-bpa-button color="secondary" @click="cancel()">{{

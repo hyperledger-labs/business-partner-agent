@@ -491,6 +491,7 @@
       "schemaId": "Schema ID",
       "placeholderName": "Name",
       "placeholderId": "Schema ID",
+      "placeholderJsonLd": "Enter, paste, or upload JSON-LD schema",
       "eventSuccess": "Schema added successfully"
     },
     "schemaList": {

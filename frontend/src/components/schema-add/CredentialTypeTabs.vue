@@ -13,10 +13,10 @@
       }}</v-tab>
     </v-tabs>
     <v-tabs-items v-model="tab">
-      <v-tab-item value="indy">
+      <v-tab-item value="indy" transition="false">
         <slot name="indy"></slot>
       </v-tab-item>
-      <v-tab-item value="json-ld">
+      <v-tab-item value="json-ld" transition="false">
         <slot name="json-ld"></slot>
       </v-tab-item>
     </v-tabs-items>
