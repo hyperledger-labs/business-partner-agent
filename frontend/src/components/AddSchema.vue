@@ -12,63 +12,53 @@
         {{ $t("component.addSchema.title") }}
       </v-card-title>
 
-      <v-tabs fixed-tabs v-model="tab">
-        <v-tab
-          v-for="item in tabItems"
-          :key="item.key"
-          :href="`#${item.key}`"
-          >{{ item.title }}</v-tab
-        >
-      </v-tabs>
-      <v-tabs-items v-model="tab">
-        <v-tab-item value="indy">
-          <v-card-text>
-            <v-list-item>
-              <v-list-item-title
-                class="grey--text text--darken-2 font-weight-medium"
+      <credential-type-tabs :is-busy="isBusy">
+        <template v-slot:indy>
+          <v-list-item>
+            <v-list-item-title
+              class="grey--text text--darken-2 font-weight-medium"
+            >
+              {{ $t("component.addSchema.schemaName") }}:
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              <v-text-field
+                class="mt-6"
+                :placeholder="$t('component.addSchema.placeholderName')"
+                v-model="schema.label"
+                :rules="[rules.required]"
+                outlined
+                dense
+                required
               >
-                {{ $t("component.addSchema.schemaName") }}:
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                <v-text-field
-                  class="mt-6"
-                  :placeholder="$t('component.addSchema.placeholderName')"
-                  v-model="schema.label"
-                  :rules="[rules.required]"
-                  outlined
-                  dense
-                  required
-                >
-                </v-text-field>
-              </v-list-item-subtitle>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-title
-                class="grey--text text--darken-2 font-weight-medium"
+              </v-text-field>
+            </v-list-item-subtitle>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title
+              class="grey--text text--darken-2 font-weight-medium"
+            >
+              {{ $t("component.addSchema.schemaId") }}:
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              <v-text-field
+                class="mt-6"
+                :placeholder="$t('component.addSchema.placeholderId')"
+                v-model="schema.schemaId"
+                :rules="[rules.required]"
+                outlined
+                dense
+                required
               >
-                {{ $t("component.addSchema.schemaId") }}:
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                <v-text-field
-                  class="mt-6"
-                  :placeholder="$t('component.addSchema.placeholderId')"
-                  v-model="schema.schemaId"
-                  :rules="[rules.required]"
-                  outlined
-                  dense
-                  required
-                >
-                </v-text-field>
-              </v-list-item-subtitle>
-            </v-list-item>
-          </v-card-text>
+              </v-text-field>
+            </v-list-item-subtitle>
+          </v-list-item>
           <v-card-actions>
             <v-layout align-end justify-end>
               <v-bpa-button color="secondary" @click="cancel()">{{
                 $t("button.cancel")
               }}</v-bpa-button>
               <v-bpa-button
-                :loading="this.isBusy"
+                :loading="isBusy"
                 color="primary"
                 @click="submit()"
                 :disabled="fieldsEmpty"
@@ -76,13 +66,21 @@
               >
             </v-layout>
           </v-card-actions>
-        </v-tab-item>
-        <v-tab-item value="json-ld">
-          <v-card flat>
-            <v-card-text>JSON-LD</v-card-text>
-          </v-card>
-        </v-tab-item>
-      </v-tabs-items>
+        </template>
+        <template v-slot:json-ld>
+          TODO
+          <v-card-actions>
+            <v-layout align-end justify-end>
+              <v-bpa-button color="secondary" @click="cancel()">{{
+                $t("button.cancel")
+              }}</v-bpa-button>
+              <v-bpa-button disabled :loading="isBusy" color="primary"
+                >{{ $t("button.submit") }} (TODO)</v-bpa-button
+              >
+            </v-layout>
+          </v-card-actions>
+        </template>
+      </credential-type-tabs>
     </v-card>
   </v-container>
 </template>
@@ -91,10 +89,11 @@
 import { EventBus } from "@/main";
 import adminService from "@/services/adminService";
 import VBpaButton from "@/components/BpaButton";
+import CredentialTypeTabs from "@/components/CredentialTypeTabs.vue";
 
 export default {
   name: "AddSchema",
-  components: { VBpaButton },
+  components: { CredentialTypeTabs, VBpaButton },
   props: {},
   data: () => {
     return {
@@ -103,7 +102,6 @@ export default {
         schemaId: "",
       },
       isBusy: false,
-      tab: undefined,
     };
   },
   computed: {
@@ -116,18 +114,6 @@ export default {
       return (
         this.schema.label.length === 0 || this.schema.schemaId.length === 0
       );
-    },
-    tabItems() {
-      return [
-        {
-          title: this.$t("credentialType.indy"),
-          key: "indy",
-        },
-        {
-          title: this.$t("credentialType.jsonLd"),
-          key: "json-ld",
-        },
-      ];
     },
   },
   methods: {
