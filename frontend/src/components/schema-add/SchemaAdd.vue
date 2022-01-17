@@ -73,6 +73,9 @@
             rows="5"
             outlined
             dense
+            clearable
+            :loading="false"
+            :rules="[rules.validJson]"
             :label="$t('component.addSchema.placeholderJsonLd')"
           ></v-textarea>
           <v-card-actions>
@@ -114,6 +117,12 @@ export default {
     rules() {
       return {
         required: (value) => !!value || this.$t("app.rules.required"),
+        validJson: (value) =>
+          typeof this.tryParseJSONObject(value) === "object"
+            ? true
+            : `${this.$t("app.rules.validJson")}: ${this.tryParseJSONObject(
+                value
+              )}`,
       };
     },
     fieldsEmpty() {
@@ -123,6 +132,19 @@ export default {
     },
   },
   methods: {
+    tryParseJSONObject(jsonString): object | boolean {
+      try {
+        const json = JSON.parse(jsonString);
+
+        if (json && typeof json === "object") {
+          return json;
+        }
+      } catch (error) {
+        return error.message;
+      }
+
+      return false;
+    },
     async submit() {
       this.isBusy = true;
       adminService

@@ -22,7 +22,8 @@
       "agree": "You must agree to continue",
       "validVersion": "Must be follow common version numbering (ex. 1.2 or 1.2.3)",
       "validSchema": "Must be alphanumeric with optional '_' or '-'.",
-      "validAttributeName": "Must be lowercase alpha with optional '_'."
+      "validAttributeName": "Must be lowercase alpha with optional '_'.",
+      "validJson": "Must be valid JSON"
     },
     "sessionDialog": {
       "headline": "Sesja wygasła",

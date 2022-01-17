@@ -22,7 +22,8 @@
       "agree": "Sie müssen zustimmen um fortzufahren",
       "validVersion": "Muss der allgemeinen Versionsnummerierung entsprechen (e.g. 1.2 oder 1.2.3)",
       "validSchema": "Muss alphanumerisch sein mit optionalem '_' oder '-'.",
-      "validAttributeName": "Darf nur aus Kleinbuchstaben bestehen mit optionalem '_'."
+      "validAttributeName": "Darf nur aus Kleinbuchstaben bestehen mit optionalem '_'.",
+      "validJson": "Muss valides JSON sein"
     },
     "sessionDialog": {
       "headline": "Sitzung abgelaufen",
