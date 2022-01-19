@@ -11,10 +11,12 @@
     "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'",
     "license": "generate-attribution -o ./licenses",
     "license-check": "license-checker --production --json --onlyAllow 'MIT;Python-2.0;Apache-2.0;BSD-2-Clause;BSD-3-Clause' --excludePackages 'business-partner-agent-frontend@0.1.0'",
-    "license-file-headers-add": "license-check-and-add add -f license-header/config.json -r 2021",
-    "license-file-headers-check": "license-check-and-add check -f license-header/config.json -r 2021",
+    "license-file-headers-add": "license-check-and-add add -f license-header/config.json -r 2022",
+    "license-file-headers-check": "license-check-and-add check -f license-header/config.json",
+    "license-file-headers-update-year": "license-check-and-add remove -f license-header/config.json && npm run license-file-headers-add",
+    "postinstall": "npm run license && npm run prettify",
     "prepare": "cd ../ && husky install ./frontend/.husky",
-    "prettify": "npm run license && prettier --write **/*.{css,html,js,json,mjs,scss,ts,tsx,yml,md,vue}"
+    "prettify": "prettier --write **/*.{css,html,js,json,mjs,scss,ts,tsx,yml,md,vue}"
   },
   "dependencies": {
     "axios": "0.24.0",
