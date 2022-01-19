@@ -99,6 +99,7 @@ import { EventBus } from "@/main";
 import adminService from "@/services/adminService";
 import VBpaButton from "@/components/BpaButton";
 import CredentialTypeTabs from "@/components/schema-add/CredentialTypeTabs.vue";
+import { validateJson } from "@/utils/validateUtils";
 
 export default {
   name: "SchemaAdd",
@@ -118,11 +119,7 @@ export default {
       return {
         required: (value) => !!value || this.$t("app.rules.required"),
         validJson: (value) =>
-          typeof this.tryParseJSONObject(value) === "object"
-            ? true
-            : `${this.$t("app.rules.validJson")}: ${this.tryParseJSONObject(
-                value
-              )}`,
+          validateJson(value) || this.$t("app.rules.validJson"),
       };
     },
     fieldsEmpty() {
@@ -132,19 +129,6 @@ export default {
     },
   },
   methods: {
-    tryParseJSONObject(jsonString): object | boolean {
-      try {
-        const json = JSON.parse(jsonString);
-
-        if (json && typeof json === "object") {
-          return json;
-        }
-      } catch (error) {
-        return error.message;
-      }
-
-      return false;
-    },
     async submit() {
       this.isBusy = true;
       adminService
