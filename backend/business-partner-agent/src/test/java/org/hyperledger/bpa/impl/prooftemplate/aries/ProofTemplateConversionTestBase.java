@@ -91,10 +91,9 @@ public class ProofTemplateConversionTestBase extends RunWithAries {
 
     protected void assertEqualAttributesInProofRequests(PresentProofRequest expected, PresentProofRequest actual) {
         Assertions.assertEquals(expected.getConnectionId(), actual.getConnectionId());
-        Map<String, PresentProofRequest.ProofRequest.ProofRequestedAttributes> actualAttributes = new HashMap<>();
 
-        actual.getProofRequest().getRequestedAttributes().forEach(
-                actualAttributes::put);
+        Map<String, PresentProofRequest.ProofRequest.ProofRequestedAttributes> actualAttributes = new HashMap<>(actual
+                .getProofRequest().getRequestedAttributes());
         expected.getProofRequest().getRequestedAttributes()
                 .forEach((key, value) -> assertEqualRequestedAttributes(key, value, actualAttributes.get(key)));
     }

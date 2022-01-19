@@ -45,7 +45,7 @@
         <!-- Settings -->
         <exec.mainClass />
         <revision>0.1-SNAPSHOT</revision>
-        <jdk.version>11</jdk.version>
+        <jdk.version>17</jdk.version>
         <m2e.apt.activation>maven_execution</m2e.apt.activation>
         <maven.compiler.target>${jdk.version}</maven.compiler.target>
         <maven.compiler.source>${jdk.version}</maven.compiler.source>
@@ -56,10 +56,10 @@
         <log4j2.version>2.17.1</log4j2.version>
         <lombok.version>1.18.22</lombok.version>
         <lombok.maven.plugin.version>1.18.20.0</lombok.maven.plugin.version>
-        <micronaut.version>3.2.6</micronaut.version>
+        <micronaut.version>3.2.7</micronaut.version>
         <micronaut.data.version>3.2.2</micronaut.data.version>
         <micronaut.openapi.version>3.2.0</micronaut.openapi.version>
-        <micronaut.security.version>3.2.2</micronaut.security.version>
+        <micronaut.security.version>3.2.3</micronaut.security.version>
         <mockito.version>4.2.0</mockito.version>
         <okhttp.version>4.9.3</okhttp.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>

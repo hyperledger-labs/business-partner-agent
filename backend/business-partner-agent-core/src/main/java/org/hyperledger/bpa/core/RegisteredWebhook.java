@@ -31,6 +31,7 @@ import java.util.UUID;
  */
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @SuperBuilder
 public class RegisteredWebhook {
 
@@ -69,6 +70,7 @@ public class RegisteredWebhook {
     @SuperBuilder
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
     @EqualsAndHashCode(callSuper = true)
     @ToString(callSuper = true)
     public static class RegisteredWebhookResponse extends RegisteredWebhook {

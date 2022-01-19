@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @MicronautTest
 public class PartnerManagerTest {
@@ -103,7 +102,7 @@ public class PartnerManagerTest {
         Optional<Partner> dbP = partnerRepo.findById(partnerId);
         Assertions.assertTrue(dbP.isPresent());
         Assertions.assertNotNull(dbP.get().getTags());
-        List<String> pTags = dbP.get().getTags().stream().map(Tag::getName).collect(Collectors.toList());
+        List<String> pTags = dbP.get().getTags().stream().map(Tag::getName).toList();
         Assertions.assertEquals(tagName.length, pTags.size());
         Arrays.stream(tagName).forEach(tn -> Assertions.assertTrue(pTags.contains(tn)));
     }

@@ -167,7 +167,7 @@ public class AdminControllerTest {
     }
 
     @Test
-    void testAddLDSchema() throws Exception {
+    void testAddLDSchema() {
         HttpResponse<SchemaAPI> ldSchema = client.toBlocking()
                 .exchange(HttpRequest.POST("",
                         AddSchemaRequest.AddJsonLDSchema.builder()

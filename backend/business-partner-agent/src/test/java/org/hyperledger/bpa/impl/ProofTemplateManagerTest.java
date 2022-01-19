@@ -37,7 +37,6 @@ import javax.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -147,8 +146,7 @@ class ProofTemplateManagerTest {
 
         ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, msg);
 
-        List<String> allTemplates = sut.listProofTemplates().map(BPAProofTemplate::getName)
-                .collect(Collectors.toList());
+        List<String> allTemplates = sut.listProofTemplates().map(BPAProofTemplate::getName).toList();
         assertEquals(2, allTemplates.size(), "Expected exactly 2 persisted proof templates.");
         assertTrue(allTemplates.contains("myFirstTemplate"), "Expected myFirstTemplate in the listed proof templates");
         assertTrue(allTemplates.contains("mySecondTemplate"),
