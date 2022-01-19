@@ -81,7 +81,7 @@ public abstract class BaseHolderManager extends BaseCredentialManager {
     @Inject
     Converter conv;
 
-    public abstract BPASchema checkSchema(BaseCredExRecord credExBase);
+    @io.micronaut.core.annotation.NonNull public abstract BPASchema checkSchema(BaseCredExRecord credExBase);
 
     // credential offer event
     public void handleOfferReceived(@NonNull BaseCredExRecord credExBase,
@@ -192,6 +192,6 @@ public abstract class BaseHolderManager extends BaseCredentialManager {
 
     public AriesCredential buildCredential(@NonNull BPACredentialExchange dbCred) {
         // TODO dbCred is not fully initialised
-        return AriesCredential.fromBPACredentialExchange(dbCred,  dbCred.getSchema().resolveSchemaLabel());
+        return AriesCredential.fromBPACredentialExchange(dbCred, dbCred.getSchema().resolveSchemaLabel());
     }
 }

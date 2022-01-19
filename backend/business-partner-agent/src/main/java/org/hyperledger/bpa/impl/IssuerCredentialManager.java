@@ -560,8 +560,9 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                 issuerCredExRepo.updateReferent(bpaEx.getId(), revocationInfo.getCredIdStored());
                 // holder event is missing the credRevId
                 try {
-                    ac.credential(revocationInfo.getCredIdStored()).ifPresent(c -> issuerCredExRepo.updateRevocationInfo(bpaEx.getId(), c.getRevRegId(),
-                            c.getCredRevId()));
+                    ac.credential(revocationInfo.getCredIdStored())
+                            .ifPresent(c -> issuerCredExRepo.updateRevocationInfo(bpaEx.getId(), c.getRevRegId(),
+                                    c.getCredRevId()));
                 } catch (IOException e) {
                     log.error(msg.getMessage("acapy.unavailable"));
                 }

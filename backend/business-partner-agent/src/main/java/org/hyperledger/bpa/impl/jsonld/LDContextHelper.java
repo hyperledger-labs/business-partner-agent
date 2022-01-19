@@ -31,6 +31,6 @@ public class LDContextHelper {
         List<Object> context = ldProof.getCredential().getContext();
         List<Object> contextCopy = new ArrayList<>(context);
         contextCopy.removeAll(CredentialType.JSON_LD.getContext());
-        return  (String) contextCopy.get(0);
+        return (String) contextCopy.get(0);
     }
 }

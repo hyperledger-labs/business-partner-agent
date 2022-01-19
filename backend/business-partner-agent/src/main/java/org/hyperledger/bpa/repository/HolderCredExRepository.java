@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.repository;
 
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
@@ -39,6 +40,12 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     // find
 
+    @NonNull
+    @Override
+    @Join(value = "schema", type = Join.Type.LEFT_FETCH)
+    Optional<BPACredentialExchange> findById(@NonNull UUID id);
+
+    @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     List<BPACredentialExchange> findByRoleEqualsAndStateIn(CredentialExchangeRole role,
             List<CredentialExchangeState> state);
 

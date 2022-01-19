@@ -308,6 +308,6 @@ public class HolderCredentialManager extends BaseHolderManager {
                 }
             }
         }
-        return bpaSchema;
+        return bpaSchema; // TODO never null
     }
 }
