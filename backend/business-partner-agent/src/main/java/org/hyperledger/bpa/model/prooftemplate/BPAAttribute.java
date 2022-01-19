@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -15,14 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.hyperledger.bpa.model.prooftemplate;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.micronaut.core.annotation.Introspected;
 import lombok.*;
 import org.hyperledger.bpa.controller.api.prooftemplates.Attribute;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondition;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -40,7 +38,6 @@ public class BPAAttribute {
     private String name;
     @Valid
     @Singular
-    @ValidAttributeCondition
     private List<BPACondition> conditions;
 
     public Attribute toRepresentation() {

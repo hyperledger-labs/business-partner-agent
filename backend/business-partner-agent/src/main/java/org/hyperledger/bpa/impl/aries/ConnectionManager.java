@@ -61,7 +61,6 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
@@ -343,8 +342,7 @@ public class ConnectionManager {
                     .connectionId(connectionId)
                     .build()).ifPresent(records -> {
                         final List<String> toDelete = records.stream()
-                                .map(PresentationExchangeRecord::getPresentationExchangeId)
-                                .collect(Collectors.toList());
+                                .map(PresentationExchangeRecord::getPresentationExchangeId).toList();
                         toDelete.forEach(presExId -> {
                             try {
                                 ac.presentProofRecordsRemove(presExId);

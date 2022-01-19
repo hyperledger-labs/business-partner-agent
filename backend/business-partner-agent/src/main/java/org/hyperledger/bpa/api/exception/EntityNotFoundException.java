@@ -19,11 +19,15 @@ package org.hyperledger.bpa.api.exception;
 
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+
 /**
  * Thrown in case something e.g. an entity was not found
  */
 @NoArgsConstructor
 public class EntityNotFoundException extends RuntimeException {
+
+    @Serial
     private static final long serialVersionUID = 651996777648233564L;
 
     public EntityNotFoundException(String message) {

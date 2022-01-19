@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -47,8 +47,7 @@ class Attributes {
         PresentProofRequest.ProofRequest.ProofRequestedAttributes.ProofRequestedAttributesBuilder builder = PresentProofRequest.ProofRequest.ProofRequestedAttributes
                 .builder()
                 .names(names)
-                // TODO only set when restriction is set, but then name has to be set for each
-                // attribute
+                // TODO only set when set in restriction
                 .restrictions(restrictionsBuilder.stream().map(res -> res.schemaId(schemaId).build().toJsonObject())
                         .collect(Collectors.toList()));
 

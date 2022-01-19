@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -52,6 +52,8 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     List<BPACredentialExchange> findByRoleAndIsPublicTrue(CredentialExchangeRole role);
 
+    Optional<BPACredentialExchange> findByRevRegIdAndCredRevId(String revRegId, String credRefId);
+
     @Query("SELECT * FROM bpa_credential_exchange WHERE credential->>'schemaId' = :schemaId "
             + "AND credential->>'credentialDefinitionId' = :credentialDefinitionId "
             + "AND role = 'HOLDER'")
@@ -78,6 +80,7 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
     void updateLabel(@Id UUID id, String label);
 
     Number updateRevoked(@Id UUID id, Boolean revoked,
+            CredentialExchangeState state,
             StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp);
 
     Number updateReferent(@Id UUID id, @Nullable String referent);

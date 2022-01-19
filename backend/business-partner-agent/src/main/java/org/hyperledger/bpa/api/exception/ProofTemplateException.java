@@ -18,8 +18,11 @@
 
 package org.hyperledger.bpa.api.exception;
 
+import java.io.Serial;
+
 public class ProofTemplateException extends RuntimeException {
 
+    @Serial
     private static final long serialVersionUID = -3947822306956287341L;
 
     public ProofTemplateException(String message) {

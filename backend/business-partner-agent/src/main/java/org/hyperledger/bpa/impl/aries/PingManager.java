@@ -145,7 +145,7 @@ public class PingManager {
         List<String> bpaConIds = StreamSupport.stream(repo.findAll().spliterator(), false)
                 .map(Partner::getConnectionId)
                 .filter(StringUtils::isNotEmpty)
-                .collect(Collectors.toList());
+                .toList();
 
         try {
             List<String> acaConIds = aries.connectionIds();
@@ -154,7 +154,7 @@ public class PingManager {
                     .filter(acaId -> bpaConIds
                             .stream()
                             .noneMatch(bpaId -> bpaId.equals(acaId)))
-                    .collect(Collectors.toList());
+                    .toList();
             for (String conId : stale) {
                 aries.connectionsRemove(conId);
             }

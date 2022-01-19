@@ -14,8 +14,17 @@ auto-ping-connection: true
 
 auto-provision: true
 
+auto-disclose-features: true
+
+notify-revocation: true
+monitor-revocation-notification: true
 monitor-ping: true
+
+enable-undelivered-queue: true
+exch-use-unencrypted-tags: true
 preserve-exchange-records: false
+# currently, there is an issue with the tails file failing to upload if this is enabled
+# genesis-transactions-list: './genesis-transaction-list.yml'
 public-invites: true
 plugin: 'aries_cloudagent.messaging.jsonld'
 outbound-transport: http

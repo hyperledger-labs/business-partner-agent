@@ -33,7 +33,7 @@ services:
       - ${BPA_PORT}:${BPA_PORT}
     restart: always
   bpa-agent1:
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.2
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.3
     ports:
       - ${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}
       - ${ACAPY_HTTP_PORT}:${ACAPY_HTTP_PORT}
@@ -65,6 +65,7 @@ services:
     ]
     volumes:
       - "./acapy-static-args.yml:/home/indy/acapy-static-args.yml"
+      - "./genesis-transaction-list.yml:/home/indy/genesis-transaction-list.yml"
   bpa-wallet-db1:
     image: "postgres:12-alpine"
     environment:
@@ -112,7 +113,7 @@ services:
   bpa-agent2:
     profiles:
       - second_bpa
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.2
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.3
     ports:
       - ${ACAPY2_ADMIN_PORT}:${ACAPY2_ADMIN_PORT}
       - ${ACAPY2_HTTP_PORT}:${ACAPY2_HTTP_PORT}
@@ -144,6 +145,7 @@ services:
     ]
     volumes:
       - "./acapy-static-args.yml:/home/indy/acapy-static-args.yml"
+      - "./genesis-transaction-list.yml:/home/indy/genesis-transaction-list.yml"
   bpa-wallet-db2:
     profiles:
       - second_bpa

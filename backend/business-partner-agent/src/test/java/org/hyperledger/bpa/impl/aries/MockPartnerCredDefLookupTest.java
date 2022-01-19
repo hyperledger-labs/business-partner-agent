@@ -35,7 +35,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -111,7 +110,7 @@ class MockPartnerCredDefLookupTest {
 
         partners = pRepo.findBySupportedCredential("977");
         assertEquals(2, partners.size());
-        final List<String> pList = partners.stream().map(Partner::getDid).collect(Collectors.toList());
+        final List<String> pList = partners.stream().map(Partner::getDid).toList();
         assertTrue(pList.contains(did1));
         assertTrue(pList.contains(did2));
 

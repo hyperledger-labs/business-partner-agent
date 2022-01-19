@@ -95,8 +95,7 @@ public class PartnerCredDefLookup {
                     } else {
                         result.addAll(StreamSupport.stream(partnerRepo.findAll().spliterator(), false)
                                 .filter(Partner::getAriesSupport)
-                                .map(conv::toAPIObject)
-                                .collect(Collectors.toList()));
+                                .map(conv::toAPIObject).toList());
                     }
                 });
     }

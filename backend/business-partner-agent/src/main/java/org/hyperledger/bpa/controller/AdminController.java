@@ -99,8 +99,7 @@ public class AdminController {
         if (req instanceof AddSchemaRequest.AddIndySchema) {
             return HttpResponse.ok(schemaService.addIndySchema(req.getSchemaId(), req.getLabel(),
                     req.getDefaultAttributeName(), ((AddSchemaRequest.AddIndySchema) req).getTrustedIssuer()));
-        } else if (req instanceof AddSchemaRequest.AddJsonLDSchema) {
-            AddSchemaRequest.AddJsonLDSchema addSchema = (AddSchemaRequest.AddJsonLDSchema) req;
+        } else if (req instanceof AddSchemaRequest.AddJsonLDSchema addSchema) {
             return HttpResponse.ok(schemaService.addJsonLDSchema(req.getSchemaId(), req.getLabel(),
                     req.getDefaultAttributeName(), addSchema.getLdType(), addSchema.getAttributes()));
         }
