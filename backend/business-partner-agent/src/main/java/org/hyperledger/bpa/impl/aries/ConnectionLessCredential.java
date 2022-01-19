@@ -41,7 +41,9 @@ import org.hyperledger.bpa.repository.IssuerCredExRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
@@ -95,7 +97,7 @@ public class ConnectionLessCredential {
         Map<String, String> document = conv.toStringMap(request.getDocument());
         V1CredentialFreeOfferHelper.CredentialFreeOffer freeOffer = h
                 .buildFreeOffer(dbCredDef.getCredentialDefinitionId(), document);
-        log.debug("{}", GsonConfig.prettyPrinter().toJson(freeOffer));
+        log.debug("{}", GsonConfig.defaultNoEscaping().toJson(freeOffer));
         Partner p = persistPartner(freeOffer.getInvitationRecord());
         persistCredentialExchange(freeOffer, dbCredDef, p);
         return createURI(IssuerController.ISSUER_CONTROLLER_BASE_URL + "/issue-credential/connection-less/"
@@ -109,13 +111,19 @@ public class ConnectionLessCredential {
      * @return base64 encoded invitation URL
      */
     public String handleConnectionLess(@NonNull UUID invMessageId) {
+        log.debug("Handling connectionless credential request: {}", invMessageId);
         Partner ex = partnerRepo.findByInvitationMsgId(invMessageId.toString())
                 .orElseThrow(EntityNotFoundException::new);
         if (ex.getInvitationRecord() == null) {
             // TODO nice exception
             throw new IllegalStateException();
         }
-        return "didcomm://" + host + "?m=" + ex.getInvitationRecord().getInvitationUrl();
+        // getInvitationUrl() has an encoding issue
+        byte[] envelopeBase64 = Base64.getEncoder().encode(
+                GsonConfig.defaultNoEscaping().toJson(
+                        ex.getInvitationRecord().getInvitation()).getBytes(StandardCharsets.UTF_8));
+        return "didcomm://" + host + "?oob=" + new String(envelopeBase64, StandardCharsets.UTF_8);
+        // TODO invalidate invitation, timeout and on request
     }
 
     private void persistCredentialExchange(

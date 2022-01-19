@@ -166,10 +166,10 @@ public class IssuerController {
      * @param id {@link UUID}
      * @return Redirect with encoded credential offer in the location header
      */
-    @ApiResponse(responseCode = "307", description = "Redirect with encoded credential offer in the location header")
+    @ApiResponse(responseCode = "301", description = "Redirect with encoded credential offer in the location header")
     @Get("/issue-credential/connection-less/{id}")
     public HttpResponse<Object> handleConnectionLess(@PathVariable UUID id) {
-        return HttpResponse.status(HttpStatus.TEMPORARY_REDIRECT).header("location",
+        return HttpResponse.status(HttpStatus.MOVED_PERMANENTLY).header("location",
                 connectionLess.handleConnectionLess(id));
     }
 
