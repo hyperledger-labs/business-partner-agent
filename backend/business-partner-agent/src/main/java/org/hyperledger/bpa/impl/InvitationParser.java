@@ -23,7 +23,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -83,10 +86,10 @@ public class InvitationParser {
         private Map<String, Object> invitation;
     }
 
-    // take an url, determine if it is an invitation, and if so, what type and can
+    // take an uri, determine if it is an invitation, and if so, what type and can
     // it be handled?
-    public CheckInvitationResponse checkInvitation(@NonNull String invitationUrl) {
-        HttpUrl url = HttpUrl.parse(URLDecoder.decode(invitationUrl, StandardCharsets.UTF_8));
+    public CheckInvitationResponse checkInvitation(@NonNull String invitationUri) {
+        HttpUrl url = uriToUrl(invitationUri);
         String invitationBlock;
         if (url != null) {
             invitationBlock = parseInvitationBlock(url);
@@ -139,7 +142,7 @@ public class InvitationParser {
                     invitation.setInvitation(o);
                     invitation.setParsed(true);
 
-                    if (CONNECTION_INVITATION_TYPES.contains(o.get("@type"))) {
+                    if (CONNECTION_INVITATION_TYPES.contains((String) o.get("@type"))) {
                         // Invitation
                         try {
                             Gson gson = GsonConfig.defaultConfig();
@@ -151,7 +154,7 @@ public class InvitationParser {
                             log.error(msg);
                         }
 
-                    } else if (OOB_INVITATION_TYPES.contains(o.get("@type"))) {
+                    } else if (OOB_INVITATION_TYPES.contains((String) o.get("@type"))) {
                         invitation.setOob(true);
 
                         Gson gson = GsonConfig.defaultConfig();
@@ -197,8 +200,10 @@ public class InvitationParser {
     private String parseInvitationBlock(@NonNull HttpUrl url) {
         for (String name : paramNames) {
             String invitationBlock = url.queryParameter(name);
-            if (StringUtils.isNotEmpty(invitationBlock))
-                return invitationBlock;
+            if (StringUtils.isNotEmpty(invitationBlock)) {
+                // TODO not good
+                return invitationBlock.replace(" ", "+");
+            }
         }
         return null;
     }
@@ -220,7 +225,7 @@ public class InvitationParser {
                 if (response.isRedirect()) {
                     String location = response.header("location");
                     if (StringUtils.isNotEmpty(location)) {
-                        HttpUrl locationUrl = getQueryFromLocation(location);
+                        HttpUrl locationUrl = uriToUrl(location);
                         if (locationUrl != null)
                             return parseInvitationBlock(locationUrl);
                     }
@@ -233,23 +238,29 @@ public class InvitationParser {
     }
 
     /**
-     * The location header can either be an HTTP URL or simply a URI, as we only
-     * process the query, and we do not want to rewrite the query parser the query
-     * is extracted from the URI and then wrapped again into a dummy HTTP URL
+     * The invitation can be in the form of, uri, url, or redirect.
+     * In case of uri we are only interested in the query so the
+     * result is wrapped for easier parsing. In case of an url
+     * we simply convert to maintain the original location.
      * 
-     * @param location the content of the location header
+     * @param invitationUri uri as String
      * @return {@link HttpUrl} or null
      */
-    private HttpUrl getQueryFromLocation(String location) {
+    private HttpUrl uriToUrl(String invitationUri) {
         HttpUrl result = null;
         try {
-            URI uri = new URI(location);
-            String query = uri.getQuery();
-            if (StringUtils.isNotEmpty(query)) {
-                result = HttpUrl.parse("https://placeholder.co?" + query);
+            String decodedUri = URLDecoder.decode(invitationUri, StandardCharsets.UTF_8);
+            URI uri = new URI(decodedUri);
+            if (uri.getScheme().startsWith("http")) {
+                result = HttpUrl.parse(decodedUri);
+            } else {
+                String query = uri.getQuery();
+                if (StringUtils.isNotEmpty(query)) {
+                    result = HttpUrl.parse("https://placeholder.co?" + query);
+                }
             }
         } catch (URISyntaxException e) {
-            log.error("Location header contained a invalid URI", e);
+            throw new InvitationException(ms.getMessage("api.invitation.url.invalid"));
         }
         return result;
     }

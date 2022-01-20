@@ -55,7 +55,7 @@ public class InvitationController {
      */
     @Post("/check")
     public MutableHttpResponse<Object> checkInvitation(@Body CheckInvitationRequest body) {
-        return HttpResponse.ok(cm.checkReceivedInvitation(body.getInvitationUrl()));
+        return HttpResponse.ok(cm.checkReceivedInvitation(body.getInvitationUri()));
     }
 
     /**

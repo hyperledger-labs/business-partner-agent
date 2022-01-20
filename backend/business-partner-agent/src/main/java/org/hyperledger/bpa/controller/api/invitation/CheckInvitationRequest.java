@@ -17,11 +17,13 @@
  */
 package org.hyperledger.bpa.controller.api.invitation;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 public class CheckInvitationRequest {
-    private String invitationUrl;
+    @JsonAlias({"invitationUrl", "invitationUri"})
+    private String invitationUri;
 }

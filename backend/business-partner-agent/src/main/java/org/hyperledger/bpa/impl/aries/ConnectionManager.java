@@ -57,6 +57,7 @@ import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.io.IOException;
+import java.net.URI;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
@@ -128,8 +129,8 @@ public class ConnectionManager {
         return mapper.valueToTree(invitation);
     }
 
-    public CheckInvitationResponse checkReceivedInvitation(@NonNull String invitationUrl) {
-        return invitationParser.checkInvitation(invitationUrl);
+    public CheckInvitationResponse checkReceivedInvitation(@NonNull String invitationUri) {
+        return invitationParser.checkInvitation(invitationUri);
     }
 
     public void receiveInvitation(@NonNull String encodedInvitation, @Nullable String alias,
@@ -161,6 +162,7 @@ public class ConnectionManager {
                             ReceiveInvitationFilter.builder()
                                     .alias(invitation.getInvitationMessage().getLabel())
                                     .autoAccept(true)
+                                    .useExistingConnection(true)
                                     .build())
                             .ifPresent(r -> {
                                 if (!prePersist) {
@@ -172,6 +174,11 @@ public class ConnectionManager {
                     String msg = messageSource.getMessage("acapy.unavailable");
                     log.error(msg, e);
                     throw new NetworkException(msg);
+                } catch (AriesException e) {
+                    // if there is an attachment ignore any aca-py exception
+                    if (CollectionUtils.isEmpty(invitation.getInvitationMessage().getRequestsTildeAttach())) {
+                        throw new InvitationException(e.getMessage());
+                    }
                 }
             }
         } else {
