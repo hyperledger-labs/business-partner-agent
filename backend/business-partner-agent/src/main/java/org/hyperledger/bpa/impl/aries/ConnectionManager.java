@@ -57,7 +57,6 @@ import org.hyperledger.bpa.repository.PartnerProofRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.io.IOException;
-import java.net.URI;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
