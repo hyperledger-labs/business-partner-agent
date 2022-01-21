@@ -89,7 +89,7 @@ public class InvitationParser {
     // take an uri, determine if it is an invitation, and if so, what type and can
     // it be handled?
     public CheckInvitationResponse checkInvitation(@NonNull String invitationUri) {
-        HttpUrl url = uriToUrl(invitationUri);
+        HttpUrl url = uriToUrl(invitationUri, true);
         String invitationBlock;
         if (url != null) {
             invitationBlock = parseInvitationBlock(url);
@@ -225,7 +225,7 @@ public class InvitationParser {
                 if (response.isRedirect()) {
                     String location = response.header("location");
                     if (StringUtils.isNotEmpty(location)) {
-                        HttpUrl locationUrl = uriToUrl(location);
+                        HttpUrl locationUrl = uriToUrl(location, false);
                         if (locationUrl != null)
                             return parseInvitationBlock(locationUrl);
                     }
@@ -244,12 +244,16 @@ public class InvitationParser {
      * location.
      * 
      * @param invitationUri uri as String
+     * @param decode if the invitationUri needs url decoding
      * @return {@link HttpUrl} or null
      */
-    private HttpUrl uriToUrl(String invitationUri) {
+    private HttpUrl uriToUrl(String invitationUri, boolean decode) {
         HttpUrl result = null;
         try {
-            String decodedUri = URLDecoder.decode(invitationUri, StandardCharsets.UTF_8);
+            String decodedUri = invitationUri;
+            if (decode) {
+                decodedUri = URLDecoder.decode(invitationUri, StandardCharsets.UTF_8);
+            }
             URI uri = new URI(decodedUri);
             if (uri.getScheme().startsWith("http")) {
                 result = HttpUrl.parse(decodedUri);
