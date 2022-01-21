@@ -238,10 +238,10 @@ public class InvitationParser {
     }
 
     /**
-     * The invitation can be in the form of, uri, url, or redirect.
-     * In case of uri we are only interested in the query so the
-     * result is wrapped for easier parsing. In case of an url
-     * we simply convert to maintain the original location.
+     * The invitation can be in the form of, uri, url, or redirect. In case of uri
+     * we are only interested in the query so the result is wrapped for easier
+     * parsing. In case of an url we simply convert to maintain the original
+     * location.
      * 
      * @param invitationUri uri as String
      * @return {@link HttpUrl} or null

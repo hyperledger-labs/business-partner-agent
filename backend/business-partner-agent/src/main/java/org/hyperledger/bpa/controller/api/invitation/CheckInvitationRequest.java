@@ -24,6 +24,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class CheckInvitationRequest {
-    @JsonAlias({"invitationUrl", "invitationUri"})
+    @JsonAlias({ "invitationUrl", "invitationUri" })
     private String invitationUri;
 }

@@ -166,6 +166,7 @@ public class IssuerController {
      * @param id {@link UUID}
      * @return Redirect with encoded credential offer in the location header
      */
+    @Secured(SecurityRule.IS_ANONYMOUS)
     @ApiResponse(responseCode = "301", description = "Redirect with encoded credential offer in the location header")
     @Get("/issue-credential/connection-less/{id}")
     public HttpResponse<Object> handleConnectionLess(@PathVariable UUID id) {
