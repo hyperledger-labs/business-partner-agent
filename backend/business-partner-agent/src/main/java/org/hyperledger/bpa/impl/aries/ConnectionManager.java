@@ -245,7 +245,13 @@ public class ConnectionManager {
 
     // handles invitations and incoming connection events
     public void handleIncomingConnectionEvent(ConnectionRecord record) {
-        partnerRepo.findByConnectionIdOrInvitationMsgId(record.getConnectionId(), record.getInvitationMsgId()).ifPresentOrElse(
+        Optional<Partner> partner;
+        if (StringUtils.isNotEmpty(record.getInvitationMsgId())) {
+            partner = partnerRepo.findByConnectionIdOrInvitationMsgId(record.getConnectionId(), record.getInvitationMsgId());
+        } else {
+            partner = partnerRepo.findByConnectionId(record.getConnectionId());
+        }
+        partner.ifPresentOrElse(
                 dbP -> {
                     if (StringUtils.isEmpty(dbP.getLabel())) {
                         dbP.setLabel(record.getTheirLabel());
