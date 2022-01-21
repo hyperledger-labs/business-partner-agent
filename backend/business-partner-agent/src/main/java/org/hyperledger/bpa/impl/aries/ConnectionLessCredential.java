@@ -30,8 +30,11 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialFreeOfferHelper;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
+import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.IssuerController;
 import org.hyperledger.bpa.controller.api.issuer.IssueConnectionLessRequest;
+import org.hyperledger.bpa.impl.activity.DocumentValidator;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.BPACredentialDefinition;
 import org.hyperledger.bpa.model.BPACredentialExchange;
@@ -78,6 +81,12 @@ public class ConnectionLessCredential {
     @Inject
     PartnerRepository partnerRepo;
 
+    @Inject
+    DocumentValidator validator;
+
+    @Inject
+    BPAMessageSource.DefaultMessageSource ms;
+
     private final V1CredentialFreeOfferHelper h;
 
     @Inject
@@ -92,14 +101,21 @@ public class ConnectionLessCredential {
      * @return location of the offer
      */
     public URI issueConnectionLess(@NonNull IssueConnectionLessRequest request) {
-        // TODO nice exception and attribute check
-        BPACredentialDefinition dbCredDef = credDefRepo.findById(request.getCredDefId()).orElseThrow();
+        BPACredentialDefinition dbCredDef = credDefRepo.findById(request.getCredDefId())
+                .orElseThrow(() -> new WrongApiUsageException(
+                        ms.getMessage("api.issuer.creddef.not.found", Map.of("id", request.getCredDefId()))));
+        validator.validateAttributesAgainstSchema(request.getDocument(), dbCredDef.getSchema().getSchemaId());
+
         Map<String, String> document = conv.toStringMap(request.getDocument());
+
         V1CredentialFreeOfferHelper.CredentialFreeOffer freeOffer = h
                 .buildFreeOffer(dbCredDef.getCredentialDefinitionId(), document);
+
         log.debug("{}", GsonConfig.defaultNoEscaping().toJson(freeOffer));
+
         Partner p = persistPartner(freeOffer.getInvitationRecord());
         persistCredentialExchange(freeOffer, dbCredDef, p);
+
         return createURI(IssuerController.ISSUER_CONTROLLER_BASE_URL + "/issue-credential/connection-less/"
                 + freeOffer.getInvitationRecord().getInviMsgId());
     }
@@ -115,8 +131,8 @@ public class ConnectionLessCredential {
         Partner ex = partnerRepo.findByInvitationMsgId(invMessageId.toString())
                 .orElseThrow(EntityNotFoundException::new);
         if (ex.getInvitationRecord() == null) {
-            // TODO nice exception
-            throw new IllegalStateException();
+            throw new IllegalStateException(ms.getMessage("api.issuer.connectionless.invitation.not.found",
+                    Map.of("id", invMessageId)));
         }
         // getInvitationUrl() has an encoding issue
         byte[] envelopeBase64 = Base64.getEncoder().encode(
