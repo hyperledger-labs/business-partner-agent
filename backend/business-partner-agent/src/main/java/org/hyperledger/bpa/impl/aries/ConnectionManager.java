@@ -247,7 +247,8 @@ public class ConnectionManager {
     public void handleIncomingConnectionEvent(ConnectionRecord record) {
         Optional<Partner> partner;
         if (StringUtils.isNotEmpty(record.getInvitationMsgId())) {
-            partner = partnerRepo.findByConnectionIdOrInvitationMsgId(record.getConnectionId(), record.getInvitationMsgId());
+            partner = partnerRepo.findByConnectionIdOrInvitationMsgId(record.getConnectionId(),
+                    record.getInvitationMsgId());
         } else {
             partner = partnerRepo.findByConnectionId(record.getConnectionId());
         }
@@ -325,6 +326,7 @@ public class ConnectionManager {
             didResolver.lookupIncoming(p);
             if (record.isIncomingConnection()) {
                 eventPublisher.publishEventAsync(PartnerRequestReceivedEvent.builder().partner(p).build());
+                partnerRepo.updateInvitationRecord(p.getId(), null); // reset invitation, if there is one
             }
         } else if (record.stateIsActive() && record.isIncomingConnection()) {
             eventPublisher.publishEventAsync(PartnerRequestCompletedEvent.builder().partner(p).build());

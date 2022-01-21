@@ -139,7 +139,6 @@ public class ConnectionLessCredential {
                 GsonConfig.defaultNoEscaping().toJson(
                         ex.getInvitationRecord().getInvitation()).getBytes(StandardCharsets.UTF_8));
         return "didcomm://" + host + "?oob=" + new String(envelopeBase64, StandardCharsets.UTF_8);
-        // TODO invalidate invitation, timeout and on request
     }
 
     private void persistCredentialExchange(

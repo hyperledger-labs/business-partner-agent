@@ -244,7 +244,7 @@ public class InvitationParser {
      * location.
      * 
      * @param invitationUri uri as String
-     * @param decode if the invitationUri needs url decoding
+     * @param decode        if the invitationUri needs url decoding
      * @return {@link HttpUrl} or null
      */
     private HttpUrl uriToUrl(String invitationUri, boolean decode) {
