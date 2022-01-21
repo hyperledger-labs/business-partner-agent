@@ -52,6 +52,8 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     Optional<Partner> findByConnectionId(String connectionId);
 
+    Optional<Partner> findByConnectionIdOrInvitationMsgId(String connectionId, String invitationMsgId);
+
     Optional<Partner> findByDid(String did);
 
     List<Partner> findByDidIn(List<String> did);
