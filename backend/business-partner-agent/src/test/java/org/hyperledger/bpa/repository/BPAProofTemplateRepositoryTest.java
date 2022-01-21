@@ -118,7 +118,7 @@ class BPAProofTemplateRepositoryTest {
         Instant firstCreatedAt = savedProofTemplate.get().getCreatedAt();
         Thread.sleep(50);
         proofTemplateToSave.setName("update to save");
-        // modified timestamp from cliet
+        // modified timestamp from client
         proofTemplateToSave.setCreatedAt(Instant.now());
         repo.save(proofTemplateToSave);
         savedProofTemplate = repo.findById(newEntityId);

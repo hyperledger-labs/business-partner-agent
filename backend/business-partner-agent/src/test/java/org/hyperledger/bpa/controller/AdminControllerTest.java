@@ -179,7 +179,7 @@ public class AdminControllerTest {
                                 .ldType("Person")
                                 .build()),
                         SchemaAPI.class);
-        SchemaAPI api = getSchema(ldSchema.getBody().get().getId());
+        SchemaAPI api = getSchema(ldSchema.getBody().orElseThrow().getId());
         Assertions.assertEquals("Person", api.getLdType());
     }
 
