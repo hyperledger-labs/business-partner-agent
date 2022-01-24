@@ -69,7 +69,7 @@ public class CredEx {
         CredDef credDef = db.getCredDef() != null ? CredDef.from(db.getCredDef())
                 : CredDef.builder().schema(schemaAPI).build();
         String displayText = null;
-        if (schemaAPI != null && credDef != null) {
+        if (schemaAPI != null) {
             displayText = String.format("%s (%s)", schemaAPI.getLabel(), schemaAPI.getVersion());
             if (StringUtils.isNotBlank(credDef.getTag())) {
                 displayText = displayText + String.format(" - %s", credDef.getTag());
