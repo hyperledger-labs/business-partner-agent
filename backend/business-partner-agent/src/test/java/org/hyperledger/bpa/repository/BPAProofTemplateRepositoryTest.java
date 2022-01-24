@@ -25,7 +25,7 @@ import org.hyperledger.bpa.impl.aries.config.SchemaService;
 import org.hyperledger.bpa.model.BPAProofTemplate;
 import org.hyperledger.bpa.model.PartnerProof;
 import org.hyperledger.bpa.model.prooftemplate.*;
-import org.hyperledger.bpa.util.SchemaMockFactory;
+import org.hyperledger.bpa.testutil.SchemaMockFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

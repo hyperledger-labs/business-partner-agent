@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
 import org.hyperledger.bpa.impl.activity.VPManager;
-import org.hyperledger.bpa.util.FileLoader;
+import org.hyperledger.bpa.testutil.FileLoader;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.time.Instant;

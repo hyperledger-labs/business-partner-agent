@@ -26,7 +26,7 @@ import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.model.prooftemplate.BPACondition;
 import org.hyperledger.bpa.model.prooftemplate.ValueOperators;
-import org.hyperledger.bpa.util.SchemaMockFactory;
+import org.hyperledger.bpa.testutil.SchemaMockFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
