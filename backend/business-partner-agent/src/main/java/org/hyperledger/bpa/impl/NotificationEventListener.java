@@ -28,7 +28,7 @@ import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.notification.*;
 import org.hyperledger.bpa.config.ActivityLogConfig;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
-import org.hyperledger.bpa.impl.messaging.MessageService;
+import org.hyperledger.bpa.impl.messaging.websocket.MessageService;
 import org.hyperledger.bpa.impl.notification.*;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.PartnerProof;
