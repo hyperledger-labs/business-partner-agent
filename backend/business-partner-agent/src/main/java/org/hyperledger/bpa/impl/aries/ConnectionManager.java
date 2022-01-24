@@ -49,7 +49,6 @@ import org.hyperledger.bpa.controller.api.invitation.CheckInvitationResponse;
 import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
 import org.hyperledger.bpa.impl.InvitationParser;
 import org.hyperledger.bpa.impl.activity.DidResolver;
-import org.hyperledger.bpa.impl.notification.*;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.PartnerProof;
