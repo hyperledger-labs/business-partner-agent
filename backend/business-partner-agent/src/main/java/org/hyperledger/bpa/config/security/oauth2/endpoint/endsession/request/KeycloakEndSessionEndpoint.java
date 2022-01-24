@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -15,14 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.security.oauth2.endpoint.endsession.request;
+package org.hyperledger.bpa.config.security.oauth2.endpoint.endsession.request;
 
 import io.micronaut.context.annotation.Value;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.oauth2.endpoint.endsession.request.EndSessionEndpoint;
 import jakarta.inject.Singleton;
-import org.hyperledger.bpa.security.oauth2.client.RequiresKeycloak;
+import org.hyperledger.bpa.config.security.oauth2.client.RequiresKeycloak;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;

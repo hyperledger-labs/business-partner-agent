@@ -48,7 +48,7 @@
     </Match>
 
     <Match>
-        <Class name="org.hyperledger.bpa.security.oauth2.endpoint.token.response.KeycloakUserDetailsMapper" />
+        <Class name="org.hyperledger.bpa.config.security.oauth2.endpoint.token.response.KeycloakUserDetailsMapper" />
         <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
     </Match>
 
