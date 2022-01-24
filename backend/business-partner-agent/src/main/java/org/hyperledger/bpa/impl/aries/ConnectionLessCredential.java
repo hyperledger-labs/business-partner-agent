@@ -131,7 +131,7 @@ public class ConnectionLessCredential {
         Partner ex = partnerRepo.findByInvitationMsgId(invMessageId.toString())
                 .orElseThrow(EntityNotFoundException::new);
         if (ex.getInvitationRecord() == null) {
-            throw new IllegalStateException(ms.getMessage("api.issuer.connectionless.invitation.not.found",
+            throw new EntityNotFoundException(ms.getMessage("api.issuer.connectionless.invitation.not.found",
                     Map.of("id", invMessageId)));
         }
         // getInvitationUrl() has an encoding issue
