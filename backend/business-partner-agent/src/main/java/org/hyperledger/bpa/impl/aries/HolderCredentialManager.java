@@ -70,7 +70,7 @@ import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.repository.HolderCredExRepository;
 import org.hyperledger.bpa.repository.MyDocumentRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
-import org.hyperledger.bpa.util.CryptoUtil;
+import org.hyperledger.bpa.impl.util.CryptoUtil;
 
 import java.io.IOException;
 import java.time.Instant;
