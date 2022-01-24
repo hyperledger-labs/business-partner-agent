@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -30,8 +30,11 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialFreeOfferHelper;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
+import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.IssuerController;
 import org.hyperledger.bpa.controller.api.issuer.IssueConnectionLessRequest;
+import org.hyperledger.bpa.impl.activity.DocumentValidator;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.BPACredentialDefinition;
 import org.hyperledger.bpa.model.BPACredentialExchange;
@@ -41,7 +44,9 @@ import org.hyperledger.bpa.repository.IssuerCredExRepository;
 import org.hyperledger.bpa.repository.PartnerRepository;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
@@ -76,6 +81,12 @@ public class ConnectionLessCredential {
     @Inject
     PartnerRepository partnerRepo;
 
+    @Inject
+    DocumentValidator validator;
+
+    @Inject
+    BPAMessageSource.DefaultMessageSource ms;
+
     private final V1CredentialFreeOfferHelper h;
 
     @Inject
@@ -90,14 +101,21 @@ public class ConnectionLessCredential {
      * @return location of the offer
      */
     public URI issueConnectionLess(@NonNull IssueConnectionLessRequest request) {
-        // TODO nice exception and attribute check
-        BPACredentialDefinition dbCredDef = credDefRepo.findById(request.getCredDefId()).orElseThrow();
+        BPACredentialDefinition dbCredDef = credDefRepo.findById(request.getCredDefId())
+                .orElseThrow(() -> new WrongApiUsageException(
+                        ms.getMessage("api.issuer.creddef.not.found", Map.of("id", request.getCredDefId()))));
+        validator.validateAttributesAgainstSchema(request.getDocument(), dbCredDef.getSchema().getSchemaId());
+
         Map<String, String> document = conv.toStringMap(request.getDocument());
+
         V1CredentialFreeOfferHelper.CredentialFreeOffer freeOffer = h
                 .buildFreeOffer(dbCredDef.getCredentialDefinitionId(), document);
-        log.debug("{}", GsonConfig.prettyPrinter().toJson(freeOffer));
+
+        log.debug("{}", GsonConfig.defaultNoEscaping().toJson(freeOffer));
+
         Partner p = persistPartner(freeOffer.getInvitationRecord());
         persistCredentialExchange(freeOffer, dbCredDef, p);
+
         return createURI(IssuerController.ISSUER_CONTROLLER_BASE_URL + "/issue-credential/connection-less/"
                 + freeOffer.getInvitationRecord().getInviMsgId());
     }
@@ -109,13 +127,18 @@ public class ConnectionLessCredential {
      * @return base64 encoded invitation URL
      */
     public String handleConnectionLess(@NonNull UUID invMessageId) {
+        log.debug("Handling connectionless credential request: {}", invMessageId);
         Partner ex = partnerRepo.findByInvitationMsgId(invMessageId.toString())
                 .orElseThrow(EntityNotFoundException::new);
         if (ex.getInvitationRecord() == null) {
-            // TODO nice exception
-            throw new IllegalStateException();
+            throw new IllegalStateException(ms.getMessage("api.issuer.connectionless.invitation.not.found",
+                    Map.of("id", invMessageId)));
         }
-        return "didcomm://" + host + "?m=" + ex.getInvitationRecord().getInvitationUrl();
+        // getInvitationUrl() has an encoding issue
+        byte[] envelopeBase64 = Base64.getEncoder().encode(
+                GsonConfig.defaultNoEscaping().toJson(
+                        ex.getInvitationRecord().getInvitation()).getBytes(StandardCharsets.UTF_8));
+        return "didcomm://" + host + "?oob=" + new String(envelopeBase64, StandardCharsets.UTF_8);
     }
 
     private void persistCredentialExchange(

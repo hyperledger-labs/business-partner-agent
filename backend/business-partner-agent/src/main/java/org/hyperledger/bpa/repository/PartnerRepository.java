@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -25,6 +25,7 @@ import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
+import org.hyperledger.acy_py.generated.model.InvitationRecord;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.model.Partner;
 import org.hyperledger.bpa.model.StateChangeDecorator;
@@ -51,6 +52,8 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
     Iterable<Partner> findAll();
 
     Optional<Partner> findByConnectionId(String connectionId);
+
+    Optional<Partner> findByConnectionIdOrInvitationMsgId(String connectionId, String invitationMsgId);
 
     Optional<Partner> findByDid(String did);
 
@@ -96,6 +99,8 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
 
     Number updateVerifiablePresentation(@Id UUID id,
             Map<String, Object> verifiablePresentation, @Nullable Boolean valid);
+
+    Number updateInvitationRecord(@Id UUID is, @Nullable InvitationRecord invitationRecord);
 
     // The queries below are native queries to prevent changes to the last updated
     // timestamp. As this timestamp indicates user interaction, whereas the queries

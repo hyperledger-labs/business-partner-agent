@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -34,11 +34,12 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.*;
 import org.hyperledger.aries.api.did_exchange.DidExchangeCreateRequestFilter;
 import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.aries.api.issue_credential_v1.IssueCredentialRecordsFilter;
+import org.hyperledger.aries.api.issue_credential_v2.V2IssueCredentialRecordsFilter;
 import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
 import org.hyperledger.aries.api.out_of_band.InvitationCreateRequest;
 import org.hyperledger.aries.api.out_of_band.ReceiveInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.InvitationException;
 import org.hyperledger.bpa.api.exception.NetworkException;
@@ -128,8 +129,8 @@ public class ConnectionManager {
         return mapper.valueToTree(invitation);
     }
 
-    public CheckInvitationResponse checkReceivedInvitation(@NonNull String invitationUrl) {
-        return invitationParser.checkInvitation(invitationUrl);
+    public CheckInvitationResponse checkReceivedInvitation(@NonNull String invitationUri) {
+        return invitationParser.checkInvitation(invitationUri);
     }
 
     public void receiveInvitation(@NonNull String encodedInvitation, @Nullable String alias,
@@ -161,6 +162,7 @@ public class ConnectionManager {
                             ReceiveInvitationFilter.builder()
                                     .alias(invitation.getInvitationMessage().getLabel())
                                     .autoAccept(true)
+                                    .useExistingConnection(true)
                                     .build())
                             .ifPresent(r -> {
                                 if (!prePersist) {
@@ -172,6 +174,11 @@ public class ConnectionManager {
                     String msg = messageSource.getMessage("acapy.unavailable");
                     log.error(msg, e);
                     throw new NetworkException(msg);
+                } catch (AriesException e) {
+                    // if there is an attachment ignore any aca-py exception
+                    if (CollectionUtils.isEmpty(invitation.getInvitationMessage().getRequestsTildeAttach())) {
+                        throw new InvitationException(e.getMessage());
+                    }
                 }
             }
         } else {
@@ -238,7 +245,14 @@ public class ConnectionManager {
 
     // handles invitations and incoming connection events
     public void handleIncomingConnectionEvent(ConnectionRecord record) {
-        partnerRepo.findByConnectionId(record.getConnectionId()).ifPresentOrElse(
+        Optional<Partner> partner;
+        if (StringUtils.isNotEmpty(record.getInvitationMsgId())) {
+            partner = partnerRepo.findByConnectionIdOrInvitationMsgId(record.getConnectionId(),
+                    record.getInvitationMsgId());
+        } else {
+            partner = partnerRepo.findByConnectionId(record.getConnectionId());
+        }
+        partner.ifPresentOrElse(
                 dbP -> {
                     if (StringUtils.isEmpty(dbP.getLabel())) {
                         dbP.setLabel(record.getTheirLabel());
@@ -312,6 +326,7 @@ public class ConnectionManager {
             didResolver.lookupIncoming(p);
             if (record.isIncomingConnection()) {
                 eventPublisher.publishEventAsync(PartnerRequestReceivedEvent.builder().partner(p).build());
+                partnerRepo.updateInvitationRecord(p.getId(), null); // reset invitation, if there is one
             }
         } else if (record.stateIsActive() && record.isIncomingConnection()) {
             eventPublisher.publishEventAsync(PartnerRequestCompletedEvent.builder().partner(p).build());
@@ -340,17 +355,36 @@ public class ConnectionManager {
             ac.presentProofRecords(PresentProofRecordsFilter
                     .builder()
                     .connectionId(connectionId)
-                    .build()).ifPresent(records -> {
-                        final List<String> toDelete = records.stream()
-                                .map(PresentationExchangeRecord::getPresentationExchangeId).toList();
-                        toDelete.forEach(presExId -> {
-                            try {
-                                ac.presentProofRecordsRemove(presExId);
-                            } catch (IOException | AriesException e) {
-                                log.error("Could not delete presentation exchange record: {}", presExId, e);
-                            }
-                        });
-                    });
+                    .build()).ifPresent(records -> records.forEach(record -> {
+                        try {
+                            ac.presentProofRecordsRemove(record.getPresentationExchangeId());
+                        } catch (IOException | AriesException e) {
+                            log.error("Could not delete presentation exchange record: {}",
+                                    record.getPresentationExchangeId(), e);
+                        }
+                    }));
+            ac.issueCredentialRecords(IssueCredentialRecordsFilter
+                    .builder()
+                    .connectionId(connectionId)
+                    .build()).ifPresent(records -> records.forEach(record -> {
+                        try {
+                            ac.issueCredentialRecordsRemove(record.getCredentialExchangeId());
+                        } catch (IOException | AriesException e) {
+                            log.error("Could not delete credential exchange record: {}",
+                                    record.getCredentialExchangeId(), e);
+                        }
+                    }));
+            ac.issueCredentialV2Records(V2IssueCredentialRecordsFilter
+                    .builder()
+                    .connectionId(connectionId)
+                    .build()).ifPresent(records -> records.forEach(record -> {
+                        try {
+                            ac.issueCredentialV2RecordsRemove(record.getCredExRecord().getCredExId());
+                        } catch (IOException | AriesException e) {
+                            log.error("Could not delete credential exchange record: {}",
+                                    record.getCredExRecord().getCredExId(), e);
+                        }
+                    }));
             partner.ifPresent(value -> eventPublisher
                     .publishEventAsync(PartnerRemovedEvent.builder().partner(value).build()));
         } catch (IOException e) {
