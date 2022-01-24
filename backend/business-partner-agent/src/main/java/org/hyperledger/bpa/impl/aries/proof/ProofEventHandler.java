@@ -32,9 +32,9 @@ import org.hyperledger.bpa.api.notification.PresentationRequestDeclinedEvent;
 import org.hyperledger.bpa.api.notification.PresentationRequestReceivedEvent;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.util.TimeUtil;
-import org.hyperledger.bpa.model.PartnerProof;
-import org.hyperledger.bpa.repository.PartnerProofRepository;
-import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.persistence.repository.PartnerProofRepository;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
 import java.time.Instant;
 import java.util.UUID;

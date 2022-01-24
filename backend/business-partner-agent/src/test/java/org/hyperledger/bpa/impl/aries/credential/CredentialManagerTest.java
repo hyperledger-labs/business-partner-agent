@@ -24,8 +24,8 @@ import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCrede
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

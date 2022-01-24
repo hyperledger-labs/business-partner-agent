@@ -23,7 +23,7 @@ import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
-import org.hyperledger.bpa.model.BPASchema;
+import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -24,9 +24,9 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.api.exception.DataPersistenceException;
 import org.hyperledger.bpa.config.BPAMessageSource;
-import org.hyperledger.bpa.model.ChatMessage;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.repository.ChatMessageRepository;
+import org.hyperledger.bpa.persistence.model.ChatMessage;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.repository.ChatMessageRepository;
 
 import java.util.List;
 import java.util.UUID;

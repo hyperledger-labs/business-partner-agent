@@ -28,9 +28,9 @@ import org.hyperledger.bpa.api.exception.DataPersistenceException;
 import org.hyperledger.bpa.api.exception.ProofTemplateException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
-import org.hyperledger.bpa.model.BPAProofTemplate;
-import org.hyperledger.bpa.model.prooftemplate.ValueOperators;
-import org.hyperledger.bpa.repository.BPAProofTemplateRepository;
+import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
+import org.hyperledger.bpa.persistence.model.prooftemplate.ValueOperators;
+import org.hyperledger.bpa.persistence.repository.BPAProofTemplateRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;

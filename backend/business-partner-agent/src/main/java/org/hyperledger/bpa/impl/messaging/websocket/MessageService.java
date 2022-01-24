@@ -21,8 +21,8 @@ import io.micronaut.scheduling.annotation.Async;
 import io.micronaut.websocket.WebSocketSession;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.MessageQueue;
-import org.hyperledger.bpa.repository.MessageQueueRepository;
+import org.hyperledger.bpa.persistence.model.MessageQueue;
+import org.hyperledger.bpa.persistence.repository.MessageQueueRepository;
 import org.slf4j.Logger;
 
 import java.util.stream.StreamSupport;

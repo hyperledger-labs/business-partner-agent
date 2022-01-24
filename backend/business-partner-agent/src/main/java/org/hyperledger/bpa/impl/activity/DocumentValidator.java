@@ -28,9 +28,9 @@ import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
-import org.hyperledger.bpa.model.BPASchema;
-import org.hyperledger.bpa.model.MyDocument;
-import org.hyperledger.bpa.repository.MyDocumentRepository;
+import org.hyperledger.bpa.persistence.model.BPASchema;
+import org.hyperledger.bpa.persistence.model.MyDocument;
+import org.hyperledger.bpa.persistence.repository.MyDocumentRepository;
 
 import java.util.Map;
 import java.util.Optional;

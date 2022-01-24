@@ -25,8 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.messaging.websocket.MessageService;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.ChatMessage;
-import org.hyperledger.bpa.model.Partner;
+import org.hyperledger.bpa.persistence.model.ChatMessage;
+import org.hyperledger.bpa.persistence.model.Partner;
 
 @Slf4j
 @NoArgsConstructor

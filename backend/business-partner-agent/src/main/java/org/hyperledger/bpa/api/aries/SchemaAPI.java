@@ -27,7 +27,7 @@ import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
 import org.hyperledger.bpa.controller.api.issuer.CredDef;
 import org.hyperledger.bpa.impl.aries.wallet.Identity;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
-import org.hyperledger.bpa.model.BPASchema;
+import org.hyperledger.bpa.persistence.model.BPASchema;
 
 import java.util.ArrayList;
 import java.util.List;

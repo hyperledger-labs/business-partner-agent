@@ -29,8 +29,8 @@ import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.NotificationService;
 import org.hyperledger.bpa.impl.aries.connection.ConnectionManager;
-import org.hyperledger.bpa.model.ChatMessage;
-import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.persistence.model.ChatMessage;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
 import java.util.Map;
 import java.util.UUID;

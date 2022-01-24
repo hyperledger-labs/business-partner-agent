@@ -29,7 +29,7 @@ import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.BPASchema;
+import org.hyperledger.bpa.persistence.model.BPASchema;
 
 import java.util.Map;
 import java.util.Optional;

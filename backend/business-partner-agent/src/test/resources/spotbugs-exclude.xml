@@ -43,7 +43,7 @@
     </Match>
 
     <Match>
-        <Class name="org.hyperledger.bpa.model.StateChangeDecorator" />
+        <Class name="org.hyperledger.bpa.persistence.model.StateChangeDecorator" />
         <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
     </Match>
 

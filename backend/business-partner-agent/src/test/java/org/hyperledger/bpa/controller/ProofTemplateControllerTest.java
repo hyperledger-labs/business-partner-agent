@@ -29,7 +29,7 @@ import org.hyperledger.bpa.controller.api.prooftemplates.Attribute;
 import org.hyperledger.bpa.controller.api.prooftemplates.AttributeGroup;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
-import org.hyperledger.bpa.repository.BPAProofTemplateRepository;
+import org.hyperledger.bpa.persistence.repository.BPAProofTemplateRepository;
 import org.hyperledger.bpa.testutil.SchemaMockFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

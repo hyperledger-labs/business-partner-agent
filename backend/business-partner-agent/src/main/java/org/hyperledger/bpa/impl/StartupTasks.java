@@ -33,8 +33,8 @@ import org.hyperledger.bpa.impl.aries.jsonld.VPManager;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.mode.indy.IndyStartupTasks;
 import org.hyperledger.bpa.impl.mode.web.WebStartupTasks;
-import org.hyperledger.bpa.model.BPAState;
-import org.hyperledger.bpa.repository.BPAStateRepository;
+import org.hyperledger.bpa.persistence.model.BPAState;
+import org.hyperledger.bpa.persistence.repository.BPAStateRepository;
 
 import java.time.Duration;
 import java.util.Iterator;

@@ -29,11 +29,11 @@ import org.hyperledger.bpa.api.notification.TaskAddedEvent;
 import org.hyperledger.bpa.api.notification.TaskCompletedEvent;
 import org.hyperledger.bpa.controller.api.activity.*;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.Activity;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.model.PartnerProof;
-import org.hyperledger.bpa.repository.ActivityRepository;
-import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.persistence.model.Activity;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.persistence.repository.ActivityRepository;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

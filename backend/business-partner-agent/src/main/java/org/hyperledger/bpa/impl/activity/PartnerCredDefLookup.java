@@ -28,12 +28,12 @@ import org.hyperledger.bpa.client.LedgerExplorerClient;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.BPARestrictions;
-import org.hyperledger.bpa.model.BPASchema;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.repository.BPARestrictionsRepository;
-import org.hyperledger.bpa.repository.BPASchemaRepository;
-import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.persistence.model.BPARestrictions;
+import org.hyperledger.bpa.persistence.model.BPASchema;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.repository.BPARestrictionsRepository;
+import org.hyperledger.bpa.persistence.repository.BPASchemaRepository;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;

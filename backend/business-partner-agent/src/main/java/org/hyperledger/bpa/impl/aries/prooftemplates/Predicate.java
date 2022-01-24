@@ -20,7 +20,7 @@ package org.hyperledger.bpa.impl.aries.prooftemplates;
 import lombok.Builder;
 import org.hyperledger.acy_py.generated.model.IndyProofReqPredSpec;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
-import org.hyperledger.bpa.model.prooftemplate.BPASchemaRestrictions;
+import org.hyperledger.bpa.persistence.model.prooftemplate.BPASchemaRestrictions;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;

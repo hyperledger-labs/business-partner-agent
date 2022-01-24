@@ -50,12 +50,12 @@ import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.activity.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.util.TimeUtil;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.model.PartnerProof;
-import org.hyperledger.bpa.model.Tag;
-import org.hyperledger.bpa.repository.HolderCredExRepository;
-import org.hyperledger.bpa.repository.PartnerProofRepository;
-import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.persistence.model.Tag;
+import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
+import org.hyperledger.bpa.persistence.repository.PartnerProofRepository;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
 import java.io.IOException;
 import java.time.Instant;

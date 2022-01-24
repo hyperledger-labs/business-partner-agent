@@ -28,7 +28,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateManager;
-import org.hyperledger.bpa.model.BPAProofTemplate;
+import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
+import org.hyperledger.bpa.persistence.model.prooftemplate.ValueOperators;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -100,7 +101,7 @@ public class ProofTemplateController {
      * List configured proof condition operators
      *
      * @return list of
-     *         {@link org.hyperledger.bpa.model.prooftemplate.ValueOperators}
+     *         {@link ValueOperators}
      */
     @Get("/known-condition-operators")
     public HttpResponse<Set<String>> listKnownConditionOperators() {

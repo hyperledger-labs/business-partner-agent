@@ -36,10 +36,10 @@ import org.hyperledger.bpa.impl.activity.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.activity.PartnerLookup;
 import org.hyperledger.bpa.impl.aries.connection.ConnectionManager;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.repository.HolderCredExRepository;
-import org.hyperledger.bpa.repository.PartnerRepository;
-import org.hyperledger.bpa.repository.TagRepository;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
+import org.hyperledger.bpa.persistence.repository.TagRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;

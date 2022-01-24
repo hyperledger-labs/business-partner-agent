@@ -29,8 +29,8 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
-import org.hyperledger.bpa.model.BPACredentialExchange;
-import org.hyperledger.bpa.repository.IssuerCredExRepository;
+import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
+import org.hyperledger.bpa.persistence.repository.IssuerCredExRepository;
 
 import java.io.IOException;
 import java.time.Instant;

@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.model.PartnerProof;
+import org.hyperledger.bpa.persistence.model.PartnerProof;
 
 @Builder
 @NoArgsConstructor

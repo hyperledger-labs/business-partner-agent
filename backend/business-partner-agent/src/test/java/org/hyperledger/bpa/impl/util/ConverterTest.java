@@ -27,8 +27,8 @@ import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.impl.aries.credential.CredentialTestUtils;
-import org.hyperledger.bpa.model.MyDocument;
-import org.hyperledger.bpa.model.Partner;
+import org.hyperledger.bpa.persistence.model.MyDocument;
+import org.hyperledger.bpa.persistence.model.Partner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

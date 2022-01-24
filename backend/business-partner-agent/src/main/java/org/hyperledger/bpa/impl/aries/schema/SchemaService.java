@@ -41,8 +41,8 @@ import org.hyperledger.bpa.config.SchemaConfig;
 import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
 import org.hyperledger.bpa.impl.aries.wallet.Identity;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
-import org.hyperledger.bpa.model.BPASchema;
-import org.hyperledger.bpa.repository.BPASchemaRepository;
+import org.hyperledger.bpa.persistence.model.BPASchema;
+import org.hyperledger.bpa.persistence.repository.BPASchemaRepository;
 
 import java.io.IOException;
 import java.net.URI;

@@ -50,12 +50,12 @@ import org.hyperledger.bpa.impl.aries.credential.CredentialInfoResolver;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.BPAProofTemplate;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.model.PartnerProof;
-import org.hyperledger.bpa.repository.HolderCredExRepository;
-import org.hyperledger.bpa.repository.PartnerProofRepository;
-import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
+import org.hyperledger.bpa.persistence.repository.PartnerProofRepository;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
 import javax.validation.Valid;
 import java.io.IOException;

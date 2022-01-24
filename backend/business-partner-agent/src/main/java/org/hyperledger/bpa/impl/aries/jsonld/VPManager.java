@@ -41,12 +41,12 @@ import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.aries.wallet.Identity;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.BPACredentialExchange;
-import org.hyperledger.bpa.model.DidDocWeb;
-import org.hyperledger.bpa.model.MyDocument;
-import org.hyperledger.bpa.repository.DidDocWebRepository;
-import org.hyperledger.bpa.repository.HolderCredExRepository;
-import org.hyperledger.bpa.repository.MyDocumentRepository;
+import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
+import org.hyperledger.bpa.persistence.model.DidDocWeb;
+import org.hyperledger.bpa.persistence.model.MyDocument;
+import org.hyperledger.bpa.persistence.repository.DidDocWebRepository;
+import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
+import org.hyperledger.bpa.persistence.repository.MyDocumentRepository;
 
 import java.util.*;
 

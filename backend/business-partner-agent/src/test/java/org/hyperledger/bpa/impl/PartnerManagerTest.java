@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -20,10 +20,10 @@ package org.hyperledger.bpa.impl;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.hyperledger.bpa.controller.api.partner.UpdatePartnerRequest;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.model.Tag;
-import org.hyperledger.bpa.repository.PartnerRepository;
-import org.hyperledger.bpa.repository.TagRepository;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.Tag;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
+import org.hyperledger.bpa.persistence.repository.TagRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

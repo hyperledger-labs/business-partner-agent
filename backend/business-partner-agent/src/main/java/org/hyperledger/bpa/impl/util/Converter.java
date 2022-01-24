@@ -48,9 +48,9 @@ import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.credential.CredentialInfoResolver;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
-import org.hyperledger.bpa.model.MyDocument;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.model.PartnerProof;
+import org.hyperledger.bpa.persistence.model.MyDocument;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.PartnerProof;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;

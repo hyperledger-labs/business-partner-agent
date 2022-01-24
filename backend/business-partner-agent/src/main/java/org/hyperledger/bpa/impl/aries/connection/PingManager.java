@@ -31,8 +31,8 @@ import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.trustping.PingEvent;
 import org.hyperledger.aries.api.trustping.PingEventState;
 import org.hyperledger.aries.api.trustping.PingRequest;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
 import java.io.IOException;
 import java.time.Instant;

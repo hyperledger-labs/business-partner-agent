@@ -34,10 +34,10 @@ import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
-import org.hyperledger.bpa.model.BPARestrictions;
-import org.hyperledger.bpa.model.BPASchema;
-import org.hyperledger.bpa.repository.BPARestrictionsRepository;
-import org.hyperledger.bpa.repository.BPASchemaRepository;
+import org.hyperledger.bpa.persistence.model.BPARestrictions;
+import org.hyperledger.bpa.persistence.model.BPASchema;
+import org.hyperledger.bpa.persistence.repository.BPARestrictionsRepository;
+import org.hyperledger.bpa.persistence.repository.BPASchemaRepository;
 
 import java.io.IOException;
 import java.util.List;

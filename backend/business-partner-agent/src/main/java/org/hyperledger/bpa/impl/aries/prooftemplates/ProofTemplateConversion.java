@@ -27,11 +27,11 @@ import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.util.Pair;
-import org.hyperledger.bpa.model.BPAProofTemplate;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
-import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttribute;
+import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 import org.jetbrains.annotations.NotNull;
 
 import javax.validation.Valid;

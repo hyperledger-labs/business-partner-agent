@@ -30,7 +30,7 @@ import org.hyperledger.bpa.config.ActivityLogConfig;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.messaging.websocket.MessageService;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.PartnerProof;
+import org.hyperledger.bpa.persistence.model.PartnerProof;
 
 import java.util.Optional;
 

@@ -30,8 +30,8 @@ import org.hyperledger.bpa.impl.activity.DocumentValidator;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.aries.jsonld.VPManager;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.MyDocument;
-import org.hyperledger.bpa.repository.MyDocumentRepository;
+import org.hyperledger.bpa.persistence.model.MyDocument;
+import org.hyperledger.bpa.persistence.repository.MyDocumentRepository;
 
 import java.util.*;
 

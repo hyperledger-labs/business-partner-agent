@@ -37,12 +37,12 @@ import org.hyperledger.bpa.controller.api.issuer.IssueConnectionLessRequest;
 import org.hyperledger.bpa.impl.activity.DocumentValidator;
 import org.hyperledger.bpa.impl.aries.connection.ConnectionManager;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.BPACredentialDefinition;
-import org.hyperledger.bpa.model.BPACredentialExchange;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.repository.BPACredentialDefinitionRepository;
-import org.hyperledger.bpa.repository.IssuerCredExRepository;
-import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.persistence.model.BPACredentialDefinition;
+import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.repository.BPACredentialDefinitionRepository;
+import org.hyperledger.bpa.persistence.repository.IssuerCredExRepository;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
 import java.net.URI;
 import java.nio.charset.StandardCharsets;

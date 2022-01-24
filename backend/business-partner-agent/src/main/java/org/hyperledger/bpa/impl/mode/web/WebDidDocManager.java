@@ -29,8 +29,8 @@ import org.hyperledger.bpa.config.runtime.RequiresWeb;
 import org.hyperledger.bpa.impl.DidDocManager;
 import org.hyperledger.bpa.impl.aries.wallet.Identity;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.DidDocWeb;
-import org.hyperledger.bpa.repository.DidDocWebRepository;
+import org.hyperledger.bpa.persistence.model.DidDocWeb;
+import org.hyperledger.bpa.persistence.repository.DidDocWebRepository;
 
 import java.util.List;
 import java.util.Locale;

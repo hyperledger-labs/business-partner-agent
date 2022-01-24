@@ -30,7 +30,7 @@ import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.impl.aries.schema.RestrictionsManager;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
-import org.hyperledger.bpa.repository.HolderCredExRepository;
+import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 
 import java.io.IOException;
 

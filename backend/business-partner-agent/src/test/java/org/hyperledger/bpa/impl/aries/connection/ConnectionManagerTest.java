@@ -25,8 +25,8 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.impl.aries.AriesEventHandler;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

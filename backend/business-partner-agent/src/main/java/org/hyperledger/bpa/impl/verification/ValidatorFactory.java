@@ -28,9 +28,9 @@ import org.hyperledger.bpa.impl.verification.prooftemplates.DistinctAttributeNam
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondition;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidBPASchemaId;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
-import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
-import org.hyperledger.bpa.model.prooftemplate.BPACondition;
+import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttribute;
+import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
+import org.hyperledger.bpa.persistence.model.prooftemplate.BPACondition;
 
 import java.util.*;
 import java.util.function.Predicate;

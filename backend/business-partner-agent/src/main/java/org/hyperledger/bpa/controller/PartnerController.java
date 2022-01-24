@@ -45,7 +45,7 @@ import org.hyperledger.bpa.impl.activity.PartnerLookup;
 import org.hyperledger.bpa.impl.aries.credential.HolderCredentialManager;
 import org.hyperledger.bpa.impl.activity.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
-import org.hyperledger.bpa.model.ChatMessage;
+import org.hyperledger.bpa.persistence.model.ChatMessage;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -23,7 +23,7 @@ import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
-import org.hyperledger.bpa.model.PartnerProof;
+import org.hyperledger.bpa.persistence.model.PartnerProof;
 
 import java.util.Map;
 import java.util.UUID;
