@@ -44,8 +44,7 @@ public class PresentationRequestCredentials {
     public static final class CredentialInfo {
 
         /**
-         * internal credentialId {@link BPACredentialExchange}
-         * - matched via referent
+         * internal credentialId {@link BPACredentialExchange} - matched via referent
          */
         private UUID credentialId;
         private String credentialLabel;

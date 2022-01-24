@@ -28,8 +28,6 @@ import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.Partner;
-import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
-import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

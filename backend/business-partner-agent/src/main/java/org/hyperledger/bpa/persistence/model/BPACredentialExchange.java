@@ -26,11 +26,14 @@ import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
-import org.hyperledger.aries.api.issue_credential_v1.*;
+import org.hyperledger.aries.api.issue_credential_v1.CredExStateTranslator;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.api.CredentialType;
-import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.persistence.model.type.CredentialTypeTranslator;
 
 import javax.persistence.*;

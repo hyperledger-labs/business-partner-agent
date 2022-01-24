@@ -26,8 +26,8 @@ import lombok.experimental.Accessors;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.type.CredentialTypeTranslator;
 
-import javax.persistence.*;
 import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;

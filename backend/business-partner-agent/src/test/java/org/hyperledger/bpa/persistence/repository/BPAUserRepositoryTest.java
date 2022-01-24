@@ -20,7 +20,6 @@ package org.hyperledger.bpa.persistence.repository;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.hyperledger.bpa.persistence.model.BPAUser;
-import org.hyperledger.bpa.persistence.repository.BPAUserRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

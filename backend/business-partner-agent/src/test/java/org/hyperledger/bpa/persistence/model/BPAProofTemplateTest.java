@@ -26,7 +26,6 @@ import jakarta.inject.Inject;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidBPASchemaId;
-import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 import org.hyperledger.bpa.persistence.model.prooftemplate.*;
 import org.hyperledger.bpa.testutil.SchemaMockFactory;
 import org.junit.jupiter.api.Assertions;

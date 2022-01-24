@@ -25,7 +25,6 @@ import org.hyperledger.bpa.core.RegisteredWebhook;
 import org.hyperledger.bpa.core.RegisteredWebhook.WebhookEventType;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.BPAWebhook;
-import org.hyperledger.bpa.persistence.repository.BPAWebhookRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

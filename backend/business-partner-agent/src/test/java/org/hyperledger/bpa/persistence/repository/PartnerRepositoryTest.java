@@ -27,8 +27,6 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.Partner;
-import org.hyperledger.bpa.persistence.repository.PartnerRepository;
-import org.hyperledger.bpa.persistence.repository.TagRepository;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;

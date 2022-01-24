@@ -37,14 +37,14 @@ import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.partner.*;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestVersion;
+import org.hyperledger.bpa.impl.PartnerManager;
+import org.hyperledger.bpa.impl.activity.PartnerCredDefLookup;
+import org.hyperledger.bpa.impl.activity.PartnerLookup;
 import org.hyperledger.bpa.impl.aries.chat.ChatMessageManager;
 import org.hyperledger.bpa.impl.aries.chat.ChatMessageService;
-import org.hyperledger.bpa.impl.PartnerManager;
-import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateManager;
-import org.hyperledger.bpa.impl.activity.PartnerLookup;
 import org.hyperledger.bpa.impl.aries.credential.HolderCredentialManager;
-import org.hyperledger.bpa.impl.activity.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
+import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateManager;
 import org.hyperledger.bpa.persistence.model.ChatMessage;
 
 import java.util.List;

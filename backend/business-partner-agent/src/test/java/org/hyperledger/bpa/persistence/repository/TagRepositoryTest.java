@@ -22,8 +22,6 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.Tag;
-import org.hyperledger.bpa.persistence.repository.PartnerRepository;
-import org.hyperledger.bpa.persistence.repository.TagRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;

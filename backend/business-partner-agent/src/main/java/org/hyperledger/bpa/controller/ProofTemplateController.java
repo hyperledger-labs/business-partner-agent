@@ -100,8 +100,7 @@ public class ProofTemplateController {
     /**
      * List configured proof condition operators
      *
-     * @return list of
-     *         {@link ValueOperators}
+     * @return list of {@link ValueOperators}
      */
     @Get("/known-condition-operators")
     public HttpResponse<Set<String>> listKnownConditionOperators() {

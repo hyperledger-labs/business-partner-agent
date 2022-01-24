@@ -21,7 +21,6 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
-import org.hyperledger.bpa.persistence.repository.PartnerProofRepository;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;

@@ -22,8 +22,6 @@ import jakarta.inject.Inject;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.BPARestrictions;
 import org.hyperledger.bpa.persistence.model.BPASchema;
-import org.hyperledger.bpa.persistence.repository.BPARestrictionsRepository;
-import org.hyperledger.bpa.persistence.repository.BPASchemaRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -28,9 +28,7 @@ import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.controller.api.stats.BPAStats;
 import org.hyperledger.bpa.controller.api.stats.DashboardCounts;
 import org.hyperledger.bpa.impl.aries.wallet.Identity;
-import org.hyperledger.bpa.persistence.model.repository.*;
 import org.hyperledger.bpa.persistence.repository.*;
-import org.hyperledger.bpa.repository.*;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

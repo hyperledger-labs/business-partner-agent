@@ -20,7 +20,6 @@ package org.hyperledger.bpa.persistence.repository;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.hyperledger.bpa.persistence.model.DidDocWeb;
-import org.hyperledger.bpa.persistence.repository.DidDocWebRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;

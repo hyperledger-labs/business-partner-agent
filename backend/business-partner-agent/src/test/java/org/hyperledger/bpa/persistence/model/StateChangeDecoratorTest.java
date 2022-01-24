@@ -18,7 +18,6 @@
 package org.hyperledger.bpa.persistence.model;
 
 import org.hyperledger.aries.api.connection.ConnectionState;
-import org.hyperledger.bpa.persistence.model.StateChangeDecorator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
