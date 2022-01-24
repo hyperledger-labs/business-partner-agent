@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -37,14 +37,14 @@ import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.partner.*;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestVersion;
-import org.hyperledger.bpa.impl.ChatMessageManager;
-import org.hyperledger.bpa.impl.ChatMessageService;
+import org.hyperledger.bpa.impl.aries.chat.ChatMessageManager;
+import org.hyperledger.bpa.impl.aries.chat.ChatMessageService;
 import org.hyperledger.bpa.impl.PartnerManager;
-import org.hyperledger.bpa.impl.ProofTemplateManager;
+import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateManager;
 import org.hyperledger.bpa.impl.activity.PartnerLookup;
-import org.hyperledger.bpa.impl.aries.HolderCredentialManager;
-import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
-import org.hyperledger.bpa.impl.aries.ProofManager;
+import org.hyperledger.bpa.impl.aries.credential.HolderCredentialManager;
+import org.hyperledger.bpa.impl.activity.PartnerCredDefLookup;
+import org.hyperledger.bpa.impl.aries.proof.ProofManager;
 import org.hyperledger.bpa.model.ChatMessage;
 
 import java.util.List;

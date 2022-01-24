@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.NonNull;
-import org.hyperledger.bpa.impl.activity.VPManager;
+import org.hyperledger.bpa.impl.aries.jsonld.VPManager;
 import org.hyperledger.bpa.testutil.FileLoader;
 import org.junit.jupiter.api.BeforeEach;
 

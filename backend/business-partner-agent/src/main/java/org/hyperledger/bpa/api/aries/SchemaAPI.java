@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.controller.api.admin.TrustedIssuer;
 import org.hyperledger.bpa.controller.api.issuer.CredDef;
-import org.hyperledger.bpa.impl.activity.Identity;
+import org.hyperledger.bpa.impl.aries.wallet.Identity;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.model.BPASchema;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -20,14 +20,14 @@ package org.hyperledger.bpa.impl;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.connection.ConnectionState;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.controller.api.stats.BPAStats;
 import org.hyperledger.bpa.controller.api.stats.DashboardCounts;
-import org.hyperledger.bpa.impl.activity.Identity;
+import org.hyperledger.bpa.impl.aries.wallet.Identity;
 import org.hyperledger.bpa.repository.*;
 
 import java.time.Instant;

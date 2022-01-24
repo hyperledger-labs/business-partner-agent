@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -26,7 +26,7 @@ import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.PartnerAPI;
-import org.hyperledger.bpa.impl.CredentialTestUtils;
+import org.hyperledger.bpa.impl.aries.credential.CredentialTestUtils;
 import org.hyperledger.bpa.model.MyDocument;
 import org.hyperledger.bpa.model.Partner;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -27,7 +27,7 @@ import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.config.runtime.RequiresWeb;
 import org.hyperledger.bpa.impl.DidDocManager;
-import org.hyperledger.bpa.impl.activity.Identity;
+import org.hyperledger.bpa.impl.aries.wallet.Identity;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.model.DidDocWeb;
 import org.hyperledger.bpa.repository.DidDocWebRepository;

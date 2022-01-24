@@ -34,7 +34,7 @@ import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.controller.api.invitation.AcceptInvitationRequest;
 import org.hyperledger.bpa.controller.api.invitation.CheckInvitationRequest;
 import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
-import org.hyperledger.bpa.impl.aries.ConnectionManager;
+import org.hyperledger.bpa.impl.aries.connection.ConnectionManager;
 
 @Slf4j
 @Controller("/api/invitations")

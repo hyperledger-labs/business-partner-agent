@@ -39,7 +39,7 @@ import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.config.SchemaConfig;
 import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
-import org.hyperledger.bpa.impl.activity.Identity;
+import org.hyperledger.bpa.impl.aries.wallet.Identity;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.BPASchemaRepository;

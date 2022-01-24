@@ -31,11 +31,12 @@ import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.client.CachingAriesClient;
-import org.hyperledger.bpa.impl.activity.CryptoManager;
 import org.hyperledger.bpa.impl.activity.DocumentValidator;
-import org.hyperledger.bpa.impl.activity.Identity;
-import org.hyperledger.bpa.impl.activity.VPManager;
+import org.hyperledger.bpa.impl.aries.credential.CredentialTestUtils;
+import org.hyperledger.bpa.impl.aries.jsonld.SignVerifyLD;
+import org.hyperledger.bpa.impl.aries.jsonld.VPManager;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
+import org.hyperledger.bpa.impl.aries.wallet.Identity;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.repository.DidDocWebRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -61,7 +62,7 @@ class MyDocumentManagerTest extends RunWithAries {
     MyDocumentManager mgmt;
 
     @Inject
-    CryptoManager cryptoMgmt;
+    SignVerifyLD cryptoMgmt;
 
     @Inject
     Identity id;

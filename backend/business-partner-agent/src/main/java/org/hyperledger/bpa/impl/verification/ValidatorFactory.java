@@ -23,6 +23,7 @@ import jakarta.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
+import org.hyperledger.bpa.impl.util.Pair;
 import org.hyperledger.bpa.impl.verification.prooftemplates.DistinctAttributeNames;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondition;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
@@ -30,7 +31,6 @@ import org.hyperledger.bpa.impl.verification.prooftemplates.ValidBPASchemaId;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttribute;
 import org.hyperledger.bpa.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.model.prooftemplate.BPACondition;
-import org.hyperledger.bpa.impl.util.Pair;
 
 import java.util.*;
 import java.util.function.Predicate;
