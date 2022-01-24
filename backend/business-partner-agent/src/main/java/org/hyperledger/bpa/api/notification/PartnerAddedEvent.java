@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.impl.notification;
+package org.hyperledger.bpa.api.notification;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,8 +27,7 @@ import org.hyperledger.bpa.model.Partner;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class PartnerRequestReceivedEvent {
+public class PartnerAddedEvent {
 
     private Partner partner;
-
 }

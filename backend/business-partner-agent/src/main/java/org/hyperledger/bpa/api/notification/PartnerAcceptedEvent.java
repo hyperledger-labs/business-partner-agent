@@ -15,18 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.impl.notification;
+package org.hyperledger.bpa.api.notification;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.api.aries.AriesCredential;
+import org.hyperledger.bpa.model.Partner;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class CredentialOfferedEvent {
-    private AriesCredential credential;
+public class PartnerAcceptedEvent {
+
+    private Partner partner;
 }
