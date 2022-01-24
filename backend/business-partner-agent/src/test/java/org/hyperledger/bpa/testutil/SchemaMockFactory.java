@@ -20,7 +20,7 @@ package org.hyperledger.bpa.testutil;
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
-import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.model.BPASchema;
 import org.mockito.Mockito;
 

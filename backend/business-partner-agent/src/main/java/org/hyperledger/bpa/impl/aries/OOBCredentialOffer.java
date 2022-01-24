@@ -58,7 +58,7 @@ import java.util.UUID;
  */
 @Slf4j
 @Singleton
-public class ConnectionLessCredential {
+public class OOBCredentialOffer {
 
     @Value("${bpa.did.prefix}")
     String didPrefix;
@@ -90,7 +90,7 @@ public class ConnectionLessCredential {
     private final V1CredentialFreeOfferHelper h;
 
     @Inject
-    public ConnectionLessCredential(AriesClient ac) {
+    public OOBCredentialOffer(AriesClient ac) {
         this.h = new V1CredentialFreeOfferHelper(ac);
     }
 

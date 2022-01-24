@@ -34,8 +34,8 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.controller.api.issuer.*;
 import org.hyperledger.bpa.impl.IssuerCredentialManager;
-import org.hyperledger.bpa.impl.aries.ConnectionLessCredential;
-import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.aries.OOBCredentialOffer;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -57,7 +57,7 @@ public class IssuerController {
     IssuerCredentialManager im;
 
     @Inject
-    ConnectionLessCredential connectionLess;
+    OOBCredentialOffer connectionLess;
 
     @Inject
     SchemaService schemaService;

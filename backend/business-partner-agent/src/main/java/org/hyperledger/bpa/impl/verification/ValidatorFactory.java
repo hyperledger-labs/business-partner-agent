@@ -22,7 +22,7 @@ import io.micronaut.validation.validator.constraints.ConstraintValidator;
 import jakarta.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
-import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.verification.prooftemplates.DistinctAttributeNames;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondition;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;

@@ -22,7 +22,7 @@ import jakarta.inject.Inject;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.RunWithAries;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
-import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.model.BPASchema;
 import org.hyperledger.bpa.model.Partner;

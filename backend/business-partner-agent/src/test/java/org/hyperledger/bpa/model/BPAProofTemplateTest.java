@@ -23,7 +23,7 @@ import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.validation.validator.Validator;
 import jakarta.inject.Inject;
-import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidBPASchemaId;
 import org.hyperledger.bpa.model.prooftemplate.*;

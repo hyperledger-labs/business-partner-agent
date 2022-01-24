@@ -57,7 +57,7 @@ import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.BaseCredentialManager;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.activity.VPManager;
-import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.api.notification.CredentialAddedEvent;
 import org.hyperledger.bpa.api.notification.CredentialOfferedEvent;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;

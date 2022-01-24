@@ -54,7 +54,7 @@ import org.hyperledger.bpa.controller.api.issuer.CredDef;
 import org.hyperledger.bpa.controller.api.issuer.CredEx;
 import org.hyperledger.bpa.controller.api.issuer.CredentialOfferRequest;
 import org.hyperledger.bpa.controller.api.issuer.IssueCredentialSendRequest;
-import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.api.notification.CredentialAcceptedEvent;
 import org.hyperledger.bpa.api.notification.CredentialIssuedEvent;
 import org.hyperledger.bpa.api.notification.CredentialProblemEvent;
