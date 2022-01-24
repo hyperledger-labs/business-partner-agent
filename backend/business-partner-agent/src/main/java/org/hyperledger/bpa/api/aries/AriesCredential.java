@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -22,7 +22,7 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
-import org.hyperledger.bpa.model.BPACredentialExchange;
+import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
 import java.util.Map;
 import java.util.UUID;

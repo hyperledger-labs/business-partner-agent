@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -28,9 +28,9 @@ import jakarta.inject.Inject;
 import org.hyperledger.bpa.controller.api.prooftemplates.Attribute;
 import org.hyperledger.bpa.controller.api.prooftemplates.AttributeGroup;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
-import org.hyperledger.bpa.impl.aries.config.SchemaService;
-import org.hyperledger.bpa.repository.BPAProofTemplateRepository;
-import org.hyperledger.bpa.util.SchemaMockFactory;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
+import org.hyperledger.bpa.persistence.repository.BPAProofTemplateRepository;
+import org.hyperledger.bpa.testutil.SchemaMockFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

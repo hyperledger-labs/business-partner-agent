@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -28,8 +28,8 @@ import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.config.TagConfig;
-import org.hyperledger.bpa.model.Tag;
-import org.hyperledger.bpa.repository.TagRepository;
+import org.hyperledger.bpa.persistence.model.Tag;
+import org.hyperledger.bpa.persistence.repository.TagRepository;
 
 import java.util.*;
 
