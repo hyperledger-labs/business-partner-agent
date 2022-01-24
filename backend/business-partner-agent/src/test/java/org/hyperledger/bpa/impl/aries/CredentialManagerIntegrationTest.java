@@ -254,6 +254,7 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
 
         ex = holderCredExRepo.findByCredentialExchangeId(offer.getCredentialExchangeId())
                 .orElseThrow();
+        assertNotNull(ex.getRevoked());
         assertTrue(ex.getRevoked());
         assertEquals(CredentialExchangeState.CREDENTIAL_REVOKED, ex.getState());
     }

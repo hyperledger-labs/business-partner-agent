@@ -19,7 +19,6 @@ package org.hyperledger.bpa.impl.util;
 
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
-import org.hyperledger.bpa.impl.util.CryptoUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
