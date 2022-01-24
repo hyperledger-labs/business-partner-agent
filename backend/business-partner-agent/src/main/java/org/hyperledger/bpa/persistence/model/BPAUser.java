@@ -28,6 +28,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import java.time.Instant;
 import java.util.UUID;
@@ -37,6 +38,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "bpa_user")
 public class BPAUser {
 
     @Id

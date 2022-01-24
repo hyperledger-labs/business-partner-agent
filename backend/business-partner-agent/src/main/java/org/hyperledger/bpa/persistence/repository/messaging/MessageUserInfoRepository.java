@@ -15,40 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.persistence.model;
+package org.hyperledger.bpa.persistence.repository.messaging;
 
-import io.micronaut.core.annotation.Nullable;
-import io.micronaut.data.annotation.AutoPopulated;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.micronaut.data.repository.CrudRepository;
+import org.hyperledger.bpa.persistence.model.messaging.MessageUserInfo;
 
-import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Entity
-@Table(name = "tag")
-public class Tag {
-
-    @Id
-    @AutoPopulated
-    private UUID id;
-
-    private String name;
-
-    @Builder.Default
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH }, mappedBy = "tags")
-    @JoinTable(name = "partner_tag")
-    private Set<Partner> partners = new HashSet<>();
-
-    @Nullable
-    private Boolean isReadOnly;
-
+public interface MessageUserInfoRepository extends CrudRepository<MessageUserInfo, UUID> {
 }

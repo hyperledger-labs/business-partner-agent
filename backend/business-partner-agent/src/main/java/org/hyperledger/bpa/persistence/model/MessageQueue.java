@@ -29,6 +29,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
@@ -38,6 +39,7 @@ import java.util.UUID;
 @Builder
 @Data
 @Entity
+@Table(name = "message_queue")
 public class MessageQueue {
 
     @Id

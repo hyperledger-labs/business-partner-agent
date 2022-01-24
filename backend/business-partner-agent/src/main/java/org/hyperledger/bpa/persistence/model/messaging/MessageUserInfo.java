@@ -15,37 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.persistence.model;
+package org.hyperledger.bpa.persistence.model.messaging;
 
-import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
 import io.micronaut.data.annotation.DateUpdated;
-import io.micronaut.data.annotation.TypeDef;
-import io.micronaut.data.model.DataType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.Instant;
-import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-/**
- * Cache for the profile.jsonld and .well-known/did.json documents
- *
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "did_doc_web")
-public class DidDocWeb {
+@Table(name = "message_user_info")
+public class MessageUserInfo {
 
     @Id
     @AutoPopulated
@@ -57,18 +48,13 @@ public class DidDocWeb {
     @DateUpdated
     private Instant updatedAt;
 
-    /**
-     * My did document when used in web mode, null otherwise
-     */
-    @Nullable
-    @TypeDef(type = DataType.JSON)
-    private Map<String, Object> didDoc;
+    @Enumerated(EnumType.STRING)
+    private MessageType type;
 
-    /**
-     * My public profile, verifiable presentation structure
-     */
-    @Nullable
-    @TypeDef(type = DataType.JSON)
-    private Map<String, Object> profileJson;
+    private String sendTo;
 
+    private String label;
+
+    @OneToMany(mappedBy = "userInfo")
+    private Set<MessageTriggerConfig> triggerConfig;
 }

@@ -29,6 +29,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
@@ -38,6 +39,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "bpa_webhook")
 public class BPAWebhook {
 
     @Id
