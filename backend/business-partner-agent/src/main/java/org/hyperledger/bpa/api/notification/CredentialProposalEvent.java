@@ -15,16 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.persistence.repository.messaging;
+package org.hyperledger.bpa.api.notification;
 
-import io.micronaut.core.annotation.Nullable;
-import io.micronaut.data.annotation.Id;
-import io.micronaut.data.repository.CrudRepository;
-import org.hyperledger.bpa.persistence.model.messaging.MessageUserInfo;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.api.aries.AriesCredential;
 
-import java.util.UUID;
-
-public interface MessageUserInfoRepository extends CrudRepository<MessageUserInfo, UUID> {
-
-    Number updateUserInfo(@Id UUID id, @Nullable String label, String sendTo);
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+public class CredentialProposalEvent {
+    private AriesCredential credential;
 }

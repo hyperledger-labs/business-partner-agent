@@ -15,16 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.persistence.repository.messaging;
+package org.hyperledger.bpa.impl.messaging.email;
 
-import io.micronaut.core.annotation.Nullable;
-import io.micronaut.data.annotation.Id;
-import io.micronaut.data.repository.CrudRepository;
-import org.hyperledger.bpa.persistence.model.messaging.MessageUserInfo;
+import lombok.NonNull;
 
-import java.util.UUID;
+import javax.validation.Valid;
 
-public interface MessageUserInfoRepository extends CrudRepository<MessageUserInfo, UUID> {
+public interface EmailService {
 
-    Number updateUserInfo(@Id UUID id, @Nullable String label, String sendTo);
+    void send(@NonNull @Valid EmailCmd email);
 }

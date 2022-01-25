@@ -17,10 +17,34 @@
  */
 package org.hyperledger.bpa.persistence.repository.messaging;
 
+import io.micronaut.core.annotation.NonNull;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.Join;
 import io.micronaut.data.repository.CrudRepository;
+import org.hyperledger.bpa.persistence.model.messaging.MessageTrigger;
 import org.hyperledger.bpa.persistence.model.messaging.MessageTriggerConfig;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface MessageTriggerConfigRepository extends CrudRepository<MessageTriggerConfig, UUID> {
+
+    @Override
+    @NonNull
+    @Join(value = "userInfo", type = Join.Type.LEFT_FETCH)
+    @Join(value = "template", type = Join.Type.LEFT_FETCH)
+    Iterable<MessageTriggerConfig> findAll();
+
+    @Override
+    @NonNull
+    @Join(value = "userInfo", type = Join.Type.LEFT_FETCH)
+    @Join(value = "template", type = Join.Type.LEFT_FETCH)
+    Optional<MessageTriggerConfig> findById(@NonNull UUID id);
+
+    @Join(value = "userInfo", type = Join.Type.LEFT_FETCH)
+    @Join(value = "template", type = Join.Type.LEFT_FETCH)
+    List<MessageTriggerConfig> findByTrigger(MessageTrigger trigger);
+
+    Number updateTriggerConfig(@Id UUID id, MessageTrigger trigger, UUID template, UUID userInfo);
 }

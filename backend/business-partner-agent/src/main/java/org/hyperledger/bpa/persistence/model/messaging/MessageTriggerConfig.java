@@ -24,6 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.impl.messaging.email.EmailCmd;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -56,6 +57,16 @@ public class MessageTriggerConfig {
     @ManyToOne
     private MessageTemplate template;
 
-
+    public EmailCmd toEmailCmd() {
+        if (userInfo == null || template == null) {
+            throw new IllegalStateException("Object is not fully initialised, is it fully joined?");
+        }
+        return EmailCmd
+                .builder()
+                .to(userInfo.getSendTo())
+                .textBody(template.getTemplate())
+                .subject(template.getSubject())
+                .build();
+    }
 
 }

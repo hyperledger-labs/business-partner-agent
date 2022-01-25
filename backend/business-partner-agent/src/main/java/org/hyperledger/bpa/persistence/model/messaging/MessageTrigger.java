@@ -18,6 +18,6 @@
 package org.hyperledger.bpa.persistence.model.messaging;
 
 public enum MessageTrigger {
-    CREDENTIAL_REQUEST,
-    PROOF_REQUEST
+    CREDENTIAL_PROPOSAL,
+    PROPOSAL_RECEIVED
 }

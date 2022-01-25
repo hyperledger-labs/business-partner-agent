@@ -2,6 +2,7 @@ CREATE TABLE message_template (
     id uuid PRIMARY KEY,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
+    subject character varying(255),
     template character varying(2048) NOT NULL
 );
 
