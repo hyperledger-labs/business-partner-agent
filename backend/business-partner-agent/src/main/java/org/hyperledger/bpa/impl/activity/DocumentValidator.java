@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -17,18 +17,20 @@
  */
 package org.hyperledger.bpa.impl.activity;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
-import org.hyperledger.bpa.impl.aries.config.SchemaService;
-import org.hyperledger.bpa.model.BPASchema;
-import org.hyperledger.bpa.model.MyDocument;
-import org.hyperledger.bpa.repository.MyDocumentRepository;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
+import org.hyperledger.bpa.persistence.model.BPASchema;
+import org.hyperledger.bpa.persistence.model.MyDocument;
+import org.hyperledger.bpa.persistence.repository.MyDocumentRepository;
 
 import java.util.Map;
 import java.util.Optional;
@@ -52,12 +54,12 @@ public class DocumentValidator {
     @Inject
     BPAMessageSource.DefaultMessageSource ms;
 
-    public void validateNew(MyDocumentAPI document) {
+    public void validateNew(@NonNull MyDocumentAPI document) {
         verifyOnlyOneOrgProfile(document);
         validateInternal(document);
     }
 
-    public void validateExisting(Optional<MyDocument> existing, MyDocumentAPI newDocument) {
+    public void validateExisting(@NonNull Optional<MyDocument> existing, @NonNull MyDocumentAPI newDocument) {
         if (existing.isEmpty()) {
             throw new WrongApiUsageException(ms.getMessage("api.document.validation.empty"));
         }
@@ -69,31 +71,32 @@ public class DocumentValidator {
         validateInternal(newDocument);
     }
 
-    private void validateInternal(MyDocumentAPI document) {
+    public void validateAttributesAgainstSchema(@NonNull JsonNode attributes, @NonNull String schemaId) {
+        // validate document data against schema
+        BPASchema schema = schemaService.getSchemaFor(schemaId)
+                .orElseThrow(() -> new WrongApiUsageException(
+                        ms.getMessage("api.schema.not.found", Map.of("id", schemaId))));
+        Set<String> attributeNames = schema.getSchemaAttributeNames();
+        // assuming flat structure
+        attributes.fieldNames().forEachRemaining(fn -> {
+            if (!attributeNames.contains(fn)) {
+                throw new WrongApiUsageException(
+                        ms.getMessage("api.document.validation.attribute.not.in.schema",
+                                Map.of("attr", fn)));
+            }
+        });
+    }
+
+    private void validateInternal(@NonNull MyDocumentAPI document) {
         if (CredentialType.INDY.equals(document.getType())) {
             if (StringUtils.isEmpty(document.getSchemaId())) {
                 throw new WrongApiUsageException(ms.getMessage("api.document.validation.schema.id.missing"));
             }
-            // validate document data against schema
-            Optional<BPASchema> schema = schemaService.getSchemaFor(document.getSchemaId());
-            if (schema.isPresent()) {
-                Set<String> attributeNames = schema.get().getSchemaAttributeNames();
-                // assuming flat structure
-                document.getDocumentData().fieldNames().forEachRemaining(fn -> {
-                    if (!attributeNames.contains(fn)) {
-                        throw new WrongApiUsageException(
-                                ms.getMessage("api.document.validation.attribute.not.in.schema",
-                                        Map.of("attr", fn)));
-                    }
-                });
-            } else {
-                throw new WrongApiUsageException(
-                        ms.getMessage("api.schema.not.found", Map.of("id", document.getSchemaId())));
-            }
+            validateAttributesAgainstSchema(document.getDocumentData(), document.getSchemaId());
         }
     }
 
-    private void verifyOnlyOneOrgProfile(MyDocumentAPI doc) {
+    private void verifyOnlyOneOrgProfile(@NonNull MyDocumentAPI doc) {
         if (doc.getType().equals(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL)) {
             docRepo.findAll().forEach(d -> {
                 if (CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(d.getType())) {

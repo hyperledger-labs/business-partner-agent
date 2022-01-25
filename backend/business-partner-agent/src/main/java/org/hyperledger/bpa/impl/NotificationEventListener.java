@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -25,12 +25,12 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.bpa.api.PartnerAPI;
+import org.hyperledger.bpa.api.notification.*;
 import org.hyperledger.bpa.config.ActivityLogConfig;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
-import org.hyperledger.bpa.impl.messaging.MessageService;
-import org.hyperledger.bpa.impl.notification.*;
+import org.hyperledger.bpa.impl.messaging.websocket.MessageService;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.PartnerProof;
+import org.hyperledger.bpa.persistence.model.PartnerProof;
 
 import java.util.Optional;
 

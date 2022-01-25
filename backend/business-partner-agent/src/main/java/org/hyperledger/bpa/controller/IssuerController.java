@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -33,9 +33,9 @@ import jakarta.inject.Inject;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.controller.api.issuer.*;
-import org.hyperledger.bpa.impl.IssuerCredentialManager;
-import org.hyperledger.bpa.impl.aries.ConnectionLessCredential;
-import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.aries.credential.IssuerCredentialManager;
+import org.hyperledger.bpa.impl.aries.credential.OOBCredentialOffer;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -57,7 +57,7 @@ public class IssuerController {
     IssuerCredentialManager im;
 
     @Inject
-    ConnectionLessCredential connectionLess;
+    OOBCredentialOffer connectionLess;
 
     @Inject
     SchemaService schemaService;
@@ -166,10 +166,11 @@ public class IssuerController {
      * @param id {@link UUID}
      * @return Redirect with encoded credential offer in the location header
      */
-    @ApiResponse(responseCode = "307", description = "Redirect with encoded credential offer in the location header")
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @ApiResponse(responseCode = "301", description = "Redirect with encoded credential offer in the location header")
     @Get("/issue-credential/connection-less/{id}")
     public HttpResponse<Object> handleConnectionLess(@PathVariable UUID id) {
-        return HttpResponse.status(HttpStatus.TEMPORARY_REDIRECT).header("location",
+        return HttpResponse.status(HttpStatus.MOVED_PERMANENTLY).header("location",
                 connectionLess.handleConnectionLess(id));
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -20,7 +20,7 @@ package org.hyperledger.bpa.controller.api;
 import io.micronaut.core.annotation.Nullable;
 import lombok.*;
 import org.hyperledger.bpa.api.PartnerAPI;
-import org.hyperledger.bpa.model.ChatMessage;
+import org.hyperledger.bpa.persistence.model.ChatMessage;
 
 /**
  * Websocket events

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -32,6 +32,7 @@ import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.client.DidDocClient;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.impl.aries.jsonld.SignVerifyLD;
 import org.hyperledger.bpa.impl.util.Converter;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public class PartnerLookup {
     DidDocClient ur;
 
     @Inject
-    CryptoManager crypto;
+    SignVerifyLD crypto;
 
     @Inject
     BPAMessageSource.DefaultMessageSource ms;
