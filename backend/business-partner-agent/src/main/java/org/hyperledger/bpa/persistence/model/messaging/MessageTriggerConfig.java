@@ -21,10 +21,7 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
 import io.micronaut.data.annotation.DateUpdated;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hyperledger.bpa.impl.messaging.email.EmailCmd;
 
 import javax.persistence.*;
@@ -59,15 +56,15 @@ public class MessageTriggerConfig {
     @Nullable
     private MessageTemplate template;
 
-    public EmailCmd toEmailCmd() {
-        if (userInfo == null || template == null) {
-            throw new IllegalStateException("Object is not fully initialised, is it fully joined?");
+    public EmailCmd toEmailCmd(@NonNull String defaultSubject, @NonNull String defaultBody) {
+        if (userInfo == null) {
+            throw new IllegalStateException("Object is missing userInfo, is it fully joined?");
         }
         return EmailCmd
                 .builder()
                 .to(userInfo.getSendTo())
-                .textBody(template.getTemplate())
-                .subject(template.getSubject())
+                .textBody(template != null ? template.getTemplate() : defaultBody)
+                .subject(template != null && template.getSubject() != null ? template.getSubject() : defaultSubject)
                 .build();
     }
 

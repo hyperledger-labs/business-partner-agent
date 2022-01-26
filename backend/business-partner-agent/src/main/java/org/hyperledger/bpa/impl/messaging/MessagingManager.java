@@ -24,10 +24,12 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
 import org.hyperledger.bpa.api.notification.CredentialProposalEvent;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.messaging.MessageTemplateCmd;
 import org.hyperledger.bpa.controller.api.messaging.MessageTriggerConfigCmd;
 import org.hyperledger.bpa.controller.api.messaging.MessageUserInfoCmd;
 import org.hyperledger.bpa.impl.messaging.email.EmailService;
+import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.persistence.model.messaging.MessageTemplate;
 import org.hyperledger.bpa.persistence.model.messaging.MessageTrigger;
 import org.hyperledger.bpa.persistence.model.messaging.MessageTriggerConfig;
@@ -36,7 +38,9 @@ import org.hyperledger.bpa.persistence.repository.messaging.MessageTemplateRepos
 import org.hyperledger.bpa.persistence.repository.messaging.MessageTriggerConfigRepository;
 import org.hyperledger.bpa.persistence.repository.messaging.MessageUserInfoRepository;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
@@ -55,6 +59,9 @@ public class MessagingManager {
 
     @Inject
     MessageTriggerConfigRepository triggerConfig;
+
+    @Inject
+    BPAMessageSource.DefaultMessageSource ms;
 
     // crud message templates
 
@@ -114,17 +121,17 @@ public class MessagingManager {
     }
 
     public MessageTriggerConfigCmd.ApiTriggerConfig addTriggerConfig(@NonNull MessageTrigger trigger,
-            @NonNull UUID messageTemplateId, @NonNull UUID userInfoId) {
+            @Nullable UUID messageTemplateId, @NonNull UUID userInfoId) {
         return MessageTriggerConfigCmd.ApiTriggerConfig.fromMessageTriggerConfig(triggerConfig.save(MessageTriggerConfig
                 .builder()
                 .trigger(trigger)
-                .template(MessageTemplate.builder().id(messageTemplateId).build())
+                .template(messageTemplateId != null ? MessageTemplate.builder().id(messageTemplateId).build() : null)
                 .userInfo(MessageUserInfo.builder().id(userInfoId).build())
                 .build()));
     }
 
-    public void updateTriggerConfig(@NonNull UUID id, @NonNull MessageTrigger trigger, UUID messageTemplateId,
-            UUID userInfoId) {
+    public void updateTriggerConfig(@NonNull UUID id, @NonNull MessageTrigger trigger, @Nullable UUID messageTemplateId,
+            @NonNull UUID userInfoId) {
         triggerConfig.updateTriggerConfig(id, trigger,
                 MessageTemplate.builder().id(messageTemplateId).build(),
                 MessageUserInfo.builder().id(userInfoId).build());
@@ -143,7 +150,10 @@ public class MessagingManager {
     }
 
     private void findAndSend(@NonNull MessageTrigger trigger) {
+        String defaultBody = ms.getMessage("mail.default.body",
+                Map.of("event", trigger, "time", TimeUtil.toISOInstant(Instant.now())));
+        String defaultSubject = ms.getMessage("mail.default.subject");
         emailService.ifPresent(mailer -> triggerConfig.findByTrigger(trigger)
-                .parallelStream().forEach(t -> mailer.send(t.toEmailCmd())));
+                .parallelStream().forEach(t -> mailer.send(t.toEmailCmd(defaultSubject, defaultBody))));
     }
 }

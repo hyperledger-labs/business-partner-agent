@@ -17,16 +17,10 @@
  */
 package org.hyperledger.bpa.api.notification;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hyperledger.bpa.api.aries.AriesCredential;
 
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 public class CredentialProposalEvent {
-    private AriesCredential credential;
 }

@@ -65,7 +65,8 @@ public class MessagingRepositoriesTest {
         Assertions.assertEquals("test@somewhere.co", trigger
                 .findById(triggerConfig.getId()).orElseThrow().getUserInfo().getSendTo());
 
-        trigger.updateTriggerConfig(triggerConfig.getId(), MessageTrigger.PROPOSAL_RECEIVED, messageTemplate, userInfo2);
+        trigger.updateTriggerConfig(triggerConfig.getId(), MessageTrigger.PROPOSAL_RECEIVED, messageTemplate,
+                userInfo2);
         Assertions.assertEquals("something@else.co", trigger
                 .findById(triggerConfig.getId()).orElseThrow().getUserInfo().getSendTo());
 

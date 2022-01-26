@@ -18,10 +18,12 @@
 package org.hyperledger.bpa.controller.api.messaging;
 
 import io.micronaut.core.annotation.Introspected;
+import io.micronaut.core.annotation.Nullable;
 import lombok.*;
 import org.hyperledger.bpa.persistence.model.messaging.MessageTrigger;
 import org.hyperledger.bpa.persistence.model.messaging.MessageTriggerConfig;
 
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 public class MessageTriggerConfigCmd {
@@ -30,8 +32,11 @@ public class MessageTriggerConfigCmd {
     @NoArgsConstructor
     @Introspected
     public static final class TriggerConfigRequest {
+        @NotNull
         private MessageTrigger trigger;
+        @Nullable
         private UUID messageTemplateId;
+        @NotNull
         private UUID userInfoId;
     }
 

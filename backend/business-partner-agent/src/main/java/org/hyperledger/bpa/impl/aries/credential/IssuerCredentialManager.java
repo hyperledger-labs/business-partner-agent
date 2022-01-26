@@ -50,6 +50,7 @@ import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.api.notification.CredentialAcceptedEvent;
 import org.hyperledger.bpa.api.notification.CredentialIssuedEvent;
 import org.hyperledger.bpa.api.notification.CredentialProblemEvent;
+import org.hyperledger.bpa.api.notification.CredentialProposalEvent;
 import org.hyperledger.bpa.config.AcaPyConfig;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.config.RuntimeConfig;
@@ -149,7 +150,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                 if (credDefRepo.findByCredentialDefinitionId(response.get().getCredentialDefinitionId()).isEmpty()) {
                     // doesn't exist, save it to the db...
                     BPACredentialDefinition credDef = BPACredentialDefinition.builder()
-                            .schema(bpaSchema.get())
+                            .schema(bpaSchema.orElseThrow())
                             .credentialDefinitionId(response.get().getCredentialDefinitionId())
                             .isSupportRevocation(supportRevocation)
                             .revocationRegistrySize(config.getRevocationRegistrySize())
@@ -462,6 +463,7 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                                 Map.of("id", ex.getCredentialProposalDict().getSchemaId())));
                         credExRepo.save(b.build());
                     });
+            fireCredentialProposalEvent();
         });
     }
 
@@ -556,10 +558,8 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                 credExRepo.updateReferent(bpaEx.getId(), revocationInfo.getCredIdStored());
                 // holder event is missing the credRevId
                 try {
-                    ac.credential(revocationInfo.getCredIdStored()).ifPresent(c -> {
-                        credExRepo.updateRevocationInfo(bpaEx.getId(), c.getRevRegId(),
-                                c.getCredRevId());
-                    });
+                    ac.credential(revocationInfo.getCredIdStored()).ifPresent(
+                            c -> credExRepo.updateRevocationInfo(bpaEx.getId(), c.getRevRegId(), c.getCredRevId()));
                 } catch (IOException e) {
                     log.error(msg.getMessage("acapy.unavailable"));
                 }
@@ -618,6 +618,10 @@ public class IssuerCredentialManager extends BaseCredentialManager {
         eventPublisher.publishEventAsync(CredentialProblemEvent.builder()
                 .credential(AriesCredential.fromBPACredentialExchange(db, schemaLabel(db)))
                 .build());
+    }
+
+    private void fireCredentialProposalEvent() {
+        eventPublisher.publishEventAsync(new CredentialProposalEvent());
     }
 
     private String schemaLabel(@NonNull BPACredentialExchange db) {

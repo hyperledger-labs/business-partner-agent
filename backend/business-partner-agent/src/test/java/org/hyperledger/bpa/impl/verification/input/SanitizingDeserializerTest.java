@@ -33,15 +33,15 @@ public class SanitizingDeserializerTest {
 
         String serialized = mapper.writeValueAsString(input);
 
-        MessageTemplateCmd.MessageTemplateRequest deserialized = mapper.
-                readValue(serialized, MessageTemplateCmd.MessageTemplateRequest.class);
+        MessageTemplateCmd.MessageTemplateRequest deserialized = mapper.readValue(serialized,
+                MessageTemplateCmd.MessageTemplateRequest.class);
         Assertions.assertEquals(" karl", deserialized.getSubject());
     }
 
     @Test
     void testDeserializeWithNull() throws Exception {
-        MessageTemplateCmd.MessageTemplateRequest deserialized = mapper.
-                readValue("{}", MessageTemplateCmd.MessageTemplateRequest.class);
+        MessageTemplateCmd.MessageTemplateRequest deserialized = mapper.readValue("{}",
+                MessageTemplateCmd.MessageTemplateRequest.class);
         Assertions.assertNull(deserialized.getSubject());
     }
 }

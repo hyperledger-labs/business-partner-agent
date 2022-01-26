@@ -27,7 +27,8 @@ import org.owasp.html.PolicyFactory;
 import java.io.IOException;
 
 /**
- * Deserializer that cleans, quotes, or removes all parts of the input that could be interpreted as HTML or script.
+ * Deserializer that cleans, quotes, or removes all parts of the input that
+ * could be interpreted as HTML or script.
  */
 public class SanitizedStringDeserializer extends JsonDeserializer<String> {
 
@@ -38,5 +39,5 @@ public class SanitizedStringDeserializer extends JsonDeserializer<String> {
         JsonNode node = p.getCodec().readTree(p);
         String text = node.asText();
         return sanitizeAllPolicy.sanitize(text);
-        }
+    }
 }

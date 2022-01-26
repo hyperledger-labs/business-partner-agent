@@ -51,5 +51,6 @@ public interface MessageTriggerConfigRepository extends CrudRepository<MessageTr
     @Join(value = "template", type = Join.Type.LEFT_FETCH)
     List<MessageTriggerConfig> findByTrigger(MessageTrigger trigger);
 
-    Number updateTriggerConfig(@Id UUID id, MessageTrigger trigger, @Nullable MessageTemplate template, MessageUserInfo userInfo);
+    Number updateTriggerConfig(@Id UUID id, MessageTrigger trigger, @Nullable MessageTemplate template,
+            MessageUserInfo userInfo);
 }

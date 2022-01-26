@@ -37,10 +37,10 @@ import javax.validation.Valid;
 import java.util.Properties;
 
 /**
- * Basic mail service implementation based on JavaMail.
- * It can be activated by setting the following environment variables:
- * MAIL_USERNAME and MAIL_PASSWORD. The default smtp server is gmail,
- * if this is not an option it can be overwritten by setting the MAIL_SMTP_HOST variable
+ * Basic mail service implementation based on JavaMail. It can be activated by
+ * setting the following environment variables: MAIL_USERNAME and MAIL_PASSWORD.
+ * The default smtp server is gmail, if this is not an option it can be
+ * overwritten by setting the MAIL_SMTP_HOST variable
  */
 @Slf4j
 @Requires(notEnv = Environment.TEST)
