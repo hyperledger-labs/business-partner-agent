@@ -19,11 +19,13 @@ package org.hyperledger.bpa.persistence.repository.messaging;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
+import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.bpa.persistence.model.messaging.MessageTemplate;
 
 import java.util.UUID;
 
+@JdbcRepository
 public interface MessageTemplateRepository extends CrudRepository<MessageTemplate, UUID> {
 
     Number updateTemplateInfo(@Id UUID id, @Nullable String subject, String template);

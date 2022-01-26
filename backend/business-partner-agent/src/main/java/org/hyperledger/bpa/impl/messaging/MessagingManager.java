@@ -125,7 +125,9 @@ public class MessagingManager {
 
     public void updateTriggerConfig(@NonNull UUID id, @NonNull MessageTrigger trigger, UUID messageTemplateId,
             UUID userInfoId) {
-        triggerConfig.updateTriggerConfig(id, trigger, messageTemplateId, userInfoId);
+        triggerConfig.updateTriggerConfig(id, trigger,
+                MessageTemplate.builder().id(messageTemplateId).build(),
+                MessageUserInfo.builder().id(userInfoId).build());
     }
 
     public void deleteTriggerConfig(@NonNull UUID id) {

@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.persistence.model.messaging;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
 import io.micronaut.data.annotation.DateUpdated;
@@ -48,11 +49,13 @@ public class MessageUserInfo {
     @DateUpdated
     private Instant updatedAt;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private MessageType type;
+    private MessageType type = MessageType.E_MAIL;
 
     private String sendTo;
 
+    @Nullable
     private String label;
 
     @OneToMany(mappedBy = "userInfo")

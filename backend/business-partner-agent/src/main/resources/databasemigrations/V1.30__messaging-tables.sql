@@ -12,7 +12,7 @@ CREATE TABLE message_user_info (
     updated_at timestamp without time zone,
     type character varying(255) NOT NULL,
     send_to character varying(255) NOT NULL,
-    label character varying(255) NOT NULL
+    label character varying(255)
 );
 
 CREATE TABLE message_trigger_config (
@@ -20,20 +20,20 @@ CREATE TABLE message_trigger_config (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     trigger character varying(2048) NOT NULL,
-    message_template_id uuid,
-    message_user_info_id uuid NOT NULL
+    template_id uuid,
+    user_info_id uuid NOT NULL
 );
 
 -- add foreign keys
 ALTER TABLE message_trigger_config
     ADD CONSTRAINT message_template_fk_1
-        FOREIGN KEY (message_template_id)
+        FOREIGN KEY (template_id)
             REFERENCES message_template(id);
 
 
 ALTER TABLE message_trigger_config
     ADD CONSTRAINT message_user_info_fk_1
-        FOREIGN KEY (message_user_info_id)
+        FOREIGN KEY (user_info_id)
             REFERENCES message_user_info(id);
 
 -- clean up table names

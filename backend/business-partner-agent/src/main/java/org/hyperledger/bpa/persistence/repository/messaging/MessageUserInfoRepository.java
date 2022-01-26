@@ -19,11 +19,13 @@ package org.hyperledger.bpa.persistence.repository.messaging;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
+import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.bpa.persistence.model.messaging.MessageUserInfo;
 
 import java.util.UUID;
 
+@JdbcRepository
 public interface MessageUserInfoRepository extends CrudRepository<MessageUserInfo, UUID> {
 
     Number updateUserInfo(@Id UUID id, @Nullable String label, String sendTo);

@@ -21,14 +21,18 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
+import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.repository.CrudRepository;
+import org.hyperledger.bpa.persistence.model.messaging.MessageTemplate;
 import org.hyperledger.bpa.persistence.model.messaging.MessageTrigger;
 import org.hyperledger.bpa.persistence.model.messaging.MessageTriggerConfig;
+import org.hyperledger.bpa.persistence.model.messaging.MessageUserInfo;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@JdbcRepository
 public interface MessageTriggerConfigRepository extends CrudRepository<MessageTriggerConfig, UUID> {
 
     @Override
@@ -47,5 +51,5 @@ public interface MessageTriggerConfigRepository extends CrudRepository<MessageTr
     @Join(value = "template", type = Join.Type.LEFT_FETCH)
     List<MessageTriggerConfig> findByTrigger(MessageTrigger trigger);
 
-    Number updateTriggerConfig(@Id UUID id, MessageTrigger trigger, @Nullable UUID template, UUID userInfo);
+    Number updateTriggerConfig(@Id UUID id, MessageTrigger trigger, @Nullable MessageTemplate template, MessageUserInfo userInfo);
 }
