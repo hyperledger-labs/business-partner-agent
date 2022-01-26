@@ -22,6 +22,5 @@ import lombok.NonNull;
 import javax.validation.Valid;
 
 public interface EmailService {
-
     void send(@NonNull @Valid EmailCmd email);
 }

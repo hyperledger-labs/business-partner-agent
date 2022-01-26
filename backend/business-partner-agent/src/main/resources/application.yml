@@ -104,6 +104,16 @@ jackson:
   mapper:
     acceptCaseInsensitiveEnums: true
 
+javamail:
+  properties:
+    mail.smtp.host: ${MAIL_SMTP_HOST:`smtp.gmail.com`}
+    mail.smtp.port: 587
+    mail.smtp.auth: true
+    mail.smtp.starttls.enable: true
+    mail.smtp.connectiontimeout: 5000
+    mail.smtp.timeout: 5000
+    mail.smtp.writetimeout: 5000
+
 bpa:
   docker:
     #host where containers are running: typically localhost but might be an IP as well
@@ -140,6 +150,11 @@ bpa:
   i18n:
     locale: ${BPA_I18N_LOCALE:en}
     fallbackLocale: ${BPA_I18N_FALLBACK_LOCALE:en}
+
+
+
+
+
 # The following is an example on how to override the default ux.
 # This shows the current defaults (and appropriate alternate value)
 # To override theme, then set themes.light properties (do not use dark theme)

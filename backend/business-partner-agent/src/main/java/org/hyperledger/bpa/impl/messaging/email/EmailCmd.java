@@ -33,11 +33,11 @@ public class EmailCmd {
     @NotBlank
     private String to;
 
-    private String from;
-
     @NotNull
     @NotBlank
     private String subject;
 
+    @NotNull
+    @NotBlank
     private String textBody;
 }
