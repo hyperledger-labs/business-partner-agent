@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.persistence.model.messaging;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
 import io.micronaut.data.annotation.DateUpdated;
@@ -55,6 +56,7 @@ public class MessageTriggerConfig {
     private MessageUserInfo userInfo;
 
     @ManyToOne
+    @Nullable
     private MessageTemplate template;
 
     public EmailCmd toEmailCmd() {

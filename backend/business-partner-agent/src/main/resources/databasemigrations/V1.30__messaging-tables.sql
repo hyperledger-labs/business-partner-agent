@@ -20,7 +20,7 @@ CREATE TABLE message_trigger_config (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     trigger character varying(2048) NOT NULL,
-    message_template_id uuid NOT NULL,
+    message_template_id uuid,
     message_user_info_id uuid NOT NULL
 );
 

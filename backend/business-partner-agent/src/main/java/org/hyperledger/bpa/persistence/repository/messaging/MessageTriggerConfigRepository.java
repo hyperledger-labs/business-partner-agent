@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.persistence.repository.messaging;
 
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
 import io.micronaut.data.repository.CrudRepository;
@@ -46,5 +47,5 @@ public interface MessageTriggerConfigRepository extends CrudRepository<MessageTr
     @Join(value = "template", type = Join.Type.LEFT_FETCH)
     List<MessageTriggerConfig> findByTrigger(MessageTrigger trigger);
 
-    Number updateTriggerConfig(@Id UUID id, MessageTrigger trigger, UUID template, UUID userInfo);
+    Number updateTriggerConfig(@Id UUID id, MessageTrigger trigger, @Nullable UUID template, UUID userInfo);
 }

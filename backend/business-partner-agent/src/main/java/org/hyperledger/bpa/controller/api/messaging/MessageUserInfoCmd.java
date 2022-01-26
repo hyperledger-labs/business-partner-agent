@@ -22,6 +22,7 @@ import lombok.*;
 import org.hyperledger.bpa.persistence.model.messaging.MessageType;
 import org.hyperledger.bpa.persistence.model.messaging.MessageUserInfo;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
@@ -45,6 +46,7 @@ public class MessageUserInfoCmd {
         private Long createdAt;
         private Long updatedAt;
         private MessageType type;
+        @Email // currently, only email, but could also be a phone number
         private String sendTo;
         private String label;
 

@@ -17,8 +17,10 @@
  */
 package org.hyperledger.bpa.controller.api.messaging;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.micronaut.core.annotation.Introspected;
 import lombok.*;
+import org.hyperledger.bpa.impl.verification.input.SanitizedStringDeserializer;
 import org.hyperledger.bpa.persistence.model.messaging.MessageTemplate;
 
 import javax.validation.constraints.NotNull;
@@ -30,8 +32,12 @@ public class MessageTemplateCmd {
     @NoArgsConstructor
     @Introspected
     public static final class MessageTemplateRequest {
+
+        @JsonDeserialize(using = SanitizedStringDeserializer.class)
         private String subject;
+
         @NotNull
+        @JsonDeserialize(using = SanitizedStringDeserializer.class)
         private String template;
     }
 
