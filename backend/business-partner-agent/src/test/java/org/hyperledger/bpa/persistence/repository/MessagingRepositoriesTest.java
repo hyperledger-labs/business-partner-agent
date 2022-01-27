@@ -65,7 +65,7 @@ public class MessagingRepositoriesTest {
         Assertions.assertEquals("test@somewhere.co", trigger
                 .findById(triggerConfig.getId()).orElseThrow().getUserInfo().getSendTo());
 
-        trigger.updateTriggerConfig(triggerConfig.getId(), MessageTrigger.PROPOSAL_RECEIVED, messageTemplate,
+        trigger.updateTriggerConfig(triggerConfig.getId(), MessageTrigger.PRESENTATION_REQUEST, messageTemplate,
                 userInfo2);
         Assertions.assertEquals("something@else.co", trigger
                 .findById(triggerConfig.getId()).orElseThrow().getUserInfo().getSendTo());
@@ -74,7 +74,7 @@ public class MessagingRepositoriesTest {
         Assertions.assertThrows(DataAccessException.class, () -> user.deleteById(userInfo2.getId()));
         Assertions.assertThrows(DataAccessException.class, () -> template.deleteById(messageTemplate.getId()));
 
-        trigger.updateTriggerConfig(triggerConfig.getId(), MessageTrigger.PROPOSAL_RECEIVED, null, userInfo2);
+        trigger.updateTriggerConfig(triggerConfig.getId(), MessageTrigger.PRESENTATION_REQUEST, null, userInfo2);
         trigger.deleteById(triggerConfig.getId());
 
         Assertions.assertTrue(template.findById(messageTemplate.getId()).isPresent());

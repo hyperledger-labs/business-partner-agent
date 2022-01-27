@@ -19,11 +19,12 @@ package org.hyperledger.bpa.impl.messaging;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.runtime.event.annotation.EventListener;
-import io.micronaut.scheduling.annotation.Async;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
 import org.hyperledger.bpa.api.notification.CredentialProposalEvent;
+import org.hyperledger.bpa.api.notification.PartnerRequestReceivedEvent;
+import org.hyperledger.bpa.api.notification.PresentationRequestReceivedEvent;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.messaging.MessageTemplateCmd;
 import org.hyperledger.bpa.controller.api.messaging.MessageTriggerConfigCmd;
@@ -141,12 +142,23 @@ public class MessagingManager {
         triggerConfig.deleteById(id);
     }
 
+    // invitation
+
     // event handler
 
-    @Async
     @EventListener
     public void onCredentialProposalEvent(CredentialProposalEvent event) {
         findAndSend(MessageTrigger.CREDENTIAL_PROPOSAL);
+    }
+
+    @EventListener
+    public void onPresentationRequestEvent(PresentationRequestReceivedEvent event) {
+        findAndSend(MessageTrigger.PRESENTATION_REQUEST);
+    }
+
+    @EventListener
+    public void onPartnerRequestEvent(PartnerRequestReceivedEvent event) {
+        findAndSend(MessageTrigger.CONNECTION_REQUEST);
     }
 
     private void findAndSend(@NonNull MessageTrigger trigger) {

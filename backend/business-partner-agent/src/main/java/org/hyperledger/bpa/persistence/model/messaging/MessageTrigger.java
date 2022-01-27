@@ -18,6 +18,10 @@
 package org.hyperledger.bpa.persistence.model.messaging;
 
 public enum MessageTrigger {
+    /** other BPA wants to connect */
+    CONNECTION_REQUEST,
+    /** other BPA sent a credential proposal */
     CREDENTIAL_PROPOSAL,
-    PROPOSAL_RECEIVED
+    /** other BPA sent a presentation request */
+    PRESENTATION_REQUEST,
 }
