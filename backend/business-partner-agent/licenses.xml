@@ -40,6 +40,12 @@
                 <name>BSD-2-Clause</name>
             </names>
         </license>
+        <license>
+            <name>The JSON License</name>
+            <names>
+                <name>The JSON License</name>
+            </names>
+        </license>
     </valid>
     <forbidden>
         <license>

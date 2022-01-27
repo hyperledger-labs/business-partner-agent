@@ -53,8 +53,8 @@ public class MessageUserInfoCmd {
         public static ApiUserInfo fromMessageUserInfo(@NonNull MessageUserInfo i) {
             return ApiUserInfo.builder()
                     .id(i.getId())
-                    .createdAt(i.getCreatedAt().toEpochMilli())
-                    .updatedAt(i.getUpdatedAt().toEpochMilli())
+                    .createdAt(i.getCreatedAt() != null ? i.getCreatedAt().toEpochMilli() : null)
+                    .updatedAt(i.getUpdatedAt() != null ? i.getUpdatedAt().toEpochMilli() : null)
                     .type(i.getType())
                     .sendTo(i.getSendTo())
                     .label(i.getLabel())

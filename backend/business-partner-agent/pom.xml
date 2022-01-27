@@ -169,8 +169,14 @@
         </dependency>
         <dependency>
             <groupId>io.micronaut.email</groupId>
-            <artifactId>micronaut-email-javamail</artifactId>
+            <artifactId>micronaut-email-mailjet</artifactId>
             <version>1.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>activation</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Database -->

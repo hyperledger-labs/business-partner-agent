@@ -104,16 +104,6 @@ jackson:
   mapper:
     acceptCaseInsensitiveEnums: true
 
-javamail:
-  properties:
-    mail.smtp.host: ${MAIL_SMTP_HOST:`smtp.gmail.com`}
-    mail.smtp.port: 587
-    mail.smtp.auth: true
-    mail.smtp.starttls.enable: true
-    mail.smtp.connectiontimeout: 5000
-    mail.smtp.timeout: 5000
-    mail.smtp.writetimeout: 5000
-
 bpa:
   docker:
     #host where containers are running: typically localhost but might be an IP as well

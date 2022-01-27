@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.persistence.model.messaging;
 
-import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.AutoPopulated;
 import io.micronaut.data.annotation.DateCreated;
@@ -53,7 +52,6 @@ public class MessageTemplate {
     @Nullable
     private String subject;
 
-    @NonNull
     private String template;
 
     @OneToMany(mappedBy = "template")
