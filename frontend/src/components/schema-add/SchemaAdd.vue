@@ -24,7 +24,7 @@
               <v-text-field
                 class="mt-6"
                 :placeholder="$t('component.addSchema.placeholderName')"
-                v-model="schema.label"
+                v-model="schemaIndy.label"
                 :rules="[rules.required]"
                 outlined
                 dense
@@ -43,7 +43,7 @@
               <v-text-field
                 class="mt-6"
                 :placeholder="$t('component.addSchema.placeholderId')"
-                v-model="schema.schemaId"
+                v-model="schemaIndy.schemaId"
                 :rules="[rules.required]"
                 outlined
                 dense
@@ -60,8 +60,8 @@
               <v-bpa-button
                 :loading="isBusy"
                 color="primary"
-                @click="submit()"
-                :disabled="fieldsEmpty"
+                @click="submitSchemaIndy()"
+                :disabled="fieldsEmptyIndy"
                 >{{ $t("button.submit") }}</v-bpa-button
               >
             </v-layout>
@@ -78,13 +78,82 @@
             :rules="[rules.validJson]"
             :label="$t('component.addSchema.placeholderJsonLd')"
           ></v-textarea>
+          <v-list-item>
+            <v-list-item-title
+              class="grey--text text--darken-2 font-weight-medium"
+            >
+              {{ $t("component.addSchema.schemaJsonLdUrl") }}:
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              <v-text-field
+                class="mt-6"
+                :placeholder="$t('component.addSchema.placeholderJsonLdUrl')"
+                v-model="schemaJsonLd.schemaId"
+                :rules="[rules.required]"
+                outlined
+                dense
+                required
+              >
+              </v-text-field>
+            </v-list-item-subtitle>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title
+              class="grey--text text--darken-2 font-weight-medium"
+            >
+              {{ $t("component.addSchema.schemaName") }}:
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              <v-text-field
+                class="mt-6"
+                :placeholder="$t('component.addSchema.placeholderName')"
+                v-model="schemaJsonLd.label"
+                :rules="[rules.required]"
+                outlined
+                dense
+                required
+              >
+              </v-text-field>
+            </v-list-item-subtitle>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title
+              class="grey--text text--darken-2 font-weight-medium"
+            >
+              {{ $t("component.addSchema.schemaJsonLdType") }}:
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              <v-text-field
+                class="mt-6"
+                :placeholder="$t('component.addSchema.placeholderJsonLdType')"
+                v-model="schemaJsonLd.ldType"
+                :rules="[rules.required]"
+                outlined
+                dense
+                required
+              >
+              </v-text-field>
+            </v-list-item-subtitle>
+          </v-list-item>
+          <v-list-item>
+            <v-data-table
+              :items="tempJsonLdAttributes"
+              :headers="headersJsonLdTable"
+              v-model="schemaJsonLd.attributes"
+              show-select
+            >
+            </v-data-table>
+          </v-list-item>
           <v-card-actions>
             <v-layout align-end justify-end>
               <v-bpa-button color="secondary" @click="cancel()">{{
                 $t("button.cancel")
               }}</v-bpa-button>
-              <v-bpa-button disabled :loading="isBusy" color="primary"
-                >{{ $t("button.submit") }} (TODO)</v-bpa-button
+              <v-bpa-button
+                :loading="isBusy"
+                color="primary"
+                @click="submitSchemaJsonLd"
+                >{{ $t("button.submit") }}</v-bpa-button
               >
             </v-layout>
           </v-card-actions>
@@ -100,6 +169,7 @@ import adminService from "@/services/adminService";
 import VBpaButton from "@/components/BpaButton";
 import CredentialTypeTabs from "@/components/schema-add/CredentialTypeTabs.vue";
 import { validateJson } from "@/utils/validateUtils";
+import { jsonLdService } from "@/services";
 
 export default {
   name: "SchemaAdd",
@@ -107,14 +177,29 @@ export default {
   props: {},
   data: () => {
     return {
-      schema: {
+      schemaIndy: {
         label: "",
         schemaId: "",
       },
+      schemaJsonLd: {
+        label: "",
+        schemaId: "",
+        attributes: [],
+        ldType: "",
+      },
+      tempJsonLdAttributes: [],
       isBusy: false,
     };
   },
   computed: {
+    headersJsonLdTable() {
+      return [
+        {
+          text: "Name",
+          value: "name",
+        },
+      ];
+    },
     rules() {
       return {
         required: (value) => !!value || this.$t("app.rules.required"),
@@ -122,17 +207,26 @@ export default {
           validateJson(value) || this.$t("app.rules.validJson"),
       };
     },
-    fieldsEmpty() {
+    fieldsEmptyIndy() {
       return (
-        this.schema.label.length === 0 || this.schema.schemaId.length === 0
+        this.schemaIndy.label.length === 0 ||
+        this.schemaIndy.schemaId.length === 0
+      );
+    },
+    fieldsEmptyJsonLd() {
+      return (
+        this.schemaJsonLd.label.length === 0 ||
+        this.schemaJsonLd.schemaId.length === 0 ||
+        this.schemaJsonLd.ldType.length === 0 ||
+        this.schemaJsonLd.attributes.size === 0
       );
     },
   },
   methods: {
-    async submit() {
+    async submitSchemaIndy() {
       this.isBusy = true;
       adminService
-        .addSchema(this.schema)
+        .addSchema(this.schemaIndy)
         .then((result) => {
           this.isBusy = false;
           if (result.status === 200) {
@@ -146,6 +240,26 @@ export default {
         .catch((error) => {
           this.isBusy = false;
           EventBus.$emit("error", this.$axiosErrorMessage(error));
+        });
+    },
+    async submitSchemaJsonLd() {
+      let jsonLd: Record<string, unknown>;
+      this.isBusy = true;
+      jsonLdService
+        .getAndValidateJsonLd("https://json-ld.org/contexts/person.jsonld")
+        .then((response) => {
+          for (const attribute of Object.keys(response["@context"])) {
+            this.tempJsonLdAttributes.push({
+              name: attribute,
+            });
+          }
+        })
+        .catch((error) => {
+          this.isBusy = false;
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
+        })
+        .finally(() => {
+          this.isBusy = false;
         });
     },
     cancel() {
