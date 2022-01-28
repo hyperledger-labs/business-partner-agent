@@ -56,14 +56,14 @@ public class MessageTriggerConfig {
     @Nullable
     private MessageTemplate template;
 
-    public EmailCmd toEmailCmd(@NonNull String defaultSubject, @NonNull String defaultBody) {
+    public EmailCmd toEmailCmd(@NonNull String defaultSubject, @NonNull String body) {
         if (userInfo == null) {
             throw new IllegalStateException("Object is missing userInfo, is it fully joined?");
         }
         return EmailCmd
                 .builder()
                 .to(userInfo.getSendTo())
-                .textBody(template != null ? template.getTemplate() : defaultBody)
+                .textBody(body)
                 .subject(template != null && template.getSubject() != null ? template.getSubject() : defaultSubject)
                 .build();
     }

@@ -17,6 +17,8 @@
  */
 package org.hyperledger.bpa.impl.messaging;
 
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.runtime.event.annotation.EventListener;
 import jakarta.inject.Inject;
@@ -39,6 +41,7 @@ import org.hyperledger.bpa.persistence.repository.messaging.MessageTemplateRepos
 import org.hyperledger.bpa.persistence.repository.messaging.MessageTriggerConfigRepository;
 import org.hyperledger.bpa.persistence.repository.messaging.MessageUserInfoRepository;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +51,8 @@ import java.util.stream.StreamSupport;
 
 @Singleton
 public class MessagingManager {
+
+    private final Handlebars handlebars = new Handlebars();
 
     @Inject
     Optional<EmailService> emailService;
@@ -162,10 +167,27 @@ public class MessagingManager {
     }
 
     private void findAndSend(@NonNull MessageTrigger trigger) {
-        String defaultBody = ms.getMessage("mail.default.body",
-                Map.of("event", trigger, "time", TimeUtil.toISOInstant(Instant.now())));
-        String defaultSubject = ms.getMessage("mail.default.subject");
-        emailService.ifPresent(mailer -> triggerConfig.findByTrigger(trigger)
-                .parallelStream().forEach(t -> mailer.send(t.toEmailCmd(defaultSubject, defaultBody))));
+        emailService.ifPresent(mailer -> {
+            String defaultSubject = ms.getMessage("mail.default.subject");
+            triggerConfig.findByTrigger(trigger)
+                    .parallelStream().forEach(t -> mailer.send(t.toEmailCmd(defaultSubject, resolveBody(trigger, t))));
+        });
+    }
+
+    private String resolveBody(@NonNull MessageTrigger trigger, @NonNull MessageTriggerConfig t) {
+        String body;
+        Map<String, Object> model = Map.of("event", trigger, "time", TimeUtil.toISOInstant(Instant.now()));
+        String defaultBody = ms.getMessage("mail.default.body", model);
+        if (t.getTemplate() == null || t.getTemplate().getTemplate() == null) {
+            body = defaultBody;
+        } else {
+            try {
+                Template template = handlebars.compileInline(t.getTemplate().getTemplate());
+                body = template.apply(model);
+            } catch (IOException e) {
+                body = defaultBody;
+            }
+        }
+        return body;
     }
 }
