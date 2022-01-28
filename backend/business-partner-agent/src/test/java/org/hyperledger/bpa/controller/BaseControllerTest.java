@@ -17,13 +17,15 @@
  */
 package org.hyperledger.bpa.controller;
 
+import io.micronaut.core.type.Argument;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.client.HttpClient;
+import io.micronaut.http.uri.UriBuilder;
 import lombok.NonNull;
-import org.hyperledger.bpa.controller.api.admin.UpdateTrustedIssuerRequest;
 
 import java.net.URI;
+import java.util.Map;
 import java.util.UUID;
 
 public abstract class BaseControllerTest {
@@ -34,13 +36,25 @@ public abstract class BaseControllerTest {
         this.client = client;
     }
 
+    public URI buildURI(@NonNull String template, Map<String, Object> values) {
+        return UriBuilder.of(template).expand(values);
+    }
+
     public <T> T getById(@NonNull UUID id, @NonNull Class<T> responseType) {
         return getById("/", id, responseType);
     }
 
     public <T> T getById(@NonNull String path, @NonNull UUID id, @NonNull Class<T> responseType) {
+        if (!path.endsWith("/")) {
+            path = path + "/";
+        }
         return client.toBlocking()
                 .retrieve(HttpRequest.GET(path + id), responseType);
+    }
+
+    public <T> T getAll(@NonNull String path, @NonNull Argument<T> responseType) {
+        return client.toBlocking()
+                .exchange(HttpRequest.GET(path), responseType).getBody().orElseThrow();
     }
 
     public <O, T> HttpResponse<T> post(@NonNull O body, @NonNull Class<T> responseType) {
@@ -49,10 +63,10 @@ public abstract class BaseControllerTest {
 
     public <O, T> HttpResponse<T> post(@NonNull String path, @NonNull O body, @NonNull Class<T> responseType) {
         return client.toBlocking()
-                .exchange(HttpRequest.POST(path , body), responseType);
+                .exchange(HttpRequest.POST(path, body), responseType);
     }
 
-    public <T> void put(@NonNull URI uri, T body) {
+    public <T> void put(@NonNull URI uri, @NonNull T body) {
         client.toBlocking().exchange(HttpRequest.PUT(uri, body));
     }
 

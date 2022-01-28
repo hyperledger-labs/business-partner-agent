@@ -30,6 +30,7 @@ public class MessageTemplateCmd {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
     @Introspected
     public static final class MessageTemplateRequest {
 

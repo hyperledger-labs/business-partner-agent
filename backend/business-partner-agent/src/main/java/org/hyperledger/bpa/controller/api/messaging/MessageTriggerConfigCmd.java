@@ -30,6 +30,7 @@ public class MessageTriggerConfigCmd {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
     @Introspected
     public static final class TriggerConfigRequest {
         @NotNull

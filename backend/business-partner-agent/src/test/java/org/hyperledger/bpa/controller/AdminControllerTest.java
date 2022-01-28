@@ -79,8 +79,7 @@ public class AdminControllerTest extends BaseControllerTest {
         Assertions.assertEquals(didPrefix + "issuer1", schema.getTrustedIssuer().get(0).getIssuerDid());
 
         // add a restriction to the schema
-        URI uri = UriBuilder.of("/{id}/trustedIssuer")
-                .expand(Map.of("id", schema.getId().toString()));
+        URI uri = buildURI("/{id}/trustedIssuer", Map.of("id", schema.getId().toString()));
         addRestriction(uri, "issuer2", "Demo Bank");
 
         // check if the restriction was added
@@ -94,10 +93,9 @@ public class AdminControllerTest extends BaseControllerTest {
                 () -> addRestriction(uri, "issuer2", null));
 
         // delete the first restriction
-        URI delete = UriBuilder.of("/{id}/trustedIssuer/{trustedIssuerId}")
-                .expand(Map.of(
-                        "id", schema.getId().toString(),
-                        "trustedIssuerId", schema.getTrustedIssuer().get(0).getId().toString()));
+        URI delete = buildURI("/{id}/trustedIssuer/{trustedIssuerId}", Map.of(
+                "id", schema.getId().toString(),
+                "trustedIssuerId", schema.getTrustedIssuer().get(0).getId().toString()));
         delete(delete.toString());
 
         // check if the first restriction was deleted
@@ -107,10 +105,9 @@ public class AdminControllerTest extends BaseControllerTest {
         Assertions.assertEquals(didPrefix + "issuer2", schema.getTrustedIssuer().get(0).getIssuerDid());
 
         // update the remaining restriction
-        URI put = UriBuilder.of("/{id}/trustedIssuer/{trustedIssuerId}")
-                .expand(Map.of(
-                        "id", schema.getId().toString(),
-                        "trustedIssuerId", schema.getTrustedIssuer().get(0).getId().toString()));
+        URI put = buildURI("/{id}/trustedIssuer/{trustedIssuerId}", Map.of(
+                "id", schema.getId().toString(),
+                "trustedIssuerId", schema.getTrustedIssuer().get(0).getId().toString()));
         put(put, new UpdateTrustedIssuerRequest("Dummy Bank"));
 
         // check if the label was updated
@@ -123,10 +120,9 @@ public class AdminControllerTest extends BaseControllerTest {
                 () -> deleteById(deleteId));
 
         // delete the second restriction
-        delete = UriBuilder.of("/{id}/trustedIssuer/{trustedIssuerId}")
-                .expand(Map.of(
-                        "id", schema.getId().toString(),
-                        "trustedIssuerId", schema.getTrustedIssuer().get(0).getId().toString()));
+        delete = buildURI("/{id}/trustedIssuer/{trustedIssuerId}", Map.of(
+                "id", schema.getId().toString(),
+                "trustedIssuerId", schema.getTrustedIssuer().get(0).getId().toString()));
         delete(delete.toString());
 
         // delete the schema
@@ -182,24 +178,24 @@ public class AdminControllerTest extends BaseControllerTest {
 
     private HttpResponse<SchemaAPI> addSchemaWithRestriction(String schemaId) {
         return post(AddSchemaRequest.AddIndySchema.builder()
-                        .schemaId(schemaId)
-                        .defaultAttributeName("name")
-                        .label("Demo Bank")
-                        .trustedIssuer(List.of(AddTrustedIssuerRequest
-                                .builder()
-                                .issuerDid("issuer1")
-                                .label("Demo Issuer")
-                                .build()))
-                        .build(),
+                .schemaId(schemaId)
+                .defaultAttributeName("name")
+                .label("Demo Bank")
+                .trustedIssuer(List.of(AddTrustedIssuerRequest
+                        .builder()
+                        .issuerDid("issuer1")
+                        .label("Demo Issuer")
+                        .build()))
+                .build(),
                 SchemaAPI.class);
     }
 
     private HttpResponse<SchemaAPI> addSchemaNoRestriction() {
         return post(AddSchemaRequest.AddIndySchema.builder()
-                        .schemaId(schemaId3)
-                        .defaultAttributeName("other")
-                        .label("Demo Corp")
-                        .build(),
+                .schemaId(schemaId3)
+                .defaultAttributeName("other")
+                .label("Demo Corp")
+                .build(),
                 SchemaAPI.class);
     }
 

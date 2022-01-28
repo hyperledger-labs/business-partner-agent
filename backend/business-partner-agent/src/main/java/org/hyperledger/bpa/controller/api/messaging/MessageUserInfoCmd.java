@@ -30,9 +30,11 @@ public class MessageUserInfoCmd {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
     @Introspected
     public static final class UserInfoRequest {
         @NotNull
+        @Email // currently, only email, but could also be a phone number
         private String sendTo;
         private String label;
     }
@@ -46,7 +48,6 @@ public class MessageUserInfoCmd {
         private Long createdAt;
         private Long updatedAt;
         private MessageType type;
-        @Email // currently, only email, but could also be a phone number
         private String sendTo;
         private String label;
 
