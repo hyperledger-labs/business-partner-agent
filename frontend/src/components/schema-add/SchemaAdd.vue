@@ -11,61 +11,12 @@
       <v-card-title class="bg-light">
         {{ $t("component.addSchema.title") }}
       </v-card-title>
-
       <credential-type-tabs :is-busy="isBusy">
         <template v-slot:indy>
-          <v-list-item>
-            <v-list-item-title
-              class="grey--text text--darken-2 font-weight-medium"
-            >
-              {{ $t("component.addSchema.schemaName") }}:
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              <v-text-field
-                class="mt-6"
-                :placeholder="$t('component.addSchema.placeholderName')"
-                v-model="schemaIndy.label"
-                :rules="[rules.required]"
-                outlined
-                dense
-                required
-              >
-              </v-text-field>
-            </v-list-item-subtitle>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-title
-              class="grey--text text--darken-2 font-weight-medium"
-            >
-              {{ $t("component.addSchema.schemaId") }}:
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              <v-text-field
-                class="mt-6"
-                :placeholder="$t('component.addSchema.placeholderId')"
-                v-model="schemaIndy.schemaId"
-                :rules="[rules.required]"
-                outlined
-                dense
-                required
-              >
-              </v-text-field>
-            </v-list-item-subtitle>
-          </v-list-item>
-          <v-card-actions>
-            <v-layout align-end justify-end>
-              <v-bpa-button color="secondary" @click="cancel()">{{
-                $t("button.cancel")
-              }}</v-bpa-button>
-              <v-bpa-button
-                :loading="isBusy"
-                color="primary"
-                @click="submitSchemaIndy()"
-                :disabled="fieldsEmptyIndy"
-                >{{ $t("button.submit") }}</v-bpa-button
-              >
-            </v-layout>
-          </v-card-actions>
+          <import-credential-indy
+            v-model="schemaIndy"
+            v-on:cancelled="cancel"
+          />
         </template>
         <template v-slot:json-ld>
           <br />
@@ -170,11 +121,11 @@ import VBpaButton from "@/components/BpaButton";
 import CredentialTypeTabs from "@/components/schema-add/CredentialTypeTabs.vue";
 import { validateJson } from "@/utils/validateUtils";
 import { jsonLdService } from "@/services";
+import ImportCredentialIndy from "@/components/schema-add/ImportCredentialIndy.vue";
 
 export default {
   name: "SchemaAdd",
-  components: { CredentialTypeTabs, VBpaButton },
-  props: {},
+  components: { ImportCredentialIndy, CredentialTypeTabs, VBpaButton },
   data: () => {
     return {
       schemaIndy: {
@@ -208,12 +159,6 @@ export default {
           validateJson(value) || this.$t("app.rules.validJson"),
       };
     },
-    fieldsEmptyIndy() {
-      return (
-        this.schemaIndy.label.length === 0 ||
-        this.schemaIndy.schemaId.length === 0
-      );
-    },
     fieldsEmptyJsonLd() {
       return (
         this.schemaJsonLd.label.length === 0 ||
@@ -224,25 +169,6 @@ export default {
     },
   },
   methods: {
-    async submitSchemaIndy() {
-      this.isBusy = true;
-      adminService
-        .addSchema(this.schemaIndy)
-        .then((result) => {
-          this.isBusy = false;
-          if (result.status === 200) {
-            EventBus.$emit(
-              "success",
-              this.$t("component.addSchema.eventSuccess")
-            );
-            this.$emit("success");
-          }
-        })
-        .catch((error) => {
-          this.isBusy = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
-        });
-    },
     async submitSchemaJsonLd() {
       this.isBusy = true;
 
