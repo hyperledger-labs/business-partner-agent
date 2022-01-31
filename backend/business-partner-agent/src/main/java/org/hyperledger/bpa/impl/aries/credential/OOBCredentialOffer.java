@@ -22,6 +22,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.acy_py.generated.model.InvitationRecord;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.ConnectionState;
@@ -41,6 +42,7 @@ import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.BPACredentialDefinition;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.Tag;
 import org.hyperledger.bpa.persistence.repository.BPACredentialDefinitionRepository;
 import org.hyperledger.bpa.persistence.repository.IssuerCredExRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
@@ -48,10 +50,7 @@ import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * First try on attaching a credential offer in the OOB invitation. As with the
@@ -99,23 +98,23 @@ public class OOBCredentialOffer {
     /**
      * Step 1: Prepare offer und return URL
      * 
-     * @param request {@link IssueConnectionLessRequest}
+     * @param req {@link IssueConnectionLessRequest}
      * @return location of the offer
      */
-    public APICreateInvitationResponse issueConnectionLess(@NonNull IssueConnectionLessRequest request) {
-        BPACredentialDefinition dbCredDef = credDefRepo.findById(request.getCredDefId())
+    public APICreateInvitationResponse issueConnectionLess(@NonNull IssueConnectionLessRequest req) {
+        BPACredentialDefinition dbCredDef = credDefRepo.findById(req.getCredDefId())
                 .orElseThrow(() -> new WrongApiUsageException(
-                        ms.getMessage("api.issuer.creddef.not.found", Map.of("id", request.getCredDefId()))));
-        validator.validateAttributesAgainstSchema(request.getDocument(), dbCredDef.getSchema().getSchemaId());
+                        ms.getMessage("api.issuer.creddef.not.found", Map.of("id", req.getCredDefId()))));
+        validator.validateAttributesAgainstSchema(req.getDocument(), dbCredDef.getSchema().getSchemaId());
 
-        Map<String, String> document = conv.toStringMap(request.getDocument());
+        Map<String, String> document = conv.toStringMap(req.getDocument());
 
         V1CredentialFreeOfferHelper.CredentialFreeOffer freeOffer = h
                 .buildFreeOffer(dbCredDef.getCredentialDefinitionId(), document);
 
         log.debug("{}", GsonConfig.defaultNoEscaping().toJson(freeOffer));
 
-        Partner p = persistPartner(freeOffer.getInvitationRecord());
+        Partner p = persistPartner(freeOffer.getInvitationRecord(), req.getAlias(), req.getTrustPing(), req.getTag());
         persistCredentialExchange(freeOffer, dbCredDef, p);
 
         return APICreateInvitationResponse.builder()
@@ -167,7 +166,7 @@ public class OOBCredentialOffer {
         credExRepo.save(b.build());
     }
 
-    private Partner persistPartner(InvitationRecord r) {
+    private Partner persistPartner(InvitationRecord r, String alias, Boolean trustPing, List<Tag> tag) {
         return partnerRepo.save(Partner
                 .builder()
                 .ariesSupport(Boolean.TRUE)
@@ -177,8 +176,9 @@ public class OOBCredentialOffer {
                 .pushStateChange(ConnectionState.INVITATION, Instant.now())
                 .invitationRecord(r)
                 .incoming(Boolean.TRUE)
-                .tags(new HashSet<>())
-                .trustPing(Boolean.FALSE)
+                .alias(StringUtils.trimToNull(alias))
+                .tags(tag != null ? new HashSet<>(tag) : null)
+                .trustPing(trustPing != null ? trustPing : Boolean.FALSE)
                 .build());
     }
 
