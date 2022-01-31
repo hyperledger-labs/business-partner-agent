@@ -54,6 +54,9 @@ public class MessageTemplate {
 
     private String template;
 
+    @Nullable
+    private String label;
+
     @OneToMany(mappedBy = "template")
     private Set<MessageTriggerConfig> triggerConfig;
 }

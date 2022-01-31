@@ -3,6 +3,7 @@ CREATE TABLE message_template (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     subject character varying(255),
+    label character varying(255) UNIQUE,
     template character varying(2048) NOT NULL
 );
 

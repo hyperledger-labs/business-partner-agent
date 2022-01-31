@@ -27,6 +27,7 @@ import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.bpa.controller.api.messaging.AdHocMessageRequest;
 import org.hyperledger.bpa.controller.api.messaging.MessageTemplateCmd;
 import org.hyperledger.bpa.controller.api.messaging.MessageTriggerConfigCmd;
 import org.hyperledger.bpa.controller.api.messaging.MessageUserInfoCmd;
@@ -124,6 +125,14 @@ public class MessagingController {
     @Delete("/trigger/{id}")
     public HttpResponse<Void> deleteMessageTrigger(@PathVariable UUID id) {
         messaging.deleteTriggerConfig(id);
+        return HttpResponse.ok();
+    }
+
+    // invitation by mail
+
+    @Post("/send-invitation")
+    public HttpResponse<Void> sendInvitationMail(@Valid @Body AdHocMessageRequest request) {
+        messaging.sendMessage(request);
         return HttpResponse.ok();
     }
 }

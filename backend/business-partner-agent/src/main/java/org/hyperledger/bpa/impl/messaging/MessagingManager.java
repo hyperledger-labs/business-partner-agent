@@ -24,19 +24,26 @@ import io.micronaut.runtime.event.annotation.EventListener;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
+import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.api.notification.CredentialProposalEvent;
 import org.hyperledger.bpa.api.notification.PartnerRequestReceivedEvent;
 import org.hyperledger.bpa.api.notification.PresentationRequestReceivedEvent;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.controller.api.messaging.AdHocMessageRequest;
 import org.hyperledger.bpa.controller.api.messaging.MessageTemplateCmd;
 import org.hyperledger.bpa.controller.api.messaging.MessageTriggerConfigCmd;
 import org.hyperledger.bpa.controller.api.messaging.MessageUserInfoCmd;
+import org.hyperledger.bpa.impl.messaging.email.EmailCmd;
 import org.hyperledger.bpa.impl.messaging.email.EmailService;
 import org.hyperledger.bpa.impl.util.TimeUtil;
+import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.messaging.MessageTemplate;
 import org.hyperledger.bpa.persistence.model.messaging.MessageTrigger;
 import org.hyperledger.bpa.persistence.model.messaging.MessageTriggerConfig;
 import org.hyperledger.bpa.persistence.model.messaging.MessageUserInfo;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 import org.hyperledger.bpa.persistence.repository.messaging.MessageTemplateRepository;
 import org.hyperledger.bpa.persistence.repository.messaging.MessageTriggerConfigRepository;
 import org.hyperledger.bpa.persistence.repository.messaging.MessageUserInfoRepository;
@@ -68,6 +75,9 @@ public class MessagingManager {
 
     @Inject
     BPAMessageSource.DefaultMessageSource ms;
+
+    @Inject
+    PartnerRepository partnerRepo;
 
     // crud message templates
 
@@ -149,6 +159,45 @@ public class MessagingManager {
 
     // invitation
 
+    public void sendMessage(@NonNull AdHocMessageRequest request) {
+        EmailService mailer = emailService
+                .orElseThrow(() -> new IllegalStateException(ms.getMessage("mail.error.no.email.provider")));
+        Partner p = partnerRepo.findByConnectionIdOrInvitationMsgId(
+                request.getInvitationId().toString(), request.getInvitationId().toString())
+                .orElseThrow(EntityNotFoundException::new);
+        MessageTemplate t = messageTemplate.findById(request.getTemplateId())
+                .orElseThrow(EntityNotFoundException::new);
+
+        String to;
+        if (StringUtils.isNotEmpty(request.getEmail())) {
+            to = request.getEmail();
+        } else {
+            if (request.getUserInfoId() == null) {
+                throw new WrongApiUsageException(ms.getMessage("mail.error.no.valid.email"));
+            }
+            MessageUserInfo i = userInfo.findById(request.getUserInfoId()).orElseThrow(EntityNotFoundException::new);
+            to = i.getSendTo();
+        }
+
+        String subject;
+        if (StringUtils.isNotEmpty(t.getSubject())) {
+            subject = t.getSubject();
+        } else {
+            subject = ms.getMessage("mail.default.notification.subject");
+        }
+
+        if (p.getInvitationRecord() == null || StringUtils.isEmpty(p.getInvitationRecord().getInvitationUrl())) {
+            throw new IllegalStateException(ms.getMessage("mail.error.invitation.uri.not.set"));
+        }
+        String body = resolveAdHocMessageBody(p.getInvitationRecord().getInvitationUrl(), t);
+
+        mailer.send(EmailCmd.builder()
+                .to(to)
+                .subject(subject)
+                .textBody(body)
+                .build());
+    }
+
     // event handler
 
     @EventListener
@@ -168,26 +217,38 @@ public class MessagingManager {
 
     private void findAndSend(@NonNull MessageTrigger trigger) {
         emailService.ifPresent(mailer -> {
-            String defaultSubject = ms.getMessage("mail.default.subject");
+            String defaultSubject = ms.getMessage("mail.default.event.subject");
             triggerConfig.findByTrigger(trigger)
-                    .parallelStream().forEach(t -> mailer.send(t.toEmailCmd(defaultSubject, resolveBody(trigger, t))));
+                    .parallelStream()
+                    .forEach(t -> mailer.send(t.toEmailCmd(defaultSubject, resolveEventMessageBody(trigger, t))));
         });
     }
 
-    private String resolveBody(@NonNull MessageTrigger trigger, @NonNull MessageTriggerConfig t) {
-        String body;
+    private String resolveEventMessageBody(@NonNull MessageTrigger trigger, @NonNull MessageTriggerConfig t) {
         Map<String, Object> model = Map.of("event", trigger, "time", TimeUtil.toISOInstant(Instant.now()));
-        String defaultBody = ms.getMessage("mail.default.body", model);
+        String defaultBody = ms.getMessage("mail.default.event.body", model);
         if (t.getTemplate() == null || t.getTemplate().getTemplate() == null) {
-            body = defaultBody;
-        } else {
-            try {
-                Template template = handlebars.compileInline(t.getTemplate().getTemplate());
-                body = template.apply(model);
-            } catch (IOException e) {
-                body = defaultBody;
-            }
+            return defaultBody;
         }
-        return body;
+        return compileTemplate(t.getTemplate(), model, defaultBody);
+    }
+
+    private String resolveAdHocMessageBody(@NonNull String uri, @Nullable MessageTemplate t) {
+        Map<String, Object> model = Map.of("uri", uri);
+        String defaultBody = ms.getMessage("mail.default.notification.body", model);
+        if (t == null || t.getTemplate() == null) {
+            return defaultBody;
+        }
+        return compileTemplate(t, model, defaultBody);
+    }
+
+    private String compileTemplate(@NonNull MessageTemplate t, @NonNull Map<String, Object> model,
+            @NonNull String defaultBody) {
+        try {
+            Template template = handlebars.compileInline(t.getTemplate());
+            return template.apply(model);
+        } catch (IOException e) {
+            return defaultBody;
+        }
     }
 }

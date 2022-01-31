@@ -261,6 +261,29 @@ class PartnerRepositoryTest {
         assertEquals(1, pingTrue.size());
     }
 
+    @Test
+    void testFinByConnectionOrInvitationId() {
+        partnerRepo.save(Partner.builder().did("empty").alias("empty").ariesSupport(Boolean.FALSE).build());
+        partnerRepo.save(
+                Partner.builder().did("connId").alias("connId").ariesSupport(Boolean.FALSE).connectionId("1").build());
+        partnerRepo.save(
+                Partner.builder().did("invId").alias("invId").ariesSupport(Boolean.FALSE).invitationMsgId("2").build());
+        partnerRepo.save(Partner.builder().did("both").alias("both").ariesSupport(Boolean.FALSE).invitationMsgId("3")
+                .connectionId("4").build());
+
+        Optional<Partner> e = partnerRepo.findByConnectionIdOrInvitationMsgId(null, null);
+        assertTrue(e.isEmpty());
+
+        Partner p = partnerRepo.findByConnectionIdOrInvitationMsgId("1", null).orElseThrow();
+        assertEquals("connId", p.getAlias());
+
+        p = partnerRepo.findByConnectionIdOrInvitationMsgId(null, "2").orElseThrow();
+        assertEquals("invId", p.getAlias());
+
+        p = partnerRepo.findByConnectionIdOrInvitationMsgId("4", "3").orElseThrow();
+        assertEquals("both", p.getAlias());
+    }
+
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
