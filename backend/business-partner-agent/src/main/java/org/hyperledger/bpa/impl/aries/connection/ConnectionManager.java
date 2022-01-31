@@ -46,7 +46,7 @@ import org.hyperledger.bpa.api.notification.*;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.invitation.CheckInvitationResponse;
 import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
-import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationResponse;
+import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.activity.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.util.TimeUtil;
@@ -106,10 +106,10 @@ public class ConnectionManager {
      * Creates a connection invitation to be used within a barcode
      *
      * @param req {@link CreatePartnerInvitationRequest}
-     * @return {@link CreateInvitationResponse}
+     * @return {@link APICreateInvitationResponse}
      */
-    public CreatePartnerInvitationResponse createConnectionInvitation(@NonNull CreatePartnerInvitationRequest req) {
-        CreatePartnerInvitationResponse.CreatePartnerInvitationResponseBuilder invitation = CreatePartnerInvitationResponse
+    public APICreateInvitationResponse createConnectionInvitation(@NonNull CreatePartnerInvitationRequest req) {
+        APICreateInvitationResponse.APICreateInvitationResponseBuilder invitation = APICreateInvitationResponse
                 .builder();
         String connId = null;
         String invMsgId = null;

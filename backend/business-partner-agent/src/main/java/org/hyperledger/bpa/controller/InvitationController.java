@@ -34,7 +34,7 @@ import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.controller.api.invitation.AcceptInvitationRequest;
 import org.hyperledger.bpa.controller.api.invitation.CheckInvitationRequest;
 import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
-import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationResponse;
+import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
 import org.hyperledger.bpa.impl.aries.connection.ConnectionManager;
 
 @Slf4j
@@ -78,7 +78,7 @@ public class InvitationController {
      * @return {@link PartnerAPI}
      */
     @Post
-    public HttpResponse<CreatePartnerInvitationResponse> requestConnectionInvitation(
+    public HttpResponse<APICreateInvitationResponse> requestConnectionInvitation(
             @Body CreatePartnerInvitationRequest req) {
         return HttpResponse.ok(cm.createConnectionInvitation(req));
     }

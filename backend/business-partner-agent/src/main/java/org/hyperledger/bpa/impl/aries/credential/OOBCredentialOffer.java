@@ -33,6 +33,7 @@ import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.IssuerController;
+import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
 import org.hyperledger.bpa.controller.api.issuer.IssueConnectionLessRequest;
 import org.hyperledger.bpa.impl.activity.DocumentValidator;
 import org.hyperledger.bpa.impl.aries.connection.ConnectionManager;
@@ -101,7 +102,7 @@ public class OOBCredentialOffer {
      * @param request {@link IssueConnectionLessRequest}
      * @return location of the offer
      */
-    public URI issueConnectionLess(@NonNull IssueConnectionLessRequest request) {
+    public APICreateInvitationResponse issueConnectionLess(@NonNull IssueConnectionLessRequest request) {
         BPACredentialDefinition dbCredDef = credDefRepo.findById(request.getCredDefId())
                 .orElseThrow(() -> new WrongApiUsageException(
                         ms.getMessage("api.issuer.creddef.not.found", Map.of("id", request.getCredDefId()))));
@@ -117,8 +118,13 @@ public class OOBCredentialOffer {
         Partner p = persistPartner(freeOffer.getInvitationRecord());
         persistCredentialExchange(freeOffer, dbCredDef, p);
 
-        return createURI(IssuerController.ISSUER_CONTROLLER_BASE_URL + "/issue-credential/connection-less/"
-                + freeOffer.getInvitationRecord().getInviMsgId());
+        return APICreateInvitationResponse.builder()
+                .invitationUrl(
+                        createURI(IssuerController.ISSUER_CONTROLLER_BASE_URL
+                                + "/issue-credential/connection-less/"
+                                + freeOffer.getInvitationRecord().getInviMsgId()).toString())
+                .invitationId(freeOffer.getInvitationRecord().getInviMsgId())
+                .build();
     }
 
     /**

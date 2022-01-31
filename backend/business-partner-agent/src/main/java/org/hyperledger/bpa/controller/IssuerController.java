@@ -32,6 +32,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
 import org.hyperledger.bpa.controller.api.issuer.*;
 import org.hyperledger.bpa.impl.aries.credential.IssuerCredentialManager;
 import org.hyperledger.bpa.impl.aries.credential.OOBCredentialOffer;
@@ -152,12 +153,12 @@ public class IssuerController {
      * returns URL for use within the barcode
      * 
      * @param req {@link IssueConnectionLessRequest}
-     * @return {@link IssueConnectionLessResponse}
+     * @return {@link APICreateInvitationResponse}
      */
     @Post("/issue-credential/connection-less")
-    public HttpResponse<IssueConnectionLessResponse> issueCredentialConnectionLess(
+    public HttpResponse<APICreateInvitationResponse> issueCredentialConnectionLess(
             @Valid @Body IssueConnectionLessRequest req) {
-        return HttpResponse.ok(new IssueConnectionLessResponse(connectionLess.issueConnectionLess(req).toString()));
+        return HttpResponse.ok(connectionLess.issueConnectionLess(req));
     }
 
     /**
