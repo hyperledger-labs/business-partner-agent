@@ -65,40 +65,33 @@ import { EventBus } from "@/main";
 export default {
   name: "import-credential-indy",
   components: { VBpaButton },
-  props: {
-    value: {
-      type: Object,
-      required: true,
-    },
-  },
   data: () => {
     return {
       isBusy: false,
+      schemaIndy: {
+        label: "",
+        schemaId: "",
+      },
     };
   },
   computed: {
-    schemaIndy: {
-      get() {
-        return this.value;
-      },
-      set(schemaIndy) {
-        this.$emit("input", schemaIndy);
-      },
-    },
     rules() {
       return {
         required: (value) => !!value || this.$t("app.rules.required"),
       };
     },
     fieldsEmptyIndy() {
-      return this.value.label.length === 0 || this.value.schemaId.length === 0;
+      return (
+        this.schemaIndy.label.length === 0 ||
+        this.schemaIndy.schemaId.length === 0
+      );
     },
   },
   methods: {
     async submitSchemaIndy() {
       this.isBusy = true;
       adminService
-        .addSchema(this.value)
+        .addSchema(this.schemaIndy)
         .then((result) => {
           this.isBusy = false;
           if (result.status === 200) {

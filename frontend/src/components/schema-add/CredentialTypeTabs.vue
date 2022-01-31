@@ -25,12 +25,6 @@
 <script lang="ts">
 export default {
   name: "credential-type-tabs",
-  props: {
-    isBusy: {
-      type: Boolean,
-      default: false,
-    },
-  },
   data: () => {
     return {
       tab: undefined,
