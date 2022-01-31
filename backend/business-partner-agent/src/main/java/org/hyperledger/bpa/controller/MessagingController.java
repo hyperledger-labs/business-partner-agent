@@ -50,17 +50,32 @@ public class MessagingController {
 
     // crud message template
 
+    /**
+     * List message templates
+     * @return list of {@link MessageTemplateCmd.ApiMessageTemplate}
+     */
     @Get("/template")
     public HttpResponse<List<MessageTemplateCmd.ApiMessageTemplate>> listMessageTemplates() {
         return HttpResponse.ok(messaging.listMessageTemplates());
     }
 
+    /**
+     * Add new message template
+     * @param template {@link MessageTemplateCmd.MessageTemplateRequest}
+     * @return {@link MessageTemplateCmd.ApiMessageTemplate}
+     */
     @Post("/template")
     public HttpResponse<MessageTemplateCmd.ApiMessageTemplate> addMessageTemplate(
             @Valid @Body MessageTemplateCmd.MessageTemplateRequest template) {
         return HttpResponse.ok(messaging.addMessageTemplate(template.getSubject(), template.getTemplate()));
     }
 
+    /**
+     * Update message template
+     * @param id {@link UUID} template id
+     * @param template {@link MessageTemplateCmd.MessageTemplateRequest}
+     * @return HTTP status
+     */
     @Put("/template/{id}")
     public HttpResponse<Void> updateMessageTemplate(@PathVariable UUID id,
             @Valid @Body MessageTemplateCmd.MessageTemplateRequest template) {
@@ -68,6 +83,11 @@ public class MessagingController {
         return HttpResponse.ok();
     }
 
+    /**
+     * Delete message template
+     * @param id {@link UUID} template id
+     * @return HTTP status
+     */
     @Delete("/template/{id}")
     public HttpResponse<Void> deleteMessageTemplate(@PathVariable UUID id) {
         messaging.deleteTemplateInfo(id);
@@ -76,17 +96,32 @@ public class MessagingController {
 
     // crud send config
 
+    /**
+     * List user info
+     * @return list of {@link MessageUserInfoCmd.ApiUserInfo}
+     */
     @Get("/user-info")
     public HttpResponse<List<MessageUserInfoCmd.ApiUserInfo>> listUserInfo() {
         return HttpResponse.ok(messaging.listUserInfo());
     }
 
+    /**
+     * Add new user info configuration
+     * @param config {@link  MessageUserInfoCmd.UserInfoRequest}
+     * @return {@link MessageUserInfoCmd.ApiUserInfo}
+     */
     @Post("/user-info")
     public HttpResponse<MessageUserInfoCmd.ApiUserInfo> addUserInfo(
             @Valid @Body MessageUserInfoCmd.UserInfoRequest config) {
         return HttpResponse.ok(messaging.addUserInfo(config.getLabel(), config.getSendTo()));
     }
 
+    /**
+     * Update user info configuration
+     * @param id {@link UUID} user info id
+     * @param config {@link MessageUserInfoCmd.UserInfoRequest}
+     * @return HTTP status
+     */
     @Put("/user-info/{id}")
     public HttpResponse<Void> updateUserInfo(@PathVariable UUID id,
             @Valid @Body MessageUserInfoCmd.UserInfoRequest config) {
@@ -94,6 +129,11 @@ public class MessagingController {
         return HttpResponse.ok();
     }
 
+    /**
+     * Delete user info configuration
+     * @param id {@link UUID} user info id
+     * @return HTTP status
+     */
     @Delete("/user-info/{id}")
     public HttpResponse<Void> deleteUserInfo(@PathVariable UUID id) {
         messaging.deleteUserInfo(id);
@@ -102,11 +142,20 @@ public class MessagingController {
 
     // crud trigger config
 
+    /**
+     * List message trigger configuration
+     * @return list of {@link MessageTriggerConfigCmd.ApiTriggerConfig}
+     */
     @Get("/trigger")
     public HttpResponse<List<MessageTriggerConfigCmd.ApiTriggerConfig>> listMessageTrigger() {
         return HttpResponse.ok(messaging.listTriggerConfig());
     }
 
+    /**
+     * ASdd new message trigger configuration
+     * @param trigger {@link MessageTriggerConfigCmd.ApiTriggerConfig}
+     * @return {@link MessageTriggerConfigCmd.TriggerConfigRequest}
+     */
     @Post("/trigger")
     public HttpResponse<MessageTriggerConfigCmd.ApiTriggerConfig> addMessageTrigger(
             @Valid @Body MessageTriggerConfigCmd.TriggerConfigRequest trigger) {
@@ -114,6 +163,12 @@ public class MessagingController {
                 trigger.getUserInfoId()));
     }
 
+    /**
+     * Update message trigger configuration
+     * @param id {@link UUID} message trigger id
+     * @param trigger {@link MessageTriggerConfigCmd.TriggerConfigRequest}
+     * @return HTTP status
+     */
     @Put("/trigger/{id}")
     public HttpResponse<Void> updateMessageTrigger(@PathVariable UUID id,
             @Valid @Body MessageTriggerConfigCmd.TriggerConfigRequest trigger) {
@@ -122,6 +177,11 @@ public class MessagingController {
         return HttpResponse.ok();
     }
 
+    /**
+     * Delete message trigger configuration
+     * @param id {@link UUID} message trigger id
+     * @return HTTP status
+     */
     @Delete("/trigger/{id}")
     public HttpResponse<Void> deleteMessageTrigger(@PathVariable UUID id) {
         messaging.deleteTriggerConfig(id);
@@ -130,6 +190,11 @@ public class MessagingController {
 
     // invitation by mail
 
+    /**
+     * Manual trigger to send an invitation url by email
+     * @param request {@link AdHocMessageRequest}
+     * @return HTTP status
+     */
     @Post("/send-invitation")
     public HttpResponse<Void> sendInvitationMail(@Valid @Body AdHocMessageRequest request) {
         messaging.sendMessage(request);
