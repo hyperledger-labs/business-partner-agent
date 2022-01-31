@@ -165,8 +165,10 @@ public class MessagingManager {
         Partner p = partnerRepo.findByConnectionIdOrInvitationMsgId(
                 request.getInvitationId().toString(), request.getInvitationId().toString())
                 .orElseThrow(EntityNotFoundException::new);
-        MessageTemplate t = messageTemplate.findById(request.getTemplateId())
-                .orElseThrow(EntityNotFoundException::new);
+        MessageTemplate t = null;
+        if (request.getTemplateId() != null) {
+            t = messageTemplate.findById(request.getTemplateId()).orElseThrow(EntityNotFoundException::new);
+        }
 
         String to;
         if (StringUtils.isNotEmpty(request.getEmail())) {
@@ -180,7 +182,7 @@ public class MessagingManager {
         }
 
         String subject;
-        if (StringUtils.isNotEmpty(t.getSubject())) {
+        if (t != null && StringUtils.isNotEmpty(t.getSubject())) {
             subject = t.getSubject();
         } else {
             subject = ms.getMessage("mail.default.notification.subject");

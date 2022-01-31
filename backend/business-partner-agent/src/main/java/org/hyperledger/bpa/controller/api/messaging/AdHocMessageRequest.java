@@ -18,6 +18,8 @@
 package org.hyperledger.bpa.controller.api.messaging;
 
 import io.micronaut.core.annotation.Introspected;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -27,11 +29,13 @@ import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Data
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Introspected
 public class AdHocMessageRequest {
 
-    @NotNull
+    @Nullable
     private UUID templateId;
     // internal representation can be either connectionId or invMsgId
     @NotNull

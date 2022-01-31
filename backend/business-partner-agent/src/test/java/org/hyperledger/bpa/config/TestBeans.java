@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -23,6 +23,7 @@ import io.micronaut.context.env.Environment;
 import jakarta.inject.Singleton;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.bpa.RunWithAries;
+import org.hyperledger.bpa.impl.messaging.email.EmailService;
 import org.mockito.Mockito;
 
 @Factory
@@ -37,5 +38,10 @@ public class TestBeans {
     @Singleton
     AriesClient getAriesClient() {
         return Mockito.mock(AriesClient.class);
+    }
+
+    @Singleton
+    EmailService getEmailService() {
+        return Mockito.mock(EmailService.class);
     }
 }
