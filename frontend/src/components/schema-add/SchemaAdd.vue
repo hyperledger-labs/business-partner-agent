@@ -82,12 +82,12 @@
             <v-list-item-title
               class="grey--text text--darken-2 font-weight-medium"
             >
-              {{ $t("component.addSchema.schemaJsonLdUrl") }}:
+              {{ $t("component.addSchema.schemaId") }}:
             </v-list-item-title>
             <v-list-item-subtitle>
               <v-text-field
                 class="mt-6"
-                :placeholder="$t('component.addSchema.placeholderJsonLdUrl')"
+                :placeholder="$t('component.addSchema.placeholderJsonLdId')"
                 v-model="schemaJsonLd.schemaId"
                 :rules="[rules.required]"
                 outlined
@@ -184,7 +184,8 @@ export default {
       schemaJsonLd: {
         label: "",
         schemaId: "",
-        attributes: [],
+        attributes: ["email"],
+        defaultAttributeName: "email",
         ldType: "",
       },
       tempJsonLdAttributes: [],
@@ -243,12 +244,32 @@ export default {
         });
     },
     async submitSchemaJsonLd() {
-      let jsonLd: Record<string, unknown>;
+      this.isBusy = true;
+
+      adminService
+        .addSchema(this.schemaJsonLd)
+        .then((result) => {
+          this.isBusy = false;
+          if (result.status === 200) {
+            EventBus.$emit(
+              "success",
+              this.$t("component.addSchema.eventSuccess")
+            );
+            this.$emit("success");
+          }
+        })
+        .catch((error) => {
+          this.isBusy = false;
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
+        });
+    },
+    async getJsonLdAttributes() {
       this.isBusy = true;
       jsonLdService
-        .getAndValidateJsonLd("https://json-ld.org/contexts/person.jsonld")
+        .contextParser()
+        .parse(this.schemaJsonLd.schemaId)
         .then((response) => {
-          for (const attribute of Object.keys(response["@context"])) {
+          for (const attribute of Object.keys(response.getContextRaw())) {
             this.tempJsonLdAttributes.push({
               name: attribute,
             });
@@ -256,7 +277,7 @@ export default {
         })
         .catch((error) => {
           this.isBusy = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
+          EventBus.$emit("error", error.message);
         })
         .finally(() => {
           this.isBusy = false;

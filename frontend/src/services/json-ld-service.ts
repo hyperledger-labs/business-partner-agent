@@ -5,18 +5,12 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-import axios, { AxiosResponse } from "axios";
-import { validateJson } from "@/utils/validateUtils";
+import { ContextParser } from "jsonld-context-parser";
+
+const jsonLdContextParser = new ContextParser();
 
 export default {
-  async getAndValidateJsonLd(
-    jsonLdUrl: string
-  ): Promise<AxiosResponse<any, any>> {
-    const jsonLd = await axios.get(jsonLdUrl);
-    const jsonLdString = JSON.stringify(jsonLd.data);
-
-    if (validateJson(jsonLdString)) {
-      return JSON.parse(jsonLdString);
-    } else throw new Error("Source does not contain valid JSON");
+  contextParser() {
+    return jsonLdContextParser;
   },
 };
