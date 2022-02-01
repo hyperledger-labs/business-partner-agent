@@ -158,6 +158,9 @@ public class MessagingControllerTest extends BaseControllerTest {
                 new MessageTriggerConfigCmd.TriggerConfigRequest(
                         MessageTrigger.PRESENTATION_REQUEST, template.getId(), userInfo.getId()));
 
+        Assertions.assertThrows(HttpClientResponseException.class, () -> delete(TEMPLATE + "/" + template.getId()));
+        Assertions.assertThrows(HttpClientResponseException.class, () -> delete(USER_INFO + "/" + userInfo.getId()));
+
         triggers = getAll(TRIGGER,
                 Argument.listOf(MessageTriggerConfigCmd.ApiTriggerConfig.class));
         Assertions.assertEquals(1, triggers.size());
@@ -169,5 +172,8 @@ public class MessagingControllerTest extends BaseControllerTest {
         triggers = getAll(TRIGGER,
                 Argument.listOf(MessageTriggerConfigCmd.ApiTriggerConfig.class));
         Assertions.assertEquals(0, triggers.size());
+
+        delete(TEMPLATE + "/" + template.getId());
+        delete(USER_INFO + "/" + userInfo.getId());
     }
 }

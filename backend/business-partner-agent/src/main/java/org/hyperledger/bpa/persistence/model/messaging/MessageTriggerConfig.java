@@ -28,6 +28,9 @@ import javax.persistence.*;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Wires templates and user information together
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -17,6 +17,9 @@
  */
 package org.hyperledger.bpa.persistence.model.messaging;
 
+/**
+ * Communication channels known to the BPA
+ */
 public enum MessageType {
     E_MAIL
 }

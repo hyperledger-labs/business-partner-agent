@@ -17,6 +17,9 @@
  */
 package org.hyperledger.bpa.persistence.model.messaging;
 
+/**
+ * Events that trigger a notification
+ */
 public enum MessageTrigger {
     /** other BPA wants to connect */
     CONNECTION_REQUEST,

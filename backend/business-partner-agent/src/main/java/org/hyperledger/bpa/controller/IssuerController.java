@@ -149,27 +149,27 @@ public class IssuerController {
     }
 
     /**
-     * Issue connection-less credential step 1 - prepares credential offer and
-     * returns URL for use within the barcode
+     * Issue OOB credential step 1 - prepares credential offer and returns URL for
+     * use within the barcode
      * 
-     * @param req {@link IssueConnectionLessRequest}
+     * @param req {@link IssueOOBCredentialRequest}
      * @return {@link APICreateInvitationResponse}
      */
-    @Post("/issue-credential/connection-less")
+    @Post("/issue-credential/oob-attachment")
     public HttpResponse<APICreateInvitationResponse> issueCredentialConnectionLess(
-            @Valid @Body IssueConnectionLessRequest req) {
+            @Valid @Body IssueOOBCredentialRequest req) {
         return HttpResponse.ok(connectionLess.issueConnectionLess(req));
     }
 
     /**
-     * Issue connection-less credential step 2 - redirect with encoded offer
+     * Issue OOB credential step 2 - redirect with encoded offer
      * 
      * @param id {@link UUID}
      * @return Redirect with encoded credential offer in the location header
      */
     @Secured(SecurityRule.IS_ANONYMOUS)
     @ApiResponse(responseCode = "301", description = "Redirect with encoded credential offer in the location header")
-    @Get("/issue-credential/connection-less/{id}")
+    @Get("/issue-credential/oob-attachment/{id}")
     public HttpResponse<Object> handleConnectionLess(@PathVariable UUID id) {
         return HttpResponse.status(HttpStatus.MOVED_PERMANENTLY).header("location",
                 connectionLess.handleConnectionLess(id));

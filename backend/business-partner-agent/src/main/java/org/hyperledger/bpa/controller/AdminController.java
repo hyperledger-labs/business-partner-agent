@@ -45,7 +45,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Controller("/api/admin")
-@Tag(name = "Configuration")
+@Tag(name = "BPA Configuration")
 @Validated
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @ExecuteOn(TaskExecutors.IO)

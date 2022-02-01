@@ -31,6 +31,9 @@ import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Stores information on where to send notification events
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -53,6 +56,7 @@ public class MessageUserInfo {
     @Enumerated(EnumType.STRING)
     private MessageType type = MessageType.E_MAIL;
 
+    /** Mail address, or phone number */
     private String sendTo;
 
     @Nullable

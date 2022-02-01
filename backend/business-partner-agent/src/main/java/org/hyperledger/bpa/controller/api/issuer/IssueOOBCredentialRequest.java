@@ -36,13 +36,13 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class IssueConnectionLessRequest {
+public class IssueOOBCredentialRequest {
 
     private String alias;
     private List<Tag> tag;
     private Boolean trustPing;
 
-    // bpa id
+    // bpa internal id
     @NotBlank
     private UUID credDefId;
 

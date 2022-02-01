@@ -31,6 +31,10 @@ import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * User defined message templates that can be mapped to a trigger or used
+ * standalone
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -49,11 +53,14 @@ public class MessageTemplate {
     @DateUpdated
     private Instant updatedAt;
 
+    /** Message subject */
     @Nullable
     private String subject;
 
+    /** Message template */
     private String template;
 
+    /** Human readable label */
     @Nullable
     private String label;
 

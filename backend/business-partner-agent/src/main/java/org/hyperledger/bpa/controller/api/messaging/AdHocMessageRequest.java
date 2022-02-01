@@ -28,6 +28,10 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
+/**
+ * Manually trigger a message to be sent. Always in reference to a pre-existing
+ * invitation. If no template id is provided the bpa falls back to default.
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -35,13 +39,14 @@ import java.util.UUID;
 @Introspected
 public class AdHocMessageRequest {
 
+    // if null, falling back to template defaults
     @Nullable
     private UUID templateId;
     // internal representation can be either connectionId or invMsgId
     @NotNull
     private UUID invitationId;
 
-    // either userInfoId or email
+    // either userInfoId or email must be set
     @Nullable
     private UUID userInfoId;
     @Email

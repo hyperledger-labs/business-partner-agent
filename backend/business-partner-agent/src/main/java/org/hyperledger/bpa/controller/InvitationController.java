@@ -30,11 +30,10 @@ import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.bpa.api.PartnerAPI;
+import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
 import org.hyperledger.bpa.controller.api.invitation.AcceptInvitationRequest;
 import org.hyperledger.bpa.controller.api.invitation.CheckInvitationRequest;
 import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
-import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
 import org.hyperledger.bpa.impl.aries.connection.ConnectionManager;
 
 @Slf4j
@@ -49,7 +48,7 @@ public class InvitationController {
     ConnectionManager cm;
 
     /**
-     * check invitation (receive)
+     * Check invitation (receive)
      * 
      * @param body {@link CheckInvitationRequest}
      * @return {@link MutableHttpResponse}
@@ -60,7 +59,7 @@ public class InvitationController {
     }
 
     /**
-     * receive / accept invitation
+     * Receive / accept invitation
      * 
      * @param body {@link AcceptInvitationRequest}
      * @return {@link MutableHttpResponse}
@@ -75,7 +74,7 @@ public class InvitationController {
      * Create a connection-invitation
      *
      * @param req {@link CreatePartnerInvitationRequest}
-     * @return {@link PartnerAPI}
+     * @return {@link APICreateInvitationResponse}
      */
     @Post
     public HttpResponse<APICreateInvitationResponse> requestConnectionInvitation(

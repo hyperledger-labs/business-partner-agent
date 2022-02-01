@@ -20,10 +20,12 @@ package org.hyperledger.bpa.impl.messaging;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.exceptions.DataAccessException;
 import io.micronaut.runtime.event.annotation.EventListener;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
@@ -56,6 +58,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
 
+@Slf4j
 @Singleton
 public class MessagingManager {
 
@@ -101,7 +104,12 @@ public class MessagingManager {
     }
 
     public void deleteTemplateInfo(@NonNull UUID id) {
-        messageTemplate.deleteById(id);
+        try {
+            messageTemplate.deleteById(id);
+        } catch (DataAccessException e) {
+            log.error("Could not delete message template", e);
+            throw new WrongApiUsageException(ms.getMessage("mail.template.constrain.violation"));
+        }
     }
 
     // crud user info
@@ -125,7 +133,12 @@ public class MessagingManager {
     }
 
     public void deleteUserInfo(@NonNull UUID id) {
-        userInfo.deleteById(id);
+        try {
+            userInfo.deleteById(id);
+        } catch (DataAccessException e) {
+            log.error("Could not delete user info", e);
+            throw new WrongApiUsageException(ms.getMessage("mail.user.info.constrain.violation"));
+        }
     }
 
     // crud trigger config
