@@ -161,7 +161,7 @@
       "title": "Your Organization",
       "subtitle": "This is the public information of your organization.",
       "noProfileTitle": "You don't have any public information yet.",
-      "noProfileSubTitle": "To make information public you can change the visibility settings of documents and verified credentials in the <strong>Held Credentials</strong>.",
+      "noProfileSubTitle": "To make information public you can change the visibility settings of documents and verified credentials in the <strong>Wallet</strong>.",
       "buttonNoProfile": "Setup your Organization"
     },
     "comingSoon": {
@@ -169,7 +169,7 @@
       "text": "This functionality is coming soon."
     },
     "wallet": {
-      "title": "Held Credentials",
+      "title": "Wallet",
       "credentials": {
         "title": "Verified Credentials Issued to Your Organization",
         "headers": {

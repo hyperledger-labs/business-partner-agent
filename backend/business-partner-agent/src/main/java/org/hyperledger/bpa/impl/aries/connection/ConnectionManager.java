@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.aries.connection;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.ApplicationEventPublisher;
@@ -47,6 +46,7 @@ import org.hyperledger.bpa.api.notification.*;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.invitation.CheckInvitationResponse;
 import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
+import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.activity.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.util.TimeUtil;
@@ -106,27 +106,34 @@ public class ConnectionManager {
      * Creates a connection invitation to be used within a barcode
      *
      * @param req {@link CreatePartnerInvitationRequest}
-     * @return {@link CreateInvitationResponse}
+     * @return {@link APICreateInvitationResponse}
      */
-    public JsonNode createConnectionInvitation(@NonNull CreatePartnerInvitationRequest req) {
-        Object invitation;
+    public APICreateInvitationResponse createConnectionInvitation(@NonNull CreatePartnerInvitationRequest req) {
+        APICreateInvitationResponse.APICreateInvitationResponseBuilder invitation = APICreateInvitationResponse
+                .builder();
         String connId = null;
         String invMsgId = null;
+        InvitationRecord invitationRecord;
         try {
             if (req.getUseOutOfBand()) {
-                InvitationRecord oobInvitation = createOOBInvitation(req.getAlias());
-                invitation = oobInvitation;
-                invMsgId = oobInvitation.getInviMsgId();
+                invitationRecord = createOOBInvitation(req.getAlias());
+                invMsgId = invitationRecord.getInviMsgId();
+                invitation
+                        .invitationUrl(invitationRecord.getInvitationUrl())
+                        .invitationId(invMsgId);
             } else {
                 CreateInvitationResponse conInvite = createInvitation(req.getAlias());
-                invitation = conInvite;
                 connId = conInvite.getConnectionId();
+                invitationRecord = InvitationRecord.builder().invitationUrl(conInvite.getInvitationUrl()).build();
+                invitation
+                        .invitationUrl(invitationRecord.getInvitationUrl())
+                        .invitationId(connId);
             }
-            createNewPartner(req.getAlias(), connId, invMsgId, req.getTag(), req.getTrustPing());
+            createNewPartner(req.getAlias(), connId, invMsgId, req.getTag(), req.getTrustPing(), invitationRecord);
         } catch (IOException e) {
             throw new NetworkException("acapy.unavailable");
         }
-        return mapper.valueToTree(invitation);
+        return invitation.build();
     }
 
     public CheckInvitationResponse checkReceivedInvitation(@NonNull String invitationUri) {
@@ -430,12 +437,18 @@ public class ConnectionManager {
 
     private void createNewPartner(String alias, String connectionId, String invMsgId, List<Tag> tag,
             Boolean trustPing) {
+        createNewPartner(alias, connectionId, invMsgId, tag, trustPing, null);
+    }
+
+    private void createNewPartner(String alias, String connectionId, String invMsgId, List<Tag> tag,
+            Boolean trustPing, InvitationRecord invitationRecord) {
         partnerRepo.save(Partner
                 .builder()
                 .ariesSupport(Boolean.TRUE)
                 .alias(StringUtils.trimToNull(alias))
                 .connectionId(connectionId)
                 .invitationMsgId(invMsgId)
+                .invitationRecord(invitationRecord)
                 .did(didPrefix + UNKNOWN_DID)
                 .state(ConnectionState.INVITATION)
                 .pushStateChange(ConnectionState.INVITATION, Instant.now())

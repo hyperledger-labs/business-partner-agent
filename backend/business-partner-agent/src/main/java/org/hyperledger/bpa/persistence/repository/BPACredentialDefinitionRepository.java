@@ -41,7 +41,7 @@ public interface BPACredentialDefinitionRepository extends CrudRepository<BPACre
     Optional<BPACredentialDefinition> findById(@NonNull UUID id);
 
     @Query("SELECT * FROM bpa_cred_def c " +
-            "LEFT JOIN bpaschema s ON c.schema_id = s.id " +
+            "LEFT JOIN bpa_schema s ON c.schema_id = s.id " +
             "WHERE s.schema_id = :schemaId")
     List<BPACredentialDefinition> findBySchemaId(String schemaId);
 

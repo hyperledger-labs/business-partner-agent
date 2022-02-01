@@ -45,6 +45,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "partner_proof")
 @Accessors(chain = true)
 public class PartnerProof extends StateChangeDecorator<PartnerProof, PresentationExchangeState>
         implements PresExStateTranslator {

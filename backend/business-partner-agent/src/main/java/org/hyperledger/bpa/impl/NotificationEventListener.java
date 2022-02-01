@@ -34,6 +34,9 @@ import org.hyperledger.bpa.persistence.model.PartnerProof;
 
 import java.util.Optional;
 
+/**
+ * Notifications send via websocket
+ */
 @Singleton
 @Slf4j
 public class NotificationEventListener {
