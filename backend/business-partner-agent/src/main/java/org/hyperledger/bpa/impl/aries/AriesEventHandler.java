@@ -34,10 +34,14 @@ import org.hyperledger.aries.api.present_proof_v2.V20PresExRecordToV1Converter;
 import org.hyperledger.aries.api.revocation.RevocationNotificationEvent;
 import org.hyperledger.aries.api.trustping.PingEvent;
 import org.hyperledger.aries.webhook.EventHandler;
-import org.hyperledger.bpa.impl.ChatMessageManager;
-import org.hyperledger.bpa.impl.IssuerCredentialManager;
+import org.hyperledger.bpa.impl.aries.chat.ChatMessageManager;
+import org.hyperledger.bpa.impl.aries.connection.ConnectionManager;
+import org.hyperledger.bpa.impl.aries.connection.PingManager;
+import org.hyperledger.bpa.impl.aries.credential.HolderCredentialManager;
+import org.hyperledger.bpa.impl.aries.credential.IssuerCredentialManager;
+import org.hyperledger.bpa.impl.aries.proof.ProofEventHandler;
 import org.hyperledger.bpa.impl.jsonld.LDEventHandler;
-import org.hyperledger.bpa.model.BPACredentialExchange;
+import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
 import java.util.Optional;
 

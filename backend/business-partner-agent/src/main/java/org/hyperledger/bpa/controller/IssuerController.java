@@ -32,10 +32,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
 import org.hyperledger.bpa.controller.api.issuer.*;
-import org.hyperledger.bpa.impl.IssuerCredentialManager;
-import org.hyperledger.bpa.impl.aries.ConnectionLessCredential;
-import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.aries.credential.IssuerCredentialManager;
+import org.hyperledger.bpa.impl.aries.credential.OOBCredentialOffer;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -57,7 +58,7 @@ public class IssuerController {
     IssuerCredentialManager im;
 
     @Inject
-    ConnectionLessCredential connectionLess;
+    OOBCredentialOffer connectionLess;
 
     @Inject
     SchemaService schemaService;
@@ -153,28 +154,29 @@ public class IssuerController {
     }
 
     /**
-     * Issue connection-less credential step 1 - prepares credential offer and
-     * returns URL for use within the barcode
+     * Issue OOB credential step 1 - prepares credential offer and returns URL for
+     * use within the barcode
      * 
-     * @param req {@link IssueConnectionLessRequest}
-     * @return {@link IssueConnectionLessResponse}
+     * @param req {@link IssueOOBCredentialRequest}
+     * @return {@link APICreateInvitationResponse}
      */
-    @Post("/issue-credential/connection-less")
-    public HttpResponse<IssueConnectionLessResponse> issueCredentialConnectionLess(
-            @Valid @Body IssueConnectionLessRequest req) {
-        return HttpResponse.ok(new IssueConnectionLessResponse(connectionLess.issueConnectionLess(req).toString()));
+    @Post("/issue-credential/oob-attachment")
+    public HttpResponse<APICreateInvitationResponse> issueCredentialConnectionLess(
+            @Valid @Body IssueOOBCredentialRequest req) {
+        return HttpResponse.ok(connectionLess.issueConnectionLess(req));
     }
 
     /**
-     * Issue connection-less credential step 2 - redirect with encoded offer
+     * Issue OOB credential step 2 - redirect with encoded offer
      * 
      * @param id {@link UUID}
      * @return Redirect with encoded credential offer in the location header
      */
-    @ApiResponse(responseCode = "307", description = "Redirect with encoded credential offer in the location header")
-    @Get("/issue-credential/connection-less/{id}")
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @ApiResponse(responseCode = "301", description = "Redirect with encoded credential offer in the location header")
+    @Get("/issue-credential/oob-attachment/{id}")
     public HttpResponse<Object> handleConnectionLess(@PathVariable UUID id) {
-        return HttpResponse.status(HttpStatus.TEMPORARY_REDIRECT).header("location",
+        return HttpResponse.status(HttpStatus.MOVED_PERMANENTLY).header("location",
                 connectionLess.handleConnectionLess(id));
     }
 

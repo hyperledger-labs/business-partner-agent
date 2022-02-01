@@ -30,11 +30,11 @@ import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
-import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.jsonld.LDContextHelper;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.BPACredentialExchange;
-import org.hyperledger.bpa.model.BPASchema;
+import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
+import org.hyperledger.bpa.persistence.model.BPASchema;
 
 import java.util.Map;
 import java.util.Optional;

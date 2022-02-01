@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -19,6 +19,7 @@ package org.hyperledger.bpa.controller.api.proof;
 
 import lombok.*;
 import org.hyperledger.bpa.api.aries.AriesCredential;
+import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
 import java.util.List;
 import java.util.Map;
@@ -43,8 +44,7 @@ public class PresentationRequestCredentials {
     public static final class CredentialInfo {
 
         /**
-         * internal credentialId {@link org.hyperledger.bpa.model.BPACredentialExchange}
-         * - matched via referent
+         * internal credentialId {@link BPACredentialExchange} - matched via referent
          */
         private UUID credentialId;
         private String credentialLabel;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -30,11 +30,11 @@ import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.bpa.api.PartnerAPI;
+import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
 import org.hyperledger.bpa.controller.api.invitation.AcceptInvitationRequest;
 import org.hyperledger.bpa.controller.api.invitation.CheckInvitationRequest;
 import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest;
-import org.hyperledger.bpa.impl.aries.ConnectionManager;
+import org.hyperledger.bpa.impl.aries.connection.ConnectionManager;
 
 @Slf4j
 @Controller("/api/invitations")
@@ -48,18 +48,18 @@ public class InvitationController {
     ConnectionManager cm;
 
     /**
-     * check invitation (receive)
+     * Check invitation (receive)
      * 
      * @param body {@link CheckInvitationRequest}
      * @return {@link MutableHttpResponse}
      */
     @Post("/check")
     public MutableHttpResponse<Object> checkInvitation(@Body CheckInvitationRequest body) {
-        return HttpResponse.ok(cm.checkReceivedInvitation(body.getInvitationUrl()));
+        return HttpResponse.ok(cm.checkReceivedInvitation(body.getInvitationUri()));
     }
 
     /**
-     * receive / accept invitation
+     * Receive / accept invitation
      * 
      * @param body {@link AcceptInvitationRequest}
      * @return {@link MutableHttpResponse}
@@ -74,10 +74,11 @@ public class InvitationController {
      * Create a connection-invitation
      *
      * @param req {@link CreatePartnerInvitationRequest}
-     * @return {@link PartnerAPI}
+     * @return {@link APICreateInvitationResponse}
      */
     @Post
-    public HttpResponse<?> requestConnectionInvitation(@Body CreatePartnerInvitationRequest req) {
+    public HttpResponse<APICreateInvitationResponse> requestConnectionInvitation(
+            @Body CreatePartnerInvitationRequest req) {
         return HttpResponse.ok(cm.createConnectionInvitation(req));
     }
 

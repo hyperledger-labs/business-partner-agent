@@ -18,6 +18,7 @@
             <name>The MIT License</name>
             <names>
                 <name>The MIT License</name>
+                <name>The MIT License (MIT)</name>
                 <name>MIT License</name>
             </names>
         </license>
@@ -37,6 +38,12 @@
             <name>BSD-2-Clause</name>
             <names>
                 <name>BSD-2-Clause</name>
+            </names>
+        </license>
+        <license>
+            <name>The JSON License</name>
+            <names>
+                <name>The JSON License</name>
             </names>
         </license>
     </valid>

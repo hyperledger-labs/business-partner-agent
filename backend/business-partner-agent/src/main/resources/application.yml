@@ -140,6 +140,11 @@ bpa:
   i18n:
     locale: ${BPA_I18N_LOCALE:en}
     fallbackLocale: ${BPA_I18N_FALLBACK_LOCALE:en}
+
+
+
+
+
 # The following is an example on how to override the default ux.
 # This shows the current defaults (and appropriate alternate value)
 # To override theme, then set themes.light properties (do not use dark theme)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -35,9 +35,9 @@ import org.hyperledger.bpa.core.RegisteredWebhook;
 import org.hyperledger.bpa.impl.WebhookService;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.model.PartnerProof;
-import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
 import java.util.List;
 import java.util.Optional;

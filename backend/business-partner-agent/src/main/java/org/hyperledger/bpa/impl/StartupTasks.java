@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -28,13 +28,13 @@ import jakarta.inject.Singleton;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.bpa.impl.activity.VPManager;
-import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
-import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.activity.PartnerCredDefLookup;
+import org.hyperledger.bpa.impl.aries.jsonld.VPManager;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.mode.indy.IndyStartupTasks;
 import org.hyperledger.bpa.impl.mode.web.WebStartupTasks;
-import org.hyperledger.bpa.model.BPAState;
-import org.hyperledger.bpa.repository.BPAStateRepository;
+import org.hyperledger.bpa.persistence.model.BPAState;
+import org.hyperledger.bpa.persistence.repository.BPAStateRepository;
 
 import java.time.Duration;
 import java.util.Iterator;

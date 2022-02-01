@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -45,12 +45,12 @@ import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.PartnerAPI.PartnerCredential;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.config.BPAMessageSource;
-import org.hyperledger.bpa.impl.aries.CredentialInfoResolver;
-import org.hyperledger.bpa.impl.aries.config.SchemaService;
-import org.hyperledger.bpa.impl.prooftemplates.ProofTemplateConversion;
-import org.hyperledger.bpa.model.MyDocument;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.model.PartnerProof;
+import org.hyperledger.bpa.impl.aries.credential.CredentialInfoResolver;
+import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateConversion;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
+import org.hyperledger.bpa.persistence.model.MyDocument;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.PartnerProof;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;

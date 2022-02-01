@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -36,8 +36,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.bpa.model.BPAUser;
-import org.hyperledger.bpa.repository.BPAUserRepository;
+import org.hyperledger.bpa.persistence.model.BPAUser;
+import org.hyperledger.bpa.persistence.repository.BPAUserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Arrays;

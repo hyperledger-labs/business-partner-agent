@@ -26,7 +26,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
-import org.hyperledger.bpa.model.BPACredentialExchange;
+import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
 import java.util.Map;
 import java.util.UUID;
@@ -69,7 +69,7 @@ public class CredEx {
         CredDef credDef = db.getCredDef() != null ? CredDef.from(db.getCredDef())
                 : CredDef.builder().schema(schemaAPI).build();
         String displayText = null;
-        if (schemaAPI != null && credDef != null) {
+        if (schemaAPI != null) {
             displayText = String.format("%s (%s)", schemaAPI.getLabel(), schemaAPI.getVersion());
             if (StringUtils.isNotBlank(credDef.getTag())) {
                 displayText = displayText + String.format(" - %s", credDef.getTag());

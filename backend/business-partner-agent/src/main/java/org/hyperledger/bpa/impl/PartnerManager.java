@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -32,14 +32,14 @@ import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.partner.AddPartnerRequest;
 import org.hyperledger.bpa.controller.api.partner.UpdatePartnerRequest;
 import org.hyperledger.bpa.core.RegisteredWebhook.WebhookEventType;
+import org.hyperledger.bpa.impl.activity.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.activity.PartnerLookup;
-import org.hyperledger.bpa.impl.aries.ConnectionManager;
-import org.hyperledger.bpa.impl.aries.PartnerCredDefLookup;
+import org.hyperledger.bpa.impl.aries.connection.ConnectionManager;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.repository.HolderCredExRepository;
-import org.hyperledger.bpa.repository.PartnerRepository;
-import org.hyperledger.bpa.repository.TagRepository;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
+import org.hyperledger.bpa.persistence.repository.TagRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;

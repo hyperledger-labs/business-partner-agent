@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -24,16 +24,16 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.bpa.api.aries.AriesCredential;
+import org.hyperledger.bpa.api.notification.ActivityNotificationEvent;
+import org.hyperledger.bpa.api.notification.TaskAddedEvent;
+import org.hyperledger.bpa.api.notification.TaskCompletedEvent;
 import org.hyperledger.bpa.controller.api.activity.*;
-import org.hyperledger.bpa.impl.notification.ActivityNotificationEvent;
-import org.hyperledger.bpa.impl.notification.TaskAddedEvent;
-import org.hyperledger.bpa.impl.notification.TaskCompletedEvent;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.model.Activity;
-import org.hyperledger.bpa.model.Partner;
-import org.hyperledger.bpa.model.PartnerProof;
-import org.hyperledger.bpa.repository.ActivityRepository;
-import org.hyperledger.bpa.repository.PartnerRepository;
+import org.hyperledger.bpa.persistence.model.Activity;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.persistence.repository.ActivityRepository;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

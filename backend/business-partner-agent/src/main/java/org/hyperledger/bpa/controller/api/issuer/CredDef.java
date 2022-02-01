@@ -22,7 +22,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
-import org.hyperledger.bpa.model.BPACredentialDefinition;
+import org.hyperledger.bpa.persistence.model.BPACredentialDefinition;
 
 import java.util.UUID;
 

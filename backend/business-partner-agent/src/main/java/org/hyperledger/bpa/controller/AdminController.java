@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -36,8 +36,8 @@ import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.admin.*;
 import org.hyperledger.bpa.impl.TagService;
-import org.hyperledger.bpa.impl.aries.config.RestrictionsManager;
-import org.hyperledger.bpa.impl.aries.config.SchemaService;
+import org.hyperledger.bpa.impl.aries.schema.RestrictionsManager;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.mode.indy.EndpointService;
 
 import java.util.List;
@@ -45,7 +45,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Controller("/api/admin")
-@Tag(name = "Configuration")
+@Tag(name = "BPA Configuration")
 @Validated
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @ExecuteOn(TaskExecutors.IO)
@@ -99,8 +99,7 @@ public class AdminController {
         if (req instanceof AddSchemaRequest.AddIndySchema) {
             return HttpResponse.ok(schemaService.addIndySchema(req.getSchemaId(), req.getLabel(),
                     req.getDefaultAttributeName(), ((AddSchemaRequest.AddIndySchema) req).getTrustedIssuer()));
-        } else if (req instanceof AddSchemaRequest.AddJsonLDSchema) {
-            AddSchemaRequest.AddJsonLDSchema addSchema = (AddSchemaRequest.AddJsonLDSchema) req;
+        } else if (req instanceof AddSchemaRequest.AddJsonLDSchema addSchema) {
             return HttpResponse.ok(schemaService.addJsonLDSchema(req.getSchemaId(), req.getLabel(),
                     req.getDefaultAttributeName(), addSchema.getLdType(), addSchema.getAttributes()));
         }

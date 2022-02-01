@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -30,10 +30,12 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.bpa.impl.StartupTasks;
 import org.hyperledger.bpa.impl.activity.DidResolver;
+import org.hyperledger.bpa.persistence.model.messaging.MessageTrigger;
 
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -93,6 +95,8 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
     @JsonIgnore
     Instant startTime;
 
+    List<MessageTrigger> messageTrigger;
+
     public String getAgentName() {
         return DidResolver.splitDidFrom(agentName).getLabel();
     }
@@ -100,6 +104,10 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
     public String getUptime() {
         Duration up = Duration.between(startTime, Instant.now());
         return DurationFormatUtils.formatDurationHMS(up.toMillis());
+    }
+
+    public List<MessageTrigger> getMessageTrigger() {
+        return List.of(MessageTrigger.values());
     }
 
     @Override

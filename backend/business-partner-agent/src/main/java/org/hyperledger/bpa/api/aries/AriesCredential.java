@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.impl.jsonld.LDContextHelper;
-import org.hyperledger.bpa.model.BPACredentialExchange;
+import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
 import java.util.Map;
 import java.util.UUID;

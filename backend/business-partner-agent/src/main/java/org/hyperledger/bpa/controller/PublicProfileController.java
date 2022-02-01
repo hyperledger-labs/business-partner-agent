@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -31,7 +31,7 @@ import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCrede
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.bpa.impl.DidDocManager;
-import org.hyperledger.bpa.impl.activity.VPManager;
+import org.hyperledger.bpa.impl.aries.jsonld.VPManager;
 
 import java.util.Optional;
 
