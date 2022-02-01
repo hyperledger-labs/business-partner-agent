@@ -82,7 +82,8 @@ public abstract class BaseHolderManager extends BaseCredentialManager {
     @Inject
     Converter conv;
 
-    @io.micronaut.core.annotation.NonNull public abstract BPASchema checkSchema(BaseCredExRecord credExBase);
+    @io.micronaut.core.annotation.NonNull
+    public abstract BPASchema checkSchema(BaseCredExRecord credExBase);
 
     // credential offer event
     public void handleOfferReceived(@NonNull BaseCredExRecord credExBase,

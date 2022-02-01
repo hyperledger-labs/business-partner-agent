@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.impl.jsonld;
+package org.hyperledger.bpa.impl.aries.jsonld;
 
 import lombok.NonNull;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;

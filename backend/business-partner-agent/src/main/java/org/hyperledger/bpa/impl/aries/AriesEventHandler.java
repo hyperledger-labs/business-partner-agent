@@ -40,7 +40,7 @@ import org.hyperledger.bpa.impl.aries.connection.PingManager;
 import org.hyperledger.bpa.impl.aries.credential.HolderCredentialManager;
 import org.hyperledger.bpa.impl.aries.credential.IssuerCredentialManager;
 import org.hyperledger.bpa.impl.aries.proof.ProofEventHandler;
-import org.hyperledger.bpa.impl.jsonld.LDEventHandler;
+import org.hyperledger.bpa.impl.aries.jsonld.LDEventHandler;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
 import java.util.Optional;
