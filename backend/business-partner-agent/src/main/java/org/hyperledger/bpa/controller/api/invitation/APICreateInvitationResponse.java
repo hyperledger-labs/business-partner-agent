@@ -17,7 +17,10 @@
  */
 package org.hyperledger.bpa.controller.api.invitation;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder

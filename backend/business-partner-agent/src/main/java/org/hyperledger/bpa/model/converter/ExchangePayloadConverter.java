@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.CredentialType;
-import org.hyperledger.bpa.model.BPACredentialExchange;
+import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
 @Slf4j
 @Singleton
