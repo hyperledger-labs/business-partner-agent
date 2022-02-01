@@ -23,13 +23,18 @@
       </v-list-item-title>
       <v-list-item-subtitle>
         <v-text-field
-          class="mt-6"
           :placeholder="$t('component.addSchema.placeholderJsonLdId')"
           v-model="schemaJsonLd.schemaId"
           :rules="[rules.required]"
           outlined
           dense
           required
+          :append-outer-icon="
+            schemaJsonLd.schemaId.length > 0
+              ? '$vuetify.icons.refresh'
+              : undefined
+          "
+          @click:append-outer="getJsonLdAttributes"
         >
         </v-text-field>
       </v-list-item-subtitle>
@@ -40,7 +45,6 @@
       </v-list-item-title>
       <v-list-item-subtitle>
         <v-text-field
-          class="mt-6"
           :placeholder="$t('component.addSchema.placeholderName')"
           v-model="schemaJsonLd.label"
           :rules="[rules.required]"
@@ -57,7 +61,6 @@
       </v-list-item-title>
       <v-list-item-subtitle>
         <v-text-field
-          class="mt-6"
           :placeholder="$t('component.addSchema.placeholderJsonLdType')"
           v-model="schemaJsonLd.ldType"
           :rules="[rules.required]"
@@ -69,20 +72,34 @@
       </v-list-item-subtitle>
     </v-list-item>
     <v-list-item>
-      <v-data-table
-        :items="tempJsonLdAttributes"
-        :headers="headersJsonLdTable"
-        v-model="schemaJsonLd.attributes"
-        show-select
-      >
-      </v-data-table>
+      <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
+        {{ $t("component.addSchema.schemaJsonLdAttributes") }}:
+      </v-list-item-title>
     </v-list-item>
+    <v-text-field
+      v-model="searchField"
+      append-icon="$vuetify.icons.search"
+      :label="$t('app.search')"
+      single-line
+      hide-details
+      clearable
+    ></v-text-field>
+    <v-data-table
+      :items="tempJsonLdAttributes"
+      :headers="headersJsonLdTable"
+      :search="searchField"
+      v-model="schemaJsonLd.attributes"
+      item-key="name"
+      show-select
+    >
+    </v-data-table>
     <v-card-actions>
       <v-layout align-end justify-end>
         <v-bpa-button color="secondary" @click="cancel"
           >{{ $t("button.cancel") }}
         </v-bpa-button>
         <v-bpa-button
+          :disabled="fieldsEmptyJsonLd"
           :loading="isBusy"
           color="primary"
           @click="submitSchemaJsonLd"
@@ -105,14 +122,16 @@ export default {
   data: () => {
     return {
       isBusy: false,
+      searchField: "",
       schemaJsonLd: {
         label: "",
         schemaId: "",
-        attributes: ["email"],
-        defaultAttributeName: "email",
+        attributes: new Array<string>(),
+        // defaultAttributeName: "email",
         ldType: "",
+        credentialType: "json-ld",
       },
-      tempJsonLdAttributes: [],
+      tempJsonLdAttributes: new Array<string>(),
     };
   },
   computed: {
@@ -126,8 +145,8 @@ export default {
     },
     rules() {
       return {
-        required: (value) => !!value || this.$t("app.rules.required"),
-        validJson: (value) =>
+        required: (value: string) => !!value || this.$t("app.rules.required"),
+        validJson: (value: string) =>
           validateJson(value) || this.$t("app.rules.validJson"),
       };
     },
@@ -163,6 +182,8 @@ export default {
     },
     async getJsonLdAttributes() {
       this.isBusy = true;
+      this.schemaJsonLd.attributes = [];
+
       jsonLdService
         .contextParser()
         .parse(this.schemaJsonLd.schemaId)

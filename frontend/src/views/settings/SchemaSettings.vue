@@ -33,7 +33,7 @@
               @cancelled="createSchemaDialog = false"
             />
           </v-dialog>
-          <v-dialog v-model="addSchemaDialog" persistent max-width="600px">
+          <v-dialog v-model="addSchemaDialog" persistent max-width="800px">
             <template v-slot:activator="{ on, attrs }">
               <v-bpa-button v-bind="attrs" v-on="on" color="primary">{{
                 $t("view.schemaSettings.buttonImportSchema")
