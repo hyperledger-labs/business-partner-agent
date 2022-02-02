@@ -8,21 +8,13 @@
 <template>
   <v-container>
     <br />
-    <v-textarea
-      rows="5"
-      outlined
-      dense
-      clearable
-      :loading="false"
-      :rules="[rules.validJson]"
-      :label="$t('component.addSchema.placeholderJsonLd')"
-    ></v-textarea>
     <v-list-item>
       <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
         {{ $t("component.addSchema.schemaId") }}:
       </v-list-item-title>
       <v-list-item-subtitle>
         <v-text-field
+          class="mt-6"
           :placeholder="$t('component.addSchema.placeholderJsonLdId')"
           v-model="schemaJsonLd.schemaId"
           :rules="[rules.required]"
@@ -45,6 +37,7 @@
       </v-list-item-title>
       <v-list-item-subtitle>
         <v-text-field
+          class="mt-6"
           :placeholder="$t('component.addSchema.placeholderName')"
           v-model="schemaJsonLd.label"
           :rules="[rules.required]"
@@ -61,6 +54,7 @@
       </v-list-item-title>
       <v-list-item-subtitle>
         <v-text-field
+          class="mt-6"
           :placeholder="$t('component.addSchema.placeholderJsonLdType')"
           v-model="schemaJsonLd.ldType"
           :rules="[rules.required]"
@@ -111,7 +105,6 @@
 </template>
 <script lang="ts">
 import VBpaButton from "@/components/BpaButton";
-import { validateJson } from "@/utils/validateUtils";
 import adminService from "@/services/adminService";
 import { EventBus } from "@/main";
 import { jsonLdService } from "@/services";
@@ -127,7 +120,6 @@ export default {
         label: "",
         schemaId: "",
         attributes: new Array<string>(),
-        // defaultAttributeName: "email",
         ldType: "",
         credentialType: "json-ld",
       },
@@ -138,7 +130,7 @@ export default {
     headersJsonLdTable() {
       return [
         {
-          text: "Name",
+          text: this.$t("component.addSchema.headerNameJsonLdAttributes"),
           value: "name",
         },
       ];
@@ -146,8 +138,6 @@ export default {
     rules() {
       return {
         required: (value: string) => !!value || this.$t("app.rules.required"),
-        validJson: (value: string) =>
-          validateJson(value) || this.$t("app.rules.validJson"),
       };
     },
     fieldsEmptyJsonLd() {
@@ -155,7 +145,7 @@ export default {
         this.schemaJsonLd.label.length === 0 ||
         this.schemaJsonLd.schemaId.length === 0 ||
         this.schemaJsonLd.ldType.length === 0 ||
-        this.schemaJsonLd.attributes.size === 0
+        this.schemaJsonLd.attributes.length === 0
       );
     },
   },
@@ -183,12 +173,20 @@ export default {
     async getJsonLdAttributes() {
       this.isBusy = true;
       this.schemaJsonLd.attributes = [];
+      this.tempJsonLdAttributes = [];
 
       jsonLdService
         .contextParser()
         .parse(this.schemaJsonLd.schemaId)
         .then((response) => {
-          for (const attribute of Object.keys(response.getContextRaw())) {
+          const regex = new RegExp(/^[a-z]/);
+          const attributes = Object.keys(response.getContextRaw()).filter(
+            (attribute) => {
+              return regex.test(attribute);
+            }
+          );
+
+          for (const attribute of attributes) {
             this.tempJsonLdAttributes.push({
               name: attribute,
             });

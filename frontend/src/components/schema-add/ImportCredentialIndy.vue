@@ -13,6 +13,7 @@
       </v-list-item-title>
       <v-list-item-subtitle>
         <v-text-field
+          class="mt-6"
           :placeholder="$t('component.addSchema.placeholderName')"
           v-model="schemaIndy.label"
           :rules="[rules.required]"
@@ -29,6 +30,7 @@
       </v-list-item-title>
       <v-list-item-subtitle>
         <v-text-field
+          class="mt-6"
           :placeholder="$t('component.addSchema.placeholderId')"
           v-model="schemaIndy.schemaId"
           :rules="[rules.required]"
