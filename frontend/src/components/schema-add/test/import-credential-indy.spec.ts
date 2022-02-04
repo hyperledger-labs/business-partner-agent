@@ -9,10 +9,11 @@ import localeEnglish from "@/locales/en.json";
 import { mountWithI18n } from "@@/test-helper";
 import ImportCredentialIndy from "@/components/schema-add/ImportCredentialIndy.vue";
 import Vue from "vue";
+import { Wrapper } from "@vue/test-utils";
 
 describe("ImportCredentialIndy", () => {
   const testString = "test string";
-  let wrapper;
+  let wrapper: Wrapper<Vue>;
 
   beforeEach(() => {
     wrapper = mountWithI18n(ImportCredentialIndy, {});

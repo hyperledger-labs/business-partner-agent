@@ -20,9 +20,10 @@ import Vue from "vue";
 import Vuetify from "vuetify";
 
 export function shallowMountWithI18n(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: any,
   options?: ThisTypedShallowMountOptions<Vue>
-): Wrapper<Vue, Element> {
+): Wrapper<Vue> {
   const localVue = createLocalVue();
   localVue.use(VueI18n);
   localVue.use(Vuetify);
@@ -45,9 +46,10 @@ export function shallowMountWithI18n(
 }
 
 export function mountWithI18n(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: any,
   options?: ThisTypedShallowMountOptions<Vue>
-): Wrapper<Vue, Element> {
+): Wrapper<Vue> {
   const localVue = createLocalVue();
   localVue.use(VueI18n);
   localVue.use(Vuetify);
