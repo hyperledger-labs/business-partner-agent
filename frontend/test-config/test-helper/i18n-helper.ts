@@ -7,6 +7,7 @@
  */
 import {
   createLocalVue,
+  mount,
   shallowMount,
   ThisTypedShallowMountOptions,
   Wrapper,
@@ -16,6 +17,7 @@ import localeEnglish from "@/locales/en.json";
 import localeGerman from "@/locales/de.json";
 import localePolish from "@/locales/pl.json";
 import Vue from "vue";
+import Vuetify from "vuetify";
 
 export function shallowMountWithI18n(
   component: any,
@@ -23,6 +25,7 @@ export function shallowMountWithI18n(
 ): Wrapper<Vue, Element> {
   const localVue = createLocalVue();
   localVue.use(VueI18n);
+  localVue.use(Vuetify);
 
   const i18n = new VueI18n({
     locale: "en",
@@ -35,6 +38,31 @@ export function shallowMountWithI18n(
   });
 
   return shallowMount(component, {
+    i18n,
+    localVue,
+    ...options,
+  });
+}
+
+export function mountWithI18n(
+  component: any,
+  options?: ThisTypedShallowMountOptions<Vue>
+): Wrapper<Vue, Element> {
+  const localVue = createLocalVue();
+  localVue.use(VueI18n);
+  localVue.use(Vuetify);
+
+  const i18n = new VueI18n({
+    locale: "en",
+    fallbackLocale: "en",
+    messages: {
+      en: localeEnglish,
+      de: localeGerman,
+      pl: localePolish,
+    },
+  });
+
+  return mount(component, {
     i18n,
     localVue,
     ...options,
