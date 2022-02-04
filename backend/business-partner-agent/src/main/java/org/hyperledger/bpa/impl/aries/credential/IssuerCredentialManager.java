@@ -562,13 +562,15 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                         revocationInfo.getCredRevId());
             } else if (bpaEx.roleIsHolder() && StringUtils.isNotEmpty(revocationInfo.getCredIdStored())) {
                 issuerCredExRepo.updateReferent(bpaEx.getId(), revocationInfo.getCredIdStored());
-                // holder event is missing the credRevId
-                try {
-                    ac.credential(revocationInfo.getCredIdStored()).ifPresent(
-                            c -> issuerCredExRepo.updateRevocationInfo(bpaEx.getId(), c.getRevRegId(),
-                                    c.getCredRevId()));
-                } catch (IOException e) {
-                    log.error(msg.getMessage("acapy.unavailable"));
+                // holder event is missing the credRevId, so get it from aca-py in case the
+                // credential is revocable
+                if (StringUtils.isNotEmpty(revocationInfo.getRevRegId())) {
+                    try {
+                        ac.credential(revocationInfo.getCredIdStored()).ifPresent(
+                                c -> issuerCredExRepo.updateRevocationInfo(bpaEx.getId(), c.getRevRegId(), c.getCredRevId()));
+                    } catch (IOException e) {
+                        log.error(msg.getMessage("acapy.unavailable"));
+                    }
                 }
             }
         });
