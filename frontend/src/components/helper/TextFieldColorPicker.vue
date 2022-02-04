@@ -77,8 +77,8 @@ export default {
       intColor: "",
       menu: false,
       hexReg: [
-        (value) => !!value || this.$t("app.rules.colorPrefix"),
-        (value) => {
+        (value: string) => !!value || this.$t("app.rules.colorPrefix"),
+        (value: string) => {
           const pattern = /^#([\da-f]{3}){1,2}$/i;
           return pattern.test(value) || this.$t("app.rules.colorInvalid");
         },
@@ -111,12 +111,12 @@ export default {
     cancel() {
       this.$emit("on-cancel");
     },
-    changeColor(value) {
+    changeColor(value: string) {
       if (this.$refs.form.validate()) {
         this.intColor = value;
       }
     },
-    pickColor(newColor) {
+    pickColor(newColor: string) {
       this.intColorField = newColor;
     },
   },

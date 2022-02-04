@@ -7,5 +7,9 @@
  */
 module.exports = {
   presets: ["@vue/cli-plugin-babel/preset"],
-  plugins: ["transform-require-context"],
+  env: {
+    test: {
+      plugins: ["transform-require-context"],
+    },
+  },
 };
