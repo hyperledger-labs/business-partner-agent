@@ -41,7 +41,6 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.notification.CredentialAddedEvent;
 import org.hyperledger.bpa.api.notification.CredentialOfferedEvent;
 import org.hyperledger.bpa.config.BPAMessageSource;
-import org.hyperledger.bpa.impl.aries.credential.BaseCredentialManager;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.CryptoUtil;
@@ -82,7 +81,6 @@ public abstract class BaseHolderManager extends BaseCredentialManager {
     @Inject
     Converter conv;
 
-    @io.micronaut.core.annotation.NonNull
     public abstract BPASchema checkSchema(BaseCredExRecord credExBase);
 
     // credential offer event
@@ -193,7 +191,7 @@ public abstract class BaseHolderManager extends BaseCredentialManager {
     }
 
     public AriesCredential buildCredential(@NonNull BPACredentialExchange dbCred) {
-        // TODO dbCred is not fully initialised
-        return AriesCredential.fromBPACredentialExchange(dbCred, dbCred.getSchema().resolveSchemaLabel());
+        return AriesCredential.fromBPACredentialExchange(dbCred,
+                dbCred.getSchema() != null ? dbCred.getSchema().resolveSchemaLabel() : null);
     }
 }

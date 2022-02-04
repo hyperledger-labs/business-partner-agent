@@ -53,6 +53,7 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     List<BPACredentialExchange> findByPartnerId(UUID partnerId);
 
+    @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     Optional<BPACredentialExchange> findByCredentialExchangeId(String credentialExchangeId);
 

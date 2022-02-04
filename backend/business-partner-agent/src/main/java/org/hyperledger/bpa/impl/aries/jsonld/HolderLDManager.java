@@ -24,14 +24,13 @@ import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
-import org.hyperledger.bpa.impl.aries.credential.BaseHolderManager;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
+import org.hyperledger.bpa.impl.aries.credential.BaseHolderManager;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.repository.BPASchemaRepository;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +53,6 @@ public class HolderLDManager extends BaseHolderManager {
     @Inject
     LabelStrategy labelStrategy;
 
-    @NotNull
     @Override
     public BPASchema checkSchema(BaseCredExRecord credExBase) {
         BPASchema schema = null;

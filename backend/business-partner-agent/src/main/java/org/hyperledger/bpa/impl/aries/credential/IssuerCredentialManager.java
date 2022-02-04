@@ -567,7 +567,8 @@ public class IssuerCredentialManager extends BaseCredentialManager {
                 if (StringUtils.isNotEmpty(revocationInfo.getRevRegId())) {
                     try {
                         ac.credential(revocationInfo.getCredIdStored()).ifPresent(
-                                c -> issuerCredExRepo.updateRevocationInfo(bpaEx.getId(), c.getRevRegId(), c.getCredRevId()));
+                                c -> issuerCredExRepo.updateRevocationInfo(bpaEx.getId(), c.getRevRegId(),
+                                        c.getCredRevId()));
                     } catch (IOException e) {
                         log.error(msg.getMessage("acapy.unavailable"));
                     }

@@ -97,9 +97,9 @@ public class LabelStrategy {
         return mergedLabel;
     }
 
-    public String apply(BPACredentialExchange.ExchangePayload ldCredential) {
+    public String apply(@Nullable BPACredentialExchange.ExchangePayload ldCredential) {
         String result = null;
-        if (ldCredential.typeIsJsonLd()) {
+        if (ldCredential != null && ldCredential.typeIsJsonLd()) {
             V20CredExRecordByFormat.LdProof ldProof = ldCredential.getLdProof();
             String schemaId = LDContextHelper.findSchemaId(ldProof);
             if (StringUtils.isNotEmpty(schemaId)) {

@@ -54,7 +54,6 @@ import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 import org.hyperledger.bpa.persistence.repository.MyDocumentRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -110,7 +109,7 @@ public class HolderCredentialManager extends BaseHolderManager {
             BPASchema s = schemaService.getSchemaFor(dbDoc.getSchemaId())
                     .orElseThrow(
                             () -> new PartnerException(msg.getMessage("api.schema.restriction.schema.not.found",
-                                    Map.of("id", dbDoc.getSchemaId()))));
+                                    Map.of("id", dbDoc.getSchemaId() != null ? dbDoc.getSchemaId() : ""))));
             V1CredentialProposalRequest v1CredentialProposalRequest = V1CredentialProposalRequest
                     .builder()
                     .connectionId(Objects.requireNonNull(dbPartner.getConnectionId()))
@@ -289,7 +288,6 @@ public class HolderCredentialManager extends BaseHolderManager {
                 });
     }
 
-    @NotNull
     @Override
     public BPASchema checkSchema(BaseCredExRecord credEx) {
         String schemaId = null;
@@ -309,6 +307,6 @@ public class HolderCredentialManager extends BaseHolderManager {
                 }
             }
         }
-        return bpaSchema; // TODO never null
+        return bpaSchema;
     }
 }

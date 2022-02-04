@@ -45,17 +45,11 @@ public class AriesStringUtil {
      * @return the last part of the input when separated by : null otherwise
      */
     public static String getLastSegmentOrNull(@Nullable String did) {
-        if (StringUtils.trimToNull(did) != null) {
-            return getLastSegment(did);
-        }
-        return null;
+        return StringUtils.trimToNull(did) != null ? getLastSegment(did) : null;
     }
 
     public static String schemaGetName(@Nullable String schemaId) {
-        if (StringUtils.isEmpty(schemaId)) {
-            return null;
-        }
-        return splitSchemaId(schemaId)[2];
+        return StringUtils.trimToNull(schemaId) != null ? splitSchemaId(schemaId)[2] : null;
     }
 
     public static String schemaGetCreator(@NonNull String schemaId) {
@@ -100,10 +94,7 @@ public class AriesStringUtil {
     }
 
     public static boolean isCredDef(@Nullable String expression) {
-        if (StringUtils.isBlank(expression)) {
-            return false;
-        }
-        return expression.split(":").length == 5;
+        return StringUtils.isNotBlank(expression) && expression.split(":").length == 5;
     }
 
     private static String[] credDefIdSplit(@NonNull String credDefId) {
