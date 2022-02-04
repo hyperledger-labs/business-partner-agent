@@ -68,6 +68,8 @@ services:
         --label '${AGENT1_NAME}' \
         ${ACAPY_ADMIN_CONFIG} \
         ${ACAPY_READ_ONLY_MODE} \
+        ${ACAPY_TAILS_BASE_URL} \
+        ${ACAPY_TAILS_UPLOAD_URL} \
         "
       ]
     volumes:
@@ -117,11 +119,9 @@ services:
       BPA_PRIVACY_POLICY_URL: ${BPA_PRIVACY_POLICY_URL}
       BPA_CREDDEF_REVOCATION_REGISTRY_SIZE: ${BPA_CREDDEF_REVOCATION_REGISTRY_SIZE}
       NODE_ENV: development
-      BPA_I18N_LOCALE: bcgov
     ports:
       - ${BPA2_PORT}:${BPA2_PORT}
       - ${BPA2_DEBUG_PORT}:${BPA2_DEBUG_PORT}
-
     restart: always
     extra_hosts:
      - host.docker.internal:host-gateway
