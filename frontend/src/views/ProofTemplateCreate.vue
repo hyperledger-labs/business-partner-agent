@@ -182,6 +182,7 @@ import VBpaButton from "@/components/BpaButton";
 import proofTemplateService from "@/services/proofTemplateService";
 import AttributeEdit from "@/components/proof-templates/AttributeEdit.vue";
 import RestrictionsEdit from "@/components/proof-templates/RestrictionsEdit.vue";
+import { SchemaLevelRestriction } from "@/components/proof-templates/attribute-group";
 
 export default {
   name: "ProofTemplates",
@@ -273,7 +274,7 @@ export default {
       return `${schema.label}<em>&nbsp;(${schema.schemaId})</em>`;
     },
     addAttributeGroup: function (schemaId) {
-      const schemaLevelRestrictions = [];
+      const schemaLevelRestrictions: SchemaLevelRestriction[] = [];
 
       const { schemaAttributeNames, trustedIssuer } = this.schemas.find(
         (s) => s.id === schemaId
@@ -322,10 +323,10 @@ export default {
 
       this.closeOtherPanelsOnOpen();
     },
-    deleteAttributeGroup(attributeGroupIndex) {
+    deleteAttributeGroup(attributeGroupIndex: number) {
       const schema = this.$store.getters.getSchemas.find(
-        (s) =>
-          s.id ===
+        (schema) =>
+          schema.id ===
           this.proofTemplate.attributeGroups[attributeGroupIndex].schemaId
       );
 

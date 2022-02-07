@@ -5,29 +5,34 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
+import { StateMessages } from "@/store/state-type";
+
+const messagesState: StateMessages = {
+  messages: [],
+};
+
 export default {
-  state: {
-    messages: [],
-  },
+  state: messagesState,
   getters: {
-    messages: (state) => {
+    messages: (state: StateMessages) => {
       return state.messages;
     },
-    messagesCount: (state) => {
+    messagesCount: (state: StateMessages) => {
       return state.messages.length;
     },
   },
   actions: {},
   mutations: {
-    onMessageReceived(state, payload) {
+    onMessageReceived(state: StateMessages, payload: any) {
       const basicMessage = payload.message.info;
-      const msgs = state.messages ? state.messages : [];
+
+      const msgs: any[] = state.messages ? state.messages : [];
       msgs.push(basicMessage);
       state.messages = msgs;
     },
-    markMessagesSeen(state, partnerId) {
+    markMessagesSeen(state: StateMessages, partnerId: string) {
       // seen means we remove them from the store for a given partner/room
-      const msgs = state.messages ? state.messages : [];
+      const msgs: any[] = state.messages ? state.messages : [];
       state.messages = msgs.filter((m) => m.partnerId !== partnerId);
     },
   },

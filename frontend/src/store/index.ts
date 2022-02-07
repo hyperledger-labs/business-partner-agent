@@ -14,24 +14,27 @@ import * as actions from "./actions";
 import * as getters from "./getters";
 import messages from "@/store/modules/messages";
 import notifications from "@/store/modules/notifications";
+import { StateBpa } from "@/store/state-type";
 
 Vue.use(Vuex);
 
+const state: StateBpa = {
+  partners: [],
+  editedDocument: {}, //document currently being edited
+  documents: [],
+  credentials: [],
+  schemas: [],
+  proofTemplates: [],
+  tags: [],
+  partnerSelectList: [],
+  credDefSelectList: [],
+  busyStack: 0,
+  expertMode: false,
+  settings: {},
+};
+
 const store = new Vuex.Store({
-  state: {
-    partners: [],
-    editedDocument: {}, //document currently being edited
-    documents: [],
-    credentials: [],
-    schemas: [],
-    proofTemplates: [],
-    tags: [],
-    partnerSelectList: [],
-    credDefSelectList: [],
-    busyStack: 0,
-    expertMode: false,
-    settings: {},
-  },
+  state,
 
   getters: getters,
   actions: actions,

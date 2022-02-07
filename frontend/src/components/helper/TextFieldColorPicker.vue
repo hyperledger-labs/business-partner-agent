@@ -41,7 +41,7 @@
               </v-card-text>
             </v-card>
           </v-menu>
-          <span justify>
+          <span>
             <v-btn class="" x-small text @click="cancel()">{{
               $t("button.cancel")
             }}</v-btn>
