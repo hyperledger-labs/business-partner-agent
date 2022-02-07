@@ -48,6 +48,8 @@ public class IssueLDCredentialTest extends BaseTest {
 
         aeh.handleCredentialV2(offer);
 
+        // TODO flow
+
     }
 
     @Test
@@ -55,12 +57,14 @@ public class IssueLDCredentialTest extends BaseTest {
         String offerSent = loader.load("files/v2-ld-credex-issuer/01-offer-sent.json");
         V20CredExRecord offer = ep.parseValueSave(offerSent, V20CredExRecord.class).orElseThrow();
 
-        String requestReceived = loader.load("files/v2-ld-credex-issuer/01-request-received.json");
+        String requestReceived = loader.load("files/v2-ld-credex-issuer/02-request-received.json");
         V20CredExRecord request = ep.parseValueSave(requestReceived, V20CredExRecord.class).orElseThrow();
 
         createDefaultPartner(offer.getConnectionId());
 
         aeh.handleCredentialV2(offer);
+
+        // TODO flow
     }
 
     private Partner createDefaultPartner(@NonNull String connectionId) {
