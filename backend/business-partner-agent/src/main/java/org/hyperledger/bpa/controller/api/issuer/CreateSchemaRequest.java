@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -18,18 +18,14 @@
 package org.hyperledger.bpa.controller.api.issuer;
 
 import io.micronaut.core.annotation.Introspected;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.annotation.Nonnull;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
-@Builder
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Introspected
 public class CreateSchemaRequest {
     // BPA fields
@@ -38,13 +34,13 @@ public class CreateSchemaRequest {
     private String defaultAttributeName;
 
     // aries schema fields...
-    @Nonnull
+    @NotBlank
     private String schemaName;
 
-    @Nonnull
+    @NotBlank
     private String schemaVersion;
 
-    @Nonnull
+    @NotBlank
     private List<String> attributes;
 
 }

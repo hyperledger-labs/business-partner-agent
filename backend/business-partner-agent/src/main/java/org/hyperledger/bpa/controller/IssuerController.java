@@ -41,7 +41,6 @@ import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.hyperledger.bpa.controller.IssuerController.ISSUER_CONTROLLER_BASE_URL;

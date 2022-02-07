@@ -18,7 +18,6 @@
 package org.hyperledger.bpa.impl.aries.jsonld;
 
 import io.micronaut.core.annotation.Nullable;
-import lombok.NonNull;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.CredentialType;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -17,14 +17,12 @@
  */
 package org.hyperledger.bpa.controller.api.proof;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.ExchangeVersion;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class PresentationRequestVersion {
     /** presentation exchange api version */
     private ExchangeVersion exchangeVersion;

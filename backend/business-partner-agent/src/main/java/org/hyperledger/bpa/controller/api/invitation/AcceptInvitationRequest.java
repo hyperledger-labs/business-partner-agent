@@ -17,8 +17,6 @@
  */
 package org.hyperledger.bpa.controller.api.invitation;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.persistence.model.Tag;
@@ -27,8 +25,6 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class AcceptInvitationRequest {
     private String invitationBlock;
     private String alias;

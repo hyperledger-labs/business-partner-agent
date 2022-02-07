@@ -21,8 +21,6 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.core.annotation.Introspected;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -30,10 +28,8 @@ import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 
 @Introspected
-@Builder
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class IssueLDCredentialRequest {
     // bpa ids
     @NotBlank
