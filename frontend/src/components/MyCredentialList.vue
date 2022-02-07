@@ -172,7 +172,9 @@ export default {
               type === "credential"
                 ? result.data.filter((item) => {
                     return (
-                      item.state === CredentialExchangeStates.CREDENTIAL_ACKED
+                      item.state ===
+                        CredentialExchangeStates.CREDENTIAL_ACKED ||
+                      item.state === CredentialExchangeStates.DONE
                     );
                   })
                 : result.data;

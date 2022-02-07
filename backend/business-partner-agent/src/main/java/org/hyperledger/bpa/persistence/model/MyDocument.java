@@ -43,6 +43,7 @@ import java.util.UUID;
 @Data
 @Accessors(chain = true)
 @Entity
+@Table(name = "my_document")
 public class MyDocument implements CredentialTypeTranslator {
 
     @Id

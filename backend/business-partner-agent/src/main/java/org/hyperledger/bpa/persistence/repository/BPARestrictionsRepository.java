@@ -40,7 +40,7 @@ public interface BPARestrictionsRepository extends CrudRepository<BPARestriction
     Optional<BPARestrictions> findByIssuerDid(String issuerDid);
 
     @Query("SELECT * FROM bpa_restrictions r " +
-            "LEFT JOIN bpaschema s ON r.schema_id = s.id " +
+            "LEFT JOIN bpa_schema s ON r.schema_id = s.id " +
             "WHERE r.issuer_did = :issuerDid " +
             "AND r.schema_id = :schemaId " +
             "LIMIT 1")

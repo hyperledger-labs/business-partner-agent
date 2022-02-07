@@ -18,7 +18,6 @@
 package org.hyperledger.bpa.controller;
 
 import io.micronaut.context.annotation.Value;
-import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.client.HttpClient;
@@ -27,7 +26,6 @@ import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.http.uri.UriBuilder;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ledger.DidVerkeyResponse;
@@ -48,7 +46,7 @@ import java.util.*;
 
 @Slf4j
 @MicronautTest
-public class AdminControllerTest {
+public class AdminControllerTest extends BaseControllerTest {
 
     private final String schemaId1 = "NZhb9EqpN9a6gkHge9fTmv:1:first:0.1";
     private final String schemaId2 = "NZhb9EqpN9a6gkHge9fTmv:2:second:0.1";
@@ -58,11 +56,11 @@ public class AdminControllerTest {
     String didPrefix;
 
     @Inject
-    @Client("/api/admin/schema")
-    HttpClient client;
-
-    @Inject
     AriesClient ac; // already a mock
+
+    public AdminControllerTest(@Client("/api/admin/schema") HttpClient client) {
+        super(client);
+    }
 
     @Test
     void testAddSchemaWithRestriction() throws Exception {
@@ -74,19 +72,18 @@ public class AdminControllerTest {
         Assertions.assertTrue(addedSchema.getBody().isPresent());
 
         // check added schema
-        SchemaAPI schema = getSchema(addedSchema.getBody().get().getId());
+        SchemaAPI schema = getById(addedSchema.getBody().get().getId(), SchemaAPI.class);
         Assertions.assertEquals(schemaId1, schema.getSchemaId());
         Assertions.assertNotNull(schema.getTrustedIssuer());
         Assertions.assertEquals(1, schema.getTrustedIssuer().size());
         Assertions.assertEquals(didPrefix + "issuer1", schema.getTrustedIssuer().get(0).getIssuerDid());
 
         // add a restriction to the schema
-        URI uri = UriBuilder.of("/{id}/trustedIssuer")
-                .expand(Map.of("id", schema.getId().toString()));
+        URI uri = buildURI("/{id}/trustedIssuer", Map.of("id", schema.getId().toString()));
         addRestriction(uri, "issuer2", "Demo Bank");
 
         // check if the restriction was added
-        schema = getSchema(addedSchema.getBody().get().getId());
+        schema = getById(addedSchema.getBody().get().getId(), SchemaAPI.class);
         Assertions.assertNotNull(schema.getTrustedIssuer());
         Assertions.assertEquals(2, schema.getTrustedIssuer().size());
         Assertions.assertEquals(didPrefix + "issuer2", schema.getTrustedIssuer().get(1).getIssuerDid());
@@ -96,45 +93,42 @@ public class AdminControllerTest {
                 () -> addRestriction(uri, "issuer2", null));
 
         // delete the first restriction
-        URI delete = UriBuilder.of("/{id}/trustedIssuer/{trustedIssuerId}")
-                .expand(Map.of(
-                        "id", schema.getId().toString(),
-                        "trustedIssuerId", schema.getTrustedIssuer().get(0).getId().toString()));
-        client.toBlocking().exchange(HttpRequest.DELETE(delete.toString()));
+        URI delete = buildURI("/{id}/trustedIssuer/{trustedIssuerId}", Map.of(
+                "id", schema.getId().toString(),
+                "trustedIssuerId", schema.getTrustedIssuer().get(0).getId().toString()));
+        delete(delete.toString());
 
         // check if the first restriction was deleted
-        schema = getSchema(addedSchema.getBody().get().getId());
+        schema = getById(addedSchema.getBody().get().getId(), SchemaAPI.class);
         Assertions.assertNotNull(schema.getTrustedIssuer());
         Assertions.assertEquals(1, schema.getTrustedIssuer().size());
         Assertions.assertEquals(didPrefix + "issuer2", schema.getTrustedIssuer().get(0).getIssuerDid());
 
         // update the remaining restriction
-        URI put = UriBuilder.of("/{id}/trustedIssuer/{trustedIssuerId}")
-                .expand(Map.of(
-                        "id", schema.getId().toString(),
-                        "trustedIssuerId", schema.getTrustedIssuer().get(0).getId().toString()));
-        client.toBlocking().exchange(HttpRequest.PUT(put, new UpdateTrustedIssuerRequest("Dummy Bank")));
+        URI put = buildURI("/{id}/trustedIssuer/{trustedIssuerId}", Map.of(
+                "id", schema.getId().toString(),
+                "trustedIssuerId", schema.getTrustedIssuer().get(0).getId().toString()));
+        put(put, new UpdateTrustedIssuerRequest("Dummy Bank"));
 
         // check if the label was updated
-        schema = getSchema(addedSchema.getBody().get().getId());
+        schema = getById(addedSchema.getBody().get().getId(), SchemaAPI.class);
         Assertions.assertEquals("Dummy Bank", schema.getTrustedIssuer().get(0).getLabel());
 
         // delete schema should fail because it still has a restriction
         UUID deleteId = schema.getId();
         Assertions.assertThrows(HttpClientResponseException.class,
-                () -> client.toBlocking().exchange(HttpRequest.DELETE("/" + deleteId)));
+                () -> deleteById(deleteId));
 
         // delete the second restriction
-        delete = UriBuilder.of("/{id}/trustedIssuer/{trustedIssuerId}")
-                .expand(Map.of(
-                        "id", schema.getId().toString(),
-                        "trustedIssuerId", schema.getTrustedIssuer().get(0).getId().toString()));
-        client.toBlocking().exchange(HttpRequest.DELETE(delete.toString()));
+        delete = buildURI("/{id}/trustedIssuer/{trustedIssuerId}", Map.of(
+                "id", schema.getId().toString(),
+                "trustedIssuerId", schema.getTrustedIssuer().get(0).getId().toString()));
+        delete(delete.toString());
 
         // delete the schema
-        client.toBlocking().exchange(HttpRequest.DELETE("/" + deleteId));
+        deleteById(deleteId);
         // check if the schema was deleted
-        Assertions.assertThrows(HttpClientResponseException.class, () -> getSchema(deleteId));
+        Assertions.assertThrows(HttpClientResponseException.class, () -> getById(deleteId, SchemaAPI.class));
     }
 
     @Test
@@ -154,7 +148,7 @@ public class AdminControllerTest {
         addRestriction(uri2, "issuer1", null);
 
         // check if the restriction was added
-        schema2 = getSchema(schema2.getId());
+        schema2 = getById(schema2.getId(), SchemaAPI.class);
         Assertions.assertNotNull(schema2.getTrustedIssuer());
         Assertions.assertEquals(1, schema2.getTrustedIssuer().size());
         Assertions.assertEquals(didPrefix + "issuer1", schema2.getTrustedIssuer().get(0).getIssuerDid());
@@ -168,61 +162,50 @@ public class AdminControllerTest {
 
     @Test
     void testAddLDSchema() {
-        HttpResponse<SchemaAPI> ldSchema = client.toBlocking()
-                .exchange(HttpRequest.POST("",
-                        AddSchemaRequest.AddJsonLDSchema.builder()
-                                .schemaId("https://schema.org/Person")
-                                .defaultAttributeName("email")
-                                .label("Person")
-                                .attributes(Set.of("email"))
-                                .credentialType(CredentialType.JSON_LD)
-                                .ldType("Person")
-                                .build()),
-                        SchemaAPI.class);
-        SchemaAPI api = getSchema(ldSchema.getBody().orElseThrow().getId());
+        HttpResponse<SchemaAPI> ldSchema = post(
+                AddSchemaRequest.AddJsonLDSchema.builder()
+                        .schemaId("https://schema.org/Person")
+                        .defaultAttributeName("email")
+                        .label("Person")
+                        .attributes(Set.of("email"))
+                        .credentialType(CredentialType.JSON_LD)
+                        .ldType("Person")
+                        .build(),
+                SchemaAPI.class);
+        SchemaAPI api = getById(ldSchema.getBody().orElseThrow().getId(), SchemaAPI.class);
         Assertions.assertEquals("Person", api.getLdType());
     }
 
-    private SchemaAPI getSchema(@NonNull UUID id) {
-        return client.toBlocking()
-                .retrieve(HttpRequest.GET("/" + id), SchemaAPI.class);
-    }
-
     private HttpResponse<SchemaAPI> addSchemaWithRestriction(String schemaId) {
-        return client.toBlocking()
-                .exchange(HttpRequest.POST("",
-                        AddSchemaRequest.AddIndySchema.builder()
-                                .schemaId(schemaId)
-                                .defaultAttributeName("name")
-                                .label("Demo Bank")
-                                .trustedIssuer(List.of(AddTrustedIssuerRequest
-                                        .builder()
-                                        .issuerDid("issuer1")
-                                        .label("Demo Issuer")
-                                        .build()))
-                                .build()),
-                        SchemaAPI.class);
+        return post(AddSchemaRequest.AddIndySchema.builder()
+                .schemaId(schemaId)
+                .defaultAttributeName("name")
+                .label("Demo Bank")
+                .trustedIssuer(List.of(AddTrustedIssuerRequest
+                        .builder()
+                        .issuerDid("issuer1")
+                        .label("Demo Issuer")
+                        .build()))
+                .build(),
+                SchemaAPI.class);
     }
 
     private HttpResponse<SchemaAPI> addSchemaNoRestriction() {
-        return client.toBlocking()
-                .exchange(HttpRequest.POST("",
-                        AddSchemaRequest.AddIndySchema.builder()
-                                .schemaId(schemaId3)
-                                .defaultAttributeName("other")
-                                .label("Demo Corp")
-                                .build()),
-                        SchemaAPI.class);
+        return post(AddSchemaRequest.AddIndySchema.builder()
+                .schemaId(schemaId3)
+                .defaultAttributeName("other")
+                .label("Demo Corp")
+                .build(),
+                SchemaAPI.class);
     }
 
     private void addRestriction(URI uri, String issuerDid, String label) {
-        client.toBlocking()
-                .exchange(HttpRequest.POST(uri,
-                        AddTrustedIssuerRequest.builder()
-                                .issuerDid(issuerDid)
-                                .label(label)
-                                .build()),
-                        TrustedIssuer.class);
+        post(uri.toString(),
+                AddTrustedIssuerRequest.builder()
+                        .issuerDid(issuerDid)
+                        .label(label)
+                        .build(),
+                TrustedIssuer.class);
     }
 
     private void mockGetSchemaAndVerkey() throws IOException {

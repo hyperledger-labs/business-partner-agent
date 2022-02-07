@@ -31,9 +31,9 @@ import java.util.UUID;
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface BPAWebhookRepository extends CrudRepository<BPAWebhook, UUID> {
 
-    @Query("SELECT * FROM bpawebhook WHERE webhook->>'url' = :url ")
+    @Query("SELECT * FROM bpa_webhook WHERE webhook->>'url' = :url ")
     Optional<BPAWebhook> findByUrl(String url);
 
-    @Query("SELECT * FROM bpawebhook where (webhook->'registeredEvent') ?? :type")
+    @Query("SELECT * FROM bpa_webhook where (webhook->'registeredEvent') ?? :type")
     List<BPAWebhook> findByEventType(WebhookEventType type);
 }
