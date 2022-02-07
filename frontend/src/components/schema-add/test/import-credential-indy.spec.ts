@@ -88,7 +88,7 @@ describe("ImportCredentialIndy", () => {
     expect(submitButton.find("[disabled]").exists()).toBe(true);
   });
 
-  it("should emit a 'cancelled' event when clicking on the cancel button.", async () => {
+  test("should emit a 'cancelled' event when clicking on the cancel button.", async () => {
     const allButtons = wrapper.findAll("button");
 
     allButtons.at(0).trigger("click");

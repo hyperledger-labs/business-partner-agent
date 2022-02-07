@@ -82,7 +82,7 @@
       :items="tempJsonLdAttributes"
       :headers="headersJsonLdTable"
       :search="searchField"
-      v-model="schemaJsonLd.attributes"
+      v-model="selectedJsonLdAttributes"
       item-key="name"
       show-select
     >
@@ -123,6 +123,7 @@ export default {
         ldType: "",
         credentialType: "json-ld",
       },
+      selectedJsonLdAttributes: new Array<{ name: string }>(),
       tempJsonLdAttributes: new Array<string>(),
     };
   },
@@ -145,13 +146,17 @@ export default {
         this.schemaJsonLd.label.length === 0 ||
         this.schemaJsonLd.schemaId.length === 0 ||
         this.schemaJsonLd.ldType.length === 0 ||
-        this.schemaJsonLd.attributes.length === 0
+        this.selectedJsonLdAttributes.length === 0
       );
     },
   },
   methods: {
     async submitSchemaJsonLd() {
       this.isBusy = true;
+
+      this.selectedJsonLdAttributes.map((selectedAttribute) => {
+        this.schemaJsonLd.attributes.push(selectedAttribute.name);
+      });
 
       adminService
         .addSchema(this.schemaJsonLd)
@@ -174,6 +179,7 @@ export default {
       this.isBusy = true;
       this.schemaJsonLd.attributes = [];
       this.tempJsonLdAttributes = [];
+      this.selectedJsonLdAttributes = [];
 
       jsonLdService
         .contextParser()

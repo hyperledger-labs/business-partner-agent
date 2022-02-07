@@ -13,10 +13,16 @@
       </v-card-title>
       <credential-type-tabs>
         <template v-slot:indy>
-          <import-credential-indy v-on:cancelled="cancel" />
+          <import-credential-indy
+            v-on:cancelled="cancel"
+            v-on:success="success"
+          />
         </template>
         <template v-slot:json-ld>
-          <import-credential-json-ld v-on:cancelled="cancel" />
+          <import-credential-json-ld
+            v-on:cancelled="cancel"
+            v-on:success="success"
+          />
         </template>
       </credential-type-tabs>
     </v-card>
@@ -38,6 +44,9 @@ export default {
   methods: {
     cancel() {
       this.$emit("cancelled");
+    },
+    success() {
+      this.$emit("success");
     },
   },
 };
