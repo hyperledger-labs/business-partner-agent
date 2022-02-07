@@ -153,9 +153,7 @@ public class AriesEventHandler extends EventHandler {
     public void handleCredentialV2(V20CredExRecord v2CredEx) {
         log.debug("Credential V2 Event: {}", v2CredEx);
         if (v2CredEx.payloadIsLdProof()) {
-            synchronized (jsonLD) {
-                jsonLD.dispatch(v2CredEx);
-            }
+            jsonLD.dispatch(v2CredEx);
         } else if (v2CredEx.roleIsIssuer()) {
             synchronized (credIssuer) {
                 if (v2CredEx.stateIsProposalReceived()) {

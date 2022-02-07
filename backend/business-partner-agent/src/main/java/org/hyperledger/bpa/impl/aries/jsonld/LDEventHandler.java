@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.aries.jsonld;
 
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
@@ -27,27 +26,42 @@ import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 @Singleton
 public class LDEventHandler {
 
-    @Inject
-    HolderLDManager holder;
+    private final HolderLDManager holder;
 
-    @Inject
-    IssuerLDManager issuer;
+    private final IssuerLDManager issuer;
+
+    public LDEventHandler(HolderLDManager holder, IssuerLDManager issuer) {
+        this.holder = holder;
+        this.issuer = issuer;
+    }
 
     public void dispatch(V20CredExRecord v2) {
         if (v2.roleIsHolder()) {
-            if (v2.stateIsOfferReceived()) {
-                holder.handleOfferReceived(v2, BPACredentialExchange.ExchangePayload.jsonLD(v2.resolveLDCredOffer()),
-                        ExchangeVersion.V2);
-            } else if (v2.stateIsCredentialReceived()) {
-                holder.handleCredentialReceived(v2);
-            } else {
-                holder.handleStateChangesOnly(v2.getCredentialExchangeId(), v2.getState(), v2.getUpdatedAt(),
-                        v2.getErrorMsg());
+            synchronized (holder) {
+                if (v2.stateIsOfferReceived()) {
+                    holder.handleOfferReceived(v2,
+                            BPACredentialExchange.ExchangePayload.jsonLD(v2.resolveLDCredOffer()),
+                            ExchangeVersion.V2);
+                } else if (v2.stateIsCredentialReceived()) {
+                    holder.handleCredentialReceived(v2);
+                } else {
+                    holder.handleStateChangesOnly(v2.getCredentialExchangeId(), v2.getState(), v2.getUpdatedAt(),
+                            v2.getErrorMsg());
+                }
+            }
+        } else if (v2.roleIsIssuer()) {
+            synchronized (issuer) {
+                if (v2.stateIsProposalReceived()) {
+                    issuer.handleCredentialProposal(v2);
+                } else if (v2.stateIsRequestReceived()) {
+                    issuer.handleV2CredentialRequest(v2);
+                } else {
+                    issuer.handleV2CredentialExchange(v2);
+                }
             }
         }
     }
 
     public void handleIssueCredentialV2LD(V2IssueLDCredentialEvent credentialInfo) {
-        //
     }
 }

@@ -1,0 +1,174 @@
+{
+  "auto_offer": false,
+  "auto_issue": true,
+  "cred_ex_id": "b423f347-8972-42cb-bacb-fa95c836785c",
+  "state": "done",
+  "initiator": "self",
+  "thread_id": "789885f9-1d48-41ff-8dcd-439852808de8",
+  "cred_request": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/request-credential",
+    "@id": "9fbf86ad-3cfd-464d-975b-0d31abc4a76b",
+    "~thread": {
+      "thid": "789885f9-1d48-41ff-8dcd-439852808de8"
+    },
+    "requests~attach": [{
+      "@id": "ld_proof",
+      "mime-type": "application/json",
+      "data": {
+        "base64": "eyJjcmVkZW50aWFsIjogeyJAY29udGV4dCI6IFsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCAiaHR0cHM6Ly9zY2hlbWEub3JnL3ZlcnNpb24vbGF0ZXN0L3NjaGVtYW9yZy1jdXJyZW50LWh0dHBzLmpzb25sZCIsICJodHRwczovL3czaWQub3JnL3NlY3VyaXR5L2Jicy92MSJdLCAidHlwZSI6IFsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCAiT3JnYW5pemF0aW9uIl0sICJpc3N1ZXIiOiAiZGlkOmtleTp6VUM3OGRZTWM2akNNZm1UanNEd2pLRFI5cVV2Z0dUWHdzWERkOG43VGRMQ2V6UFRvZkhab1pvZHNxR2JSQTNWTDdmd2Zoa0NxeHBIWGloS241ZkJoWWFEN3JYaHF2QkNjYTVnakx4d2NHb0dUQ1BwVzNMTVlLNWdHdDVYY3o1MkNmc2NIWjgiLCAiaXNzdWFuY2VEYXRlIjogIjIwMTktMTItMDNUMTI6MTk6NTJaIiwgImNyZWRlbnRpYWxTdWJqZWN0IjogeyJzY2hlbWE6bGVnYWxOYW1lIjogInNlcHAifX0sICJvcHRpb25zIjogeyJwcm9vZlR5cGUiOiAiQmJzQmxzU2lnbmF0dXJlMjAyMCJ9fQ=="
+      }
+    }],
+    "formats": [{
+      "attach_id": "ld_proof",
+      "format": "aries/ld-proof-vc-detail@v1.0"
+    }]
+  },
+  "role": "issuer",
+  "cred_proposal": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/propose-credential",
+    "@id": "90063e24-e3c2-42d5-ba5c-82a3c8b9159d",
+    "filters~attach": [{
+      "@id": "ld_proof",
+      "mime-type": "application/json",
+      "data": {
+        "base64": "eyJjcmVkZW50aWFsIjogeyJAY29udGV4dCI6IFsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCAiaHR0cHM6Ly9zY2hlbWEub3JnL3ZlcnNpb24vbGF0ZXN0L3NjaGVtYW9yZy1jdXJyZW50LWh0dHBzLmpzb25sZCJdLCAiY3JlZGVudGlhbFN1YmplY3QiOiB7InNjaGVtYTpsZWdhbE5hbWUiOiAic2VwcCJ9LCAiaXNzdWFuY2VEYXRlIjogIjIwMTktMTItMDNUMTI6MTk6NTJaIiwgImlzc3VlciI6ICJkaWQ6a2V5OnpVQzc4ZFlNYzZqQ01mbVRqc0R3aktEUjlxVXZnR1RYd3NYRGQ4bjdUZExDZXpQVG9mSFpvWm9kc3FHYlJBM1ZMN2Z3ZmhrQ3F4cEhYaWhLbjVmQmhZYUQ3clhocXZCQ2NhNWdqTHh3Y0dvR1RDUHBXM0xNWUs1Z0d0NVhjejUyQ2ZzY0haOCIsICJ0eXBlIjogWyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsICJPcmdhbml6YXRpb24iXX0sICJvcHRpb25zIjogeyJwcm9vZlR5cGUiOiAiQmJzQmxzU2lnbmF0dXJlMjAyMCJ9fQ=="
+      }
+    }],
+    "formats": [{
+      "attach_id": "ld_proof",
+      "format": "aries/ld-proof-vc-detail@v1.0"
+    }]
+  },
+  "by_format": {
+    "cred_issue": {
+      "ld_proof": {
+        "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          "https://schema.org/version/latest/schemaorg-current-https.jsonld",
+          "https://w3id.org/security/bbs/v1"
+        ],
+        "type": [
+          "VerifiableCredential",
+          "Organization"
+        ],
+        "issuer": "did:key:zUC78dYMc6jCMfmTjsDwjKDR9qUvgGTXwsXDd8n7TdLCezPTofHZoZodsqGbRA3VL7fwfhkCqxpHXihKn5fBhYaD7rXhqvBCca5gjLxwcGoGTCPpW3LMYK5gGt5Xcz52CfscHZ8",
+        "issuanceDate": "2019-12-03T12:19:52Z",
+        "credentialSubject": {
+          "schema:legalName": "sepp"
+        },
+        "proof": {
+          "type": "BbsBlsSignature2020",
+          "verificationMethod": "did:key:zUC78dYMc6jCMfmTjsDwjKDR9qUvgGTXwsXDd8n7TdLCezPTofHZoZodsqGbRA3VL7fwfhkCqxpHXihKn5fBhYaD7rXhqvBCca5gjLxwcGoGTCPpW3LMYK5gGt5Xcz52CfscHZ8#zUC78dYMc6jCMfmTjsDwjKDR9qUvgGTXwsXDd8n7TdLCezPTofHZoZodsqGbRA3VL7fwfhkCqxpHXihKn5fBhYaD7rXhqvBCca5gjLxwcGoGTCPpW3LMYK5gGt5Xcz52CfscHZ8",
+          "created": "2021-11-25T11:16:07.412310+00:00",
+          "proofPurpose": "assertionMethod",
+          "proofValue": "g9xg8GzlNAxIma9GaOtPELFfD2CFp3lWKCsV51Dy5BCg49bqUmvO1Y48T2cU7K5acCP9oF4gTg0Vrw9mzvAkjPGDP4DKPyH+7LqtbScJNIolaQRJCL3G8ZWjCaTLLIA0pklvZwUcoftP1zQLMmzD4Q=="
+        }
+      }
+    },
+    "cred_request": {
+      "ld_proof": {
+        "credential": {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://schema.org/version/latest/schemaorg-current-https.jsonld",
+            "https://w3id.org/security/bbs/v1"
+          ],
+          "type": [
+            "VerifiableCredential",
+            "Organization"
+          ],
+          "issuer": "did:key:zUC78dYMc6jCMfmTjsDwjKDR9qUvgGTXwsXDd8n7TdLCezPTofHZoZodsqGbRA3VL7fwfhkCqxpHXihKn5fBhYaD7rXhqvBCca5gjLxwcGoGTCPpW3LMYK5gGt5Xcz52CfscHZ8",
+          "issuanceDate": "2019-12-03T12:19:52Z",
+          "credentialSubject": {
+            "schema:legalName": "sepp"
+          }
+        },
+        "options": {
+          "proofType": "BbsBlsSignature2020"
+        }
+      }
+    },
+    "cred_offer": {
+      "ld_proof": {
+        "credential": {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://schema.org/version/latest/schemaorg-current-https.jsonld",
+            "https://w3id.org/security/bbs/v1"
+          ],
+          "type": [
+            "VerifiableCredential",
+            "Organization"
+          ],
+          "issuer": "did:key:zUC78dYMc6jCMfmTjsDwjKDR9qUvgGTXwsXDd8n7TdLCezPTofHZoZodsqGbRA3VL7fwfhkCqxpHXihKn5fBhYaD7rXhqvBCca5gjLxwcGoGTCPpW3LMYK5gGt5Xcz52CfscHZ8",
+          "issuanceDate": "2019-12-03T12:19:52Z",
+          "credentialSubject": {
+            "schema:legalName": "sepp"
+          }
+        },
+        "options": {
+          "proofType": "BbsBlsSignature2020"
+        }
+      }
+    },
+    "cred_proposal": {
+      "ld_proof": {
+        "credential": {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://schema.org/version/latest/schemaorg-current-https.jsonld"
+          ],
+          "credentialSubject": {
+            "schema:legalName": "sepp"
+          },
+          "issuanceDate": "2019-12-03T12:19:52Z",
+          "issuer": "did:key:zUC78dYMc6jCMfmTjsDwjKDR9qUvgGTXwsXDd8n7TdLCezPTofHZoZodsqGbRA3VL7fwfhkCqxpHXihKn5fBhYaD7rXhqvBCca5gjLxwcGoGTCPpW3LMYK5gGt5Xcz52CfscHZ8",
+          "type": [
+            "VerifiableCredential",
+            "Organization"
+          ]
+        },
+        "options": {
+          "proofType": "BbsBlsSignature2020"
+        }
+      }
+    }
+  },
+  "cred_issue": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/issue-credential",
+    "@id": "7c126d6c-1d09-4058-8a95-e7e8189f8bc0",
+    "credentials~attach": [{
+      "@id": "ld_proof",
+      "mime-type": "application/json",
+      "data": {
+        "base64": "eyJAY29udGV4dCI6IFsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCAiaHR0cHM6Ly9zY2hlbWEub3JnL3ZlcnNpb24vbGF0ZXN0L3NjaGVtYW9yZy1jdXJyZW50LWh0dHBzLmpzb25sZCIsICJodHRwczovL3czaWQub3JnL3NlY3VyaXR5L2Jicy92MSJdLCAidHlwZSI6IFsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCAiT3JnYW5pemF0aW9uIl0sICJpc3N1ZXIiOiAiZGlkOmtleTp6VUM3OGRZTWM2akNNZm1UanNEd2pLRFI5cVV2Z0dUWHdzWERkOG43VGRMQ2V6UFRvZkhab1pvZHNxR2JSQTNWTDdmd2Zoa0NxeHBIWGloS241ZkJoWWFEN3JYaHF2QkNjYTVnakx4d2NHb0dUQ1BwVzNMTVlLNWdHdDVYY3o1MkNmc2NIWjgiLCAiaXNzdWFuY2VEYXRlIjogIjIwMTktMTItMDNUMTI6MTk6NTJaIiwgImNyZWRlbnRpYWxTdWJqZWN0IjogeyJzY2hlbWE6bGVnYWxOYW1lIjogInNlcHAifSwgInByb29mIjogeyJ0eXBlIjogIkJic0Jsc1NpZ25hdHVyZTIwMjAiLCAidmVyaWZpY2F0aW9uTWV0aG9kIjogImRpZDprZXk6elVDNzhkWU1jNmpDTWZtVGpzRHdqS0RSOXFVdmdHVFh3c1hEZDhuN1RkTENlelBUb2ZIWm9ab2RzcUdiUkEzVkw3ZndmaGtDcXhwSFhpaEtuNWZCaFlhRDdyWGhxdkJDY2E1Z2pMeHdjR29HVENQcFczTE1ZSzVnR3Q1WGN6NTJDZnNjSFo4I3pVQzc4ZFlNYzZqQ01mbVRqc0R3aktEUjlxVXZnR1RYd3NYRGQ4bjdUZExDZXpQVG9mSFpvWm9kc3FHYlJBM1ZMN2Z3ZmhrQ3F4cEhYaWhLbjVmQmhZYUQ3clhocXZCQ2NhNWdqTHh3Y0dvR1RDUHBXM0xNWUs1Z0d0NVhjejUyQ2ZzY0haOCIsICJjcmVhdGVkIjogIjIwMjEtMTEtMjVUMTE6MTY6MDcuNDEyMzEwKzAwOjAwIiwgInByb29mUHVycG9zZSI6ICJhc3NlcnRpb25NZXRob2QiLCAicHJvb2ZWYWx1ZSI6ICJnOXhnOEd6bE5BeEltYTlHYU90UEVMRmZEMkNGcDNsV0tDc1Y1MUR5NUJDZzQ5YnFVbXZPMVk0OFQyY1U3SzVhY0NQOW9GNGdUZzBWcnc5bXp2QWtqUEdEUDRES1B5SCs3THF0YlNjSk5Jb2xhUVJKQ0wzRzhaV2pDYVRMTElBMHBrbHZad1Vjb2Z0UDF6UUxNbXpENFE9PSJ9fQ=="
+      }
+    }],
+    "formats": [{
+      "attach_id": "ld_proof",
+      "format": "aries/ld-proof-vc@v1.0"
+    }]
+  },
+  "updated_at": "2021-11-25T11:16:11.997835Z",
+  "auto_remove": true,
+  "cred_offer": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/offer-credential",
+    "@id": "789885f9-1d48-41ff-8dcd-439852808de8",
+    "~thread": {},
+    "comment": "create automated v2.0 credential exchange record",
+    "formats": [{
+      "attach_id": "ld_proof",
+      "format": "aries/ld-proof-vc-detail@v1.0"
+    }],
+    "offers~attach": [{
+      "@id": "ld_proof",
+      "mime-type": "application/json",
+      "data": {
+        "base64": "eyJjcmVkZW50aWFsIjogeyJAY29udGV4dCI6IFsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCAiaHR0cHM6Ly9zY2hlbWEub3JnL3ZlcnNpb24vbGF0ZXN0L3NjaGVtYW9yZy1jdXJyZW50LWh0dHBzLmpzb25sZCIsICJodHRwczovL3czaWQub3JnL3NlY3VyaXR5L2Jicy92MSJdLCAidHlwZSI6IFsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCAiT3JnYW5pemF0aW9uIl0sICJpc3N1ZXIiOiAiZGlkOmtleTp6VUM3OGRZTWM2akNNZm1UanNEd2pLRFI5cVV2Z0dUWHdzWERkOG43VGRMQ2V6UFRvZkhab1pvZHNxR2JSQTNWTDdmd2Zoa0NxeHBIWGloS241ZkJoWWFEN3JYaHF2QkNjYTVnakx4d2NHb0dUQ1BwVzNMTVlLNWdHdDVYY3o1MkNmc2NIWjgiLCAiaXNzdWFuY2VEYXRlIjogIjIwMTktMTItMDNUMTI6MTk6NTJaIiwgImNyZWRlbnRpYWxTdWJqZWN0IjogeyJzY2hlbWE6bGVnYWxOYW1lIjogInNlcHAifX0sICJvcHRpb25zIjogeyJwcm9vZlR5cGUiOiAiQmJzQmxzU2lnbmF0dXJlMjAyMCJ9fQ=="
+      }
+    }]
+  },
+  "trace": false,
+  "created_at": "2021-11-25T11:16:07.049742Z",
+  "connection_id": "d216ba80-7c69-4f22-b53e-585d547d1c61"
+}

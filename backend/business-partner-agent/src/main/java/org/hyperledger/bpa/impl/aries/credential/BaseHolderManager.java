@@ -21,12 +21,9 @@ import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import lombok.AccessLevel;
 import lombok.NonNull;
-import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.acy_py.generated.model.V20CredRequestRequest;
-import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.issue_credential_v1.BaseCredExRecord;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
@@ -40,7 +37,6 @@ import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.notification.CredentialAddedEvent;
 import org.hyperledger.bpa.api.notification.CredentialOfferedEvent;
-import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.CryptoUtil;
@@ -60,17 +56,10 @@ import java.util.UUID;
 public abstract class BaseHolderManager extends BaseCredentialManager {
 
     @Inject
-    @Setter(AccessLevel.PACKAGE)
-    AriesClient ac;
-
-    @Inject
     HolderCredExRepository holderCredExRepo;
 
     @Inject
     PartnerRepository partnerRepo;
-
-    @Inject
-    BPAMessageSource.DefaultMessageSource msg;
 
     @Inject
     SchemaService schemaService;

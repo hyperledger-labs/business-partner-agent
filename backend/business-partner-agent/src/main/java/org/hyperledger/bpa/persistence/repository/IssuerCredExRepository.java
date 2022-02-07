@@ -62,6 +62,8 @@ public interface IssuerCredExRepository extends CrudRepository<BPACredentialExch
 
     Number updateCredential(@Id UUID id, Credential indyCredential);
 
+    Number updateCredential(@Id UUID id, BPACredentialExchange.ExchangePayload ldCredential);
+
     Number updateAfterEventWithRevocationInfo(@Id UUID id,
             CredentialExchangeState state,
             StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp,

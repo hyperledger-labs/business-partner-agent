@@ -40,7 +40,7 @@ public class IssueLDCredentialTest extends BaseTest {
     private final EventParser ep = new EventParser();
 
     @Test
-    void testHandleProofRequestAsVerifierSelf() {
+    void testHandleHolderCredentialEvents() {
         String offerReceived = loader.load("files/v2-ld-credex-holder/01-offer-received.json");
         V20CredExRecord offer = ep.parseValueSave(offerReceived, V20CredExRecord.class).orElseThrow();
 
@@ -48,6 +48,19 @@ public class IssueLDCredentialTest extends BaseTest {
 
         aeh.handleCredentialV2(offer);
 
+    }
+
+    @Test
+    void testHandleIssuerCredentialEvents() {
+        String offerSent = loader.load("files/v2-ld-credex-issuer/01-offer-sent.json");
+        V20CredExRecord offer = ep.parseValueSave(offerSent, V20CredExRecord.class).orElseThrow();
+
+        String requestReceived = loader.load("files/v2-ld-credex-issuer/01-request-received.json");
+        V20CredExRecord request = ep.parseValueSave(requestReceived, V20CredExRecord.class).orElseThrow();
+
+        createDefaultPartner(offer.getConnectionId());
+
+        aeh.handleCredentialV2(offer);
     }
 
     private Partner createDefaultPartner(@NonNull String connectionId) {

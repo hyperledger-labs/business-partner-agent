@@ -23,7 +23,6 @@ import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
-import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
@@ -31,6 +30,7 @@ import org.hyperledger.aries.api.issue_credential_v2.V2CredentialSendRequest;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.impl.aries.credential.BaseIssuerManager;
 import org.hyperledger.bpa.impl.aries.wallet.Identity;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.TimeUtil;
@@ -49,7 +49,7 @@ import java.util.UUID;
 
 @Slf4j
 @Singleton
-public class IssuerLDManager {
+public class IssuerLDManager extends BaseIssuerManager {
 
     @Inject
     AriesClient ac;
@@ -109,9 +109,7 @@ public class IssuerLDManager {
                     .role(CredentialExchangeRole.ISSUER)
                     .state(CredentialExchangeState.OFFER_SENT)
                     .pushStateChange(CredentialExchangeState.OFFER_SENT, Instant.now())
-                    .indyCredential(Credential.builder()
-                            .attrs(cred)
-                            .build())
+                    .credentialOffer(BPACredentialExchange.ExchangePayload.jsonLD(exRecord.resolveLDCredOffer()))
                     .credentialExchangeId(exRecord.getCredentialExchangeId())
                     .threadId(exRecord.getThreadId())
                     .exchangeVersion(ExchangeVersion.V2)
@@ -122,5 +120,8 @@ public class IssuerLDManager {
             log.error("aca-py not offline");
         }
         return credentialExchangeId;
+    }
+
+    public void handleCredentialProposal(V20CredExRecord v2) {
     }
 }
