@@ -1,0 +1,104 @@
+{
+  "cred_offer": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/offer-credential",
+    "@id": "79985c0d-2835-4055-9b06-bcfdb8563ff9",
+    "~thread": {},
+    "formats": [
+      {
+        "attach_id": "ld_proof",
+        "format": "aries/ld-proof-vc-detail@v1.0"
+      }
+    ],
+    "offers~attach": [
+      {
+        "@id": "ld_proof",
+        "mime-type": "application/json",
+        "data": {
+          "base64": "eyJjcmVkZW50aWFsIjogeyJAY29udGV4dCI6IFsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCAiaHR0cHM6Ly9zY2hlbWEub3JnL3ZlcnNpb24vbGF0ZXN0L3NjaGVtYW9yZy1jdXJyZW50LWh0dHBzLmpzb25sZCIsICJodHRwczovL3czaWQub3JnL3NlY3VyaXR5L2Jicy92MSJdLCAidHlwZSI6IFsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCAiT3JnYW5pemF0aW9uIl0sICJpc3N1ZXIiOiAiZGlkOmtleTp6VUM3R0pjcUJlTkhDRUQ5RlBKcm5HcHI2cU5FRWZyb2RjV3FnYlg5UTZXTjdUQ2FoTXhjUmQyVUpHVm5NUXRNclR5WFJNYnZ1c3c0NU1WcEpZRDFUWVI0NHZ3a1ZyRXZGUmUxWVdra2JlUUpqN3hhZ2hXTXBvVUNoVXhYYmZkdVJZcldUcHoiLCAiaXNzdWFuY2VEYXRlIjogIjIwMTktMTItMDNUMTI6MTk6NTJaIiwgImNyZWRlbnRpYWxTdWJqZWN0IjogeyJzY2hlbWE6bGVnYWxOYW1lIjogInNlcHAifX0sICJvcHRpb25zIjogeyJwcm9vZlR5cGUiOiAiQmJzQmxzU2lnbmF0dXJlMjAyMCJ9fQ=="
+        }
+      }
+    ]
+  },
+  "auto_issue": false,
+  "trace": false,
+  "initiator": "external",
+  "auto_offer": false,
+  "cred_request": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/request-credential",
+    "@id": "83fd02ad-03e6-4e7c-8f89-97837a0d3bec",
+    "~thread": {
+      "thid": "79985c0d-2835-4055-9b06-bcfdb8563ff9"
+    },
+    "formats": [
+      {
+        "attach_id": "ld_proof",
+        "format": "aries/ld-proof-vc-detail@v1.0"
+      }
+    ],
+    "requests~attach": [
+      {
+        "@id": "ld_proof",
+        "mime-type": "application/json",
+        "data": {
+          "base64": "eyJjcmVkZW50aWFsIjogeyJAY29udGV4dCI6IFsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCAiaHR0cHM6Ly9zY2hlbWEub3JnL3ZlcnNpb24vbGF0ZXN0L3NjaGVtYW9yZy1jdXJyZW50LWh0dHBzLmpzb25sZCIsICJodHRwczovL3czaWQub3JnL3NlY3VyaXR5L2Jicy92MSJdLCAidHlwZSI6IFsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCAiT3JnYW5pemF0aW9uIl0sICJpc3N1ZXIiOiAiZGlkOmtleTp6VUM3R0pjcUJlTkhDRUQ5RlBKcm5HcHI2cU5FRWZyb2RjV3FnYlg5UTZXTjdUQ2FoTXhjUmQyVUpHVm5NUXRNclR5WFJNYnZ1c3c0NU1WcEpZRDFUWVI0NHZ3a1ZyRXZGUmUxWVdra2JlUUpqN3hhZ2hXTXBvVUNoVXhYYmZkdVJZcldUcHoiLCAiaXNzdWFuY2VEYXRlIjogIjIwMTktMTItMDNUMTI6MTk6NTJaIiwgImNyZWRlbnRpYWxTdWJqZWN0IjogeyJzY2hlbWE6bGVnYWxOYW1lIjogInNlcHAifX0sICJvcHRpb25zIjogeyJwcm9vZlR5cGUiOiAiQmJzQmxzU2lnbmF0dXJlMjAyMCJ9fQ=="
+        }
+      }
+    ]
+  },
+  "by_format": {
+    "cred_offer": {
+      "ld_proof": {
+        "credential": {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://schema.org/version/latest/schemaorg-current-https.jsonld",
+            "https://w3id.org/security/bbs/v1"
+          ],
+          "type": [
+            "VerifiableCredential",
+            "Organization"
+          ],
+          "issuer": "did:key:zUC7GJcqBeNHCED9FPJrnGpr6qNEEfrodcWqgbX9Q6WN7TCahMxcRd2UJGVnMQtMrTyXRMbvusw45MVpJYD1TYR44vwkVrEvFRe1YWkkbeQJj7xaghWMpoUChUxXbfduRYrWTpz",
+          "issuanceDate": "2019-12-03T12:19:52Z",
+          "credentialSubject": {
+            "schema:legalName": "sepp"
+          }
+        },
+        "options": {
+          "proofType": "BbsBlsSignature2020"
+        }
+      }
+    },
+    "cred_request": {
+      "ld_proof": {
+        "credential": {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://schema.org/version/latest/schemaorg-current-https.jsonld",
+            "https://w3id.org/security/bbs/v1"
+          ],
+          "type": [
+            "VerifiableCredential",
+            "Organization"
+          ],
+          "issuer": "did:key:zUC7GJcqBeNHCED9FPJrnGpr6qNEEfrodcWqgbX9Q6WN7TCahMxcRd2UJGVnMQtMrTyXRMbvusw45MVpJYD1TYR44vwkVrEvFRe1YWkkbeQJj7xaghWMpoUChUxXbfduRYrWTpz",
+          "issuanceDate": "2019-12-03T12:19:52Z",
+          "credentialSubject": {
+            "schema:legalName": "sepp"
+          }
+        },
+        "options": {
+          "proofType": "BbsBlsSignature2020"
+        }
+      }
+    }
+  },
+  "updated_at": "2022-02-07T11:39:04.713812Z",
+  "cred_ex_id": "412c0b79-ad2d-49c4-9d53-cd54aa3748f1",
+  "connection_id": "caf6c16b-cfd9-4e37-8673-70dda5b74b67",
+  "thread_id": "79985c0d-2835-4055-9b06-bcfdb8563ff9",
+  "role": "holder",
+  "state": "request-sent",
+  "auto_remove": true,
+  "created_at": "2022-02-07T11:25:59.728140Z"
+}

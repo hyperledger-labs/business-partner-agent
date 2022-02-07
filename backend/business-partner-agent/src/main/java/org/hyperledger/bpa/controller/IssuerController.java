@@ -36,6 +36,7 @@ import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse
 import org.hyperledger.bpa.controller.api.issuer.*;
 import org.hyperledger.bpa.impl.aries.credential.IssuerCredentialManager;
 import org.hyperledger.bpa.impl.aries.credential.OOBCredentialOffer;
+import org.hyperledger.bpa.impl.aries.jsonld.IssuerLDManager;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 
 import javax.validation.Valid;
@@ -58,23 +59,16 @@ public class IssuerController {
     IssuerCredentialManager im;
 
     @Inject
+    IssuerLDManager ld;
+
+    @Inject
     OOBCredentialOffer connectionLess;
 
     @Inject
     SchemaService schemaService;
 
     /**
-     * List configured schemas
-     *
-     * @return list of {@link SchemaAPI}
-     */
-    @Get("/schema")
-    public HttpResponse<List<SchemaAPI>> listSchemas() {
-        return HttpResponse.ok(schemaService.listSchemas());
-    }
-
-    /**
-     * Create a new schema configuration
+     * Create a new schema on the indy ledger and import it
      *
      * @param req {@link CreateSchemaRequest}
      * @return {@link SchemaAPI}
@@ -83,21 +77,6 @@ public class IssuerController {
     public HttpResponse<SchemaAPI> createSchema(@Body CreateSchemaRequest req) {
         return HttpResponse.ok(schemaService.createSchema(req.getSchemaName(), req.getSchemaVersion(),
                 req.getAttributes(), req.getSchemaLabel(), req.getDefaultAttributeName()));
-    }
-
-    /**
-     * Get a configured schema by id
-     *
-     * @param id {@link UUID} the schema id
-     * @return {@link SchemaAPI}
-     */
-    @Get("/schema/{id}")
-    public HttpResponse<SchemaAPI> readSchema(@PathVariable UUID id) {
-        final Optional<SchemaAPI> schema = schemaService.getSchema(id);
-        if (schema.isPresent()) {
-            return HttpResponse.ok(schema.get());
-        }
-        return HttpResponse.notFound();
     }
 
     /**
@@ -127,7 +106,7 @@ public class IssuerController {
     }
 
     /**
-     * Delete a credential definition
+     * Delete a indy credential definition
      *
      * @param id {@link UUID} the cred def id
      * @return {@link HttpResponse}
@@ -139,18 +118,30 @@ public class IssuerController {
     }
 
     /**
-     * Auto credential exchange: Issuer sends credential to holder
+     * Auto credential exchange: Issuer sends indy credential to holder
      *
-     * @param req {@link IssueCredentialSendRequest}
+     * @param req {@link IssueIndyCredentialRequest}
      * @return {@link HttpResponse}
      */
     @Post("/issue-credential/send")
-    public HttpResponse<String> issueCredentialSend(@Valid @Body IssueCredentialSendRequest req) {
-        String exchange = im.issueCredential(
+    public HttpResponse<String> issueIndyCredential(@Valid @Body IssueIndyCredentialRequest req) {
+        String exchangeId = im.issueCredential(
                 IssuerCredentialManager.IssueCredentialRequest.from(req));
         // just return the id and not the full Aries Object.
         // Event handlers will create the db cred ex records
-        return HttpResponse.ok(exchange);
+        return HttpResponse.ok(exchangeId);
+    }
+
+    /**
+     * Auto credential exchange: Issuer sends json-ld credential to holder
+     * 
+     * @param req {@link IssueLDCredentialRequest}
+     * @return {@link HttpResponse}
+     */
+    @Post("/issue-credential/send-ld")
+    public HttpResponse<String> issueLDCredential(@Valid @Body IssueLDCredentialRequest req) {
+        String exchangeId = ld.issueLDCredential(req.getPartnerId(), req.getSchemaId(), req.getDocument());
+        return HttpResponse.ok(exchangeId);
     }
 
     /**

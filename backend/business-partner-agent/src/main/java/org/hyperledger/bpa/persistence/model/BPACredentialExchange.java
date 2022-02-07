@@ -126,7 +126,7 @@ public class BPACredentialExchange
     @Nullable
     @TypeDef(type = DataType.JSON)
     @MappedProperty("credential")
-    private Credential indyCredential;
+    private Credential indyCredential; // TODO deprecation?
 
     @Nullable
     private String errorMsg;
@@ -224,6 +224,28 @@ public class BPACredentialExchange
         return p.getAttributes()
                 .stream()
                 .collect(Collectors.toMap(CredentialAttributes::getName, CredentialAttributes::getValue));
+    }
+
+    public Map<String, String> attributesByState() {
+        if (stateIsProposalReceived()) {
+            return proposalAttributesToMap();
+        } else if (stateIsOfferReceived()) {
+            return offerAttributesToMap();
+        } else if (stateIsDone() || stateIsCredentialIssued()) {
+            return credentialAttributesToMap();
+        }
+        return Map.of();
+    }
+
+    public ExchangePayload exchangePayloadByState() {
+        if (stateIsProposalReceived()) {
+            return credentialProposal;
+        } else if (stateIsOfferReceived()) {
+            return credentialOffer;
+        } else if (stateIsDone() || stateIsCredentialIssued()) {
+            return ldCredential;
+        }
+        return null;
     }
 
     // extends lombok builder

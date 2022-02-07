@@ -57,13 +57,13 @@ public class AriesCredential {
             b
                     .schemaId(c.getIndyCredential().getSchemaId())
                     .credentialDefinitionId(c.getIndyCredential().getCredentialDefinitionId())
-                    .revocable(StringUtils.isNotEmpty(c.getIndyCredential().getRevRegId()))
-                    .credentialData(c.credentialAttributesToMap());
+                    .revocable(StringUtils.isNotEmpty(c.getIndyCredential().getRevRegId()));
         } else if (c.typeIsJsonLd()) {
             b
-                    .schemaId(LDContextHelper.findSchemaId(c.getLdCredential().getLdProof()))
+                    .schemaId(LDContextHelper.findSchemaId(
+                            c.exchangePayloadByState() != null ? c.exchangePayloadByState().getLdProof() : null))
                     .revocable(false) // TODO not tested
-                    .credentialData(c.credentialAttributesToMap());
+            ;
         }
         return b
                 .id(c.getId())
@@ -76,6 +76,7 @@ public class AriesCredential {
                 .label(c.getLabel())
                 .typeLabel(typeLabel)
                 .exchangeVersion(c.getExchangeVersion())
+                .credentialData(c.attributesByState())
                 .build();
     }
 

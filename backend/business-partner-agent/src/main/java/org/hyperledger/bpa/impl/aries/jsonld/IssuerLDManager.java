@@ -69,7 +69,8 @@ public class IssuerLDManager {
     @Inject
     Converter conv;
 
-    public void issueLDCredential(UUID partnerId, UUID bpaSchemaId, JsonNode document) {
+    public String issueLDCredential(UUID partnerId, UUID bpaSchemaId, JsonNode document) {
+        String credentialExchangeId = null;
         Partner partner = partnerRepo.findById(partnerId).orElseThrow();
         BPASchema bpaSchema = schemaRepo.findById(bpaSchemaId).orElseThrow();
 
@@ -116,8 +117,10 @@ public class IssuerLDManager {
                     .exchangeVersion(ExchangeVersion.V2)
                     .build();
             credExRepo.save(cex);
+            credentialExchangeId = exRecord.getCredentialExchangeId();
         } catch (IOException e) {
             log.error("aca-py not offline");
         }
+        return credentialExchangeId;
     }
 }

@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.impl.aries.jsonld;
 
+import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.CredentialType;
@@ -26,7 +27,10 @@ import java.util.List;
 
 public class LDContextHelper {
 
-    public static String findSchemaId(@NonNull V20CredExRecordByFormat.LdProof ldProof) {
+    public static String findSchemaId(@Nullable V20CredExRecordByFormat.LdProof ldProof) {
+        if (ldProof == null) {
+            return null;
+        }
         // TODO this does not consider all use cases
         List<Object> context = ldProof.getCredential().getContext();
         List<Object> contextCopy = new ArrayList<>(context);

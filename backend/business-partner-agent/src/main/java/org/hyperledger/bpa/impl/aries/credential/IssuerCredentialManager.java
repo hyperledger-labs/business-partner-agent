@@ -656,11 +656,11 @@ public class IssuerCredentialManager extends BaseCredentialManager {
             return exchangeVersion == null || ExchangeVersion.V1.equals(exchangeVersion);
         }
 
-        public static IssueCredentialRequest from(IssueCredentialSendRequest r) {
+        public static IssueCredentialRequest from(IssueIndyCredentialRequest r) {
             return IssueCredentialRequest
                     .builder()
-                    .credDefId(UUID.fromString(r.getCredDefId()))
-                    .partnerId(UUID.fromString(r.getPartnerId()))
+                    .credDefId(r.getCredDefId())
+                    .partnerId(r.getPartnerId())
                     .exchangeVersion(r.getExchangeVersion())
                     .document(r.getDocument())
                     .build();

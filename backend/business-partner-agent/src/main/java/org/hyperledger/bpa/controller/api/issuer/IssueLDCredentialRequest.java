@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -17,34 +17,32 @@
  */
 package org.hyperledger.bpa.controller.api.issuer;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.core.annotation.Introspected;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.annotation.Nonnull;
-import java.util.List;
+import javax.validation.constraints.NotBlank;
+import java.util.UUID;
 
+@Introspected
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Introspected
-public class CreateSchemaRequest {
-    // BPA fields
-    private String schemaLabel;
+public class IssueLDCredentialRequest {
+    // bpa ids
+    @NotBlank
+    private UUID schemaId;
+    @NotBlank
+    private UUID partnerId;
 
-    private String defaultAttributeName;
-
-    // aries schema fields...
-    @Nonnull
-    private String schemaName;
-
-    @Nonnull
-    private String schemaVersion;
-
-    @Nonnull
-    private List<String> attributes;
-
+    /** credential body key value pairs */
+    @JsonRawValue
+    @Schema(example = "{}")
+    private JsonNode document;
 }

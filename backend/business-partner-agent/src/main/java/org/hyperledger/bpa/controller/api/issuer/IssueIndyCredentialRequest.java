@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -26,23 +26,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.ExchangeVersion;
-import org.hyperledger.bpa.impl.verification.ValidUUID;
 
 import javax.validation.constraints.NotBlank;
+import java.util.UUID;
 
 @Introspected
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class IssueCredentialSendRequest {
+public class IssueIndyCredentialRequest {
     // bpa ids
     @NotBlank
-    @ValidUUID
-    private String credDefId;
+    private UUID credDefId;
     @NotBlank
-    @ValidUUID
-    private String partnerId;
+    private UUID partnerId;
 
     /** credential exchange api version */
     private ExchangeVersion exchangeVersion;
