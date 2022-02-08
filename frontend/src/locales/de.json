@@ -22,7 +22,8 @@
       "agree": "Sie müssen zustimmen um fortzufahren",
       "validVersion": "Muss der allgemeinen Versionsnummerierung entsprechen (e.g. 1.2 oder 1.2.3)",
       "validSchema": "Muss alphanumerisch sein mit optionalem '_' oder '-'.",
-      "validAttributeName": "Darf nur aus Kleinbuchstaben bestehen mit optionalem '_'."
+      "validAttributeName": "Darf nur aus Kleinbuchstaben bestehen mit optionalem '_'.",
+      "validJson": "Muss valides JSON sein"
     },
     "sessionDialog": {
       "headline": "Sitzung abgelaufen",
@@ -68,6 +69,10 @@
     "reissue": "Neu ausstellen",
     "useV2": "V2 verwenden",
     "writeToLedger": "Endpunkte auf Register schreiben"
+  },
+  "credentialType": {
+    "indy": "Indy",
+    "jsonLd": "JSON-LD"
   },
   "view": {
     "notifications": {
@@ -159,8 +164,9 @@
     },
     "profile": {
       "title": "Öffentliches Profil",
-      "subtitle": "Sie können die Sichtbarkeit von Dokumenten und verifizierten Berechtigungsnachweisen unter <strong>Wallet</strong> ändern, um Ihr öffentliches Profil zu aktualisieren.",
+      "subtitle": "Dies sind die öffentlichen Informationen Ihrer Organisation.",
       "noProfileTitle": "Sie haben noch kein öffentliches Profil eingerichtet",
+      "noProfileSubTitle": "Sie können die Sichtbarkeit von Dokumenten und verifizierten Berechtigungsnachweisen unter <strong>Wallet</strong> ändern, um Ihr öffentliches Profil zu aktualisieren.",
       "buttonNoProfile": "Profil erstellen"
     },
     "comingSoon": {
@@ -485,8 +491,13 @@
       "title": "Schema importieren",
       "schemaName": "Schema Name",
       "schemaId": "Schema ID",
+      "schemaJsonLdType": "Schema Typ",
+      "schemaJsonLdAttributes": "Schema Attribute",
       "placeholderName": "Name",
       "placeholderId": "Schema ID",
+      "placeholderJsonLdId": "URL zu JSON-LD",
+      "placeholderJsonLdType": "Typ",
+      "headerNameJsonLdAttributes": "Name",
       "eventSuccess": "Schema erfolgreich hinzugefügt"
     },
     "schemaList": {

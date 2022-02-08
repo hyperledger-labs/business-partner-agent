@@ -22,7 +22,8 @@
       "agree": "You must agree to continue",
       "validVersion": "Must be follow common version numbering (ex. 1.2 or 1.2.3)",
       "validSchema": "Must be alphanumeric with optional '_' or '-'.",
-      "validAttributeName": "Must be lowercase alpha with optional '_'."
+      "validAttributeName": "Must be lowercase alpha with optional '_'.",
+      "validJson": "Must be valid JSON"
     },
     "sessionDialog": {
       "headline": "Sesja wygasła",
@@ -68,6 +69,10 @@
     "reissue": "Ponowne wydanie",
     "useV2": "Zastosowanie V2",
     "writeToLedger": "Write endpoints to ledger"
+  },
+  "credentialType": {
+    "indy": "Indy",
+    "jsonLd": "JSON-LD"
   },
   "view": {
     "notifications": {
@@ -159,9 +164,10 @@
     },
     "profile": {
       "title": "Public Profile",
-      "subtitle": "Możesz zmienić ustawienia widoczności dokumentów i zweryfikowanych poświadczeń w <strong>portfelu</strong>, aby zaktualizować swój profil publiczny.",
+      "subtitle": "This is the public information of your organization.",
       "noProfileTitle": "You don't have set up a public profile yet",
-      "buttonNoProfile": "Setup your Profile"
+      "noProfileSubTitle": "Możesz zmienić ustawienia widoczności dokumentów i zweryfikowanych poświadczeń w <strong>portfelu</strong>, aby zaktualizować swój profil publiczny.",
+      "buttonNoProfile": "Setup your Organization"
     },
     "comingSoon": {
       "title": "Coming Soon",
@@ -485,8 +491,13 @@
       "title": "Import Schema",
       "schemaName": "Schema Name",
       "schemaId": "Schema ID",
+      "schemaJsonLdType": "Schema Type",
+      "schemaJsonLdAttributes": "Schema Attributes",
       "placeholderName": "Name",
-      "placeholderId": "Schema ID",
+      "placeholderId": "Schema DID",
+      "placeholderJsonLdId": "URL to JSON-LD",
+      "placeholderJsonLdType": "Type",
+      "headerNameJsonLdAttributes": "Name",
       "eventSuccess": "Schema added successfully"
     },
     "schemaList": {

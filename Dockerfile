@@ -4,7 +4,7 @@
 FROM node:16-alpine as VUE
 WORKDIR /frontend
 COPY frontend .
-RUN npm install && npm run license && npm run build
+RUN npm install && npm run build
 
 # Micronaut build
 FROM maven:3-eclipse-temurin-17-alpine as MAVEN
