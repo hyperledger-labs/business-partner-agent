@@ -126,7 +126,7 @@ public class BPACredentialExchange
     @Nullable
     @TypeDef(type = DataType.JSON)
     @MappedProperty("credential")
-    private Credential indyCredential; // TODO deprecation?
+    private Credential indyCredential; // TODO deprecation and use ldCredential?
 
     @Nullable
     private String errorMsg;
@@ -203,6 +203,7 @@ public class BPACredentialExchange
         if (typeIsJsonLd()) {
             return ldAttributesToMap(ldCredential != null ? ldCredential.ldProof : null);
         }
+        // TODO fallback to credential
         if (indyCredential == null || CollectionUtils.isEmpty(indyCredential.getAttrs())) {
             return Map.of();
         }
