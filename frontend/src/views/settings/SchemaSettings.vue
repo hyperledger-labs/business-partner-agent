@@ -1,5 +1,5 @@
 <!--
- Copyright (c) 2020-2021 - for information on the respective copyright owner
+ Copyright (c) 2020-2022 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/business-partner-agent
 
@@ -33,13 +33,13 @@
               @cancelled="createSchemaDialog = false"
             />
           </v-dialog>
-          <v-dialog v-model="addSchemaDialog" persistent max-width="600px">
+          <v-dialog v-model="addSchemaDialog" persistent max-width="800px">
             <template v-slot:activator="{ on, attrs }">
               <v-bpa-button v-bind="attrs" v-on="on" color="primary">{{
                 $t("view.schemaSettings.buttonImportSchema")
               }}</v-bpa-button>
             </template>
-            <AddSchema
+            <SchemaAdd
               @success="onSchemaAdded"
               @cancelled="addSchemaDialog = false"
             />
@@ -53,7 +53,7 @@
 <script lang="ts">
 import { EventBus } from "@/main";
 import SchemaList from "@/components/SchemaList.vue";
-import AddSchema from "@/components/AddSchema.vue";
+import SchemaAdd from "@/components/schema-add/SchemaAdd.vue";
 import CreateSchema from "@/components/CreateSchema.vue";
 import store from "@/store";
 import VBpaButton from "@/components/BpaButton";
@@ -62,7 +62,7 @@ export default {
   name: "SchemaSettings",
   components: {
     VBpaButton,
-    AddSchema,
+    SchemaAdd,
     CreateSchema,
     SchemaList,
   },

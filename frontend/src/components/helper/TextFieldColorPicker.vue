@@ -1,5 +1,5 @@
 <!--
- Copyright (c) 2020-2021 - for information on the respective copyright owner
+ Copyright (c) 2020-2022 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/business-partner-agent
 
@@ -41,7 +41,7 @@
               </v-card-text>
             </v-card>
           </v-menu>
-          <span justify>
+          <span>
             <v-btn class="" x-small text @click="cancel()">{{
               $t("button.cancel")
             }}</v-btn>
@@ -77,8 +77,8 @@ export default {
       intColor: "",
       menu: false,
       hexReg: [
-        (value) => !!value || this.$t("app.rules.colorPrefix"),
-        (value) => {
+        (value: string) => !!value || this.$t("app.rules.colorPrefix"),
+        (value: string) => {
           const pattern = /^#([\da-f]{3}){1,2}$/i;
           return pattern.test(value) || this.$t("app.rules.colorInvalid");
         },
@@ -111,12 +111,12 @@ export default {
     cancel() {
       this.$emit("on-cancel");
     },
-    changeColor(value) {
+    changeColor(value: string) {
       if (this.$refs.form.validate()) {
         this.intColor = value;
       }
     },
-    pickColor(newColor) {
+    pickColor(newColor: string) {
       this.intColorField = newColor;
     },
   },

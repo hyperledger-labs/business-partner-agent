@@ -22,7 +22,8 @@
       "agree": "You must agree to continue",
       "validVersion": "Must be follow common version numbering (ex. 1.2 or 1.2.3)",
       "validSchema": "Must be alphanumeric with optional '_' or '-'.",
-      "validAttributeName": "Must be lowercase alpha with optional '_'."
+      "validAttributeName": "Must be lowercase alpha with optional '_'.",
+      "validJson": "Must be valid JSON"
     },
     "sessionDialog": {
       "headline": "Session expired",
@@ -68,6 +69,10 @@
     "reissue": "ReIssue",
     "useV2": "Use V2",
     "writeToLedger": "Write endpoints to ledger"
+  },
+  "credentialType": {
+    "indy": "Indy",
+    "jsonLd": "JSON-LD"
   },
   "view": {
     "notifications": {
@@ -486,8 +491,13 @@
       "title": "Import Schema",
       "schemaName": "Schema Name",
       "schemaId": "Schema ID",
+      "schemaJsonLdType": "Schema Type",
+      "schemaJsonLdAttributes": "Schema Attributes",
       "placeholderName": "Name",
-      "placeholderId": "Schema ID",
+      "placeholderId": "Schema DID",
+      "placeholderJsonLdId": "URL to JSON-LD",
+      "placeholderJsonLdType": "Type",
+      "headerNameJsonLdAttributes": "Name",
       "eventSuccess": "Schema added successfully"
     },
     "schemaList": {

@@ -1,5 +1,5 @@
 <!--
- Copyright (c) 2020-2021 - for information on the respective copyright owner
+ Copyright (c) 2020-2022 - for information on the respective copyright owner
  see the NOTICE file and/or the repository at
  https://github.com/hyperledger-labs/business-partner-agent
 
@@ -78,7 +78,7 @@ export default {
   },
   data: () => {
     return {
-      operators: [],
+      operators: new Array<string>(),
       searchField: "",
     };
   },
@@ -93,7 +93,7 @@ export default {
       get() {
         return this.value;
       },
-      set(value) {
+      set(value: any) {
         this.$emit("input", value);
       },
     },
@@ -115,21 +115,21 @@ export default {
     },
     rules() {
       return {
-        onlyInteger: (value) =>
+        onlyInteger: (value: string) =>
           value === undefined
             ? true
             : /^-?\d+$/.test(value) || this.$t("app.rules.onlyInteger"),
-        valueMin: (value) =>
+        valueMin: (value: number) =>
           value >= -2_147_483_648 ||
           `${this.$t("app.rules.valueMin")} -2147483648`,
-        valueMax: (value) =>
+        valueMax: (value: number) =>
           value <= 2_147_483_647 ||
           `${this.$t("app.rules.valueMax")} 2147483647`,
       };
     },
   },
   methods: {
-    setPredicateConditionsErrorCount(event, attributeGroup) {
+    setPredicateConditionsErrorCount(event: boolean, attributeGroup) {
       if (event === true) {
         attributeGroup.ui.predicateConditionsErrorCount += 1;
       } else if (
