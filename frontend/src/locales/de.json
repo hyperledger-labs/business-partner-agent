@@ -164,8 +164,9 @@
     },
     "profile": {
       "title": "Öffentliches Profil",
-      "subtitle": "Sie können die Sichtbarkeit von Dokumenten und verifizierten Berechtigungsnachweisen unter <strong>Wallet</strong> ändern, um Ihr öffentliches Profil zu aktualisieren.",
+      "subtitle": "Dies sind die öffentlichen Informationen Ihrer Organisation.",
       "noProfileTitle": "Sie haben noch kein öffentliches Profil eingerichtet",
+      "noProfileSubTitle": "Sie können die Sichtbarkeit von Dokumenten und verifizierten Berechtigungsnachweisen unter <strong>Wallet</strong> ändern, um Ihr öffentliches Profil zu aktualisieren.",
       "buttonNoProfile": "Profil erstellen"
     },
     "comingSoon": {
@@ -490,9 +491,13 @@
       "title": "Schema importieren",
       "schemaName": "Schema Name",
       "schemaId": "Schema ID",
+      "schemaJsonLdType": "Schema Typ",
+      "schemaJsonLdAttributes": "Schema Attribute",
       "placeholderName": "Name",
       "placeholderId": "Schema ID",
-      "placeholderJsonLd": "JSON-LD Schema eingeben, einfügen oder hochladen",
+      "placeholderJsonLdId": "URL zu JSON-LD",
+      "placeholderJsonLdType": "Typ",
+      "headerNameJsonLdAttributes": "Name",
       "eventSuccess": "Schema erfolgreich hinzugefügt"
     },
     "schemaList": {
