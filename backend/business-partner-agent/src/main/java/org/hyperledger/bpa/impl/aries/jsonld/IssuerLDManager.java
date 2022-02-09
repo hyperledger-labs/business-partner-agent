@@ -26,14 +26,10 @@ import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
-import org.hyperledger.aries.api.issue_credential_v2.V2CredentialSendRequest;
-import org.hyperledger.aries.api.jsonld.VerifiableCredential;
-import org.hyperledger.aries.config.GsonConfig;
+import org.hyperledger.aries.api.issue_credential_v2.V2CredentialExchangeFree;
 import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.impl.aries.credential.BaseIssuerManager;
-import org.hyperledger.bpa.impl.aries.wallet.Identity;
-import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.model.Partner;
@@ -43,8 +39,7 @@ import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
@@ -64,41 +59,16 @@ public class IssuerLDManager extends BaseIssuerManager {
     IssuerCredExRepository credExRepo;
 
     @Inject
-    Identity identity;
-
-    @Inject
-    Converter conv;
+    LDContextHelper vcHelper;
 
     public String issueLDCredential(UUID partnerId, UUID bpaSchemaId, JsonNode document) {
         String credentialExchangeId = null;
-        Partner partner = partnerRepo.findById(partnerId).orElseThrow();
-        BPASchema bpaSchema = schemaRepo.findById(bpaSchemaId).orElseThrow();
-
-        Map<String, String> cred = conv.toStringMap(document);
+        Partner partner = partnerRepo.findById(partnerId).orElseThrow(EntityNotFoundException::new);
+        BPASchema bpaSchema = schemaRepo.findById(bpaSchemaId).orElseThrow(EntityNotFoundException::new);
         try {
-            V20CredExRecord exRecord = ac.issueCredentialV2Send(V2CredentialSendRequest
-                    .builder()
-                    .connectionId(partner.getConnectionId())
-                    .filter(V2CredentialSendRequest.V20CredFilter
-                            .builder()
-                            .ldProof(V2CredentialSendRequest.LDProofVCDetail
-                                    .builder()
-                                    .credential(VerifiableCredential
-                                            .builder()
-                                            .context(List.of(CredentialType.JSON_LD.getContext().get(0),
-                                                    bpaSchema.getSchemaId()))
-                                            .credentialSubject(
-                                                    GsonConfig.defaultConfig().toJsonTree(cred).getAsJsonObject())
-                                            .issuanceDate(TimeUtil.toISOInstantTruncated(Instant.now()))
-                                            .issuer(identity.getDidKey())
-                                            .type(List.of(CredentialType.JSON_LD.getType().get(0),
-                                                    bpaSchema.getLdType()))
-                                            .build())
-                                    .options(V2CredentialSendRequest.LDProofVCDetailOptions.builder()
-                                            .proofType(V2CredentialSendRequest.ProofType.BbsBlsSignature2020)
-                                            .build())
-                                    .build())
-                            .build())
+            V20CredExRecord exRecord = ac.issueCredentialV2Send(V2CredentialExchangeFree.builder()
+                    .connectionId(UUID.fromString(Objects.requireNonNull(partner.getConnectionId())))
+                    .filter(vcHelper.buildVC(bpaSchema, document, Boolean.TRUE))
                     .build())
                     .orElseThrow();
 
@@ -117,11 +87,8 @@ public class IssuerLDManager extends BaseIssuerManager {
             credExRepo.save(cex);
             credentialExchangeId = exRecord.getCredentialExchangeId();
         } catch (IOException e) {
-            log.error("aca-py not offline");
+            log.error("aca-py is offline");
         }
         return credentialExchangeId;
-    }
-
-    public void handleCredentialProposal(V20CredExRecord v2) {
     }
 }

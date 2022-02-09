@@ -51,11 +51,13 @@ import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.api.notification.CredentialAcceptedEvent;
 import org.hyperledger.bpa.api.notification.CredentialIssuedEvent;
 import org.hyperledger.bpa.api.notification.CredentialProblemEvent;
-import org.hyperledger.bpa.api.notification.CredentialProposalEvent;
 import org.hyperledger.bpa.config.AcaPyConfig;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.config.RuntimeConfig;
-import org.hyperledger.bpa.controller.api.issuer.*;
+import org.hyperledger.bpa.controller.api.issuer.CredDef;
+import org.hyperledger.bpa.controller.api.issuer.CredEx;
+import org.hyperledger.bpa.controller.api.issuer.CredentialOfferRequest;
+import org.hyperledger.bpa.controller.api.issuer.IssueIndyCredentialRequest;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.BPACredentialDefinition;
@@ -110,13 +112,6 @@ public class IssuerCredentialManager extends BaseIssuerManager {
     public List<CredDef> listCredDefs() {
         List<CredDef> result = new ArrayList<>();
         credDefRepo.findAll().forEach(db -> result.add(CredDef.from(db)));
-        return result;
-    }
-
-    public List<IssuanceTemplate> listIssuanceTemplates() {
-        List<IssuanceTemplate> result = new ArrayList<>();
-        credDefRepo.findAll().forEach(db -> result.add(IssuanceTemplate.from(db)));
-        // schemaService.listSchemas()
         return result;
     }
 
@@ -445,34 +440,7 @@ public class IssuerCredentialManager extends BaseIssuerManager {
 
     // Credential Management - Called By Event Handler
 
-    public void handleCredentialProposal(@NonNull V1CredentialExchange ex, ExchangeVersion exchangeVersion) {
-        partnerRepo.findByConnectionId(ex.getConnectionId()).ifPresent(partner -> {
-            BPACredentialExchange.BPACredentialExchangeBuilder b = BPACredentialExchange
-                    .builder()
-                    .partner(partner)
-                    .role(CredentialExchangeRole.ISSUER)
-                    .state(ex.getState())
-                    .pushStateChange(ex.getState(), Instant.now())
-                    .exchangeVersion(exchangeVersion)
-                    .credentialExchangeId(ex.getCredentialExchangeId())
-                    .threadId(ex.getThreadId())
-                    .credentialProposal(ex.getCredentialProposalDict() != null
-                            ? BPACredentialExchange.ExchangePayload
-                                    .indy(ex.getCredentialProposalDict().getCredentialProposal())
-                            : null);
-            // preselecting first match
-            credDefRepo.findBySchemaId(ex.getCredentialProposalDict().getSchemaId()).stream().findFirst()
-                    .ifPresentOrElse(dbCredDef -> {
-                        b.schema(dbCredDef.getSchema()).credDef(dbCredDef);
-                        issuerCredExRepo.save(b.build());
-                    }, () -> {
-                        b.errorMsg(msg.getMessage("api.holder.issuer.has.no.creddef",
-                                Map.of("id", ex.getCredentialProposalDict().getSchemaId())));
-                        issuerCredExRepo.save(b.build());
-                    });
-            fireCredentialProposalEvent();
-        });
-    }
+
 
     /**
      * In v1 (indy) this message can only be received after a preceding Credential
@@ -540,10 +508,6 @@ public class IssuerCredentialManager extends BaseIssuerManager {
         eventPublisher.publishEventAsync(CredentialProblemEvent.builder()
                 .credential(AriesCredential.fromBPACredentialExchange(db, schemaLabel(db)))
                 .build());
-    }
-
-    private void fireCredentialProposalEvent() {
-        eventPublisher.publishEventAsync(new CredentialProposalEvent());
     }
 
     private String schemaLabel(@NonNull BPACredentialExchange db) {

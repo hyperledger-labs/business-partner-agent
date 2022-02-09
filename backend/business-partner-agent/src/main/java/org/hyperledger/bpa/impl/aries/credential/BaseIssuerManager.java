@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.impl.aries.credential;
 
+import io.micronaut.context.event.ApplicationEventPublisher;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -24,14 +25,25 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.acy_py.generated.model.V20CredIssueProblemReportRequest;
 import org.hyperledger.acy_py.generated.model.V20CredIssueRequest;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.issue_credential_v1.BaseCredExRecord;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
+import org.hyperledger.bpa.api.notification.CredentialProposalEvent;
 import org.hyperledger.bpa.config.AcaPyConfig;
+import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
+import org.hyperledger.bpa.persistence.repository.BPACredentialDefinitionRepository;
+import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Singleton
@@ -39,6 +51,15 @@ public class BaseIssuerManager extends BaseCredentialManager {
 
     @Inject
     AcaPyConfig acaPyConfig;
+
+    @Inject
+    BPACredentialDefinitionRepository credDefRepo;
+
+    @Inject
+    PartnerRepository partnerRepo;
+
+    @Inject
+    ApplicationEventPublisher eventPublisher;
 
     /**
      * In v2 (indy and w3c) a holder can decide to skip negotiation and directly
@@ -100,6 +121,7 @@ public class BaseIssuerManager extends BaseCredentialManager {
                                 issuerCredExRepo.updateCredential(bpaEx.getId(),
                                         BPACredentialExchange.ExchangePayload.jsonLD(ex.resolveLDCredential()));
                             }
+                            // TODO events
                         }
                     }
                 });
@@ -132,5 +154,56 @@ public class BaseIssuerManager extends BaseCredentialManager {
                 }
             }
         });
+    }
+
+    public void handleCredentialProposal(@NonNull BaseCredExRecord ex, ExchangeVersion exchangeVersion) {
+        partnerRepo.findByConnectionId(ex.getConnectionId()).ifPresent(partner -> {
+            BPACredentialExchange.BPACredentialExchangeBuilder b = BPACredentialExchange
+                    .builder()
+                    .partner(partner)
+                    .role(CredentialExchangeRole.ISSUER)
+                    .state(ex.getState())
+                    .pushStateChange(ex.getState(), Instant.now())
+                    .exchangeVersion(exchangeVersion)
+                    .credentialExchangeId(ex.getCredentialExchangeId())
+                    .threadId(ex.getThreadId())
+                    .credentialProposal(resolveProposal(ex));
+            // preselecting first match
+            credDefRepo.findBySchemaId(resolveSchemaIdFromProposal(ex)).stream().findFirst()
+                    .ifPresentOrElse(dbCredDef -> {
+                        b.schema(dbCredDef.getSchema()).credDef(dbCredDef);
+                        issuerCredExRepo.save(b.build());
+                    }, () -> {
+                        b.errorMsg(msg.getMessage("api.holder.issuer.has.no.creddef",
+                                Map.of("id", resolveSchemaIdFromProposal(ex))));
+                        issuerCredExRepo.save(b.build());
+                    });
+            fireCredentialProposalEvent();
+        });
+    }
+
+    BPACredentialExchange.ExchangePayload resolveProposal(@NonNull BaseCredExRecord ex) {
+        if (ex instanceof V1CredentialExchange v1Indy) {
+            return v1Indy.getCredentialProposalDict() != null
+                    ? BPACredentialExchange.ExchangePayload
+                    .indy(v1Indy.getCredentialProposalDict().getCredentialProposal())
+                    : null;
+        } else if (ex instanceof V20CredExRecord v2) {
+            return BPACredentialExchange.ExchangePayload.jsonLD(v2.resolveLDCredProposal());
+        }
+        return null;
+    }
+
+    String resolveSchemaIdFromProposal(@NonNull BaseCredExRecord ex) {
+        if (ex instanceof V1CredentialExchange v1Indy) {
+            return Objects.requireNonNull(v1Indy.getCredentialProposalDict()).getSchemaId();
+        } else if (ex instanceof V20CredExRecord v2) {
+            return LDContextHelper.findSchemaId(v2.resolveLDCredProposal());
+        }
+        return null;
+    }
+
+    private void fireCredentialProposalEvent() {
+        eventPublisher.publishEventAsync(new CredentialProposalEvent());
     }
 }

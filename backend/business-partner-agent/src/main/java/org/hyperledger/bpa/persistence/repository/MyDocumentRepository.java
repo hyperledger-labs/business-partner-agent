@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.persistence.repository;
 
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
@@ -27,10 +28,16 @@ import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.MyDocument;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
 public interface MyDocumentRepository extends CrudRepository<MyDocument, UUID> {
+
+    @Override
+    @NonNull
+    @Join(value = "schema", type = Join.Type.LEFT_FETCH)
+    Optional<MyDocument> findById(@NonNull UUID id);
 
     /**
      * Find all my public credentials

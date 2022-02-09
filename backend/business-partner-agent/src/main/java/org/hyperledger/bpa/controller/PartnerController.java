@@ -26,14 +26,12 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
-import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.partner.*;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestVersion;
@@ -257,48 +255,6 @@ public class PartnerController {
             @Body @Nullable PresentationRequestVersion version) {
         proofTemplateManager.invokeProofRequestByTemplate(templateId, id,
                 version != null ? version.getExchangeVersion() : null);
-        return HttpResponse.ok();
-    }
-
-    /**
-     * Request proof from partner
-     *
-     * @deprecated use proof exchange controller
-     *             {@link ProofExchangeController#requestProof}
-     * @param id  {@link UUID} the partner id
-     * @param req {@link RequestProofRequest}
-     * @return HTTP status
-     */
-    @Post("/{id}/proof-request")
-    @Deprecated
-    public HttpResponse<Void> requestProof(
-            @PathVariable UUID id,
-            @RequestBody(description = "One of requestBySchema or requestRaw") @Body RequestProofRequest req) {
-        if (req.getRequestBySchema() != null && req.getRequestRaw() != null) {
-            throw new WrongApiUsageException(msg.getMessage("api.partner.proof.request.empty.body"));
-        }
-        if (req.isRequestBySchema() && StringUtils.isEmpty(req.getRequestBySchema().getSchemaId())) {
-            throw new WrongApiUsageException(msg.getMessage("api.partner.proof.request.no.schema.id"));
-        }
-        proofM.sendPresentProofRequest(id, req);
-        return HttpResponse.ok();
-    }
-
-    /**
-     * Send proof to partner
-     *
-     * @deprecated use proof exchange controller
-     *             {@link ProofExchangeController#sendProof}
-     * @param id  {@link UUID} the partner id
-     * @param req {@link SendProofRequest}
-     * @return HTTP status
-     */
-    @Post("/{id}/proof-send")
-    @Deprecated
-    public HttpResponse<Void> sendProof(
-            @PathVariable UUID id,
-            @Body SendProofRequest req) {
-        proofM.sendProofProposal(id, req.getMyCredentialId(), req.getExchangeVersion());
         return HttpResponse.ok();
     }
 

@@ -79,22 +79,7 @@ public class IssuerController {
     }
 
     /**
-     * List configured indy credential definitions
-     *
-     * @return list of {@link CredDef}
-     */
-    @Get("/creddef")
-    public HttpResponse<List<CredDef>> listCredDefs() {
-        return HttpResponse.ok(im.listCredDefs());
-    }
-
-    @Get("/templates")
-    public HttpResponse<List<IssuanceTemplate>> listIssuanceTemplates() {
-        return HttpResponse.ok(im.listIssuanceTemplates());
-    }
-
-    /**
-     * Create a new indy credential definition
+     * Create a new indy credential definition, and send it to the ledger
      *
      * @param req {@link CreateCredDefRequest}
      * @return {@link CredDef}
@@ -105,7 +90,7 @@ public class IssuerController {
     }
 
     /**
-     * Delete a indy credential definition
+     * Delete a indy credential definition (will not delete it from the ledger)
      *
      * @param id {@link UUID} the cred def id
      * @return {@link HttpResponse}
@@ -171,7 +156,7 @@ public class IssuerController {
     }
 
     /**
-     * List issued credentials
+     * List issued or received credentials
      *
      * @return list of {@link CredEx}
      */

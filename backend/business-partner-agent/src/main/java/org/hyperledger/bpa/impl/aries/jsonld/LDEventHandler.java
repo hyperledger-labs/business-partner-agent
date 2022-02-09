@@ -24,16 +24,7 @@ import org.hyperledger.aries.api.issue_credential_v2.V2IssueLDCredentialEvent;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
 @Singleton
-public class LDEventHandler {
-
-    private final HolderLDManager holder;
-
-    private final IssuerLDManager issuer;
-
-    public LDEventHandler(HolderLDManager holder, IssuerLDManager issuer) {
-        this.holder = holder;
-        this.issuer = issuer;
-    }
+public record LDEventHandler(HolderLDManager holder, IssuerLDManager issuer) {
 
     public void dispatch(V20CredExRecord v2) {
         if (v2.roleIsHolder()) {
@@ -52,7 +43,7 @@ public class LDEventHandler {
         } else if (v2.roleIsIssuer()) {
             synchronized (issuer) {
                 if (v2.stateIsProposalReceived()) {
-                    issuer.handleCredentialProposal(v2);
+                    issuer.handleCredentialProposal(v2, ExchangeVersion.V2);
                 } else if (v2.stateIsRequestReceived()) {
                     issuer.handleV2CredentialRequest(v2);
                 } else {

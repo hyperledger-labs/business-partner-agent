@@ -59,7 +59,8 @@ public class MyDocument implements CredentialTypeTranslator {
     @Enumerated(EnumType.STRING)
     private CredentialType type;
 
-    /** There for backwards compatibility, use reference to schema instead */
+    /** @deprecated There for backwards compatibility, use reference to schema instead */
+    @Deprecated
     @Nullable
     private String schemaId;
 

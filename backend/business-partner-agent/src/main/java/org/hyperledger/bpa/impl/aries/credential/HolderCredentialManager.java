@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.impl.aries.credential;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.scheduling.annotation.Scheduled;
 import jakarta.inject.Inject;
@@ -32,10 +33,11 @@ import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.credentials.CredentialPreview;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.issue_credential_v1.*;
+import org.hyperledger.aries.api.issue_credential_v2.V1ToV2IssueCredentialConverter;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
+import org.hyperledger.aries.api.issue_credential_v2.V2CredentialExchangeFree;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.revocation.RevocationNotificationEvent;
-import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
@@ -43,8 +45,8 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
+import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.impl.aries.jsonld.VPManager;
-import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
@@ -84,32 +86,32 @@ public class HolderCredentialManager extends BaseHolderManager {
     VPManager vpMgmt;
 
     @Inject
-    @Setter(AccessLevel.PROTECTED)
-    SchemaService schemaService;
+    LabelStrategy labelStrategy;
 
     @Inject
-    LabelStrategy labelStrategy;
+    LDContextHelper ldHelper;
 
     @Inject
     BPAMessageSource.DefaultMessageSource msg;
 
+    @Inject
+    ObjectMapper mapper;
+
     // request credential from issuer (partner)
     public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId,
-            @Nullable ExchangeVersion version) {
+        @Nullable ExchangeVersion version) {
         Partner dbPartner = partnerRepo.findById(partnerId)
                 .orElseThrow(
                         () -> new PartnerException(msg.getMessage("api.partner.not.found", Map.of("id", partnerId))));
         MyDocument dbDoc = docRepo.findById(myDocId)
                 .orElseThrow(
                         () -> new PartnerException(msg.getMessage("api.document.not.found", Map.of("id", myDocId))));
-        if (!CredentialType.INDY.equals(dbDoc.getType())) {
-            throw new PartnerException(msg.getMessage("api.schema.credential.document.conversion.failure"));
+        if (dbDoc.getSchema() == null) {
+            throw new PartnerException(msg.getMessage("api.schema.restriction.schema.not.found",
+                    Map.of("id", dbDoc.getSchemaId() != null ? dbDoc.getSchemaId() : "")));
         }
+        BPASchema s = dbDoc.getSchema();
         try {
-            BPASchema s = schemaService.getSchemaFor(dbDoc.getSchemaId())
-                    .orElseThrow(
-                            () -> new PartnerException(msg.getMessage("api.schema.restriction.schema.not.found",
-                                    Map.of("id", dbDoc.getSchemaId() != null ? dbDoc.getSchemaId() : ""))));
             V1CredentialProposalRequest v1CredentialProposalRequest = V1CredentialProposalRequest
                     .builder()
                     .connectionId(Objects.requireNonNull(dbPartner.getConnectionId()))
@@ -133,14 +135,31 @@ public class HolderCredentialManager extends BaseHolderManager {
                         .credentialProposal(BPACredentialExchange.ExchangePayload
                                 .indy(v1.getCredentialProposalDict().getCredentialProposal())));
             } else {
-                ac.issueCredentialV2SendProposal(v1CredentialProposalRequest).ifPresent(v2 -> dbCredEx
-                        .threadId(v2.getThreadId())
-                        .credentialExchangeId(v2.getCredentialExchangeId())
-                        .exchangeVersion(ExchangeVersion.V2)
-                        .credentialProposal(BPACredentialExchange.ExchangePayload
+                V2CredentialExchangeFree v2Request;
+                if (dbDoc.typeIsIndy()) {
+                    v2Request = V1ToV2IssueCredentialConverter.toV20CredExFree(v1CredentialProposalRequest);
+                } else {
+                    v2Request = V2CredentialExchangeFree.builder()
+                            .connectionId(UUID.fromString(Objects.requireNonNull(dbPartner.getConnectionId())))
+                            .filter(ldHelper.buildVC(s, mapper.valueToTree(dbDoc.getDocument()), Boolean.FALSE))
+                            .build();
+                }
+                ac.issueCredentialV2SendProposal(v2Request).ifPresent(v2 -> {
+                    BPACredentialExchange.ExchangePayload proposal;
+                    if (dbDoc.typeIsIndy()) {
+                        proposal = BPACredentialExchange.ExchangePayload
                                 .indy(V2ToV1IndyCredentialConverter.INSTANCE().toV1Proposal(v2)
                                         .getCredentialProposalDict()
-                                        .getCredentialProposal())));
+                                        .getCredentialProposal());
+                    } else {
+                        proposal = BPACredentialExchange.ExchangePayload.jsonLD(v2.resolveLDCredProposal());
+                    }
+                    dbCredEx
+                            .threadId(v2.getThreadId())
+                            .credentialExchangeId(v2.getCredentialExchangeId())
+                            .exchangeVersion(ExchangeVersion.V2)
+                            .credentialProposal(proposal);
+                });
             }
             holderCredExRepo.save(dbCredEx.build());
         } catch (IOException e) {
