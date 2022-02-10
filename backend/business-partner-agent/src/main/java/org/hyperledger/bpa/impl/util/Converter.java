@@ -184,7 +184,8 @@ public class Converter {
      */
     public MyDocument updateMyCredential(@NonNull MyDocumentAPI apiDoc, @NonNull MyDocument myDoc) {
         Map<String, Object> data = toMap(apiDoc.getDocumentData());
-        schemaService.getSchemaFor(apiDoc.getSchemaId()).ifPresentOrElse(myDoc::setSchema, EntityNotFoundException::new);
+        schemaService.getSchemaFor(apiDoc.getSchemaId()).ifPresentOrElse(myDoc::setSchema,
+                EntityNotFoundException::new);
         myDoc
                 .setDocument(data)
                 .setIsPublic(apiDoc.getIsPublic())

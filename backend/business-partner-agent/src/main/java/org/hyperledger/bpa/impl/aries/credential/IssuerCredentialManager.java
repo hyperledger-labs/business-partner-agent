@@ -17,9 +17,7 @@
  */
 package org.hyperledger.bpa.impl.aries.credential;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.context.event.ApplicationEventPublisher;
-import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.Builder;
@@ -73,6 +71,9 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Handles all credential issuer logic that is specific to indy
+ */
 @Slf4j
 @Singleton
 public class IssuerCredentialManager extends BaseIssuerManager {
@@ -107,7 +108,7 @@ public class IssuerCredentialManager extends BaseIssuerManager {
     @Inject
     ApplicationEventPublisher eventPublisher;
 
-    // Credential Definition Management
+    // Indy Credential Definition Management
 
     public List<CredDef> listCredDefs() {
         List<CredDef> result = new ArrayList<>();
@@ -182,16 +183,16 @@ public class IssuerCredentialManager extends BaseIssuerManager {
         }
     }
 
-    // Credential Management - Called By User
+    // Indy Credential Management - Called By User
 
     /**
-     * Issuer initialises the credential exchange with an offer. There is no
+     * Issuer initialises the indy credential exchange with an offer. There is no
      * preexisting proposal from the holder.
      *
-     * @param request {@link IssueCredentialRequest}
+     * @param request {@link IssueIndyCredentialRequest}
      * @return credential exchange id
      */
-    public String issueCredential(@NonNull IssueCredentialRequest request) {
+    public String issueIndyCredential(@NonNull IssueIndyCredentialRequest request) {
         Partner dbPartner = partnerRepo.findById(request.getPartnerId())
                 .orElseThrow(() -> new IssuerException(msg.getMessage("api.partner.not.found",
                         Map.of("id", request.getPartnerId()))));
@@ -202,7 +203,7 @@ public class IssuerCredentialManager extends BaseIssuerManager {
 
         Map<String, String> document = conv.toStringMap(request.getDocument());
 
-        checkAttributes(document, dbCredDef);
+        checkCredentialAttributes(document, dbCredDef);
 
         String connectionId = dbPartner.getConnectionId();
         String schemaId = dbCredDef.getSchema().getSchemaId();
@@ -221,10 +222,10 @@ public class IssuerCredentialManager extends BaseIssuerManager {
 
         if (request.isV1()) {
             exVersion = ExchangeVersion.V1;
-            exResult = sendV1Credential(proposal);
+            exResult = sendV1IndyCredential(proposal);
         } else {
             exVersion = ExchangeVersion.V2;
-            exResult = sendV2Credential(proposal);
+            exResult = sendV2IndyCredential(proposal);
         }
 
         BPACredentialExchange cex = BPACredentialExchange.builder()
@@ -250,10 +251,10 @@ public class IssuerCredentialManager extends BaseIssuerManager {
         return exResult.getCredentialExchangeId();
     }
 
-    public void reIssueCredential(@NonNull UUID exchangeId) {
+    public void reIssueIndyCredential(@NonNull UUID exchangeId) {
         BPACredentialExchange credEx = issuerCredExRepo.findById(exchangeId).orElseThrow(EntityNotFoundException::new);
         if (credEx.roleIsIssuer() && credEx.stateIsRevoked()) {
-            issueCredential(IssueCredentialRequest.builder()
+            issueIndyCredential(IssueIndyCredentialRequest.builder()
                     .partnerId(credEx.getPartner() != null ? credEx.getPartner().getId() : null)
                     .credDefId(credEx.getCredDef() != null ? credEx.getCredDef().getId() : null)
                     .document(conv.mapToNode(credEx.getIndyCredential().getAttrs()))
@@ -271,7 +272,7 @@ public class IssuerCredentialManager extends BaseIssuerManager {
      * @param document  the credential
      * @param dbCredDef {@link BPACredentialDefinition}
      */
-    private void checkAttributes(Map<String, String> document, BPACredentialDefinition dbCredDef) {
+    private void checkCredentialAttributes(Map<String, String> document, BPACredentialDefinition dbCredDef) {
         Set<String> documentAttributeNames = document.keySet();
         Set<String> schemaAttributeNames = dbCredDef.getSchema().getSchemaAttributeNames();
         if (!documentAttributeNames.equals(schemaAttributeNames)) {
@@ -280,7 +281,7 @@ public class IssuerCredentialManager extends BaseIssuerManager {
         }
     }
 
-    private ExchangeResult sendV1Credential(@NonNull V1CredentialProposalRequest proposal) {
+    private ExchangeResult sendV1IndyCredential(@NonNull V1CredentialProposalRequest proposal) {
         try {
             return ac.issueCredentialSend(proposal)
                     .map(ExchangeResult::fromV1)
@@ -290,7 +291,7 @@ public class IssuerCredentialManager extends BaseIssuerManager {
         }
     }
 
-    private ExchangeResult sendV2Credential(@NonNull V1CredentialProposalRequest proposal) {
+    private ExchangeResult sendV2IndyCredential(@NonNull V1CredentialProposalRequest proposal) {
         try {
             return ac.issueCredentialV2Send(proposal)
                     .map(ExchangeResult::fromV2)
@@ -300,33 +301,7 @@ public class IssuerCredentialManager extends BaseIssuerManager {
         }
     }
 
-    public List<CredEx> listCredentialExchanges(@Nullable CredentialExchangeRole role, @Nullable UUID partnerId) {
-        List<BPACredentialExchange> exchanges = issuerCredExRepo.listOrderByUpdatedAtDesc();
-        // now, lets get credentials...
-        return exchanges.stream()
-                .filter(x -> {
-                    if (role != null) {
-                        return role.equals(x.getRole());
-                    }
-                    return true;
-                })
-                .filter(x -> x.getPartner() != null)
-                .filter(x -> {
-                    if (partnerId != null) {
-                        return x.getPartner().getId().equals(partnerId);
-                    }
-                    return true;
-                })
-                .map(ex -> CredEx.from(ex, conv.toAPIObject(ex.getPartner())))
-                .collect(Collectors.toList());
-    }
-
-    public CredEx getCredEx(@NonNull UUID id) {
-        BPACredentialExchange credEx = issuerCredExRepo.findById(id).orElseThrow(EntityNotFoundException::new);
-        return CredEx.from(credEx, conv.toAPIObject(credEx.getPartner()));
-    }
-
-    public CredEx revokeCredentialExchange(@NonNull UUID id) {
+    public CredEx revokeIndyCredential(@NonNull UUID id) {
         if (!config.getTailsServerConfigured()) {
             throw new IssuerException(msg.getMessage("api.issuer.no.tails.server"));
         }
@@ -360,6 +335,7 @@ public class IssuerCredentialManager extends BaseIssuerManager {
      * @param counterOffer {@link CredentialOfferRequest}
      * @return {@link CredEx} updated credential exchange, if found
      */
+    // TODO V2 LD
     public CredEx sendCredentialOffer(@NonNull UUID id, @NonNull CredentialOfferRequest counterOffer) {
         BPACredentialExchange credEx = issuerCredExRepo.findById(id).orElseThrow(EntityNotFoundException::new);
         if (!credEx.stateIsProposalReceived()) {
@@ -426,21 +402,7 @@ public class IssuerCredentialManager extends BaseIssuerManager {
         return CredEx.from(credEx);
     }
 
-    public void declineCredentialProposal(@NonNull UUID id, @Nullable String message) {
-        if (StringUtils.isEmpty(message)) {
-            message = msg.getMessage("api.issuer.credential.exchange.declined");
-        }
-        BPACredentialExchange credEx = getCredentialExchange(id);
-        credEx.pushStates(CredentialExchangeState.DECLINED, Instant.now());
-        issuerCredExRepo.updateAfterEventNoRevocationInfo(credEx.getId(), credEx.getState(),
-                credEx.getStateToTimestamp(),
-                message);
-        declineCredentialExchange(credEx, message);
-    }
-
     // Credential Management - Called By Event Handler
-
-
 
     /**
      * In v1 (indy) this message can only be received after a preceding Credential
@@ -492,6 +454,8 @@ public class IssuerCredentialManager extends BaseIssuerManager {
         });
     }
 
+    // Events
+
     private void fireCredentialIssuedEvent(@NonNull BPACredentialExchange db) {
         eventPublisher.publishEventAsync(CredentialIssuedEvent.builder()
                 .credential(AriesCredential.fromBPACredentialExchange(db, schemaLabel(db)))
@@ -515,32 +479,6 @@ public class IssuerCredentialManager extends BaseIssuerManager {
             return schemaService.getSchemaLabel(db.getIndyCredential().getSchemaId());
         }
         return "";
-    }
-
-    /**
-     * Internal transfer POJO
-     */
-    @Data
-    @Builder
-    public static final class IssueCredentialRequest {
-        private UUID credDefId;
-        private UUID partnerId;
-        private ExchangeVersion exchangeVersion;
-        private JsonNode document;
-
-        public boolean isV1() {
-            return exchangeVersion == null || ExchangeVersion.V1.equals(exchangeVersion);
-        }
-
-        public static IssueCredentialRequest from(IssueIndyCredentialRequest r) {
-            return IssueCredentialRequest
-                    .builder()
-                    .credDefId(r.getCredDefId())
-                    .partnerId(r.getPartnerId())
-                    .exchangeVersion(r.getExchangeVersion())
-                    .document(r.getDocument())
-                    .build();
-        }
     }
 
     @Data

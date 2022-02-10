@@ -109,8 +109,7 @@ public class IssuerController {
      */
     @Post("/issue-credential/send")
     public HttpResponse<String> issueIndyCredential(@Valid @Body IssueIndyCredentialRequest req) {
-        String exchangeId = im.issueCredential(
-                IssuerCredentialManager.IssueCredentialRequest.from(req));
+        String exchangeId = im.issueIndyCredential(req);
         // just return the id and not the full Aries Object.
         // Event handlers will create the db cred ex records
         return HttpResponse.ok(exchangeId);
@@ -174,7 +173,7 @@ public class IssuerController {
      */
     @Get("/exchanges/{id}")
     public HttpResponse<CredEx> getCredentialExchange(@PathVariable UUID id) {
-        return HttpResponse.ok(im.getCredEx(id));
+        return HttpResponse.ok(im.findCredentialExchangeById(id));
     }
 
     /**
@@ -185,7 +184,7 @@ public class IssuerController {
      */
     @Put("/exchanges/{id}/revoke")
     public HttpResponse<CredEx> revokeCredential(@PathVariable UUID id) {
-        return HttpResponse.ok(im.revokeCredentialExchange(id));
+        return HttpResponse.ok(im.revokeIndyCredential(id));
     }
 
     /**
@@ -197,7 +196,7 @@ public class IssuerController {
      */
     @Post("/exchanges/{id}/re-issue")
     public HttpResponse<Void> reIssueCredential(@PathVariable UUID id) {
-        im.reIssueCredential(id);
+        im.reIssueIndyCredential(id);
         return HttpResponse.ok();
     }
 

@@ -222,7 +222,7 @@ public class PartnerController {
     public HttpResponse<Void> requestCredential(
             @PathVariable UUID id,
             @Body RequestCredentialRequest credReq) {
-        credM.sendCredentialRequest(
+        credM.sendCredentialProposal(
                 id,
                 UUID.fromString(credReq.getDocumentId()),
                 credReq.getExchangeVersion());

@@ -64,17 +64,17 @@ public class LDContextHelper {
         return V2CredentialExchangeFree.V20CredFilter.builder()
                 .ldProof(V2CredentialExchangeFree.LDProofVCDetail.builder()
                         .credential(VerifiableCredential.builder()
-                        .context(List.of(CredentialType.JSON_LD.getContext().get(0), bpaSchema.getSchemaId()))
-                        .credentialSubject(GsonConfig.defaultConfig().toJsonTree(cred).getAsJsonObject())
-                        .issuanceDate(issuer ? TimeUtil.toISOInstantTruncated(Instant.now()) : null)
-                        .issuer(issuer ? identity.getDidKey() : null)
-                        .type(List.of(CredentialType.JSON_LD.getType().get(0),
-                                Objects.requireNonNull(bpaSchema.getLdType())))
+                                .context(List.of(CredentialType.JSON_LD.getContext().get(0), bpaSchema.getSchemaId()))
+                                .credentialSubject(GsonConfig.defaultConfig().toJsonTree(cred).getAsJsonObject())
+                                .issuanceDate(issuer ? TimeUtil.toISOInstantTruncated(Instant.now()) : null)
+                                .issuer(issuer ? identity.getDidKey() : null)
+                                .type(List.of(CredentialType.JSON_LD.getType().get(0),
+                                        Objects.requireNonNull(bpaSchema.getLdType())))
+                                .build())
+                        .options(V2CredentialExchangeFree.LDProofVCDetailOptions.builder()
+                                .proofType(V2CredentialExchangeFree.ProofType.BbsBlsSignature2020)
+                                .build())
                         .build())
-                    .options(V2CredentialExchangeFree.LDProofVCDetailOptions.builder()
-                            .proofType(V2CredentialExchangeFree.ProofType.BbsBlsSignature2020)
-                            .build())
-                    .build())
                 .build();
     }
 }

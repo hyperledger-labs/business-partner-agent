@@ -18,6 +18,7 @@
 package org.hyperledger.bpa.impl.aries.credential;
 
 import io.micronaut.context.event.ApplicationEventPublisher;
+import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -44,7 +45,12 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
+/**
+ * Wraps all credential issuer specific logic that is common for both indy and
+ * json-ld credentials.
+ */
 @Slf4j
 @Singleton
 public class BaseIssuerManager extends BaseCredentialManager {
@@ -60,6 +66,54 @@ public class BaseIssuerManager extends BaseCredentialManager {
 
     @Inject
     ApplicationEventPublisher eventPublisher;
+
+    // Credential Management - Called By User
+
+    /**
+     * Issuer declines credential proposal received from holder
+     * 
+     * @param id      {@link UUID} bpa credential exchange id
+     * @param message optional reason
+     */
+    public void declineCredentialProposal(@NonNull UUID id, @Nullable String message) {
+        if (StringUtils.isEmpty(message)) {
+            message = msg.getMessage("api.issuer.credential.exchange.declined");
+        }
+        BPACredentialExchange credEx = getCredentialExchange(id);
+        credEx.pushStates(CredentialExchangeState.DECLINED, Instant.now());
+        issuerCredExRepo.updateAfterEventNoRevocationInfo(credEx.getId(), credEx.getState(),
+                credEx.getStateToTimestamp(),
+                message);
+        declineCredentialExchange(credEx, message);
+    }
+
+    // Credential Management - Called By Event Handler
+
+    public void handleCredentialProposal(@NonNull BaseCredExRecord ex, ExchangeVersion exchangeVersion) {
+        partnerRepo.findByConnectionId(ex.getConnectionId()).ifPresent(partner -> {
+            BPACredentialExchange.BPACredentialExchangeBuilder b = BPACredentialExchange
+                    .builder()
+                    .partner(partner)
+                    .role(CredentialExchangeRole.ISSUER)
+                    .state(ex.getState())
+                    .pushStateChange(ex.getState(), Instant.now())
+                    .exchangeVersion(exchangeVersion)
+                    .credentialExchangeId(ex.getCredentialExchangeId())
+                    .threadId(ex.getThreadId())
+                    .credentialProposal(resolveProposal(ex));
+            // preselecting first match
+            credDefRepo.findBySchemaId(resolveSchemaIdFromProposal(ex)).stream().findFirst()
+                    .ifPresentOrElse(dbCredDef -> {
+                        b.schema(dbCredDef.getSchema()).credDef(dbCredDef);
+                        issuerCredExRepo.save(b.build());
+                    }, () -> {
+                        b.errorMsg(msg.getMessage("api.holder.issuer.has.no.creddef",
+                                Map.of("id", Objects.requireNonNullElse(resolveSchemaIdFromProposal(ex), ""))));
+                        issuerCredExRepo.save(b.build());
+                    });
+            fireCredentialProposalEvent();
+        });
+    }
 
     /**
      * In v2 (indy and w3c) a holder can decide to skip negotiation and directly
@@ -156,37 +210,13 @@ public class BaseIssuerManager extends BaseCredentialManager {
         });
     }
 
-    public void handleCredentialProposal(@NonNull BaseCredExRecord ex, ExchangeVersion exchangeVersion) {
-        partnerRepo.findByConnectionId(ex.getConnectionId()).ifPresent(partner -> {
-            BPACredentialExchange.BPACredentialExchangeBuilder b = BPACredentialExchange
-                    .builder()
-                    .partner(partner)
-                    .role(CredentialExchangeRole.ISSUER)
-                    .state(ex.getState())
-                    .pushStateChange(ex.getState(), Instant.now())
-                    .exchangeVersion(exchangeVersion)
-                    .credentialExchangeId(ex.getCredentialExchangeId())
-                    .threadId(ex.getThreadId())
-                    .credentialProposal(resolveProposal(ex));
-            // preselecting first match
-            credDefRepo.findBySchemaId(resolveSchemaIdFromProposal(ex)).stream().findFirst()
-                    .ifPresentOrElse(dbCredDef -> {
-                        b.schema(dbCredDef.getSchema()).credDef(dbCredDef);
-                        issuerCredExRepo.save(b.build());
-                    }, () -> {
-                        b.errorMsg(msg.getMessage("api.holder.issuer.has.no.creddef",
-                                Map.of("id", resolveSchemaIdFromProposal(ex))));
-                        issuerCredExRepo.save(b.build());
-                    });
-            fireCredentialProposalEvent();
-        });
-    }
+    // Helpers
 
-    BPACredentialExchange.ExchangePayload resolveProposal(@NonNull BaseCredExRecord ex) {
+    private BPACredentialExchange.ExchangePayload resolveProposal(@NonNull BaseCredExRecord ex) {
         if (ex instanceof V1CredentialExchange v1Indy) {
             return v1Indy.getCredentialProposalDict() != null
                     ? BPACredentialExchange.ExchangePayload
-                    .indy(v1Indy.getCredentialProposalDict().getCredentialProposal())
+                            .indy(v1Indy.getCredentialProposalDict().getCredentialProposal())
                     : null;
         } else if (ex instanceof V20CredExRecord v2) {
             return BPACredentialExchange.ExchangePayload.jsonLD(v2.resolveLDCredProposal());
@@ -194,7 +224,7 @@ public class BaseIssuerManager extends BaseCredentialManager {
         return null;
     }
 
-    String resolveSchemaIdFromProposal(@NonNull BaseCredExRecord ex) {
+    private String resolveSchemaIdFromProposal(@NonNull BaseCredExRecord ex) {
         if (ex instanceof V1CredentialExchange v1Indy) {
             return Objects.requireNonNull(v1Indy.getCredentialProposalDict()).getSchemaId();
         } else if (ex instanceof V20CredExRecord v2) {
@@ -202,6 +232,8 @@ public class BaseIssuerManager extends BaseCredentialManager {
         }
         return null;
     }
+
+    // Events
 
     private void fireCredentialProposalEvent() {
         eventPublisher.publishEventAsync(new CredentialProposalEvent());

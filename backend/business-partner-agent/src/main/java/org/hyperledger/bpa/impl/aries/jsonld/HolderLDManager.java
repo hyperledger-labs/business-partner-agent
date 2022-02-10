@@ -35,6 +35,9 @@ import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Handles all credential holder logic that is specific to json-ld
+ */
 @Singleton
 public class HolderLDManager extends BaseHolderManager {
 

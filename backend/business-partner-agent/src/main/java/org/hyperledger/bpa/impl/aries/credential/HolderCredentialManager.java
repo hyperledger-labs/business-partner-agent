@@ -17,8 +17,6 @@
  */
 package org.hyperledger.bpa.impl.aries.credential;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.micronaut.core.annotation.Nullable;
 import io.micronaut.scheduling.annotation.Scheduled;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -26,45 +24,29 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.ExchangeVersion;
-import org.hyperledger.aries.api.credentials.CredentialAttributes;
-import org.hyperledger.aries.api.credentials.CredentialPreview;
 import org.hyperledger.aries.api.exception.AriesException;
-import org.hyperledger.aries.api.issue_credential_v1.*;
-import org.hyperledger.aries.api.issue_credential_v2.V1ToV2IssueCredentialConverter;
+import org.hyperledger.aries.api.issue_credential_v1.BaseCredExRecord;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
-import org.hyperledger.aries.api.issue_credential_v2.V2CredentialExchangeFree;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.revocation.RevocationNotificationEvent;
-import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
-import org.hyperledger.bpa.api.exception.EntityNotFoundException;
-import org.hyperledger.bpa.api.exception.NetworkException;
-import org.hyperledger.bpa.api.exception.PartnerException;
-import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
-import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
-import org.hyperledger.bpa.impl.aries.jsonld.VPManager;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
-import org.hyperledger.bpa.persistence.model.MyDocument;
-import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
-import org.hyperledger.bpa.persistence.repository.MyDocumentRepository;
-import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
-import java.io.IOException;
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
+/**
+ * Handles all credential holder logic that is specific to indy
+ */
 @Slf4j
 @Singleton
 public class HolderCredentialManager extends BaseHolderManager {
@@ -74,163 +56,13 @@ public class HolderCredentialManager extends BaseHolderManager {
     AriesClient ac;
 
     @Inject
-    PartnerRepository partnerRepo;
-
-    @Inject
-    MyDocumentRepository docRepo;
-
-    @Inject
     HolderCredExRepository holderCredExRepo;
-
-    @Inject
-    VPManager vpMgmt;
 
     @Inject
     LabelStrategy labelStrategy;
 
     @Inject
-    LDContextHelper ldHelper;
-
-    @Inject
-    BPAMessageSource.DefaultMessageSource msg;
-
-    @Inject
-    ObjectMapper mapper;
-
-    // request credential from issuer (partner)
-    public void sendCredentialRequest(@NonNull UUID partnerId, @NonNull UUID myDocId,
-        @Nullable ExchangeVersion version) {
-        Partner dbPartner = partnerRepo.findById(partnerId)
-                .orElseThrow(
-                        () -> new PartnerException(msg.getMessage("api.partner.not.found", Map.of("id", partnerId))));
-        MyDocument dbDoc = docRepo.findById(myDocId)
-                .orElseThrow(
-                        () -> new PartnerException(msg.getMessage("api.document.not.found", Map.of("id", myDocId))));
-        if (dbDoc.getSchema() == null) {
-            throw new PartnerException(msg.getMessage("api.schema.restriction.schema.not.found",
-                    Map.of("id", dbDoc.getSchemaId() != null ? dbDoc.getSchemaId() : "")));
-        }
-        BPASchema s = dbDoc.getSchema();
-        try {
-            V1CredentialProposalRequest v1CredentialProposalRequest = V1CredentialProposalRequest
-                    .builder()
-                    .connectionId(Objects.requireNonNull(dbPartner.getConnectionId()))
-                    .schemaId(s.getSchemaId())
-                    .credentialProposal(
-                            new CredentialPreview(
-                                    CredentialAttributes.from(
-                                            Objects.requireNonNull(dbDoc.getDocument()))))
-                    .build();
-            BPACredentialExchange.BPACredentialExchangeBuilder dbCredEx = BPACredentialExchange
-                    .builder()
-                    .partner(dbPartner)
-                    .schema(s)
-                    .state(CredentialExchangeState.PROPOSAL_SENT)
-                    .pushStateChange(CredentialExchangeState.PROPOSAL_SENT, Instant.now())
-                    .role(CredentialExchangeRole.HOLDER);
-            if (version == null || ExchangeVersion.V1.equals(version)) {
-                ac.issueCredentialSendProposal(v1CredentialProposalRequest).ifPresent(v1 -> dbCredEx
-                        .threadId(v1.getThreadId())
-                        .credentialExchangeId(v1.getCredentialExchangeId())
-                        .credentialProposal(BPACredentialExchange.ExchangePayload
-                                .indy(v1.getCredentialProposalDict().getCredentialProposal())));
-            } else {
-                V2CredentialExchangeFree v2Request;
-                if (dbDoc.typeIsIndy()) {
-                    v2Request = V1ToV2IssueCredentialConverter.toV20CredExFree(v1CredentialProposalRequest);
-                } else {
-                    v2Request = V2CredentialExchangeFree.builder()
-                            .connectionId(UUID.fromString(Objects.requireNonNull(dbPartner.getConnectionId())))
-                            .filter(ldHelper.buildVC(s, mapper.valueToTree(dbDoc.getDocument()), Boolean.FALSE))
-                            .build();
-                }
-                ac.issueCredentialV2SendProposal(v2Request).ifPresent(v2 -> {
-                    BPACredentialExchange.ExchangePayload proposal;
-                    if (dbDoc.typeIsIndy()) {
-                        proposal = BPACredentialExchange.ExchangePayload
-                                .indy(V2ToV1IndyCredentialConverter.INSTANCE().toV1Proposal(v2)
-                                        .getCredentialProposalDict()
-                                        .getCredentialProposal());
-                    } else {
-                        proposal = BPACredentialExchange.ExchangePayload.jsonLD(v2.resolveLDCredProposal());
-                    }
-                    dbCredEx
-                            .threadId(v2.getThreadId())
-                            .credentialExchangeId(v2.getCredentialExchangeId())
-                            .exchangeVersion(ExchangeVersion.V2)
-                            .credentialProposal(proposal);
-                });
-            }
-            holderCredExRepo.save(dbCredEx.build());
-        } catch (IOException e) {
-            throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
-        }
-    }
-
-    public void declineCredentialOffer(@NonNull UUID id, @Nullable String message) {
-        if (StringUtils.isEmpty(message)) {
-            message = msg.getMessage("api.holder.credential.exchange.declined");
-        }
-        BPACredentialExchange dbEx = getCredentialExchange(id);
-        dbEx.pushStates(CredentialExchangeState.DECLINED, Instant.now());
-        holderCredExRepo.updateStates(dbEx.getId(), dbEx.getState(), dbEx.getStateToTimestamp(), message);
-        declineCredentialExchange(dbEx, message);
-    }
-
-    // credential visible in public profile
-    public void toggleVisibility(UUID id) {
-        BPACredentialExchange cred = holderCredExRepo.findById(id).orElseThrow(EntityNotFoundException::new);
-        holderCredExRepo.updateIsPublic(id, !cred.checkIfPublic());
-        vpMgmt.recreateVerifiablePresentation();
-    }
-
-    // credential CRUD operations
-
-    public List<AriesCredential> listCredentials() {
-        return holderCredExRepo.findByRoleEqualsAndStateIn(
-                CredentialExchangeRole.HOLDER,
-                List.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE))
-                .stream()
-                .map(this::buildCredential)
-                .collect(Collectors.toList());
-    }
-
-    public AriesCredential getCredentialById(@NonNull UUID id) {
-        return holderCredExRepo.findById(id).map(this::buildCredential).orElseThrow(EntityNotFoundException::new);
-    }
-
-    /**
-     * Updates the credentials label
-     *
-     * @param id    the credential id
-     * @param label the credentials label
-     * @return the updated credential if found
-     */
-    public AriesCredential updateCredentialById(@NonNull UUID id, @Nullable String label) {
-        final AriesCredential cred = getCredentialById(id);
-        String mergedLabel = labelStrategy.apply(label, cred);
-        holderCredExRepo.updateLabel(id, mergedLabel);
-        cred.setLabel(label);
-        return cred;
-    }
-
-    public void deleteCredentialById(@NonNull UUID id) {
-        holderCredExRepo.findById(id).ifPresent(c -> {
-            boolean isPublic = c.checkIfPublic();
-            try {
-                if (c.getReferent() != null) {
-                    ac.credentialRemove(c.getReferent());
-                }
-            } catch (AriesException | IOException e) {
-                // if we fail here it's not good, but also no deal-breaker, so log and continue
-                log.error("Could not delete aca-py credential for referent: {}", c.getReferent(), e);
-            }
-            holderCredExRepo.deleteById(id);
-            if (isPublic) {
-                vpMgmt.recreateVerifiablePresentation();
-            }
-        });
-    }
+    SchemaService schemaService;
 
     /**
      * Scheduled task that checks the revocation status of all credentials issued to

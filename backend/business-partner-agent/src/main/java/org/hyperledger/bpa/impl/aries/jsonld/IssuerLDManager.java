@@ -42,6 +42,9 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Handles all credential holder logic that is specific to json-ld
+ */
 @Slf4j
 @Singleton
 public class IssuerLDManager extends BaseIssuerManager {
@@ -65,6 +68,7 @@ public class IssuerLDManager extends BaseIssuerManager {
         String credentialExchangeId = null;
         Partner partner = partnerRepo.findById(partnerId).orElseThrow(EntityNotFoundException::new);
         BPASchema bpaSchema = schemaRepo.findById(bpaSchemaId).orElseThrow(EntityNotFoundException::new);
+        // TODO validate document against configured attributes
         try {
             V20CredExRecord exRecord = ac.issueCredentialV2Send(V2CredentialExchangeFree.builder()
                     .connectionId(UUID.fromString(Objects.requireNonNull(partner.getConnectionId())))

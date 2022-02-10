@@ -138,7 +138,7 @@ public class WalletController {
      */
     @Get("/credential")
     public HttpResponse<List<AriesCredential>> getCredentials() {
-        return HttpResponse.ok(holderCredMgmt.listCredentials());
+        return HttpResponse.ok(holderCredMgmt.listHeldCredentials());
     }
 
     /**
@@ -149,7 +149,7 @@ public class WalletController {
      */
     @Get("/credential/{id}")
     public HttpResponse<AriesCredential> getCredentialById(@PathVariable UUID id) {
-        return HttpResponse.ok(holderCredMgmt.getCredentialById(id));
+        return HttpResponse.ok(holderCredMgmt.findHeldCredentialById(id));
     }
 
     /**

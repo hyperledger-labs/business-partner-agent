@@ -21,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.core.annotation.Introspected;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.ExchangeVersion;
@@ -31,6 +33,8 @@ import java.util.UUID;
 @Introspected
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class IssueIndyCredentialRequest {
     // bpa ids
     @NotBlank
@@ -45,4 +49,8 @@ public class IssueIndyCredentialRequest {
     @JsonRawValue
     @Schema(example = "{}")
     private JsonNode document;
+
+    public boolean isV1() {
+        return exchangeVersion == null || ExchangeVersion.V1.equals(exchangeVersion);
+    }
 }
