@@ -60,12 +60,18 @@ public class LDContextHelper {
 
     public V2CredentialExchangeFree.V20CredFilter buildVC(
             @NonNull BPASchema bpaSchema, @NonNull JsonNode document, @NonNull Boolean issuer) {
-        Map<String, String> cred = conv.toStringMap(document);
+        return buildVC(bpaSchema, conv.toStringMap(document), issuer);
+    }
+
+    public V2CredentialExchangeFree.V20CredFilter buildVC(
+            @NonNull BPASchema bpaSchema, @NonNull Map<String, String> document, @NonNull Boolean issuer) {
+
+        // TODO validation
         return V2CredentialExchangeFree.V20CredFilter.builder()
                 .ldProof(V2CredentialExchangeFree.LDProofVCDetail.builder()
                         .credential(VerifiableCredential.builder()
                                 .context(List.of(CredentialType.JSON_LD.getContext().get(0), bpaSchema.getSchemaId()))
-                                .credentialSubject(GsonConfig.defaultConfig().toJsonTree(cred).getAsJsonObject())
+                                .credentialSubject(GsonConfig.defaultConfig().toJsonTree(document).getAsJsonObject())
                                 .issuanceDate(issuer ? TimeUtil.toISOInstantTruncated(Instant.now()) : null)
                                 .issuer(issuer ? identity.getDidKey() : null)
                                 .type(List.of(CredentialType.JSON_LD.getType().get(0),

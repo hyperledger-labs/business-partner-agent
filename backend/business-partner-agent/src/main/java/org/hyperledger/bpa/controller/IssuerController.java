@@ -209,7 +209,7 @@ public class IssuerController {
      * @return {@link CredEx}
      */
     @Put("/exchanges/{id}/send-offer")
-    public HttpResponse<CredEx> sendCredentialOffer(@PathVariable UUID id, @Body CredentialOfferRequest counterOffer) {
+    public HttpResponse<CredEx> sendCredentialOffer(@PathVariable UUID id, @Body @Valid CredentialOfferRequest counterOffer) {
         return HttpResponse.ok(im.sendCredentialOffer(id, counterOffer));
     }
 

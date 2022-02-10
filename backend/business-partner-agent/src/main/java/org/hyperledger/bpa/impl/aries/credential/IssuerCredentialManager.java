@@ -35,7 +35,6 @@ import org.hyperledger.aries.api.credential_definition.CredentialDefinition.Cred
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.credentials.CredentialPreview;
-import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.issue_credential_v1.*;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.revocation.RevokeRequest;
@@ -54,7 +53,6 @@ import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.issuer.CredDef;
 import org.hyperledger.bpa.controller.api.issuer.CredEx;
-import org.hyperledger.bpa.controller.api.issuer.CredentialOfferRequest;
 import org.hyperledger.bpa.controller.api.issuer.IssueIndyCredentialRequest;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.util.Converter;
@@ -65,6 +63,7 @@ import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.repository.BPACredentialDefinitionRepository;
 import org.hyperledger.bpa.persistence.repository.IssuerCredExRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -327,33 +326,13 @@ public class IssuerCredentialManager extends BaseIssuerManager {
         }
     }
 
-    /**
-     * Send partner a credential (counter) offer in reference to a proposal (Not to
-     * be confused with the automated send-offer flow).
-     *
-     * @param id           credential exchange id
-     * @param counterOffer {@link CredentialOfferRequest}
-     * @return {@link CredEx} updated credential exchange, if found
-     */
-    // TODO V2 LD
-    public CredEx sendCredentialOffer(@NonNull UUID id, @NonNull CredentialOfferRequest counterOffer) {
-        BPACredentialExchange credEx = issuerCredExRepo.findById(id).orElseThrow(EntityNotFoundException::new);
-        if (!credEx.stateIsProposalReceived()) {
-            throw new WrongApiUsageException(msg.getMessage("api.issuer.credential.send.offer.wrong.state",
-                    Map.of("state", credEx.getState())));
-        }
-        List<CredentialAttributes> attributes;
-        if (counterOffer.acceptAll()) {
-            attributes = credEx.getCredentialProposal() != null
-                    ? credEx.getCredentialProposal().getIndy().getAttributes()
-                    : List.of();
-        } else {
-            attributes = counterOffer.toCredentialAttributes();
-        }
+    @Override
+    protected CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NotNull Map<String, String> attributes,
+            @NonNull IdWrapper ids) throws IOException {
         String credDefId = credEx.getCredDef() != null ? credEx.getCredDef().getCredentialDefinitionId() : null;
-        if (StringUtils.isNotEmpty(counterOffer.getCredDefId()) && !counterOffer.getCredDefId().equals(credDefId)) {
+        if (StringUtils.isNotEmpty(ids.credDefId()) && !StringUtils.equals(credDefId, ids.credDefId())) {
             BPACredentialDefinition counterCredDef = credDefRepo
-                    .findByCredentialDefinitionId(counterOffer.getCredDefId())
+                    .findByCredentialDefinitionId(ids.credDefId())
                     .orElseThrow(() -> new WrongApiUsageException(
                             msg.getMessage("api.issuer.credential.send.offer.wrong.creddef")));
             credDefId = counterCredDef.getCredentialDefinitionId();
@@ -368,34 +347,22 @@ public class IssuerCredentialManager extends BaseIssuerManager {
                         .credDefId(credDefId)
                         .credentialProposal(org.hyperledger.acy_py.generated.model.CredentialPreview
                                 .builder()
-                                .attributes(attributes.stream().map(a -> CredAttrSpec
+                                .attributes(attributes.entrySet().stream().map(a -> CredAttrSpec
                                         .builder()
-                                        .name(a.getName()).value(a.getValue()).mimeType(a.getMimeType())
+                                        .name(a.getKey()).value(a.getValue())
                                         .build()).collect(Collectors.toList()))
                                 .build())
                         .build())
                 .build();
-        try {
-            if (ExchangeVersion.V1.equals(credEx.getExchangeVersion())) {
-                ac.issueCredentialRecordsSendOffer(credEx.getCredentialExchangeId(), v1Offer);
-            } else {
-                ac.issueCredentialV2RecordsSendOffer(credEx.getCredentialExchangeId(), v1Offer);
-            }
-        } catch (IOException e) {
-            throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
-        } catch (AriesException e) {
-            if (e.getCode() == 400) {
-                String message = msg.getMessage("api.issuer.credential.exchange.problem");
-                credEx.pushStates(CredentialExchangeState.PROBLEM);
-                issuerCredExRepo.updateAfterEventNoRevocationInfo(
-                        credEx.getId(), credEx.getState(), credEx.getStateToTimestamp(), message);
-                throw new WrongApiUsageException(message);
-            }
-            throw e;
+
+        if (ExchangeVersion.V1.equals(credEx.getExchangeVersion())) {
+            ac.issueCredentialRecordsSendOffer(credEx.getCredentialExchangeId(), v1Offer);
+        } else {
+            ac.issueCredentialV2RecordsSendOffer(credEx.getCredentialExchangeId(), v1Offer);
         }
+
         Credential credential = Credential.builder()
-                .attrs(attributes.stream()
-                        .collect(Collectors.toMap(CredentialAttributes::getName, CredentialAttributes::getValue)))
+                .attrs(attributes)
                 .build();
         credEx.setIndyCredential(credential);
         issuerCredExRepo.updateCredential(credEx.getId(), credential);

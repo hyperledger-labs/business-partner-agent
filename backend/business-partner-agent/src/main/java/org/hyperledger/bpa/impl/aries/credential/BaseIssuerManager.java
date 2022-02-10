@@ -28,14 +28,20 @@ import org.hyperledger.acy_py.generated.model.V20CredIssueProblemReportRequest;
 import org.hyperledger.acy_py.generated.model.V20CredIssueRequest;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.issue_credential_v1.BaseCredExRecord;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
+import org.hyperledger.bpa.api.exception.NetworkException;
+import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.api.notification.CredentialProposalEvent;
 import org.hyperledger.bpa.config.AcaPyConfig;
+import org.hyperledger.bpa.controller.api.issuer.CredEx;
+import org.hyperledger.bpa.controller.api.issuer.CredentialOfferRequest;
 import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.repository.BPACredentialDefinitionRepository;
@@ -53,7 +59,7 @@ import java.util.UUID;
  */
 @Slf4j
 @Singleton
-public class BaseIssuerManager extends BaseCredentialManager {
+public abstract class BaseIssuerManager extends BaseCredentialManager {
 
     @Inject
     AcaPyConfig acaPyConfig;
@@ -68,6 +74,57 @@ public class BaseIssuerManager extends BaseCredentialManager {
     ApplicationEventPublisher eventPublisher;
 
     // Credential Management - Called By User
+
+    /**
+     * Send partner a credential (counter) offer in reference to a proposal (Not to
+     * be confused with the automated send-offer flow).
+     *
+     * @param id           credential exchange id
+     * @param counterOffer {@link CredentialOfferRequest}
+     * @return {@link CredEx} updated credential exchange, if found
+     */
+    public CredEx sendCredentialOffer(@NonNull UUID id, @NonNull CredentialOfferRequest counterOffer) {
+        BPACredentialExchange credEx = issuerCredExRepo.findById(id).orElseThrow(EntityNotFoundException::new);
+        if (!credEx.stateIsProposalReceived()) {
+            throw new WrongApiUsageException(msg.getMessage("api.issuer.credential.send.offer.wrong.state",
+                    Map.of("state", credEx.getState())));
+        }
+        Map<String, String> attributes;
+        if (counterOffer.acceptAll()) {
+            attributes = credEx.proposalAttributesToMap();
+        } else {
+            attributes = counterOffer.getAttributes();
+        }
+        try {
+            return sendOffer(credEx, attributes,
+                    new IdWrapper(counterOffer.getCredDefId(), counterOffer.getSchemaId()));
+        } catch (IOException e) {
+            throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
+        } catch (AriesException e) {
+            if (e.getCode() == 400) {
+                String message = msg.getMessage("api.issuer.credential.exchange.problem");
+                credEx.pushStates(CredentialExchangeState.PROBLEM);
+                issuerCredExRepo.updateAfterEventNoRevocationInfo(
+                        credEx.getId(), credEx.getState(), credEx.getStateToTimestamp(), message);
+                throw new WrongApiUsageException(message);
+            }
+            throw e;
+        }
+    }
+
+    public record IdWrapper(String credDefId, String schemaId) {
+    }
+
+    /**
+     * Indy or json-ld specific send counter offer implementation
+     * 
+     * @param credEx     {@link BPACredentialExchange}
+     * @param attributes proposal or counter offer attributes
+     * @param ids        {@link IdWrapper}
+     * @return {@link CredEx}
+     */
+    protected abstract CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NonNull Map<String, String> attributes,
+            @NonNull IdWrapper ids) throws IOException;
 
     /**
      * Issuer declines credential proposal received from holder

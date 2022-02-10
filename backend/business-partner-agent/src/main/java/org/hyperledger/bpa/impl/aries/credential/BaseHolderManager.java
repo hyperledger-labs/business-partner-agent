@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.impl.aries.credential;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
@@ -153,9 +154,10 @@ public abstract class BaseHolderManager extends BaseCredentialManager {
                 if (dbDoc.typeIsIndy()) {
                     v2Request = V1ToV2IssueCredentialConverter.toV20CredExFree(v1CredentialProposalRequest);
                 } else {
+                    JsonNode jsonNode = mapper.valueToTree(dbDoc.getDocument());
                     v2Request = V2CredentialExchangeFree.builder()
                             .connectionId(UUID.fromString(Objects.requireNonNull(dbPartner.getConnectionId())))
-                            .filter(ldHelper.buildVC(s, mapper.valueToTree(dbDoc.getDocument()), Boolean.FALSE))
+                            .filter(ldHelper.buildVC(s, jsonNode, Boolean.FALSE))
                             .build();
                 }
                 ac.issueCredentialV2SendProposal(v2Request).ifPresent(v2 -> {

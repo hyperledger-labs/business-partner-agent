@@ -20,15 +20,21 @@ package org.hyperledger.bpa.impl.aries.jsonld;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredBoundOfferRequest;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2CredentialExchangeFree;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
+import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.controller.api.issuer.CredEx;
 import org.hyperledger.bpa.impl.aries.credential.BaseIssuerManager;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
@@ -36,9 +42,11 @@ import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.repository.BPASchemaRepository;
 import org.hyperledger.bpa.persistence.repository.IssuerCredExRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -64,11 +72,13 @@ public class IssuerLDManager extends BaseIssuerManager {
     @Inject
     LDContextHelper vcHelper;
 
+    @Inject
+    BPAMessageSource.DefaultMessageSource msg;
+
     public String issueLDCredential(UUID partnerId, UUID bpaSchemaId, JsonNode document) {
         String credentialExchangeId = null;
         Partner partner = partnerRepo.findById(partnerId).orElseThrow(EntityNotFoundException::new);
         BPASchema bpaSchema = schemaRepo.findById(bpaSchemaId).orElseThrow(EntityNotFoundException::new);
-        // TODO validate document against configured attributes
         try {
             V20CredExRecord exRecord = ac.issueCredentialV2Send(V2CredentialExchangeFree.builder()
                     .connectionId(UUID.fromString(Objects.requireNonNull(partner.getConnectionId())))
@@ -94,5 +104,27 @@ public class IssuerLDManager extends BaseIssuerManager {
             log.error("aca-py is offline");
         }
         return credentialExchangeId;
+    }
+
+    @Override
+    protected CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NotNull Map<String, String> attributes,
+            @NonNull IdWrapper ids) throws IOException {
+        String schemaId = credEx.getSchema() != null ? credEx.getSchema().getSchemaId() : null;
+        if (StringUtils.isNotEmpty(schemaId) && !StringUtils.equals(schemaId, ids.schemaId())) {
+            BPASchema counterSchema = schemaRepo.findBySchemaId(ids.schemaId()).orElseThrow(
+                    () -> new WrongApiUsageException(msg.getMessage("api.issuer.credential.send.offer.wrong.schema")));
+            credEx.setSchema(counterSchema);
+            credExRepo.update(credEx);
+        }
+        V2CredentialExchangeFree.V20CredFilter v20CredFilter = vcHelper.buildVC(credEx.getSchema(), attributes,
+                Boolean.TRUE);
+        V20CredExRecord v20CredExRecord = ac.issueCredentialV2RecordsSendOffer(credEx.getCredentialExchangeId(),
+                V20CredBoundOfferRequest.builder()
+                        .filter(v20CredFilter)
+                        .build())
+                .orElseThrow();
+        credExRepo.updateCredential(credEx.getId(),
+                BPACredentialExchange.ExchangePayload.jsonLD(v20CredExRecord.resolveLDCredOffer()));
+        return CredEx.from(credEx);
     }
 }

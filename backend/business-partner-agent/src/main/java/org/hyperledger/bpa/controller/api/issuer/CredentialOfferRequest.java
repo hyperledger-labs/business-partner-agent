@@ -17,18 +17,23 @@
  */
 package org.hyperledger.bpa.controller.api.issuer;
 
+import io.micronaut.core.annotation.Introspected;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.Map;
 
 @Data
 @NoArgsConstructor
+@Introspected
 public class CredentialOfferRequest {
     private Boolean acceptProposal;
     private String credDefId;
+    private String schemaId;
+    @NotEmpty
     private Map<String, String> attributes;
 
     public boolean acceptAll() {
