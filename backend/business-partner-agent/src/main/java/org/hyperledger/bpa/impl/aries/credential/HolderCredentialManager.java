@@ -62,6 +62,7 @@ public class HolderCredentialManager extends BaseHolderManager {
     LabelStrategy labelStrategy;
 
     @Inject
+    @Setter(AccessLevel.PACKAGE)
     SchemaService schemaService;
 
     /**

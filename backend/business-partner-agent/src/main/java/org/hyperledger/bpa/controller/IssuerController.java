@@ -79,6 +79,16 @@ public class IssuerController {
     }
 
     /**
+     * List credential definitions, items that I can issue
+     *
+     * @return list of {@link SchemaAPI}
+     */
+    @Get("/creddef")
+    public HttpResponse<List<CredDef>> listCredDefs() {
+        return HttpResponse.ok(im.listCredDefs());
+    }
+
+    /**
      * Create a new indy credential definition, and send it to the ledger
      *
      * @param req {@link CreateCredDefRequest}
@@ -209,7 +219,8 @@ public class IssuerController {
      * @return {@link CredEx}
      */
     @Put("/exchanges/{id}/send-offer")
-    public HttpResponse<CredEx> sendCredentialOffer(@PathVariable UUID id, @Body @Valid CredentialOfferRequest counterOffer) {
+    public HttpResponse<CredEx> sendCredentialOffer(@PathVariable UUID id,
+            @Body @Valid CredentialOfferRequest counterOffer) {
         return HttpResponse.ok(im.sendCredentialOffer(id, counterOffer));
     }
 
