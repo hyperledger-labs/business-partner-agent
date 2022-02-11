@@ -88,6 +88,7 @@ public class HolderLDManager {
                 .threadId(v2.getThreadId())
                 .credentialExchangeId(v2.getCredentialExchangeId())
                 .exchangeVersion(ExchangeVersion.V2)
+                .type(CredentialType.JSON_LD)
                 .credentialProposal(BPACredentialExchange.ExchangePayload.jsonLD(v2.resolveLDCredProposal())));
     }
 

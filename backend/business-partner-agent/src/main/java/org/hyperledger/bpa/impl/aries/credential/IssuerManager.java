@@ -209,19 +209,20 @@ public class IssuerManager extends CredentialManagerBase {
     // Credential Management - Called By Event Handler
 
     public void handleV1CredentialProposal(@NonNull V1CredentialExchange v1CredEx) {
-        handleCredentialProposalInternal(v1CredEx, ExchangeVersion.V1);
+        handleCredentialProposalInternal(v1CredEx, ExchangeVersion.V1, true);
     }
 
     public void handleV2CredentialProposal(@NonNull V20CredExRecord v2CredEx) {
         if (v2CredEx.payloadIsLdProof()) {
-            handleCredentialProposalInternal(v2CredEx, ExchangeVersion.V2);
+            handleCredentialProposalInternal(v2CredEx, ExchangeVersion.V2, false);
         } else {
             handleCredentialProposalInternal(V2ToV1IndyCredentialConverter.INSTANCE().toV1Proposal(v2CredEx),
-                    ExchangeVersion.V2);
+                    ExchangeVersion.V2, true);
         }
     }
 
-    private void handleCredentialProposalInternal(@NonNull BaseCredExRecord ex, ExchangeVersion exchangeVersion) {
+    private void handleCredentialProposalInternal(@NonNull BaseCredExRecord ex, ExchangeVersion exchangeVersion,
+            boolean isIndy) {
         partnerRepo.findByConnectionId(ex.getConnectionId()).ifPresent(partner -> {
             BPACredentialExchange.BPACredentialExchangeBuilder b = BPACredentialExchange
                     .builder()
@@ -233,16 +234,20 @@ public class IssuerManager extends CredentialManagerBase {
                     .credentialExchangeId(ex.getCredentialExchangeId())
                     .threadId(ex.getThreadId())
                     .credentialProposal(resolveProposal(ex));
-            // preselecting first match
-            credDefRepo.findBySchemaId(resolveSchemaIdFromProposal(ex)).stream().findFirst()
-                    .ifPresentOrElse(dbCredDef -> {
-                        b.schema(dbCredDef.getSchema()).credDef(dbCredDef);
-                        issuerCredExRepo.save(b.build());
-                    }, () -> {
-                        b.errorMsg(msg.getMessage("api.holder.issuer.has.no.creddef",
-                                Map.of("id", Objects.requireNonNullElse(resolveSchemaIdFromProposal(ex), ""))));
-                        issuerCredExRepo.save(b.build());
-                    });
+            if (isIndy) {
+                // preselecting first match
+                credDefRepo.findBySchemaId(resolveSchemaIdFromProposal(ex)).stream().findFirst()
+                        .ifPresentOrElse(dbCredDef -> {
+                            b.schema(dbCredDef.getSchema()).credDef(dbCredDef);
+                            issuerCredExRepo.save(b.build());
+                        }, () -> {
+                            b.errorMsg(msg.getMessage("api.holder.issuer.has.no.creddef",
+                                    Map.of("id", Objects.requireNonNullElse(resolveSchemaIdFromProposal(ex), ""))));
+                            issuerCredExRepo.save(b.build());
+                        });
+            } else {
+                ld.handleCredentialProposal(resolveSchemaIdFromProposal(ex), b);
+            }
             fireCredentialProposalEvent();
         });
     }
@@ -401,9 +406,9 @@ public class IssuerManager extends CredentialManagerBase {
                             .indy(v1Indy.getCredentialProposalDict().getCredentialProposal())
                     : null;
         } else if (ex instanceof V20CredExRecord v2) {
-            return BPACredentialExchange.ExchangePayload.jsonLD(v2.resolveLDCredProposal());
+            return BPACredentialExchange.ExchangePayload.jsonLD(Objects.requireNonNull(v2.resolveLDCredProposal()));
         }
-        return null;
+        throw new IllegalStateException();
     }
 
     private String resolveSchemaIdFromProposal(@NonNull BaseCredExRecord ex) {

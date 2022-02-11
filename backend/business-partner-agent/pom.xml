@@ -170,7 +170,7 @@
         <dependency>
             <groupId>io.micronaut.email</groupId>
             <artifactId>micronaut-email-mailjet</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.activation</groupId>

@@ -133,4 +133,17 @@ public class IssuerLDManager {
                 BPACredentialExchange.ExchangePayload.jsonLD(v20CredExRecord.resolveLDCredOffer()));
         return CredEx.from(credEx);
     }
+
+    public void handleCredentialProposal(@NonNull String schemaId,
+            @NonNull BPACredentialExchange.BPACredentialExchangeBuilder b) {
+        schemaRepo.findBySchemaId(schemaId).ifPresentOrElse(s -> {
+            b.schema(s);
+            b.type(CredentialType.JSON_LD);
+            credExRepo.save(b.build());
+        }, () -> {
+            b.errorMsg(msg.getMessage("api.holder.issuer.has.no.creddef",
+                    Map.of("id", schemaId)));
+            credExRepo.save(b.build());
+        });
+    }
 }
