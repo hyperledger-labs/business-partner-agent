@@ -40,16 +40,6 @@ public record LDEventHandler(HolderLDManager holder, IssuerLDManager issuer) {
                             v2.getErrorMsg());
                 }
             }
-        } else if (v2.roleIsIssuer()) {
-            synchronized (issuer) {
-                if (v2.stateIsProposalReceived()) {
-                    issuer.handleCredentialProposal(v2, ExchangeVersion.V2);
-                } else if (v2.stateIsRequestReceived()) {
-                    issuer.handleV2CredentialRequest(v2);
-                } else {
-                    issuer.handleV2CredentialExchange(v2);
-                }
-            }
         }
     }
 

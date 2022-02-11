@@ -29,20 +29,27 @@ import org.hyperledger.acy_py.generated.model.V20CredIssueRequest;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.exception.AriesException;
-import org.hyperledger.aries.api.issue_credential_v1.BaseCredExRecord;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
-import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
+import org.hyperledger.aries.api.issue_credential_v1.*;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
+import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
+import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
+import org.hyperledger.bpa.api.exception.IssuerException;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
+import org.hyperledger.bpa.api.notification.CredentialAcceptedEvent;
+import org.hyperledger.bpa.api.notification.CredentialIssuedEvent;
+import org.hyperledger.bpa.api.notification.CredentialProblemEvent;
 import org.hyperledger.bpa.api.notification.CredentialProposalEvent;
 import org.hyperledger.bpa.config.AcaPyConfig;
+import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.issuer.CredEx;
 import org.hyperledger.bpa.controller.api.issuer.CredentialOfferRequest;
+import org.hyperledger.bpa.controller.api.issuer.IssueIndyCredentialRequest;
+import org.hyperledger.bpa.impl.aries.jsonld.IssuerLDManager;
 import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.repository.BPACredentialDefinitionRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
@@ -59,7 +66,7 @@ import java.util.UUID;
  */
 @Slf4j
 @Singleton
-public abstract class BaseIssuerManager extends BaseCredentialManager {
+public class BaseIssuerManager extends BaseCredentialManager {
 
     @Inject
     AcaPyConfig acaPyConfig;
@@ -71,9 +78,75 @@ public abstract class BaseIssuerManager extends BaseCredentialManager {
     PartnerRepository partnerRepo;
 
     @Inject
+    IssuerIndyManager indy;
+
+    @Inject
+    IssuerLDManager ld;
+
+    @Inject
     ApplicationEventPublisher eventPublisher;
 
+    @Inject
+    RuntimeConfig config;
+
+    @Inject
+    SchemaService schemaService;
+
     // Credential Management - Called By User
+
+    public record IdWrapper(String credDefId, String schemaId) {
+    }
+
+    /**
+     * Issuer initialises the credential exchange with an offer. There is no
+     * preexisting proposal from the holder.
+     *
+     * @param request {@link IssueIndyCredentialRequest}
+     * @return credential exchange id
+     */
+    public String issueCredential(@NonNull IssueIndyCredentialRequest request) {
+        BPACredentialExchange credEx;
+        if (request.isIndy()) {
+            credEx = indy.issueIndyCredential(request);
+        } else {
+            credEx = ld.issueLDCredential(request.getPartnerId(), request.getSchemaId(), request.getDocument());
+        }
+        fireCredentialIssuedEvent(credEx);
+        return credEx.getCredentialExchangeId();
+    }
+
+    /**
+     * Re-issue a revoked credential, only works for indy credentials
+     * 
+     * @param exchangeId bpa credential exchange id
+     */
+    public void reIssueCredential(@NonNull UUID exchangeId) {
+        BPACredentialExchange credEx = issuerCredExRepo.findById(exchangeId).orElseThrow(EntityNotFoundException::new);
+        if (credEx.typeIsIndy()) {
+            indy.reIssueIndyCredential(credEx);
+        } else {
+            ld.reIssueLDCredential();
+        }
+    }
+
+    /**
+     * Revocation only works for indy credentials. Json-ld credentials are currently
+     * (February '22) not revocable, there is an ongoing discussion to use:
+     * https://w3c-ccg.github.io/vc-status-rl-2020/ for this.
+     * 
+     * @param id bpa credential exchange id.
+     * @return {@link CredEx}
+     */
+    public CredEx revokeCredential(@NonNull UUID id) {
+        if (!config.getTailsServerConfigured()) {
+            throw new IssuerException(msg.getMessage("api.issuer.no.tails.server"));
+        }
+        BPACredentialExchange credEx = issuerCredExRepo.findById(id).orElseThrow(EntityNotFoundException::new);
+        if (credEx.typeIsIndy()) {
+            return indy.revokeIndyCredential(credEx);
+        }
+        return ld.revokeLDCredential();
+    }
 
     /**
      * Send partner a credential (counter) offer in reference to a proposal (Not to
@@ -96,8 +169,11 @@ public abstract class BaseIssuerManager extends BaseCredentialManager {
             attributes = counterOffer.getAttributes();
         }
         try {
-            return sendOffer(credEx, attributes,
-                    new IdWrapper(counterOffer.getCredDefId(), counterOffer.getSchemaId()));
+            IdWrapper ids = new IdWrapper(counterOffer.getCredDefId(), counterOffer.getSchemaId());
+            if (credEx.typeIsIndy()) {
+                return indy.sendOffer(credEx, attributes, ids);
+            }
+            return ld.sendOffer(credEx, attributes, ids);
         } catch (IOException e) {
             throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
         } catch (AriesException e) {
@@ -111,20 +187,6 @@ public abstract class BaseIssuerManager extends BaseCredentialManager {
             throw e;
         }
     }
-
-    public record IdWrapper(String credDefId, String schemaId) {
-    }
-
-    /**
-     * Indy or json-ld specific send counter offer implementation
-     * 
-     * @param credEx     {@link BPACredentialExchange}
-     * @param attributes proposal or counter offer attributes
-     * @param ids        {@link IdWrapper}
-     * @return {@link CredEx}
-     */
-    protected abstract CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NonNull Map<String, String> attributes,
-            @NonNull IdWrapper ids) throws IOException;
 
     /**
      * Issuer declines credential proposal received from holder
@@ -146,7 +208,20 @@ public abstract class BaseIssuerManager extends BaseCredentialManager {
 
     // Credential Management - Called By Event Handler
 
-    public void handleCredentialProposal(@NonNull BaseCredExRecord ex, ExchangeVersion exchangeVersion) {
+    public void handleV1CredentialProposal(@NonNull V1CredentialExchange v1CredEx) {
+        handleCredentialProposalInternal(v1CredEx, ExchangeVersion.V1);
+    }
+
+    public void handleV2CredentialProposal(@NonNull V20CredExRecord v2CredEx) {
+        if (v2CredEx.payloadIsLdProof()) {
+            handleCredentialProposalInternal(v2CredEx, ExchangeVersion.V2);
+        } else {
+            handleCredentialProposalInternal(V2ToV1IndyCredentialConverter.INSTANCE().toV1Proposal(v2CredEx),
+                    ExchangeVersion.V2);
+        }
+    }
+
+    private void handleCredentialProposalInternal(@NonNull BaseCredExRecord ex, ExchangeVersion exchangeVersion) {
         partnerRepo.findByConnectionId(ex.getConnectionId()).ifPresent(partner -> {
             BPACredentialExchange.BPACredentialExchangeBuilder b = BPACredentialExchange
                     .builder()
@@ -169,6 +244,56 @@ public abstract class BaseIssuerManager extends BaseCredentialManager {
                         issuerCredExRepo.save(b.build());
                     });
             fireCredentialProposalEvent();
+        });
+    }
+
+    /**
+     * In v1 (indy) this message can only be received after a preceding Credential
+     * Offer, meaning the holder can never start with a Credential Request, so it is
+     * ok to directly auto accept the request
+     *
+     * @param ex {@link V1CredentialExchange}
+     */
+    public void handleV1CredentialRequest(@NonNull V1CredentialExchange ex) {
+        try {
+            if (Boolean.FALSE.equals(acaPyConfig.getAutoRespondCredentialRequest())) {
+                ac.issueCredentialRecordsIssue(ex.getCredentialExchangeId(),
+                        V1CredentialIssueRequest.builder().build());
+            }
+            handleV1CredentialExchange(ex); // save state changes
+        } catch (IOException e) {
+            log.error(msg.getMessage("acapy.unavailable"));
+        }
+    }
+
+    /**
+     * Handle issue credential v1 state changes and revocation info
+     *
+     * @param ex {@link V1CredentialExchange}
+     */
+    public void handleV1CredentialExchange(@NonNull V1CredentialExchange ex) {
+        issuerCredExRepo.findByCredentialExchangeId(ex.getCredentialExchangeId()).ifPresent(bpaEx -> {
+            boolean notDeclined = bpaEx.stateIsNotDeclined();
+            CredentialExchangeState state = ex.getState() != null ? ex.getState() : CredentialExchangeState.PROBLEM;
+            bpaEx.pushStates(state, ex.getUpdatedAt());
+            if (StringUtils.isNotEmpty(ex.getErrorMsg())) {
+                if (notDeclined) {
+                    issuerCredExRepo.updateAfterEventNoRevocationInfo(bpaEx.getId(),
+                            bpaEx.getState(), bpaEx.getStateToTimestamp(), ex.getErrorMsg());
+                    fireCredentialProblemEvent(bpaEx);
+                }
+            } else {
+                issuerCredExRepo.updateAfterEventWithRevocationInfo(bpaEx.getId(),
+                        bpaEx.getState(), bpaEx.getStateToTimestamp(),
+                        ex.getRevocRegId(), ex.getRevocationId(), ex.getErrorMsg());
+            }
+            if (ex.stateIsCredentialAcked() && ex.autoIssueEnabled()) {
+                ex.findAttributesInCredentialOfferDict().ifPresent(
+                        attr -> {
+                            issuerCredExRepo.updateCredential(bpaEx.getId(), Credential.builder().attrs(attr).build());
+                            fireCredentialAcceptedEvent(bpaEx);
+                        });
+            }
         });
     }
 
@@ -290,9 +415,34 @@ public abstract class BaseIssuerManager extends BaseCredentialManager {
         return null;
     }
 
+    private String schemaLabel(@NonNull BPACredentialExchange db) {
+        if (db.getIndyCredential() != null && db.getIndyCredential().getSchemaId() != null) {
+            return schemaService.getSchemaLabel(db.getIndyCredential().getSchemaId());
+        }
+        return "";
+    }
+
     // Events
+
+    private void fireCredentialIssuedEvent(@NonNull BPACredentialExchange db) {
+        eventPublisher.publishEventAsync(CredentialIssuedEvent.builder()
+                .credential(AriesCredential.fromBPACredentialExchange(db, schemaLabel(db)))
+                .build());
+    }
 
     private void fireCredentialProposalEvent() {
         eventPublisher.publishEventAsync(new CredentialProposalEvent());
+    }
+
+    private void fireCredentialAcceptedEvent(@NonNull BPACredentialExchange db) {
+        eventPublisher.publishEventAsync(CredentialAcceptedEvent.builder()
+                .credential(AriesCredential.fromBPACredentialExchange(db, schemaLabel(db)))
+                .build());
+    }
+
+    private void fireCredentialProblemEvent(@NonNull BPACredentialExchange db) {
+        eventPublisher.publishEventAsync(CredentialProblemEvent.builder()
+                .credential(AriesCredential.fromBPACredentialExchange(db, schemaLabel(db)))
+                .build());
     }
 }

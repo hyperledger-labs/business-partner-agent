@@ -32,6 +32,7 @@ import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2CredentialExchangeFree;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
+import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.issuer.CredEx;
@@ -55,7 +56,7 @@ import java.util.UUID;
  */
 @Slf4j
 @Singleton
-public class IssuerLDManager extends BaseIssuerManager {
+public class IssuerLDManager {
 
     @Inject
     AriesClient ac;
@@ -75,8 +76,7 @@ public class IssuerLDManager extends BaseIssuerManager {
     @Inject
     BPAMessageSource.DefaultMessageSource msg;
 
-    public String issueLDCredential(UUID partnerId, UUID bpaSchemaId, JsonNode document) {
-        String credentialExchangeId = null;
+    public BPACredentialExchange issueLDCredential(UUID partnerId, UUID bpaSchemaId, JsonNode document) {
         Partner partner = partnerRepo.findById(partnerId).orElseThrow(EntityNotFoundException::new);
         BPASchema bpaSchema = schemaRepo.findById(bpaSchemaId).orElseThrow(EntityNotFoundException::new);
         try {
@@ -98,17 +98,23 @@ public class IssuerLDManager extends BaseIssuerManager {
                     .threadId(exRecord.getThreadId())
                     .exchangeVersion(ExchangeVersion.V2)
                     .build();
-            credExRepo.save(cex);
-            credentialExchangeId = exRecord.getCredentialExchangeId();
+            return credExRepo.save(cex);
         } catch (IOException e) {
             log.error("aca-py is offline");
+            throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
         }
-        return credentialExchangeId;
     }
 
-    @Override
-    protected CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NotNull Map<String, String> attributes,
-            @NonNull IdWrapper ids) throws IOException {
+    public void reIssueLDCredential() {
+        throw new WrongApiUsageException(msg.getMessage("api.issuer.credential.send.not.supported"));
+    }
+
+    public CredEx revokeLDCredential() {
+        throw new WrongApiUsageException(msg.getMessage("api.issuer.credential.send.not.supported"));
+    }
+
+    public CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NotNull Map<String, String> attributes,
+            @NonNull BaseIssuerManager.IdWrapper ids) throws IOException {
         String schemaId = credEx.getSchema() != null ? credEx.getSchema().getSchemaId() : null;
         if (StringUtils.isNotEmpty(schemaId) && !StringUtils.equals(schemaId, ids.schemaId())) {
             BPASchema counterSchema = schemaRepo.findBySchemaId(ids.schemaId()).orElseThrow(

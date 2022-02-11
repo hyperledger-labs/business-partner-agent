@@ -26,6 +26,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.bpa.api.CredentialType;
 
 import javax.validation.constraints.NotBlank;
 import java.util.UUID;
@@ -39,11 +40,15 @@ public class IssueIndyCredentialRequest {
     // bpa ids
     @NotBlank
     private UUID credDefId;
+    private UUID schemaId;
     @NotBlank
     private UUID partnerId;
 
     /** credential exchange api version */
     private ExchangeVersion exchangeVersion;
+
+    /** credential exchange type */
+    private CredentialType type;
 
     /** credential body key value pairs */
     @JsonRawValue
@@ -52,5 +57,9 @@ public class IssueIndyCredentialRequest {
 
     public boolean isV1() {
         return exchangeVersion == null || ExchangeVersion.V1.equals(exchangeVersion);
+    }
+
+    public boolean isIndy() {
+        return type == null || CredentialType.INDY.equals(type);
     }
 }

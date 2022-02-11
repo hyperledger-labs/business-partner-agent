@@ -72,8 +72,9 @@ public class LDContextHelper {
                         .credential(VerifiableCredential.builder()
                                 .context(List.of(CredentialType.JSON_LD.getContext().get(0), bpaSchema.getSchemaId()))
                                 .credentialSubject(GsonConfig.defaultConfig().toJsonTree(document).getAsJsonObject())
-                                .issuanceDate(issuer ? TimeUtil.toISOInstantTruncated(Instant.now()) : null)
-                                .issuer(issuer ? identity.getDidKey() : null)
+                                .issuanceDate(TimeUtil.toISOInstantTruncated(Instant.now()))
+                                .issuer(identity.getDidKey()) // TODO how to get the did:key from the issuer when
+                                                              // holder?
                                 .type(List.of(CredentialType.JSON_LD.getType().get(0),
                                         Objects.requireNonNull(bpaSchema.getLdType())))
                                 .build())

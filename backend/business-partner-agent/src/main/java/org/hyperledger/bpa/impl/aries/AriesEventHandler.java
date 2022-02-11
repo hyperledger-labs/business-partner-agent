@@ -37,10 +37,10 @@ import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.impl.aries.chat.ChatMessageManager;
 import org.hyperledger.bpa.impl.aries.connection.ConnectionManager;
 import org.hyperledger.bpa.impl.aries.connection.PingManager;
+import org.hyperledger.bpa.impl.aries.credential.BaseIssuerManager;
 import org.hyperledger.bpa.impl.aries.credential.HolderCredentialManager;
-import org.hyperledger.bpa.impl.aries.credential.IssuerCredentialManager;
-import org.hyperledger.bpa.impl.aries.proof.ProofEventHandler;
 import org.hyperledger.bpa.impl.aries.jsonld.LDEventHandler;
+import org.hyperledger.bpa.impl.aries.proof.ProofEventHandler;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
 import java.util.Optional;
@@ -55,7 +55,7 @@ public class AriesEventHandler extends EventHandler {
 
     private final HolderCredentialManager credHolder;
 
-    private final IssuerCredentialManager credIssuer;
+    private final BaseIssuerManager credIssuer;
 
     private final ProofEventHandler proof;
 
@@ -70,7 +70,7 @@ public class AriesEventHandler extends EventHandler {
             HolderCredentialManager holderCredentialManager,
             ProofEventHandler proofEventHandler,
             LDEventHandler jsonLD,
-            IssuerCredentialManager issuerCredentialManager,
+            BaseIssuerManager issuerCredentialManager,
             ChatMessageManager chatMessageManager) {
         this.connection = connectionManager;
         this.ping = pingManager;
@@ -139,7 +139,7 @@ public class AriesEventHandler extends EventHandler {
         } else if (v1CredEx.roleIsIssuer()) {
             synchronized (credIssuer) {
                 if (v1CredEx.stateIsProposalReceived()) {
-                    credIssuer.handleCredentialProposal(v1CredEx, ExchangeVersion.V1);
+                    credIssuer.handleV1CredentialProposal(v1CredEx);
                 } else if (v1CredEx.stateIsRequestReceived()) {
                     credIssuer.handleV1CredentialRequest(v1CredEx);
                 } else {
@@ -157,8 +157,7 @@ public class AriesEventHandler extends EventHandler {
         } else if (v2CredEx.roleIsIssuer()) {
             synchronized (credIssuer) {
                 if (v2CredEx.stateIsProposalReceived()) {
-                    credIssuer.handleCredentialProposal(V2ToV1IndyCredentialConverter.INSTANCE().toV1Proposal(v2CredEx),
-                            ExchangeVersion.V2);
+                    credIssuer.handleV2CredentialProposal(v2CredEx);
                 } else if (v2CredEx.stateIsRequestReceived()) {
                     credIssuer.handleV2CredentialRequest(v2CredEx);
                 } else {

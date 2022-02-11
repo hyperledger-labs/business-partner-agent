@@ -34,9 +34,9 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
 import org.hyperledger.bpa.controller.api.issuer.*;
-import org.hyperledger.bpa.impl.aries.credential.IssuerCredentialManager;
+import org.hyperledger.bpa.impl.aries.creddef.CredDefManager;
+import org.hyperledger.bpa.impl.aries.credential.BaseIssuerManager;
 import org.hyperledger.bpa.impl.aries.credential.OOBCredentialOffer;
-import org.hyperledger.bpa.impl.aries.jsonld.IssuerLDManager;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 
 import javax.validation.Valid;
@@ -55,10 +55,10 @@ public class IssuerController {
     public static final String ISSUER_CONTROLLER_BASE_URL = "/api/issuer";
 
     @Inject
-    IssuerCredentialManager im;
+    BaseIssuerManager im;
 
     @Inject
-    IssuerLDManager ld;
+    CredDefManager credDef;
 
     @Inject
     OOBCredentialOffer connectionLess;
@@ -85,7 +85,7 @@ public class IssuerController {
      */
     @Get("/creddef")
     public HttpResponse<List<CredDef>> listCredDefs() {
-        return HttpResponse.ok(im.listCredDefs());
+        return HttpResponse.ok(credDef.listCredDefs());
     }
 
     /**
@@ -96,7 +96,7 @@ public class IssuerController {
      */
     @Post("/creddef")
     public HttpResponse<CredDef> createCredDef(@Body CreateCredDefRequest req) {
-        return HttpResponse.ok(im.createCredDef(req.getSchemaId(), req.getTag(), req.isSupportRevocation()));
+        return HttpResponse.ok(credDef.createCredDef(req.getSchemaId(), req.getTag(), req.isSupportRevocation()));
     }
 
     /**
@@ -107,7 +107,7 @@ public class IssuerController {
      */
     @Delete("/creddef/{id}")
     public HttpResponse<Void> deleteCredDef(@PathVariable UUID id) {
-        im.deleteCredDef(id);
+        credDef.deleteCredDef(id);
         return HttpResponse.ok();
     }
 
@@ -119,21 +119,9 @@ public class IssuerController {
      */
     @Post("/issue-credential/send")
     public HttpResponse<String> issueIndyCredential(@Valid @Body IssueIndyCredentialRequest req) {
-        String exchangeId = im.issueIndyCredential(req);
+        String exchangeId = im.issueCredential(req);
         // just return the id and not the full Aries Object.
         // Event handlers will create the db cred ex records
-        return HttpResponse.ok(exchangeId);
-    }
-
-    /**
-     * Auto credential exchange: Issuer sends json-ld credential to holder
-     * 
-     * @param req {@link IssueLDCredentialRequest}
-     * @return {@link HttpResponse}
-     */
-    @Post("/issue-credential/send-ld")
-    public HttpResponse<String> issueLDCredential(@Valid @Body IssueLDCredentialRequest req) {
-        String exchangeId = ld.issueLDCredential(req.getPartnerId(), req.getSchemaId(), req.getDocument());
         return HttpResponse.ok(exchangeId);
     }
 
@@ -194,7 +182,7 @@ public class IssuerController {
      */
     @Put("/exchanges/{id}/revoke")
     public HttpResponse<CredEx> revokeCredential(@PathVariable UUID id) {
-        return HttpResponse.ok(im.revokeIndyCredential(id));
+        return HttpResponse.ok(im.revokeCredential(id));
     }
 
     /**
@@ -206,7 +194,7 @@ public class IssuerController {
      */
     @Post("/exchanges/{id}/re-issue")
     public HttpResponse<Void> reIssueCredential(@PathVariable UUID id) {
-        im.reIssueIndyCredential(id);
+        im.reIssueCredential(id);
         return HttpResponse.ok();
     }
 
