@@ -36,7 +36,7 @@ import org.hyperledger.bpa.controller.api.issuer.DeclineExchangeRequest;
 import org.hyperledger.bpa.controller.api.wallet.WalletCredentialRequest;
 import org.hyperledger.bpa.controller.api.wallet.WalletDocumentRequest;
 import org.hyperledger.bpa.impl.MyDocumentManager;
-import org.hyperledger.bpa.impl.aries.credential.HolderCredentialManager;
+import org.hyperledger.bpa.impl.aries.credential.HolderManager;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,7 +53,7 @@ public class WalletController {
     MyDocumentManager docMgmt;
 
     @Inject
-    HolderCredentialManager holderCredMgmt;
+    HolderManager holderCredMgmt;
 
     // -------------------------------------
     // Document Management

@@ -35,7 +35,7 @@ import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
 import org.hyperledger.bpa.controller.api.issuer.*;
 import org.hyperledger.bpa.impl.aries.creddef.CredDefManager;
-import org.hyperledger.bpa.impl.aries.credential.BaseIssuerManager;
+import org.hyperledger.bpa.impl.aries.credential.IssuerManager;
 import org.hyperledger.bpa.impl.aries.credential.OOBCredentialOffer;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 
@@ -55,7 +55,7 @@ public class IssuerController {
     public static final String ISSUER_CONTROLLER_BASE_URL = "/api/issuer";
 
     @Inject
-    BaseIssuerManager im;
+    IssuerManager im;
 
     @Inject
     CredDefManager credDef;

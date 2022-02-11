@@ -36,7 +36,7 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.issuer.CredEx;
-import org.hyperledger.bpa.impl.aries.credential.BaseIssuerManager;
+import org.hyperledger.bpa.impl.aries.credential.IssuerManager;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.model.Partner;
@@ -114,7 +114,7 @@ public class IssuerLDManager {
     }
 
     public CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NotNull Map<String, String> attributes,
-            @NonNull BaseIssuerManager.IdWrapper ids) throws IOException {
+            @NonNull IssuerManager.IdWrapper ids) throws IOException {
         String schemaId = credEx.getSchema() != null ? credEx.getSchema().getSchemaId() : null;
         if (StringUtils.isNotEmpty(schemaId) && !StringUtils.equals(schemaId, ids.schemaId())) {
             BPASchema counterSchema = schemaRepo.findBySchemaId(ids.schemaId()).orElseThrow(

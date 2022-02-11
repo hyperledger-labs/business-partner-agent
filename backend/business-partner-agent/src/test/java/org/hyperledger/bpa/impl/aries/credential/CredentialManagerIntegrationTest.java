@@ -61,7 +61,10 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
     AriesEventHandler eventHandler;
 
     @Inject
-    HolderCredentialManager holderMgmt;
+    HolderManager holderMgmt;
+
+    @Inject
+    HolderIndyManager indy;
 
     @Inject
     HolderCredExRepository holderCredExRepo;
@@ -89,7 +92,7 @@ public class CredentialManagerIntegrationTest extends RunWithAries {
 
     @BeforeEach
     public void injectAries() {
-        holderMgmt.setSchemaService(schemaService);
+        indy.setSchemaService(schemaService);
         crypto.setAcaPy(ac);
         acaCache.setAc(ac);
         id.setAcaPy(ac);

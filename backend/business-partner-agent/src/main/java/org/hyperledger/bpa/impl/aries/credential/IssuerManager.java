@@ -66,7 +66,7 @@ import java.util.UUID;
  */
 @Slf4j
 @Singleton
-public class BaseIssuerManager extends BaseCredentialManager {
+public class IssuerManager extends CredentialManagerBase {
 
     @Inject
     AcaPyConfig acaPyConfig;

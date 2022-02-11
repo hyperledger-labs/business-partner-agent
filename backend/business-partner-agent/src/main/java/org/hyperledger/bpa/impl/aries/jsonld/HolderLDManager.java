@@ -19,13 +19,13 @@ package org.hyperledger.bpa.impl.aries.jsonld;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import lombok.NonNull;
 import org.hyperledger.aries.api.issue_credential_v1.BaseCredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
-import org.hyperledger.bpa.impl.aries.credential.BaseHolderManager;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
@@ -39,10 +39,7 @@ import java.util.Optional;
  * Handles all credential holder logic that is specific to json-ld
  */
 @Singleton
-public class HolderLDManager extends BaseHolderManager {
-
-    @Inject
-    HolderCredExRepository credExRepo;
+public class HolderLDManager {
 
     @Inject
     BPASchemaRepository schemaRepo;
@@ -56,7 +53,6 @@ public class HolderLDManager extends BaseHolderManager {
     @Inject
     LabelStrategy labelStrategy;
 
-    @Override
     public BPASchema checkSchema(BaseCredExRecord credExBase) {
         BPASchema schema = null;
         if (credExBase instanceof V20CredExRecord) {
@@ -77,16 +73,14 @@ public class HolderLDManager extends BaseHolderManager {
         return schema;
     }
 
-    public void handleCredentialReceived(V20CredExRecord v2) {
-        holderCredExRepo.findByCredentialExchangeId(v2.getCredentialExchangeId()).ifPresent(dbCred -> {
-            String label = labelStrategy.apply(dbCred.getLdCredential());
-            dbCred
-                    .pushStates(v2.getState(), v2.getUpdatedAt())
-                    .setLdCredential(BPACredentialExchange.ExchangePayload.jsonLD(v2.resolveLDCredOffer()))
-                    .setIssuer(resolveIssuer(dbCred.getPartner()))
-                    .setLabel(label);
-            BPACredentialExchange dbCredential = holderCredExRepo.update(dbCred);
-            fireCredentialAddedEvent(dbCredential);
-        });
+    public void handleV2CredentialReceived(@NonNull V20CredExRecord v2, @NonNull BPACredentialExchange dbCred,
+            String issuer) {
+        String label = labelStrategy.apply(dbCred.getLdCredential());
+        dbCred
+                .pushStates(v2.getState(), v2.getUpdatedAt())
+                .setLdCredential(BPACredentialExchange.ExchangePayload.jsonLD(v2.resolveLDCredOffer()))
+                .setIssuer(issuer)
+                .setLabel(label);
+        holderCredExRepo.update(dbCred);
     }
 }

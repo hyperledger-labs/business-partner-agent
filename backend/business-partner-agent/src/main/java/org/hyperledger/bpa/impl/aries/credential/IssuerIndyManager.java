@@ -187,7 +187,7 @@ public class IssuerIndyManager {
     }
 
     public CredEx sendOffer(@NonNull BPACredentialExchange credEx, @NotNull Map<String, String> attributes,
-            @NonNull BaseIssuerManager.IdWrapper ids) throws IOException {
+            @NonNull IssuerManager.IdWrapper ids) throws IOException {
         String credDefId = credEx.getCredDef() != null ? credEx.getCredDef().getCredentialDefinitionId() : null;
         if (StringUtils.isNotEmpty(ids.credDefId()) && !StringUtils.equals(credDefId, ids.credDefId())) {
             BPACredentialDefinition counterCredDef = credDefRepo

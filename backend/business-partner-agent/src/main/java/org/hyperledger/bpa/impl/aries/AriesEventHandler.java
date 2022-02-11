@@ -26,7 +26,6 @@ import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueLDCredentialEvent;
-import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.message.BasicMessage;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof_v2.V20PresExRecord;
@@ -37,8 +36,8 @@ import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.impl.aries.chat.ChatMessageManager;
 import org.hyperledger.bpa.impl.aries.connection.ConnectionManager;
 import org.hyperledger.bpa.impl.aries.connection.PingManager;
-import org.hyperledger.bpa.impl.aries.credential.BaseIssuerManager;
-import org.hyperledger.bpa.impl.aries.credential.HolderCredentialManager;
+import org.hyperledger.bpa.impl.aries.credential.HolderManager;
+import org.hyperledger.bpa.impl.aries.credential.IssuerManager;
 import org.hyperledger.bpa.impl.aries.jsonld.LDEventHandler;
 import org.hyperledger.bpa.impl.aries.proof.ProofEventHandler;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
@@ -53,9 +52,9 @@ public class AriesEventHandler extends EventHandler {
 
     private final Optional<PingManager> ping;
 
-    private final HolderCredentialManager credHolder;
+    private final HolderManager credHolder;
 
-    private final BaseIssuerManager credIssuer;
+    private final IssuerManager credIssuer;
 
     private final ProofEventHandler proof;
 
@@ -67,10 +66,10 @@ public class AriesEventHandler extends EventHandler {
     public AriesEventHandler(
             ConnectionManager connectionManager,
             Optional<PingManager> pingManager,
-            HolderCredentialManager holderCredentialManager,
+            HolderManager holderCredentialManager,
             ProofEventHandler proofEventHandler,
             LDEventHandler jsonLD,
-            BaseIssuerManager issuerCredentialManager,
+            IssuerManager issuerCredentialManager,
             ChatMessageManager chatMessageManager) {
         this.connection = connectionManager;
         this.ping = pingManager;
@@ -152,9 +151,7 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleCredentialV2(V20CredExRecord v2CredEx) {
         log.debug("Credential V2 Event: {}", v2CredEx);
-        if (v2CredEx.payloadIsLdProof()) {
-            jsonLD.dispatch(v2CredEx);
-        } else if (v2CredEx.roleIsIssuer()) {
+        if (v2CredEx.roleIsIssuer()) {
             synchronized (credIssuer) {
                 if (v2CredEx.stateIsProposalReceived()) {
                     credIssuer.handleV2CredentialProposal(v2CredEx);
@@ -167,10 +164,7 @@ public class AriesEventHandler extends EventHandler {
         } else if (v2CredEx.roleIsHolder()) {
             synchronized (credHolder) {
                 if (v2CredEx.stateIsOfferReceived()) {
-                    credHolder.handleOfferReceived(v2CredEx,
-                            BPACredentialExchange.ExchangePayload.indy(V2ToV1IndyCredentialConverter.INSTANCE()
-                                    .toV1Offer(v2CredEx).getCredentialProposalDict().getCredentialProposal()),
-                            ExchangeVersion.V2);
+                    credHolder.handleV2OfferReceived(v2CredEx);
                 } else if (v2CredEx.stateIsCredentialReceived()) {
                     credHolder.handleV2CredentialReceived(v2CredEx);
                 } else {

@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  * credentials, and both holder and issuer flows.
  */
 @Singleton
-public abstract class BaseCredentialManager {
+public abstract class CredentialManagerBase {
 
     @Inject
     AriesClient ac;

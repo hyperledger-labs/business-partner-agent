@@ -18,31 +18,10 @@
 package org.hyperledger.bpa.impl.aries.jsonld;
 
 import jakarta.inject.Singleton;
-import org.hyperledger.aries.api.ExchangeVersion;
-import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueLDCredentialEvent;
-import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
 @Singleton
 public record LDEventHandler(HolderLDManager holder, IssuerLDManager issuer) {
-
-    public void dispatch(V20CredExRecord v2) {
-        if (v2.roleIsHolder()) {
-            synchronized (holder) {
-                if (v2.stateIsOfferReceived()) {
-                    holder.handleOfferReceived(v2,
-                            BPACredentialExchange.ExchangePayload.jsonLD(v2.resolveLDCredOffer()),
-                            ExchangeVersion.V2);
-                } else if (v2.stateIsCredentialReceived()) {
-                    holder.handleCredentialReceived(v2);
-                } else {
-                    holder.handleStateChangesOnly(v2.getCredentialExchangeId(), v2.getState(), v2.getUpdatedAt(),
-                            v2.getErrorMsg());
-                }
-            }
-        }
-    }
-
     public void handleIssueCredentialV2LD(V2IssueLDCredentialEvent credentialInfo) {
     }
 }

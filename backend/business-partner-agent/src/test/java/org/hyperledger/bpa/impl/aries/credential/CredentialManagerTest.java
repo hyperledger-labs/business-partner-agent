@@ -36,7 +36,7 @@ class CredentialManagerTest extends BaseTest {
     private static final String DID = "did:sov:M6Mbe3qx7vB4wpZF4sBRjt";
 
     @Inject
-    HolderCredentialManager mgmt;
+    HolderManager mgmt;
 
     @Inject
     PartnerRepository partnerRepo;
