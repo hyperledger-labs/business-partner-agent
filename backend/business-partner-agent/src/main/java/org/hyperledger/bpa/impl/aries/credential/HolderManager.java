@@ -17,8 +17,6 @@
  */
 package org.hyperledger.bpa.impl.aries.credential;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
@@ -28,13 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.acy_py.generated.model.V20CredRequestRequest;
 import org.hyperledger.aries.api.ExchangeVersion;
-import org.hyperledger.aries.api.credentials.CredentialAttributes;
-import org.hyperledger.aries.api.credentials.CredentialPreview;
 import org.hyperledger.aries.api.exception.AriesException;
-import org.hyperledger.aries.api.issue_credential_v1.*;
-import org.hyperledger.aries.api.issue_credential_v2.V1ToV2IssueCredentialConverter;
+import org.hyperledger.aries.api.issue_credential_v1.BaseCredExRecord;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
-import org.hyperledger.aries.api.issue_credential_v2.V2CredentialExchangeFree;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
@@ -49,7 +46,6 @@ import org.hyperledger.bpa.api.notification.CredentialAddedEvent;
 import org.hyperledger.bpa.api.notification.CredentialOfferedEvent;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.aries.jsonld.HolderLDManager;
-import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.impl.aries.jsonld.VPManager;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
@@ -95,13 +91,7 @@ public class HolderManager extends CredentialManagerBase {
     Converter conv;
 
     @Inject
-    LDContextHelper ldHelper;
-
-    @Inject
     MyDocumentRepository docRepo;
-
-    @Inject
-    ObjectMapper mapper;
 
     @Inject
     VPManager vpMgmt;
@@ -120,11 +110,6 @@ public class HolderManager extends CredentialManagerBase {
      */
     public void sendCredentialProposal(@NonNull UUID partnerId, @NonNull UUID myDocId,
             @Nullable ExchangeVersion version) {
-
-        // TODO split this up the same way as the offer in the issuer
-        // TODO issuance date and issuer are missing in the ld request, requires did:key
-        // of the issuer
-
         Partner dbPartner = partnerRepo.findById(partnerId)
                 .orElseThrow(
                         () -> new PartnerException(msg.getMessage("api.partner.not.found", Map.of("id", partnerId))));
@@ -137,15 +122,6 @@ public class HolderManager extends CredentialManagerBase {
         }
         BPASchema s = dbDoc.getSchema();
         try {
-            V1CredentialProposalRequest v1CredentialProposalRequest = V1CredentialProposalRequest
-                    .builder()
-                    .connectionId(Objects.requireNonNull(dbPartner.getConnectionId()))
-                    .schemaId(s.getSchemaId())
-                    .credentialProposal(
-                            new CredentialPreview(
-                                    CredentialAttributes.from(
-                                            Objects.requireNonNull(dbDoc.getDocument()))))
-                    .build();
             BPACredentialExchange.BPACredentialExchangeBuilder dbCredEx = BPACredentialExchange
                     .builder()
                     .partner(dbPartner)
@@ -153,39 +129,12 @@ public class HolderManager extends CredentialManagerBase {
                     .state(CredentialExchangeState.PROPOSAL_SENT)
                     .pushStateChange(CredentialExchangeState.PROPOSAL_SENT, Instant.now())
                     .role(CredentialExchangeRole.HOLDER);
-            if (version == null || ExchangeVersion.V1.equals(version)) {
-                ac.issueCredentialSendProposal(v1CredentialProposalRequest).ifPresent(v1 -> dbCredEx
-                        .threadId(v1.getThreadId())
-                        .credentialExchangeId(v1.getCredentialExchangeId())
-                        .credentialProposal(BPACredentialExchange.ExchangePayload
-                                .indy(v1.getCredentialProposalDict().getCredentialProposal())));
+            String connectionId = Objects.requireNonNull(dbPartner.getConnectionId());
+            Map<String, Object> document = Objects.requireNonNull(dbDoc.getDocument());
+            if (dbDoc.typeIsIndy()) {
+                indy.sendCredentialProposal(connectionId, s.getSchemaId(), document, dbCredEx, version);
             } else {
-                V2CredentialExchangeFree v2Request;
-                if (dbDoc.typeIsIndy()) {
-                    v2Request = V1ToV2IssueCredentialConverter.toV20CredExFree(v1CredentialProposalRequest);
-                } else {
-                    JsonNode jsonNode = mapper.valueToTree(dbDoc.getDocument());
-                    v2Request = V2CredentialExchangeFree.builder()
-                            .connectionId(UUID.fromString(Objects.requireNonNull(dbPartner.getConnectionId())))
-                            .filter(ldHelper.buildVC(s, jsonNode, Boolean.FALSE))
-                            .build();
-                }
-                ac.issueCredentialV2SendProposal(v2Request).ifPresent(v2 -> {
-                    BPACredentialExchange.ExchangePayload proposal;
-                    if (dbDoc.typeIsIndy()) {
-                        proposal = BPACredentialExchange.ExchangePayload
-                                .indy(V2ToV1IndyCredentialConverter.INSTANCE().toV1Proposal(v2)
-                                        .getCredentialProposalDict()
-                                        .getCredentialProposal());
-                    } else {
-                        proposal = BPACredentialExchange.ExchangePayload.jsonLD(v2.resolveLDCredProposal());
-                    }
-                    dbCredEx
-                            .threadId(v2.getThreadId())
-                            .credentialExchangeId(v2.getCredentialExchangeId())
-                            .exchangeVersion(ExchangeVersion.V2)
-                            .credentialProposal(proposal);
-                });
+                ld.sendCredentialProposal(connectionId, s, document, dbCredEx);
             }
             holderCredExRepo.save(dbCredEx.build());
         } catch (IOException e) {

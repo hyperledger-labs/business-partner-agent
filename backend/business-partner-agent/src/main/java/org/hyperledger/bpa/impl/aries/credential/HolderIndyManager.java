@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.impl.aries.credential;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.scheduling.annotation.Scheduled;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -25,11 +26,17 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
+import org.hyperledger.aries.api.credentials.CredentialPreview;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.issue_credential_v1.BaseCredExRecord;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialProposalRequest;
+import org.hyperledger.aries.api.issue_credential_v2.V1ToV2IssueCredentialConverter;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
+import org.hyperledger.aries.api.issue_credential_v2.V2CredentialExchangeFree;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
@@ -38,7 +45,9 @@ import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 
+import java.io.IOException;
 import java.time.Instant;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -61,6 +70,42 @@ public class HolderIndyManager {
     @Inject
     @Setter(AccessLevel.PACKAGE)
     SchemaService schemaService;
+
+    public void sendCredentialProposal(
+            @NonNull String connectionId,
+            @NonNull String schemaId,
+            @NonNull Map<String, Object> document,
+            @NonNull BPACredentialExchange.BPACredentialExchangeBuilder dbCredEx,
+            @Nullable ExchangeVersion version)
+            throws IOException {
+        V1CredentialProposalRequest v1CredentialProposalRequest = V1CredentialProposalRequest
+                .builder()
+                .connectionId(Objects.requireNonNull(connectionId))
+                .schemaId(schemaId)
+                .credentialProposal(
+                        new CredentialPreview(
+                                CredentialAttributes.from(
+                                        Objects.requireNonNull(document))))
+                .build();
+        if (version == null || ExchangeVersion.V1.equals(version)) {
+            ac.issueCredentialSendProposal(v1CredentialProposalRequest).ifPresent(v1 -> dbCredEx
+                    .threadId(v1.getThreadId())
+                    .credentialExchangeId(v1.getCredentialExchangeId())
+                    .credentialProposal(BPACredentialExchange.ExchangePayload
+                            .indy(v1.getCredentialProposalDict().getCredentialProposal())));
+        } else {
+            V2CredentialExchangeFree v2Request = V1ToV2IssueCredentialConverter
+                    .toV20CredExFree(v1CredentialProposalRequest);
+            ac.issueCredentialV2SendProposal(v2Request).ifPresent(v2 -> dbCredEx
+                    .threadId(v2.getThreadId())
+                    .credentialExchangeId(v2.getCredentialExchangeId())
+                    .exchangeVersion(ExchangeVersion.V2)
+                    .credentialProposal(BPACredentialExchange.ExchangePayload
+                            .indy(V2ToV1IndyCredentialConverter.INSTANCE().toV1Proposal(v2)
+                                    .getCredentialProposalDict()
+                                    .getCredentialProposal())));
+        }
+    }
 
     /**
      * Scheduled task that checks the revocation status of all credentials issued to
