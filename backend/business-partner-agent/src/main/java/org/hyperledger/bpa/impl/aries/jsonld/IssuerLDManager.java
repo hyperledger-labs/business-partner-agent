@@ -23,7 +23,6 @@ import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.acy_py.generated.model.V20CredPreview;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.credentials.CredentialAttributes;
