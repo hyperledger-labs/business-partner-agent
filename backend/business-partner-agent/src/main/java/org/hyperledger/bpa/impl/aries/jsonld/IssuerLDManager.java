@@ -23,8 +23,10 @@ import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.acy_py.generated.model.V20CredPreview;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredBoundOfferRequest;
@@ -127,6 +129,9 @@ public class IssuerLDManager {
         V20CredExRecord v20CredExRecord = ac.issueCredentialV2RecordsSendOffer(credEx.getCredentialExchangeId(),
                 V20CredBoundOfferRequest.builder()
                         .filter(v20CredFilter)
+                        .counterPreview(V2CredentialExchangeFree.V2CredentialPreview.builder()
+                                .attributes(CredentialAttributes.fromMap(attributes))
+                                .build())
                         .build())
                 .orElseThrow();
         credExRepo.updateCredential(credEx.getId(),

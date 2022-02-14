@@ -513,7 +513,10 @@ export default {
 
       const counterOffer = {
         acceptProposal,
-        credDefId: this.credDef.credentialDefinitionId,
+        credDefId: this.credDef
+          ? this.credDef.credentialDefinitionId
+          : undefined,
+        schemaId: this.document.schemaId,
         attributes: this.document.credentialData,
       };
 
