@@ -16,7 +16,7 @@
     "license-file-headers-update-year": "license-check-and-add remove -f license-header/config.json && npm run license-file-headers-add",
     "postinstall": "npm run license && npm run prettify",
     "prepare": "cd ../ && husky install ./frontend/.husky",
-    "prettify": "prettier --write **/*.{css,html,js,json,mjs,scss,ts,tsx,yml,md,vue}"
+    "prettify": "prettier --write '**/*.{css,html,js,json,mjs,scss,ts,tsx,yml,md,vue}'"
   },
   "dependencies": {
     "axios": "0.24.0",
