@@ -117,7 +117,7 @@
             dense
           ></v-select>
           <v-select
-            v-if="documentRoleIsIssuer"
+            v-if="documentRoleIsIssuer && credentialTypeIsIndy"
             :label="$t('component.credExList.dialog.credDefLabel')"
             return-object
             v-model="credDef"
@@ -265,7 +265,11 @@ import VBpaButton from "@/components/BpaButton";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
 import Timeline from "@/components/Timeline.vue";
 import { EventBus } from "@/main";
-import { CredentialExchangeRoles, CredentialExchangeStates } from "@/constants";
+import {
+  CredentialExchangeRoles,
+  CredentialExchangeStates,
+  CredentialTypes,
+} from "@/constants";
 
 export default {
   props: {
@@ -348,6 +352,9 @@ export default {
       get() {
         return this.$store.getters.getCredDefSelectList;
       },
+    },
+    credentialTypeIsIndy() {
+      return this.document.credentialExchangeType === CredentialTypes.INDY.type;
     },
     documentStateIsProposalReceived() {
       return (
@@ -443,6 +450,7 @@ export default {
         credentialExchangeId: item.id,
         credentialExchangeState: item.state,
         credentialExchangeRole: item.role,
+        credentialExchangeType: item.type,
         credentialWasEdited: false,
         credentialStateToTimestamp,
         walletCredentialId: item.id,
@@ -523,7 +531,7 @@ export default {
       issuerService
         .sendCredentialOffer(this.document.credentialExchangeId, counterOffer)
         .then((response) => {
-          EventBus.$emit("success", this.$axiosErrorMessage(response));
+          EventBus.$emit("success");
           this.closeDialog();
         })
         .catch((error) => {
