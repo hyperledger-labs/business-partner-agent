@@ -36,7 +36,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class IssueIndyCredentialRequest {
+public class IssueCredentialRequest {
     // bpa ids
     @NotBlank
     private UUID credDefId;

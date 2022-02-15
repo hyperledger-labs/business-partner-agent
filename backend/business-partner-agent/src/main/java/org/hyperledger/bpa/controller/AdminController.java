@@ -40,6 +40,7 @@ import org.hyperledger.bpa.impl.aries.schema.RestrictionsManager;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.mode.indy.EndpointService;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -95,7 +96,7 @@ public class AdminController {
      * @return {@link HttpResponse}
      */
     @Post("/schema")
-    public HttpResponse<SchemaAPI> addSchema(@Body AddSchemaRequest req) {
+    public HttpResponse<SchemaAPI> addSchema(@Body @Valid AddSchemaRequest req) {
         if (req instanceof AddSchemaRequest.AddIndySchema) {
             return HttpResponse.ok(schemaService.addIndySchema(req.getSchemaId(), req.getLabel(),
                     req.getDefaultAttributeName(), ((AddSchemaRequest.AddIndySchema) req).getTrustedIssuer()));

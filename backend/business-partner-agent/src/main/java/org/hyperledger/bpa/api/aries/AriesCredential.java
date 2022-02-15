@@ -62,7 +62,7 @@ public class AriesCredential {
             b
                     .schemaId(LDContextHelper.findSchemaId(
                             c.exchangePayloadByState() != null ? c.exchangePayloadByState().getLdProof() : null))
-                    .revocable(false) // TODO not tested
+                    .revocable(false) // not supported with ld-credentials
             ;
         }
         return b

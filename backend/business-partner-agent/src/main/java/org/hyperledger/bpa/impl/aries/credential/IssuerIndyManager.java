@@ -43,7 +43,7 @@ import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.issuer.CredEx;
-import org.hyperledger.bpa.controller.api.issuer.IssueIndyCredentialRequest;
+import org.hyperledger.bpa.controller.api.issuer.IssueCredentialRequest;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.BPACredentialDefinition;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
@@ -91,10 +91,10 @@ public class IssuerIndyManager {
      * Issuer initialises the indy credential exchange with an offer. There is no
      * preexisting proposal from the holder.
      *
-     * @param request {@link IssueIndyCredentialRequest}
+     * @param request {@link IssueCredentialRequest}
      * @return {@link BPACredentialExchange}
      */
-    public BPACredentialExchange issueIndyCredential(@NonNull IssueIndyCredentialRequest request) {
+    public BPACredentialExchange issueIndyCredential(@NonNull IssueCredentialRequest request) {
         Partner dbPartner = partnerRepo.findById(request.getPartnerId())
                 .orElseThrow(() -> new IssuerException(msg.getMessage("api.partner.not.found",
                         Map.of("id", request.getPartnerId()))));
@@ -152,7 +152,7 @@ public class IssuerIndyManager {
 
     public void reIssueIndyCredential(@NonNull BPACredentialExchange credEx) {
         if (credEx.roleIsIssuer() && credEx.stateIsRevoked()) {
-            issueIndyCredential(IssueIndyCredentialRequest.builder()
+            issueIndyCredential(IssueCredentialRequest.builder()
                     .partnerId(credEx.getPartner() != null ? credEx.getPartner().getId() : null)
                     .credDefId(credEx.getCredDef() != null ? credEx.getCredDef().getId() : null)
                     .document(conv.mapToNode(Objects.requireNonNull(credEx.getIndyCredential()).getAttrs()))

@@ -73,7 +73,7 @@ public class IssuerController {
      * @return {@link SchemaAPI}
      */
     @Post("/schema")
-    public HttpResponse<SchemaAPI> createSchema(@Body CreateSchemaRequest req) {
+    public HttpResponse<SchemaAPI> createSchema(@Body @Valid CreateSchemaRequest req) {
         return HttpResponse.ok(schemaService.createSchema(req.getSchemaName(), req.getSchemaVersion(),
                 req.getAttributes(), req.getSchemaLabel(), req.getDefaultAttributeName()));
     }
@@ -112,13 +112,13 @@ public class IssuerController {
     }
 
     /**
-     * Auto credential exchange: Issuer sends indy credential to holder
+     * Auto credential exchange: Issuer sends credential to holder
      *
-     * @param req {@link IssueIndyCredentialRequest}
+     * @param req {@link IssueCredentialRequest}
      * @return {@link HttpResponse}
      */
     @Post("/issue-credential/send")
-    public HttpResponse<String> issueIndyCredential(@Valid @Body IssueIndyCredentialRequest req) {
+    public HttpResponse<String> issueCredential(@Valid @Body IssueCredentialRequest req) {
         String exchangeId = im.issueCredential(req);
         // just return the id and not the full Aries Object.
         // Event handlers will create the db cred ex records

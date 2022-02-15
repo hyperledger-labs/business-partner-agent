@@ -249,10 +249,6 @@ public class SchemaService {
         return result;
     }
 
-    public @Nullable String getSchemaLabel(@NonNull UUID schemaId) {
-        return null;
-    }
-
     public void resetWriteOnlySchemas() {
         for (SchemaConfig schema : schemas) {
             schemaRepo.findBySchemaId(schema.getId()).ifPresentOrElse(

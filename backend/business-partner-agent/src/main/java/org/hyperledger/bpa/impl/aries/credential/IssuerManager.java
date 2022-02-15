@@ -46,7 +46,7 @@ import org.hyperledger.bpa.config.AcaPyConfig;
 import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.issuer.CredEx;
 import org.hyperledger.bpa.controller.api.issuer.CredentialOfferRequest;
-import org.hyperledger.bpa.controller.api.issuer.IssueIndyCredentialRequest;
+import org.hyperledger.bpa.controller.api.issuer.IssueCredentialRequest;
 import org.hyperledger.bpa.impl.aries.jsonld.IssuerLDManager;
 import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
@@ -101,10 +101,10 @@ public class IssuerManager extends CredentialManagerBase {
      * Issuer initialises the credential exchange with an offer. There is no
      * preexisting proposal from the holder.
      *
-     * @param request {@link IssueIndyCredentialRequest}
+     * @param request {@link IssueCredentialRequest}
      * @return credential exchange id
      */
-    public String issueCredential(@NonNull IssueIndyCredentialRequest request) {
+    public String issueCredential(@NonNull IssueCredentialRequest request) {
         BPACredentialExchange credEx;
         if (request.typeIsIndy()) {
             credEx = indy.issueIndyCredential(request);
