@@ -106,7 +106,7 @@ public class IssuerManager extends CredentialManagerBase {
      */
     public String issueCredential(@NonNull IssueIndyCredentialRequest request) {
         BPACredentialExchange credEx;
-        if (request.isIndy()) {
+        if (request.typeIsIndy()) {
             credEx = indy.issueIndyCredential(request);
         } else {
             credEx = ld.issueLDCredential(request.getPartnerId(), request.getSchemaId(), request.getDocument());

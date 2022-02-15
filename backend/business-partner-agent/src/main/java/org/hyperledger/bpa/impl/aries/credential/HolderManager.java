@@ -231,8 +231,12 @@ public class HolderManager extends CredentialManagerBase {
         holderCredExRepo.findById(id).ifPresent(c -> {
             boolean isPublic = c.checkIfPublic();
             try {
-                if (c.getReferent() != null) {
-                    ac.credentialRemove(c.getReferent());
+                if (StringUtils.isNotEmpty(c.getReferent())) {
+                    if (c.typeIsIndy()) {
+                        ac.credentialRemove(c.getReferent());
+                    } else {
+                        ac.credentialW3CRemove(c.getReferent());
+                    }
                 }
             } catch (AriesException | IOException e) {
                 // if we fail here it's not good, but also no deal-breaker, so log and continue

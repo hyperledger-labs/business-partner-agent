@@ -55,11 +55,11 @@ public class IssueIndyCredentialRequest {
     @Schema(example = "{}")
     private JsonNode document;
 
-    public boolean isV1() {
+    public boolean exchangeIsV1() {
         return exchangeVersion == null || ExchangeVersion.V1.equals(exchangeVersion);
     }
 
-    public boolean isIndy() {
+    public boolean typeIsIndy() {
         return type == null || CredentialType.INDY.equals(type);
     }
 }

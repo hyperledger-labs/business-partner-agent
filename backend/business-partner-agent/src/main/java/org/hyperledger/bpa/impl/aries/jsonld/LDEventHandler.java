@@ -19,9 +19,11 @@ package org.hyperledger.bpa.impl.aries.jsonld;
 
 import jakarta.inject.Singleton;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueLDCredentialEvent;
+import org.hyperledger.bpa.persistence.repository.IssuerCredExRepository;
 
 @Singleton
-public record LDEventHandler(HolderLDManager holder, IssuerLDManager issuer) {
+public record LDEventHandler(IssuerCredExRepository issuerCredExRepo) {
     public void handleIssueCredentialV2LD(V2IssueLDCredentialEvent credentialInfo) {
+        issuerCredExRepo.updateByCredentialExchangeId(credentialInfo.getCredExId(), credentialInfo.getCredIdStored());
     }
 }

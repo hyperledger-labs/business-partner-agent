@@ -93,8 +93,9 @@ public class IssuerLDManager {
                     .type(CredentialType.JSON_LD)
                     .role(CredentialExchangeRole.ISSUER)
                     .state(CredentialExchangeState.OFFER_SENT)
+                    // same behaviour as indy, in this case proposal == offer == credential
                     .pushStateChange(CredentialExchangeState.OFFER_SENT, Instant.now())
-                    .credentialOffer(BPACredentialExchange.ExchangePayload.jsonLD(exRecord.resolveLDCredOffer()))
+                    .ldCredential(BPACredentialExchange.ExchangePayload.jsonLD(exRecord.resolveLDCredOffer()))
                     .credentialExchangeId(exRecord.getCredentialExchangeId())
                     .threadId(exRecord.getThreadId())
                     .exchangeVersion(ExchangeVersion.V2)

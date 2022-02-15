@@ -122,7 +122,7 @@ public class IssuerIndyManager {
                 .credentialDefinitionId(credentialDefinitionId)
                 .build();
 
-        if (request.isV1()) {
+        if (request.exchangeIsV1()) {
             exVersion = ExchangeVersion.V1;
             exResult = sendV1IndyCredential(proposal);
         } else {
