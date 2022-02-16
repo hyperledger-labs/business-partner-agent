@@ -23,18 +23,18 @@ import lombok.NonNull;
 import org.hyperledger.acy_py.generated.model.DID;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
-import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredBoundOfferRequest;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
-import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
-import org.hyperledger.aries.config.GsonConfig;
+import org.hyperledger.aries.api.issue_credential_v2.V2CredentialExchangeFree;
 import org.hyperledger.aries.webhook.EventParser;
 import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.controller.api.issuer.CredentialOfferRequest;
+import org.hyperledger.bpa.controller.api.issuer.IssueCredentialRequest;
 import org.hyperledger.bpa.impl.aries.AriesEventHandler;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
+import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.repository.IssuerCredExRepository;
@@ -45,13 +45,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Instant;
+import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 @MicronautTest
 @ExtendWith(MockitoExtension.class)
 public class IssueLDCredentialTest extends BaseTest {
+
+    private final String schemaId = "https://w3id.org/citizenship/v1";
 
     @Inject
     IssuerManager issuer;
@@ -67,6 +70,9 @@ public class IssueLDCredentialTest extends BaseTest {
 
     @Inject
     AriesEventHandler aeh;
+
+    @Inject
+    Converter conv;
 
     @Inject
     AriesClient ac;
@@ -87,7 +93,7 @@ public class IssueLDCredentialTest extends BaseTest {
     }
 
     @Test
-    void testHandleIssuerCredentialEvents() {
+    void testHandleIssuerSendCredential() throws IOException {
         String offerSent = loader.load("files/v2-ld-credex-issuer/01-offer-sent.json");
         String reqReceived = loader.load("files/v2-ld-credex-issuer/02-request-received.json");
         String credIssued = loader.load("files/v2-ld-credex-issuer/03-credential-issued.json");
@@ -98,14 +104,28 @@ public class IssueLDCredentialTest extends BaseTest {
         V20CredExRecord issued = ep.parseValueSave(credIssued, V20CredExRecord.class).orElseThrow();
         V20CredExRecord done = ep.parseValueSave(exDone, V20CredExRecord.class).orElseThrow();
 
-        Partner p = createDefaultPartner(offer.getConnectionId());
-        BPACredentialExchange ex = saveCredentialOffer(p, offer);
+        Mockito.when(ac.walletDidCreate(Mockito.any()))
+                .thenReturn(Optional.of(DID.builder().did("did:key:dummy").build()));
+        Mockito.when(ac.issueCredentialV2Send(Mockito.any(V2CredentialExchangeFree.class)))
+                .thenReturn(Optional.of(offer));
 
-        // not much to do here, just check the states
+        SchemaAPI schemaAPI = createDefaultSchema();
+        Partner p = createDefaultPartner(offer.getConnectionId());
+
+        issuer.issueCredential(IssueCredentialRequest.builder()
+                .schemaId(schemaAPI.getId())
+                .partnerId(p.getId())
+                .document(conv.mapToNode(Map.of("name", "555", "identifier", "1234")))
+                .type(CredentialType.JSON_LD)
+                .build());
 
         aeh.handleCredentialV2(offer);
-        ex = credExRepo.findById(ex.getId()).orElseThrow();
+        BPACredentialExchange ex = loadCredEx(offer.getCredentialExchangeId());
         Assertions.assertTrue(ex.stateIsOfferSent());
+        Assertions.assertTrue(ex.typeIsJsonLd());
+        Assertions.assertEquals(ExchangeVersion.V2, ex.getExchangeVersion());
+        Assertions.assertEquals(2, ex.credentialAttributesToMap().size());
+        Assertions.assertEquals("555", ex.credentialAttributesToMap().get("name"));
 
         aeh.handleCredentialV2(received);
         ex = credExRepo.findById(ex.getId()).orElseThrow();
@@ -121,7 +141,41 @@ public class IssueLDCredentialTest extends BaseTest {
     }
 
     @Test
-    void testHandleIssuerProposalReceived() throws Exception {
+    void testHandleIssuerSendCredentialHolderDeclines() throws IOException {
+        String offerSent = loader.load("files/v2-ld-credex-issuer/01-offer-sent.json");
+        String abandoned = loader.load("files/v2-ld-credex-issuer/05-abandoned.json");
+
+        V20CredExRecord offer = ep.parseValueSave(offerSent, V20CredExRecord.class).orElseThrow();
+        V20CredExRecord problem = ep.parseValueSave(abandoned, V20CredExRecord.class).orElseThrow();
+
+        Mockito.when(ac.walletDidCreate(Mockito.any()))
+                .thenReturn(Optional.of(DID.builder().did("did:key:dummy").build()));
+        Mockito.when(ac.issueCredentialV2Send(Mockito.any(V2CredentialExchangeFree.class)))
+                .thenReturn(Optional.of(offer));
+
+        SchemaAPI schemaAPI = createDefaultSchema();
+        Partner p = createDefaultPartner(offer.getConnectionId());
+
+        issuer.issueCredential(IssueCredentialRequest.builder()
+                .schemaId(schemaAPI.getId())
+                .partnerId(p.getId())
+                .document(conv.mapToNode(Map.of("name", "555", "identifier", "1234")))
+                .type(CredentialType.JSON_LD)
+                .build());
+
+        aeh.handleCredentialV2(offer);
+        BPACredentialExchange ex = loadCredEx(offer.getCredentialExchangeId());
+        Assertions.assertTrue(ex.stateIsOfferSent());
+
+        aeh.handleCredentialV2(problem);
+        ex = loadCredEx(offer.getCredentialExchangeId());
+        System.out.println(ex);
+        Assertions.assertTrue(ex.stateIsProblem());
+        Assertions.assertEquals("issuance-abandoned: my reason2", ex.getErrorMsg());
+    }
+
+    @Test
+    void testHandleIssuerProposalReceived() throws IOException {
         String proposalReceived = loader.load("files/v2-ld-credex-issuer-proposal/01-proposal-received.json");
         String counterOffer = loader.load("files/v2-ld-credex-issuer-proposal/02-counter-offer-sent.json");
         String requestReceived = loader.load("files/v2-ld-credex-issuer-proposal/03-request-received.json");
@@ -132,8 +186,10 @@ public class IssueLDCredentialTest extends BaseTest {
         V20CredExRecord request = ep.parseValueSave(requestReceived, V20CredExRecord.class).orElseThrow();
         V20CredExRecord issued = ep.parseValueSave(credentialIssued, V20CredExRecord.class).orElseThrow();
 
-        Mockito.when(ac.walletDidCreate(Mockito.any())).thenReturn(Optional.of(DID.builder().did("did:key:dummy").build()));
-        Mockito.when(ac.issueCredentialV2RecordsSendOffer(Mockito.anyString(), Mockito.any(V20CredBoundOfferRequest.class)))
+        Mockito.when(ac.walletDidCreate(Mockito.any()))
+                .thenReturn(Optional.of(DID.builder().did("did:key:dummy").build()));
+        Mockito.when(
+                ac.issueCredentialV2RecordsSendOffer(Mockito.anyString(), Mockito.any(V20CredBoundOfferRequest.class)))
                 .thenReturn(Optional.of(offer));
         String id = proposal.getCredentialExchangeId();
 
@@ -146,11 +202,12 @@ public class IssueLDCredentialTest extends BaseTest {
         Assertions.assertTrue(ex.typeIsJsonLd());
         Assertions.assertEquals(ExchangeVersion.V2, ex.getExchangeVersion());
         Assertions.assertEquals(2, ex.proposalAttributesToMap().size());
+        Assertions.assertEquals("Name", ex.proposalAttributesToMap().get("name"));
         Assertions.assertEquals(0, ex.offerAttributesToMap().size());
 
         CredentialOfferRequest req = new CredentialOfferRequest();
         req.setAcceptProposal(Boolean.TRUE);
-        req.setSchemaId("https://w3id.org/citizenship/v1");
+        req.setSchemaId(schemaId);
         issuer.sendCredentialOffer(ex.getId(), req);
 
         aeh.handleCredentialV2(offer);
@@ -163,29 +220,34 @@ public class IssueLDCredentialTest extends BaseTest {
         ex = loadCredEx(id);
         Assertions.assertTrue(ex.stateIsCredentialIssued());
         Assertions.assertEquals(2, ex.credentialAttributesToMap().size());
+        Assertions.assertEquals("Other Name", ex.credentialAttributesToMap().get("name"));
+    }
+
+    @Test
+    void testHandleIssuerProposalReceivedIssuerDeclines() {
+        String proposalReceived = loader.load("files/v2-ld-credex-issuer-proposal/01-proposal-received.json");
+        V20CredExRecord proposal = ep.parseValueSave(proposalReceived, V20CredExRecord.class).orElseThrow();
+
+        createDefaultPartner(proposal.getConnectionId());
+        createDefaultSchema();
+
+        aeh.handleCredentialV2(proposal);
+
+        BPACredentialExchange ex = loadCredEx(proposal.getCredentialExchangeId());
+        issuer.declineCredentialProposal(ex.getId(), "my reason");
+
+        ex = loadCredEx(proposal.getCredentialExchangeId());
+        Assertions.assertTrue(ex.stateIsDeclined());
+        Assertions.assertEquals("my reason", ex.getErrorMsg());
     }
 
     private BPACredentialExchange loadCredEx(String id) {
-        return credExRepo.findByCredentialExchangeId( id)
+        return credExRepo.findByCredentialExchangeId(id)
                 .orElseThrow();
     }
-    private BPACredentialExchange saveCredentialOffer(Partner p, V20CredExRecord exRecord) {
-        BPACredentialExchange cex = BPACredentialExchange.builder()
-                .partner(p)
-                .type(CredentialType.JSON_LD)
-                .role(CredentialExchangeRole.ISSUER)
-                .state(CredentialExchangeState.OFFER_SENT)
-                .pushStateChange(CredentialExchangeState.OFFER_SENT, Instant.now())
-                .ldCredential(BPACredentialExchange.ExchangePayload.jsonLD(exRecord.resolveLDCredOffer()))
-                .credentialExchangeId(exRecord.getCredentialExchangeId())
-                .threadId(exRecord.getThreadId())
-                .exchangeVersion(ExchangeVersion.V2)
-                .build();
-        return credExRepo.save(cex);
-    }
 
-    private void createDefaultSchema() {
-        schemaService.addJsonLDSchema("https://w3id.org/citizenship/v1", "Citizen",
+    private SchemaAPI createDefaultSchema() {
+        return schemaService.addJsonLDSchema(schemaId, "Citizen",
                 null, "PermanentResident", Set.of("name", "identifier"));
     }
 
@@ -197,5 +259,4 @@ public class IssueLDCredentialTest extends BaseTest {
                 .build();
         return partnerRepo.save(p);
     }
-
 }

@@ -1,0 +1,104 @@
+{
+  "cred_proposal": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/propose-credential",
+    "@id": "9bfa7f41-5319-47de-a501-a074d885ccc8",
+    "filters~attach": [
+      {
+        "@id": "ld_proof",
+        "mime-type": "application/json",
+        "data": {
+          "base64": "eyJjcmVkZW50aWFsIjogeyJAY29udGV4dCI6IFsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCAiaHR0cHM6Ly93M2lkLm9yZy9jaXRpemVuc2hpcC92MSJdLCAiY3JlZGVudGlhbFN1YmplY3QiOiB7Im5hbWUiOiAia2FybCIsICJpZGVudGlmaWVyIjogIjEyMzQifSwgImlzc3VhbmNlRGF0ZSI6ICIyMDIyLTAyLTE2VDE2OjA4OjU2WiIsICJpc3N1ZXIiOiAiZGlkOmtleTp6VUM3RnN3Z1Z0NjFURE01eTg4dU04M2dwTFdaN3VwVnA3S0VpVHRnZ0pjc3BTZmJ4S2QzeUhGUlh6N25qdWNYTEVIVTFRdlVWYTRaeEhXYTdmQkE2OExROUZMMmF5OXFjQ0ZqWWVIc0JBaFdUMUhSREJua25ROUNDQlhvbkFoNnhtdm9GYXAiLCAidHlwZSI6IFsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCAiUGVybWFuZW50UmVzaWRlbnQiXX0sICJvcHRpb25zIjogeyJwcm9vZlR5cGUiOiAiQmJzQmxzU2lnbmF0dXJlMjAyMCJ9fQ=="
+        }
+      }
+    ],
+    "formats": [
+      {
+        "attach_id": "ld_proof",
+        "format": "aries/ld-proof-vc-detail@v1.0"
+      }
+    ]
+  },
+  "role": "issuer",
+  "by_format": {
+    "cred_proposal": {
+      "ld_proof": {
+        "credential": {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://w3id.org/citizenship/v1"
+          ],
+          "credentialSubject": {
+            "name": "karl",
+            "identifier": "1234"
+          },
+          "issuanceDate": "2022-02-16T16:08:56Z",
+          "issuer": "did:key:zUC7FswgVt61TDM5y88uM83gpLWZ7upVp7KEiTtggJcspSfbxKd3yHFRXz7njucXLEHU1QvUVa4ZxHWa7fBA68LQ9FL2ay9qcCFjYeHsBAhWT1HRDBnknQ9CCBXonAh6xmvoFap",
+          "type": [
+            "VerifiableCredential",
+            "PermanentResident"
+          ]
+        },
+        "options": {
+          "proofType": "BbsBlsSignature2020"
+        }
+      }
+    },
+    "cred_offer": {
+      "ld_proof": {
+        "credential": {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://w3id.org/citizenship/v1",
+            "https://w3id.org/security/bbs/v1"
+          ],
+          "type": [
+            "VerifiableCredential",
+            "PermanentResident"
+          ],
+          "issuer": "did:key:zUC7FswgVt61TDM5y88uM83gpLWZ7upVp7KEiTtggJcspSfbxKd3yHFRXz7njucXLEHU1QvUVa4ZxHWa7fBA68LQ9FL2ay9qcCFjYeHsBAhWT1HRDBnknQ9CCBXonAh6xmvoFap",
+          "issuanceDate": "2022-02-16T16:08:56Z",
+          "credentialSubject": {
+            "name": "karl",
+            "identifier": "1234"
+          }
+        },
+        "options": {
+          "proofType": "BbsBlsSignature2020"
+        }
+      }
+    }
+  },
+  "auto_offer": false,
+  "state": "abandoned",
+  "trace": false,
+  "cred_ex_id": "2b66c488-4af9-4e8d-a8f8-1dcfbbe2fc70",
+  "auto_remove": true,
+  "created_at": "2022-02-16T16:08:58.864678Z",
+  "initiator": "self",
+  "connection_id": "1be44de6-7538-4d49-a7f5-86b9dab151ea",
+  "updated_at": "2022-02-16T16:09:14.709277Z",
+  "auto_issue": true,
+  "error_msg": "issuance-abandoned: my reason2",
+  "cred_offer": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/offer-credential",
+    "@id": "8f9f01e1-ef76-4008-b639-3a6a42a9ff5b",
+    "~thread": {},
+    "comment": "create automated v2.0 credential exchange record",
+    "formats": [
+      {
+        "attach_id": "ld_proof",
+        "format": "aries/ld-proof-vc-detail@v1.0"
+      }
+    ],
+    "offers~attach": [
+      {
+        "@id": "ld_proof",
+        "mime-type": "application/json",
+        "data": {
+          "base64": "eyJjcmVkZW50aWFsIjogeyJAY29udGV4dCI6IFsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCAiaHR0cHM6Ly93M2lkLm9yZy9jaXRpemVuc2hpcC92MSIsICJodHRwczovL3czaWQub3JnL3NlY3VyaXR5L2Jicy92MSJdLCAidHlwZSI6IFsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCAiUGVybWFuZW50UmVzaWRlbnQiXSwgImlzc3VlciI6ICJkaWQ6a2V5OnpVQzdGc3dnVnQ2MVRETTV5ODh1TTgzZ3BMV1o3dXBWcDdLRWlUdGdnSmNzcFNmYnhLZDN5SEZSWHo3bmp1Y1hMRUhVMVF2VVZhNFp4SFdhN2ZCQTY4TFE5RkwyYXk5cWNDRmpZZUhzQkFoV1QxSFJEQm5rblE5Q0NCWG9uQWg2eG12b0ZhcCIsICJpc3N1YW5jZURhdGUiOiAiMjAyMi0wMi0xNlQxNjowODo1NloiLCAiY3JlZGVudGlhbFN1YmplY3QiOiB7Im5hbWUiOiAia2FybCIsICJpZGVudGlmaWVyIjogIjEyMzQifX0sICJvcHRpb25zIjogeyJwcm9vZlR5cGUiOiAiQmJzQmxzU2lnbmF0dXJlMjAyMCJ9fQ=="
+        }
+      }
+    ]
+  },
+  "thread_id": "8f9f01e1-ef76-4008-b639-3a6a42a9ff5b"
+}
