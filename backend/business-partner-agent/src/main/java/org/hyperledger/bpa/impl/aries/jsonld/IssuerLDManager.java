@@ -83,7 +83,7 @@ public class IssuerLDManager {
         try {
             V20CredExRecord exRecord = ac.issueCredentialV2Send(V2CredentialExchangeFree.builder()
                     .connectionId(UUID.fromString(Objects.requireNonNull(partner.getConnectionId())))
-                    .filter(vcHelper.buildVC(bpaSchema, document, Boolean.TRUE))
+                    .filter(vcHelper.buildVC(bpaSchema, document))
                     .build())
                     .orElseThrow();
 
@@ -124,8 +124,7 @@ public class IssuerLDManager {
             credEx.setSchema(counterSchema);
             credExRepo.update(credEx);
         }
-        V2CredentialExchangeFree.V20CredFilter v20CredFilter = vcHelper.buildVC(credEx.getSchema(), attributes,
-                Boolean.TRUE);
+        V2CredentialExchangeFree.V20CredFilter v20CredFilter = vcHelper.buildVC(credEx.getSchema(), attributes);
         V20CredExRecord v20CredExRecord = ac.issueCredentialV2RecordsSendOffer(credEx.getCredentialExchangeId(),
                 V20CredBoundOfferRequest.builder()
                         .filter(v20CredFilter)

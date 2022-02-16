@@ -59,12 +59,12 @@ public class LDContextHelper {
     }
 
     public V2CredentialExchangeFree.V20CredFilter buildVC(
-            @NonNull BPASchema bpaSchema, @NonNull JsonNode document, @NonNull Boolean issuer) {
-        return buildVC(bpaSchema, conv.toStringMap(document), issuer);
+            @NonNull BPASchema bpaSchema, @NonNull JsonNode document) {
+        return buildVC(bpaSchema, conv.toStringMap(document));
     }
 
     public V2CredentialExchangeFree.V20CredFilter buildVC(
-            @NonNull BPASchema bpaSchema, @NonNull Map<String, String> document, @NonNull Boolean issuer) {
+            @NonNull BPASchema bpaSchema, @NonNull Map<String, String> document) {
 
         // TODO validation
         return V2CredentialExchangeFree.V20CredFilter.builder()

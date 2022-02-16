@@ -1,6 +1,33 @@
 {
   "role": "holder",
   "by_format": {
+    "cred_issue": {
+      "ld_proof": {
+        "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          "https://w3id.org/citizenship/v1",
+          "https://w3id.org/security/bbs/v1"
+        ],
+        "type": [
+          "VerifiableCredential",
+          "PermanentResident"
+        ],
+        "issuer": "did:key:zUC7GJcqBeNHCED9FPJrnGpr6qNEEfrodcWqgbX9Q6WN7TCahMxcRd2UJGVnMQtMrTyXRMbvusw45MVpJYD1TYR44vwkVrEvFRe1YWkkbeQJj7xaghWMpoUChUxXbfduRYrWTpz",
+        "issuanceDate": "2022-02-16T16:53:19Z",
+        "credentialSubject": {
+          "name": "karl",
+          "identifier": "1234",
+          "id": "did:key:zUC7FswgVt61TDM5y88uM83gpLWZ7upVp7KEiTtggJcspSfbxKd3yHFRXz7njucXLEHU1QvUVa4ZxHWa7fBA68LQ9FL2ay9qcCFjYeHsBAhWT1HRDBnknQ9CCBXonAh6xmvoFap"
+        },
+        "proof": {
+          "type": "BbsBlsSignature2020",
+          "verificationMethod": "did:key:zUC7GJcqBeNHCED9FPJrnGpr6qNEEfrodcWqgbX9Q6WN7TCahMxcRd2UJGVnMQtMrTyXRMbvusw45MVpJYD1TYR44vwkVrEvFRe1YWkkbeQJj7xaghWMpoUChUxXbfduRYrWTpz#zUC7GJcqBeNHCED9FPJrnGpr6qNEEfrodcWqgbX9Q6WN7TCahMxcRd2UJGVnMQtMrTyXRMbvusw45MVpJYD1TYR44vwkVrEvFRe1YWkkbeQJj7xaghWMpoUChUxXbfduRYrWTpz",
+          "created": "2022-02-16T16:54:13.555228+00:00",
+          "proofPurpose": "assertionMethod",
+          "proofValue": "ryxHXJ3qXcj037k2Tg/u/+hckGVVMMfqOUGqz2MY8Sxj9Jwa7maTeGr433c3ICgIFxTVIitQWzAw44IRBvJqVf3iW4FPzt05Cq7CkBOyQqA7CPVSgIKIM1vYKhIlj7cplUAd4QAJKDOwhxGS6a9YQg=="
+        }
+      }
+    },
     "cred_offer": {
       "ld_proof": {
         "credential": {
@@ -52,7 +79,7 @@
     }
   },
   "auto_offer": false,
-  "state": "request-sent",
+  "state": "done",
   "trace": false,
   "cred_ex_id": "9a2b489a-5c47-49ce-9b87-093fc79817c7",
   "auto_remove": true,
@@ -81,7 +108,29 @@
       }
     ]
   },
-  "updated_at": "2022-02-16T16:54:13.188641Z",
+  "updated_at": "2022-02-16T16:54:20.965010Z",
+  "cred_issue": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/issue-credential",
+    "@id": "cb01186c-99ed-41e4-99d6-cb4ebc7968c2",
+    "~thread": {
+      "thid": "b8942466-637f-4db3-a139-126be08ba306"
+    },
+    "formats": [
+      {
+        "attach_id": "ld_proof",
+        "format": "aries/ld-proof-vc@v1.0"
+      }
+    ],
+    "credentials~attach": [
+      {
+        "@id": "ld_proof",
+        "mime-type": "application/json",
+        "data": {
+          "base64": "eyJAY29udGV4dCI6IFsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCAiaHR0cHM6Ly93M2lkLm9yZy9jaXRpemVuc2hpcC92MSIsICJodHRwczovL3czaWQub3JnL3NlY3VyaXR5L2Jicy92MSJdLCAidHlwZSI6IFsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCAiUGVybWFuZW50UmVzaWRlbnQiXSwgImlzc3VlciI6ICJkaWQ6a2V5OnpVQzdHSmNxQmVOSENFRDlGUEpybkdwcjZxTkVFZnJvZGNXcWdiWDlRNldON1RDYWhNeGNSZDJVSkdWbk1RdE1yVHlYUk1idnVzdzQ1TVZwSllEMVRZUjQ0dndrVnJFdkZSZTFZV2trYmVRSmo3eGFnaFdNcG9VQ2hVeFhiZmR1UllyV1RweiIsICJpc3N1YW5jZURhdGUiOiAiMjAyMi0wMi0xNlQxNjo1MzoxOVoiLCAiY3JlZGVudGlhbFN1YmplY3QiOiB7Im5hbWUiOiAia2FybCIsICJpZGVudGlmaWVyIjogIjEyMzQiLCAiaWQiOiAiZGlkOmtleTp6VUM3RnN3Z1Z0NjFURE01eTg4dU04M2dwTFdaN3VwVnA3S0VpVHRnZ0pjc3BTZmJ4S2QzeUhGUlh6N25qdWNYTEVIVTFRdlVWYTRaeEhXYTdmQkE2OExROUZMMmF5OXFjQ0ZqWWVIc0JBaFdUMUhSREJua25ROUNDQlhvbkFoNnhtdm9GYXAifSwgInByb29mIjogeyJ0eXBlIjogIkJic0Jsc1NpZ25hdHVyZTIwMjAiLCAidmVyaWZpY2F0aW9uTWV0aG9kIjogImRpZDprZXk6elVDN0dKY3FCZU5IQ0VEOUZQSnJuR3ByNnFORUVmcm9kY1dxZ2JYOVE2V043VENhaE14Y1JkMlVKR1ZuTVF0TXJUeVhSTWJ2dXN3NDVNVnBKWUQxVFlSNDR2d2tWckV2RlJlMVlXa2tiZVFKajd4YWdoV01wb1VDaFV4WGJmZHVSWXJXVHB6I3pVQzdHSmNxQmVOSENFRDlGUEpybkdwcjZxTkVFZnJvZGNXcWdiWDlRNldON1RDYWhNeGNSZDJVSkdWbk1RdE1yVHlYUk1idnVzdzQ1TVZwSllEMVRZUjQ0dndrVnJFdkZSZTFZV2trYmVRSmo3eGFnaFdNcG9VQ2hVeFhiZmR1UllyV1RweiIsICJjcmVhdGVkIjogIjIwMjItMDItMTZUMTY6NTQ6MTMuNTU1MjI4KzAwOjAwIiwgInByb29mUHVycG9zZSI6ICJhc3NlcnRpb25NZXRob2QiLCAicHJvb2ZWYWx1ZSI6ICJyeXhIWEozcVhjajAzN2syVGcvdS8raGNrR1ZWTU1mcU9VR3F6Mk1ZOFN4ajlKd2E3bWFUZUdyNDMzYzNJQ2dJRnhUVklpdFFXekF3NDRJUkJ2SnFWZjNpVzRGUHp0MDVDcTdDa0JPeVFxQTdDUFZTZ0lLSU0xdllLaElsajdjcGxVQWQ0UUFKS0RPd2h4R1M2YTlZUWc9PSJ9fQ=="
+        }
+      }
+    ]
+  },
   "auto_issue": false,
   "cred_offer": {
     "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/offer-credential",

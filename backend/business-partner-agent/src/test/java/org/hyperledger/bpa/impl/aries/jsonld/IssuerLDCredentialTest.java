@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.impl.aries.credential;
+package org.hyperledger.bpa.impl.aries.jsonld;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
@@ -33,6 +33,7 @@ import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.controller.api.issuer.CredentialOfferRequest;
 import org.hyperledger.bpa.controller.api.issuer.IssueCredentialRequest;
 import org.hyperledger.bpa.impl.aries.AriesEventHandler;
+import org.hyperledger.bpa.impl.aries.credential.IssuerManager;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
@@ -52,7 +53,7 @@ import java.util.Set;
 
 @MicronautTest
 @ExtendWith(MockitoExtension.class)
-public class IssueLDCredentialTest extends BaseTest {
+public class IssuerLDCredentialTest extends BaseTest {
 
     private final String schemaId = "https://w3id.org/citizenship/v1";
 
@@ -78,19 +79,6 @@ public class IssueLDCredentialTest extends BaseTest {
     AriesClient ac;
 
     private final EventParser ep = new EventParser();
-
-    @Test
-    void testHandleHolderCredentialEvents() {
-        String offerReceived = loader.load("files/v2-ld-credex-holder/01-offer-received.json");
-        V20CredExRecord offer = ep.parseValueSave(offerReceived, V20CredExRecord.class).orElseThrow();
-
-        createDefaultPartner(offer.getConnectionId());
-
-        aeh.handleCredentialV2(offer);
-
-        // TODO flow
-
-    }
 
     @Test
     void testHandleIssuerSendCredential() throws IOException {
@@ -169,7 +157,6 @@ public class IssueLDCredentialTest extends BaseTest {
 
         aeh.handleCredentialV2(problem);
         ex = loadCredEx(offer.getCredentialExchangeId());
-        System.out.println(ex);
         Assertions.assertTrue(ex.stateIsProblem());
         Assertions.assertEquals("issuance-abandoned: my reason2", ex.getErrorMsg());
     }
