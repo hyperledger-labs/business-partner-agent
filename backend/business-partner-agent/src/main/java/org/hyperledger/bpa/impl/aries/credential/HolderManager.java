@@ -47,6 +47,7 @@ import org.hyperledger.bpa.api.notification.CredentialOfferedEvent;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.aries.jsonld.HolderLDManager;
 import org.hyperledger.bpa.impl.aries.jsonld.VPManager;
+import org.hyperledger.bpa.impl.aries.wallet.Identity;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.CryptoUtil;
@@ -98,6 +99,9 @@ public class HolderManager extends CredentialManagerBase {
 
     @Inject
     LabelStrategy labelStrategy;
+
+    @Inject
+    Identity identity;
 
     // Credential Management - Called By User
 
@@ -153,8 +157,12 @@ public class HolderManager extends CredentialManagerBase {
             if (ExchangeVersion.V1.equals(dbEx.getExchangeVersion())) {
                 ac.issueCredentialRecordsSendRequest(dbEx.getCredentialExchangeId());
             } else {
-                ac.issueCredentialV2RecordsSendRequest(dbEx.getCredentialExchangeId(), V20CredRequestRequest
-                        .builder().build());
+                V20CredRequestRequest.V20CredRequestRequestBuilder credentialRequest = V20CredRequestRequest
+                        .builder();
+                if (dbEx.typeIsJsonLd()) {
+                    credentialRequest.holderDid(identity.getDidKey());
+                }
+                ac.issueCredentialV2RecordsSendRequest(dbEx.getCredentialExchangeId(), credentialRequest.build());
             }
         } catch (IOException e) {
             throw new NetworkException(msg.getMessage("acapy.unavailable"), e);
