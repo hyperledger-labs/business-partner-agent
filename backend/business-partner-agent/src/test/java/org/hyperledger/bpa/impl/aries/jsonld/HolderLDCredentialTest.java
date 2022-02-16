@@ -7,11 +7,17 @@ import org.hyperledger.acy_py.generated.model.DID;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
+import org.hyperledger.aries.api.issue_credential_v2.V2CredentialExchangeFree;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueLDCredentialEvent;
 import org.hyperledger.aries.webhook.EventParser;
 import org.hyperledger.bpa.BaseTest;
+import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.api.MyDocumentAPI;
+import org.hyperledger.bpa.impl.MyDocumentManager;
 import org.hyperledger.bpa.impl.aries.AriesEventHandler;
 import org.hyperledger.bpa.impl.aries.credential.HolderManager;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
+import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
@@ -23,11 +29,15 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @MicronautTest
 @ExtendWith(MockitoExtension.class)
 public class HolderLDCredentialTest extends BaseTest {
+
+    private final String schemaId = "https://w3id.org/citizenship/v1";
 
     @Inject
     PartnerRepository partnerRepo;
@@ -36,7 +46,16 @@ public class HolderLDCredentialTest extends BaseTest {
     HolderCredExRepository credExRepo;
 
     @Inject
+    MyDocumentManager doc;
+
+    @Inject
+    SchemaService schemaService;
+
+    @Inject
     HolderManager holder;
+
+    @Inject
+    Converter conv;
 
     @Inject
     AriesEventHandler aeh;
@@ -98,17 +117,103 @@ public class HolderLDCredentialTest extends BaseTest {
 
     @Test
     void testHolderReceivesCredentialFromIssuerAndDeclines() {
+        String offerReceived = loader.load("files/v2-ld-credex-holder/01-offer-received.json");
 
+        V20CredExRecord offer = ep.parseValueSave(offerReceived, V20CredExRecord.class).orElseThrow();
+
+        String id = offer.getCredentialExchangeId();
+
+        createDefaultPartner(offer.getConnectionId());
+
+        aeh.handleCredentialV2(offer);
+        BPACredentialExchange ex = loadCredEx(id);
+        Assertions.assertTrue(ex.stateIsOfferReceived());
+
+        holder.declineCredentialOffer(ex.getId(), "my reason");
+        ex = loadCredEx(id);
+        Assertions.assertTrue(ex.stateIsDeclined());
+        Assertions.assertEquals("my reason", ex.getErrorMsg());
     }
 
     @Test
-    void testHolderRequestsCredentialFromIssuerAndIssuerAccepts() {
+    void testHolderRequestsCredentialFromIssuerAndIssuerAccepts() throws IOException{
+        String proposalSent = loader.load("files/v2-ld-credex-holder-proposal/01-proposal-sent.json");
+        String offerReceived = loader.load("files/v2-ld-credex-holder-proposal/02-offer-received.json");
 
+        V20CredExRecord proposal = ep.parseValueSave(proposalSent, V20CredExRecord.class).orElseThrow();
+        V20CredExRecord offer = ep.parseValueSave(offerReceived, V20CredExRecord.class).orElseThrow();
+
+        Mockito.when(ac.walletDidCreate(Mockito.any()))
+                .thenReturn(Optional.of(DID.builder().did("did:key:dummy").build()));
+        Mockito.when(
+                    ac.issueCredentialV2SendProposal(Mockito.any(V2CredentialExchangeFree.class)))
+                .thenReturn(Optional.of(proposal));
+
+        String id = offer.getCredentialExchangeId();
+
+        Partner p = createDefaultPartner(offer.getConnectionId());
+        createDefaultSchema();
+
+        MyDocumentAPI document = doc.saveNewDocument(MyDocumentAPI.builder()
+                .schemaId(schemaId)
+                .type(CredentialType.JSON_LD)
+                .isPublic(Boolean.FALSE)
+                .documentData(conv.mapToNode(Map.of("name", "My Name", "identifier", "something")))
+                .build());
+
+        holder.sendCredentialProposal(p.getId(), document.getId(), null);
+
+        aeh.handleCredentialV2(proposal);
+        BPACredentialExchange ex = loadCredEx(id);
+        Assertions.assertTrue(ex.stateIsProposalSent());
+        Assertions.assertTrue(ex.typeIsJsonLd());
+        Assertions.assertEquals(ExchangeVersion.V2, ex.getExchangeVersion());
+        Assertions.assertEquals(2, ex.proposalAttributesToMap().size());
+        Assertions.assertEquals("My Name", ex.proposalAttributesToMap().get("name"));
+
+        aeh.handleCredentialV2(offer);
+        ex = loadCredEx(id);
+        Assertions.assertTrue(ex.stateIsOfferReceived());
+
+        // from here on same as testHolderReceivesCredentialFromIssuerAndAccepts()
     }
 
     @Test
-    void testHolderRequestsCredentialFromIssuerAndIssuerDeclines() {
+    void testHolderRequestsCredentialFromIssuerAndIssuerDeclines() throws IOException{
+        String proposalSent = loader.load("files/v2-ld-credex-holder-proposal/01-proposal-sent.json");
+        String abandonedEvent = loader.load("files/v2-ld-credex-holder-proposal/03-abandoned.json");
 
+        V20CredExRecord proposal = ep.parseValueSave(proposalSent, V20CredExRecord.class).orElseThrow();
+        V20CredExRecord abandoned = ep.parseValueSave(abandonedEvent, V20CredExRecord.class).orElseThrow();
+
+        Mockito.when(ac.walletDidCreate(Mockito.any()))
+                .thenReturn(Optional.of(DID.builder().did("did:key:dummy").build()));
+        Mockito.when(
+                        ac.issueCredentialV2SendProposal(Mockito.any(V2CredentialExchangeFree.class)))
+                .thenReturn(Optional.of(proposal));
+
+        String id = proposal.getCredentialExchangeId();
+
+        Partner p = createDefaultPartner(proposal.getConnectionId());
+        createDefaultSchema();
+
+        MyDocumentAPI document = doc.saveNewDocument(MyDocumentAPI.builder()
+                .schemaId(schemaId)
+                .type(CredentialType.JSON_LD)
+                .isPublic(Boolean.FALSE)
+                .documentData(conv.mapToNode(Map.of("name", "My Name", "identifier", "something")))
+                .build());
+
+        holder.sendCredentialProposal(p.getId(), document.getId(), null);
+
+        aeh.handleCredentialV2(proposal);
+        BPACredentialExchange ex = loadCredEx(id);
+        Assertions.assertTrue(ex.stateIsProposalSent());
+
+        aeh.handleCredentialV2(abandoned);
+        ex = loadCredEx(id);
+        Assertions.assertTrue(ex.stateIsProblem());
+        Assertions.assertEquals("issuance-abandoned: my reason", ex.getErrorMsg());
     }
 
     private BPACredentialExchange loadCredEx(String id) {
@@ -123,5 +228,10 @@ public class HolderLDCredentialTest extends BaseTest {
                 .ariesSupport(Boolean.TRUE)
                 .build();
         return partnerRepo.save(p);
+    }
+
+    private void createDefaultSchema() {
+        schemaService.addJsonLDSchema(schemaId, "Citizen",
+                null, "PermanentResident", Set.of("name", "identifier"));
     }
 }
