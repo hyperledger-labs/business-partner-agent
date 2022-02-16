@@ -50,6 +50,7 @@ import org.hyperledger.bpa.controller.api.issuer.IssueCredentialRequest;
 import org.hyperledger.bpa.impl.aries.jsonld.IssuerLDManager;
 import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
+import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.repository.BPACredentialDefinitionRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
@@ -229,7 +230,7 @@ public class IssuerManager extends CredentialManagerBase {
                     .partner(partner)
                     .role(CredentialExchangeRole.ISSUER)
                     .state(ex.getState())
-                    .pushStateChange(ex.getState(), Instant.now())
+                    .pushStateChange(ex.getState(), TimeUtil.fromISOInstant(ex.getUpdatedAt()))
                     .exchangeVersion(exchangeVersion)
                     .credentialExchangeId(ex.getCredentialExchangeId())
                     .threadId(ex.getThreadId())
