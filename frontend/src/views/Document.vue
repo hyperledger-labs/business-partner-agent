@@ -80,7 +80,11 @@
                     icon
                     :to="{
                       name: 'RequestVerification',
-                      params: { documentId: id, schemaId: intDoc.schemaId },
+                      params: {
+                        documentId: id,
+                        schemaId: intDoc.schemaId,
+                        type: intDoc.type,
+                      },
                     }"
                     :disabled="docModified()"
                   >
