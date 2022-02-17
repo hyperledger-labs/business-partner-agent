@@ -56,7 +56,7 @@
         <log4j2.version>2.17.1</log4j2.version>
         <lombok.version>1.18.22</lombok.version>
         <lombok.maven.plugin.version>1.18.20.0</lombok.maven.plugin.version>
-        <micronaut.version>3.3.2</micronaut.version>
+        <micronaut.version>3.3.3</micronaut.version>
         <micronaut.data.version>3.2.2</micronaut.data.version>
         <micronaut.openapi.version>4.0.0</micronaut.openapi.version>
         <micronaut.security.version>3.3.0</micronaut.security.version>
