@@ -342,7 +342,9 @@ public class HolderManager extends CredentialManagerBase {
             @NonNull String updatedAt, @Nullable String errorMsg) {
         holderCredExRepo.findByCredentialExchangeId(credExId).ifPresent(db -> {
             if (db.stateIsNotDeclined()) { // already handled
-                CredentialExchangeState s = state == null || CredentialExchangeState.ABANDONED.equals(state) ? CredentialExchangeState.PROBLEM : state;
+                CredentialExchangeState s = state == null || CredentialExchangeState.ABANDONED.equals(state)
+                        ? CredentialExchangeState.PROBLEM
+                        : state;
                 db.pushStates(s, updatedAt);
                 holderCredExRepo.updateStates(db.getId(), db.getState(), db.getStateToTimestamp(), errorMsg);
             }

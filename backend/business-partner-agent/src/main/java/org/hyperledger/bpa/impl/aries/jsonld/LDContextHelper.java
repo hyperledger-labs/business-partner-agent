@@ -32,7 +32,9 @@ import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.wallet.Identity;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.TimeUtil;
+import org.hyperledger.bpa.persistence.model.BPARestrictions;
 import org.hyperledger.bpa.persistence.model.BPASchema;
+import org.hyperledger.bpa.persistence.repository.BPARestrictionsRepository;
 
 import java.time.Instant;
 import java.util.*;
@@ -45,6 +47,9 @@ public class LDContextHelper {
 
     @Inject
     Converter conv;
+
+    @Inject
+    BPARestrictionsRepository trustedIssuer;
 
     @Inject
     BPAMessageSource.DefaultMessageSource ms;
@@ -61,12 +66,12 @@ public class LDContextHelper {
     }
 
     public V2CredentialExchangeFree.V20CredFilter buildVC(
-            @NonNull BPASchema bpaSchema, @NonNull JsonNode document) {
-        return buildVC(bpaSchema, conv.toStringMap(document));
+            @NonNull BPASchema bpaSchema, @NonNull JsonNode document, @NonNull Boolean issuer) {
+        return buildVC(bpaSchema, conv.toStringMap(document), issuer);
     }
 
     public V2CredentialExchangeFree.V20CredFilter buildVC(
-            @NonNull BPASchema bpaSchema, @NonNull Map<String, String> document) {
+            @NonNull BPASchema bpaSchema, @NonNull Map<String, String> document, @NonNull Boolean issuer) {
         validateDocumentAgainstSchema(bpaSchema, document);
         return V2CredentialExchangeFree.V20CredFilter.builder()
                 .ldProof(V2CredentialExchangeFree.LDProofVCDetail.builder()
@@ -74,8 +79,7 @@ public class LDContextHelper {
                                 .context(List.of(CredentialType.JSON_LD.getContext().get(0), bpaSchema.getSchemaId()))
                                 .credentialSubject(GsonConfig.defaultConfig().toJsonTree(document).getAsJsonObject())
                                 .issuanceDate(TimeUtil.toISOInstantTruncated(Instant.now()))
-                                .issuer(identity.getDidKey()) // TODO how to get the did:key from the issuer when
-                                                              // holder?
+                                .issuer(issuer ? identity.getDidKey() : findIssuerDidOrFallback(bpaSchema))
                                 .type(List.of(CredentialType.JSON_LD.getType().get(0),
                                         Objects.requireNonNull(bpaSchema.getLdType())))
                                 .build())
@@ -95,5 +99,22 @@ public class LDContextHelper {
                                 Map.of("attr", k)));
             }
         });
+    }
+
+    /**
+     * Returns the first configured did:key from the trusted issuer list, or falls
+     * back to the holders local did:key which will then be replaced by the issuer
+     * with the issuers key. Note: This will work, but in this case the issuer is
+     * not verified.
+     * 
+     * @param bpaSchema {@link BPASchema}
+     * @return did:key
+     */
+    private String findIssuerDidOrFallback(@NonNull BPASchema bpaSchema) {
+        return trustedIssuer.findBySchema(bpaSchema)
+                .stream()
+                .map(BPARestrictions::getIssuerDid)
+                .findFirst()
+                .orElse(identity.getDidKey());
     }
 }

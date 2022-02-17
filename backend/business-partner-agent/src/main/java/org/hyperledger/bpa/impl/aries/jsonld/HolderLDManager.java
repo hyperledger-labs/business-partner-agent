@@ -82,7 +82,7 @@ public class HolderLDManager {
         JsonNode jsonNode = mapper.valueToTree(document);
         V2CredentialExchangeFree v2Request = V2CredentialExchangeFree.builder()
                 .connectionId(UUID.fromString(connectionId))
-                .filter(ldHelper.buildVC(s, jsonNode))
+                .filter(ldHelper.buildVC(s, jsonNode, Boolean.FALSE))
                 .build();
         ac.issueCredentialV2SendProposal(v2Request).ifPresent(v2 -> dbCredEx
                 .threadId(v2.getThreadId())

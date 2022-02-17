@@ -24,8 +24,28 @@ import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AriesStringUtil {
+
+    private static final Pattern DID_KEY_PATTERN = Pattern.compile("z[a-km-zA-HJ-NP-Z1-9]+");
+    private static final String DID_KEY = "did:key:";
+
+    /**
+     * tests if the provided did is a did:key
+     * 
+     * @param did
+     * @return true if did is a did:key, false otherwise
+     */
+    public static boolean isDidKey(@Nullable String did) {
+        if (StringUtils.isNotEmpty(did) && did.startsWith(DID_KEY)) {
+            String toMatch = did.replace(DID_KEY, "");
+            Matcher m = DID_KEY_PATTERN.matcher(toMatch);
+            return m.matches();
+        }
+        return false;
+    }
 
     /**
      * Gets the last segment of a did

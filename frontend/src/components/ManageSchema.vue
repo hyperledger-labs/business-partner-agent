@@ -106,6 +106,7 @@ import { adminService } from "@/services";
 import TrustedIssuers from "@/components/TrustedIssuers.vue";
 import CredentialDefinitions from "@/components/CredentialDefinitions.vue";
 import VBpaButton from "@/components/BpaButton";
+import { CredentialTypes } from "@/constants";
 export default {
   name: "ManageSchema",
   props: {
@@ -143,6 +144,9 @@ export default {
     };
   },
   computed: {
+    typeIsJsonLD() {
+      return this.schema.type === CredentialTypes.JSON_LD.type;
+    },
     schema: {
       get() {
         return this.value;
@@ -158,12 +162,12 @@ export default {
           key: "schema-attributes",
         },
       ];
-      if (this.credentialDefinitions)
+      if (this.credentialDefinitions && !this.typeIsJsonLD)
         tabs.push({
           title: this.$t("component.manageSchema.tabs.credentialDefinitions"),
           key: "credential-definitions",
         });
-      if (!this.schema.isMine && this.trustedIssuers)
+      if ((!this.schema.isMine || this.typeIsJsonLD) && this.trustedIssuers)
         tabs.push({
           title: this.$t("component.manageSchema.tabs.trustedIssuers"),
           key: "trusted-issuers",

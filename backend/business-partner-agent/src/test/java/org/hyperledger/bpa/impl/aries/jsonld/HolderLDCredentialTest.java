@@ -153,7 +153,7 @@ public class HolderLDCredentialTest extends BaseTest {
     }
 
     @Test
-    void testHolderRequestsCredentialFromIssuerAndIssuerAccepts() throws IOException{
+    void testHolderRequestsCredentialFromIssuerAndIssuerAccepts() throws IOException {
         String proposalSent = loader.load("files/v2-ld-credex-holder-proposal/01-proposal-sent.json");
         String offerReceived = loader.load("files/v2-ld-credex-holder-proposal/02-offer-received.json");
 
@@ -163,7 +163,7 @@ public class HolderLDCredentialTest extends BaseTest {
         Mockito.when(ac.walletDidCreate(Mockito.any()))
                 .thenReturn(Optional.of(DID.builder().did("did:key:dummy").build()));
         Mockito.when(
-                    ac.issueCredentialV2SendProposal(Mockito.any(V2CredentialExchangeFree.class)))
+                ac.issueCredentialV2SendProposal(Mockito.any(V2CredentialExchangeFree.class)))
                 .thenReturn(Optional.of(proposal));
 
         String id = offer.getCredentialExchangeId();
@@ -196,7 +196,7 @@ public class HolderLDCredentialTest extends BaseTest {
     }
 
     @Test
-    void testHolderRequestsCredentialFromIssuerAndIssuerDeclines() throws IOException{
+    void testHolderRequestsCredentialFromIssuerAndIssuerDeclines() throws IOException {
         String proposalSent = loader.load("files/v2-ld-credex-holder-proposal/01-proposal-sent.json");
         String abandonedEvent = loader.load("files/v2-ld-credex-holder-proposal/03-abandoned.json");
 
@@ -206,7 +206,7 @@ public class HolderLDCredentialTest extends BaseTest {
         Mockito.when(ac.walletDidCreate(Mockito.any()))
                 .thenReturn(Optional.of(DID.builder().did("did:key:dummy").build()));
         Mockito.when(
-                        ac.issueCredentialV2SendProposal(Mockito.any(V2CredentialExchangeFree.class)))
+                ac.issueCredentialV2SendProposal(Mockito.any(V2CredentialExchangeFree.class)))
                 .thenReturn(Optional.of(proposal));
 
         String id = proposal.getCredentialExchangeId();
