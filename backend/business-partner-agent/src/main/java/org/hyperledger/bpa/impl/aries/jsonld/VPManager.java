@@ -29,6 +29,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential.VerifiableIndyCredentialBuilder;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
@@ -84,7 +85,10 @@ public class VPManager {
         docRepo.findByIsPublicTrue().forEach(doc -> vcs.add(buildFromDocument(doc, myDid)));
 
         holderCredExRepo.findByRoleAndIsPublicTrue(CredentialExchangeRole.HOLDER)
-                .forEach(cred -> vcs.add(buildFromCredential(cred)));
+                .stream()
+                .filter(credEx -> credEx.stateIsCredentialAcked() || credEx.stateIsDone()
+                        || credEx.stateIsCredentialReceived())
+                .forEach(credEx -> vcs.add(buildFromCredential(credEx)));
 
         // only split up into own method, because of a weird issue that the second
         // thread does
@@ -136,6 +140,13 @@ public class VPManager {
     }
 
     protected VerifiableIndyCredential buildFromCredential(@NonNull BPACredentialExchange cred) {
+        if (cred.typeIsJsonLd()) {
+            return buildFromLDCredential(cred);
+        }
+        return buildFromIndyCredential(cred);
+    }
+
+    private VerifiableIndyCredential buildFromIndyCredential(@NonNull BPACredentialExchange cred) {
         final ArrayList<String> type = new ArrayList<>(cred.getType().getType());
         type.add("IndyCredential");
 
@@ -155,6 +166,32 @@ public class VPManager {
                 .label(cred.getLabel())
                 .indyIssuer(id.getDidPrefix() + AriesStringUtil.credDefIdGetDid(ariesCred.getCredentialDefinitionId()))
                 .credentialSubject(GsonConfig.defaultConfig().toJsonTree(ariesCred.getAttrs()).getAsJsonObject());
+        return builder.build();
+    }
+
+    private VerifiableIndyCredential buildFromLDCredential(@NonNull BPACredentialExchange cred) {
+        VerifiableCredential vc = Objects.requireNonNull(cred.getLdCredential()).getLdProof().getCredential();
+
+        List<Object> ctx = new ArrayList<>(vc.getContext());
+        ctx.add(ApiConstants.LABELED_CREDENTIAL_SCHEMA);
+
+        List<String> type = new ArrayList<>(vc.getType());
+        type.add(ApiConstants.LABELED_CREDENTIAL_NAME);
+
+        @SuppressWarnings("rawtypes")
+        VerifiableIndyCredentialBuilder builder = VerifiableIndyCredential.builder()
+                .context(ctx)
+                .credentialSubject(vc.getCredentialSubject())
+                .expirationDate(vc.getExpirationDate())
+                .id(vc.getId())
+                .issuanceDate(vc.getIssuanceDate())
+                .issuer(vc.getIssuer())
+                .proof(vc.getProof())
+                .type(type)
+                .label(cred.getLabel())
+                .schemaId(null)
+                .credDefId(null)
+                .indyIssuer(null);
         return builder.build();
     }
 

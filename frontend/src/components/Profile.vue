@@ -41,7 +41,7 @@
               class="text-caption mt-1 ml-1"
             >
               {{ $t("component.profile.credential.verifiedByLabel") }}
-              {{ item.issuer }}
+              {{ item.issuer | truncate }}
             </v-row>
             <v-row
               v-if="item.credentialData && item.credentialData.validFrom"
@@ -116,6 +116,16 @@ export default {
       validFrom: mdiCalendarCheck,
       validUntil: mdiCalendarRemove,
     };
+  },
+  filters: {
+    truncate: function (value) {
+      if (!value) return "";
+      let t = String(value);
+      if (t.length > 40) {
+        return t.slice(0, 40) + "...";
+      }
+      return t;
+    },
   },
   computed: {
     profile: function () {
