@@ -17,6 +17,8 @@
         v-bind:headers="docHeaders"
         v-model="selectedDocument"
         disable-verification-request
+        use-indy
+        use-json-ld
         selectable
         type="document"
       ></MyCredentialList>

@@ -280,7 +280,10 @@ public class IssuerManager extends CredentialManagerBase {
     public void handleV1CredentialExchange(@NonNull V1CredentialExchange ex) {
         issuerCredExRepo.findByCredentialExchangeId(ex.getCredentialExchangeId()).ifPresent(bpaEx -> {
             boolean notDeclined = bpaEx.stateIsNotDeclined();
-            CredentialExchangeState state = ex.getState() != null ? ex.getState() : CredentialExchangeState.PROBLEM;
+            CredentialExchangeState state = ex.getState() == null
+                    || CredentialExchangeState.ABANDONED.equals(ex.getState())
+                            ? CredentialExchangeState.PROBLEM
+                            : ex.getState();
             bpaEx.pushStates(state, ex.getUpdatedAt());
             if (StringUtils.isNotEmpty(ex.getErrorMsg())) {
                 if (notDeclined) {

@@ -88,7 +88,7 @@ public class IssuerLDManager {
                     .orElseThrow();
 
             BPACredentialExchange cex = BPACredentialExchange.builder()
-                    .schema(bpaSchema)
+                    .schema(BPASchema.builder().id(bpaSchema.getId()).build())
                     .partner(partner)
                     .type(CredentialType.JSON_LD)
                     .role(CredentialExchangeRole.ISSUER)

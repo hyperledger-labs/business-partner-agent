@@ -120,6 +120,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    useJsonLd: {
+      type: Boolean,
+      default: false,
+    },
   },
   components: {
     NewMessageIcon,
@@ -136,6 +140,17 @@ export default {
     };
   },
   computed: {
+    queryFilter() {
+      let q = "";
+      if (this.useIndy && this.useJsonLd) {
+        q = "?types=INDY&types=JSON_LD";
+      } else if (this.useIndy) {
+        q = "?types=INDY";
+      } else if (this.useJsonLd) {
+        q = "?types=JSON_LD";
+      }
+      return q;
+    },
     credentialNotifications() {
       return this.$store.getters.credentialNotifications;
     },
@@ -159,11 +174,7 @@ export default {
   methods: {
     fetch(type) {
       this.$axios
-        .get(
-          `${this.$apiBaseUrl}/wallet/${type}${
-            this.useIndy ? "?types=INDY" : ""
-          }`
-        )
+        .get(`${this.$apiBaseUrl}/wallet/${type}${this.queryFilter}`)
         .then((result) => {
           if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.isBusy = false;
