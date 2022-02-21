@@ -55,21 +55,17 @@ public class LabelStrategy {
     @Inject
     SchemaService schemaService;
 
-    public @Nullable String apply(@NonNull MyDocumentAPI document) {
+    public void apply(@NonNull MyDocumentAPI document) {
         if (StringUtils.isBlank(document.getLabel())) {
-            Optional<String> attr = findDefaultAttribute(document.getSchemaId());
-            if (attr.isPresent()) {
+            findDefaultAttribute(document.getSchemaId()).ifPresent(attr -> {
                 JsonNode documentData = document.getDocumentData();
-                JsonNode value = documentData.findValue(attr.get());
+                JsonNode value = documentData.findValue(attr);
                 if (value != null) {
                     String label = value.asText();
                     document.setLabel(label);
-                    return label;
                 }
-            }
-            document.setLabel(null);
+            });
         }
-        return null;
     }
 
     public @Nullable String apply(@Nullable Credential ariesCredential) {

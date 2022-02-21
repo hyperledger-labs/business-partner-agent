@@ -101,11 +101,12 @@ public class OOBCredentialOffer {
      * @param req {@link IssueOOBCredentialRequest}
      * @return location of the offer
      */
+    // TODO LD-Credential Support
     public APICreateInvitationResponse issueConnectionLess(@NonNull IssueOOBCredentialRequest req) {
         BPACredentialDefinition dbCredDef = credDefRepo.findById(req.getCredDefId())
                 .orElseThrow(() -> new WrongApiUsageException(
                         ms.getMessage("api.issuer.creddef.not.found", Map.of("id", req.getCredDefId()))));
-        validator.validateAttributesAgainstSchema(req.getDocument(), dbCredDef.getSchema().getSchemaId());
+        validator.validateAttributesAgainstIndySchema(req.getDocument(), dbCredDef.getSchema().getSchemaId());
 
         Map<String, String> document = conv.toStringMap(req.getDocument());
 

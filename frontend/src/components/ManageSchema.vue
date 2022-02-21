@@ -62,6 +62,11 @@
               >
                 <p class="grey--text text--darken-2 font-weight-medium">
                   {{ attribute }}
+                  <v-icon
+                    x-small
+                    v-if="attribute === schema.defaultAttributeName"
+                    >$vuetify.icons.asterisk</v-icon
+                  >
                 </p>
               </v-list-item>
             </v-card>

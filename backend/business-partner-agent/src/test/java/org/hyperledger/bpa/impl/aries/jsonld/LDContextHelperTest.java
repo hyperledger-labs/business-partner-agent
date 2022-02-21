@@ -20,43 +20,16 @@ package org.hyperledger.bpa.impl.aries.jsonld;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.bpa.api.CredentialType;
-import org.hyperledger.bpa.api.exception.WrongApiUsageException;
-import org.hyperledger.bpa.config.BPAMessageSource;
-import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @ExtendWith(MockitoExtension.class)
 public class LDContextHelperTest {
-
-    @Mock
-    private BPAMessageSource.DefaultMessageSource ms;
-
-    @InjectMocks
-    private final LDContextHelper h = new LDContextHelper();
-
-    @Test
-    void testSchemaValidationSuccess() {
-        h.validateDocumentAgainstSchema(BPASchema.builder()
-                .schemaAttributeNames(Set.of("name", "id", "some"))
-                .build(), Map.of("name", "me", "id", "123"));
-    }
-
-    @Test
-    void testSchemaValidationFailure() {
-        Assertions.assertThrows(WrongApiUsageException.class, () -> h.validateDocumentAgainstSchema(BPASchema.builder()
-                .schemaAttributeNames(Set.of("name", "id", "some"))
-                .build(), Map.of("other", "123")));
-    }
 
     @Test
     void testFindLDSchemaId() {

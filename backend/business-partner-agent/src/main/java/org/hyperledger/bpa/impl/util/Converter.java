@@ -205,7 +205,7 @@ public class Converter {
                 .type(myDoc.getType())
                 .typeLabel(resolveTypeLabel(myDoc.getType(), myDoc.getSchemaId(), null))
                 .schemaId(myDoc.getSchemaId())
-                .label(myDoc.getLabel())
+                .label(myDoc.getLabel() != null ? myDoc.getLabel() : "")
                 .build();
     }
 

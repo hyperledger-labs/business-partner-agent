@@ -27,8 +27,8 @@ import org.hyperledger.aries.api.issue_credential_v2.V2CredentialExchangeFree;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
-import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.impl.activity.DocumentValidator;
 import org.hyperledger.bpa.impl.aries.wallet.Identity;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.TimeUtil;
@@ -37,7 +37,10 @@ import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.repository.BPARestrictionsRepository;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Singleton
 public class LDContextHelper {
@@ -47,6 +50,9 @@ public class LDContextHelper {
 
     @Inject
     Converter conv;
+
+    @Inject
+    DocumentValidator documentValidator;
 
     @Inject
     BPARestrictionsRepository trustedIssuer;
@@ -72,7 +78,7 @@ public class LDContextHelper {
 
     public V2CredentialExchangeFree.V20CredFilter buildVC(
             @NonNull BPASchema bpaSchema, @NonNull Map<String, String> document, @NonNull Boolean issuer) {
-        validateDocumentAgainstSchema(bpaSchema, document);
+        documentValidator.validateAttributesAgainstLDSchema(bpaSchema, document);
         return V2CredentialExchangeFree.V20CredFilter.builder()
                 .ldProof(V2CredentialExchangeFree.LDProofVCDetail.builder()
                         .credential(VerifiableCredential.builder()
@@ -88,17 +94,6 @@ public class LDContextHelper {
                                 .build())
                         .build())
                 .build();
-    }
-
-    public void validateDocumentAgainstSchema(@NonNull BPASchema bpaSchema, @NonNull Map<String, String> document) {
-        SortedSet<String> attributeNames = bpaSchema.getSchemaAttributeNames();
-        document.keySet().forEach(k -> {
-            if (!attributeNames.contains(k)) {
-                throw new WrongApiUsageException(
-                        ms.getMessage("api.document.validation.attribute.not.in.schema",
-                                Map.of("attr", k)));
-            }
-        });
     }
 
     /**
