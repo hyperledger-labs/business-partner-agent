@@ -162,7 +162,7 @@ public class HolderManager extends CredentialManagerBase {
                 V20CredRequestRequest.V20CredRequestRequestBuilder credentialRequest = V20CredRequestRequest
                         .builder();
                 if (dbEx.typeIsJsonLd()) {
-                    credentialRequest.holderDid(identity.getDidKey());
+                    credentialRequest.holderDid(identity.getMyDid());
                 }
                 ac.issueCredentialV2RecordsSendRequest(dbEx.getCredentialExchangeId(), credentialRequest.build());
             }
