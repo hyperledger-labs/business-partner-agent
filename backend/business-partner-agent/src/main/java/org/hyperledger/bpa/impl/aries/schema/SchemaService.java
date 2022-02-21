@@ -133,10 +133,12 @@ public class SchemaService {
         try {
             Optional<SchemaSendResponse.Schema> ariesSchema = ac.schemasGetById(sId);
             if (ariesSchema.isPresent()) {
+                LinkedHashSet<String> schemaAttributeNames = new LinkedHashSet<>(ariesSchema.get().getAttrNames());
+                validateDefaultAttribute(defaultAttributeName, schemaAttributeNames);
                 BPASchema dbS = BPASchema.builder()
                         .label(label != null ? label : AriesStringUtil.schemaGetName(schemaId))
                         .schemaId(ariesSchema.get().getId())
-                        .schemaAttributeNames(new LinkedHashSet<>(ariesSchema.get().getAttrNames()))
+                        .schemaAttributeNames(schemaAttributeNames)
                         .defaultAttributeName(defaultAttributeName)
                         .seqNo(ariesSchema.get().getSeqNo())
                         .type(CredentialType.INDY)
@@ -165,6 +167,7 @@ public class SchemaService {
         } catch (URISyntaxException e) {
             throw new WrongApiUsageException(ms.getMessage("api.schema.ld.id.parse.error"));
         }
+        validateDefaultAttribute(defaultAttributeName, attributes);
 
         BPASchema dbS = BPASchema.builder()
                 .label(label)
@@ -180,6 +183,7 @@ public class SchemaService {
 
     public SchemaAPI updateSchema(@NonNull UUID id, @Nullable String defaultAttribute) {
         BPASchema schema = schemaRepo.findById(id).orElseThrow(EntityNotFoundException::new);
+        validateDefaultAttribute(defaultAttribute, schema.getSchemaAttributeNames());
         schemaRepo.updateDefaultAttributeName(id, defaultAttribute);
         schema.setDefaultAttributeName(defaultAttribute);
         return SchemaAPI.from(schema);
@@ -265,6 +269,13 @@ public class SchemaService {
                             log.warn("Could not add schema id: {}", schema.getId(), e);
                         }
                     });
+        }
+    }
+
+    void validateDefaultAttribute(@Nullable String defaultAttributeName, @NonNull Set<String> attributes) {
+        if (StringUtils.isNotEmpty(defaultAttributeName)
+                && !StringUtils.containsAnyIgnoreCase(defaultAttributeName, attributes.toArray(String[]::new))) {
+            throw new WrongApiUsageException(ms.getMessage("api.schema.default.attribute.mismatch"));
         }
     }
 }
