@@ -105,15 +105,15 @@ public class DocumentValidatorTest {
     @Test
     void testSchemaValidationSuccess() {
         validator.validateAttributesAgainstLDSchema(BPASchema.builder()
-                .schemaAttributeNames(Set.of("name", "id", "some"))
-                .build(), Map.of("name", "me", "id", "123"));
+                .schemaAttributeNames(Set.of("name", "some"))
+                .build(), Map.of("name", "me", "id", "did:sov:123"));
     }
 
     @Test
     void testSchemaValidationFailure() {
         Assertions.assertThrows(WrongApiUsageException.class,
                 () -> validator.validateAttributesAgainstLDSchema(BPASchema.builder()
-                        .schemaAttributeNames(Set.of("name", "id", "some"))
+                        .schemaAttributeNames(Set.of("name", "some"))
                         .build(), Map.of("other", "123")));
     }
 

@@ -94,7 +94,7 @@ public class DocumentValidator {
     public void validateAttributesAgainstLDSchema(@NonNull BPASchema bpaSchema, @NonNull Map<String, String> document) {
         SortedSet<String> attributeNames = bpaSchema.getSchemaAttributeNames();
         document.keySet().forEach(k -> {
-            if (!attributeNames.contains(k)) {
+            if (!"id".equals(k) && !attributeNames.contains(k)) {
                 throw new WrongApiUsageException(
                         ms.getMessage("api.document.validation.attribute.not.in.schema",
                                 Map.of("attr", k)));

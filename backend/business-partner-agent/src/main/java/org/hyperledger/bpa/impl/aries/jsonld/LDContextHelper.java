@@ -79,6 +79,9 @@ public class LDContextHelper {
     public V2CredentialExchangeFree.V20CredFilter buildVC(
             @NonNull BPASchema bpaSchema, @NonNull Map<String, String> document, @NonNull Boolean issuer) {
         documentValidator.validateAttributesAgainstLDSchema(bpaSchema, document);
+        if (!issuer) {
+            document.put("id", identity.getMyDid());
+        }
         return V2CredentialExchangeFree.V20CredFilter.builder()
                 .ldProof(V2CredentialExchangeFree.LDProofVCDetail.builder()
                         .credential(VerifiableCredential.builder()
