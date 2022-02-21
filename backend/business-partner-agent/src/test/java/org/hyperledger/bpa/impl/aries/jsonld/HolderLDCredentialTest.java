@@ -84,8 +84,8 @@ public class HolderLDCredentialTest extends BaseTest {
 
     @Test
     void testHolderReceivesCredentialFromIssuerAndAccepts() throws IOException {
-        Mockito.when(ac.walletDidCreate(Mockito.any()))
-                .thenReturn(Optional.of(DID.builder().did("did:key:dummy").build()));
+        Mockito.when(ac.walletDidPublic()).thenReturn(Optional.of(DID.builder()
+                .did("did:indy:1234").method(DID.MethodEnum.SOV).build()));
 
         String offerReceived = loader.load("files/v2-ld-credex-holder/01-offer-received.json");
         String requestSent = loader.load("files/v2-ld-credex-holder/02-request-sent.json");
@@ -160,8 +160,8 @@ public class HolderLDCredentialTest extends BaseTest {
         V20CredExRecord proposal = ep.parseValueSave(proposalSent, V20CredExRecord.class).orElseThrow();
         V20CredExRecord offer = ep.parseValueSave(offerReceived, V20CredExRecord.class).orElseThrow();
 
-        Mockito.when(ac.walletDidCreate(Mockito.any()))
-                .thenReturn(Optional.of(DID.builder().did("did:key:dummy").build()));
+        Mockito.when(ac.walletDidPublic()).thenReturn(Optional.of(DID.builder()
+                .did("did:indy:1234").method(DID.MethodEnum.SOV).build()));
         Mockito.when(
                 ac.issueCredentialV2SendProposal(Mockito.any(V2CredentialExchangeFree.class)))
                 .thenReturn(Optional.of(proposal));
@@ -203,8 +203,8 @@ public class HolderLDCredentialTest extends BaseTest {
         V20CredExRecord proposal = ep.parseValueSave(proposalSent, V20CredExRecord.class).orElseThrow();
         V20CredExRecord abandoned = ep.parseValueSave(abandonedEvent, V20CredExRecord.class).orElseThrow();
 
-        Mockito.when(ac.walletDidCreate(Mockito.any()))
-                .thenReturn(Optional.of(DID.builder().did("did:key:dummy").build()));
+        Mockito.when(ac.walletDidPublic()).thenReturn(Optional.of(DID.builder()
+                .did("did:indy:1234").method(DID.MethodEnum.SOV).build()));
         Mockito.when(
                 ac.issueCredentialV2SendProposal(Mockito.any(V2CredentialExchangeFree.class)))
                 .thenReturn(Optional.of(proposal));

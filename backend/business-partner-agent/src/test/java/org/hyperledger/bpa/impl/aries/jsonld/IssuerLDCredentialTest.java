@@ -92,8 +92,8 @@ public class IssuerLDCredentialTest extends BaseTest {
         V20CredExRecord issued = ep.parseValueSave(credIssued, V20CredExRecord.class).orElseThrow();
         V20CredExRecord done = ep.parseValueSave(exDone, V20CredExRecord.class).orElseThrow();
 
-        Mockito.when(ac.walletDidCreate(Mockito.any()))
-                .thenReturn(Optional.of(DID.builder().did("did:key:dummy").build()));
+        Mockito.when(ac.walletDidPublic()).thenReturn(Optional.of(DID.builder()
+                .did("did:indy:1234").method(DID.MethodEnum.SOV).build()));
         Mockito.when(ac.issueCredentialV2Send(Mockito.any(V2CredentialExchangeFree.class)))
                 .thenReturn(Optional.of(offer));
 
@@ -136,8 +136,8 @@ public class IssuerLDCredentialTest extends BaseTest {
         V20CredExRecord offer = ep.parseValueSave(offerSent, V20CredExRecord.class).orElseThrow();
         V20CredExRecord problem = ep.parseValueSave(abandoned, V20CredExRecord.class).orElseThrow();
 
-        Mockito.when(ac.walletDidCreate(Mockito.any()))
-                .thenReturn(Optional.of(DID.builder().did("did:key:dummy").build()));
+        Mockito.when(ac.walletDidPublic()).thenReturn(Optional.of(DID.builder()
+                .did("did:indy:1234").method(DID.MethodEnum.SOV).build()));
         Mockito.when(ac.issueCredentialV2Send(Mockito.any(V2CredentialExchangeFree.class)))
                 .thenReturn(Optional.of(offer));
 
@@ -173,8 +173,8 @@ public class IssuerLDCredentialTest extends BaseTest {
         V20CredExRecord request = ep.parseValueSave(requestReceived, V20CredExRecord.class).orElseThrow();
         V20CredExRecord issued = ep.parseValueSave(credentialIssued, V20CredExRecord.class).orElseThrow();
 
-        Mockito.when(ac.walletDidCreate(Mockito.any()))
-                .thenReturn(Optional.of(DID.builder().did("did:key:dummy").build()));
+        Mockito.when(ac.walletDidPublic()).thenReturn(Optional.of(DID.builder()
+                .did("did:indy:1234").method(DID.MethodEnum.SOV).build()));
         Mockito.when(
                 ac.issueCredentialV2RecordsSendOffer(Mockito.anyString(), Mockito.any(V20CredBoundOfferRequest.class)))
                 .thenReturn(Optional.of(offer));
