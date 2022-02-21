@@ -33,19 +33,19 @@ The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Ide
 | Role/Feature     | Flow                                                                   | Protocol Version                  |
 |------------------|------------------------------------------------------------------------|-----------------------------------|
 | Issuer           |                                                                        |                                   |
-|                  | auto: issue credential                                                 | indy: v1, v2 <br/>json-ld: v2     |
-|                  | manual: send credential offer to holder                                | indy: v1, v2 <br/>json-ld: v2     |
-|                  | manual: receive credential proposal from holder                        | indy: v1, v2 <br/>json-ld: v2     |
-|                  | manual: decline credential proposal from holder and provide reason     | indy: v1, v2 <br/>json-ld: v2     |
-|                  | revoke issued credential (requires tails server)                       | indy: v1, v2 <br/>json-ld: n/a    |
-|                  | send revocation notification                                           | indy: v1, v2 <br/>json-ld: n/a    |
+|                  | auto: issue credential                                                 | indy: v1, v2 <br/>w3c: v2         |
+|                  | manual: send credential offer to holder                                | indy: v1, v2 <br/>w3c: v2         |
+|                  | manual: receive credential proposal from holder                        | indy: v1, v2 <br/>w3c: v2         |
+|                  | manual: decline credential proposal from holder and provide reason     | indy: v1, v2 <br/>w3c: v2         |
+|                  | revoke issued credential (requires tails server)                       | indy: v1, v2 <br/>w3c: n/a        |
+|                  | send revocation notification                                           | indy: v1, v2 <br/>w3c: n/a        |
 | Holder           |                                                                        |                                   |
-|                  | auto: receive credential                                               | indy: v1, v2 <br/>json-ld: v2     |
-|                  | manual: send credential proposal to issuer (based on document)         | indy: v1, v2 <br/>json-ld: v2     |
-|                  | manual: receive credential offer from issuer                           | indy: v1, v2 <br/>json-ld: v2     |
-|                  | manual: decline credential offer from issuer                           | indy: v1, v2 <br/>json-ld: v2     |
-|                  | scheduled revocation check on all received credentials                 | indy: v1, v2 <br/>json-ld: n/a    |
-|                  | receive revocation notification                                        | indy: v1, v2 <br/>json-ld: n/a    |
+|                  | auto: receive credential                                               | indy: v1, v2 <br/>w3c: v2         |
+|                  | manual: send credential proposal to issuer (based on document)         | indy: v1, v2 <br/>w3c: v2         |
+|                  | manual: receive credential offer from issuer                           | indy: v1, v2 <br/>w3c: v2         |
+|                  | manual: decline credential offer from issuer                           | indy: v1, v2 <br/>w3c: v2         |
+|                  | scheduled revocation check on all received credentials                 | indy: v1, v2 <br/>w3c: n/a        |
+|                  | receive revocation notification                                        | indy: v1, v2 <br/>w3c: n/a        |
 | Prover           |                                                                        |                                   |
 |                  | auto: send presentation to verifier                                    | indy: v1, v2                      |
 |                  | auto: answer presentation request                                      | indy: v1, v2                      |
