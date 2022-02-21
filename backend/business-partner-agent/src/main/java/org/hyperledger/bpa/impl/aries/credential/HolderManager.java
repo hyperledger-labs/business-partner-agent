@@ -19,6 +19,7 @@ package org.hyperledger.bpa.impl.aries.credential;
 
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.util.CollectionUtils;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -37,6 +38,7 @@ import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.revocation.RevocationNotificationEvent;
 import org.hyperledger.aries.config.GsonConfig;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.api.aries.ProfileVC;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
@@ -198,14 +200,21 @@ public class HolderManager extends CredentialManagerBase {
 
     /**
      * List credential that the user holds in the wallet
-     * 
+     *
+     * @param typesToFilter filter by provided credential types
      * @return list of {@link AriesCredential}
      */
-    public List<AriesCredential> listHeldCredentials() {
+    public List<AriesCredential> listHeldCredentials(@Nullable List<CredentialType> typesToFilter) {
         return holderCredExRepo.findByRoleEqualsAndStateIn(
                 CredentialExchangeRole.HOLDER,
                 List.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE))
                 .stream()
+                .filter(c -> {
+                    if (CollectionUtils.isEmpty(typesToFilter) || typesToFilter.contains(c.getType())) {
+                        return true;
+                    }
+                    return false;
+                })
                 .map(this::buildCredential)
                 .collect(Collectors.toList());
     }

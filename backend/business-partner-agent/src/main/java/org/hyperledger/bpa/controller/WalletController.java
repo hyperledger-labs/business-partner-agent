@@ -134,11 +134,13 @@ public class WalletController {
     /**
      * Aries: List wallet credentials
      *
+     * @param types {@link CredentialType} multi value list of types to filter
      * @return list of {@link AriesCredential}
      */
     @Get("/credential")
-    public HttpResponse<List<AriesCredential>> getCredentials() {
-        return HttpResponse.ok(holderCredMgmt.listHeldCredentials());
+    public HttpResponse<List<AriesCredential>> getCredentials(@Parameter(
+            description = "types filter") @Nullable @QueryValue @Format("MULTI") List<CredentialType> types) {
+        return HttpResponse.ok(holderCredMgmt.listHeldCredentials(types));
     }
 
     /**

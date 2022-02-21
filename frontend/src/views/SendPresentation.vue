@@ -22,6 +22,7 @@
           v-model="selectedCredentials"
           type="credential"
           selectable
+          use-indy
         ></MyCredentialList>
       </v-card-text>
 
@@ -141,9 +142,5 @@ export default {
 <style scoped>
 .bg-light {
   background-color: #fafafa;
-}
-
-.bg-light-2 {
-  background-color: #ececec;
 }
 </style>
