@@ -80,6 +80,21 @@
               </v-list-item-action>
             </v-list-item>
           </v-col>
+          <v-col cols="12" v-if="useOutOfBand">
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title
+                  class="grey--text text--darken-2 font-weight-medium"
+                  >{{
+                    $t("view.addPartnerbyURL.usePublicDid")
+                  }}</v-list-item-title
+                >
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-switch v-model="usePublicDid"></v-switch>
+              </v-list-item-action>
+            </v-list-item>
+          </v-col>
           <v-col cols="12">
             <v-bpa-button color="primary" @click="createInvitation()">{{
               $t("view.addPartnerbyURL.createInvitation")
@@ -150,8 +165,9 @@ export default {
       // Disable trust ping for invitation to
       // mobile wallets by default.
       trustPing: false,
-      // Allow to use Out of Band format for invitation
+      // Allows using Out of Band format for the invitation
       useOutOfBand: false,
+      usePublicDid: true,
     };
   },
   computed: {
@@ -170,6 +186,7 @@ export default {
         }),
         trustPing: this.trustPing,
         useOutOfBand: this.useOutOfBand,
+        usePublicDid: this.useOutOfBand ? this.usePublicDid : undefined,
       };
       this.$axios
         .post(`${this.$apiBaseUrl}/invitations`, partnerToAdd)

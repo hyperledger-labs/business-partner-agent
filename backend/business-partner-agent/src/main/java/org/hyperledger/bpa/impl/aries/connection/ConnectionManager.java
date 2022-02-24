@@ -116,7 +116,7 @@ public class ConnectionManager {
         InvitationRecord invitationRecord;
         try {
             if (req.getUseOutOfBand()) {
-                invitationRecord = createOOBInvitation(req.getAlias());
+                invitationRecord = createOOBInvitation(req.getAlias(), req.getUsePublicDid());
                 invMsgId = invitationRecord.getInviMsgId();
                 invitation
                         .invitationUrl(invitationRecord.getInvitationUrl())
@@ -412,11 +412,11 @@ public class ConnectionManager {
         return false;
     }
 
-    private InvitationRecord createOOBInvitation(@Nullable String alias) throws IOException {
+    private InvitationRecord createOOBInvitation(@Nullable String alias, boolean usePublicDid) throws IOException {
         return ac.outOfBandCreateInvitation(
                 InvitationCreateRequest.builder()
                         .alias(alias)
-                        .usePublicDid(Boolean.TRUE)
+                        .usePublicDid(usePublicDid)
                         .build(),
                 CreateInvitationFilter.builder()
                         .autoAccept(Boolean.TRUE)

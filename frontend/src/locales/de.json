@@ -305,6 +305,7 @@
       "createInvitation": "Einladung generieren (QR Code)",
       "invitationURL": "Einladung URL",
       "useOOB": "Out of Band verwenden",
+      "usePublicDid": "Öffentliche DID verwenden",
       "eventSuccessCreatePartnerInvite": "Einladung erfolgreich erstellt"
     },
     "proofTemplate": {

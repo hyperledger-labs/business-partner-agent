@@ -30,8 +30,13 @@ public class CreatePartnerInvitationRequest {
     private List<Tag> tag;
     private Boolean trustPing;
     private Boolean useOutOfBand;
+    private Boolean usePublicDid;
 
     public boolean getUseOutOfBand() {
         return useOutOfBand != null && useOutOfBand;
+    }
+
+    public boolean getUsePublicDid() {
+        return usePublicDid != null && usePublicDid;
     }
 }
