@@ -31,9 +31,11 @@ public class AriesStringUtil {
 
     private static final Pattern DID_KEY_PATTERN = Pattern.compile("z[a-km-zA-HJ-NP-Z1-9]+");
     private static final String DID_KEY = "did:key:";
+    private static final String DID_INDY = "did:key:";
+    private static final String DID_SOV = "did:sov:";
 
     /**
-     * tests if the provided did is a did:key
+     * Tests if the provided did is a did:key
      * 
      * @param did
      * @return true if did is a did:key, false otherwise
@@ -45,6 +47,32 @@ public class AriesStringUtil {
             return m.matches();
         }
         return false;
+    }
+
+    /**
+     * Tests if the provided did is a did:indy
+     *
+     * @param did
+     * @return true if did is a did:indy, false otherwise
+     */
+    public static boolean isDidIndy(@Nullable String did) {
+        if (StringUtils.isNotEmpty(did) && did.startsWith(DID_INDY) || did.startsWith(DID_SOV)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the provided did is fully qualified, if not it is prepended with the provided qualifier
+     * @param did qualified or unqualified did
+     * @param qualifier fallback qualifier if the provided did is unqualified
+     * @return qualified did
+     */
+    public static String qualifyDidIfNeeded(@Nullable String did, @NonNull String qualifier) {
+        if (did == null) {
+            return null;
+        }
+        return did.startsWith("did:") ? did : qualifier + did;
     }
 
     /**

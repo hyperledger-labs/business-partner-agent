@@ -88,7 +88,7 @@ public class AriesEventHandler extends EventHandler {
             return;
         }
         synchronized (connection) {
-            if (connectionRecord.isConnectionInvitation()) {
+            if (connectionRecord.isInvitationResponse()) {
                 connection.handleInvitationEvent(connectionRecord);
             } else if (connectionRecord.isOutgoingConnection()) {
                 connection.handleOutgoingConnectionEvent(connectionRecord);
