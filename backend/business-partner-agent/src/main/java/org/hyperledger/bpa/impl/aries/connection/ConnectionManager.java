@@ -284,7 +284,7 @@ public class ConnectionManager {
                 });
     }
 
-    private String resolveDidFromRecord(@NonNull ConnectionRecord record) {
+    String resolveDidFromRecord(@NonNull ConnectionRecord record) {
         String did = null;
         if (record.protocolIsIdDidExchangeV1() && !record.isInvitationRequest()) {
             did = AriesStringUtil.qualifyDidIfNeeded(StringUtils.isNotEmpty(record.getTheirPublicDid())
