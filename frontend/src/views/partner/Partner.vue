@@ -538,8 +538,4 @@ export default {
 .bg-light {
   background-color: #fafafa;
 }
-
-.bg-light-2 {
-  background-color: #ececec;
-}
 </style>

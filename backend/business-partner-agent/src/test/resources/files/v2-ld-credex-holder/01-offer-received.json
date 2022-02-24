@@ -1,0 +1,61 @@
+{
+  "role": "holder",
+  "by_format": {
+    "cred_offer": {
+      "ld_proof": {
+        "credential": {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://w3id.org/citizenship/v1",
+            "https://w3id.org/security/bbs/v1"
+          ],
+          "type": [
+            "VerifiableCredential",
+            "PermanentResident"
+          ],
+          "issuer": "did:key:zUC7GJcqBeNHCED9FPJrnGpr6qNEEfrodcWqgbX9Q6WN7TCahMxcRd2UJGVnMQtMrTyXRMbvusw45MVpJYD1TYR44vwkVrEvFRe1YWkkbeQJj7xaghWMpoUChUxXbfduRYrWTpz",
+          "issuanceDate": "2022-02-16T16:53:19Z",
+          "credentialSubject": {
+            "name": "karl",
+            "identifier": "1234"
+          }
+        },
+        "options": {
+          "proofType": "BbsBlsSignature2020"
+        }
+      }
+    }
+  },
+  "auto_offer": false,
+  "state": "offer-received",
+  "trace": false,
+  "cred_ex_id": "9a2b489a-5c47-49ce-9b87-093fc79817c7",
+  "auto_remove": true,
+  "created_at": "2022-02-16T16:53:21.634264Z",
+  "initiator": "external",
+  "connection_id": "1be44de6-7538-4d49-a7f5-86b9dab151ea",
+  "updated_at": "2022-02-16T16:53:21.634264Z",
+  "auto_issue": false,
+  "cred_offer": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/offer-credential",
+    "@id": "b8942466-637f-4db3-a139-126be08ba306",
+    "~thread": {},
+    "comment": "create automated v2.0 credential exchange record",
+    "formats": [
+      {
+        "attach_id": "ld_proof",
+        "format": "aries/ld-proof-vc-detail@v1.0"
+      }
+    ],
+    "offers~attach": [
+      {
+        "@id": "ld_proof",
+        "mime-type": "application/json",
+        "data": {
+          "base64": "eyJjcmVkZW50aWFsIjogeyJAY29udGV4dCI6IFsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCAiaHR0cHM6Ly93M2lkLm9yZy9jaXRpemVuc2hpcC92MSIsICJodHRwczovL3czaWQub3JnL3NlY3VyaXR5L2Jicy92MSJdLCAidHlwZSI6IFsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCAiUGVybWFuZW50UmVzaWRlbnQiXSwgImlzc3VlciI6ICJkaWQ6a2V5OnpVQzdHSmNxQmVOSENFRDlGUEpybkdwcjZxTkVFZnJvZGNXcWdiWDlRNldON1RDYWhNeGNSZDJVSkdWbk1RdE1yVHlYUk1idnVzdzQ1TVZwSllEMVRZUjQ0dndrVnJFdkZSZTFZV2trYmVRSmo3eGFnaFdNcG9VQ2hVeFhiZmR1UllyV1RweiIsICJpc3N1YW5jZURhdGUiOiAiMjAyMi0wMi0xNlQxNjo1MzoxOVoiLCAiY3JlZGVudGlhbFN1YmplY3QiOiB7Im5hbWUiOiAia2FybCIsICJpZGVudGlmaWVyIjogIjEyMzQifX0sICJvcHRpb25zIjogeyJwcm9vZlR5cGUiOiAiQmJzQmxzU2lnbmF0dXJlMjAyMCJ9fQ=="
+        }
+      }
+    ]
+  },
+  "thread_id": "b8942466-637f-4db3-a139-126be08ba306"
+}

@@ -1,0 +1,1 @@
+ALTER TABLE bpa_credential_exchange ADD COLUMN ld_credential jsonb;

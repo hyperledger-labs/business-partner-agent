@@ -18,13 +18,14 @@
         v-model="selectedDocument"
         disable-verification-request
         use-indy
+        use-json-ld
         selectable
         type="document"
       ></MyCredentialList>
       <v-card-actions>
         <v-layout align-center align-end justify-end>
           <v-switch
-            v-if="expertMode"
+            v-if="showV2Slider"
             v-model="useV2Exchange"
             :label="$t('button.useV2')"
           ></v-switch>
@@ -50,7 +51,7 @@
 
 <script lang="ts">
 import { EventBus } from "@/main";
-import { ExchangeVersion } from "@/constants";
+import { ExchangeVersion, CredentialTypes } from "@/constants";
 import MyCredentialList from "@/components/MyCredentialList.vue";
 import VBpaButton from "@/components/BpaButton";
 import credentialService from "@/services/credentialService";
@@ -76,6 +77,13 @@ export default {
     };
   },
   computed: {
+    showV2Slider() {
+      return (
+        this.expertMode &&
+        this.selectedDocument[0] &&
+        this.selectedDocument[0].type !== CredentialTypes.JSON_LD.type
+      );
+    },
     expertMode() {
       return this.$store.state.expertMode;
     },

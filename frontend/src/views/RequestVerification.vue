@@ -5,6 +5,13 @@
 
  SPDX-License-Identifier: Apache-2.0
 -->
+<!--
+ Copyright (c) 2020-2022 - for information on the respective copyright owner
+ see the NOTICE file and/or the repository at
+ https://github.com/hyperledger-labs/business-partner-agent
+
+ SPD-License-Identifier: Apache-2.0
+-->
 <template>
   <v-container>
     <v-card class="mx-auto">
@@ -28,7 +35,7 @@
       <v-card-actions>
         <v-layout align-center align-end justify-end>
           <v-switch
-            v-if="expertMode"
+            v-if="showV2Slider"
             v-model="useV2Exchange"
             :label="$t('button.useV2')"
           ></v-switch>
@@ -85,7 +92,7 @@ import { EventBus } from "@/main";
 import PartnerList from "@/components/PartnerList.vue";
 import VBpaButton from "@/components/BpaButton";
 import { getPartnerState } from "@/utils/partnerUtils";
-import { PartnerStates, ExchangeVersion } from "@/constants";
+import { PartnerStates, ExchangeVersion, CredentialTypes } from "@/constants";
 import credentialService from "@/services/credentialService";
 
 export default {
@@ -97,6 +104,7 @@ export default {
   props: {
     documentId: String,
     schemaId: String,
+    type: String,
   },
   created() {
     EventBus.$emit("title", this.$t("view.requestVerification.title"));
@@ -110,9 +118,7 @@ export default {
   },
   data: () => {
     return {
-      document: {},
       isBusy: false,
-      isReady: false,
       attentionPartnerStateDialog: false,
       partner: {},
       getPartnerState: getPartnerState,
@@ -120,6 +126,9 @@ export default {
     };
   },
   computed: {
+    showV2Slider() {
+      return this.expertMode && this.type !== CredentialTypes.JSON_LD.type;
+    },
     expertMode() {
       return this.$store.state.expertMode;
     },

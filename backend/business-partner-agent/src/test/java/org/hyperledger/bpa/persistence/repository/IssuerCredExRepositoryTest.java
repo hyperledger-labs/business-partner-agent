@@ -20,7 +20,9 @@ package org.hyperledger.bpa.persistence.repository;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.credentials.CredentialAttributes;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.junit.jupiter.api.Assertions;
@@ -59,7 +61,32 @@ public class IssuerCredExRepositoryTest {
                 .build());
 
         exchange = issuerCredExRepo.findById(exchange.getId()).orElseThrow();
-        Assertions.assertNotNull(exchange.getCredential());
-        Assertions.assertEquals("val1", exchange.getCredential().getAttrs().get("attr1"));
+        Assertions.assertNotNull(exchange.getIndyCredential());
+        Assertions.assertEquals("val1", exchange.getIndyCredential().getAttrs().get("attr1"));
+    }
+
+    @Test
+    void testSaveWithCredentialProposal() {
+        Partner p = partnerRepo.save(Partner.builder()
+                .did("did-1")
+                .ariesSupport(Boolean.TRUE)
+                .build());
+
+        BPACredentialExchange exchange = issuerCredExRepo.save(BPACredentialExchange
+                .builder()
+                .threadId(UUID.randomUUID().toString())
+                .credentialExchangeId(UUID.randomUUID().toString())
+                .credentialProposal(BPACredentialExchange.ExchangePayload
+                        .indy(V1CredentialExchange.CredentialProposalDict.CredentialProposal.builder()
+                                .attributes(CredentialAttributes.from(Map.of("attr1", "value1")))
+                                .build()))
+                .state(CredentialExchangeState.PROPOSAL_SENT)
+                .partner(p)
+                .build());
+
+        BPACredentialExchange saved = issuerCredExRepo.save(exchange);
+        saved = issuerCredExRepo.findById(saved.getId()).orElseThrow();
+        Assertions.assertNotNull(saved.getCredentialProposal());
+        Assertions.assertEquals("value1", saved.getCredentialProposal().getIndy().getAttributes().get(0).getValue());
     }
 }

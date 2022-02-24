@@ -91,23 +91,26 @@ public class RestrictionsManager {
                 String issuerDid = c.get("issuerDid");
                 if (StringUtils.isNotEmpty(issuerDid)) {
                     try {
-                        // simple check to test if issuer exists on the ledger
-                        ac.ledgerDidVerkey(issuerDid).ifPresent(verkey -> {
-                            BPARestrictions def = BPARestrictions
-                                    .builder()
-                                    .issuerDid(prefixIssuerDid(issuerDid))
-                                    .label(c.get("label"))
-                                    .schema(BPASchema.builder().id(schemaId).build())
-                                    .build();
-                            BPARestrictions db = repo.save(def);
-                            result.setConfig(TrustedIssuer
-                                    .builder()
-                                    .id(db.getId())
-                                    .label(db.getLabel())
-                                    .issuerDid(db.getIssuerDid())
-                                    .build());
-
-                        });
+                        if (!AriesStringUtil.isDidKey(issuerDid)) {
+                            // simple check to test if issuer exists on the ledger
+                            ac.ledgerDidVerkey(issuerDid).orElseThrow(() -> new AriesException(404, ""));
+                        } else if (schemaRepo.findById(schemaId).orElseThrow().typeIsIndy()) {
+                            throw new WrongApiUsageException(
+                                    msg.getMessage("api.schema.restriction.schema.wrong.type"));
+                        }
+                        BPARestrictions def = BPARestrictions
+                                .builder()
+                                .issuerDid(prefixIssuerDid(issuerDid))
+                                .label(c.get("label"))
+                                .schema(BPASchema.builder().id(schemaId).build())
+                                .build();
+                        BPARestrictions db = repo.save(def);
+                        result.setConfig(TrustedIssuer
+                                .builder()
+                                .id(db.getId())
+                                .label(db.getLabel())
+                                .issuerDid(db.getIssuerDid())
+                                .build());
                     } catch (IOException e) {
                         log.error("aca-py not available", e);
                     } catch (AriesException e) {

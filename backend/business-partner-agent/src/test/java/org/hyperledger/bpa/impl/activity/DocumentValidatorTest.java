@@ -28,6 +28,7 @@ import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.model.MyDocument;
 import org.hyperledger.bpa.persistence.repository.MyDocumentRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -98,6 +100,21 @@ public class DocumentValidatorTest {
         JsonNode jsonNode = m.readTree(json);
 
         assertThrows(WrongApiUsageException.class, () -> validator.validateNew(buildMyDocument(jsonNode)));
+    }
+
+    @Test
+    void testSchemaValidationSuccess() {
+        validator.validateAttributesAgainstLDSchema(BPASchema.builder()
+                .schemaAttributeNames(Set.of("name", "some"))
+                .build(), Map.of("name", "me", "id", "did:sov:123"));
+    }
+
+    @Test
+    void testSchemaValidationFailure() {
+        Assertions.assertThrows(WrongApiUsageException.class,
+                () -> validator.validateAttributesAgainstLDSchema(BPASchema.builder()
+                        .schemaAttributeNames(Set.of("name", "some"))
+                        .build(), Map.of("other", "123")));
     }
 
     private Optional<BPASchema> buildSchema(Set<String> attr) {

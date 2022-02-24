@@ -1,0 +1,149 @@
+{
+  "state": "request-received",
+  "updated_at": "2022-02-15T17:46:26.212504Z",
+  "thread_id": "fcd27ccb-5a73-4a78-b214-ab5dad402d22",
+  "auto_issue": true,
+  "trace": false,
+  "auto_remove": true,
+  "cred_offer": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/offer-credential",
+    "@id": "fcd27ccb-5a73-4a78-b214-ab5dad402d22",
+    "~thread": {},
+    "formats": [
+      {
+        "attach_id": "ld_proof",
+        "format": "aries/ld-proof-vc-detail@v1.0"
+      }
+    ],
+    "offers~attach": [
+      {
+        "@id": "ld_proof",
+        "mime-type": "application/json",
+        "data": {
+          "base64": "eyJjcmVkZW50aWFsIjogeyJAY29udGV4dCI6IFsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCAiaHR0cHM6Ly93M2lkLm9yZy9jaXRpemVuc2hpcC92MSIsICJodHRwczovL3czaWQub3JnL3NlY3VyaXR5L2Jicy92MSJdLCAidHlwZSI6IFsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCAiUGVybWFuZW50UmVzaWRlbnQiXSwgImlzc3VlciI6ICJkaWQ6a2V5OnpVQzdGc3dnVnQ2MVRETTV5ODh1TTgzZ3BMV1o3dXBWcDdLRWlUdGdnSmNzcFNmYnhLZDN5SEZSWHo3bmp1Y1hMRUhVMVF2VVZhNFp4SFdhN2ZCQTY4TFE5RkwyYXk5cWNDRmpZZUhzQkFoV1QxSFJEQm5rblE5Q0NCWG9uQWg2eG12b0ZhcCIsICJpc3N1YW5jZURhdGUiOiAiMjAyMi0wMi0xNVQxNzo0NToxOVoiLCAiY3JlZGVudGlhbFN1YmplY3QiOiB7ImlkZW50aWZpZXIiOiAid2FzIGdlaHQiLCAibmFtZSI6ICI1NTUifX0sICJvcHRpb25zIjogeyJwcm9vZlR5cGUiOiAiQmJzQmxzU2lnbmF0dXJlMjAyMCJ9fQ=="
+        }
+      }
+    ],
+    "comment": "create automated v2.0 credential exchange record"
+  },
+  "cred_proposal": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/propose-credential",
+    "@id": "508c1d0e-ccd6-4a7a-b55d-91d205273f8d",
+    "filters~attach": [
+      {
+        "@id": "ld_proof",
+        "mime-type": "application/json",
+        "data": {
+          "base64": "eyJjcmVkZW50aWFsIjogeyJAY29udGV4dCI6IFsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCAiaHR0cHM6Ly93M2lkLm9yZy9jaXRpemVuc2hpcC92MSJdLCAiY3JlZGVudGlhbFN1YmplY3QiOiB7ImlkZW50aWZpZXIiOiAid2FzIGdlaHQiLCAibmFtZSI6ICI1NTUifSwgImlzc3VhbmNlRGF0ZSI6ICIyMDIyLTAyLTE1VDE3OjQ1OjE5WiIsICJpc3N1ZXIiOiAiZGlkOmtleTp6VUM3RnN3Z1Z0NjFURE01eTg4dU04M2dwTFdaN3VwVnA3S0VpVHRnZ0pjc3BTZmJ4S2QzeUhGUlh6N25qdWNYTEVIVTFRdlVWYTRaeEhXYTdmQkE2OExROUZMMmF5OXFjQ0ZqWWVIc0JBaFdUMUhSREJua25ROUNDQlhvbkFoNnhtdm9GYXAiLCAidHlwZSI6IFsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCAiUGVybWFuZW50UmVzaWRlbnQiXX0sICJvcHRpb25zIjogeyJwcm9vZlR5cGUiOiAiQmJzQmxzU2lnbmF0dXJlMjAyMCJ9fQ=="
+        }
+      }
+    ],
+    "formats": [
+      {
+        "attach_id": "ld_proof",
+        "format": "aries/ld-proof-vc-detail@v1.0"
+      }
+    ]
+  },
+  "cred_request": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/request-credential",
+    "@id": "ba5ab5db-bd1d-4775-9670-18a18b96ea2e",
+    "~thread": {
+      "thid": "fcd27ccb-5a73-4a78-b214-ab5dad402d22"
+    },
+    "requests~attach": [
+      {
+        "@id": "ld_proof",
+        "mime-type": "application/json",
+        "data": {
+          "base64": "eyJjcmVkZW50aWFsIjogeyJAY29udGV4dCI6IFsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCAiaHR0cHM6Ly93M2lkLm9yZy9jaXRpemVuc2hpcC92MSIsICJodHRwczovL3czaWQub3JnL3NlY3VyaXR5L2Jicy92MSJdLCAidHlwZSI6IFsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCAiUGVybWFuZW50UmVzaWRlbnQiXSwgImlzc3VlciI6ICJkaWQ6a2V5OnpVQzdGc3dnVnQ2MVRETTV5ODh1TTgzZ3BMV1o3dXBWcDdLRWlUdGdnSmNzcFNmYnhLZDN5SEZSWHo3bmp1Y1hMRUhVMVF2VVZhNFp4SFdhN2ZCQTY4TFE5RkwyYXk5cWNDRmpZZUhzQkFoV1QxSFJEQm5rblE5Q0NCWG9uQWg2eG12b0ZhcCIsICJpc3N1YW5jZURhdGUiOiAiMjAyMi0wMi0xNVQxNzo0NToxOVoiLCAiY3JlZGVudGlhbFN1YmplY3QiOiB7ImlkZW50aWZpZXIiOiAid2FzIGdlaHQiLCAibmFtZSI6ICI1NTUifX0sICJvcHRpb25zIjogeyJwcm9vZlR5cGUiOiAiQmJzQmxzU2lnbmF0dXJlMjAyMCJ9fQ=="
+        }
+      }
+    ],
+    "formats": [
+      {
+        "attach_id": "ld_proof",
+        "format": "aries/ld-proof-vc-detail@v1.0"
+      }
+    ]
+  },
+  "by_format": {
+    "cred_offer": {
+      "ld_proof": {
+        "credential": {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://w3id.org/citizenship/v1",
+            "https://w3id.org/security/bbs/v1"
+          ],
+          "type": [
+            "VerifiableCredential",
+            "PermanentResident"
+          ],
+          "issuer": "did:key:zUC7FswgVt61TDM5y88uM83gpLWZ7upVp7KEiTtggJcspSfbxKd3yHFRXz7njucXLEHU1QvUVa4ZxHWa7fBA68LQ9FL2ay9qcCFjYeHsBAhWT1HRDBnknQ9CCBXonAh6xmvoFap",
+          "issuanceDate": "2022-02-15T17:45:19Z",
+          "credentialSubject": {
+            "identifier": "was geht",
+            "name": "555"
+          }
+        },
+        "options": {
+          "proofType": "BbsBlsSignature2020"
+        }
+      }
+    },
+    "cred_request": {
+      "ld_proof": {
+        "credential": {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://w3id.org/citizenship/v1",
+            "https://w3id.org/security/bbs/v1"
+          ],
+          "type": [
+            "VerifiableCredential",
+            "PermanentResident"
+          ],
+          "issuer": "did:key:zUC7FswgVt61TDM5y88uM83gpLWZ7upVp7KEiTtggJcspSfbxKd3yHFRXz7njucXLEHU1QvUVa4ZxHWa7fBA68LQ9FL2ay9qcCFjYeHsBAhWT1HRDBnknQ9CCBXonAh6xmvoFap",
+          "issuanceDate": "2022-02-15T17:45:19Z",
+          "credentialSubject": {
+            "identifier": "was geht",
+            "name": "555"
+          }
+        },
+        "options": {
+          "proofType": "BbsBlsSignature2020"
+        }
+      }
+    },
+    "cred_proposal": {
+      "ld_proof": {
+        "credential": {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://w3id.org/citizenship/v1"
+          ],
+          "credentialSubject": {
+            "identifier": "was geht",
+            "name": "555"
+          },
+          "issuanceDate": "2022-02-15T17:45:19Z",
+          "issuer": "did:key:zUC7FswgVt61TDM5y88uM83gpLWZ7upVp7KEiTtggJcspSfbxKd3yHFRXz7njucXLEHU1QvUVa4ZxHWa7fBA68LQ9FL2ay9qcCFjYeHsBAhWT1HRDBnknQ9CCBXonAh6xmvoFap",
+          "type": [
+            "VerifiableCredential",
+            "PermanentResident"
+          ]
+        },
+        "options": {
+          "proofType": "BbsBlsSignature2020"
+        }
+      }
+    }
+  },
+  "connection_id": "1be44de6-7538-4d49-a7f5-86b9dab151ea",
+  "initiator": "self",
+  "cred_ex_id": "2b66c488-4af9-4e8d-a8f8-1dcfbbe2fc70",
+  "role": "issuer",
+  "auto_offer": false,
+  "created_at": "2022-02-15T17:45:21.543829Z"
+}

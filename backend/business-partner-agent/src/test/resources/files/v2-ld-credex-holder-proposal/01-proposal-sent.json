@@ -1,0 +1,58 @@
+{
+  "cred_proposal": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/propose-credential",
+    "@id": "4cbf3e01-4a7c-42b1-80c2-0a6986a7ad9a",
+    "filters~attach": [
+      {
+        "@id": "ld_proof",
+        "mime-type": "application/json",
+        "data": {
+          "base64": "eyJjcmVkZW50aWFsIjogeyJAY29udGV4dCI6IFsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCAiaHR0cHM6Ly93M2lkLm9yZy9jaXRpemVuc2hpcC92MSIsICJodHRwczovL3czaWQub3JnL3NlY3VyaXR5L2Jicy92MSJdLCAidHlwZSI6IFsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCAiUGVybWFuZW50UmVzaWRlbnQiXSwgImlzc3VlciI6ICJkaWQ6a2V5OnpVQzdGc3dnVnQ2MVRETTV5ODh1TTgzZ3BMV1o3dXBWcDdLRWlUdGdnSmNzcFNmYnhLZDN5SEZSWHo3bmp1Y1hMRUhVMVF2VVZhNFp4SFdhN2ZCQTY4TFE5RkwyYXk5cWNDRmpZZUhzQkFoV1QxSFJEQm5rblE5Q0NCWG9uQWg2eG12b0ZhcCIsICJpc3N1YW5jZURhdGUiOiAiMjAyMi0wMi0xNlQxNzoxODo1OFoiLCAiY3JlZGVudGlhbFN1YmplY3QiOiB7Im5hbWUiOiAidGVzdCB1c2VyIiwgImlkZW50aWZpZXIiOiAid2FsdGVyIn19LCAib3B0aW9ucyI6IHsicHJvb2ZUeXBlIjogIkJic0Jsc1NpZ25hdHVyZTIwMjAifX0="
+        }
+      }
+    ],
+    "formats": [
+      {
+        "attach_id": "ld_proof",
+        "format": "aries/ld-proof-vc-detail@v1.0"
+      }
+    ]
+  },
+  "role": "holder",
+  "by_format": {
+    "cred_proposal": {
+      "ld_proof": {
+        "credential": {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://w3id.org/citizenship/v1",
+            "https://w3id.org/security/bbs/v1"
+          ],
+          "type": [
+            "VerifiableCredential",
+            "PermanentResident"
+          ],
+          "issuer": "did:key:zUC7FswgVt61TDM5y88uM83gpLWZ7upVp7KEiTtggJcspSfbxKd3yHFRXz7njucXLEHU1QvUVa4ZxHWa7fBA68LQ9FL2ay9qcCFjYeHsBAhWT1HRDBnknQ9CCBXonAh6xmvoFap",
+          "issuanceDate": "2022-02-16T17:18:58Z",
+          "credentialSubject": {
+            "name": "My Name",
+            "identifier": "something"
+          }
+        },
+        "options": {
+          "proofType": "BbsBlsSignature2020"
+        }
+      }
+    }
+  },
+  "auto_offer": false,
+  "state": "proposal-sent",
+  "cred_ex_id": "e64a02ac-fd5c-4adc-b5a2-a8186820690b",
+  "auto_remove": true,
+  "created_at": "2022-02-16T17:18:58.197536Z",
+  "initiator": "self",
+  "connection_id": "1be44de6-7538-4d49-a7f5-86b9dab151ea",
+  "updated_at": "2022-02-16T17:18:58.197536Z",
+  "auto_issue": false,
+  "thread_id": "4cbf3e01-4a7c-42b1-80c2-0a6986a7ad9a"
+}

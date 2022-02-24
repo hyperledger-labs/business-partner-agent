@@ -19,10 +19,14 @@ package org.hyperledger.bpa.impl.activity;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
+import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +34,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -123,5 +128,29 @@ public class LabelStrategyTest {
         credential.setCredentialData(Map.of("iban", "test123", "bic", "1234"));
         String label = labelStrategy.apply("", credential);
         assertEquals("test123", label);
+    }
+
+    @Test
+    void testFindLabelForLDProof() {
+        String schemaId = "https://foo.com/person";
+        when(schemaService.getSchemaFor(anyString())).thenReturn(Optional.of(BPASchema
+                .builder()
+                .defaultAttributeName("name")
+                .schemaId(schemaId)
+                .build()));
+        JsonObject jo = new JsonObject();
+        jo.addProperty("name", "myTest");
+        jo.addProperty("email", "test@bar.com");
+        VerifiableCredential vc = VerifiableCredential
+                .builder()
+                .context(List.of(schemaId))
+                .type(List.of("person"))
+                .credentialSubject(jo)
+                .build();
+        String label = labelStrategy.apply(BPACredentialExchange.ExchangePayload
+                .jsonLD(V20CredExRecordByFormat.LdProof.builder()
+                        .credential(vc)
+                        .build()));
+        assertEquals("myTest", label);
     }
 }

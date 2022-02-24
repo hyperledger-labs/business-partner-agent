@@ -150,7 +150,7 @@ class VPManagerTest {
         BPACredentialExchange myCredential = BPACredentialExchange
                 .builder()
                 .id(UUID.randomUUID())
-                .credential(credential)
+                .indyCredential(credential)
                 .type(CredentialType.INDY)
                 .build();
         VerifiableCredential.VerifiableIndyCredential indyCred = vpm.buildFromCredential(myCredential);

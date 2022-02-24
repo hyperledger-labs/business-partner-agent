@@ -44,6 +44,7 @@ import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.PartnerAPI.PartnerCredential;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.credential.CredentialInfoResolver;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateConversion;
@@ -183,7 +184,8 @@ public class Converter {
      */
     public MyDocument updateMyCredential(@NonNull MyDocumentAPI apiDoc, @NonNull MyDocument myDoc) {
         Map<String, Object> data = toMap(apiDoc.getDocumentData());
-        schemaService.getSchemaFor(apiDoc.getSchemaId()).ifPresent(myDoc::setSchema);
+        schemaService.getSchemaFor(apiDoc.getSchemaId()).ifPresentOrElse(myDoc::setSchema,
+                EntityNotFoundException::new);
         myDoc
                 .setDocument(data)
                 .setIsPublic(apiDoc.getIsPublic())
@@ -203,7 +205,7 @@ public class Converter {
                 .type(myDoc.getType())
                 .typeLabel(resolveTypeLabel(myDoc.getType(), myDoc.getSchemaId(), null))
                 .schemaId(myDoc.getSchemaId())
-                .label(myDoc.getLabel())
+                .label(myDoc.getLabel() != null ? myDoc.getLabel() : "")
                 .build();
     }
 

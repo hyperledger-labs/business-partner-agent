@@ -67,7 +67,7 @@ public class AdminControllerTest extends BaseControllerTest {
         mockGetSchemaAndVerkey();
 
         // add schema
-        HttpResponse<SchemaAPI> addedSchema = addSchemaWithRestriction(schemaId1);
+        HttpResponse<SchemaAPI> addedSchema = addSchemaWithRestriction(schemaId1, "name");
         Assertions.assertEquals(HttpStatus.OK, addedSchema.getStatus());
         Assertions.assertTrue(addedSchema.getBody().isPresent());
 
@@ -135,7 +135,7 @@ public class AdminControllerTest extends BaseControllerTest {
     void testAddRestrictionTwice() throws Exception {
         mockGetSchemaAndVerkey();
 
-        SchemaAPI schema1 = addSchemaWithRestriction(schemaId2).getBody().orElseThrow();
+        SchemaAPI schema1 = addSchemaWithRestriction(schemaId2, "other1").getBody().orElseThrow();
         SchemaAPI schema2 = addSchemaNoRestriction().getBody().orElseThrow();
 
         URI uri1 = UriBuilder.of("/{id}/trustedIssuer").expand(Map.of("id", schema1.getId().toString()));
@@ -176,10 +176,10 @@ public class AdminControllerTest extends BaseControllerTest {
         Assertions.assertEquals("Person", api.getLdType());
     }
 
-    private HttpResponse<SchemaAPI> addSchemaWithRestriction(String schemaId) {
+    private HttpResponse<SchemaAPI> addSchemaWithRestriction(String schemaId, String defaultAttribute) {
         return post(AddSchemaRequest.AddIndySchema.builder()
                 .schemaId(schemaId)
-                .defaultAttributeName("name")
+                .defaultAttributeName(defaultAttribute)
                 .label("Demo Bank")
                 .trustedIssuer(List.of(AddTrustedIssuerRequest
                         .builder()
@@ -193,7 +193,7 @@ public class AdminControllerTest extends BaseControllerTest {
     private HttpResponse<SchemaAPI> addSchemaNoRestriction() {
         return post(AddSchemaRequest.AddIndySchema.builder()
                 .schemaId(schemaId3)
-                .defaultAttributeName("other")
+                .defaultAttributeName("other2")
                 .label("Demo Corp")
                 .build(),
                 SchemaAPI.class);

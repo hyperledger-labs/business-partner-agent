@@ -1,0 +1,141 @@
+{
+  "state": "offer-sent",
+  "updated_at": "2022-02-15T18:26:46.874890Z",
+  "cred_preview": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/credential-preview",
+    "attributes": [
+      {
+        "name": "identifier",
+        "value": "1234"
+      },
+      {
+        "name": "name",
+        "value": "Other Name"
+      }
+    ]
+  },
+  "thread_id": "bd86bace-be99-4dc1-8ad5-ec7d3cbbd152",
+  "trace": false,
+  "auto_remove": true,
+  "cred_offer": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/offer-credential",
+    "@id": "4860c2b8-d242-48fb-98a2-200774f7edbf",
+    "~thread": {
+      "thid": "bd86bace-be99-4dc1-8ad5-ec7d3cbbd152"
+    },
+    "formats": [
+      {
+        "attach_id": "ld_proof",
+        "format": "aries/ld-proof-vc-detail@v1.0"
+      }
+    ],
+    "credential_preview": {
+      "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/credential-preview",
+      "attributes": [
+        {
+          "name": "identifier",
+          "value": "1234"
+        },
+        {
+          "name": "name",
+          "value": "Other Name"
+        }
+      ]
+    },
+    "offers~attach": [
+      {
+        "@id": "ld_proof",
+        "mime-type": "application/json",
+        "data": {
+          "base64": "eyJjcmVkZW50aWFsIjogeyJAY29udGV4dCI6IFsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCAiaHR0cHM6Ly93M2lkLm9yZy9jaXRpemVuc2hpcC92MSIsICJodHRwczovL3czaWQub3JnL3NlY3VyaXR5L2Jicy92MSJdLCAidHlwZSI6IFsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCAiUGVybWFuZW50UmVzaWRlbnQiXSwgImlzc3VlciI6ICJkaWQ6a2V5OnpVQzdGc3dnVnQ2MVRETTV5ODh1TTgzZ3BMV1o3dXBWcDdLRWlUdGdnSmNzcFNmYnhLZDN5SEZSWHo3bmp1Y1hMRUhVMVF2VVZhNFp4SFdhN2ZCQTY4TFE5RkwyYXk5cWNDRmpZZUhzQkFoV1QxSFJEQm5rblE5Q0NCWG9uQWg2eG12b0ZhcCIsICJpc3N1YW5jZURhdGUiOiAiMjAyMi0wMi0xNVQxODoyNjo0NFoiLCAiY3JlZGVudGlhbFN1YmplY3QiOiB7ImlkZW50aWZpZXIiOiAiMTIzNCIsICJuYW1lIjogIk90aGVyIE5hbWUifX0sICJvcHRpb25zIjogeyJwcm9vZlR5cGUiOiAiQmJzQmxzU2lnbmF0dXJlMjAyMCJ9fQ=="
+        }
+      }
+    ]
+  },
+  "cred_proposal": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/propose-credential",
+    "@id": "03006871-56ce-4029-8b42-857ac3701f70",
+    "filters~attach": [
+      {
+        "@id": "ld_proof",
+        "mime-type": "application/json",
+        "data": {
+          "base64": "eyJjcmVkZW50aWFsIjogeyJAY29udGV4dCI6IFsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCAiaHR0cHM6Ly93M2lkLm9yZy9jaXRpemVuc2hpcC92MSJdLCAiY3JlZGVudGlhbFN1YmplY3QiOiB7ImlkZW50aWZpZXIiOiAiMTIzNCIsICJuYW1lIjogIk90aGVyIE5hbWUifSwgImlzc3VhbmNlRGF0ZSI6ICIyMDIyLTAyLTE1VDE4OjI2OjQ0WiIsICJpc3N1ZXIiOiAiZGlkOmtleTp6VUM3RnN3Z1Z0NjFURE01eTg4dU04M2dwTFdaN3VwVnA3S0VpVHRnZ0pjc3BTZmJ4S2QzeUhGUlh6N25qdWNYTEVIVTFRdlVWYTRaeEhXYTdmQkE2OExROUZMMmF5OXFjQ0ZqWWVIc0JBaFdUMUhSREJua25ROUNDQlhvbkFoNnhtdm9GYXAiLCAidHlwZSI6IFsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCAiUGVybWFuZW50UmVzaWRlbnQiXX0sICJvcHRpb25zIjogeyJwcm9vZlR5cGUiOiAiQmJzQmxzU2lnbmF0dXJlMjAyMCJ9fQ=="
+        }
+      }
+    ],
+    "formats": [
+      {
+        "attach_id": "ld_proof",
+        "format": "aries/ld-proof-vc-detail@v1.0"
+      }
+    ],
+    "credential_preview": {
+      "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/credential-preview",
+      "attributes": [
+        {
+          "name": "identifier",
+          "value": "1234"
+        },
+        {
+          "name": "name",
+          "value": "Other Name"
+        }
+      ]
+    }
+  },
+  "by_format": {
+    "cred_offer": {
+      "ld_proof": {
+        "credential": {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://w3id.org/citizenship/v1",
+            "https://w3id.org/security/bbs/v1"
+          ],
+          "type": [
+            "VerifiableCredential",
+            "PermanentResident"
+          ],
+          "issuer": "did:key:zUC7FswgVt61TDM5y88uM83gpLWZ7upVp7KEiTtggJcspSfbxKd3yHFRXz7njucXLEHU1QvUVa4ZxHWa7fBA68LQ9FL2ay9qcCFjYeHsBAhWT1HRDBnknQ9CCBXonAh6xmvoFap",
+          "issuanceDate": "2022-02-15T18:26:44Z",
+          "credentialSubject": {
+            "identifier": "1234",
+            "name": "Other Name"
+          }
+        },
+        "options": {
+          "proofType": "BbsBlsSignature2020"
+        }
+      }
+    },
+    "cred_proposal": {
+      "ld_proof": {
+        "credential": {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://w3id.org/citizenship/v1"
+          ],
+          "credentialSubject": {
+            "identifier": "1234",
+            "name": "Other Name"
+          },
+          "issuanceDate": "2022-02-15T18:26:44Z",
+          "issuer": "did:key:zUC7FswgVt61TDM5y88uM83gpLWZ7upVp7KEiTtggJcspSfbxKd3yHFRXz7njucXLEHU1QvUVa4ZxHWa7fBA68LQ9FL2ay9qcCFjYeHsBAhWT1HRDBnknQ9CCBXonAh6xmvoFap",
+          "type": [
+            "VerifiableCredential",
+            "PermanentResident"
+          ]
+        },
+        "options": {
+          "proofType": "BbsBlsSignature2020"
+        }
+      }
+    }
+  },
+  "connection_id": "1be44de6-7538-4d49-a7f5-86b9dab151ea",
+  "initiator": "external",
+  "cred_ex_id": "5c72dfb5-9965-4210-bf45-f89911b71c84",
+  "role": "issuer",
+  "created_at": "2022-02-15T18:25:04.522565Z"
+}

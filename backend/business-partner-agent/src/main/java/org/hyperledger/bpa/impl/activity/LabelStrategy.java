@@ -18,6 +18,8 @@
 package org.hyperledger.bpa.impl.activity;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -25,10 +27,13 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
+import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.impl.util.Converter;
+import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 
 import java.util.Map;
@@ -50,46 +55,61 @@ public class LabelStrategy {
     @Inject
     SchemaService schemaService;
 
-    public @Nullable String apply(@NonNull MyDocumentAPI document) {
+    public void apply(@NonNull MyDocumentAPI document) {
         if (StringUtils.isBlank(document.getLabel())) {
-            Optional<String> attr = findDefaultAttribute(document.getSchemaId());
-            if (attr.isPresent()) {
+            findDefaultAttribute(document.getSchemaId()).ifPresent(attr -> {
                 JsonNode documentData = document.getDocumentData();
-                JsonNode value = documentData.findValue(attr.get());
+                JsonNode value = documentData.findValue(attr);
                 if (value != null) {
                     String label = value.asText();
                     document.setLabel(label);
-                    return label;
                 }
-            }
-            document.setLabel(null);
+            });
         }
-        return null;
     }
 
-    public @Nullable String apply(@Nullable Credential credential) {
-        if (credential != null) {
-            Optional<String> attr = findDefaultAttribute(credential.getSchemaId());
-            if (attr.isPresent() && credential.getAttrs() != null) {
-                Map<String, String> attrs = credential.getAttrs();
+    public @Nullable String apply(@Nullable Credential ariesCredential) {
+        if (ariesCredential != null) {
+            Optional<String> attr = findDefaultAttribute(ariesCredential.getSchemaId());
+            if (attr.isPresent() && ariesCredential.getAttrs() != null) {
+                Map<String, String> attrs = ariesCredential.getAttrs();
                 return attrs.get(attr.get());
             }
         }
         return null;
     }
 
-    public @Nullable String apply(@Nullable String newLabel, @NonNull AriesCredential credential) {
+    public @Nullable String apply(@Nullable String newLabel, @NonNull AriesCredential ariesCredential) {
         String mergedLabel = null;
         if (StringUtils.isNotBlank(newLabel)) {
             mergedLabel = newLabel;
         } else {
-            Optional<String> attr = findDefaultAttribute(credential.getSchemaId());
-            if (attr.isPresent() && credential.getCredentialData() != null) {
-                Map<String, String> attrs = credential.getCredentialData();
+            Optional<String> attr = findDefaultAttribute(ariesCredential.getSchemaId());
+            if (attr.isPresent() && ariesCredential.getCredentialData() != null) {
+                Map<String, String> attrs = ariesCredential.getCredentialData();
                 mergedLabel = attrs.get(attr.get());
             }
         }
         return mergedLabel;
+    }
+
+    public String apply(@Nullable BPACredentialExchange.ExchangePayload ldCredential) {
+        String result = null;
+        if (ldCredential != null && ldCredential.typeIsJsonLd()) {
+            V20CredExRecordByFormat.LdProof ldProof = ldCredential.getLdProof();
+            String schemaId = LDContextHelper.findSchemaId(ldProof);
+            if (StringUtils.isNotEmpty(schemaId)) {
+                Optional<String> defaultAttribute = findDefaultAttribute(schemaId);
+                if (defaultAttribute.isPresent()) {
+                    JsonObject credentialSubject = ldProof.getCredential().getCredentialSubject();
+                    JsonElement je = credentialSubject.get(defaultAttribute.get());
+                    if (je != null) {
+                        result = je.getAsString();
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     private Optional<String> findDefaultAttribute(@Nullable String schemaId) {

@@ -19,7 +19,6 @@ package org.hyperledger.bpa.impl.aries.credential;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
-import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.BaseTest;
@@ -34,11 +33,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @MicronautTest
 class CredentialManagerTest extends BaseTest {
 
-    private static final String CRED_DEF_ID = "M6Mbe3qx7vB4wpZF4sBRjt:3:CL:571:ba";
     private static final String DID = "did:sov:M6Mbe3qx7vB4wpZF4sBRjt";
 
     @Inject
-    HolderCredentialManager mgmt;
+    HolderManager mgmt;
 
     @Inject
     PartnerRepository partnerRepo;
@@ -48,53 +46,48 @@ class CredentialManagerTest extends BaseTest {
 
     @Test
     void testResolveIssuerDidOnly() {
-        Credential c = new Credential();
-        c.setCredentialDefinitionId(CRED_DEF_ID);
-        String iss = mgmt.resolveIssuer(c);
+        Partner p = partnerRepo.save(Partner
+                .builder()
+                .did(DID)
+                .ariesSupport(Boolean.TRUE)
+                .build());
+
+        String iss = mgmt.resolveIssuer(p);
         assertEquals(DID, iss);
     }
 
     @Test
     void testResolveIssuerByAlias() {
-        Credential c = new Credential();
-        c.setCredentialDefinitionId(CRED_DEF_ID);
-
-        partnerRepo.save(Partner
+        Partner p = partnerRepo.save(Partner
                 .builder()
                 .alias("My Bank")
                 .did(DID)
                 .ariesSupport(Boolean.TRUE)
                 .build());
 
-        String iss = mgmt.resolveIssuer(c);
+        String iss = mgmt.resolveIssuer(p);
         assertEquals("My Bank", iss);
     }
 
     @Test
     void testResolveIssuerByVP() throws Exception {
-        Credential c = new Credential();
-        c.setCredentialDefinitionId(CRED_DEF_ID);
-
         final String json = loader.load("files/verifiablePresentation.json");
         final VerifiablePresentation<VerifiableIndyCredential> vp = mapper.readValue(json, Converter.VP_TYPEREF);
 
-        partnerRepo.save(Partner
+        Partner p = partnerRepo.save(Partner
                 .builder()
                 .did(DID)
                 .ariesSupport(Boolean.TRUE)
                 .verifiablePresentation(conv.toMap(vp))
                 .build());
 
-        String iss = mgmt.resolveIssuer(c);
+        String iss = mgmt.resolveIssuer(p);
         assertEquals("Test Corp", iss);
     }
 
     @Test
     void testResolveIssuerByLabel() {
-        Credential c = new Credential();
-        c.setCredentialDefinitionId(CRED_DEF_ID);
-
-        partnerRepo.save(Partner
+        Partner p = partnerRepo.save(Partner
                 .builder()
                 .did(DID)
                 .ariesSupport(Boolean.TRUE)
@@ -102,7 +95,7 @@ class CredentialManagerTest extends BaseTest {
                 .label("Their Label")
                 .build());
 
-        String iss = mgmt.resolveIssuer(c);
+        String iss = mgmt.resolveIssuer(p);
         assertEquals("Their Label", iss);
     }
 

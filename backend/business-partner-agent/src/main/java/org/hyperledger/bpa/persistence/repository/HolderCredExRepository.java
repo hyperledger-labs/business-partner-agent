@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.persistence.repository;
 
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
@@ -26,7 +27,6 @@ import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
-import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.StateChangeDecorator;
 
@@ -40,6 +40,12 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     // find
 
+    @NonNull
+    @Override
+    @Join(value = "schema", type = Join.Type.LEFT_FETCH)
+    Optional<BPACredentialExchange> findById(@NonNull UUID id);
+
+    @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     List<BPACredentialExchange> findByRoleEqualsAndStateIn(CredentialExchangeRole role,
             List<CredentialExchangeState> state);
 
@@ -47,6 +53,7 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     List<BPACredentialExchange> findByPartnerId(UUID partnerId);
 
+    @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     Optional<BPACredentialExchange> findByCredentialExchangeId(String credentialExchangeId);
 
@@ -75,7 +82,7 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
 
     void updateOnCredentialOfferEvent(@Id UUID id, CredentialExchangeState state,
             StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp,
-            V1CredentialExchange.CredentialProposalDict.CredentialProposal credentialOffer);
+            BPACredentialExchange.ExchangePayload credentialOffer);
 
     void updateLabel(@Id UUID id, String label);
 

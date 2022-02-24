@@ -121,4 +121,14 @@ class AriesStringUtilTest {
                 () -> AriesStringUtil.revocationEventToRevocationInfo("12:foo:1::12"));
     }
 
+    @Test
+    void testIsDidKey() {
+        assertFalse(AriesStringUtil.isDidKey("did:key:äää"));
+        assertFalse(AriesStringUtil.isDidKey("zUC7FswgVt61TDM5y88uM"));
+        assertFalse(AriesStringUtil.isDidKey(""));
+        assertFalse(AriesStringUtil.isDidKey(null));
+        assertTrue(AriesStringUtil.isDidKey(
+                "did:key:zUC7FswgVt61TDM5y88uM83gpLWZ7upVp7KEiTtggJcspSfbxKd3yHFRXz7njucXLEHU1QvUVa4ZxHWa7fBA68LQ9FL2ay9qcCFjYeHsBAhWT1HRDBnknQ9CCBXonAh6xmvoFap"));
+    }
+
 }

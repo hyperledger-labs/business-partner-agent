@@ -22,6 +22,7 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
 import java.util.Map;
@@ -52,12 +53,17 @@ public class AriesCredential {
     public static AriesCredential fromBPACredentialExchange(@NonNull BPACredentialExchange c,
             @Nullable String typeLabel) {
         AriesCredentialBuilder b = AriesCredential.builder();
-        if (c.getCredential() != null) {
+        if (c.typeIsIndy() && c.getIndyCredential() != null) {
             b
-                    .schemaId(c.getCredential().getSchemaId())
-                    .credentialDefinitionId(c.getCredential().getCredentialDefinitionId())
-                    .revocable(StringUtils.isNotEmpty(c.getCredential().getRevRegId()))
-                    .credentialData(c.getCredential().getAttrs());
+                    .schemaId(c.getIndyCredential().getSchemaId())
+                    .credentialDefinitionId(c.getIndyCredential().getCredentialDefinitionId())
+                    .revocable(StringUtils.isNotEmpty(c.getIndyCredential().getRevRegId()));
+        } else if (c.typeIsJsonLd()) {
+            b
+                    .schemaId(LDContextHelper.findSchemaId(
+                            c.exchangePayloadByState() != null ? c.exchangePayloadByState().getLdProof() : null))
+                    .revocable(false) // not supported with ld-credentials
+            ;
         }
         return b
                 .id(c.getId())
@@ -70,6 +76,7 @@ public class AriesCredential {
                 .label(c.getLabel())
                 .typeLabel(typeLabel)
                 .exchangeVersion(c.getExchangeVersion())
+                .credentialData(c.attributesByState())
                 .build();
     }
 

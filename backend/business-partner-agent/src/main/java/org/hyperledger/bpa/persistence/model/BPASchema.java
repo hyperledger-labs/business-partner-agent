@@ -23,7 +23,9 @@ import io.micronaut.data.annotation.DateCreated;
 import io.micronaut.data.annotation.TypeDef;
 import io.micronaut.data.model.DataType;
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.persistence.model.type.CredentialTypeTranslator;
 
 import javax.persistence.*;
@@ -79,5 +81,15 @@ public class BPASchema implements CredentialTypeTranslator {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     private List<BPACredentialDefinition> credentialDefinitions;
+
+    public @Nullable String resolveSchemaLabel() {
+        String result = label;
+        if (StringUtils.isEmpty(result) && typeIsJsonLd()) {
+            result = ldType;
+        } else if (StringUtils.isEmpty(result) && typeIsIndy()) {
+            result = AriesStringUtil.schemaGetName(schemaId);
+        }
+        return result;
+    }
 
 }

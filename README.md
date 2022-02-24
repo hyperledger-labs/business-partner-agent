@@ -30,48 +30,50 @@ The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Ide
 
 ## Features in Detail
 
-| Role/Feature     | Flow                                                                    | Protocol Version                  |
-|------------------|-------------------------------------------------------------------------|-----------------------------------|
-| Issuer           |                                                                         |                                   |
-|                  | auto: issue credential                                                  | indy: v1, v2                      |
-|                  | manual: send credential offer to holder                                 | indy: v1, v2                      |
-|                  | manual: receive credential proposal from holder                         | indy: v1, v2                      |
-|                  | manual: decline credential proposal from holder and provide reason      | indy: v1, v2                      |
-|                  | revoke issued credential (requires tails server)                        | n/a                               |
-| Holder           |                                                                         |                                   |
-|                  | auto: receive credential                                                | indy: v1, v2                      |
-|                  | manual: send credential proposal to issuer (based on document)          | indy: v1, v2                      |
-|                  | manual: receive credential offer from issuer                            | indy: v1, v2                      |
-|                  | manual: decline credential offer from issuer                            | indy: v1, v2                      |
-|                  | scheduled revocation check on all received credentials                  | n/a                               |
-| Prover           |                                                                         |                                   |
-|                  | auto: send presentation to verifier                                     | indy: v1, v2                      |
-|                  | auto: answer presentation request                                       | indy: v1, v2                      |
-|                  | manual: accept/decline presentation request and provide reason          | indy: v1, v2                      |
-| Verifier         |                                                                         |                                   |
-|                  | auto: request presentation from prover based on proof template          | indy: v1, v2                      |
-|                  | auto: receive and verify presentation from prover                       | indy: v1, v2                      |
-| Connection       |                                                                         |                                   |
-|                  | connect by did:sov, did:web (if endpoint is aca-py)                     | did-exchange                      |
-|                  | receive invitation by URL                                               | connection-protocol, OOB          |
-|                  | create invitation (barcode or URL)                                      | connection-protocol, OOB          |
-|                  | auto: accept incoming connection                                        | did-exchange, connection-protocol |
-|                  | manual: accept incoming connection                                      | did-exchange, connection-protocol |
-|                  | optional: scheduled trust ping to check connection status               | n/a                               |
-|                  | tag a connection, e.g. as trusted issuer                                | n/a                               |
-| Ledger           |                                                                         |                                   |
-|                  | send schema to the ledger (requires endorser role)                      | n/a                               |
-|                  | create a credential definition on the ledger (requires endorser role)   | n/a                               |
-| Basic Message    |                                                                         |                                   |
-|                  | send and receive basic messages via chat window                         | n/a                               |
-| Tasks/Activities |                                                                         |                                   |
-|                  | list of tasks that need attention, and list of past activities          | n/a                               |
-| TAA              |                                                                         |                                   |
-|                  | if ledger is configured with a TAA, show it and give option to accept   | n/a                               |
-| Read Only Ledger |                                                                         |                                   |
-|                  | if mode is set to web only                                              | n/a                               |
-| Public Profile   |                                                                         |                                   |
-|                  | web accessible (self signed) imprint based on credentials or documents  | n/a                               |
+| Role/Feature     | Flow                                                                   | Protocol Version                  |
+|------------------|------------------------------------------------------------------------|-----------------------------------|
+| Issuer           |                                                                        |                                   |
+|                  | auto: issue credential                                                 | indy: v1, v2 <br/>w3c: v2         |
+|                  | manual: send credential offer to holder                                | indy: v1, v2 <br/>w3c: v2         |
+|                  | manual: receive credential proposal from holder                        | indy: v1, v2 <br/>w3c: v2         |
+|                  | manual: decline credential proposal from holder and provide reason     | indy: v1, v2 <br/>w3c: v2         |
+|                  | revoke issued credential (requires tails server)                       | indy: v1, v2 <br/>w3c: n/a        |
+|                  | send revocation notification                                           | indy: v1, v2 <br/>w3c: n/a        |
+| Holder           |                                                                        |                                   |
+|                  | auto: receive credential                                               | indy: v1, v2 <br/>w3c: v2         |
+|                  | manual: send credential proposal to issuer (based on document)         | indy: v1, v2 <br/>w3c: v2         |
+|                  | manual: receive credential offer from issuer                           | indy: v1, v2 <br/>w3c: v2         |
+|                  | manual: decline credential offer from issuer                           | indy: v1, v2 <br/>w3c: v2         |
+|                  | scheduled revocation check on all received credentials                 | indy: v1, v2 <br/>w3c: n/a        |
+|                  | receive revocation notification                                        | indy: v1, v2 <br/>w3c: n/a        |
+| Prover           |                                                                        |                                   |
+|                  | auto: send presentation to verifier                                    | indy: v1, v2                      |
+|                  | auto: answer presentation request                                      | indy: v1, v2                      |
+|                  | manual: accept/decline presentation request and provide reason         | indy: v1, v2                      |
+| Verifier         |                                                                        |                                   |
+|                  | auto: request presentation from prover based on proof template         | indy: v1, v2                      |
+|                  | auto: receive and verify presentation from prover                      | indy: v1, v2                      |
+| Connection       |                                                                        |                                   |
+|                  | connect by did:sov, did:web (if endpoint is aca-py)                    | did-exchange                      |
+|                  | receive invitation by URL                                              | connection-protocol, OOB          |
+|                  | create invitation (barcode or URL)                                     | connection-protocol, OOB          |
+|                  | auto: accept incoming connection                                       | did-exchange, connection-protocol |
+|                  | manual: accept incoming connection                                     | did-exchange, connection-protocol |
+|                  | optional: scheduled trust ping to check connection status              | n/a                               |
+|                  | tag a connection, e.g. as trusted issuer                               | n/a                               |
+| Ledger           |                                                                        |                                   |
+|                  | send schema to the ledger (requires endorser role)                     | n/a                               |
+|                  | create a credential definition on the ledger (requires endorser role)  | n/a                               |
+| Basic Message    |                                                                        |                                   |
+|                  | send and receive basic messages via chat window                        | n/a                               |
+| Tasks/Activities |                                                                        |                                   |
+|                  | list of tasks that need attention, and list of past activities         | n/a                               |
+| TAA              |                                                                        |                                   |
+|                  | if ledger is configured with a TAA, show it and give option to accept  | n/a                               |
+| Read Only Ledger |                                                                        |                                   |
+|                  | if mode is set to web only                                             | n/a                               |
+| Public Profile   |                                                                        |                                   |
+|                  | web accessible (self signed) imprint based on credentials or documents | n/a                               |
 
 ## Upcoming Features
 
@@ -113,7 +115,7 @@ Learn how to contribute in [Contributing](CONTRIBUTING.md). You can also start b
 
 Regarding release process, we do not follow a strict process yet, nevertheless we follow the guidelines described in [Publishing](PUBLISHING.md).
 
-Learn what aries protocols can be controlled by the BPA in [aca-py-args](scripts/aca-py-args.md)
+Learn what aries protocols can be controlled by the BPA in [aca-py-args](scripts/acapy-static-args.yml)
 
 ## Business Partner Agent in Action
 - [COP26 Presented by BC Goverment and OpenEarth Foundation](https://www.youtube.com/watch?v=q0Jml3isSh8)

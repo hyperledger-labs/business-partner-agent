@@ -11,6 +11,7 @@ import Vuetify from "vuetify/lib/framework";
 import { en, de, pl } from "vuetify/lib/locale/index";
 
 import {
+  mdiAsterisk,
   mdiViewDashboard,
   mdiForumOutline,
   mdiAccountCircle,
@@ -104,6 +105,7 @@ export default new Vuetify({
       invitation: mdiTicketConfirmationOutline,
       validationError: mdiAlert,
       attachment: mdiAttachment,
+      asterisk: mdiAsterisk,
     },
   },
   lang: {

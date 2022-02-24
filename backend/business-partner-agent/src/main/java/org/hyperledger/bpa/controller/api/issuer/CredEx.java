@@ -70,7 +70,10 @@ public class CredEx {
                 : CredDef.builder().schema(schemaAPI).build();
         String displayText = null;
         if (schemaAPI != null) {
-            displayText = String.format("%s (%s)", schemaAPI.getLabel(), schemaAPI.getVersion());
+            displayText = String.format("%s", schemaAPI.getLabel());
+            if (StringUtils.isNotEmpty(schemaAPI.getVersion())) {
+                displayText = displayText + String.format(" (%s)", schemaAPI.getVersion());
+            }
             if (StringUtils.isNotBlank(credDef.getTag())) {
                 displayText = displayText + String.format(" - %s", credDef.getTag());
             }
@@ -120,8 +123,8 @@ public class CredEx {
     }
 
     private static Boolean checkIfRevocable(@NonNull BPACredentialExchange db) {
-        if (db.roleIsHolder() && db.getCredential() != null) {
-            return StringUtils.isNotEmpty(db.getCredential().getRevRegId());
+        if (db.roleIsHolder() && db.getIndyCredential() != null) {
+            return StringUtils.isNotEmpty(db.getIndyCredential().getRevRegId());
         }
         return StringUtils.isNotEmpty(db.getRevRegId());
     }

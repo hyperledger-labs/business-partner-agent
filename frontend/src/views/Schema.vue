@@ -67,6 +67,7 @@
 import { EventBus } from "@/main";
 import TrustedIssuers from "../components/TrustedIssuers.vue";
 import VBpaButton from "@/components/BpaButton";
+import store from "@/store";
 export default {
   name: "Schema",
   props: {
@@ -123,6 +124,7 @@ export default {
         .then((result) => {
           console.log(result);
           if (result.status === 200) {
+            store.dispatch("loadSchemas");
             EventBus.$emit(
               "success",
               this.$t("view.schema.eventSuccessDelete")

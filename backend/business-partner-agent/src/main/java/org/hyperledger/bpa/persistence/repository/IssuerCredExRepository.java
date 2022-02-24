@@ -60,7 +60,9 @@ public interface IssuerCredExRepository extends CrudRepository<BPACredentialExch
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     List<BPACredentialExchange> listOrderByUpdatedAtDesc();
 
-    Number updateCredential(@Id UUID id, Credential credential);
+    Number updateCredential(@Id UUID id, Credential indyCredential);
+
+    Number updateCredential(@Id UUID id, BPACredentialExchange.ExchangePayload ldCredential);
 
     Number updateAfterEventWithRevocationInfo(@Id UUID id,
             CredentialExchangeState state,
@@ -77,4 +79,6 @@ public interface IssuerCredExRepository extends CrudRepository<BPACredentialExch
     Number updateRevocationInfo(@Id UUID id, String revRegId, @Nullable String credRevId);
 
     Number updateReferent(@Id UUID id, String referent);
+
+    Number updateByCredentialExchangeId(String credentialExchangeId, String referent);
 }

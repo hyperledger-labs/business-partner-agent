@@ -24,8 +24,28 @@ import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AriesStringUtil {
+
+    private static final Pattern DID_KEY_PATTERN = Pattern.compile("z[a-km-zA-HJ-NP-Z1-9]+");
+    private static final String DID_KEY = "did:key:";
+
+    /**
+     * tests if the provided did is a did:key
+     * 
+     * @param did
+     * @return true if did is a did:key, false otherwise
+     */
+    public static boolean isDidKey(@Nullable String did) {
+        if (StringUtils.isNotEmpty(did) && did.startsWith(DID_KEY)) {
+            String toMatch = did.replace(DID_KEY, "");
+            Matcher m = DID_KEY_PATTERN.matcher(toMatch);
+            return m.matches();
+        }
+        return false;
+    }
 
     /**
      * Gets the last segment of a did
@@ -45,14 +65,11 @@ public class AriesStringUtil {
      * @return the last part of the input when separated by : null otherwise
      */
     public static String getLastSegmentOrNull(@Nullable String did) {
-        if (StringUtils.trimToNull(did) != null) {
-            return getLastSegment(did);
-        }
-        return null;
+        return StringUtils.trimToNull(did) != null ? getLastSegment(did) : null;
     }
 
-    public static String schemaGetName(@NonNull String schemaId) {
-        return splitSchemaId(schemaId)[2];
+    public static String schemaGetName(@Nullable String schemaId) {
+        return StringUtils.trimToNull(schemaId) != null ? splitSchemaId(schemaId)[2] : null;
     }
 
     public static String schemaGetCreator(@NonNull String schemaId) {
@@ -97,10 +114,7 @@ public class AriesStringUtil {
     }
 
     public static boolean isCredDef(@Nullable String expression) {
-        if (StringUtils.isBlank(expression)) {
-            return false;
-        }
-        return expression.split(":").length == 5;
+        return StringUtils.isNotBlank(expression) && expression.split(":").length == 5;
     }
 
     private static String[] credDefIdSplit(@NonNull String credDefId) {

@@ -42,7 +42,7 @@ import org.hyperledger.bpa.impl.activity.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.activity.PartnerLookup;
 import org.hyperledger.bpa.impl.aries.chat.ChatMessageManager;
 import org.hyperledger.bpa.impl.aries.chat.ChatMessageService;
-import org.hyperledger.bpa.impl.aries.credential.HolderCredentialManager;
+import org.hyperledger.bpa.impl.aries.credential.HolderManager;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateManager;
 import org.hyperledger.bpa.persistence.model.ChatMessage;
@@ -66,7 +66,7 @@ public class PartnerController {
     PartnerLookup partnerLookup;
 
     @Inject
-    HolderCredentialManager credM;
+    HolderManager credM;
 
     @Inject
     ProofManager proofM;
@@ -224,7 +224,7 @@ public class PartnerController {
     public HttpResponse<Void> requestCredential(
             @PathVariable UUID id,
             @Body RequestCredentialRequest credReq) {
-        credM.sendCredentialRequest(
+        credM.sendCredentialProposal(
                 id,
                 UUID.fromString(credReq.getDocumentId()),
                 credReq.getExchangeVersion());

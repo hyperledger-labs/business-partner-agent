@@ -1,0 +1,57 @@
+{
+  "state": "proposal-received",
+  "updated_at": "2022-02-15T18:25:04.522565Z",
+  "thread_id": "bd86bace-be99-4dc1-8ad5-ec7d3cbbd152",
+  "trace": false,
+  "auto_remove": true,
+  "cred_proposal": {
+    "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/issue-credential/2.0/propose-credential",
+    "@id": "bd86bace-be99-4dc1-8ad5-ec7d3cbbd152",
+    "filters~attach": [
+      {
+        "@id": "ld_proof",
+        "mime-type": "application/json",
+        "data": {
+          "base64": "eyJjcmVkZW50aWFsIjogeyJAY29udGV4dCI6IFsiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvdjEiLCAiaHR0cHM6Ly93M2lkLm9yZy9jaXRpemVuc2hpcC92MSIsICJodHRwczovL3czaWQub3JnL3NlY3VyaXR5L2Jicy92MSJdLCAidHlwZSI6IFsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCAiUGVybWFuZW50UmVzaWRlbnQiXSwgImlzc3VlciI6ICJkaWQ6a2V5OnpVQzdHSmNxQmVOSENFRDlGUEpybkdwcjZxTkVFZnJvZGNXcWdiWDlRNldON1RDYWhNeGNSZDJVSkdWbk1RdE1yVHlYUk1idnVzdzQ1TVZwSllEMVRZUjQ0dndrVnJFdkZSZTFZV2trYmVRSmo3eGFnaFdNcG9VQ2hVeFhiZmR1UllyV1RweiIsICJpc3N1YW5jZURhdGUiOiAiMjAyMi0wMi0xNVQxODoyNTowNFoiLCAiY3JlZGVudGlhbFN1YmplY3QiOiB7Im5hbWUiOiAiSGFucyBNb3NlciIsICJpZGVudGlmaWVyIjogIjEyMzQifX0sICJvcHRpb25zIjogeyJwcm9vZlR5cGUiOiAiQmJzQmxzU2lnbmF0dXJlMjAyMCJ9fQ=="
+        }
+      }
+    ],
+    "formats": [
+      {
+        "attach_id": "ld_proof",
+        "format": "aries/ld-proof-vc-detail@v1.0"
+      }
+    ]
+  },
+  "by_format": {
+    "cred_proposal": {
+      "ld_proof": {
+        "credential": {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://w3id.org/citizenship/v1",
+            "https://w3id.org/security/bbs/v1"
+          ],
+          "type": [
+            "VerifiableCredential",
+            "PermanentResident"
+          ],
+          "issuer": "did:key:zUC7GJcqBeNHCED9FPJrnGpr6qNEEfrodcWqgbX9Q6WN7TCahMxcRd2UJGVnMQtMrTyXRMbvusw45MVpJYD1TYR44vwkVrEvFRe1YWkkbeQJj7xaghWMpoUChUxXbfduRYrWTpz",
+          "issuanceDate": "2022-02-15T18:25:04Z",
+          "credentialSubject": {
+            "name": "Name",
+            "identifier": "1234"
+          }
+        },
+        "options": {
+          "proofType": "BbsBlsSignature2020"
+        }
+      }
+    }
+  },
+  "connection_id": "1be44de6-7538-4d49-a7f5-86b9dab151ea",
+  "initiator": "external",
+  "cred_ex_id": "5c72dfb5-9965-4210-bf45-f89911b71c84",
+  "role": "issuer",
+  "created_at": "2022-02-15T18:25:04.522565Z"
+}

@@ -52,6 +52,8 @@ public class SchemaAPI {
 
     private Set<String> schemaAttributeNames;
 
+    private String defaultAttributeName;
+
     private List<TrustedIssuer> trustedIssuer;
 
     // ld only
@@ -103,6 +105,7 @@ public class SchemaAPI {
                 .label(s.getLabel())
                 .schemaId(s.getSchemaId())
                 .schemaAttributeNames(s.getSchemaAttributeNames() != null ? s.getSchemaAttributeNames() : Set.of())
+                .defaultAttributeName(s.getDefaultAttributeName())
                 .build();
     }
 

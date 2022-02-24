@@ -28,13 +28,16 @@ import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
+import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.model.MyDocument;
 import org.hyperledger.bpa.persistence.repository.MyDocumentRepository;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * Does some validation on incoming {@link MyDocumentAPI} objects. Like this we
@@ -50,6 +53,9 @@ public class DocumentValidator {
     @Inject
     @Setter
     SchemaService schemaService;
+
+    @Inject
+    Converter conv;
 
     @Inject
     BPAMessageSource.DefaultMessageSource ms;
@@ -71,11 +77,9 @@ public class DocumentValidator {
         validateInternal(newDocument);
     }
 
-    public void validateAttributesAgainstSchema(@NonNull JsonNode attributes, @NonNull String schemaId) {
+    public void validateAttributesAgainstIndySchema(@NonNull JsonNode attributes, @NonNull String schemaId) {
         // validate document data against schema
-        BPASchema schema = schemaService.getSchemaFor(schemaId)
-                .orElseThrow(() -> new WrongApiUsageException(
-                        ms.getMessage("api.schema.not.found", Map.of("id", schemaId))));
+        BPASchema schema = findSchema(schemaId);
         Set<String> attributeNames = schema.getSchemaAttributeNames();
         // assuming flat structure
         attributes.fieldNames().forEachRemaining(fn -> {
@@ -87,12 +91,25 @@ public class DocumentValidator {
         });
     }
 
+    public void validateAttributesAgainstLDSchema(@NonNull BPASchema bpaSchema, @NonNull Map<String, String> document) {
+        SortedSet<String> attributeNames = bpaSchema.getSchemaAttributeNames();
+        document.keySet().forEach(k -> {
+            if (!"id".equals(k) && !attributeNames.contains(k)) {
+                throw new WrongApiUsageException(
+                        ms.getMessage("api.document.validation.attribute.not.in.schema",
+                                Map.of("attr", k)));
+            }
+        });
+    }
+
     private void validateInternal(@NonNull MyDocumentAPI document) {
         if (CredentialType.INDY.equals(document.getType())) {
-            if (StringUtils.isEmpty(document.getSchemaId())) {
-                throw new WrongApiUsageException(ms.getMessage("api.document.validation.schema.id.missing"));
-            }
-            validateAttributesAgainstSchema(document.getDocumentData(), document.getSchemaId());
+            mustHaveSchemaId(document);
+            validateAttributesAgainstIndySchema(document.getDocumentData(), document.getSchemaId());
+        } else if (CredentialType.JSON_LD.equals(document.getType())) {
+            mustHaveSchemaId(document);
+            validateAttributesAgainstLDSchema(findSchema(document.getSchemaId()),
+                    conv.toStringMap(document.getDocumentData()));
         }
     }
 
@@ -103,6 +120,18 @@ public class DocumentValidator {
                     throw new WrongApiUsageException(ms.getMessage("api.document.validation.profile.already.exists"));
                 }
             });
+        }
+    }
+
+    private @io.micronaut.core.annotation.NonNull BPASchema findSchema(@NotNull String schemaId) {
+        return schemaService.getSchemaFor(schemaId)
+                .orElseThrow(() -> new WrongApiUsageException(
+                        ms.getMessage("api.schema.not.found", Map.of("id", schemaId))));
+    }
+
+    private void mustHaveSchemaId(@NotNull MyDocumentAPI document) {
+        if (StringUtils.isEmpty(document.getSchemaId())) {
+            throw new WrongApiUsageException(ms.getMessage("api.document.validation.schema.id.missing"));
         }
     }
 }

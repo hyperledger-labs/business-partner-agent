@@ -36,7 +36,6 @@ public class CredDef {
     private String credentialDefinitionId;
     private String tag;
     private Boolean supportRevocation;
-    private Integer revocationRegistrySize;
     private Long createdAt;
     private SchemaAPI schema;
     private String displayText;
@@ -48,11 +47,10 @@ public class CredDef {
                 .builder()
                 .id(db.getId())
                 .schemaId(db.getSchema().getSchemaId())
-                .schema(SchemaAPI.from(db.getSchema(), true, false))
                 .credentialDefinitionId(db.getCredentialDefinitionId())
+                .schema(SchemaAPI.from(db.getSchema(), true, false))
                 .tag(db.getTag())
                 .supportRevocation(db.getIsSupportRevocation())
-                .revocationRegistrySize(db.getRevocationRegistrySize())
                 .createdAt(db.getCreatedAt().toEpochMilli())
                 .displayText(displayText)
                 .build();

@@ -19,6 +19,7 @@ package org.hyperledger.bpa.controller.api.admin;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +28,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.hyperledger.bpa.api.CredentialType;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.Set;
 
@@ -48,6 +50,7 @@ public abstract class AddSchemaRequest {
     @Nullable
     private String label;
 
+    @NotEmpty
     private String schemaId;
 
     @Nullable
@@ -74,6 +77,7 @@ public abstract class AddSchemaRequest {
     @Data
     @EqualsAndHashCode(callSuper = true)
     @ToString(callSuper = true)
+    @Introspected
     public static final class AddIndySchema extends AddSchemaRequest {
         @Nullable
         private List<AddTrustedIssuerRequest> trustedIssuer;
@@ -87,8 +91,11 @@ public abstract class AddSchemaRequest {
     @Data
     @EqualsAndHashCode(callSuper = true)
     @ToString(callSuper = true)
+    @Introspected
     public static final class AddJsonLDSchema extends AddSchemaRequest {
+        @NotEmpty
         private Set<String> attributes;
+        @NotEmpty
         private String ldType;
 
         public AddJsonLDSchema() {

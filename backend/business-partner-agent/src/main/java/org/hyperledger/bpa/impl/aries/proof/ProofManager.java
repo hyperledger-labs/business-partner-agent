@@ -168,7 +168,7 @@ public class ProofManager {
             @Nullable ExchangeVersion version) {
         partnerRepo.findById(partnerId).ifPresent(p -> holderCredExRepo.findById(myCredentialId).ifPresent(c -> {
             ExchangeVersion v = version != null ? version : ExchangeVersion.V1;
-            Credential cred = Objects.requireNonNull(c.getCredential());
+            Credential cred = Objects.requireNonNull(c.getIndyCredential());
             try {
                 if (v.isV1()) {
                     ac.presentProofSendProposal(PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred))

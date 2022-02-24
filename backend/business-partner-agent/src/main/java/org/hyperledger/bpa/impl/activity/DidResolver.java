@@ -75,7 +75,7 @@ public class DidResolver {
     public void resolveDid(PartnerProof pp, @NonNull List<PresentationExchangeRecord.Identifier> identifiers) {
         Optional<PresentationExchangeRecord.Identifier> cr = identifiers.stream()
                 .filter(i -> StringUtils.isNotEmpty(i.getSchemaId()))
-                .filter(i -> AriesStringUtil.schemaGetName(i.getSchemaId()).equals("commercialregister"))
+                .filter(i -> "commercialregister".equals(AriesStringUtil.schemaGetName(i.getSchemaId())))
                 .findAny();
         try {
             if (cr.isPresent()) {

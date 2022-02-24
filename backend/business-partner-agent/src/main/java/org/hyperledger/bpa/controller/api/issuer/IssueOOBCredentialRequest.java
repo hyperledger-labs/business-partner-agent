@@ -21,8 +21,6 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.core.annotation.Introspected;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.persistence.model.Tag;
@@ -32,10 +30,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Introspected
-@Builder
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class IssueOOBCredentialRequest {
 
     private String alias;
