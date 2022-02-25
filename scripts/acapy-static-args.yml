@@ -22,6 +22,8 @@ monitor-ping: true
 
 enable-undelivered-queue: true
 exch-use-unencrypted-tags: true
+emit-new-didcomm-prefix: true
+emit-new-didcomm-mime-type: true # wrong content-type otherwise
 preserve-exchange-records: false
 # currently, there is an issue with the tails file failing to upload if this is enabled
 # genesis-transactions-list: './genesis-transaction-list.yml'

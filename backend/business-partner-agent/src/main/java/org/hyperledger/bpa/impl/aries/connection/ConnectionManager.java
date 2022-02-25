@@ -294,6 +294,9 @@ public class ConnectionManager {
         if (StringUtils.isEmpty(did)) {
             did = AriesStringUtil.qualifyDidIfNeeded(record.getTheirDid(), "did:peer:");
         }
+        if (StringUtils.isEmpty(did)) {
+            did = UNKNOWN_DID;
+        }
         return did;
     }
 
