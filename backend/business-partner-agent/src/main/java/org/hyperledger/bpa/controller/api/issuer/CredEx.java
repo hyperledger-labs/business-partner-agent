@@ -87,6 +87,7 @@ public class CredEx {
                 || db.roleIsIssuer() && db.stateIsDeclined()) {
             credentialAttrs = db.proposalAttributesToMap();
         } else if (db.stateIsOfferReceived()
+                || db.stateIsRequestSent()
                 || db.roleIsHolder() && db.stateIsDeclined()) {
             credentialAttrs = db.offerAttributesToMap();
         } else {

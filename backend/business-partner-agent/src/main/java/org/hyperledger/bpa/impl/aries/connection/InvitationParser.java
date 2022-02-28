@@ -142,7 +142,8 @@ public class InvitationParser {
                     invitation.setInvitation(o);
                     invitation.setParsed(true);
 
-                    if (CONNECTION_INVITATION_TYPES.contains((String) o.get("@type"))) {
+                    String type = (String) o.get("@type");
+                    if (CONNECTION_INVITATION_TYPES.contains(type)) {
                         // Invitation
                         try {
                             Gson gson = GsonConfig.defaultConfig();
@@ -154,7 +155,7 @@ public class InvitationParser {
                             log.error(msg);
                         }
 
-                    } else if (OOB_INVITATION_TYPES.contains((String) o.get("@type"))) {
+                    } else if (OOB_INVITATION_TYPES.contains(type)) {
                         invitation.setOob(true);
 
                         Gson gson = GsonConfig.defaultConfig();
