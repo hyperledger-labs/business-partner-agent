@@ -56,7 +56,7 @@ public class AriesStringUtil {
      * @return true if did is a did:indy, false otherwise
      */
     public static boolean isDidIndy(@Nullable String did) {
-        if (StringUtils.isNotEmpty(did) && did.startsWith(DID_INDY) || did.startsWith(DID_SOV)) {
+        if (StringUtils.isNotEmpty(did) && (did.startsWith(DID_INDY) || did.startsWith(DID_SOV))) {
             return true;
         }
         return false;
