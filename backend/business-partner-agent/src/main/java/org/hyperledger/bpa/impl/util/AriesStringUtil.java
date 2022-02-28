@@ -63,8 +63,10 @@ public class AriesStringUtil {
     }
 
     /**
-     * Checks if the provided did is fully qualified, if not it is prepended with the provided qualifier
-     * @param did qualified or unqualified did
+     * Checks if the provided did is fully qualified, if not it is prepended with
+     * the provided qualifier
+     * 
+     * @param did       qualified or unqualified did
      * @param qualifier fallback qualifier if the provided did is unqualified
      * @return qualified did
      */
