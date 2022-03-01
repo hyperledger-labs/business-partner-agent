@@ -34,6 +34,9 @@ micronaut:
           - isAuthenticated()
   session:
     max-inactive-interval: 12h
+    http:
+      cookie-same-site: strict
+      cookie-name: __HOST-SESSION
   router:
     # note also check the AppController
     static-resources:

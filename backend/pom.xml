@@ -56,7 +56,7 @@
         <log4j2.version>2.17.2</log4j2.version>
         <lombok.version>1.18.22</lombok.version>
         <lombok.maven.plugin.version>1.18.20.0</lombok.maven.plugin.version>
-        <micronaut.version>3.3.3</micronaut.version>
+        <micronaut.version>3.3.4</micronaut.version>
         <micronaut.data.version>3.2.2</micronaut.data.version>
         <micronaut.openapi.version>4.0.0</micronaut.openapi.version>
         <micronaut.security.version>3.3.0</micronaut.security.version>
@@ -136,6 +136,11 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
                 <version>8.5.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>42.3.3</version>
             </dependency>
             <!-- Logging -->
             <dependency>
@@ -249,10 +254,10 @@
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
-                <version>6.5.3</version>
+                <version>7.0.0</version>
                 <configuration>
                     <failBuildOnAnyVulnerability>false</failBuildOnAnyVulnerability>
-                    <skip>true</skip>
+                    <skip>false</skip>
                 </configuration>
                 <executions>
                     <execution>
@@ -484,7 +489,7 @@
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>docker-maven-plugin</artifactId>
-                    <version>0.38.1</version>
+                    <version>0.39.1</version>
                     <configuration>
                         <images>
                             <image>
