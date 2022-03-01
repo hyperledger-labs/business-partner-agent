@@ -1,7 +1,7 @@
 # Business Partner Agent [![join the chat][rocketchat-image]][rocketchat-url]
 
-[rocketchat-url]: https://chat.hyperledger.org/channel/business-partner-agent
-[rocketchat-image]: https://open.rocket.chat/images/join-chat.svg
+[rocketchat-url]: https://discord.com/channels/905194001349627914/948240184124788736
+[rocketchat-image]: https://img.shields.io/badge/DISCORD-JOIN%20CHAT-green
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![CI/CD](https://github.com/hyperledger-labs/business-partner-agent/workflows/CI/CD/badge.svg)](https://github.com/hyperledger-labs/business-partner-agent/actions?query=workflow%3ACI%2FCD+branch%3Amain)
