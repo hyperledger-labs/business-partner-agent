@@ -5,8 +5,23 @@ micronaut:
       id: ${random.shortuuid}
   server:
     port: 8080
+    http-version: HTTP_2_0
     cors:
-      enabled: true # potential security risk
+      enabled: true
+      configurations:
+        '*':
+          allowCredentials: false
+          allowedOrigins: ${bpa.host}
+          allowedMethods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+            - OPTIONS
+          allowedHeaders:
+            - Authorization
+            - Cache-Control
+            - Cookie
     idle-timeout: 30m
   security:
     enabled: ${BPA_SECURITY_ENABLED:true}
