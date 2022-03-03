@@ -1,4 +1,13 @@
 {
+  "@fontsource/roboto": {
+    "ignore": false,
+    "name": "@fontsource/roboto",
+    "version": "4.5.3",
+    "authors": "Lotus <declininglotus@gmail.com>",
+    "url": "https://github.com/fontsource/fontsource",
+    "license": "MIT",
+    "licenseText": ""
+  },
   "@types/http-link-header": {
     "ignore": false,
     "name": "@types/http-link-header",
@@ -80,7 +89,7 @@
   "emoji-picker-element": {
     "ignore": false,
     "name": "emoji-picker-element",
-    "version": "1.8.2",
+    "version": "1.10.1",
     "authors": "Nolan Lawson <nolan@nolanlawson.com>",
     "url": "https://github.com/nolanlawson/emoji-picker-element",
     "license": "Apache-2.0",
@@ -238,7 +247,7 @@
   "vue-advanced-chat": {
     "ignore": false,
     "name": "vue-advanced-chat",
-    "version": "1.4.3",
+    "version": "1.5.3",
     "authors": "Antoine Dupont <antoindupontdev@gmail.com>",
     "url": "https://github.com/antoine92190/vue-advanced-chat",
     "license": "MIT",

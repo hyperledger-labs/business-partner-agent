@@ -23,6 +23,7 @@
     :show-files="false"
     :show-emojis="false"
     :show-reaction-emojis="false"
+    :emojis-suggestion-enabled="false"
     :text-formatting="{ disabled: true }"
     :text-messages="textMessages"
     :styles="{ room: { backgroundCounterBadge: 'red' } }"
