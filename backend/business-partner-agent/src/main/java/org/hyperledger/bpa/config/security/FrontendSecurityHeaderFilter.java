@@ -25,6 +25,9 @@ import io.micronaut.http.filter.ServerFilterChain;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 
+/**
+ * Sets security related HTTP headers on all frontend related calls.
+ */
 @Filter({ "/*", "classpath:public", "/js/**", "/css/**", "/fonts/**", "/img/**" })
 public class FrontendSecurityHeaderFilter implements HttpServerFilter {
     @Override
@@ -34,7 +37,8 @@ public class FrontendSecurityHeaderFilter implements HttpServerFilter {
                         .add("Referrer-Policy", "same-origin")
                         .add("X-Content-Type-Options", "nosniff")
                         .add("X-Frame-Options", "deny")
-                        .add("Content-Security-Policy", "frame-ancestors 'none'; default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self' data:")
-                );
+                        .add("Content-Security-Policy", "frame-ancestors 'none'; " +
+                                "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; " +
+                                "img-src 'self'; font-src 'self' data:"));
     }
 }
