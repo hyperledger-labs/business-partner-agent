@@ -78,7 +78,9 @@
                 }}</v-bpa-button
               >
             </template>
+            <h1 v-if="issueConnectionless">TODO: Connectionless Dialog</h1>
             <IssueCredential
+              v-else
               :credDefId="credDefId"
               :partnerId="partnerId"
               :open="issueCredentialDialog"
@@ -138,6 +140,7 @@ export default {
       credDefId: "",
       issueCredentialDisabled: true,
       issueCredentialDialog: false,
+      issueConnectionless: false,
       addSchemaDialog: false,
       createSchemaDialog: false,
     };
@@ -145,7 +148,16 @@ export default {
   computed: {
     partnerList: {
       get() {
-        return this.$store.getters.getPartnerSelectList;
+        return [
+          {
+            text: this.$t(
+              "view.issueCredentials.cards.action.connectionlessLabel"
+            ),
+            id: "connectionless",
+          },
+          { divider: true },
+          ...this.$store.getters.getPartnerSelectList,
+        ];
       },
     },
     credDefList: {
@@ -156,8 +168,13 @@ export default {
   },
   watch: {
     partner(value) {
-      this.issueCredentialDisabled =
-        !value || !value.id || !this.credDef || !this.credDef.id;
+      if (value.id === "connectionless") {
+        this.issueConnectionless = true;
+      } else {
+        this.issueConnectionless = false;
+        this.issueCredentialDisabled =
+          !value || !value.id || !this.credDef || !this.credDef.id;
+      }
       this.partnerId = value ? value.id : "";
     },
     credDef(value) {

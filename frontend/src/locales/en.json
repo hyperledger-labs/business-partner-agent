@@ -422,7 +422,8 @@
           "title": "Issue Credential",
           "button": "Issue Credential",
           "partnerLabel": "Select a connection to issue credential to",
-          "credDefLabel": "Select a template to issue credential with"
+          "credDefLabel": "Select a template to issue credential with",
+          "connectionlessLabel": "Connectionless"
         },
         "table": {
           "title": "Credentials Your Organization Issued"

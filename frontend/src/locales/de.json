@@ -422,7 +422,8 @@
           "title": "Berechtigungsnachweis ausstellen",
           "button": "Berechtigungsnachweis ausstellen",
           "partnerLabel": "Partner auswählen",
-          "credDefLabel": "Berechtigungsnachweis-Definition auswählen"
+          "credDefLabel": "Berechtigungsnachweis-Definition auswählen",
+          "connectionlessLabel": "Connectionless"
         },
         "table": {
           "title": "Ausgestellte Berechtigungsnachweise"

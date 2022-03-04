@@ -421,7 +421,8 @@
           "title": "Wystawienie uprawnień",
           "button": "Wystawienie uprawnień",
           "partnerLabel": "Wybierz partnera",
-          "credDefLabel": "Wybierz definicję uprawnień "
+          "credDefLabel": "Wybierz definicję uprawnień ",
+          "connectionlessLabel": "Connectionless"
         },
         "table": {
           "title": "Wydane uprawnienia"
