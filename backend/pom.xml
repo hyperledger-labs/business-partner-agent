@@ -59,7 +59,7 @@
         <micronaut.version>3.3.4</micronaut.version>
         <micronaut.data.version>3.2.2</micronaut.data.version>
         <micronaut.openapi.version>4.0.0</micronaut.openapi.version>
-        <micronaut.security.version>3.3.0</micronaut.security.version>
+        <micronaut.security.version>3.4.1</micronaut.security.version>
         <mockito.version>4.3.1</mockito.version>
         <okhttp.version>4.9.3</okhttp.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
