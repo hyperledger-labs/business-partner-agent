@@ -7,5 +7,6 @@ dist
 node_modules
 coverage
 setup-runtime.sh
+update-backend-typings.sh
 .env
 .dockerignore

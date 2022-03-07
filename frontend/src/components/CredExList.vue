@@ -259,7 +259,7 @@
 }
 </style>
 <script lang="ts">
-import { issuerService } from "@/services";
+import { CredentialOfferRequest, issuerService } from "@/services";
 import Cred from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
@@ -519,7 +519,7 @@ export default {
         acceptProposal = acceptAll;
       }
 
-      const counterOffer = {
+      const counterOffer: CredentialOfferRequest = {
         acceptProposal,
         credDefId: this.credDef
           ? this.credDef.credentialDefinitionId
@@ -530,7 +530,7 @@ export default {
 
       issuerService
         .sendCredentialOffer(this.document.credentialExchangeId, counterOffer)
-        .then((response) => {
+        .then(() => {
           EventBus.$emit("success");
           this.closeDialog();
         })

@@ -8,6 +8,13 @@
 
 import { appAxios } from "@/services/interceptors";
 import { ApiRoutes, CredentialExchangeRoles } from "@/constants";
+import {
+  CreateCredDefRequest,
+  CreateSchemaRequest,
+  CredentialOfferRequest,
+  IssueCredentialRequest,
+  IssueOobCredentialRequest,
+} from "@/services/types-services";
 
 export default {
   //
@@ -18,19 +25,19 @@ export default {
     return appAxios().get(`${ApiRoutes.ISSUER}/schema`);
   },
 
-  createSchema(data) {
+  createSchema(data: CreateSchemaRequest) {
     return appAxios().post(`${ApiRoutes.ISSUER}/schema`, data);
   },
 
-  readSchema(id) {
+  readSchema(id: string) {
     return appAxios().get(`${ApiRoutes.ISSUER}/schema/${id}`);
   },
 
-  createCredDef(data) {
+  createCredDef(data: CreateCredDefRequest) {
     return appAxios().post(`${ApiRoutes.ISSUER}/creddef`, data);
   },
 
-  deleteCredDef(id) {
+  deleteCredDef(id: string) {
     return appAxios().delete(`${ApiRoutes.ISSUER}/creddef/${id}`);
   },
 
@@ -38,21 +45,42 @@ export default {
     return appAxios().get(`${ApiRoutes.ISSUER}/creddef`);
   },
 
-  issueCredentialSend(data) {
+  issueCredentialSend(data: IssueCredentialRequest) {
     return appAxios().post(`${ApiRoutes.ISSUER}/issue-credential/send`, data);
   },
 
-  listCredentialExchanges(id) {
+  /**
+   * Issue OOB credential step 1 - prepares credential offer and returns URL for use within the barcode
+   * @param data
+   */
+  issueOobCredentialOfferCreate(data: IssueOobCredentialRequest) {
+    return appAxios().post(
+      `${ApiRoutes.ISSUER}/issue-credential/oob-attachment`,
+      data
+    );
+  },
+
+  /**
+   * Issue OOB credential step 2 - redirect with encoded offer
+   * @param id UUID
+   */
+  issueOobCredentialOfferRedirect(id: string) {
+    return appAxios().get(
+      `${ApiRoutes.ISSUER}/issue-credential/oob-attachment/${id}`
+    );
+  },
+
+  listCredentialExchanges(id: string) {
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
       params: { partnerId: id },
     });
   },
 
-  getCredExRecord(id) {
+  getCredExRecord(id: string) {
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges/${id}`);
   },
 
-  listCredentialExchangesAsIssuer(id?) {
+  listCredentialExchangesAsIssuer(id?: string) {
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
       params: { role: CredentialExchangeRoles.ISSUER, partnerId: id },
     });
@@ -63,13 +91,13 @@ export default {
       params: { role: CredentialExchangeRoles.HOLDER },
     });
   },
-  revokeCredential(id) {
+  revokeCredential(id: string) {
     return appAxios().put(`${ApiRoutes.ISSUER}/exchanges/${id}/revoke`);
   },
-  acceptCredentialOffer(id) {
+  acceptCredentialOffer(id: string) {
     return appAxios().put(`${ApiRoutes.WALLET}/credential/${id}/accept-offer`);
   },
-  async declineCredentialOffer(id, reasonMessage) {
+  async declineCredentialOffer(id: string, reasonMessage: string) {
     const message =
       reasonMessage === undefined || "" ? undefined : reasonMessage;
 
@@ -80,7 +108,7 @@ export default {
       }
     );
   },
-  async declineCredentialProposal(id, reasonMessage) {
+  async declineCredentialProposal(id: string, reasonMessage: string) {
     const message =
       reasonMessage === undefined || "" ? undefined : reasonMessage;
 
@@ -91,13 +119,13 @@ export default {
       }
     );
   },
-  sendCredentialOffer(id, counterOfferData) {
+  sendCredentialOffer(id: string, counterOfferData: CredentialOfferRequest) {
     return appAxios().put(
       `${ApiRoutes.ISSUER}/exchanges/${id}/send-offer`,
       counterOfferData
     );
   },
-  reIssueCredential(id) {
+  reIssueCredential(id: string) {
     return appAxios().post(`${ApiRoutes.ISSUER}/exchanges/${id}/re-issue`);
   },
 };

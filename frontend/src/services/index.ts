@@ -12,3 +12,4 @@ export { default as partnerService } from "./partnerService";
 export { default as proofExService } from "./proofExService";
 export { default as proofTemplateService } from "./proofTemplateService";
 export { default as jsonLdService } from "./json-ld-service";
+export * from "./types-services";
