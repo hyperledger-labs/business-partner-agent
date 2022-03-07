@@ -9,43 +9,41 @@
 import { appAxios } from "@/services/interceptors";
 import { ApiRoutes, CredentialExchangeRoles } from "@/constants";
 import {
-  CreateCredDefRequest,
-  CreateSchemaRequest,
-  CredentialOfferRequest,
-  IssueCredentialRequest,
-  IssueOobCredentialRequest,
+  RequestCreateCredDef,
+  SchemaApi,
+  RequestCreateSchema,
+  RequestCredentialOffer,
+  RequestIssueCredential,
+  RequestIssueOobCredential,
+  CredDef,
+  ApiCreateInvitation,
+  CredEx,
 } from "@/services/types-services";
+import { AxiosResponse } from "axios";
 
 export default {
   //
   // Issuer API
   //
-
-  listSchemas() {
-    return appAxios().get(`${ApiRoutes.ISSUER}/schema`);
-  },
-
-  createSchema(data: CreateSchemaRequest) {
+  createSchema(data: RequestCreateSchema): Promise<AxiosResponse<SchemaApi>> {
     return appAxios().post(`${ApiRoutes.ISSUER}/schema`, data);
   },
 
-  readSchema(id: string) {
-    return appAxios().get(`${ApiRoutes.ISSUER}/schema/${id}`);
-  },
-
-  createCredDef(data: CreateCredDefRequest) {
+  createCredDef(data: RequestCreateCredDef): Promise<AxiosResponse<CredDef>> {
     return appAxios().post(`${ApiRoutes.ISSUER}/creddef`, data);
   },
 
-  deleteCredDef(id: string) {
+  deleteCredDef(id: string): Promise<AxiosResponse<void>> {
     return appAxios().delete(`${ApiRoutes.ISSUER}/creddef/${id}`);
   },
 
-  listCredDefs() {
+  listCredDefs(): Promise<AxiosResponse<CredDef[]>> {
     return appAxios().get(`${ApiRoutes.ISSUER}/creddef`);
   },
 
-  issueCredentialSend(data: IssueCredentialRequest) {
+  issueCredentialSend(
+    data: RequestIssueCredential
+  ): Promise<AxiosResponse<string>> {
     return appAxios().post(`${ApiRoutes.ISSUER}/issue-credential/send`, data);
   },
 
@@ -53,7 +51,9 @@ export default {
    * Issue OOB credential step 1 - prepares credential offer and returns URL for use within the barcode
    * @param data
    */
-  issueOobCredentialOfferCreate(data: IssueOobCredentialRequest) {
+  issueOobCredentialOfferCreate(
+    data: RequestIssueOobCredential
+  ): Promise<AxiosResponse<ApiCreateInvitation>> {
     return appAxios().post(
       `${ApiRoutes.ISSUER}/issue-credential/oob-attachment`,
       data
@@ -64,51 +64,38 @@ export default {
    * Issue OOB credential step 2 - redirect with encoded offer
    * @param id UUID
    */
-  issueOobCredentialOfferRedirect(id: string) {
+  issueOobCredentialOfferRedirect(id: string): Promise<AxiosResponse<void>> {
     return appAxios().get(
       `${ApiRoutes.ISSUER}/issue-credential/oob-attachment/${id}`
     );
   },
 
-  listCredentialExchanges(id: string) {
+  listCredentialExchanges(id: string): Promise<AxiosResponse<CredEx[]>> {
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
       params: { partnerId: id },
     });
   },
 
-  getCredExRecord(id: string) {
+  getCredExRecord(id: string): Promise<AxiosResponse<CredEx>> {
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges/${id}`);
   },
 
-  listCredentialExchangesAsIssuer(id?: string) {
+  listCredentialExchangesAsIssuer(
+    id?: string
+  ): Promise<AxiosResponse<CredEx[]>> {
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
       params: { role: CredentialExchangeRoles.ISSUER, partnerId: id },
     });
   },
 
-  listCredentialExchangesAsHolder() {
-    return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
-      params: { role: CredentialExchangeRoles.HOLDER },
-    });
-  },
-  revokeCredential(id: string) {
+  revokeCredential(id: string): Promise<AxiosResponse<CredEx>> {
     return appAxios().put(`${ApiRoutes.ISSUER}/exchanges/${id}/revoke`);
   },
-  acceptCredentialOffer(id: string) {
-    return appAxios().put(`${ApiRoutes.WALLET}/credential/${id}/accept-offer`);
-  },
-  async declineCredentialOffer(id: string, reasonMessage: string) {
-    const message =
-      reasonMessage === undefined || "" ? undefined : reasonMessage;
 
-    return appAxios().put(
-      `${ApiRoutes.WALLET}/credential/${id}/decline-offer`,
-      {
-        message,
-      }
-    );
-  },
-  async declineCredentialProposal(id: string, reasonMessage: string) {
+  async declineCredentialProposal(
+    id: string,
+    reasonMessage: string
+  ): Promise<AxiosResponse<void>> {
     const message =
       reasonMessage === undefined || "" ? undefined : reasonMessage;
 
@@ -119,13 +106,18 @@ export default {
       }
     );
   },
-  sendCredentialOffer(id: string, counterOfferData: CredentialOfferRequest) {
+
+  sendCredentialOffer(
+    id: string,
+    counterOfferData: RequestCredentialOffer
+  ): Promise<AxiosResponse<CredEx>> {
     return appAxios().put(
       `${ApiRoutes.ISSUER}/exchanges/${id}/send-offer`,
       counterOfferData
     );
   },
-  reIssueCredential(id: string) {
+
+  reIssueCredential(id: string): Promise<AxiosResponse<void>> {
     return appAxios().post(`${ApiRoutes.ISSUER}/exchanges/${id}/re-issue`);
   },
 };

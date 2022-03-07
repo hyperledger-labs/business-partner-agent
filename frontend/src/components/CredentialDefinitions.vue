@@ -64,7 +64,7 @@
 import { EventBus } from "@/main";
 import issuerService from "@/services/issuerService";
 import VBpaButton from "@/components/BpaButton";
-import { CreateCredDefRequest } from "@/services";
+import { RequestCreateCredDef } from "@/services";
 
 export default {
   components: { VBpaButton },
@@ -150,7 +150,7 @@ export default {
     },
     createNewItem(item) {
       this.isBusy = true;
-      const data: CreateCredDefRequest = {
+      const data: RequestCreateCredDef = {
         schemaId: this.schema.schemaId,
         tag: item.tag,
         supportRevocation: item.supportRevocation,

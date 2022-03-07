@@ -259,7 +259,11 @@
 }
 </style>
 <script lang="ts">
-import { CredentialOfferRequest, issuerService } from "@/services";
+import {
+  RequestCredentialOffer,
+  issuerService,
+  walletService,
+} from "@/services";
 import Cred from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
@@ -495,11 +499,11 @@ export default {
       issuerService.revokeCredential(id);
     },
     async acceptCredentialOffer(id) {
-      await issuerService.acceptCredentialOffer(id);
+      await walletService.acceptCredentialOffer(id);
       this.closeDialog();
     },
     async declineCredentialOffer(id) {
-      await issuerService.declineCredentialOffer(id, this.declineReasonText);
+      await walletService.declineCredentialOffer(id, this.declineReasonText);
       this.closeDialog();
     },
     async declineCredentialProposal(id) {
@@ -519,7 +523,7 @@ export default {
         acceptProposal = acceptAll;
       }
 
-      const counterOffer: CredentialOfferRequest = {
+      const counterOffer: RequestCredentialOffer = {
         acceptProposal,
         credDefId: this.credDef
           ? this.credDef.credentialDefinitionId

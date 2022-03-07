@@ -142,7 +142,7 @@
 
 <script lang="ts">
 import { EventBus } from "@/main";
-import { CreateSchemaRequest, issuerService } from "@/services";
+import { SchemaApi, RequestCreateSchema, issuerService } from "@/services";
 import VBpaButton from "@/components/BpaButton";
 import * as textUtils from "@/utils/textUtils";
 
@@ -211,7 +211,7 @@ export default {
     fixSchemaParams(s) {
       return s.trim().replace(/ /g, "_");
     },
-    getSchemaFormData(): CreateSchemaRequest {
+    getSchemaFormData(): RequestCreateSchema {
       const attributes = this.schemaAttributes
         .filter((x) => x.text.trim().length)
         .map((x) => this.fixSchemaParams(x.text));
@@ -235,9 +235,9 @@ export default {
       const initialData = this.$options.data.call(this);
       Object.assign(this.$data, initialData);
     },
-    async saveSchema() {
+    async saveSchema(): Promise<SchemaApi> {
       try {
-        const schemaForm: CreateSchemaRequest = this.getSchemaFormData();
+        const schemaForm: RequestCreateSchema = this.getSchemaFormData();
         const resp = await issuerService.createSchema(schemaForm);
         if (resp.status === 200) {
           return resp.data;

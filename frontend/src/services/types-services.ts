@@ -7,16 +7,26 @@
  */
 import { components } from "backend-types";
 
-export type IssueCredentialRequest =
+export type RequestIssueCredential =
   components["schemas"]["IssueCredentialRequest"];
 
-export type IssueOobCredentialRequest =
+export type RequestIssueOobCredential =
   components["schemas"]["IssueOOBCredentialRequest"];
 
-export type CredentialOfferRequest =
+export type RequestCredentialOffer =
   components["schemas"]["CredentialOfferRequest"];
 
-export type CreateCredDefRequest =
+export type RequestCreateCredDef =
   components["schemas"]["CreateCredDefRequest"];
 
-export type CreateSchemaRequest = components["schemas"]["CreateSchemaRequest"];
+export type RequestCreateSchema = components["schemas"]["CreateSchemaRequest"];
+
+// Issuer controller data types
+export type SchemaApi = components["schemas"]["SchemaAPI"];
+
+export type ApiCreateInvitation =
+  components["schemas"]["APICreateInvitationResponse"];
+
+export type CredDef = components["schemas"]["CredDef"];
+
+export type CredEx = components["schemas"]["CredEx"];
