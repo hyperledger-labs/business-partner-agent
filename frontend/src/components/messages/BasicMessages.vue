@@ -32,7 +32,7 @@
 <script lang="ts">
 import ChatWindow from "vue-advanced-chat";
 import "vue-advanced-chat/dist/vue-advanced-chat.css";
-import partnerService from "@/services/partnerService";
+import partnerService from "@/services/partner-service";
 import { mapMutations } from "vuex";
 import { CHAT_CURRENT_USERID, PartnerStates } from "@/constants";
 import { formatDateLong } from "@/filters";

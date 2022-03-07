@@ -59,7 +59,7 @@
 </template>
 <script lang="ts">
 import VBpaButton from "@/components/BpaButton";
-import adminService from "@/services/adminService";
+import adminService from "@/services/admin-service";
 import { EventBus } from "@/main";
 
 export default {

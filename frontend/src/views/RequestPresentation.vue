@@ -51,7 +51,7 @@
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import ProofTemplatesList from "@/components/proof-templates/ProofTemplatesList.vue";
-import proofTemplateService from "@/services/proofTemplateService";
+import proofTemplateService from "@/services/proof-template-service";
 import { ExchangeVersion } from "@/constants";
 
 export default {

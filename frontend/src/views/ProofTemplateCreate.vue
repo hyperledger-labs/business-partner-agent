@@ -179,7 +179,7 @@
 <script lang="ts">
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
-import proofTemplateService from "@/services/proofTemplateService";
+import proofTemplateService from "@/services/proof-template-service";
 import AttributeEdit from "@/components/proof-templates/AttributeEdit.vue";
 import RestrictionsEdit from "@/components/proof-templates/RestrictionsEdit.vue";
 import { SchemaLevelRestriction } from "@/components/proof-templates/attribute-group";

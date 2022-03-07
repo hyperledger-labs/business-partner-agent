@@ -6,11 +6,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export { default as adminService } from "./adminService";
-export { default as issuerService } from "./issuerService";
-export { default as partnerService } from "./partnerService";
-export { default as proofExService } from "./proofExService";
-export { default as proofTemplateService } from "./proofTemplateService";
+export { default as adminService } from "./admin-service";
+export { default as issuerService } from "./issuer-service";
+export { default as partnerService } from "./partner-service";
+export { default as proofExService } from "./proof-ex-service";
+export { default as proofTemplateService } from "./proof-template-service";
 export { default as jsonLdService } from "./json-ld-service";
 export { default as walletService } from "./wallet-service";
 export * from "./types-services";

@@ -62,7 +62,7 @@
 
 <script lang="ts">
 import { EventBus } from "@/main";
-import issuerService from "@/services/issuerService";
+import issuerService from "@/services/issuer-service";
 import VBpaButton from "@/components/BpaButton";
 import { RequestCreateCredDef } from "@/services";
 

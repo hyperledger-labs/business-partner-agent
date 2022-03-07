@@ -17,7 +17,7 @@
 <script lang="ts">
 import { EventBus } from "@/main";
 import ProofTemplateCreate from "@/views/ProofTemplateCreate.vue";
-import proofTemplateService from "@/services/proofTemplateService";
+import proofTemplateService from "@/services/proof-template-service";
 import { ExchangeVersion } from "@/constants";
 
 export default {

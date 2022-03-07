@@ -40,7 +40,7 @@
 import { EventBus } from "@/main";
 import Document from "@/views/Document.vue";
 import { CredentialTypes, ExchangeVersion } from "@/constants";
-import credentialService from "@/services/credentialService";
+import credentialService from "@/services/credential-service";
 
 export default {
   name: "RequestCredentialCreateDocument",
