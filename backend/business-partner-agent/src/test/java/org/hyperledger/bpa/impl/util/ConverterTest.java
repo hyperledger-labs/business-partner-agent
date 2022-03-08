@@ -122,7 +122,7 @@ class ConverterTest extends BaseTest {
     @Test
     void testConvertCredentialToModelObject() throws Exception {
         MyDocumentAPI c = utils.createDummyCred(CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL, Boolean.TRUE);
-        c.setCreatedDate(123L); // should not be used but set by database layer
+        c.setCreatedAt(123L); // should not be used but set by database layer
         c.setId(UUID.randomUUID()); // should not be used but set by database layer
 
         MyDocument result = conv.toModelObject(c);

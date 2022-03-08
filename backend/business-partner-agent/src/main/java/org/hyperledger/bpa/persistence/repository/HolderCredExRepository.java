@@ -23,10 +23,13 @@ import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.StateChangeDecorator;
 
@@ -46,8 +49,11 @@ public interface HolderCredExRepository extends CrudRepository<BPACredentialExch
     Optional<BPACredentialExchange> findById(@NonNull UUID id);
 
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
-    List<BPACredentialExchange> findByRoleEqualsAndStateIn(CredentialExchangeRole role,
-            List<CredentialExchangeState> state);
+    Page<BPACredentialExchange> findByRoleEqualsAndStateInAndTypeIn(
+            CredentialExchangeRole role,
+            List<CredentialExchangeState> state,
+            List<CredentialType> type,
+            Pageable pageable);
 
     Optional<BPACredentialExchange> findByReferent(String referent);
 

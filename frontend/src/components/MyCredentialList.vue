@@ -16,16 +16,18 @@
       hide-details
     ></v-text-field>
     <v-data-table
-      :hide-default-footer="data.length < 10"
+      :hide-default-footer="hideFooter"
       :loading="isBusy"
       v-model="inputValue"
       :headers="headers"
       :items="data"
+      :options.sync="options"
+      :server-items-length="totalNumberOfElements"
       :search="search"
       :show-select="selectable"
       single-select
-      :sort-by="['createdDate']"
-      :sort-desc="[false]"
+      sort-by="createdAt"
+      sort-desc="false"
       @click:row="open"
     >
       <template v-slot:[`item.label`]="{ item }">
@@ -50,11 +52,11 @@
         </div>
       </template>
 
-      <template v-slot:[`item.createdDate`]="{ item }">
+      <template v-slot:[`item.createdAt`]="{ item }">
         {{ item.createdDate | formatDateLong }}
       </template>
 
-      <template v-slot:[`item.updatedDate`]="{ item }">
+      <template v-slot:[`item.updatedAt`]="{ item }">
         {{ item.updatedDate | formatDateLong }}
       </template>
 
@@ -129,11 +131,14 @@ export default {
     NewMessageIcon,
   },
   created() {
-    this.fetch(this.type);
+    //this.fetch(this.type);
   },
   data: () => {
     return {
       data: [],
+      options: {},
+      totalNumberOfElements: 0,
+      hideFooter: false,
       search: "",
       isBusy: true,
       CredentialTypes: CredentialTypes,
@@ -141,15 +146,20 @@ export default {
   },
   computed: {
     queryFilter() {
-      let q = "";
-      if (this.useIndy && this.useJsonLd) {
-        q = "?types=INDY&types=JSON_LD";
-      } else if (this.useIndy) {
-        q = "?types=INDY";
-      } else if (this.useJsonLd) {
-        q = "?types=JSON_LD";
+      const { page, itemsPerPage, sortBy, sortDesc } = this.options;
+      const params = new URLSearchParams();
+      const currentPage = Number(page) - 1;
+      if (this.useIndy) {
+        params.append("types", CredentialTypes.INDY.type);
       }
-      return q;
+      if (this.useJsonLd) {
+        params.append("types", CredentialTypes.JSON_LD.type);
+      }
+      params.append("size", itemsPerPage);
+      params.append("page", currentPage.toString());
+      params.append("q", sortBy);
+      params.append("desc", sortDesc);
+      return params;
     },
     credentialNotifications() {
       return this.$store.getters.credentialNotifications;
@@ -170,25 +180,32 @@ export default {
         this.fetch(this.type);
       }
     },
+    options: {
+      handler() {
+        this.fetch(this.type);
+      },
+    },
   },
   methods: {
     fetch(type) {
       this.$axios
-        .get(`${this.$apiBaseUrl}/wallet/${type}${this.queryFilter}`)
+        .get(`${this.$apiBaseUrl}/wallet/${type}`, { params: this.queryFilter })
         .then((result) => {
           if (Object.prototype.hasOwnProperty.call(result, "data")) {
+            const { itemsPerPage } = this.options;
             this.isBusy = false;
-
+            this.totalNumberOfElements = result.data.totalSize;
+            this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
             this.data =
               type === "credential"
-                ? result.data.filter((item) => {
+                ? result.data.content.filter((item) => {
                     return (
                       item.state ===
                         CredentialExchangeStates.CREDENTIAL_ACKED ||
                       item.state === CredentialExchangeStates.DONE
                     );
                   })
-                : result.data;
+                : result.data.content;
           }
         })
         .catch((error) => {

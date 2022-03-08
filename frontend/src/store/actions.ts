@@ -94,10 +94,10 @@ export const loadDocuments = async ({ commit }) => {
     .get(`${apiBaseUrl}/wallet/document`)
     .then((result) => {
       if (Object.prototype.hasOwnProperty.call(result, "data")) {
-        const documents = result.data;
+        const documents = result.data.content;
         documents.map((documentIn) => {
-          documentIn.createdDate = moment(documentIn.createdDate);
-          documentIn.updatedDate = moment(documentIn.updatedDate);
+          documentIn.createdAt = moment(documentIn.createdAt);
+          documentIn.updatedAt = moment(documentIn.updatedAt);
         });
 
         commit({

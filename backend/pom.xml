@@ -56,10 +56,10 @@
         <log4j2.version>2.17.2</log4j2.version>
         <lombok.version>1.18.22</lombok.version>
         <lombok.maven.plugin.version>1.18.20.0</lombok.maven.plugin.version>
-        <micronaut.version>3.3.3</micronaut.version>
+        <micronaut.version>3.3.4</micronaut.version>
         <micronaut.data.version>3.2.2</micronaut.data.version>
         <micronaut.openapi.version>4.0.0</micronaut.openapi.version>
-        <micronaut.security.version>3.3.0</micronaut.security.version>
+        <micronaut.security.version>3.4.1</micronaut.security.version>
         <mockito.version>4.3.1</mockito.version>
         <okhttp.version>4.9.3</okhttp.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
@@ -135,7 +135,7 @@
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
-                <version>8.5.1</version>
+                <version>8.5.2</version>
             </dependency>
             <!-- Logging -->
             <dependency>

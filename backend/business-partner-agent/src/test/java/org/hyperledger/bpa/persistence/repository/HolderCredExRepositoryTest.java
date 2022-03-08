@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.persistence.repository;
 
+import io.micronaut.data.model.Pageable;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.connection.ConnectionState;
@@ -136,13 +137,20 @@ class HolderCredExRepositoryTest extends BaseTest {
         holderCredExRepo.save(createDummyCredEx(p).setState(CredentialExchangeState.CREDENTIAL_ISSUED));
         holderCredExRepo.save(createDummyCredEx(createRandomPartner()).setState(CredentialExchangeState.DONE));
 
-        assertEquals(2, holderCredExRepo.findByRoleEqualsAndStateIn(
+        assertEquals(2, holderCredExRepo.findByRoleEqualsAndStateInAndTypeIn(
                 CredentialExchangeRole.HOLDER,
-                List.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE)).size());
+                List.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE),
+                List.of(CredentialType.INDY), Pageable.unpaged()).getTotalSize());
 
-        assertEquals(1, holderCredExRepo.findByRoleEqualsAndStateIn(
+        assertEquals(1, holderCredExRepo.findByRoleEqualsAndStateInAndTypeIn(
                 CredentialExchangeRole.HOLDER,
-                List.of(CredentialExchangeState.CREDENTIAL_ISSUED)).size());
+                List.of(CredentialExchangeState.CREDENTIAL_ISSUED),
+                List.of(CredentialType.INDY), Pageable.unpaged()).getTotalSize());
+
+        assertEquals(0, holderCredExRepo.findByRoleEqualsAndStateInAndTypeIn(
+                CredentialExchangeRole.HOLDER,
+                List.of(CredentialExchangeState.CREDENTIAL_ISSUED),
+                List.of(CredentialType.JSON_LD), Pageable.unpaged()).getTotalSize());
     }
 
     @Test
@@ -170,6 +178,7 @@ class HolderCredExRepositoryTest extends BaseTest {
                 .credentialExchangeId(UUID.randomUUID().toString())
                 .isPublic(Boolean.FALSE)
                 .role(CredentialExchangeRole.HOLDER)
+                .type(CredentialType.INDY)
                 .build();
     }
 
