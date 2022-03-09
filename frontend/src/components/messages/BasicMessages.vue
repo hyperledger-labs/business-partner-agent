@@ -156,6 +156,7 @@ export default {
               senderId: message.incoming
                 ? message.partner.id
                 : CHAT_CURRENT_USERID,
+              // @ts-ignore createdAtTs actually exists
               timestamp: formatDateLong(message.createdAtTs),
               seen: _seen,
             });

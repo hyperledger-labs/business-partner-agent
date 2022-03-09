@@ -21,7 +21,7 @@ export type RequestCreateCredDef =
 
 export type RequestCreateSchema = components["schemas"]["CreateSchemaRequest"];
 
-// Issuer controller data types
+// Data types
 export type SchemaApi = components["schemas"]["SchemaAPI"];
 
 export type ApiCreateInvitation =
@@ -30,3 +30,16 @@ export type ApiCreateInvitation =
 export type CredDef = components["schemas"]["CredDef"];
 
 export type CredEx = components["schemas"]["CredEx"];
+
+export type Tag = components["schemas"]["Tag"];
+
+export type PartnerAPI = components["schemas"]["PartnerAPI"];
+
+export type UpdatePartnerRequest =
+  components["schemas"]["UpdatePartnerRequest"];
+
+export type ChatMessage = components["schemas"]["ChatMessage"];
+
+export type SendMessageRequest = components["schemas"]["SendMessageRequest"];
+
+export type AriesProofExchange = components["schemas"]["AriesProofExchange"];

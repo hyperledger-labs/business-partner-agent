@@ -79,7 +79,7 @@
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import partnerService from "@/services/partner-service";
-import { Tag, UpdatePartnerRequest } from "@/services/partner-types";
+import { Tag, UpdatePartnerRequest } from "@/services";
 
 export default {
   name: "UpdatePartner",
