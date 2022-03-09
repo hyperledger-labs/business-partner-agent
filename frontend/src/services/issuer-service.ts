@@ -48,7 +48,7 @@ export default {
   },
 
   /**
-   * Issue OOB credential step 1 - prepares credential offer and returns URL for use within the barcode
+   * Issue OOB credential - prepares credential offer and returns URL for use within the barcode
    * @param data
    */
   issueOobCredentialOfferCreate(
@@ -57,16 +57,6 @@ export default {
     return appAxios().post(
       `${ApiRoutes.ISSUER}/issue-credential/oob-attachment`,
       data
-    );
-  },
-
-  /**
-   * Issue OOB credential step 2 - redirect with encoded offer
-   * @param id OOB invitation id / UUID
-   */
-  issueOobCredentialOfferRedirect(id: string): Promise<AxiosResponse<void>> {
-    return appAxios().get(
-      `${ApiRoutes.ISSUER}/issue-credential/oob-attachment/${id}`
     );
   },
 

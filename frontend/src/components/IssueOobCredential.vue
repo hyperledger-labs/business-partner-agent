@@ -226,15 +226,26 @@
       </v-card-text>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-bpa-button color="secondary" @click="cancel()">{{
-            $t("button.cancel")
-          }}</v-bpa-button>
           <v-bpa-button
+            v-show="currentStep === 1"
+            color="secondary"
+            @click="cancel()"
+            >{{ $t("button.cancel") }}</v-bpa-button
+          >
+          <v-bpa-button
+            v-show="currentStep === 1"
             :loading="this.isBusy"
             color="primary"
             @click="submit()"
             :disabled="createDisabled"
             >{{ $t("button.create") }}</v-bpa-button
+          >
+          <v-bpa-button
+            v-show="currentStep === 2"
+            :loading="this.isBusy"
+            color="primary"
+            @click="$emit('success')"
+            >{{ $t("button.close") }}</v-bpa-button
           >
         </v-layout>
       </v-card-actions>
@@ -278,11 +289,8 @@ export default {
       // Disable trust ping for invitation to
       // mobile wallets by default.
       trustPing: false,
-      // Allows using Out of Band format for the invitation
-      useOutOfBand: false,
       invitationUrl: "",
       createDisabled: true,
-      useV2Credential: undefined,
       expertLoad: {
         show: false,
         data: "",
@@ -393,7 +401,6 @@ export default {
           this.credDef = {};
           this.createDisabled = true;
           this.currentStep = 2;
-          // this.$emit("success");
         }
       } catch (error) {
         this.isBusy = false;
