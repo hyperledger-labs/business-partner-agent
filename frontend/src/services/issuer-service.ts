@@ -62,7 +62,7 @@ export default {
 
   /**
    * Issue OOB credential step 2 - redirect with encoded offer
-   * @param id UUID
+   * @param id OOB invitation id / UUID
    */
   issueOobCredentialOfferRedirect(id: string): Promise<AxiosResponse<void>> {
     return appAxios().get(

@@ -423,7 +423,7 @@
           "button": "Issue Credential",
           "partnerLabel": "Select a connection to issue credential to",
           "credDefLabel": "Select a template to issue credential with",
-          "connectionlessLabel": "Connectionless"
+          "invitationWithAttachmentLabel": "Invitation with Credential"
         },
         "table": {
           "title": "Credentials Your Organization Issued"
@@ -608,6 +608,16 @@
           "readFile": "Error reading file"
         }
       }
+    },
+    "issueOobCredential": {
+      "title": "Create Invitation with Credential Attachment",
+      "credDefLabel": "Credential Definition",
+      "successMessage": "Invitation with credential issued",
+      "attributesTitle": "Credential Details",
+      "options": {
+        "title": "Options"
+      },
+      "urlLabel": "URL to invitation with attachment (credential)"
     },
     "partnerList": {
       "headers": {

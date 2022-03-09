@@ -423,7 +423,7 @@
           "button": "Berechtigungsnachweis ausstellen",
           "partnerLabel": "Partner auswählen",
           "credDefLabel": "Berechtigungsnachweis-Definition auswählen",
-          "connectionlessLabel": "Connectionless"
+          "invitationWithAttachmentLabel": "Einladung mit Berechtigungsnachweis"
         },
         "table": {
           "title": "Ausgestellte Berechtigungsnachweise"
@@ -608,6 +608,16 @@
           "readFile": "Fehler beim Lesen der Datei"
         }
       }
+    },
+    "issueOobCredential": {
+      "title": "Erstelle Einladung mit Berechtigungsnachweis als Anhang",
+      "credDefLabel": "Berechtigungsnachweis-Definition",
+      "successMessage": "Einladung mit Berechtigungsnachweis ausgestellt",
+      "attributesTitle": "Berechtigungsnachweis Details",
+      "options": {
+        "title": "Optionen"
+      },
+      "urlLabel": "URL für Einladung mit Anhang (Berechtigungsnachweis)"
     },
     "partnerList": {
       "headers": {

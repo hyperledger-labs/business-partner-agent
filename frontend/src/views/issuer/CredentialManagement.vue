@@ -78,7 +78,13 @@
                 }}</v-bpa-button
               >
             </template>
-            <h1 v-if="issueConnectionless">TODO: Connectionless Dialog</h1>
+            <IssueOobCredential
+              v-if="issueOutOfBoundCredential"
+              :credDefId="credDefId"
+              :open="issueCredentialDialog"
+              @success="credentialIssued"
+              @cancelled="issueCredentialDialog = false"
+            ></IssueOobCredential>
             <IssueCredential
               v-else
               :credDefId="credDefId"
@@ -118,12 +124,14 @@ import CredExList from "@/components/CredExList.vue";
 import IssueCredential from "@/components/IssueCredential.vue";
 import * as partnerUtils from "@/utils/partnerUtils";
 import VBpaButton from "@/components/BpaButton";
+import IssueOobCredential from "@/components/IssueOobCredential.vue";
 
 export default {
   name: "CredentialManagement",
   components: {
     VBpaButton,
     IssueCredential,
+    IssueOobCredential,
     CredExList,
   },
   created() {
@@ -140,7 +148,7 @@ export default {
       credDefId: "",
       issueCredentialDisabled: true,
       issueCredentialDialog: false,
-      issueConnectionless: false,
+      issueOutOfBoundCredential: false,
       addSchemaDialog: false,
       createSchemaDialog: false,
     };
@@ -151,9 +159,9 @@ export default {
         return [
           {
             text: this.$t(
-              "view.issueCredentials.cards.action.connectionlessLabel"
+              "view.issueCredentials.cards.action.invitationWithAttachmentLabel"
             ),
-            id: "connectionless",
+            id: "invitationWithAttachment",
           },
           { divider: true },
           ...this.$store.getters.getPartnerSelectList,
@@ -168,10 +176,10 @@ export default {
   },
   watch: {
     partner(value) {
-      if (value.id === "connectionless") {
-        this.issueConnectionless = true;
+      if (value.id === "invitationWithAttachment") {
+        this.issueOutOfBoundCredential = true;
       } else {
-        this.issueConnectionless = false;
+        this.issueOutOfBoundCredential = false;
         this.issueCredentialDisabled =
           !value || !value.id || !this.credDef || !this.credDef.id;
       }

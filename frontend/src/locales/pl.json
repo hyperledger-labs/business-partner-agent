@@ -422,7 +422,7 @@
           "button": "Wystawienie uprawnień",
           "partnerLabel": "Wybierz partnera",
           "credDefLabel": "Wybierz definicję uprawnień ",
-          "connectionlessLabel": "Connectionless"
+          "invitationWithAttachmentLabel": "Invitation with Credential"
         },
         "table": {
           "title": "Wydane uprawnienia"
@@ -607,6 +607,16 @@
           "readFile": "Error reading file"
         }
       }
+    },
+    "issueOobCredential": {
+      "title": "Create Invitation with Credential Attachment",
+      "credDefLabel": "Credential Definition",
+      "successMessage": "Invitation with credential issued",
+      "attributesTitle": "Credential Details",
+      "options": {
+        "title": "Options"
+      },
+      "urlLabel": "URL to invitation with attachment (credential)"
     },
     "partnerList": {
       "headers": {
