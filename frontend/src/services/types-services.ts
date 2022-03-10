@@ -33,6 +33,10 @@ export type CredEx = components["schemas"]["CredEx"];
 
 export type Tag = components["schemas"]["Tag"];
 
+export type TagApi = components["schemas"]["TagAPI"];
+
+export type AddTagRequest = components["schemas"]["AddTagRequest"];
+
 export type PartnerAPI = components["schemas"]["PartnerAPI"];
 
 export type UpdatePartnerRequest =
@@ -43,3 +47,5 @@ export type ChatMessage = components["schemas"]["ChatMessage"];
 export type SendMessageRequest = components["schemas"]["SendMessageRequest"];
 
 export type AriesProofExchange = components["schemas"]["AriesProofExchange"];
+
+export type AddSchemaRequest = components["schemas"]["AddSchemaRequest"];
