@@ -20,7 +20,7 @@ export default {
   //
   // Admin API
   //
-  listSchemas() /* TODO : Promise<AxiosResponse<SchemaApi[]>>*/ {
+  listSchemas(): any /*Promise<AxiosResponse<SchemaApi[]>> TODO: actions.ts needs to be refactored*/ {
     return appAxios().get(`${ApiRoutes.ADMIN}/schema`);
   },
 

@@ -8,28 +8,44 @@
 
 import { appAxios } from "@/services/interceptors";
 import { ApiRoutes } from "@/constants";
+import { AxiosResponse } from "axios";
+import {
+  PresentationRequestVersion,
+  ProofTemplate,
+} from "@/services/types-services";
 
 export default {
-  getProofTemplates() {
+  getProofTemplates(): Promise<AxiosResponse<ProofTemplate[]>> {
     return appAxios().get(`${ApiRoutes.PROOF_TEMPLATES}`);
   },
-  getProofTemplate(id: string) {
+
+  getProofTemplate(id: string): Promise<AxiosResponse<ProofTemplate>> {
     return appAxios().get(`${ApiRoutes.PROOF_TEMPLATES}/${id}`);
   },
-  getKnownConditionOperators() {
+
+  getKnownConditionOperators(): Promise<AxiosResponse<string[]>> {
     return appAxios().get(
       `${ApiRoutes.PROOF_TEMPLATES}/known-condition-operators`
     );
   },
-  createProofTemplate(data) {
+
+  createProofTemplate(
+    data: ProofTemplate
+  ): Promise<AxiosResponse<ProofTemplate>> {
     return appAxios().post(`${ApiRoutes.PROOF_TEMPLATES}`, data);
   },
-  deleteProofTemplate(id: string) {
+
+  deleteProofTemplate(id: string): Promise<AxiosResponse<void>> {
     return appAxios().delete(`${ApiRoutes.PROOF_TEMPLATES}/${id}`);
   },
-  sendProofTemplate(id: string, partnerId: string, data) {
+
+  sendProofTemplate(
+    templateId: string,
+    partnerId: string,
+    data: PresentationRequestVersion
+  ): Promise<AxiosResponse<void>> {
     return appAxios().put(
-      `${ApiRoutes.PARTNERS}/${partnerId}/proof-request/${id}`,
+      `${ApiRoutes.PARTNERS}/${partnerId}/proof-request/${templateId}`,
       data
     );
   },

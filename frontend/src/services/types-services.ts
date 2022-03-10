@@ -58,3 +58,8 @@ export type Tag = components["schemas"]["Tag"];
 export type ChatMessage = components["schemas"]["ChatMessage"];
 
 export type AriesProofExchange = components["schemas"]["AriesProofExchange"];
+
+export type ProofTemplate = components["schemas"]["ProofTemplate"];
+
+export type PresentationRequestVersion =
+  components["schemas"]["PresentationRequestVersion"];

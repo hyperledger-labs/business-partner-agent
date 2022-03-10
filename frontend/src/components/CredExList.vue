@@ -380,7 +380,7 @@ export default {
     documentStateIsRevokedAndRoleIsIssuer() {
       return (
         this.document.credentialExchangeState ===
-          CredentialExchangeStates.REVOKED &&
+          CredentialExchangeStates.CREDENTIAL_REVOKED &&
         this.document.credentialExchangeRole === CredentialExchangeRoles.ISSUER
       );
     },

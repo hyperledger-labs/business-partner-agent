@@ -14,6 +14,7 @@ import proofTemplateService from "@/services/proof-template-service";
 import partnerService from "@/services/partner-service";
 import issuerService from "@/services/issuer-service";
 import * as textUtils from "@/utils/textUtils";
+import { ProofTemplate } from "@/services";
 
 export const loadSchemas = async ({ commit }) => {
   adminService
@@ -163,7 +164,7 @@ export const loadProofTemplates = async ({ commit }) => {
   proofTemplateService
     .getProofTemplates()
     .then((result) => {
-      const proofTemplates = result.data;
+      const proofTemplates: ProofTemplate[] = result.data;
 
       commit({
         type: "setProofTemplates",
