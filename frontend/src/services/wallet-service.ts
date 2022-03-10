@@ -8,6 +8,7 @@
 import { AxiosResponse } from "axios";
 import { appAxios } from "@/services/interceptors";
 import { ApiRoutes } from "@/constants";
+import { DeclineExchangeRequest } from "@/services/types-services";
 
 export default {
   acceptCredentialOffer(id: string): Promise<AxiosResponse<void>> {
@@ -18,14 +19,13 @@ export default {
     id: string,
     reasonMessage: string
   ): Promise<AxiosResponse<void>> {
-    const message =
-      reasonMessage === undefined || "" ? undefined : reasonMessage;
+    const body: DeclineExchangeRequest = {
+      message: reasonMessage === undefined || "" ? undefined : reasonMessage,
+    };
 
     return appAxios().put(
       `${ApiRoutes.WALLET}/credential/${id}/decline-offer`,
-      {
-        message,
-      }
+      body
     );
   },
 };
