@@ -259,7 +259,7 @@ import { EventBus } from "@/main";
 import {
   ApiCreateInvitation,
   issuerService,
-  RequestIssueOobCredential,
+  IssueOobCredentialRequest,
 } from "@/services";
 import VBpaButton from "@/components/BpaButton";
 import * as textUtils from "@/utils/textUtils";
@@ -366,7 +366,7 @@ export default {
       // fill in whatever populated fields we have
       Object.assign(document, this.credentialFields);
 
-      const data: RequestIssueOobCredential = {
+      const data: IssueOobCredentialRequest = {
         alias: this.alias,
         tag: this.selectedTags,
         trustPing: this.trustPing,

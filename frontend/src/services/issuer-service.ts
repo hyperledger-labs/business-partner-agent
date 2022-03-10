@@ -9,12 +9,12 @@
 import { appAxios } from "@/services/interceptors";
 import { ApiRoutes, CredentialExchangeRoles } from "@/constants";
 import {
-  RequestCreateCredDef,
+  CreateCredDefRequest,
   SchemaApi,
-  RequestCreateSchema,
-  RequestCredentialOffer,
-  RequestIssueCredential,
-  RequestIssueOobCredential,
+  CreateSchemaRequest,
+  CredentialOfferRequest,
+  IssueCredentialRequest,
+  IssueOobCredentialRequest,
   CredDef,
   ApiCreateInvitation,
   CredEx,
@@ -25,11 +25,11 @@ export default {
   //
   // Issuer API
   //
-  createSchema(data: RequestCreateSchema): Promise<AxiosResponse<SchemaApi>> {
+  createSchema(data: CreateSchemaRequest): Promise<AxiosResponse<SchemaApi>> {
     return appAxios().post(`${ApiRoutes.ISSUER}/schema`, data);
   },
 
-  createCredDef(data: RequestCreateCredDef): Promise<AxiosResponse<CredDef>> {
+  createCredDef(data: CreateCredDefRequest): Promise<AxiosResponse<CredDef>> {
     return appAxios().post(`${ApiRoutes.ISSUER}/creddef`, data);
   },
 
@@ -42,7 +42,7 @@ export default {
   },
 
   issueCredentialSend(
-    data: RequestIssueCredential
+    data: IssueCredentialRequest
   ): Promise<AxiosResponse<string>> {
     return appAxios().post(`${ApiRoutes.ISSUER}/issue-credential/send`, data);
   },
@@ -52,7 +52,7 @@ export default {
    * @param data
    */
   issueOobCredentialOfferCreate(
-    data: RequestIssueOobCredential
+    data: IssueOobCredentialRequest
   ): Promise<AxiosResponse<ApiCreateInvitation>> {
     return appAxios().post(
       `${ApiRoutes.ISSUER}/issue-credential/oob-attachment`,
@@ -99,7 +99,7 @@ export default {
 
   sendCredentialOffer(
     id: string,
-    counterOfferData: RequestCredentialOffer
+    counterOfferData: CredentialOfferRequest
   ): Promise<AxiosResponse<CredEx>> {
     return appAxios().put(
       `${ApiRoutes.ISSUER}/exchanges/${id}/send-offer`,

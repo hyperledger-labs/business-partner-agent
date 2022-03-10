@@ -168,7 +168,7 @@ import VBpaButton from "@/components/BpaButton";
 import * as textUtils from "@/utils/textUtils";
 import * as CSV from "csv-string";
 import { ExchangeVersion } from "@/constants";
-import { RequestIssueCredential } from "@/services/types-services";
+import { IssueCredentialRequest } from "@/services/types-services";
 
 export default {
   name: "IssueCredential",
@@ -287,7 +287,7 @@ export default {
       //fill in whatever populated fields we have...
       Object.assign(document, this.credentialFields);
 
-      const data: RequestIssueCredential = {
+      const data: IssueCredentialRequest = {
         credDefId: this.credDef.id,
         partnerId: this.partner.id,
         document: document,

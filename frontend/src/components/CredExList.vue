@@ -260,7 +260,7 @@
 </style>
 <script lang="ts">
 import {
-  RequestCredentialOffer,
+  CredentialOfferRequest,
   issuerService,
   walletService,
 } from "@/services";
@@ -523,7 +523,7 @@ export default {
         acceptProposal = acceptAll;
       }
 
-      const counterOffer: RequestCredentialOffer = {
+      const counterOffer: CredentialOfferRequest = {
         acceptProposal,
         credDefId: this.credDef
           ? this.credDef.credentialDefinitionId

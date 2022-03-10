@@ -7,22 +7,36 @@
  */
 import { components } from "backend-types";
 
-export type RequestIssueCredential =
+// Request types
+export type IssueCredentialRequest =
   components["schemas"]["IssueCredentialRequest"];
 
-export type RequestIssueOobCredential =
+export type IssueOobCredentialRequest =
   components["schemas"]["IssueOOBCredentialRequest"];
 
-export type RequestCredentialOffer =
+export type CredentialOfferRequest =
   components["schemas"]["CredentialOfferRequest"];
 
-export type RequestCreateCredDef =
+export type CreateCredDefRequest =
   components["schemas"]["CreateCredDefRequest"];
 
-export type RequestCreateSchema = components["schemas"]["CreateSchemaRequest"];
+export type CreateSchemaRequest = components["schemas"]["CreateSchemaRequest"];
 
-// Data types
+export type AddTagRequest = components["schemas"]["AddTagRequest"];
+
+export type SendMessageRequest = components["schemas"]["SendMessageRequest"];
+
+export type AddSchemaRequest = components["schemas"]["AddSchemaRequest"];
+
+export type UpdatePartnerRequest =
+  components["schemas"]["UpdatePartnerRequest"];
+
+// Data and response types
 export type SchemaApi = components["schemas"]["SchemaAPI"];
+
+export type TagApi = components["schemas"]["TagAPI"];
+
+export type PartnerAPI = components["schemas"]["PartnerAPI"];
 
 export type ApiCreateInvitation =
   components["schemas"]["APICreateInvitationResponse"];
@@ -33,19 +47,6 @@ export type CredEx = components["schemas"]["CredEx"];
 
 export type Tag = components["schemas"]["Tag"];
 
-export type TagApi = components["schemas"]["TagAPI"];
-
-export type AddTagRequest = components["schemas"]["AddTagRequest"];
-
-export type PartnerAPI = components["schemas"]["PartnerAPI"];
-
-export type UpdatePartnerRequest =
-  components["schemas"]["UpdatePartnerRequest"];
-
 export type ChatMessage = components["schemas"]["ChatMessage"];
 
-export type SendMessageRequest = components["schemas"]["SendMessageRequest"];
-
 export type AriesProofExchange = components["schemas"]["AriesProofExchange"];
-
-export type AddSchemaRequest = components["schemas"]["AddSchemaRequest"];
