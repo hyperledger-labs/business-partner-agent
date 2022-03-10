@@ -27,7 +27,6 @@
       :show-select="selectable"
       single-select
       sort-by="createdAt"
-      sort-desc="false"
       @click:row="open"
     >
       <template v-slot:[`item.label`]="{ item }">
@@ -129,9 +128,6 @@ export default {
   },
   components: {
     NewMessageIcon,
-  },
-  created() {
-    //this.fetch(this.type);
   },
   data: () => {
     return {

@@ -9,12 +9,13 @@
 <template>
   <v-container>
     <v-data-table
-      :loading="isLoading"
-      :hide-default-footer="items.length < 10"
+      :loading="isLoadingCredentials"
+      :hide-default-footer="hideFooter"
       :headers="headers"
-      :items="items"
-      :sort-by="['updatedAt']"
-      :sort-desc="[true]"
+      :items="exchanges"
+      :options.sync="options"
+      :server-items-length="totalNumberOfElements"
+      sort-by="updatedAt"
       single-select
       @click:row="openItem"
     >
@@ -273,7 +274,6 @@ import {
 
 export default {
   props: {
-    items: Array,
     isActiveFn: {
       type: Function,
       default: (item) =>
@@ -281,7 +281,6 @@ export default {
         item.state === CredentialExchangeStates.CREDENTIAL_ACKED ||
         item.state === CredentialExchangeStates.DONE,
     },
-    isLoading: Boolean,
     headerRole: {
       type: Boolean,
       default: false,
@@ -410,6 +409,11 @@ export default {
       credentialContentChanged: false,
       declineReasonText: "",
       exchangeRoles: CredentialExchangeRoles,
+      options: {},
+      isLoadingCredentials: false,
+      totalNumberOfElements: 0,
+      hideFooter: false,
+      exchanges: [],
       document: {},
       partner: {},
       credDef: {},
@@ -421,8 +425,42 @@ export default {
       console.log("Credential Exchange Item refresh");
       console.log(value);
     },
+    options: {
+      handler() {
+        this.loadCredentials();
+      },
+    },
   },
   methods: {
+    queryFilter() {
+      const { page, itemsPerPage, sortBy, sortDesc } = this.options;
+      const params = new URLSearchParams();
+      const currentPage = Number(page) - 1;
+      params.append("size", itemsPerPage);
+      params.append("page", currentPage.toString());
+      params.append("q", sortBy);
+      params.append("desc", sortDesc);
+      return params;
+    },
+    async loadCredentials() {
+      this.isLoadingCredentials = true;
+      this.exchanges = [];
+      try {
+        const iresp = await issuerService.listCredentialExchangesAsIssuer(
+          undefined,
+          this.queryFilter()
+        );
+        if (iresp.status === 200) {
+          const { itemsPerPage } = this.options;
+          this.exchanges = iresp.data.content;
+          this.totalNumberOfElements = iresp.data.totalSize;
+          this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
+        }
+      } catch (error) {
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
+      }
+      this.isLoadingCredentials = false;
+    },
     openItem(item) {
       this.dialog = true;
       this.partner = this.partnerList.find((p) => p.value === item.partner.id);
@@ -530,6 +568,7 @@ export default {
 
       issuerService
         .sendCredentialOffer(this.document.credentialExchangeId, counterOffer)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .then((response) => {
           EventBus.$emit("success");
           this.closeDialog();

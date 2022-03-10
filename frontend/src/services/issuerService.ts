@@ -52,9 +52,13 @@ export default {
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges/${id}`);
   },
 
-  listCredentialExchangesAsIssuer(id?) {
+  listCredentialExchangesAsIssuer(id?: string, params = new URLSearchParams()) {
+    params.append("role", CredentialExchangeRoles.ISSUER);
+    if (id) {
+      params.append("partnerId", id);
+    }
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
-      params: { role: CredentialExchangeRoles.ISSUER, partnerId: id },
+      params: params,
     });
   },
 

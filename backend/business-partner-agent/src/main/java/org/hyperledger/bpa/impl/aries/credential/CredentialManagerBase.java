@@ -18,6 +18,8 @@
 package org.hyperledger.bpa.impl.aries.credential;
 
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -34,6 +36,7 @@ import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.issuer.CredEx;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
+import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.repository.IssuerCredExRepository;
 
 import java.io.IOException;
@@ -90,6 +93,14 @@ public abstract class CredentialManagerBase {
             throw e;
         }
         return credEx;
+    }
+
+    public Page<CredEx> foo(@Nullable CredentialExchangeRole role, @Nullable UUID partnerId, @NonNull Pageable pageable) {
+        List<CredentialExchangeRole> roles = role == null ? List.of(CredentialExchangeRole.values()) : List.of(role);
+        Page<BPACredentialExchange> exchanges = partnerId == null
+                ? issuerCredExRepo.findByRoleIn(roles, pageable)
+                : issuerCredExRepo.findByRoleInAndPartnerEquals(roles, Partner.builder().id(partnerId).build(), pageable);
+        return exchanges.map(ex -> CredEx.from(ex, conv.toAPIObject(ex.getPartner())));
     }
 
     public List<CredEx> listCredentialExchanges(@Nullable CredentialExchangeRole role, @Nullable UUID partnerId) {
