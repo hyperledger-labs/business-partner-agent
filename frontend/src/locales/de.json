@@ -211,7 +211,7 @@
       "eventErrorSchemaExists": "Schema existiert bereits"
     },
     "schemaSettings": {
-      "title": "Schema Einstellungen",
+      "title": "Schemata",
       "buttonCreateSchema": "Schema erstellen",
       "buttonImportSchema": "Schema importieren"
     },
