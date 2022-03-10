@@ -31,6 +31,14 @@ export type AddSchemaRequest = components["schemas"]["AddSchemaRequest"];
 export type UpdatePartnerRequest =
   components["schemas"]["UpdatePartnerRequest"];
 
+export type DeclineExchangeRequest =
+  components["schemas"]["DeclineExchangeRequest"];
+
+export type ApproveProofRequest = components["schemas"]["ApproveProofRequest"];
+
+export type PresentationRequestCredentials =
+  components["schemas"]["PresentationRequestCredentials"];
+
 // Data and response types
 export type SchemaApi = components["schemas"]["SchemaAPI"];
 

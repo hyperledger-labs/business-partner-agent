@@ -8,36 +8,57 @@
 
 import { appAxios } from "@/services/interceptors";
 import { ApiRoutes } from "@/constants";
+import { AxiosResponse } from "axios";
+import {
+  ApproveProofRequest,
+  AriesProofExchange,
+  DeclineExchangeRequest,
+  PresentationRequestCredentials,
+} from "@/services/types-services";
 
 export default {
   //
   // Presentation/Proof Exchange API
   //
 
-  declineProofRequest(id: string, reasonMessage: string) {
+  declineProofRequest(
+    id: string,
+    reasonMessage: string
+  ): Promise<AxiosResponse<void>> {
     const message =
       reasonMessage === undefined || "" ? undefined : reasonMessage;
 
-    return appAxios().post(`${ApiRoutes.PROOF_EXCHANGES}/${id}/decline`, {
+    const body: DeclineExchangeRequest = {
       message,
-    });
+    };
+
+    return appAxios().post(`${ApiRoutes.PROOF_EXCHANGES}/${id}/decline`, body);
   },
-  approveProofRequest(id: string, referents: string[]) {
-    return appAxios().post(`${ApiRoutes.PROOF_EXCHANGES}/${id}/prove`, {
-      payload: {
-        referents: referents,
-      },
-    });
+
+  approveProofRequest(
+    id: string,
+    referents: string[]
+  ): Promise<AxiosResponse<void>> {
+    const body: ApproveProofRequest = {
+      referents: referents,
+    };
+
+    return appAxios().post(`${ApiRoutes.PROOF_EXCHANGES}/${id}/prove`, body);
   },
-  getMatchingCredentials(id: string) {
+
+  getMatchingCredentials(
+    id: string
+  ): Promise<AxiosResponse<PresentationRequestCredentials[]>> {
     return appAxios().get(
       `${ApiRoutes.PROOF_EXCHANGES}/${id}/matching-credentials`
     );
   },
-  getProofExRecord(id: string) {
+
+  getProofExRecord(id: string): Promise<AxiosResponse<AriesProofExchange>> {
     return appAxios().get(`${ApiRoutes.PROOF_EXCHANGES}/${id}`);
   },
-  deleteProofExRecord(id: string) {
+
+  deleteProofExRecord(id: string): Promise<AxiosResponse<void>> {
     return appAxios().delete(`${ApiRoutes.PROOF_EXCHANGES}/${id}`);
   },
 };

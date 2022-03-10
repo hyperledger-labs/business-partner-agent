@@ -33,7 +33,10 @@ export default {
     return appAxios().put(`${ApiRoutes.PARTNERS}/${id}`, data);
   },
 
-  sendMessage(id: string, content: SendMessageRequest): Promise<void> {
+  sendMessage(
+    id: string,
+    content: SendMessageRequest
+  ): Promise<AxiosResponse<void>> {
     return appAxios().post(`${ApiRoutes.PARTNERS}/${id}/messages`, {
       content: content,
     });
