@@ -93,7 +93,7 @@ import PartnerList from "@/components/PartnerList.vue";
 import VBpaButton from "@/components/BpaButton";
 import { getPartnerState } from "@/utils/partnerUtils";
 import { PartnerStates, ExchangeVersion, CredentialTypes } from "@/constants";
-import credentialService from "@/services/credentialService";
+import credentialService from "@/services/credential-service";
 
 export default {
   name: "RequestVerification",

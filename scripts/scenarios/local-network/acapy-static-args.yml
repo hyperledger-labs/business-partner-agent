@@ -1,23 +1,51 @@
+# connection behaviour
+public-invites: true
 auto-accept-invites: false
 auto-accept-requests: false
+monitor-ping: true # enables the connection status in the ui
+auto-ping-connection: true # needed when using the connection protocol, otherwise the connection might not become active
+
+# auto message
 auto-respond-messages: false
+
+# auto credential exchange - issuer
 auto-respond-credential-proposal: false
-auto-respond-credential-offer: false
 auto-respond-credential-request: false
-auto-respond-presentation-proposal: true
+
+# auto credential exchange - holder
+auto-respond-credential-offer: false
+auto-store-credential: true # needed if there is no ui
+
+# auto presentation exchange
+auto-respond-presentation-proposal: true # needed if there is no ui
+auto-verify-presentation: true # needed if there is no ui
 auto-respond-presentation-request: false
 
-auto-store-credential: true
-auto-verify-presentation: true
-
-auto-ping-connection: true
-
-auto-provision: true
-
-monitor-ping: true
+# credential and presentation exchanges
 preserve-exchange-records: false
-public-invites: true
+
+# auto discover features protocol
+auto-disclose-features: true
+
+# wallet
+auto-provision: true
+wallet-type: 'indy'
+
+# revocation notifications (anoncreds only)
+notify-revocation: true
+monitor-revocation-notification: true
+
+# interoperability with other w3c wallets
+emit-new-didcomm-prefix: true
+emit-new-didcomm-mime-type: true # if true not backwards compatible with aca-py < 0.7.3
+
+# general aca-py config
+enable-undelivered-queue: true
+exch-use-unencrypted-tags: true
 plugin: 'aries_cloudagent.messaging.jsonld'
 outbound-transport: http
-wallet-type: 'indy'
 log-level: info
+
+# multi ledger support
+# currently, there is an issue with the tails file failing to upload if this is enabled
+# genesis-transactions-list: './genesis-transaction-list.yml'

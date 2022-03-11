@@ -37,7 +37,7 @@ public interface DidDocWebRepository extends CrudRepository<DidDocWeb, UUID> {
 
     /**
      * Like with the highlander there can only be one.
-     * 
+     *
      * @return {@link DidDocWeb}
      */
     default Optional<DidDocWeb> findDidDocSingle() {

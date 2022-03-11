@@ -69,7 +69,7 @@ public abstract class CredentialManagerBase {
      * If there is a problem during the credential exchange and aca-py is started
      * without the option to preserve exchange records, the record is deleted
      * immediately. Hence, we need to check if the record exists in both systems.
-     * 
+     *
      * @param id credential exchange id
      * @return {@link BPACredentialExchange}
      */

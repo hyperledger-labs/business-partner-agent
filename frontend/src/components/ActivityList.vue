@@ -83,7 +83,7 @@
 import { EventBus } from "@/main";
 import { ActivityRoles, ActivityStates, ActivityTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
-import activitiesService from "@/services/activitiesService";
+import activitiesService from "@/services/activities-service";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
 
 export default {

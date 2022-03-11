@@ -14,6 +14,7 @@
     "license-file-headers-add": "license-check-and-add add -f license-header/config.json -r 2022",
     "license-file-headers-check": "license-check-and-add check -f license-header/config.json",
     "license-file-headers-update-year": "license-check-and-add remove -f license-header/config.json && npm run license-file-headers-add",
+    "update-backend-typings": "./update-backend-typings.sh",
     "postinstall": "npm run license && npm run prettify",
     "prepare": "cd ../ && husky install ./frontend/.husky",
     "prettify": "prettier --write '**/*.{css,html,js,json,mjs,scss,ts,tsx,yml,md,vue}'"
@@ -68,6 +69,7 @@
     "license-check-and-add": "4.0.3",
     "license-checker": "25.0.1",
     "lint-staged": "12.1.2",
+    "openapi-typescript": "5.2.0",
     "oss-attribution-generator": "1.7.1",
     "prettier": "2.5.1",
     "sass": "1.32.0",

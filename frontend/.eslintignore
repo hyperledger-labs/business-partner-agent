@@ -10,3 +10,4 @@
 **/*.sh
 node_modules
 dist
+backend-types.ts

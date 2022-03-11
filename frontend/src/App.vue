@@ -86,12 +86,16 @@
             }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+
+        <v-divider></v-divider>
+
         <v-list-item link :to="{ name: 'PublicProfile' }">
           <v-list-item-action>
             <v-icon>$vuetify.icons.profile</v-icon>
           </v-list-item-action>
           <v-list-item-title>{{ $t("view.profile.title") }}</v-list-item-title>
         </v-list-item>
+
         <v-list-item link :to="{ name: 'Wallet' }">
           <v-list-item-action>
             <v-icon>$vuetify.icons.wallet</v-icon>
@@ -132,6 +136,20 @@
             >
           </v-list-item-content>
         </v-list-item>
+
+        <v-list-item link :to="{ name: 'SchemaSettings' }">
+          <v-list-item-action>
+            <v-icon>$vuetify.icons.schemas</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>
+              {{ $t("view.schemaSettings.title") }}</v-list-item-title
+            >
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-divider></v-divider>
+
         <v-list-item
           v-if="ux.navigation.settings.location === 'top'"
           link

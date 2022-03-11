@@ -118,7 +118,7 @@ public class IssuerManager extends CredentialManagerBase {
 
     /**
      * Re-issue a revoked credential, only works for indy credentials
-     * 
+     *
      * @param exchangeId bpa credential exchange id
      */
     public void reIssueCredential(@NonNull UUID exchangeId) {
@@ -134,7 +134,7 @@ public class IssuerManager extends CredentialManagerBase {
      * Revocation only works for indy credentials. Json-ld credentials are currently
      * (February '22) not revocable, there is an ongoing discussion to use:
      * https://w3c-ccg.github.io/vc-status-rl-2020/ for this.
-     * 
+     *
      * @param id bpa credential exchange id.
      * @return {@link CredEx}
      */
@@ -191,7 +191,7 @@ public class IssuerManager extends CredentialManagerBase {
 
     /**
      * Issuer declines credential proposal received from holder
-     * 
+     *
      * @param id      {@link UUID} bpa credential exchange id
      * @param message optional reason
      */

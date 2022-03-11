@@ -141,7 +141,7 @@
 }
 </style>
 <script lang="ts">
-import { proofExService } from "@/services";
+import { PresentationRequestCredentials, proofExService } from "@/services";
 import { EventBus } from "@/main";
 import { PresentationExchangeStates, RequestTypes } from "@/constants";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
@@ -393,7 +393,7 @@ export default {
     getMatchingCredentials() {
       this.isWaitingForMatchingCreds = true;
       proofExService.getMatchingCredentials(this.record.id).then((result) => {
-        const matchingCreds = result.data;
+        const matchingCreds: PresentationRequestCredentials[] = result.data;
         // Match to request
         for (const cred of matchingCreds) {
           for (const c of cred.presentationReferents) {

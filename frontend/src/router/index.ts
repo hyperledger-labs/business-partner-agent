@@ -24,7 +24,7 @@ import AddPartner from "@/views/partner/AddPartner.vue";
 import AddPartnerbyURL from "@/views/partner/AddPartnerbyURL.vue";
 import Settings from "@/views/settings/Settings.vue";
 import TagManagement from "@/views/settings/TagManagement.vue";
-import SchemaSettings from "@/views/settings/SchemaSettings.vue";
+import SchemaSettings from "@/views/SchemaSettings.vue";
 import Schema from "@/views/Schema.vue";
 import AddSchema from "@/views/AddSchema.vue";
 import About from "@/views/About.vue";
@@ -153,7 +153,7 @@ const routes = [
     component: TagManagement,
   },
   {
-    path: "/app/settings/schema",
+    path: "/app/schemas",
     name: "SchemaSettings",
     component: SchemaSettings,
   },

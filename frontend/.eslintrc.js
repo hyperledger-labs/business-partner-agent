@@ -34,6 +34,7 @@ module.exports = {
     "unicorn/filename-case": "off",
     "unicorn/prevent-abbreviations": "off",
     "@typescript-eslint/ban-ts-comment": "warn",
+    "@typescript-eslint/no-explicit-any": "off",
   },
   overrides: [
     {

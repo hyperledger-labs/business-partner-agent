@@ -50,7 +50,7 @@ public class ProofTemplateController {
 
     /**
      * List configured templates
-     * 
+     *
      * @return list of {@link ProofTemplate}
      */
     @Get
@@ -63,7 +63,7 @@ public class ProofTemplateController {
 
     /**
      * Get template by id
-     * 
+     *
      * @param id proof template id
      * @return {@link ProofTemplate}
      */
@@ -79,7 +79,7 @@ public class ProofTemplateController {
 
     /**
      * Add a new proof template
-     * 
+     *
      * @param template {@link ProofTemplate}
      * @return {@link ProofTemplate}
      */
@@ -109,7 +109,7 @@ public class ProofTemplateController {
 
     /**
      * Delete proof template by id
-     * 
+     *
      * @param id proof template id
      * @return Http Status
      */

@@ -110,7 +110,7 @@ public class HolderManager extends CredentialManagerBase {
 
     /**
      * Request credential from issuer (partner)
-     * 
+     *
      * @param partnerId {@link UUID}
      * @param myDocId   {@link UUID}
      * @param version   {@link ExchangeVersion}
@@ -151,7 +151,7 @@ public class HolderManager extends CredentialManagerBase {
 
     /**
      * Holder accepts credential offer received from issuer
-     * 
+     *
      * @param id {@link UUID} bpa credential exchange id
      */
     public void sendCredentialRequest(@NonNull UUID id) {
@@ -174,7 +174,7 @@ public class HolderManager extends CredentialManagerBase {
 
     /**
      * Holder declines credential offer received from issuer
-     * 
+     *
      * @param id      {@link UUID} bpa credential exchange id
      * @param message optional reason
      */
@@ -190,7 +190,7 @@ public class HolderManager extends CredentialManagerBase {
 
     /**
      * Sets the credential's visibility in the public profile
-     * 
+     *
      * @param id {@link UUID} bpa credential exchange id
      */
     public void toggleVisibility(UUID id) {
@@ -222,7 +222,7 @@ public class HolderManager extends CredentialManagerBase {
 
     /**
      * Find wallet credential by id
-     * 
+     *
      * @param id {@link UUID} bpa credential exchange id
      * @return {@link AriesCredential}
      */

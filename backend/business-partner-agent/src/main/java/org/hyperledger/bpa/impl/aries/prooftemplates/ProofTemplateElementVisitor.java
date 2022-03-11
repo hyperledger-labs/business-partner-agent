@@ -94,7 +94,7 @@ class ProofTemplateElementVisitor {
     /**
      * Collects general information of the given {@link BPAProofTemplate}, e.g. the
      * template's name.
-     * 
+     *
      * @param bpaProofTemplate contains general information to create a
      *                         {@link PresentProofRequest.ProofRequest}.
      */
@@ -104,7 +104,7 @@ class ProofTemplateElementVisitor {
 
     /**
      * Collects the information of the given {@link BPAAttributeGroup}
-     * 
+     *
      * @param bpaAttributeGroup contains all information for a
      *                          {@link PresentProofRequest.ProofRequest} related to
      *                          a certain schema.
@@ -122,7 +122,7 @@ class ProofTemplateElementVisitor {
     /**
      * Collects the information of the given {@link BPAAttribute} in context of its
      * {@link BPAAttributeGroup}'s <code>schemaId</code>
-     * 
+     *
      * @param schemaIdAndBpaAttribute is the <code>schemaId</code> of the
      *                                {@link BPAAttributeGroup} containing
      *                                {@link BPAAttribute}
@@ -285,7 +285,7 @@ class ProofTemplateElementVisitor {
     /**
      * Creates a {@link PresentProofRequest.ProofRequest} with the information
      * collected by the <code>visit</code> methods.
-     * 
+     *
      * @return an applicable {@link PresentProofRequest.ProofRequest}
      */
     PresentProofRequest.ProofRequest getResult() {
