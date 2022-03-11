@@ -105,7 +105,7 @@ public class LDContextHelper {
      * back to the holders local did:key which will then be replaced by the issuer
      * with the issuers key. Note: This will work, but in this case the issuer is
      * not verified.
-     * 
+     *
      * @param bpaSchema {@link BPASchema}
      * @return did:key
      */

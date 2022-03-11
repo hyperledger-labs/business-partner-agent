@@ -64,31 +64,31 @@ public class DefaultEmailService implements EmailService {
      * mail.smtp.auth: true mail.smtp.starttls.enable: true
      * mail.smtp.connectiontimeout: 5000 mail.smtp.timeout: 5000
      * mail.smtp.writetimeout: 5000
-     * 
-     * 
+     *
+     *
      * @Singleton
-     * 
+     *
      * @Requires(notEnv = Environment.TEST)
-     * 
+     *
      * @Requires(property = "mail.username")
-     * 
+     *
      * @Requires(property = "mail.password") public static class
      * JavaMailSessionProvider implements SessionProvider {
-     * 
+     *
      * @Value("${mail.username}") String mailUser;
-     * 
+     *
      * @Value("${mail.password}") String mailPassword;
-     * 
+     *
      * private final Properties properties;
-     * 
+     *
      * JavaMailSessionProvider(MailPropertiesProvider mailPropertiesProvider) {
      * this.properties = mailPropertiesProvider.mailProperties(); }
-     * 
+     *
      * @Override
-     * 
+     *
      * @NonNull public Session session() { return Session.getInstance(properties,
      * new Authenticator() {
-     * 
+     *
      * @Override protected PasswordAuthentication getPasswordAuthentication() {
      * return new PasswordAuthentication(mailUser, mailPassword); } }); } }
      */

@@ -36,7 +36,7 @@ public class AriesStringUtil {
 
     /**
      * Tests if the provided did is a did:key
-     * 
+     *
      * @param did
      * @return true if did is a did:key, false otherwise
      */
@@ -65,7 +65,7 @@ public class AriesStringUtil {
     /**
      * Checks if the provided did is fully qualified, if not it is prepended with
      * the provided qualifier
-     * 
+     *
      * @param did       qualified or unqualified did
      * @param qualifier fallback qualifier if the provided did is unqualified
      * @return qualified did
@@ -79,7 +79,7 @@ public class AriesStringUtil {
 
     /**
      * Gets the last segment of a did
-     * 
+     *
      * @param did String e.g. did or credential definition id
      * @return the last part of the input when separated by : unchanged otherwise
      */
