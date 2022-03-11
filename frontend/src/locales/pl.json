@@ -422,7 +422,7 @@
           "button": "Wystawienie uprawnień",
           "partnerLabel": "Wybierz partnera",
           "credDefLabel": "Wybierz definicję uprawnień ",
-          "invitationWithAttachmentLabel": "Invitation with Credential"
+          "invitationWithAttachmentLabel": "Send with invitation"
         },
         "table": {
           "title": "Wydane uprawnienia"

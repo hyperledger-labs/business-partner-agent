@@ -423,7 +423,7 @@
           "button": "Berechtigungsnachweis ausstellen",
           "partnerLabel": "Partner auswählen",
           "credDefLabel": "Berechtigungsnachweis-Definition auswählen",
-          "invitationWithAttachmentLabel": "Einladung mit Berechtigungsnachweis"
+          "invitationWithAttachmentLabel": "Senden mit Einladung"
         },
         "table": {
           "title": "Ausgestellte Berechtigungsnachweise"
