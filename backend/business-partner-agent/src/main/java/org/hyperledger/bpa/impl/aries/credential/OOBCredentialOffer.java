@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.acy_py.generated.model.InvitationRecord;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.connection.ConnectionState;
+import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialFreeOfferHelper;
@@ -97,7 +98,7 @@ public class OOBCredentialOffer {
 
     /**
      * Step 1: Prepare offer und return URL
-     * 
+     *
      * @param req {@link IssueOOBCredentialRequest}
      * @return location of the offer
      */
@@ -116,7 +117,7 @@ public class OOBCredentialOffer {
         log.debug("{}", GsonConfig.defaultNoEscaping().toJson(freeOffer));
 
         Partner p = persistPartner(freeOffer.getInvitationRecord(), req.getAlias(), req.getTrustPing(), req.getTag());
-        persistCredentialExchange(freeOffer, dbCredDef, p);
+        persistCredentialExchange(freeOffer, document, dbCredDef, p);
 
         return APICreateInvitationResponse.builder()
                 .invitationUrl(
@@ -129,7 +130,7 @@ public class OOBCredentialOffer {
 
     /**
      * Step 2: Return the base64 encoded invitation plus attachment
-     * 
+     *
      * @param invMessageId invitation message id
      * @return base64 encoded invitation URL
      */
@@ -149,7 +150,9 @@ public class OOBCredentialOffer {
     }
 
     private void persistCredentialExchange(
-            @NonNull V1CredentialFreeOfferHelper.CredentialFreeOffer r, @NonNull BPACredentialDefinition dbCredDef,
+            @NonNull V1CredentialFreeOfferHelper.CredentialFreeOffer r,
+            @NonNull Map<String, String> document,
+            @NonNull BPACredentialDefinition dbCredDef,
             @NonNull Partner p) {
         BPACredentialExchange.BPACredentialExchangeBuilder b = BPACredentialExchange
                 .builder()
@@ -164,7 +167,10 @@ public class OOBCredentialOffer {
                 .credentialOffer(r.getCredentialProposalDict() != null
                         ? BPACredentialExchange.ExchangePayload
                                 .indy(r.getCredentialProposalDict().getCredentialProposal())
-                        : null);
+                        : null)
+                .indyCredential(Credential.builder()
+                        .attrs(document)
+                        .build());
         credExRepo.save(b.build());
     }
 

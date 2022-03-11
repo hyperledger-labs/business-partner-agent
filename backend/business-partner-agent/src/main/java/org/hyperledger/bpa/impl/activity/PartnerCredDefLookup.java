@@ -67,7 +67,7 @@ public class PartnerCredDefLookup {
     /**
      * Get/filter partners that can issue credentials that are based on the schema's
      * id.
-     * 
+     *
      * @param schemaId the schema id
      * @return {@link PartnerAPI} list
      */
@@ -82,7 +82,7 @@ public class PartnerCredDefLookup {
     /**
      * If a ledger explorer is configured. Find partners that can issue credentials
      * that are based on the schema id.
-     * 
+     *
      * @param schemaId the schema id
      * @param result   {@link List} that should contain the result
      */
@@ -104,7 +104,7 @@ public class PartnerCredDefLookup {
      * If NO ledger explorer is configured, statically match configured issuer did's
      * to partner did's to find partners that can issue a credential based on the
      * schema id.
-     * 
+     *
      * @param schemaId the schema id
      * @param result   {@link List} that should contain the result
      */

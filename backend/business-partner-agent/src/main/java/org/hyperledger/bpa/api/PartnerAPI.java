@@ -112,7 +112,7 @@ public class PartnerAPI {
      * 2. Legal Name from public profile if set 3. aca-py label, --label flag or
      * overwritten when creating the connection with the label option 4. did, public
      * or peer
-     * 
+     *
      * @return the partners name or null if no match was found
      */
     public String getName() {

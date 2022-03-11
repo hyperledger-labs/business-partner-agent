@@ -147,7 +147,7 @@ public class RestrictionsManager {
 
     /**
      * Resolve the label of the trusted issuer either by did or credDefId
-     * 
+     *
      * @param expression either did (qualified or unqualified) or credential
      *                   definition id
      * @return label of the trusted issuer if set

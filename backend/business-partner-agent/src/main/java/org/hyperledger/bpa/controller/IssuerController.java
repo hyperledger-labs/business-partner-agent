@@ -128,7 +128,7 @@ public class IssuerController {
     /**
      * Issue OOB credential step 1 - prepares credential offer and returns URL for
      * use within the barcode
-     * 
+     *
      * @param req {@link IssueOOBCredentialRequest}
      * @return {@link APICreateInvitationResponse}
      */
@@ -140,7 +140,7 @@ public class IssuerController {
 
     /**
      * Issue OOB credential step 2 - redirect with encoded offer
-     * 
+     *
      * @param id {@link UUID}
      * @return Redirect with encoded credential offer in the location header
      */
@@ -188,7 +188,7 @@ public class IssuerController {
     /**
      * Send holder a new credential offer based on an existing (revoked) exchange
      * record
-     * 
+     *
      * @param id credential exchange id
      * @return {@link HttpResponse}
      */

@@ -282,7 +282,7 @@ public class Converter {
      * always falls back to 'proof-request' for the name. In most cases this is only
      * relevant in bpa to bpa communication, so we know how the proposal looks like,
      * and we can fall back to the label of the credential definition.
-     * 
+     *
      * @param p {@link PartnerProof}
      * @return name, credential definition tag, or default label
      */

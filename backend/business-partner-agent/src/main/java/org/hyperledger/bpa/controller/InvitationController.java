@@ -49,7 +49,7 @@ public class InvitationController {
 
     /**
      * Check invitation (receive)
-     * 
+     *
      * @param body {@link CheckInvitationRequest}
      * @return {@link MutableHttpResponse}
      */
@@ -60,7 +60,7 @@ public class InvitationController {
 
     /**
      * Receive / accept invitation
-     * 
+     *
      * @param body {@link AcceptInvitationRequest}
      * @return {@link MutableHttpResponse}
      */
