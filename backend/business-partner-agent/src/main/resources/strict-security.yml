@@ -1,0 +1,25 @@
+# Strict cors configuration
+micronaut:
+  server:
+    cors:
+      enabled: true
+      configurations:
+        web:
+          allowCredentials: false
+          allowedOrigins: ${bpa.allowed.hosts}
+          allowedMethods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+            - OPTIONS
+          allowedHeaders:
+            - Authorization
+            - Cache-Control
+            - Cookie
+
+# Also controls CSP headers: frame-ancestors and frame-src
+bpa:
+  allowed:
+    hosts:
+      - ${bpa.host}

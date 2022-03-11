@@ -17,28 +17,54 @@
  */
 package org.hyperledger.bpa.config.security;
 
+import io.micronaut.context.annotation.Property;
+import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.Filter;
 import io.micronaut.http.filter.HttpServerFilter;
 import io.micronaut.http.filter.ServerFilterChain;
+import org.apache.commons.lang3.StringUtils;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 
+import java.util.List;
+import java.util.Optional;
+
 /**
- * Sets security related HTTP headers on all frontend related calls.
+ * Sets HTTP security headers on all frontend related calls.
  */
 @Filter({ "/*", "classpath:public", "/js/**", "/css/**", "/fonts/**", "/img/**" })
 public class FrontendSecurityHeaderFilter implements HttpServerFilter {
+
+    @Property(name = "bpa.allowed.hosts")
+    Optional<List<String>> allowedHosts;
+
     @Override
     public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
         return Flux.from(chain.proceed(request))
-                .doOnNext(res -> res.getHeaders()
-                        .add("Referrer-Policy", "same-origin")
-                        .add("X-Content-Type-Options", "nosniff")
-                        .add("X-Frame-Options", "deny")
-                        .add("Content-Security-Policy", "frame-ancestors 'none'; " +
-                                "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; " +
-                                "img-src 'self'; font-src 'self' data:"));
+                .doOnNext(res -> {
+                    // uncritical headers, should always be set
+                    res.getHeaders()
+                            .add("Referrer-Policy", "same-origin")
+                            .add("X-Content-Type-Options", "nosniff")
+                            ;
+                    // These headers might break stuff
+                    // TODO maybe only set if strict-security.yml is enabled
+                    String frameSources;
+                    if (allowedHosts.isEmpty() || CollectionUtils.isEmpty(allowedHosts.get()) ){
+                        res.getHeaders().add("X-Frame-Options", "deny");
+                        frameSources = "frame-ancestors 'none'; ";
+                    } else {
+                        frameSources =
+                                "frame-src " + String.join(" ", allowedHosts.get()) + "; " +
+                                "frame-ancestors " + String.join(" ", allowedHosts.get()) + "; ";
+                    }
+                    if (!StringUtils.contains(request.getPath(), "swagger")) { // skipping swagger
+                        res.getHeaders().add("Content-Security-Policy", frameSources +
+                                        "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; " +
+                                        "img-src 'self'; font-src 'self' data:");
+                    }
+                });
     }
 }

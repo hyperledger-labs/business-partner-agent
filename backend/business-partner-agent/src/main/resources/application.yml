@@ -5,23 +5,8 @@ micronaut:
       id: ${random.shortuuid}
   server:
     port: 8080
-    http-version: HTTP_2_0
     cors:
-      enabled: true
-      configurations:
-        '*':
-          allowCredentials: false
-          allowedOrigins: ${bpa.host}
-          allowedMethods:
-            - GET
-            - POST
-            - PUT
-            - DELETE
-            - OPTIONS
-          allowedHeaders:
-            - Authorization
-            - Cache-Control
-            - Cookie
+      enabled: true # permissive cors, for strict cors configuration add strict-security.yml
     idle-timeout: 30m
     netty:
       responses:
