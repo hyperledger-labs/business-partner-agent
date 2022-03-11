@@ -176,12 +176,13 @@ export default {
   },
   watch: {
     partner(value) {
+      const isNotSelected: boolean = !value || !value.id;
       this.issueCredentialDisabled =
-        !value || !value.id || !this.credDef || !this.credDef.id;
+        isNotSelected || !this.credDef || !this.credDef.id;
 
       this.issueOutOfBoundCredential =
-        !this.issueCredentialDisabled &&
-        value.id === "invitationWithAttachment";
+        !isNotSelected && value.id === "invitationWithAttachment";
+
       this.partnerId = value ? value.id : "";
     },
     credDef(value) {
