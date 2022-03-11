@@ -48,6 +48,7 @@ import {
   mdiTicketConfirmationOutline,
   mdiAlert,
   mdiAttachment,
+  mdiScriptText,
 } from "@mdi/js";
 
 Vue.use(Vuetify);
@@ -106,6 +107,7 @@ export default new Vuetify({
       validationError: mdiAlert,
       attachment: mdiAttachment,
       asterisk: mdiAsterisk,
+      schemas: mdiScriptText,
     },
   },
   lang: {

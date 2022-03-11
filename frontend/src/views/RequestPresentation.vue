@@ -51,8 +51,9 @@
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import ProofTemplatesList from "@/components/proof-templates/ProofTemplatesList.vue";
-import proofTemplateService from "@/services/proofTemplateService";
+import proofTemplateService from "@/services/proof-template-service";
 import { ExchangeVersion } from "@/constants";
+import { PresentationRequestVersion } from "@/services";
 
 export default {
   name: "RequestPresentation",
@@ -88,7 +89,7 @@ export default {
     },
     async submitRequest() {
       this.isBusy = true;
-      const data = {
+      const data: PresentationRequestVersion = {
         exchangeVersion: this.useV2Exchange
           ? ExchangeVersion.V2
           : ExchangeVersion.V1,

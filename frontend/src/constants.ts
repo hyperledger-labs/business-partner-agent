@@ -27,48 +27,51 @@ export const CredentialTypes = Object.freeze({
 });
 
 /** API Route paths */
-export const ApiRoutes = Object.freeze({
-  ADMIN: "/admin",
-  ISSUER: "/issuer",
-  PARTNERS: "/partners",
-  PROOF_EXCHANGES: "/proof-exchanges",
-  PROOF_TEMPLATES: "/proof-templates",
-  ACTIVITIES: "/activities",
-  WALLET: "/wallet",
-});
+export enum ApiRoutes {
+  ADMIN = "/admin",
+  ISSUER = "/issuer",
+  PARTNERS = "/partners",
+  PROOF_EXCHANGES = "/proof-exchanges",
+  PROOF_TEMPLATES = "/proof-templates",
+  ACTIVITIES = "/activities",
+  WALLET = "/wallet",
+}
 
-export const CredentialExchangeRoles = Object.freeze({
-  ISSUER: "issuer",
-  HOLDER: "holder",
-});
+export enum CredentialExchangeRoles {
+  ISSUER = "issuer",
+  HOLDER = "holder",
+}
 
-export const CredentialExchangeStates = Object.freeze({
-  PROPOSAL_SENT: "proposal_sent",
-  PROPOSAL_RECEIVED: "proposal_received",
-  PROBLEM: "problem",
-  DECLINED: "declined",
-  OFFER_SENT: "offer_sent",
-  OFFER_RECEIVED: "offer_received",
-  REQUEST_SENT: "request_sent",
-  REQUEST_RECEIVED: "request_received",
-  CREDENTIAL_ISSUED: "credential_issued",
-  CREDENTIAL_RECEIVED: "credential_received",
-  CREDENTIAL_ACKED: "credential_acked",
-  DONE: "done",
-  REVOKED: "credential_revoked",
-});
+export enum CredentialExchangeStates {
+  PROPOSAL_SENT = "proposal_sent",
+  PROPOSAL_RECEIVED = "proposal_received",
+  PROBLEM = "problem",
+  DECLINED = "declined",
+  ABANDONED = "abandoned",
+  OFFER_SENT = "offer_sent",
+  OFFER_RECEIVED = "offer_received",
+  REQUEST_SENT = "request_sent",
+  REQUEST_RECEIVED = "request_received",
+  CREDENTIAL_ISSUED = "credential_issued",
+  CREDENTIAL_RECEIVED = "credential_received",
+  CREDENTIAL_ACKED = "credential_acked",
+  CREDENTIAL_REVOKED = "credential_revoked",
+  DONE = "done",
+}
 
-export const PresentationExchangeStates = Object.freeze({
-  PROPOSAL_SENT: "proposal_sent",
-  PROPOSAL_RECEIVED: "proposal_received",
-  REQUEST_SENT: "request_sent",
-  REQUEST_RECEIVED: "request_received",
-  PRESENTATION_SENT: "presentation_sent",
-  PRESENTATION_RECEIVED: "presentation_received",
-  VERIFIED: "verified",
-  DECLINED: "declined",
-  PRESENTATION_ACKED: "presentation_acked",
-});
+export enum PresentationExchangeStates {
+  PROPOSAL_SENT = "proposal_sent",
+  PROPOSAL_RECEIVED = "proposal_received",
+  REQUEST_SENT = "request_sent",
+  REQUEST_RECEIVED = "request_received",
+  PRESENTATION_SENT = "presentation_sent",
+  PRESENTATION_RECEIVED = "presentation_received",
+  VERIFIED = "verified",
+  DECLINED = "declined",
+  DONE = "done",
+  ABANDONED = "abandoned",
+  PRESENTATION_ACKED = "presentation_acked",
+}
 
 export const PartnerStates = Object.freeze({
   INVITATION: {
@@ -214,12 +217,12 @@ export const ActivityRoles = Object.freeze({
   },
 });
 
-export const Predicates = Object.freeze({
-  LESS_THAN_OR_EQUAL_TO: "<=",
-  LESS_THAN: "<",
-  GREATER_THAN_OR_EQUAL_TO: ">=",
-  GREATER_THAN: ">",
-});
+export enum Predicates {
+  LESS_THAN_OR_EQUAL_TO = "<=",
+  LESS_THAN = "<",
+  GREATER_THAN_OR_EQUAL_TO = ">=",
+  GREATER_THAN = ">",
+}
 
 export const Restrictions = Object.freeze({
   SCHEMA_ID: { value: "schema_id", label: "Schema ID" },
@@ -232,7 +235,7 @@ export const Restrictions = Object.freeze({
 
 export const RequestTypes = ["requestedAttributes", "requestedPredicates"];
 
-export const ExchangeVersion = Object.freeze({
-  V1: "V1",
-  V2: "V2",
-});
+export enum ExchangeVersion {
+  V1 = "V1",
+  V2 = "V2",
+}

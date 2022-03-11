@@ -69,7 +69,7 @@
   </v-container>
 </template>
 <script lang="ts">
-import proofTemplateService from "@/services/proofTemplateService";
+import proofTemplateService from "@/services/proof-template-service";
 
 export default {
   name: "AttributeEdit",

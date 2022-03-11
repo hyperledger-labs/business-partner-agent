@@ -8,28 +8,47 @@
 
 import { appAxios } from "@/services/interceptors";
 import { ApiRoutes } from "@/constants";
-import { UpdatePartnerRequest } from "@/services/partner-types";
+import { AxiosResponse } from "axios";
+import {
+  AriesProofExchange,
+  ChatMessage,
+  PartnerAPI,
+  SendMessageRequest,
+  UpdatePartnerRequest,
+} from "@/services/types-services";
 
 export default {
   //
   // Partner API
   //
 
-  listPartners() {
+  listPartners(): Promise<AxiosResponse<PartnerAPI[]>> {
     return appAxios().get(`${ApiRoutes.PARTNERS}`);
   },
-  updatePartner(id: string, data: UpdatePartnerRequest) {
+
+  updatePartner(
+    id: string,
+    data: UpdatePartnerRequest
+  ): Promise<AxiosResponse<PartnerAPI>> {
     return appAxios().put(`${ApiRoutes.PARTNERS}/${id}`, data);
   },
-  sendMessage(id: string, content: string): Promise<void> {
+
+  sendMessage(
+    id: string,
+    content: SendMessageRequest
+  ): Promise<AxiosResponse<void>> {
     return appAxios().post(`${ApiRoutes.PARTNERS}/${id}/messages`, {
       content: content,
     });
   },
-  getMessages(id: string) {
+
+  getMessages(id: string): Promise<AxiosResponse<ChatMessage[]>> {
     return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/messages`);
   },
-  getPresentationExRecords(id: string) {
+
+  getPresentationExRecords(
+    id: string
+  ): Promise<AxiosResponse<AriesProofExchange[]>> {
     return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/proof-exchanges`);
   },
 };

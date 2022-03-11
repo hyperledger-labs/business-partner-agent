@@ -78,7 +78,15 @@
                 }}</v-bpa-button
               >
             </template>
+            <IssueOobCredential
+              v-if="issueOutOfBoundCredential"
+              :credDefId="credDefId"
+              :open="issueCredentialDialog"
+              @success="credentialIssued"
+              @cancelled="issueCredentialDialog = false"
+            ></IssueOobCredential>
             <IssueCredential
+              v-else
               :credDefId="credDefId"
               :partnerId="partnerId"
               :open="issueCredentialDialog"
@@ -116,12 +124,14 @@ import CredExList from "@/components/CredExList.vue";
 import IssueCredential from "@/components/IssueCredential.vue";
 import * as partnerUtils from "@/utils/partnerUtils";
 import VBpaButton from "@/components/BpaButton";
+import IssueOobCredential from "@/components/IssueOobCredential.vue";
 
 export default {
   name: "CredentialManagement",
   components: {
     VBpaButton,
     IssueCredential,
+    IssueOobCredential,
     CredExList,
   },
   created() {
@@ -138,6 +148,7 @@ export default {
       credDefId: "",
       issueCredentialDisabled: true,
       issueCredentialDialog: false,
+      issueOutOfBoundCredential: false,
       addSchemaDialog: false,
       createSchemaDialog: false,
     };
@@ -145,7 +156,16 @@ export default {
   computed: {
     partnerList: {
       get() {
-        return this.$store.getters.getPartnerSelectList;
+        return [
+          {
+            text: this.$t(
+              "view.issueCredentials.cards.action.invitationWithAttachmentLabel"
+            ),
+            id: "invitationWithAttachment",
+          },
+          { divider: true },
+          ...this.$store.getters.getPartnerSelectList,
+        ];
       },
     },
     credDefList: {
@@ -156,8 +176,13 @@ export default {
   },
   watch: {
     partner(value) {
+      const isNotSelected: boolean = !value || !value.id;
       this.issueCredentialDisabled =
-        !value || !value.id || !this.credDef || !this.credDef.id;
+        isNotSelected || !this.credDef || !this.credDef.id;
+
+      this.issueOutOfBoundCredential =
+        !isNotSelected && value.id === "invitationWithAttachment";
+
       this.partnerId = value ? value.id : "";
     },
     credDef(value) {

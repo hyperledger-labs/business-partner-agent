@@ -8,79 +8,84 @@
 
 import { appAxios } from "@/services/interceptors";
 import { ApiRoutes, CredentialExchangeRoles } from "@/constants";
+import {
+  CreateCredDefRequest,
+  SchemaApi,
+  CreateSchemaRequest,
+  CredentialOfferRequest,
+  IssueCredentialRequest,
+  IssueOobCredentialRequest,
+  CredDef,
+  ApiCreateInvitation,
+  CredEx,
+} from "@/services/types-services";
+import { AxiosResponse } from "axios";
 
 export default {
   //
   // Issuer API
   //
-
-  listSchemas() {
-    return appAxios().get(`${ApiRoutes.ISSUER}/schema`);
-  },
-
-  createSchema(data) {
+  createSchema(data: CreateSchemaRequest): Promise<AxiosResponse<SchemaApi>> {
     return appAxios().post(`${ApiRoutes.ISSUER}/schema`, data);
   },
 
-  readSchema(id) {
-    return appAxios().get(`${ApiRoutes.ISSUER}/schema/${id}`);
-  },
-
-  createCredDef(data) {
+  createCredDef(data: CreateCredDefRequest): Promise<AxiosResponse<CredDef>> {
     return appAxios().post(`${ApiRoutes.ISSUER}/creddef`, data);
   },
 
-  deleteCredDef(id) {
+  deleteCredDef(id: string): Promise<AxiosResponse<void>> {
     return appAxios().delete(`${ApiRoutes.ISSUER}/creddef/${id}`);
   },
 
-  listCredDefs() {
+  listCredDefs(): Promise<AxiosResponse<CredDef[]>> {
     return appAxios().get(`${ApiRoutes.ISSUER}/creddef`);
   },
 
-  issueCredentialSend(data) {
+  issueCredentialSend(
+    data: IssueCredentialRequest
+  ): Promise<AxiosResponse<string>> {
     return appAxios().post(`${ApiRoutes.ISSUER}/issue-credential/send`, data);
   },
 
-  listCredentialExchanges(id) {
+  /**
+   * Issue OOB credential - prepares credential offer and returns URL for use within the barcode
+   * @param data
+   */
+  issueOobCredentialOfferCreate(
+    data: IssueOobCredentialRequest
+  ): Promise<AxiosResponse<ApiCreateInvitation>> {
+    return appAxios().post(
+      `${ApiRoutes.ISSUER}/issue-credential/oob-attachment`,
+      data
+    );
+  },
+
+  listCredentialExchanges(id: string): Promise<AxiosResponse<CredEx[]>> {
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
       params: { partnerId: id },
     });
   },
 
-  getCredExRecord(id) {
+  getCredExRecord(id: string): Promise<AxiosResponse<CredEx>> {
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges/${id}`);
   },
 
-  listCredentialExchangesAsIssuer(id?) {
+  listCredentialExchangesAsIssuer(
+    id?: string
+  ): Promise<AxiosResponse<CredEx[]>> {
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
       params: { role: CredentialExchangeRoles.ISSUER, partnerId: id },
     });
   },
 
-  listCredentialExchangesAsHolder() {
-    return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
-      params: { role: CredentialExchangeRoles.HOLDER },
-    });
-  },
-  revokeCredential(id) {
+  revokeCredential(id: string): Promise<AxiosResponse<CredEx>> {
     return appAxios().put(`${ApiRoutes.ISSUER}/exchanges/${id}/revoke`);
   },
-  acceptCredentialOffer(id) {
-    return appAxios().put(`${ApiRoutes.WALLET}/credential/${id}/accept-offer`);
-  },
-  async declineCredentialOffer(id, reasonMessage) {
-    const message =
-      reasonMessage === undefined || "" ? undefined : reasonMessage;
 
-    return appAxios().put(
-      `${ApiRoutes.WALLET}/credential/${id}/decline-offer`,
-      {
-        message,
-      }
-    );
-  },
-  async declineCredentialProposal(id, reasonMessage) {
+  async declineCredentialProposal(
+    id: string,
+    reasonMessage: string
+  ): Promise<AxiosResponse<void>> {
     const message =
       reasonMessage === undefined || "" ? undefined : reasonMessage;
 
@@ -91,13 +96,18 @@ export default {
       }
     );
   },
-  sendCredentialOffer(id, counterOfferData) {
+
+  sendCredentialOffer(
+    id: string,
+    counterOfferData: CredentialOfferRequest
+  ): Promise<AxiosResponse<CredEx>> {
     return appAxios().put(
       `${ApiRoutes.ISSUER}/exchanges/${id}/send-offer`,
       counterOfferData
     );
   },
-  reIssueCredential(id) {
+
+  reIssueCredential(id: string): Promise<AxiosResponse<void>> {
     return appAxios().post(`${ApiRoutes.ISSUER}/exchanges/${id}/re-issue`);
   },
 };
