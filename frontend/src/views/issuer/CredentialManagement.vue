@@ -176,13 +176,12 @@ export default {
   },
   watch: {
     partner(value) {
-      if (value.id === "invitationWithAttachment") {
-        this.issueOutOfBoundCredential = true;
-      } else {
-        this.issueOutOfBoundCredential = false;
-        this.issueCredentialDisabled =
-          !value || !value.id || !this.credDef || !this.credDef.id;
-      }
+      this.issueCredentialDisabled =
+        !value || !value.id || !this.credDef || !this.credDef.id;
+
+      this.issueOutOfBoundCredential =
+        !this.issueCredentialDisabled &&
+        value.id === "invitationWithAttachment";
       this.partnerId = value ? value.id : "";
     },
     credDef(value) {
