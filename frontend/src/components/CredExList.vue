@@ -259,7 +259,11 @@
 }
 </style>
 <script lang="ts">
-import { issuerService } from "@/services";
+import {
+  CredentialOfferRequest,
+  issuerService,
+  walletService,
+} from "@/services";
 import Cred from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
@@ -376,7 +380,7 @@ export default {
     documentStateIsRevokedAndRoleIsIssuer() {
       return (
         this.document.credentialExchangeState ===
-          CredentialExchangeStates.REVOKED &&
+          CredentialExchangeStates.CREDENTIAL_REVOKED &&
         this.document.credentialExchangeRole === CredentialExchangeRoles.ISSUER
       );
     },
@@ -495,11 +499,11 @@ export default {
       issuerService.revokeCredential(id);
     },
     async acceptCredentialOffer(id) {
-      await issuerService.acceptCredentialOffer(id);
+      await walletService.acceptCredentialOffer(id);
       this.closeDialog();
     },
     async declineCredentialOffer(id) {
-      await issuerService.declineCredentialOffer(id, this.declineReasonText);
+      await walletService.declineCredentialOffer(id, this.declineReasonText);
       this.closeDialog();
     },
     async declineCredentialProposal(id) {
@@ -519,7 +523,7 @@ export default {
         acceptProposal = acceptAll;
       }
 
-      const counterOffer = {
+      const counterOffer: CredentialOfferRequest = {
         acceptProposal,
         credDefId: this.credDef
           ? this.credDef.credentialDefinitionId
@@ -530,7 +534,7 @@ export default {
 
       issuerService
         .sendCredentialOffer(this.document.credentialExchangeId, counterOffer)
-        .then((response) => {
+        .then(() => {
           EventBus.$emit("success");
           this.closeDialog();
         })

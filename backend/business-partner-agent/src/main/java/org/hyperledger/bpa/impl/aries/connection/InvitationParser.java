@@ -243,7 +243,7 @@ public class InvitationParser {
      * we are only interested in the query so the result is wrapped for easier
      * parsing. In case of an url we simply convert to maintain the original
      * location.
-     * 
+     *
      * @param invitationUri uri as String
      * @param decode        if the invitationUri needs url decoding
      * @return {@link HttpUrl} or null

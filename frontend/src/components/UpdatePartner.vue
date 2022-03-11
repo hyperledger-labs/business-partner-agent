@@ -78,8 +78,8 @@
 <script lang="ts">
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
-import partnerService from "@/services/partnerService";
-import { Tag, UpdatePartnerRequest } from "@/services/partner-types";
+import partnerService from "@/services/partner-service";
+import { Tag, UpdatePartnerRequest } from "@/services";
 
 export default {
   name: "UpdatePartner",

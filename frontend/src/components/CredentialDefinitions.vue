@@ -62,8 +62,9 @@
 
 <script lang="ts">
 import { EventBus } from "@/main";
-import issuerService from "@/services/issuerService";
+import issuerService from "@/services/issuer-service";
 import VBpaButton from "@/components/BpaButton";
+import { CreateCredDefRequest } from "@/services";
 
 export default {
   components: { VBpaButton },
@@ -149,7 +150,7 @@ export default {
     },
     createNewItem(item) {
       this.isBusy = true;
-      const data = {
+      const data: CreateCredDefRequest = {
         schemaId: this.schema.schemaId,
         tag: item.tag,
         supportRevocation: item.supportRevocation,

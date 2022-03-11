@@ -7,9 +7,9 @@
  */
 
 import { CredentialTypes, PartnerStates } from "@/constants";
-import { Partner } from "@/services/partner-types";
+import { PartnerAPI } from "@/services";
 
-export const getPartnerProfile = (partner: Partner) => {
+export const getPartnerProfile = (partner: PartnerAPI) => {
   if (partner && Object.prototype.hasOwnProperty.call(partner, "credential")) {
     const partnerProfile = partner.credential.find((cred) => {
       return cred.type === CredentialTypes.PROFILE.type;
@@ -30,7 +30,7 @@ export const getPartnerProfile = (partner: Partner) => {
   }
 };
 
-export const getPartnerProfileRoute = (partner: Partner) => {
+export const getPartnerProfileRoute = (partner: PartnerAPI) => {
   if (partner && Object.prototype.hasOwnProperty.call(partner, "credential")) {
     const partnerProfile = partner.credential.find((cred) => {
       return cred.type === CredentialTypes.PROFILE.type;
@@ -53,7 +53,7 @@ export const getPartnerProfileRoute = (partner: Partner) => {
   }
 };
 
-export const getPartnerState = (partner: Partner) => {
+export const getPartnerState = (partner: PartnerAPI) => {
   if (Object.prototype.hasOwnProperty.call(partner, "state")) {
     if (partner.state === PartnerStates.REQUEST.value) {
       return partner.incoming

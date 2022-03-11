@@ -9,11 +9,12 @@ import moment from "moment";
 import { CredentialTypes, PartnerStates } from "@/constants";
 import { EventBus, axios, apiBaseUrl } from "../main";
 import { getPartnerProfile } from "@/utils/partnerUtils";
-import adminService from "@/services/adminService";
-import proofTemplateService from "@/services/proofTemplateService";
-import partnerService from "@/services/partnerService";
-import issuerService from "@/services/issuerService";
+import adminService from "@/services/admin-service";
+import proofTemplateService from "@/services/proof-template-service";
+import partnerService from "@/services/partner-service";
+import issuerService from "@/services/issuer-service";
 import * as textUtils from "@/utils/textUtils";
+import { ProofTemplate } from "@/services";
 
 export const loadSchemas = async ({ commit }) => {
   adminService
@@ -163,7 +164,7 @@ export const loadProofTemplates = async ({ commit }) => {
   proofTemplateService
     .getProofTemplates()
     .then((result) => {
-      const proofTemplates = result.data;
+      const proofTemplates: ProofTemplate[] = result.data;
 
       commit({
         type: "setProofTemplates",

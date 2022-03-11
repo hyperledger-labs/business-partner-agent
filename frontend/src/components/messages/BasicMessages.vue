@@ -33,7 +33,7 @@
 <script lang="ts">
 import ChatWindow from "vue-advanced-chat";
 import "vue-advanced-chat/dist/vue-advanced-chat.css";
-import partnerService from "@/services/partnerService";
+import partnerService from "@/services/partner-service";
 import { mapMutations } from "vuex";
 import { CHAT_CURRENT_USERID, PartnerStates } from "@/constants";
 import { formatDateLong } from "@/filters";
@@ -157,6 +157,7 @@ export default {
               senderId: message.incoming
                 ? message.partner.id
                 : CHAT_CURRENT_USERID,
+              // @ts-ignore createdAtTs actually exists
               timestamp: formatDateLong(message.createdAtTs),
               seen: _seen,
             });

@@ -54,7 +54,7 @@ import { EventBus } from "@/main";
 import { ExchangeVersion, CredentialTypes } from "@/constants";
 import MyCredentialList from "@/components/MyCredentialList.vue";
 import VBpaButton from "@/components/BpaButton";
-import credentialService from "@/services/credentialService";
+import credentialService from "@/services/credential-service";
 
 export default {
   name: "RequestPresentation",

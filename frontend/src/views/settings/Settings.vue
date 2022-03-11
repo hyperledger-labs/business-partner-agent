@@ -38,19 +38,6 @@
         <v-list-item-content>
           <v-list-item-title
             class="grey--text text--darken-2 font-weight-medium"
-            >{{ $t("view.settings.schemaManagement") }}</v-list-item-title
-          >
-        </v-list-item-content>
-        <v-list-item-action>
-          <v-btn icon :to="{ name: 'SchemaSettings' }">
-            <v-icon color="grey">$vuetify.icons.next</v-icon>
-          </v-btn>
-        </v-list-item-action>
-      </v-list-item>
-      <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title
-            class="grey--text text--darken-2 font-weight-medium"
             >{{ $t("view.settings.tags") }}</v-list-item-title
           >
         </v-list-item-content>

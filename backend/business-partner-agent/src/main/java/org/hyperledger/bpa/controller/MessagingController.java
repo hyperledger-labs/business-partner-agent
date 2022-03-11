@@ -52,7 +52,7 @@ public class MessagingController {
 
     /**
      * List message templates
-     * 
+     *
      * @return list of {@link MessageTemplateCmd.ApiMessageTemplate}
      */
     @Get("/template")
@@ -62,7 +62,7 @@ public class MessagingController {
 
     /**
      * Add new message template
-     * 
+     *
      * @param template {@link MessageTemplateCmd.MessageTemplateRequest}
      * @return {@link MessageTemplateCmd.ApiMessageTemplate}
      */
@@ -74,7 +74,7 @@ public class MessagingController {
 
     /**
      * Update message template
-     * 
+     *
      * @param id       {@link UUID} template id
      * @param template {@link MessageTemplateCmd.MessageTemplateRequest}
      * @return HTTP status
@@ -88,7 +88,7 @@ public class MessagingController {
 
     /**
      * Delete message template
-     * 
+     *
      * @param id {@link UUID} template id
      * @return HTTP status
      */
@@ -102,7 +102,7 @@ public class MessagingController {
 
     /**
      * List user info
-     * 
+     *
      * @return list of {@link MessageUserInfoCmd.ApiUserInfo}
      */
     @Get("/user-info")
@@ -112,7 +112,7 @@ public class MessagingController {
 
     /**
      * Add new user info configuration
-     * 
+     *
      * @param config {@link MessageUserInfoCmd.UserInfoRequest}
      * @return {@link MessageUserInfoCmd.ApiUserInfo}
      */
@@ -124,7 +124,7 @@ public class MessagingController {
 
     /**
      * Update user info configuration
-     * 
+     *
      * @param id     {@link UUID} user info id
      * @param config {@link MessageUserInfoCmd.UserInfoRequest}
      * @return HTTP status
@@ -138,7 +138,7 @@ public class MessagingController {
 
     /**
      * Delete user info configuration
-     * 
+     *
      * @param id {@link UUID} user info id
      * @return HTTP status
      */
@@ -152,7 +152,7 @@ public class MessagingController {
 
     /**
      * List message trigger configuration
-     * 
+     *
      * @return list of {@link MessageTriggerConfigCmd.ApiTriggerConfig}
      */
     @Get("/trigger")
@@ -162,7 +162,7 @@ public class MessagingController {
 
     /**
      * ASdd new message trigger configuration
-     * 
+     *
      * @param trigger {@link MessageTriggerConfigCmd.ApiTriggerConfig}
      * @return {@link MessageTriggerConfigCmd.TriggerConfigRequest}
      */
@@ -175,7 +175,7 @@ public class MessagingController {
 
     /**
      * Update message trigger configuration
-     * 
+     *
      * @param id      {@link UUID} message trigger id
      * @param trigger {@link MessageTriggerConfigCmd.TriggerConfigRequest}
      * @return HTTP status
@@ -190,7 +190,7 @@ public class MessagingController {
 
     /**
      * Delete message trigger configuration
-     * 
+     *
      * @param id {@link UUID} message trigger id
      * @return HTTP status
      */
@@ -204,7 +204,7 @@ public class MessagingController {
 
     /**
      * Manual trigger to send an invitation url by email
-     * 
+     *
      * @param request {@link AdHocMessageRequest}
      * @return HTTP status
      */

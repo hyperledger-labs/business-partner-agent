@@ -8,27 +8,39 @@
 
 import { appAxios } from "@/services/interceptors";
 import { ApiRoutes } from "@/constants";
+import { AxiosResponse } from "axios";
+import {
+  AddSchemaRequest,
+  AddTagRequest,
+  SchemaApi,
+  TagApi,
+} from "@/services/types-services";
 
 export default {
   //
   // Admin API
   //
-  listSchemas() {
+  listSchemas(): any /*Promise<AxiosResponse<SchemaApi[]>> TODO: actions.ts needs to be refactored*/ {
     return appAxios().get(`${ApiRoutes.ADMIN}/schema`);
   },
-  addSchema(data) {
+
+  addSchema(data: AddSchemaRequest): Promise<AxiosResponse<SchemaApi>> {
     return appAxios().post(`${ApiRoutes.ADMIN}/schema`, data);
   },
-  deleteSchema(id) {
+
+  deleteSchema(id: string): Promise<AxiosResponse<void>> {
     return appAxios().delete(`${ApiRoutes.ADMIN}/schema/${id}`);
   },
-  listTags() {
+
+  listTags(): Promise<AxiosResponse<TagApi[]>> {
     return appAxios().get(`${ApiRoutes.ADMIN}/tag`);
   },
-  addTag(data) {
+
+  addTag(data: AddTagRequest): Promise<AxiosResponse<TagApi>> {
     return appAxios().post(`${ApiRoutes.ADMIN}/tag`, data);
   },
-  deleteTag(id, hardDelete) {
+
+  deleteTag(id: string, hardDelete: boolean) {
     let parameters;
     if (hardDelete) {
       parameters = new URLSearchParams([["force", "true"]]);

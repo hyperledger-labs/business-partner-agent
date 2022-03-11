@@ -273,7 +273,7 @@ public class AdminController {
      * Trigger the backend to write configured endpoints to the ledger. TAA digest
      * has to be passed to explicitly confirm prior TTA acceptance by the user for
      * this ledger interaction / session.
-     * 
+     *
      * @param tAADigest {@link TAADigestRequest}
      * @return {@link HttpResponse}
      */
@@ -299,7 +299,7 @@ public class AdminController {
 
     /**
      * Get TAA record (digest, text, version)
-     * 
+     *
      * @return {@link TAARecord}
      */
     @Get("/taa/get")

@@ -168,6 +168,7 @@ import VBpaButton from "@/components/BpaButton";
 import * as textUtils from "@/utils/textUtils";
 import * as CSV from "csv-string";
 import { ExchangeVersion } from "@/constants";
+import { IssueCredentialRequest } from "@/services/types-services";
 
 export default {
   name: "IssueCredential",
@@ -281,12 +282,12 @@ export default {
         exVersion = ExchangeVersion.V2;
       }
       // create an empty document, all empty strings...
-      let document = {};
+      let document: any = {};
       for (const x of this.credDef.fields) document[x.type] = "";
       //fill in whatever populated fields we have...
       Object.assign(document, this.credentialFields);
 
-      const data = {
+      const data: IssueCredentialRequest = {
         credDefId: this.credDef.id,
         partnerId: this.partner.id,
         document: document,
@@ -294,6 +295,7 @@ export default {
       };
       try {
         const resp = await issuerService.issueCredentialSend(data);
+
         if (resp.status === 200) {
           return resp.data;
         }

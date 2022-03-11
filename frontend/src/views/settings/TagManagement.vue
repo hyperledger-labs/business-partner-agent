@@ -85,7 +85,7 @@
 
 <script lang="ts">
 import { EventBus } from "@/main";
-import adminService from "@/services/adminService";
+import adminService from "@/services/admin-service";
 import VBpaButton from "@/components/BpaButton";
 
 export default {
