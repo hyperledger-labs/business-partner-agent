@@ -203,7 +203,7 @@ public class HolderManager extends CredentialManagerBase {
      * List credential that the user holds in the wallet
      *
      * @param typesToFilter filter by provided credential types
-     * @param pageable {@link Pageable}
+     * @param pageable      {@link Pageable}
      * @return list of {@link AriesCredential}
      */
     public Page<AriesCredential> listHeldCredentials(
@@ -216,8 +216,7 @@ public class HolderManager extends CredentialManagerBase {
                 CredentialExchangeRole.HOLDER,
                 List.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE),
                 types, pageable)
-                .map(this::buildCredential)
-                ;
+                .map(this::buildCredential);
     }
 
     /**

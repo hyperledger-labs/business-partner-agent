@@ -157,9 +157,9 @@ public class IssuerController {
     /**
      * List issued or received credentials
      *
-     * @param pc {@link PaginationCommand}
+     * @param pc        {@link PaginationCommand}
      * @param partnerId partner id
-     * @param role {@link CredentialExchangeRole}
+     * @param role      {@link CredentialExchangeRole}
      * @return list of {@link CredEx}
      */
     @Get("/exchanges{?pc*}")

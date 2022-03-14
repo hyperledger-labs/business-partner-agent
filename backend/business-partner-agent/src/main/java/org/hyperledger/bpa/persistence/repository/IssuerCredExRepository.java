@@ -75,7 +75,8 @@ public interface IssuerCredExRepository extends PageableRepository<BPACredential
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     @Join(value = "credDef", type = Join.Type.LEFT_FETCH)
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
-    Page<BPACredentialExchange> findByRoleInAndPartnerEquals(@NonNull List<CredentialExchangeRole> role, @NonNull Partner partner, @NonNull Pageable pageable);
+    Page<BPACredentialExchange> findByRoleInAndPartnerEquals(@NonNull List<CredentialExchangeRole> role,
+            @NonNull Partner partner, @NonNull Pageable pageable);
 
     Number updateCredential(@Id UUID id, Credential indyCredential);
 

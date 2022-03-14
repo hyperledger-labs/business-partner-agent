@@ -95,11 +95,13 @@ public abstract class CredentialManagerBase {
         return credEx;
     }
 
-    public Page<CredEx> foo(@Nullable CredentialExchangeRole role, @Nullable UUID partnerId, @NonNull Pageable pageable) {
+    public Page<CredEx> foo(@Nullable CredentialExchangeRole role, @Nullable UUID partnerId,
+            @NonNull Pageable pageable) {
         List<CredentialExchangeRole> roles = role == null ? List.of(CredentialExchangeRole.values()) : List.of(role);
         Page<BPACredentialExchange> exchanges = partnerId == null
                 ? issuerCredExRepo.findByRoleIn(roles, pageable)
-                : issuerCredExRepo.findByRoleInAndPartnerEquals(roles, Partner.builder().id(partnerId).build(), pageable);
+                : issuerCredExRepo.findByRoleInAndPartnerEquals(roles, Partner.builder().id(partnerId).build(),
+                        pageable);
         return exchanges.map(ex -> CredEx.from(ex, conv.toAPIObject(ex.getPartner())));
     }
 

@@ -37,8 +37,6 @@ import java.util.List;
 @Introspected
 public class PaginationCommand {
 
-    private HttpRequest<?> httpRequest;
-
     @QueryValue
     private int page;
 

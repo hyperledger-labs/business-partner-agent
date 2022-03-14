@@ -27,6 +27,7 @@ import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import org.hyperledger.bpa.api.CredentialType;
@@ -67,6 +68,7 @@ public class WalletController {
      * @return list of {@link MyDocumentAPI}
      */
     @Get("/document{?pc*}")
+    @Schema(implementation = Page.class)
     public HttpResponse<Page<MyDocumentAPI>> getDocuments(@Valid @Nullable PaginationCommand pc) {
         return HttpResponse.ok(docMgmt.getMyDocuments(
                 pc != null ? pc.toPageable() : Pageable.unpaged(),
