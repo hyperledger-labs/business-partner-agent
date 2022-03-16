@@ -1,6 +1,6 @@
 # Business Partner Agent [![join the chat][discord-image]][discord-url]
 
-[discord-url]: https://discord.com/channels/905194001349627914/948240184124788736
+[discord-url]: https://discord.gg/hyperledger
 [discord-image]: https://img.shields.io/badge/DISCORD-JOIN%20CHAT-green
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
@@ -37,6 +37,7 @@ The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Ide
 |                  | manual: send credential offer to holder                                | indy: v1, v2 <br/>w3c: v2         |
 |                  | manual: receive credential proposal from holder                        | indy: v1, v2 <br/>w3c: v2         |
 |                  | manual: decline credential proposal from holder and provide reason     | indy: v1, v2 <br/>w3c: v2         |
+|                  | send credential offer as invitation attachment                         | indy: v2                          |
 |                  | revoke issued credential (requires tails server)                       | indy: v1, v2 <br/>w3c: n/a        |
 |                  | send revocation notification                                           | indy: v1, v2 <br/>w3c: n/a        |
 | Holder           |                                                                        |                                   |
