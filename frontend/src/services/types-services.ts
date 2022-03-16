@@ -63,3 +63,12 @@ export type ProofTemplate = components["schemas"]["ProofTemplate"];
 
 export type PresentationRequestVersion =
   components["schemas"]["PresentationRequestVersion"];
+
+export class Page<T> {
+  size?: number;
+  totalPages?: number;
+  totalSize?: number;
+  pageNumber?: number;
+  numberOfElements?: number;
+  content?: T;
+}
