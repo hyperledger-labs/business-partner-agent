@@ -72,3 +72,26 @@ export class Page<T> {
   numberOfElements?: number;
   content?: T;
 }
+
+export class PageOptions {
+  page = 1;
+  itemsPerPage = 10;
+  sortBy: string[] = [];
+  sortDesc: boolean[] = [];
+
+  static toUrlSearchParams(options: PageOptions) {
+    const params = new URLSearchParams();
+    const currentPage = Number(options.page) - 1;
+    params.append("page", currentPage.toString());
+    if (options.itemsPerPage) {
+      params.append("size", options.itemsPerPage.toString());
+    }
+    if (options.sortBy && options.sortBy.length > 0) {
+      params.append("q", String(options.sortBy));
+    }
+    if (options.sortDesc) {
+      params.append("desc", String(options.sortDesc));
+    }
+    return params;
+  }
+}

@@ -76,7 +76,9 @@ export default {
     params: URLSearchParams = new URLSearchParams()
   ): Promise<AxiosResponse<Page<CredEx[]>>> {
     params.set("role", CredentialExchangeRoles.ISSUER);
-    params.set("partnerId", id);
+    if (id) {
+      params.set("partnerId", id);
+    }
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
       params: params,
     });

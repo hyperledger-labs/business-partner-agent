@@ -263,6 +263,7 @@
 import {
   CredentialOfferRequest,
   issuerService,
+  PageOptions,
   walletService,
 } from "@/services";
 import Cred from "@/components/Credential.vue";
@@ -324,6 +325,7 @@ export default {
         {
           text: this.$t("component.credExList.headers.displayText"),
           value: "displayText",
+          sortable: false,
         },
         {
           text:
@@ -331,6 +333,7 @@ export default {
               ? this.$t("component.credExList.headers.role")
               : this.$t("component.credExList.headers.partnerName"),
           value: this.headerRole === true ? "role" : "partner.name",
+          sortable: false,
         },
         {
           text: this.$t("component.credExList.headers.updatedAt"),
@@ -343,6 +346,7 @@ export default {
         {
           text: this.$t("component.credExList.headers.revocable"),
           value: "revocable",
+          sortable: false,
         },
       ];
     },
@@ -413,7 +417,7 @@ export default {
       credentialContentChanged: false,
       declineReasonText: "",
       exchangeRoles: CredentialExchangeRoles,
-      options: {},
+      options: new PageOptions(),
       isLoadingCredentials: false,
       totalNumberOfElements: 0,
       hideFooter: false,
@@ -436,23 +440,13 @@ export default {
     },
   },
   methods: {
-    queryFilter() {
-      const { page, itemsPerPage, sortBy, sortDesc } = this.options;
-      const params = new URLSearchParams();
-      const currentPage = Number(page) - 1;
-      params.append("size", itemsPerPage);
-      params.append("page", currentPage.toString());
-      params.append("q", sortBy);
-      params.append("desc", sortDesc);
-      return params;
-    },
     async loadCredentials() {
       this.isLoadingCredentials = true;
       this.exchanges = [];
       try {
         const iresp = await issuerService.listCredentialExchangesAsIssuer(
           undefined,
-          this.queryFilter()
+          PageOptions.toUrlSearchParams(this.options)
         );
         if (iresp.status === 200) {
           const { itemsPerPage } = this.options;
