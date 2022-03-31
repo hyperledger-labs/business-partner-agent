@@ -416,8 +416,8 @@
                                 </goals>
                                 <configuration>
                                     <!-- See https://nodejs.org/en/download/ -->
-                                    <nodeVersion>v16.14.0</nodeVersion>
-                                    <npmVersion>8.3.1</npmVersion>
+                                    <nodeVersion>v16.14.2</nodeVersion>
+                                    <npmVersion>8.5.0</npmVersion>
                                 </configuration>
                             </execution>
                             <execution>

@@ -44,7 +44,7 @@ public class FrontendSecurityHeaderFilter implements HttpServerFilter {
     public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
         return Flux.from(chain.proceed(request))
                 .doOnNext(res -> {
-                    // uncritical headers, should always be set
+                    // Uncritical headers, should always be set
                     res.getHeaders()
                             .add("Referrer-Policy", "same-origin")
                             .add("X-Content-Type-Options", "nosniff");
@@ -58,7 +58,7 @@ public class FrontendSecurityHeaderFilter implements HttpServerFilter {
                         frameSources = "frame-src " + String.join(" ", allowedHosts.get()) + "; " +
                                 "frame-ancestors " + String.join(" ", allowedHosts.get()) + "; ";
                     }
-                    if (!StringUtils.contains(request.getPath(), "swagger")) { // skipping swagger
+                    if (!StringUtils.contains(request.getPath(), "swagger")) { // Skipping swagger
                         res.getHeaders().add("Content-Security-Policy", frameSources +
                                 "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; " +
                                 "img-src 'self'; font-src 'self' data:");
