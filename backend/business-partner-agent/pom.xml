@@ -92,7 +92,7 @@
         <dependency>
             <groupId>io.micronaut.redis</groupId>
             <artifactId>micronaut-redis-lettuce</artifactId>
-            <version>5.1.0</version>
+            <version>5.2.0</version>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
@@ -107,7 +107,7 @@
         <dependency><!-- Overwrite for jakarta-annotations-api -->
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-annotations-api</artifactId>
-            <version>10.1.0-M10</version>
+            <version>10.1.0-M12</version>
         </dependency>
 
         <!-- Logging -->
@@ -170,7 +170,7 @@
         <dependency>
             <groupId>io.micronaut.email</groupId>
             <artifactId>micronaut-email-mailjet</artifactId>
-            <version>1.1.1</version>
+            <version>1.2.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.activation</groupId>
@@ -366,7 +366,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>3.3.0</version>
                         <executions>
                             <execution>
                                 <id>copy</id>
