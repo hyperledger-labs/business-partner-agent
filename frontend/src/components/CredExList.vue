@@ -417,7 +417,7 @@ export default {
       credentialContentChanged: false,
       declineReasonText: "",
       exchangeRoles: CredentialExchangeRoles,
-      options: new PageOptions(),
+      options: {},
       isLoadingCredentials: false,
       totalNumberOfElements: 0,
       hideFooter: false,

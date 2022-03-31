@@ -22,7 +22,6 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.convert.format.Format;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.Sort;
-import io.micronaut.http.HttpRequest;
 import io.micronaut.http.annotation.QueryValue;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.Data;
@@ -73,6 +72,6 @@ public class PaginationCommand {
     }
 
     public Boolean getDesc() {
-        return desc != null ? desc : false;
+        return desc != null && desc;
     }
 }
