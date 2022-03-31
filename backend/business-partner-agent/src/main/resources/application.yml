@@ -6,8 +6,12 @@ micronaut:
   server:
     port: 8080
     cors:
-      enabled: true # potential security risk
+      enabled: true # permissive cors, for strict cors configuration add strict-security.yml
     idle-timeout: 30m
+    netty:
+      responses:
+        file:
+          cache-seconds: 60
   security:
     enabled: ${BPA_SECURITY_ENABLED:true}
     authentication: session
@@ -34,6 +38,10 @@ micronaut:
           - isAuthenticated()
   session:
     max-inactive-interval: 12h
+    http:
+      cookie-same-site: strict
+      cookie-name: __HOST-SESSION
+      cookie-max-age: ${micronaut.session.max-inactive-interval}
   router:
     # note also check the AppController
     static-resources:

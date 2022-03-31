@@ -8,9 +8,8 @@
 /*
  * This globally extends the base Vuetify style
  */
-@import url("https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900");
-@import url("https://fonts.googleapis.com/css?family=Material+Icons");
 @import "~material-design-icons-iconfont/dist/material-design-icons.css";
+@import "~@fontsource/roboto/index.css";
 @import "~@fortawesome/fontawesome-free/css/all.css";
 @import "~vuetify/src/styles/styles.sass";
 
