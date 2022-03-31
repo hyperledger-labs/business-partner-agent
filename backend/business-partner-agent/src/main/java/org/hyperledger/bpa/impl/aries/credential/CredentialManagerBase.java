@@ -95,7 +95,7 @@ public abstract class CredentialManagerBase {
         return credEx;
     }
 
-    public Page<CredEx> foo(@Nullable CredentialExchangeRole role, @Nullable UUID partnerId,
+    public Page<CredEx> listCredentialExchanges(@Nullable CredentialExchangeRole role, @Nullable UUID partnerId,
             @NonNull Pageable pageable) {
         List<CredentialExchangeRole> roles = role == null ? List.of(CredentialExchangeRole.values()) : List.of(role);
         Page<BPACredentialExchange> exchanges = partnerId == null
@@ -105,7 +105,8 @@ public abstract class CredentialManagerBase {
         return exchanges.map(ex -> CredEx.from(ex, conv.toAPIObject(ex.getPartner())));
     }
 
-    public List<CredEx> listCredentialExchanges(@Nullable CredentialExchangeRole role, @Nullable UUID partnerId) {
+    @Deprecated
+    public List<CredEx> listCredentialExchangesOld(@Nullable CredentialExchangeRole role, @Nullable UUID partnerId) {
         List<BPACredentialExchange> exchanges = issuerCredExRepo.listOrderByUpdatedAtDesc();
         // now, lets get credentials...
         return exchanges.stream()

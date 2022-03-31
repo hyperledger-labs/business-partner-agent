@@ -117,6 +117,7 @@ export default {
         {
           text: this.$t("view.wallet.credentials.headers.issuedAt"),
           value: "issuedAt",
+          sortable: false,
         },
         {
           text: this.$t("view.wallet.credentials.headers.revoked"),
@@ -140,11 +141,11 @@ export default {
         },
         {
           text: this.$t("view.wallet.documents.headers.createdDate"),
-          value: "createdDate",
+          value: "createdAt",
         },
         {
           text: this.$t("view.wallet.documents.headers.updatedDate"),
-          value: "updatedDate",
+          value: "updatedAt",
         },
         {
           text: this.$t("view.wallet.documents.headers.isPublic"),

@@ -99,6 +99,8 @@
 import { CredentialExchangeStates, CredentialTypes } from "@/constants";
 import { EventBus } from "@/main";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
+import { Page, PageOptions } from "@/services";
+import { AxiosResponse } from "axios";
 
 export default {
   props: {
@@ -142,19 +144,13 @@ export default {
   },
   computed: {
     queryFilter() {
-      const { page, itemsPerPage, sortBy, sortDesc } = this.options;
-      const params = new URLSearchParams();
-      const currentPage = Number(page) - 1;
+      const params = PageOptions.toUrlSearchParams(this.options);
       if (this.useIndy) {
         params.append("types", CredentialTypes.INDY.type);
       }
       if (this.useJsonLd) {
         params.append("types", CredentialTypes.JSON_LD.type);
       }
-      params.append("size", itemsPerPage);
-      params.append("page", currentPage.toString());
-      params.append("q", sortBy);
-      params.append("desc", sortDesc);
       return params;
     },
     credentialNotifications() {
@@ -186,23 +182,20 @@ export default {
     fetch(type) {
       this.$axios
         .get(`${this.$apiBaseUrl}/wallet/${type}`, { params: this.queryFilter })
-        .then((result) => {
-          if (Object.prototype.hasOwnProperty.call(result, "data")) {
-            const { itemsPerPage } = this.options;
-            this.isBusy = false;
-            this.totalNumberOfElements = result.data.totalSize;
-            this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
-            this.data =
-              type === "credential"
-                ? result.data.content.filter((item) => {
-                    return (
-                      item.state ===
-                        CredentialExchangeStates.CREDENTIAL_ACKED ||
-                      item.state === CredentialExchangeStates.DONE
-                    );
-                  })
-                : result.data.content;
-          }
+        .then((result: AxiosResponse<Page<any>>) => {
+          const { itemsPerPage } = this.options;
+          this.isBusy = false;
+          this.totalNumberOfElements = result.data.totalSize;
+          this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
+          this.data =
+            type === "credential"
+              ? result.data.content.filter((item) => {
+                  return (
+                    item.state === CredentialExchangeStates.CREDENTIAL_ACKED ||
+                    item.state === CredentialExchangeStates.DONE
+                  );
+                })
+              : result.data.content;
         })
         .catch((error) => {
           this.isBusy = false;

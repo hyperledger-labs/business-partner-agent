@@ -19,6 +19,7 @@ package org.hyperledger.bpa.controller;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.*;
@@ -167,7 +168,8 @@ public class IssuerController {
             @Valid @Nullable PaginationCommand pc,
             @Parameter(description = "issuer or holder") @Nullable @QueryValue CredentialExchangeRole role,
             @Parameter(description = "partner id") @Nullable @QueryValue UUID partnerId) {
-        return HttpResponse.ok(im.foo(role, partnerId, pc.toPageable()));
+        return HttpResponse.ok(im.listCredentialExchanges(role, partnerId,
+                pc != null ? pc.toPageable() : Pageable.unpaged()));
     }
 
     /**

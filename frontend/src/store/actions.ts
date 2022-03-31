@@ -14,7 +14,8 @@ import proofTemplateService from "@/services/proof-template-service";
 import partnerService from "@/services/partner-service";
 import issuerService from "@/services/issuer-service";
 import * as textUtils from "@/utils/textUtils";
-import { ProofTemplate } from "@/services";
+import { Page, ProofTemplate } from "@/services";
+import { AxiosResponse } from "axios";
 
 export const loadSchemas = async ({ commit }) => {
   adminService
@@ -93,19 +94,16 @@ export const loadPartners = async ({ commit }) => {
 export const loadDocuments = async ({ commit }) => {
   axios
     .get(`${apiBaseUrl}/wallet/document`)
-    .then((result) => {
-      if (Object.prototype.hasOwnProperty.call(result, "data")) {
-        const documents = result.data.content;
-        documents.content.map((documentIn) => {
-          documentIn.createdAt = moment(documentIn.createdAt);
-          documentIn.updatedAt = moment(documentIn.updatedAt);
-        });
-
-        commit({
-          type: "loadDocumentsFinished",
-          documents: documents,
-        });
-      }
+    .then((result: AxiosResponse<Page<any>>) => {
+      const documents = result.data.content;
+      documents.map((documentIn) => {
+        documentIn.createdAt = moment(documentIn.createdAt);
+        documentIn.updatedAt = moment(documentIn.updatedAt);
+      });
+      commit({
+        type: "loadDocumentsFinished",
+        documents: documents,
+      });
     })
     .catch((error) => {
       console.error(error);
