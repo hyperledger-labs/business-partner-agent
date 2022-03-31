@@ -1,4 +1,13 @@
 {
+  "@fontsource/roboto": {
+    "ignore": false,
+    "name": "@fontsource/roboto",
+    "version": "4.5.3",
+    "authors": "Lotus <declininglotus@gmail.com>",
+    "url": "https://github.com/fontsource/fontsource",
+    "license": "MIT",
+    "licenseText": ""
+  },
   "@types/http-link-header": {
     "ignore": false,
     "name": "@types/http-link-header",
