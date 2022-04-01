@@ -61,21 +61,14 @@ export default {
     );
   },
 
-  listCredentialExchanges(id: string): Promise<AxiosResponse<CredEx[]>> {
-    return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
-      params: { partnerId: id },
-    });
-  },
-
   getCredExRecord(id: string): Promise<AxiosResponse<CredEx>> {
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges/${id}`);
   },
 
-  listCredentialExchangesAsIssuer(
+  listCredentialExchanges(
     id?: string,
     params: URLSearchParams = new URLSearchParams()
   ): Promise<AxiosResponse<Page<CredEx[]>>> {
-    params.set("role", CredentialExchangeRoles.ISSUER);
     if (id) {
       params.set("partnerId", id);
     }

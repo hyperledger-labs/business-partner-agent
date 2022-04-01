@@ -108,7 +108,7 @@
         </v-layout>
       </v-card-title>
       <v-card-text>
-        <CredExList />
+        <CredExList ref="credExList" asIssuer />
       </v-card-text>
     </v-card>
   </v-container>
@@ -194,7 +194,7 @@ export default {
     async loadCredentials() {
       this.partner = {};
       this.credDef = {};
-      // TODO fire load
+      await this.$refs.credExList.loadCredentials();
     },
     credentialIssued() {
       this.issueCredentialDialog = false;

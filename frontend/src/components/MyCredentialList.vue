@@ -52,11 +52,11 @@
       </template>
 
       <template v-slot:[`item.createdAt`]="{ item }">
-        {{ item.createdDate | formatDateLong }}
+        {{ item.createdAt | formatDateLong }}
       </template>
 
       <template v-slot:[`item.updatedAt`]="{ item }">
-        {{ item.updatedDate | formatDateLong }}
+        {{ item.updatedAt | formatDateLong }}
       </template>
 
       <template v-slot:[`item.issuedAt`]="{ item }">

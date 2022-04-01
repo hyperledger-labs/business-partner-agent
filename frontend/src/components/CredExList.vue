@@ -8,6 +8,10 @@
 
 <template>
   <v-container>
+    <v-progress-linear
+      v-if="isLoadingCredentials"
+      indeterminate
+    ></v-progress-linear>
     <v-data-table
       :loading="isLoadingCredentials"
       :hide-default-footer="hideFooter"
@@ -290,6 +294,8 @@ export default {
       type: Boolean,
       default: false,
     },
+    partnerId: String,
+    asIssuer: Boolean,
     openItemById: String,
   },
   created() {
@@ -443,10 +449,14 @@ export default {
     async loadCredentials() {
       this.isLoadingCredentials = true;
       this.exchanges = [];
+      const params = PageOptions.toUrlSearchParams(this.options);
+      if (this.asIssuer) {
+        params.set("role", CredentialExchangeRoles.ISSUER);
+      }
       try {
-        const iresp = await issuerService.listCredentialExchangesAsIssuer(
-          undefined,
-          PageOptions.toUrlSearchParams(this.options)
+        const iresp = await issuerService.listCredentialExchanges(
+          this.partnerId,
+          params
         );
         if (iresp.status === 200) {
           const { itemsPerPage } = this.options;

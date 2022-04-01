@@ -188,14 +188,12 @@
           </v-bpa-button>
         </v-layout>
       </v-card-title>
-      <v-progress-linear
-        v-if="isLoadingCredExRecords"
-        indeterminate
-      ></v-progress-linear>
       <CredExList
+        ref="credExList"
         v-if="isReady"
         v-bind:items="issuedCredentials"
         header-role
+        v-bind:partnerId="id"
         v-bind:openItemById="credExId"
         @changed="refreshIssuedCredentialRecords"
       ></CredExList>
@@ -255,7 +253,7 @@ import PartnerStateIndicator from "@/components/PartnerStateIndicator.vue";
 import { CredentialTypes, PartnerStates } from "@/constants";
 import { getPartnerProfile, getPartnerState } from "@/utils/partnerUtils";
 import { EventBus } from "@/main";
-import { issuerService, partnerService } from "@/services";
+import { partnerService } from "@/services";
 import CredExList from "@/components/CredExList.vue";
 import PresentationExList from "@/components/PresentationExList.vue";
 import IssueCredential from "@/components/IssueCredential.vue";
@@ -283,7 +281,6 @@ export default {
     EventBus.$emit("title", this.$t("view.partner.title"));
     this.getPartner();
     this.getPresentationRecords();
-    this.getIssuedCredentials(this.id);
     this.$store.commit("partnerNotificationSeen", { id: this.id });
   },
   data: () => {
@@ -291,7 +288,6 @@ export default {
       isReady: false,
       isBusy: false,
       isLoading: true,
-      isLoadingCredExRecords: true,
       isLoadingPresExRecords: true,
       attentionPartnerStateDialog: false,
       updatePartnerDialog: false,
@@ -378,26 +374,8 @@ export default {
           console.error(error);
         });
     },
-
-    // Issue Credentials
-    getIssuedCredentials(id) {
-      console.log("Getting issued credential records...");
-      this.isLoadingCredExRecords = true;
-      issuerService
-        .listCredentialExchanges(id)
-        .then((result) => {
-          this.isLoadingCredExRecords = false;
-          if (Object.prototype.hasOwnProperty.call(result, "data")) {
-            this.issuedCredentials = result.data;
-          }
-        })
-        .catch((error) => {
-          this.isLoadingCredExRecords = false;
-          console.error(error);
-        });
-    },
     refreshIssuedCredentialRecords() {
-      this.getIssuedCredentials(this.id);
+      this.$refs.credExList.loadCredentials();
     },
     requestCredential() {
       if (this.isActive) {
@@ -528,7 +506,7 @@ export default {
     },
     onCredentialIssued() {
       this.issueCredentialDialog = false;
-      this.getIssuedCredentials(`${this.id}`);
+      this.refreshIssuedCredentialRecords();
     },
   },
 };
