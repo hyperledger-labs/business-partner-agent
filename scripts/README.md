@@ -62,7 +62,7 @@ Alternatively, you can register a DID manually:
 
 1. Go to https://indy-test.bosch-digital.de/
 2. Provide a 32 characterer wallet seed on the right side under "Authenticate a new DID" and click on "Register DID"
-3. Make a copy of the provided [.env-example file](.env-example) with the name `.env`. Set the `AGENT1_SEED` to the wallet seed.
+3. Make a copy of the provided [.env-example file](.env-example) with the name `.env`. Set the `ACAPY_SEED` to the wallet seed.
 
 ## Start a Business Partner Agent instance
 
