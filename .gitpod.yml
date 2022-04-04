@@ -64,7 +64,7 @@ tasks:
   - name: dev backend
     init: | 
       cd /workspace/business-partner-agent/backend
-      mvn clean install -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
+      mvn clean install -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true -Dlicense.skip=true
     command: |   
       gp await-port 8030
       source /workspace/business-partner-agent/scripts/setup-gitpod.sh
