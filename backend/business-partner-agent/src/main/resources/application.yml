@@ -174,19 +174,19 @@ bpa:
 #      dark: false
 #      themes:
 #        light:
-#          primary: "#4A148C",
-#          secondary: "#424242",
-#          accent: "#82B1FF",
-#          error: "#FF5252",
-#          info: "#2196F3",
-#          success: "#4CAF50",
-#          warning: "#FFC107",
+#          primary: "#4A148C"
+#          secondary: "#424242"
+#          accent: "#82B1FF"
+#          error: "#FF5252"
+#          info: "#2196F3"
+#          success: "#4CAF50"
+#          warning: "#FFC107"
 #          // the following are custom and are used as variables in style.scss
-#          bgLight: "#FAFAFA",
-#          bgLight2: "#ECECEC",
-#          font: "#313132",
-#          anchor: "#1A5A96",
-#          anchorHover: "#3B99FC",
+#          bgLight: "#FAFAFA"
+#          bgLight2: "#ECECEC"
+#          font: "#313132"
+#          anchor: "#1A5A96"
+#          anchorHover: "#3B99FC"
 #          icons: "#000000"
 # // see App.vue
 #    favicon:

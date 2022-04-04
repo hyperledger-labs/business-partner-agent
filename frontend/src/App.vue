@@ -448,7 +448,7 @@ export default {
     if (this.$config.ux) {
       this.ux = merge(this.ux, this.$config.ux);
 
-      // Copy the the configuration UX themes, this allows us to change primary color later...
+      // Copy the configuration UX themes, this allows us to change primary color later...
       if (this.ux.theme) {
         this.$vuetify.theme.dark = this.ux.theme.dark
           ? this.ux.theme.dark

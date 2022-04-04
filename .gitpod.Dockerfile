@@ -8,6 +8,9 @@ ENV TRIGGER_REBUILD 12
 
 USER root
 
+# Install Java 17
+RUN bash -c ". /home/gitpod/.sdkman/bin/sdkman-init.sh && sdk install java 17.0.2-tem"
+
 ### QEMU (x86) and workspace kernel development tools
 RUN install-packages qemu qemu-system-x86 linux-image-$(uname -r) libguestfs-tools sshpass
 

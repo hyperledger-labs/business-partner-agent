@@ -40,6 +40,9 @@ public class FrontendSecurityHeaderFilter implements HttpServerFilter {
     @Property(name = "bpa.allowed.hosts")
     Optional<List<String>> allowedHosts;
 
+    @Property(name = "bpa.ux.navigation.avatar.agent.default")
+    Optional<Boolean> avatarImageDefault;
+
     @Override
     public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
         return Flux.from(chain.proceed(request))
@@ -58,10 +61,17 @@ public class FrontendSecurityHeaderFilter implements HttpServerFilter {
                         frameSources = "frame-src " + String.join(" ", allowedHosts.get()) + "; " +
                                 "frame-ancestors " + String.join(" ", allowedHosts.get()) + "; ";
                     }
+                    String imgSource = "img-src 'self'";
+                    if (avatarImageDefault.isPresent() && !avatarImageDefault.get()) {
+                        imgSource += " data:";
+                    }
+                    imgSource += "; ";
                     if (!StringUtils.contains(request.getPath(), "swagger")) { // Skipping swagger
-                        res.getHeaders().add("Content-Security-Policy", frameSources +
-                                "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; " +
-                                "img-src 'self'; font-src 'self' data:");
+                        res.getHeaders().add("Content-Security-Policy",
+                                frameSources +
+                                        imgSource +
+                                        "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; " +
+                                        "font-src 'self' data:");
                     }
                 });
     }

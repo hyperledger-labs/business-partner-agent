@@ -51,7 +51,9 @@ register_did() {
         fi
         # sed on Mac and Linux work differently
         if [ "$ARCHITECTURE" = "Mac" ]; then
-            sed -i'' '/'"$1"'=/c\'"$1"'='"${SEED}"'' $DEST_FILE
+            sed -i '' '/'"$1"'=/c\
+'"$1"'='"${SEED}"'
+            ' $DEST_FILE
         else
             sed -i '/'"$1"'=/c\
             '"$1"'='"${SEED}"'
