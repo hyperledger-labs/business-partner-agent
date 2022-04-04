@@ -13,6 +13,8 @@ Furthermore, the firewall might block traffic to other agents depending on its e
 
 ## TL;DR
 
+Spinning up a single instance that is not exposed to the internet.
+
 ```s
 git clone https://github.com/hyperledger-labs/business-partner-agent
 cd scripts
@@ -103,7 +105,7 @@ Alternatively, you can register a DID manually:
 
 1. Go to https://indy-test.bosch-digital.de/
 2. Provide a 32 character wallet seed on the right side under "Authenticate a new DID" and click on "Register DID"
-3. Make a copy of the provided [.env-example file](.env-example) with the name `.env`. Set the `AGENT1_SEED` to the wallet seed.
+3. Make a copy of the provided [.env-example file](.env-example) with the name `.env`. Set the `AGENT1_SEED` to the wallet seed. Repeat this process for the second DID if needed, and set the `ACAPY_SEED2` to the second wallet seed.
 
 ## Get a public IP
 If you did not deploy your agent on a server with a public ip it won't have public endpoints to communicate with other agents.
@@ -130,3 +132,18 @@ and a username and password.
 
 Ideally also configure a secure connection between the backend services (core and aca-py).
 This can be achieved by setting an API key in `.env` file via `ACAPY_ADMIN_CONFIG` (see example).
+
+## Customizing the frontend
+
+There are some limited options to customize the UI without recompiling the code
+e.g. exchanging the image or setting some styles. For options see the ux properties in:
+[application.yml](../backend/business-partner-agent/src/main/resources/application.yml)
+
+E.g. to exchange the logo you can set:
+
+```s
+-Dbpa.ux.navigation.avatar.agent.enabled="true"
+-Dbpa.ux.navigation.avatar.agent.default="false"
+-Dbpa.ux.navigation.avatar.agent.src=data:image/png;base64,<...>
+```
+In the JAVA_OPTS section of the bpa-agent1 or bpa-agent2 in the docker compose file.

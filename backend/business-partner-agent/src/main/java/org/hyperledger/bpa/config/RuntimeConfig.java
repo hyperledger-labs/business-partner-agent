@@ -18,11 +18,12 @@
 package org.hyperledger.bpa.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.micronaut.context.annotation.Property;
+import io.micronaut.context.annotation.ConfigurationProperties;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.ApplicationEventListener;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -77,8 +78,8 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
     @Value("${bpa.creddef.revocationRegistrySize}")
     Integer revocationRegistrySize;
 
-    @Property(name = "bpa.ux")
-    Map<String, Object> ux;
+    @Inject
+    UxConfig ux;
 
     @Value("${bpa.title}")
     String title;
@@ -128,6 +129,83 @@ public class RuntimeConfig implements ApplicationEventListener<StartupTasks.AcaP
                     .isPresent();
         } catch (IOException e) {
             log.warn("aca-py is not reachable");
+        }
+    }
+
+    @Data
+    @NoArgsConstructor
+    @ConfigurationProperties("bpa.ux")
+    public static final class UxConfig {
+        private Map<String, Object> buttons;
+        private Map<String, Object> theme;
+        private Map<String, Object> favicon;
+        private UxConfigNavigation navigation;
+        private Map<String, Object> header;
+
+        @Data
+        @NoArgsConstructor
+        @ConfigurationProperties("navigation")
+        public static final class UxConfigNavigation {
+
+            private UxConfigNavigationAvatar avatar;
+            private UxConfigNavigationSettings settings;
+            private UxConfigNavigationAbout about;
+            private UxConfigNavigationLogout logout;
+
+            @Data
+            @NoArgsConstructor
+            @ConfigurationProperties("avatar")
+            public static final class UxConfigNavigationAvatar {
+
+                private UxConfigNavigationAvatarAgent agent;
+
+                @Data
+                @NoArgsConstructor
+                @ConfigurationProperties("agent")
+                public static final class UxConfigNavigationAvatarAgent {
+                    private Boolean enabled;
+                    @JsonIgnore
+                    private Boolean def;
+                    private String src;
+                    private Boolean showName;
+
+                    public void setDefault(Boolean d) {
+                        this.def = d;
+                    }
+
+                    public Boolean getDefault() {
+                        return this.def;
+                    }
+                }
+            }
+
+            @Data
+            @NoArgsConstructor
+            @ConfigurationProperties("settings")
+            public static final class UxConfigNavigationSettings {
+                private String location;
+            }
+
+            @Data
+            @NoArgsConstructor
+            @ConfigurationProperties("about")
+            public static final class UxConfigNavigationAbout {
+                private Boolean enabled;
+            }
+
+            @Data
+            @NoArgsConstructor
+            @ConfigurationProperties("logout")
+            public static final class UxConfigNavigationLogout {
+                private Boolean enabled;
+            }
+        }
+
+        @Data
+        @NoArgsConstructor
+        @ConfigurationProperties("header")
+        public static final class UxConfigNavigationHeader {
+            private UxConfigNavigation.UxConfigNavigationLogout logout;
         }
     }
 }
