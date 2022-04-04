@@ -7,7 +7,7 @@ COPY frontend .
 RUN npm install && npm run build
 
 # Micronaut build
-FROM maven:3-eclipse-temurin-17-alpine as MAVEN
+FROM maven:3-eclipse-temurin-17 as MAVEN
 
 WORKDIR /home/maven
 
@@ -25,7 +25,7 @@ RUN mvn dependency:go-offline || true
 RUN mvn clean package -DskipTests=true -Dspotbugs.skip=true -Dpmd.skip=true
 
 # Runtime Container
-FROM eclipse-temurin:17-alpine
+FROM eclipse-temurin:17-jre-focal
 
 # Setup rights for overwriting frontend runtime variables
 COPY --from=VUE /frontend/setup-runtime.sh setup-runtime.sh
