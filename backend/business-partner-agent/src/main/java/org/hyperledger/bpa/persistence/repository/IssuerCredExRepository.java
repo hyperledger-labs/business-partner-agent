@@ -61,12 +61,6 @@ public interface IssuerCredExRepository extends PageableRepository<BPACredential
 
     int countIdByCredDefId(@NonNull UUID credDefId);
 
-    @Deprecated
-    @Join(value = "schema", type = Join.Type.LEFT_FETCH)
-    @Join(value = "credDef", type = Join.Type.LEFT_FETCH)
-    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
-    List<BPACredentialExchange> listOrderByUpdatedAtDesc();
-
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     @Join(value = "credDef", type = Join.Type.LEFT_FETCH)
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)

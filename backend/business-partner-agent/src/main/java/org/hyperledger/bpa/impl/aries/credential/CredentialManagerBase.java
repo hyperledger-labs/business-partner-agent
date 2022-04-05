@@ -44,7 +44,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Wraps all credential exchange logic that is common for indy and json-ld
@@ -103,28 +102,6 @@ public abstract class CredentialManagerBase {
                 : issuerCredExRepo.findByRoleInAndPartnerEquals(roles, Partner.builder().id(partnerId).build(),
                         pageable);
         return exchanges.map(ex -> CredEx.from(ex, conv.toAPIObject(ex.getPartner())));
-    }
-
-    @Deprecated
-    public List<CredEx> listCredentialExchangesOld(@Nullable CredentialExchangeRole role, @Nullable UUID partnerId) {
-        List<BPACredentialExchange> exchanges = issuerCredExRepo.listOrderByUpdatedAtDesc();
-        // now, lets get credentials...
-        return exchanges.stream()
-                .filter(x -> {
-                    if (role != null) {
-                        return role.equals(x.getRole());
-                    }
-                    return true;
-                })
-                .filter(x -> x.getPartner() != null)
-                .filter(x -> {
-                    if (partnerId != null) {
-                        return x.getPartner().getId().equals(partnerId);
-                    }
-                    return true;
-                })
-                .map(ex -> CredEx.from(ex, conv.toAPIObject(ex.getPartner())))
-                .collect(Collectors.toList());
     }
 
     public CredEx findCredentialExchangeById(@NonNull UUID id) {
