@@ -37,7 +37,8 @@ import java.util.UUID;
  * Manages webhooks
  *
  */
-@Controller("/api/webhook")
+// TODO do we still need this? If yes needs refactoring, until then make it inaccessible
+// @Controller("/api/webhook")
 @Tag(name = "Webhook")
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @ExecuteOn(TaskExecutors.IO)
