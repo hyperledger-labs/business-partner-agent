@@ -8,13 +8,6 @@
 
 <template>
   <v-container>
-    <v-text-field
-      v-model="search"
-      append-icon="$vuetify.icons.search"
-      :label="$t('app.search')"
-      single-line
-      hide-details
-    ></v-text-field>
     <v-data-table
       :hide-default-footer="hideFooter"
       :loading="isBusy"
@@ -23,7 +16,6 @@
       :items="data"
       :options.sync="options"
       :server-items-length="totalNumberOfElements"
-      :search="search"
       :show-select="selectable"
       single-select
       sort-by="createdAt"
@@ -169,26 +161,28 @@ export default {
     credentialNotifications: function (newValue) {
       if (newValue && this.type === "credential") {
         // TODO: Don't fetch all partners but only add new credential data
-        this.fetch(this.type);
+        this.fetch();
       }
     },
     options: {
       handler() {
-        this.fetch(this.type);
+        this.fetch();
       },
     },
   },
   methods: {
-    fetch(type) {
+    fetch() {
       this.$axios
-        .get(`${this.$apiBaseUrl}/wallet/${type}`, { params: this.queryFilter })
+        .get(`${this.$apiBaseUrl}/wallet/${this.type}`, {
+          params: this.queryFilter,
+        })
         .then((result: AxiosResponse<Page<any>>) => {
           const { itemsPerPage } = this.options;
           this.isBusy = false;
           this.totalNumberOfElements = result.data.totalSize;
           this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
           this.data =
-            type === "credential"
+            this.type === "credential"
               ? result.data.content.filter((item) => {
                   return (
                     item.state === CredentialExchangeStates.CREDENTIAL_ACKED ||
