@@ -79,9 +79,10 @@ export class PageOptions {
   sortBy: string[] = [];
   sortDesc: boolean[] = [];
 
-  static toUrlSearchParams(options: PageOptions) {
+  static toUrlSearchParams(options: PageOptions = new PageOptions()) {
     const params = new URLSearchParams();
-    const currentPage = Number(options.page) - 1;
+    const optionKeys = Object.keys(options).length;
+    const currentPage = optionKeys > 0 ? Number(options.page) - 1 : 0;
     params.append("page", currentPage.toString());
     if (options.itemsPerPage) {
       params.append("size", options.itemsPerPage.toString());

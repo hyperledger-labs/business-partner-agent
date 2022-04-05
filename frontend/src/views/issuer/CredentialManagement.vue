@@ -132,7 +132,6 @@ export default {
   },
   created() {
     EventBus.$emit("title", this.$t("view.issueCredentials.title"));
-    this.loadCredentials();
   },
   data: () => {
     return {
