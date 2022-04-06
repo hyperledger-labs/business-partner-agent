@@ -64,6 +64,11 @@ export type ProofTemplate = components["schemas"]["ProofTemplate"];
 export type PresentationRequestVersion =
   components["schemas"]["PresentationRequestVersion"];
 
+export type MyDocumentAPI = components["schemas"]["MyDocumentAPI"];
+
+export type AriesCredential = components["schemas"]["AriesCredential"];
+
+// Page response from server
 export class Page<T> {
   size?: number;
   totalPages?: number;
@@ -73,6 +78,7 @@ export class Page<T> {
   content?: T;
 }
 
+// Translates between datatable pagination names and server names, see also PaginationCommand
 export class PageOptions {
   page = 1;
   itemsPerPage = 10;

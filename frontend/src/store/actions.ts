@@ -5,7 +5,6 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-import moment from "moment";
 import { CredentialTypes, PartnerStates } from "@/constants";
 import { EventBus, axios, apiBaseUrl } from "../main";
 import { getPartnerProfile } from "@/utils/partnerUtils";
@@ -14,7 +13,12 @@ import proofTemplateService from "@/services/proof-template-service";
 import partnerService from "@/services/partner-service";
 import issuerService from "@/services/issuer-service";
 import * as textUtils from "@/utils/textUtils";
-import { Page, ProofTemplate } from "@/services";
+import {
+  AriesCredential,
+  MyDocumentAPI,
+  Page,
+  ProofTemplate,
+} from "@/services";
 import { AxiosResponse } from "axios";
 
 export const loadSchemas = async ({ commit }) => {
@@ -94,15 +98,10 @@ export const loadPartners = async ({ commit }) => {
 export const loadDocuments = async ({ commit }) => {
   axios
     .get(`${apiBaseUrl}/wallet/document`)
-    .then((result: AxiosResponse<Page<any>>) => {
-      const documents = result.data.content;
-      documents.map((documentIn) => {
-        documentIn.createdAt = moment(documentIn.createdAt);
-        documentIn.updatedAt = moment(documentIn.updatedAt);
-      });
+    .then((result: AxiosResponse<Page<MyDocumentAPI[]>>) => {
       commit({
         type: "loadDocumentsFinished",
-        documents: documents,
+        documents: result.data.content,
       });
     })
     .catch((error) => {
@@ -114,25 +113,23 @@ export const loadDocuments = async ({ commit }) => {
 export const loadCredentials = async ({ commit }) => {
   axios
     .get(`${apiBaseUrl}/wallet/credential`)
-    .then((result) => {
-      if (Object.prototype.hasOwnProperty.call(result, "data")) {
-        const credentials: Array<any> = [];
-        for (const credentialReference of result.data) {
-          axios
-            .get(`${apiBaseUrl}/wallet/credential/${credentialReference.id}`)
-            .then((result) => {
-              credentials.push(result.data);
-            })
-            .catch((error) => {
-              console.error(error);
-              EventBus.$emit("error", error);
-            });
-        }
-        commit({
-          type: "loadCredentialsFinished",
-          credentials: credentials,
-        });
+    .then((result: AxiosResponse<Page<AriesCredential[]>>) => {
+      const credentials: AriesCredential[] = [];
+      for (const credentialReference of result.data.content) {
+        axios
+          .get(`${apiBaseUrl}/wallet/credential/${credentialReference.id}`)
+          .then((result: AxiosResponse<AriesCredential>) => {
+            credentials.push(result.data);
+          })
+          .catch((error) => {
+            console.error(error);
+            EventBus.$emit("error", error);
+          });
       }
+      commit({
+        type: "loadCredentialsFinished",
+        credentials: credentials,
+      });
     })
     .catch((error) => {
       console.error(error);

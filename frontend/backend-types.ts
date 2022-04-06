@@ -431,9 +431,9 @@ export interface components {
     };
     AddSchemaRequest: {
       credentialType?: components["schemas"]["CredentialType"];
-      label: string | null;
+      label?: string | null;
       schemaId: string;
-      defaultAttributeName: string | null;
+      defaultAttributeName?: string | null;
     };
     AddTagRequest: {
       name?: string;
@@ -837,7 +837,7 @@ export interface components {
     "MessageTriggerConfigCmd.TriggerConfigRequest": {
       trigger: components["schemas"]["MessageTrigger"];
       /** Format: uuid */
-      messageTemplateId: string | null;
+      messageTemplateId?: string | null;
       /** Format: uuid */
       userInfoId: string;
     };
@@ -863,9 +863,9 @@ export interface components {
       /** Format: uuid */
       id?: string;
       /** Format: int64 */
-      createdDate?: number;
+      createdAt?: number;
       /** Format: int64 */
-      updatedDate?: number;
+      updatedAt?: number;
       type?: components["schemas"]["CredentialType"];
       typeLabel?: string;
       schemaId?: string;
@@ -876,6 +876,15 @@ export interface components {
     };
     Number: { [key: string]: unknown };
     Object: { [key: string]: unknown };
+    PaginationCommand: {
+      /** Format: int32 */
+      size?: number;
+      desc?: boolean;
+      /** Format: int32 */
+      page?: number;
+      q?: string | null;
+      types?: components["schemas"]["CredentialType"][] | null;
+    };
     Partner: components["schemas"]["StateChangeDecorator_Partner.ConnectionState_"] & {
       /** Format: uuid */
       id?: string;
@@ -887,7 +896,7 @@ export interface components {
        * Format: date-time
        * @description The last time a ping response was received from the partner
        */
-      lastSeen: string | null;
+      lastSeen?: string | null;
       /** @description The fully qualified did like did:sov:123 */
       did?: string;
       /**
@@ -896,37 +905,37 @@ export interface components {
        */
       ariesSupport?: boolean;
       /** @description aries connection id */
-      connectionId: string | null;
-      state: components["schemas"]["ConnectionState"] & (unknown | null);
+      connectionId?: string | null;
+      state?: components["schemas"]["ConnectionState"] & (unknown | null);
       stateToTimestamp?: components["schemas"]["StateChangeDecorator.StateToTimestamp_ConnectionState_"] &
         unknown;
       /**
        * @description aries connection label, if incoming connection set by the partner via the
        *  --label flag, or through rest overwrite
        */
-      label: string | null;
+      label?: string | null;
       /** @description The partners alias or name, always set by a user in the UI */
-      alias: string | null;
+      alias?: string | null;
       /** @description Direction of the communication, incoming or outgoing aries connection */
-      incoming: boolean | null;
+      incoming?: boolean | null;
       /** @description If the partners public profile is valid */
-      valid: boolean | null;
+      valid?: boolean | null;
       /** @description If the trust ping feature is active for this partner */
-      trustPing: boolean | null;
+      trustPing?: boolean | null;
       /** @description Aries OOB invitation message id */
-      invitationMsgId: string | null;
+      invitationMsgId?: string | null;
       /**
        * @description The Partners Public Profile VerifiablePresentation to be used in the
        *  PartnerAPI
        */
-      verifiablePresentation: { [key: string]: unknown } | null;
-      invitationRecord: components["schemas"]["InvitationRecord"] &
+      verifiablePresentation?: { [key: string]: unknown } | null;
+      invitationRecord?: components["schemas"]["InvitationRecord"] &
         (unknown | null);
       /**
        * @description Serialized PartnerCredentialType to allow filtering partners by
        *  supported credentials
        */
-      supportedCredentials: { [key: string]: unknown } | null;
+      supportedCredentials?: { [key: string]: unknown } | null;
       tags?: components["schemas"]["Tag"][];
     };
     PartnerAPI: {
@@ -1089,7 +1098,7 @@ export interface components {
     };
     "RequestProofRequest.RequestBySchema": {
       schemaId: string;
-      issuerDid: string[] | null;
+      issuerDid?: string[] | null;
     };
     RuntimeConfig: {
       agentName?: string;
@@ -1105,12 +1114,43 @@ export interface components {
       dataPrivacyPolicy?: string;
       /** Format: int32 */
       revocationRegistrySize?: number;
-      ux?: { [key: string]: unknown };
+      ux?: components["schemas"]["RuntimeConfig.UxConfig"];
       title?: string;
       locale?: string;
       fallbackLocale?: string;
       /** @description only set when running from .jar */
       buildVersion?: string;
+    };
+    "RuntimeConfig.UxConfig": {
+      buttons?: { [key: string]: unknown };
+      theme?: { [key: string]: unknown };
+      favicon?: { [key: string]: unknown };
+      navigation?: components["schemas"]["RuntimeConfig.UxConfig.UxConfigNavigation"];
+      header?: { [key: string]: unknown };
+    };
+    "RuntimeConfig.UxConfig.UxConfigNavigation": {
+      avatar?: components["schemas"]["RuntimeConfig.UxConfig.UxConfigNavigation.UxConfigNavigationAvatar"];
+      settings?: components["schemas"]["RuntimeConfig.UxConfig.UxConfigNavigation.UxConfigNavigationSettings"];
+      about?: components["schemas"]["RuntimeConfig.UxConfig.UxConfigNavigation.UxConfigNavigationAbout"];
+      logout?: components["schemas"]["RuntimeConfig.UxConfig.UxConfigNavigation.UxConfigNavigationLogout"];
+    };
+    "RuntimeConfig.UxConfig.UxConfigNavigation.UxConfigNavigationAbout": {
+      enabled?: boolean;
+    };
+    "RuntimeConfig.UxConfig.UxConfigNavigation.UxConfigNavigationAvatar": {
+      agent?: components["schemas"]["RuntimeConfig.UxConfig.UxConfigNavigation.UxConfigNavigationAvatar.UxConfigNavigationAvatarAgent"];
+    };
+    "RuntimeConfig.UxConfig.UxConfigNavigation.UxConfigNavigationAvatar.UxConfigNavigationAvatarAgent": {
+      default?: boolean;
+      enabled?: boolean;
+      src?: string;
+      showName?: boolean;
+    };
+    "RuntimeConfig.UxConfig.UxConfigNavigation.UxConfigNavigationLogout": {
+      enabled?: boolean;
+    };
+    "RuntimeConfig.UxConfig.UxConfigNavigation.UxConfigNavigationSettings": {
+      location?: string;
     };
     SchemaAPI: {
       /** Format: uuid */
@@ -1127,12 +1167,12 @@ export interface components {
       credentialDefinitions?: components["schemas"]["CredDef"][];
     };
     SchemaRestrictions: {
-      schemaId: string | null;
-      schemaName: string | null;
-      schemaVersion: string | null;
-      schemaIssuerDid: string | null;
-      credentialDefinitionId: string | null;
-      issuerDid: string | null;
+      schemaId?: string | null;
+      schemaName?: string | null;
+      schemaVersion?: string | null;
+      schemaIssuerDid?: string | null;
+      credentialDefinitionId?: string | null;
+      issuerDid?: string | null;
     };
     SendMessageRequest: {
       content?: string;
@@ -1163,7 +1203,7 @@ export interface components {
       id?: string;
       name?: string;
       partners?: components["schemas"]["Partner"][];
-      isReadOnly: boolean | null;
+      isReadOnly?: boolean | null;
     };
     TagAPI: {
       /** Format: uuid */
@@ -1682,6 +1722,8 @@ export interface operations {
   listCredentialExchanges: {
     parameters: {
       query: {
+        /** PaginationCommand */
+        pc?: components["schemas"]["PaginationCommand"] & (unknown | null);
         /** issuer or holder */
         role?: components["schemas"]["CredentialExchangeRole"] &
           (unknown | null);
@@ -2654,8 +2696,8 @@ export interface operations {
   getCredentials: {
     parameters: {
       query: {
-        /** types filter */
-        types?: components["schemas"]["CredentialType"][] | null;
+        /** PaginationCommand */
+        pc?: components["schemas"]["PaginationCommand"] & (unknown | null);
       };
     };
     responses: {
@@ -2788,15 +2830,15 @@ export interface operations {
   getDocuments: {
     parameters: {
       query: {
-        /** types filter */
-        types?: components["schemas"]["CredentialType"][] | null;
+        /** PaginationCommand multi value list of types to filter */
+        pc?: components["schemas"]["PaginationCommand"] & (unknown | null);
       };
     };
     responses: {
       /** list of MyDocumentAPI */
       200: {
         content: {
-          "application/json": components["schemas"]["MyDocumentAPI"][];
+          "application/json": components["schemas"]["Object"][];
         };
       };
     };
