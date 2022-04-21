@@ -108,10 +108,7 @@
         </v-layout>
       </v-card-title>
       <v-card-text>
-        <CredExList
-          :items="issuedCredentials"
-          :is-loading="isLoadingCredentials"
-        ></CredExList>
+        <CredExList ref="credExList" asIssuer />
       </v-card-text>
     </v-card>
   </v-container>
@@ -119,7 +116,6 @@
 
 <script lang="ts">
 import { EventBus } from "@/main";
-import { issuerService } from "@/services";
 import CredExList from "@/components/CredExList.vue";
 import IssueCredential from "@/components/IssueCredential.vue";
 import * as partnerUtils from "@/utils/partnerUtils";
@@ -136,7 +132,6 @@ export default {
   },
   created() {
     EventBus.$emit("title", this.$t("view.issueCredentials.title"));
-    this.loadCredentials();
   },
   data: () => {
     return {
@@ -196,20 +191,9 @@ export default {
       return partnerUtils.getPartnerStateColor(p.state);
     },
     async loadCredentials() {
-      this.isLoadingCredentials = true;
-      this.issuedCredentials = [];
       this.partner = {};
       this.credDef = {};
-
-      try {
-        const iresp = await issuerService.listCredentialExchangesAsIssuer();
-        if (iresp.status === 200) {
-          this.issuedCredentials = iresp.data;
-        }
-      } catch (error) {
-        EventBus.$emit("error", this.$axiosErrorMessage(error));
-      }
-      this.isLoadingCredentials = false;
+      await this.$refs.credExList.loadCredentials();
     },
     credentialIssued() {
       this.issueCredentialDialog = false;

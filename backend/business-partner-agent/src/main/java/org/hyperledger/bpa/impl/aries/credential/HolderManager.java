@@ -20,6 +20,8 @@ package org.hyperledger.bpa.impl.aries.credential;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -65,7 +67,6 @@ import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Wraps all credential holder specific logic that is common for both indy and
@@ -202,21 +203,20 @@ public class HolderManager extends CredentialManagerBase {
      * List credential that the user holds in the wallet
      *
      * @param typesToFilter filter by provided credential types
+     * @param pageable      {@link Pageable}
      * @return list of {@link AriesCredential}
      */
-    public List<AriesCredential> listHeldCredentials(@Nullable List<CredentialType> typesToFilter) {
-        return holderCredExRepo.findByRoleEqualsAndStateIn(
+    public Page<AriesCredential> listHeldCredentials(
+            @Nullable List<CredentialType> typesToFilter,
+            @NonNull Pageable pageable) {
+        List<CredentialType> types = CollectionUtils.isNotEmpty(typesToFilter)
+                ? typesToFilter
+                : List.of(CredentialType.values());
+        return holderCredExRepo.findByRoleEqualsAndStateInAndTypeIn(
                 CredentialExchangeRole.HOLDER,
-                List.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE))
-                .stream()
-                .filter(c -> {
-                    if (CollectionUtils.isEmpty(typesToFilter) || typesToFilter.contains(c.getType())) {
-                        return true;
-                    }
-                    return false;
-                })
-                .map(this::buildCredential)
-                .collect(Collectors.toList());
+                List.of(CredentialExchangeState.CREDENTIAL_ACKED, CredentialExchangeState.DONE),
+                types, pageable)
+                .map(this::buildCredential);
     }
 
     /**

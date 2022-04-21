@@ -8,13 +8,18 @@
 
 <template>
   <v-container>
+    <v-progress-linear
+      v-if="isLoadingCredentials"
+      indeterminate
+    ></v-progress-linear>
     <v-data-table
-      :loading="isLoading"
-      :hide-default-footer="items.length < 10"
+      :loading="isLoadingCredentials"
+      :hide-default-footer="hideFooter"
       :headers="headers"
-      :items="items"
-      :sort-by="['updatedAt']"
-      :sort-desc="[true]"
+      :items="exchanges"
+      :options.sync="options"
+      :server-items-length="totalNumberOfElements"
+      sort-by="updatedAt"
       single-select
       @click:row="openItem"
     >
@@ -262,6 +267,7 @@
 import {
   CredentialOfferRequest,
   issuerService,
+  PageOptions,
   walletService,
 } from "@/services";
 import Cred from "@/components/Credential.vue";
@@ -277,7 +283,6 @@ import {
 
 export default {
   props: {
-    items: Array,
     isActiveFn: {
       type: Function,
       default: (item) =>
@@ -285,11 +290,12 @@ export default {
         item.state === CredentialExchangeStates.CREDENTIAL_ACKED ||
         item.state === CredentialExchangeStates.DONE,
     },
-    isLoading: Boolean,
     headerRole: {
       type: Boolean,
       default: false,
     },
+    partnerId: String,
+    asIssuer: Boolean,
     openItemById: String,
   },
   created() {
@@ -325,6 +331,7 @@ export default {
         {
           text: this.$t("component.credExList.headers.displayText"),
           value: "displayText",
+          sortable: false,
         },
         {
           text:
@@ -332,6 +339,7 @@ export default {
               ? this.$t("component.credExList.headers.role")
               : this.$t("component.credExList.headers.partnerName"),
           value: this.headerRole === true ? "role" : "partner.name",
+          sortable: false,
         },
         {
           text: this.$t("component.credExList.headers.updatedAt"),
@@ -344,6 +352,7 @@ export default {
         {
           text: this.$t("component.credExList.headers.revocable"),
           value: "revocable",
+          sortable: false,
         },
       ];
     },
@@ -414,6 +423,11 @@ export default {
       credentialContentChanged: false,
       declineReasonText: "",
       exchangeRoles: CredentialExchangeRoles,
+      options: {},
+      isLoadingCredentials: false,
+      totalNumberOfElements: 0,
+      hideFooter: false,
+      exchanges: [],
       document: {},
       partner: {},
       credDef: {},
@@ -425,8 +439,36 @@ export default {
       console.log("Credential Exchange Item refresh");
       console.log(value);
     },
+    options: {
+      handler() {
+        this.loadCredentials();
+      },
+    },
   },
   methods: {
+    async loadCredentials() {
+      this.isLoadingCredentials = true;
+      this.exchanges = [];
+      const params = PageOptions.toUrlSearchParams(this.options);
+      if (this.asIssuer) {
+        params.set("role", CredentialExchangeRoles.ISSUER);
+      }
+      try {
+        const iresp = await issuerService.listCredentialExchanges(
+          this.partnerId,
+          params
+        );
+        if (iresp.status === 200) {
+          const { itemsPerPage } = this.options;
+          this.exchanges = iresp.data.content;
+          this.totalNumberOfElements = iresp.data.totalSize;
+          this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
+        }
+      } catch (error) {
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
+      }
+      this.isLoadingCredentials = false;
+    },
     openItem(item) {
       this.dialog = true;
       this.partner = this.partnerList.find((p) => p.value === item.partner.id);

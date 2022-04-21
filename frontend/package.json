@@ -37,7 +37,7 @@
     "vue-moment": "4.1.0",
     "vue-native-websocket": "2.0.15",
     "vue-router": "3.5.3",
-    "vuetify": "2.6.1",
+    "vuetify": "2.6.4",
     "vuex": "3.6.2",
     "@fontsource/roboto": "4.5.3"
   },

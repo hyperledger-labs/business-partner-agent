@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: '16'
           check-latest: true
-      - run: npm --prefix frontend install --no-optional
+      - run: npm --prefix frontend ci --no-optional
 
       - name: Setup Java
         uses: actions/setup-java@v2

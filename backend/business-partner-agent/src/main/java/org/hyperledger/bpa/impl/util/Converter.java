@@ -198,8 +198,8 @@ public class Converter {
     public MyDocumentAPI toApiObject(@NonNull MyDocument myDoc) {
         return MyDocumentAPI.builder()
                 .id(myDoc.getId())
-                .createdDate(myDoc.getCreatedAt().toEpochMilli())
-                .updatedDate(myDoc.getUpdatedAt().toEpochMilli())
+                .createdAt(myDoc.getCreatedAt().toEpochMilli())
+                .updatedAt(myDoc.getUpdatedAt().toEpochMilli())
                 .documentData(myDoc.getDocument() != null ? fromMap(myDoc.getDocument(), JsonNode.class) : null)
                 .isPublic(myDoc.getIsPublic())
                 .type(myDoc.getType())

@@ -18,7 +18,8 @@
 package org.hyperledger.bpa.controller;
 
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.core.convert.format.Format;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
@@ -26,19 +27,20 @@ import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
-import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
+import org.hyperledger.bpa.controller.api.PaginationCommand;
 import org.hyperledger.bpa.controller.api.issuer.DeclineExchangeRequest;
 import org.hyperledger.bpa.controller.api.wallet.WalletCredentialRequest;
 import org.hyperledger.bpa.controller.api.wallet.WalletDocumentRequest;
 import org.hyperledger.bpa.impl.MyDocumentManager;
 import org.hyperledger.bpa.impl.aries.credential.HolderManager;
 
-import java.util.List;
+import javax.validation.Valid;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -62,16 +64,17 @@ public class WalletController {
     /**
      * List wallet documents
      *
-     * @param types {@link CredentialType} multi value list of types to filter
+     * @param pc {@link PaginationCommand} multi value list of types to filter
      * @return list of {@link MyDocumentAPI}
      */
-    @Get("/document")
-    public HttpResponse<List<MyDocumentAPI>> getDocuments(
-            @Parameter(
-                    description = "types filter") @Nullable @QueryValue @Format("MULTI") List<CredentialType> types) {
-        final List<MyDocumentAPI> myCreds = docMgmt
-                .getMyDocuments(types != null ? types.toArray(new CredentialType[0]) : null);
-        return HttpResponse.ok(myCreds);
+    @Get("/document{?pc*}")
+    @Schema(implementation = Page.class)
+    public HttpResponse<Page<MyDocumentAPI>> getDocuments(@Valid @Nullable PaginationCommand pc) {
+        return HttpResponse.ok(docMgmt.getMyDocuments(
+                pc != null ? pc.toPageable() : Pageable.unpaged(),
+                pc != null && pc.getTypes() != null
+                        ? pc.getTypes().toArray(new CredentialType[0])
+                        : null));
     }
 
     /**
@@ -134,13 +137,14 @@ public class WalletController {
     /**
      * Aries: List wallet credentials
      *
-     * @param types {@link CredentialType} multi value list of types to filter
+     * @param pc {@link PaginationCommand}
      * @return list of {@link AriesCredential}
      */
-    @Get("/credential")
-    public HttpResponse<List<AriesCredential>> getCredentials(@Parameter(
-            description = "types filter") @Nullable @QueryValue @Format("MULTI") List<CredentialType> types) {
-        return HttpResponse.ok(holderCredMgmt.listHeldCredentials(types));
+    @Get("/credential{?pc*}")
+    public HttpResponse<Page<AriesCredential>> getCredentials(@Valid @Nullable PaginationCommand pc) {
+        return HttpResponse.ok(holderCredMgmt.listHeldCredentials(
+                pc != null ? pc.getTypes() : null,
+                pc != null ? pc.toPageable() : Pageable.unpaged()));
     }
 
     /**

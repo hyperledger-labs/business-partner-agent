@@ -8,24 +8,17 @@
 
 <template>
   <v-container>
-    <v-text-field
-      v-model="search"
-      append-icon="$vuetify.icons.search"
-      :label="$t('app.search')"
-      single-line
-      hide-details
-    ></v-text-field>
     <v-data-table
-      :hide-default-footer="data.length < 10"
+      :hide-default-footer="hideFooter"
       :loading="isBusy"
       v-model="inputValue"
       :headers="headers"
       :items="data"
-      :search="search"
+      :options.sync="options"
+      :server-items-length="totalNumberOfElements"
       :show-select="selectable"
       single-select
-      :sort-by="['createdDate']"
-      :sort-desc="[false]"
+      sort-by="createdAt"
       @click:row="open"
     >
       <template v-slot:[`item.label`]="{ item }">
@@ -50,12 +43,12 @@
         </div>
       </template>
 
-      <template v-slot:[`item.createdDate`]="{ item }">
-        {{ item.createdDate | formatDateLong }}
+      <template v-slot:[`item.createdAt`]="{ item }">
+        {{ item.createdAt | formatDateLong }}
       </template>
 
-      <template v-slot:[`item.updatedDate`]="{ item }">
-        {{ item.updatedDate | formatDateLong }}
+      <template v-slot:[`item.updatedAt`]="{ item }">
+        {{ item.updatedAt | formatDateLong }}
       </template>
 
       <template v-slot:[`item.issuedAt`]="{ item }">
@@ -98,6 +91,8 @@
 import { CredentialExchangeStates, CredentialTypes } from "@/constants";
 import { EventBus } from "@/main";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
+import { Page, PageOptions } from "@/services";
+import { AxiosResponse } from "axios";
 
 export default {
   props: {
@@ -128,12 +123,12 @@ export default {
   components: {
     NewMessageIcon,
   },
-  created() {
-    this.fetch(this.type);
-  },
   data: () => {
     return {
       data: [],
+      options: {},
+      totalNumberOfElements: 0,
+      hideFooter: false,
       search: "",
       isBusy: true,
       CredentialTypes: CredentialTypes,
@@ -141,15 +136,14 @@ export default {
   },
   computed: {
     queryFilter() {
-      let q = "";
-      if (this.useIndy && this.useJsonLd) {
-        q = "?types=INDY&types=JSON_LD";
-      } else if (this.useIndy) {
-        q = "?types=INDY";
-      } else if (this.useJsonLd) {
-        q = "?types=JSON_LD";
+      const params = PageOptions.toUrlSearchParams(this.options);
+      if (this.useIndy) {
+        params.append("types", CredentialTypes.INDY.type);
       }
-      return q;
+      if (this.useJsonLd) {
+        params.append("types", CredentialTypes.JSON_LD.type);
+      }
+      return params;
     },
     credentialNotifications() {
       return this.$store.getters.credentialNotifications;
@@ -167,29 +161,35 @@ export default {
     credentialNotifications: function (newValue) {
       if (newValue && this.type === "credential") {
         // TODO: Don't fetch all partners but only add new credential data
-        this.fetch(this.type);
+        this.fetch();
       }
+    },
+    options: {
+      handler() {
+        this.fetch();
+      },
     },
   },
   methods: {
-    fetch(type) {
+    fetch() {
       this.$axios
-        .get(`${this.$apiBaseUrl}/wallet/${type}${this.queryFilter}`)
-        .then((result) => {
-          if (Object.prototype.hasOwnProperty.call(result, "data")) {
-            this.isBusy = false;
-
-            this.data =
-              type === "credential"
-                ? result.data.filter((item) => {
-                    return (
-                      item.state ===
-                        CredentialExchangeStates.CREDENTIAL_ACKED ||
-                      item.state === CredentialExchangeStates.DONE
-                    );
-                  })
-                : result.data;
-          }
+        .get(`${this.$apiBaseUrl}/wallet/${this.type}`, {
+          params: this.queryFilter,
+        })
+        .then((result: AxiosResponse<Page<any>>) => {
+          const { itemsPerPage } = this.options;
+          this.isBusy = false;
+          this.totalNumberOfElements = result.data.totalSize;
+          this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
+          this.data =
+            this.type === "credential"
+              ? result.data.content.filter((item) => {
+                  return (
+                    item.state === CredentialExchangeStates.CREDENTIAL_ACKED ||
+                    item.state === CredentialExchangeStates.DONE
+                  );
+                })
+              : result.data.content;
         })
         .catch((error) => {
           this.isBusy = false;

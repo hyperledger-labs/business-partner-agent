@@ -63,3 +63,42 @@ export type ProofTemplate = components["schemas"]["ProofTemplate"];
 
 export type PresentationRequestVersion =
   components["schemas"]["PresentationRequestVersion"];
+
+export type MyDocumentAPI = components["schemas"]["MyDocumentAPI"];
+
+export type AriesCredential = components["schemas"]["AriesCredential"];
+
+// Page response from server
+export class Page<T> {
+  size?: number;
+  totalPages?: number;
+  totalSize?: number;
+  pageNumber?: number;
+  numberOfElements?: number;
+  content?: T;
+}
+
+// Translates between datatable pagination names and server names, see also PaginationCommand
+export class PageOptions {
+  page = 1;
+  itemsPerPage = 10;
+  sortBy: string[] = [];
+  sortDesc: boolean[] = [];
+
+  static toUrlSearchParams(options: PageOptions = new PageOptions()) {
+    const params = new URLSearchParams();
+    const optionKeys = Object.keys(options).length;
+    const currentPage = optionKeys > 0 ? Number(options.page) - 1 : 0;
+    params.append("page", currentPage.toString());
+    if (options.itemsPerPage) {
+      params.append("size", options.itemsPerPage.toString());
+    }
+    if (options.sortBy && options.sortBy.length > 0) {
+      params.append("q", String(options.sortBy));
+    }
+    if (options.sortDesc) {
+      params.append("desc", String(options.sortDesc));
+    }
+    return params;
+  }
+}

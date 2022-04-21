@@ -18,6 +18,8 @@
 package org.hyperledger.bpa.controller;
 
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.*;
@@ -32,6 +34,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.controller.api.PaginationCommand;
 import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
 import org.hyperledger.bpa.controller.api.issuer.*;
 import org.hyperledger.bpa.impl.aries.creddef.CredDefManager;
@@ -155,13 +158,18 @@ public class IssuerController {
     /**
      * List issued or received credentials
      *
+     * @param pc        {@link PaginationCommand}
+     * @param partnerId partner id
+     * @param role      {@link CredentialExchangeRole}
      * @return list of {@link CredEx}
      */
-    @Get("/exchanges")
-    public HttpResponse<List<CredEx>> listCredentialExchanges(
+    @Get("/exchanges{?pc*}")
+    public HttpResponse<Page<CredEx>> listCredentialExchanges(
+            @Valid @Nullable PaginationCommand pc,
             @Parameter(description = "issuer or holder") @Nullable @QueryValue CredentialExchangeRole role,
-            @Parameter(description = "partner id") @Nullable @QueryValue String partnerId) {
-        return HttpResponse.ok(im.listCredentialExchanges(role, partnerId != null ? UUID.fromString(partnerId) : null));
+            @Parameter(description = "partner id") @Nullable @QueryValue UUID partnerId) {
+        return HttpResponse.ok(im.listCredentialExchanges(role, partnerId,
+                pc != null ? pc.toPageable() : Pageable.unpaged()));
     }
 
     /**

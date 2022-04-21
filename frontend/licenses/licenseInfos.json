@@ -320,7 +320,7 @@
   "vuetify": {
     "ignore": false,
     "name": "vuetify",
-    "version": "2.6.1",
+    "version": "2.6.4",
     "authors": "John Leider <john@vuetifyjs.com>",
     "url": "https://github.com/vuetifyjs/vuetify",
     "license": "MIT",

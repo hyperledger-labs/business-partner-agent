@@ -18,6 +18,7 @@ import {
   CredDef,
   ApiCreateInvitation,
   CredEx,
+  Page,
 } from "@/services/types-services";
 import { AxiosResponse } from "axios";
 
@@ -60,21 +61,19 @@ export default {
     );
   },
 
-  listCredentialExchanges(id: string): Promise<AxiosResponse<CredEx[]>> {
-    return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
-      params: { partnerId: id },
-    });
-  },
-
   getCredExRecord(id: string): Promise<AxiosResponse<CredEx>> {
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges/${id}`);
   },
 
-  listCredentialExchangesAsIssuer(
-    id?: string
-  ): Promise<AxiosResponse<CredEx[]>> {
+  listCredentialExchanges(
+    id?: string,
+    params: URLSearchParams = new URLSearchParams()
+  ): Promise<AxiosResponse<Page<CredEx[]>>> {
+    if (id) {
+      params.set("partnerId", id);
+    }
     return appAxios().get(`${ApiRoutes.ISSUER}/exchanges`, {
-      params: { role: CredentialExchangeRoles.ISSUER, partnerId: id },
+      params: params,
     });
   },
 

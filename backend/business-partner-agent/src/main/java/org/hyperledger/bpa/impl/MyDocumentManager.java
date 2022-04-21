@@ -18,6 +18,8 @@
 package org.hyperledger.bpa.impl;
 
 import io.micronaut.core.util.ArrayUtils;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -86,13 +88,11 @@ public class MyDocumentManager {
         throw new WrongApiUsageException(ms.getMessage("api.document.not.found", Map.of("id", id)));
     }
 
-    public List<MyDocumentAPI> getMyDocuments(CredentialType... types) {
-        List<MyDocumentAPI> result = new ArrayList<>();
+    public Page<MyDocumentAPI> getMyDocuments(Pageable pageable, CredentialType... types) {
         List<CredentialType> search = Arrays.asList(Objects.requireNonNullElseGet(
                 ArrayUtils.isEmpty(types) ? null : types,
                 CredentialType::values));
-        docRepo.findByTypeIn(search).forEach(dbDoc -> result.add(converter.toApiObject(dbDoc)));
-        return result;
+        return docRepo.findByTypeIn(search, pageable).map(dbDoc -> converter.toApiObject(dbDoc));
     }
 
     public Optional<MyDocumentAPI> getMyDocumentById(@NonNull UUID id) {
