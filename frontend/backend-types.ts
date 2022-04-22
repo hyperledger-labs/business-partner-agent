@@ -346,18 +346,6 @@ export interface paths {
     /** Delete a wallet document by id */
     delete: operations["deleteDocument"];
   };
-  "/api/webhook": {
-    /** List registered webhooks */
-    get: operations["listRegisteredWebhooks"];
-    /** Register a new webhook */
-    post: operations["registerWebhook"];
-  };
-  "/api/webhook/{id}": {
-    /** Update a registered webhook */
-    put: operations["updateWebhook"];
-    /** Delete a registered webhook */
-    delete: operations["deleteWebhook"];
-  };
   "/profile.jsonld": {
     get: operations["getMasterdata"];
   };
@@ -1064,24 +1052,6 @@ export interface components {
       name: string;
       attributeGroups: components["schemas"]["AttributeGroup"][];
     };
-    RegisteredWebhook: {
-      url: string;
-      registeredEvent?: components["schemas"]["RegisteredWebhook.WebhookEventType"][];
-      credentials?: components["schemas"]["RegisteredWebhook.WebhookCredentials"];
-    };
-    "RegisteredWebhook.RegisteredWebhookResponse": components["schemas"]["RegisteredWebhook"] & {
-      /** Format: uuid */
-      id: string;
-    };
-    "RegisteredWebhook.WebhookCredentials": {
-      username?: string;
-      password?: string;
-    };
-    /** @enum {string} */
-    "RegisteredWebhook.WebhookEventType":
-      | "ALL"
-      | "PARTNER_ADD"
-      | "PARTNER_UPDATE";
     RequestCredentialRequest: {
       documentId?: string;
       exchangeVersion?: components["schemas"]["ExchangeVersion"];
@@ -2911,76 +2881,6 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
-    };
-  };
-  /** List registered webhooks */
-  listRegisteredWebhooks: {
-    parameters: {};
-    responses: {
-      /** list of RegisteredWebhookResponse */
-      200: {
-        content: {
-          "application/json": components["schemas"]["RegisteredWebhook.RegisteredWebhookResponse"][];
-        };
-      };
-    };
-  };
-  /** Register a new webhook */
-  registerWebhook: {
-    parameters: {};
-    responses: {
-      /** RegisteredWebhookResponse */
-      200: {
-        content: {
-          "application/json": components["schemas"]["RegisteredWebhook.RegisteredWebhookResponse"];
-        };
-      };
-    };
-    /** RegisteredWebhook */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RegisteredWebhook"];
-      };
-    };
-  };
-  /** Update a registered webhook */
-  updateWebhook: {
-    parameters: {
-      path: {
-        /** the webhook's id */
-        id: string;
-      };
-    };
-    responses: {
-      /** RegisteredWebhookResponse */
-      200: {
-        content: {
-          "application/json": components["schemas"]["RegisteredWebhook.RegisteredWebhookResponse"];
-        };
-      };
-    };
-    /** RegisteredWebhook */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RegisteredWebhook"];
-      };
-    };
-  };
-  /** Delete a registered webhook */
-  deleteWebhook: {
-    parameters: {
-      path: {
-        /** the webhook's id */
-        id: string;
-      };
-    };
-    responses: {
-      /** always OK */
       200: {
         content: {
           "application/json": components["schemas"]["Void"];
