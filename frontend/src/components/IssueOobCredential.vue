@@ -141,7 +141,7 @@
                 <v-card-title class="bg-light" style="font-size: small">
                   {{ $t("component.issueOobCredential.options.title") }}
                 </v-card-title>
-                <v-card-text v-if="expertMode">
+                <v-card-text>
                   <v-col>
                     <v-list-item>
                       <v-list-item-content>
@@ -162,42 +162,44 @@
                       </v-list-item-action>
                     </v-list-item>
                   </v-col>
-                  <v-col>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <v-list-item-title
-                          class="grey--text text--darken-2 font-weight-medium"
-                        >
-                          {{ $t("view.addPartner.setTags") }}
-                        </v-list-item-title>
-                      </v-list-item-content>
-                      <v-list-item-action>
-                        <v-autocomplete
-                          multiple
-                          v-model="selectedTags"
-                          :items="tags"
-                          chips
-                          deletable-chips
-                        >
-                        </v-autocomplete>
-                      </v-list-item-action>
-                    </v-list-item>
-                  </v-col>
-                  <v-col>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <v-list-item-title
-                          class="grey--text text--darken-2 font-weight-medium"
-                          >{{
-                            $t("view.addPartner.trustPing")
-                          }}</v-list-item-title
-                        >
-                      </v-list-item-content>
-                      <v-list-item-action>
-                        <v-switch v-model="trustPing"></v-switch>
-                      </v-list-item-action>
-                    </v-list-item>
-                  </v-col>
+                  <div v-if="expertMode">
+                    <v-col>
+                      <v-list-item>
+                        <v-list-item-content>
+                          <v-list-item-title
+                            class="grey--text text--darken-2 font-weight-medium"
+                          >
+                            {{ $t("view.addPartner.setTags") }}
+                          </v-list-item-title>
+                        </v-list-item-content>
+                        <v-list-item-action>
+                          <v-autocomplete
+                            multiple
+                            v-model="selectedTags"
+                            :items="tags"
+                            chips
+                            deletable-chips
+                          >
+                          </v-autocomplete>
+                        </v-list-item-action>
+                      </v-list-item>
+                    </v-col>
+                    <v-col>
+                      <v-list-item>
+                        <v-list-item-content>
+                          <v-list-item-title
+                            class="grey--text text--darken-2 font-weight-medium"
+                            >{{
+                              $t("view.addPartner.trustPing")
+                            }}</v-list-item-title
+                          >
+                        </v-list-item-content>
+                        <v-list-item-action>
+                          <v-switch v-model="trustPing"></v-switch>
+                        </v-list-item-action>
+                      </v-list-item>
+                    </v-col>
+                  </div>
                 </v-card-text>
               </v-card>
             </v-stepper-content>
