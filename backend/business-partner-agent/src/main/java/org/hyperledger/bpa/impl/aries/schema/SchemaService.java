@@ -167,6 +167,9 @@ public class SchemaService {
         } catch (URISyntaxException e) {
             throw new WrongApiUsageException(ms.getMessage("api.schema.ld.id.parse.error"));
         }
+        if (schemaRepo.findBySchemaId(schemaId).isPresent()) {
+            throw new WrongApiUsageException(ms.getMessage("api.schema.already.exists", Map.of("id", schemaId)));
+        }
         validateDefaultAttribute(defaultAttributeName, attributes);
 
         BPASchema dbS = BPASchema.builder()
@@ -192,14 +195,6 @@ public class SchemaService {
     public List<SchemaAPI> listSchemas() {
         return StreamSupport.stream(schemaRepo.findAll().spliterator(), false)
                 .map(dbS -> SchemaAPI.from(dbS, id))
-                .collect(Collectors.toList());
-    }
-
-    public List<SchemaAPI> listLdSchemas() {
-        return schemaRepo
-                .findByType(CredentialType.JSON_LD)
-                .stream()
-                .map(s -> SchemaAPI.from(s, false, false))
                 .collect(Collectors.toList());
     }
 

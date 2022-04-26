@@ -70,7 +70,8 @@ public class FrontendSecurityHeaderFilter implements HttpServerFilter {
                         res.getHeaders().add("Content-Security-Policy",
                                 frameSources +
                                         imgSource +
-                                        "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; " +
+                                        "default-src 'self'; script-src 'self'; connect-src *; " +
+                                        "style-src 'self' 'unsafe-inline'; " +
                                         "font-src 'self' data:");
                     }
                 });

@@ -232,7 +232,7 @@ public class BPACredentialExchange
             return proposalAttributesToMap();
         } else if (stateIsOfferReceived()) {
             return offerAttributesToMap();
-        } else if (stateIsDone() || stateIsCredentialAcked() || stateIsCredentialIssued() ) {
+        } else if (stateIsDone() || stateIsCredentialAcked() || stateIsCredentialIssued()) {
             return credentialAttributesToMap();
         }
         return Map.of();

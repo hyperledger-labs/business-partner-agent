@@ -107,10 +107,12 @@ public class IssuerManager extends CredentialManagerBase {
      */
     public String issueCredential(@NonNull IssueCredentialRequest request) {
         BPACredentialExchange credEx;
-        if (request.typeIsIndy()) {
-            credEx = indy.issueIndyCredential(request);
+        if (request instanceof IssueCredentialRequest.IssueIndyCredentialRequest indyReq) {
+            credEx = indy.issueIndyCredential(indyReq);
+        } else if (request instanceof IssueCredentialRequest.IssueLDCredentialRequest ldReq) {
+            credEx = ld.issueLDCredential(ldReq.getPartnerId(), ldReq.getSchemaId(), ldReq.getDocument());
         } else {
-            credEx = ld.issueLDCredential(request.getPartnerId(), request.getSchemaId(), request.getDocument());
+            throw new WrongApiUsageException();
         }
         fireCredentialIssuedEvent(credEx);
         return credEx.getCredentialExchangeId();

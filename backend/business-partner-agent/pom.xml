@@ -107,7 +107,7 @@
         <dependency><!-- Overwrite for jakarta-annotations-api -->
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-annotations-api</artifactId>
-            <version>10.1.0-M12</version>
+            <version>10.1.0-M14</version>
         </dependency>
 
         <!-- Logging -->
@@ -155,7 +155,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>5.6.2</version>
+            <version>5.6.3</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
@@ -170,7 +170,7 @@
         <dependency>
             <groupId>io.micronaut.email</groupId>
             <artifactId>micronaut-email-mailjet</artifactId>
-            <version>1.2.0</version>
+            <version>1.2.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.activation</groupId>
@@ -183,6 +183,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+            <version>42.3.4</version>
         </dependency>
         <dependency>
             <groupId>io.micronaut.flyway</groupId>
