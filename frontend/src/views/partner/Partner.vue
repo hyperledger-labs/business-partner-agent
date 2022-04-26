@@ -204,12 +204,25 @@
               $t("view.partner.credentialExchanges.button.issueCredential")
             }}</v-bpa-button>
           </template>
-          <IssueCredentialIndy
-            :partnerId="id"
-            @success="onCredentialIssued"
-            @cancelled="issueCredentialDialog = false"
-          >
-          </IssueCredentialIndy>
+          <v-card class="mx-auto">
+            <v-card-title class="bg-light"
+              >{{ $t("component.issueCredential.title") }}
+            </v-card-title>
+            <credential-type-tabs>
+              <template v-slot:indy>
+                <IssueCredentialIndy
+                  :partnerId="id"
+                  hide-title
+                  @success="onCredentialIssued"
+                  @cancelled="issueCredentialDialog = false"
+                >
+                </IssueCredentialIndy>
+              </template>
+              <template v-slot:json-ld>
+                <!-- TODO -->
+              </template>
+            </credential-type-tabs>
+          </v-card>
         </v-dialog>
         <v-bpa-button
           style="margin-left: 8px"
@@ -260,6 +273,7 @@ import UpdatePartner from "@/components/UpdatePartner.vue";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
 import IssueCredentialIndy from "@/components/issue/IssueCredentialIndy.vue";
+import CredentialTypeTabs from "@/components/helper/CredentialTypeTabs.vue";
 
 export default {
   name: "Partner",
@@ -276,6 +290,7 @@ export default {
     CredExList,
     IssueCredentialIndy,
     UpdatePartner,
+    CredentialTypeTabs,
   },
   created() {
     EventBus.$emit("title", this.$t("view.partner.title"));

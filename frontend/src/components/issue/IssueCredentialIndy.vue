@@ -8,7 +8,7 @@
 <template>
   <v-container>
     <v-card class="mx-auto">
-      <v-card-title class="bg-light">{{
+      <v-card-title v-show="!hideTitle" class="bg-light">{{
         $t("component.issueCredential.title")
       }}</v-card-title>
       <v-card-text>
@@ -177,6 +177,10 @@ export default {
     partnerId: String,
     credDefId: String,
     open: Boolean,
+    hideTitle: {
+      type: Boolean,
+      default: false,
+    },
   },
   mounted() {
     this.load();
