@@ -38,7 +38,6 @@ import java.util.UUID;
 @Builder
 public class IssueCredentialRequest {
     // bpa ids
-    @NotBlank
     private UUID credDefId;
     private UUID schemaId;
     @NotBlank

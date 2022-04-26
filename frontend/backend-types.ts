@@ -702,7 +702,7 @@ export interface components {
     };
     IssueCredentialRequest: {
       /** Format: uuid */
-      credDefId: string;
+      credDefId?: string;
       /** Format: uuid */
       schemaId?: string;
       /** Format: uuid */
