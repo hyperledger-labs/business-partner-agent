@@ -78,14 +78,14 @@
                 }}</v-bpa-button
               >
             </template>
-            <IssueOobCredential
+            <IssueCredentialIndyOob
               v-if="issueOutOfBoundCredential"
               :credDefId="credDefId"
               :open="issueCredentialDialog"
               @success="credentialIssued"
               @cancelled="issueCredentialDialog = false"
-            ></IssueOobCredential>
-            <IssueCredential
+            ></IssueCredentialIndyOob>
+            <IssueCredentialIndy
               v-else
               :credDefId="credDefId"
               :partnerId="partnerId"
@@ -93,7 +93,7 @@
               @success="credentialIssued"
               @cancelled="issueCredentialDialog = false"
             >
-            </IssueCredential>
+            </IssueCredentialIndy>
           </v-dialog>
         </v-layout>
       </v-card-actions>
@@ -117,17 +117,17 @@
 <script lang="ts">
 import { EventBus } from "@/main";
 import CredExList from "@/components/CredExList.vue";
-import IssueCredential from "@/components/IssueCredential.vue";
 import * as partnerUtils from "@/utils/partnerUtils";
 import VBpaButton from "@/components/BpaButton";
-import IssueOobCredential from "@/components/IssueOobCredential.vue";
+import IssueCredentialIndyOob from "@/components/issue/IssueCredentialIndyOob.vue";
+import IssueCredentialIndy from "@/components/issue/IssueCredentialIndy.vue";
 
 export default {
   name: "CredentialManagement",
   components: {
     VBpaButton,
-    IssueCredential,
-    IssueOobCredential,
+    IssueCredentialIndy,
+    IssueCredentialIndyOob,
     CredExList,
   },
   created() {

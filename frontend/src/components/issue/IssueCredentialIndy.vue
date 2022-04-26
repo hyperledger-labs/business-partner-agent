@@ -171,7 +171,7 @@ import { ExchangeVersion } from "@/constants";
 import { IssueCredentialRequest } from "@/services/types-services";
 
 export default {
-  name: "IssueCredential",
+  name: "IssueCredentialIndy",
   components: { VBpaButton },
   props: {
     partnerId: String,
@@ -277,7 +277,7 @@ export default {
       this.isLoading = false;
     },
     async issueCredential() {
-      let exVersion;
+      let exVersion: ExchangeVersion;
       if (this.useV2Credential) {
         exVersion = ExchangeVersion.V2;
       }

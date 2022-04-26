@@ -269,7 +269,7 @@ import * as CSV from "csv-string";
 import QrcodeVue from "qrcode.vue";
 
 export default {
-  name: "IssueCredential",
+  name: "IssueCredentialIndyOob",
   components: { VBpaButton, QrcodeVue },
   props: {
     credDefId: String,

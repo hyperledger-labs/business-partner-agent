@@ -204,12 +204,12 @@
               $t("view.partner.credentialExchanges.button.issueCredential")
             }}</v-bpa-button>
           </template>
-          <IssueCredential
+          <IssueCredentialIndy
             :partnerId="id"
             @success="onCredentialIssued"
             @cancelled="issueCredentialDialog = false"
           >
-          </IssueCredential>
+          </IssueCredentialIndy>
         </v-dialog>
         <v-bpa-button
           style="margin-left: 8px"
@@ -256,10 +256,10 @@ import { EventBus } from "@/main";
 import { partnerService } from "@/services";
 import CredExList from "@/components/CredExList.vue";
 import PresentationExList from "@/components/PresentationExList.vue";
-import IssueCredential from "@/components/IssueCredential.vue";
 import UpdatePartner from "@/components/UpdatePartner.vue";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
+import IssueCredentialIndy from "@/components/issue/IssueCredentialIndy.vue";
 
 export default {
   name: "Partner",
@@ -274,7 +274,7 @@ export default {
     PresentationExList,
     PartnerStateIndicator,
     CredExList,
-    IssueCredential,
+    IssueCredentialIndy,
     UpdatePartner,
   },
   created() {
