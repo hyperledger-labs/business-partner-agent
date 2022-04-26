@@ -18,13 +18,13 @@
 package org.hyperledger.bpa.controller.api.issuer;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.core.annotation.Introspected;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.api.CredentialType;
 
@@ -35,17 +35,24 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class IssueCredentialRequest {
-    // bpa ids
-    @NotBlank
-    private UUID credDefId;
-    private UUID schemaId;
+@SuperBuilder
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        property = "type",
+        defaultImpl = IssueCredentialRequest.IssueIndyCredentialRequest.class)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = IssueCredentialRequest.IssueIndyCredentialRequest.class, names = { "INDY", "indy" }),
+        @JsonSubTypes.Type(value = IssueCredentialRequest.IssueLDCredentialRequest.class,
+                names = { "JSON_LD", "JSON-LD", "json_ld", "json-ld" }),
+})
+@Schema(anyOf = {
+        IssueCredentialRequest.IssueIndyCredentialRequest.class,
+        IssueCredentialRequest.IssueLDCredentialRequest.class,
+})
+public abstract class IssueCredentialRequest {
+
     @NotBlank
     private UUID partnerId;
-
-    /** credential exchange api version */
-    private ExchangeVersion exchangeVersion;
 
     /** credential exchange type */
     private CredentialType type;
@@ -55,8 +62,34 @@ public class IssueCredentialRequest {
     @Schema(example = "{}")
     private JsonNode document;
 
-    public boolean exchangeIsV1() {
-        return exchangeVersion == null || ExchangeVersion.V1.equals(exchangeVersion);
+    @Introspected
+    @Data
+    @SuperBuilder
+    @NoArgsConstructor
+    @EqualsAndHashCode(callSuper = true)
+    @ToString(callSuper = true)
+    public static final class IssueIndyCredentialRequest extends IssueCredentialRequest {
+
+        @NotBlank
+        private UUID credDefId;
+
+        /** credential exchange api version */
+        private ExchangeVersion exchangeVersion;
+
+        public boolean exchangeIsV1() {
+            return exchangeVersion == null || ExchangeVersion.V1.equals(exchangeVersion);
+        }
+    }
+
+    @Introspected
+    @Data
+    @SuperBuilder
+    @NoArgsConstructor
+    @EqualsAndHashCode(callSuper = true)
+    @ToString(callSuper = true)
+    public static final class IssueLDCredentialRequest extends IssueCredentialRequest {
+        @NotBlank
+        private UUID schemaId;
     }
 
     public boolean typeIsIndy() {

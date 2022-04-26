@@ -94,7 +94,8 @@ public class IssuerIndyManager {
      * @param request {@link IssueCredentialRequest}
      * @return {@link BPACredentialExchange}
      */
-    public BPACredentialExchange issueIndyCredential(@NonNull IssueCredentialRequest request) {
+    public BPACredentialExchange issueIndyCredential(
+            @NonNull IssueCredentialRequest.IssueIndyCredentialRequest request) {
         Partner dbPartner = partnerRepo.findById(request.getPartnerId())
                 .orElseThrow(() -> new IssuerException(msg.getMessage("api.partner.not.found",
                         Map.of("id", request.getPartnerId()))));
@@ -152,7 +153,7 @@ public class IssuerIndyManager {
 
     public void reIssueIndyCredential(@NonNull BPACredentialExchange credEx) {
         if (credEx.roleIsIssuer() && credEx.stateIsRevoked()) {
-            issueIndyCredential(IssueCredentialRequest.builder()
+            issueIndyCredential(IssueCredentialRequest.IssueIndyCredentialRequest.builder()
                     .partnerId(credEx.getPartner() != null ? credEx.getPartner().getId() : null)
                     .credDefId(credEx.getCredDef() != null ? credEx.getCredDef().getId() : null)
                     .document(conv.mapToNode(Objects.requireNonNull(credEx.getIndyCredential()).getAttrs()))

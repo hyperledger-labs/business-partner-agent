@@ -30,6 +30,7 @@ import org.hyperledger.aries.webhook.EventParser;
 import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.MyDocumentAPI;
+import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.impl.MyDocumentManager;
 import org.hyperledger.bpa.impl.aries.AriesEventHandler;
 import org.hyperledger.bpa.impl.aries.credential.HolderManager;
@@ -231,6 +232,12 @@ public class HolderLDCredentialTest extends BaseTest {
         ex = loadCredEx(id);
         Assertions.assertTrue(ex.stateIsProblem());
         Assertions.assertEquals("issuance-abandoned: my reason", ex.getErrorMsg());
+    }
+
+    @Test
+    void testFailWhenAddingSchemaTwice() {
+        createDefaultSchema();
+        Assertions.assertThrows(WrongApiUsageException.class, this::createDefaultSchema);
     }
 
     private BPACredentialExchange loadCredEx(String id) {

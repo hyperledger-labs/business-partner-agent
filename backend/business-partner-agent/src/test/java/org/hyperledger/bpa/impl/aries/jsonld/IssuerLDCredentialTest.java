@@ -100,7 +100,7 @@ public class IssuerLDCredentialTest extends BaseTest {
         SchemaAPI schemaAPI = createDefaultSchema();
         Partner p = createDefaultPartner(offer.getConnectionId());
 
-        issuer.issueCredential(IssueCredentialRequest.builder()
+        issuer.issueCredential(IssueCredentialRequest.IssueLDCredentialRequest.builder()
                 .schemaId(schemaAPI.getId())
                 .partnerId(p.getId())
                 .document(conv.mapToNode(Map.of("name", "555", "identifier", "1234")))
@@ -144,7 +144,7 @@ public class IssuerLDCredentialTest extends BaseTest {
         SchemaAPI schemaAPI = createDefaultSchema();
         Partner p = createDefaultPartner(offer.getConnectionId());
 
-        issuer.issueCredential(IssueCredentialRequest.builder()
+        issuer.issueCredential(IssueCredentialRequest.IssueLDCredentialRequest.builder()
                 .schemaId(schemaAPI.getId())
                 .partnerId(p.getId())
                 .document(conv.mapToNode(Map.of("name", "555", "identifier", "1234")))
