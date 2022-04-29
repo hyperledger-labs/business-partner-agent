@@ -700,20 +700,29 @@ export interface components {
       trace: boolean;
       updatedAt: string;
     };
-    IssueCredentialRequest: {
-      /** Format: uuid */
-      credDefId?: string;
-      /** Format: uuid */
-      schemaId?: string;
+    IssueCredentialRequest: (Partial<
+      components["schemas"]["IssueCredentialRequest.IssueIndyCredentialRequest"]
+    > &
+      Partial<
+        components["schemas"]["IssueCredentialRequest.IssueLDCredentialRequest"]
+      >) & {
       /** Format: uuid */
       partnerId: string;
-      exchangeVersion?: components["schemas"]["ExchangeVersion"] & unknown;
       type?: components["schemas"]["CredentialType"] & unknown;
       /**
        * @description credential body key value pairs
        * @example [object Object]
        */
       document?: { [key: string]: unknown }[];
+    };
+    "IssueCredentialRequest.IssueIndyCredentialRequest": components["schemas"]["IssueCredentialRequest"] & {
+      /** Format: uuid */
+      credDefId: string;
+      exchangeVersion?: components["schemas"]["ExchangeVersion"] & unknown;
+    };
+    "IssueCredentialRequest.IssueLDCredentialRequest": components["schemas"]["IssueCredentialRequest"] & {
+      /** Format: uuid */
+      schemaId: string;
     };
     IssueOOBCredentialRequest: {
       alias?: string;
