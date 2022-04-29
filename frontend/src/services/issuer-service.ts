@@ -7,18 +7,19 @@
  */
 
 import { appAxios } from "@/services/interceptors";
-import { ApiRoutes, CredentialExchangeRoles } from "@/constants";
+import { ApiRoutes } from "@/constants";
 import {
   CreateCredDefRequest,
   SchemaApi,
   CreateSchemaRequest,
   CredentialOfferRequest,
-  IssueCredentialRequest,
+  IssueCredentialRequestIndy,
   IssueOobCredentialRequest,
   CredDef,
   ApiCreateInvitation,
   CredEx,
   Page,
+  IssueCredentialRequestLd,
 } from "@/services/types-services";
 import { AxiosResponse } from "axios";
 
@@ -42,8 +43,14 @@ export default {
     return appAxios().get(`${ApiRoutes.ISSUER}/creddef`);
   },
 
-  issueCredentialSend(
-    data: IssueCredentialRequest
+  issueCredentialSendIndy(
+    data: IssueCredentialRequestIndy
+  ): Promise<AxiosResponse<string>> {
+    return appAxios().post(`${ApiRoutes.ISSUER}/issue-credential/send`, data);
+  },
+
+  issueCredentialSendLd(
+    data: IssueCredentialRequestLd
   ): Promise<AxiosResponse<string>> {
     return appAxios().post(`${ApiRoutes.ISSUER}/issue-credential/send`, data);
   },

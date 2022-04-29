@@ -8,8 +8,11 @@
 import { components } from "backend-types";
 
 // Request types
-export type IssueCredentialRequest =
-  components["schemas"]["IssueCredentialRequest"];
+export type IssueCredentialRequestIndy =
+  components["schemas"]["IssueCredentialRequest.IssueIndyCredentialRequest"];
+
+export type IssueCredentialRequestLd =
+  components["schemas"]["IssueCredentialRequest.IssueLDCredentialRequest"];
 
 export type IssueOobCredentialRequest =
   components["schemas"]["IssueOOBCredentialRequest"];

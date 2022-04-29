@@ -700,6 +700,7 @@ export interface components {
       trace: boolean;
       updatedAt: string;
     };
+    // @ts-ignore
     IssueCredentialRequest: (Partial<
       components["schemas"]["IssueCredentialRequest.IssueIndyCredentialRequest"]
     > &
@@ -715,11 +716,13 @@ export interface components {
        */
       document?: { [key: string]: unknown }[];
     };
+    // @ts-ignore
     "IssueCredentialRequest.IssueIndyCredentialRequest": components["schemas"]["IssueCredentialRequest"] & {
       /** Format: uuid */
       credDefId: string;
       exchangeVersion?: components["schemas"]["ExchangeVersion"] & unknown;
     };
+    // @ts-ignore
     "IssueCredentialRequest.IssueLDCredentialRequest": components["schemas"]["IssueCredentialRequest"] & {
       /** Format: uuid */
       schemaId: string;

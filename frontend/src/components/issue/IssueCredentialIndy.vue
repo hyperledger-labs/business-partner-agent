@@ -163,12 +163,11 @@
 <script lang="ts">
 import Vue from "vue";
 import { EventBus } from "@/main";
-import { issuerService } from "@/services";
+import { IssueCredentialRequestIndy, issuerService } from "@/services";
 import VBpaButton from "@/components/BpaButton";
 import * as textUtils from "@/utils/textUtils";
 import * as CSV from "csv-string";
 import { ExchangeVersion } from "@/constants";
-import { IssueCredentialRequest } from "@/services/types-services";
 
 export default {
   name: "IssueCredentialIndy",
@@ -291,14 +290,14 @@ export default {
       //fill in whatever populated fields we have...
       Object.assign(document, this.credentialFields);
 
-      const data: IssueCredentialRequest = {
+      const data: IssueCredentialRequestIndy = {
         credDefId: this.credDef.id,
         partnerId: this.partner.id,
         document: document,
         exchangeVersion: exVersion,
       };
       try {
-        const resp = await issuerService.issueCredentialSend(data);
+        const resp = await issuerService.issueCredentialSendIndy(data);
 
         if (resp.status === 200) {
           return resp.data;
