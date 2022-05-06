@@ -32,7 +32,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.CredentialType;
-import org.hyperledger.bpa.persistence.model.converter.ExchangePayloadConverter;
+import org.hyperledger.bpa.persistence.model.converter.CredExPayloadConverter;
 import org.hyperledger.bpa.persistence.model.type.CredentialTypeTranslator;
 
 import javax.persistence.Id;
@@ -112,15 +112,15 @@ public class BPACredentialExchange
     private StateToTimestamp<CredentialExchangeState> stateToTimestamp;
 
     @Nullable
-    @TypeDef(type = DataType.JSON, converter = ExchangePayloadConverter.class)
+    @TypeDef(type = DataType.JSON, converter = CredExPayloadConverter.class)
     private ExchangePayload credentialProposal;
 
     @Nullable
-    @TypeDef(type = DataType.JSON, converter = ExchangePayloadConverter.class)
+    @TypeDef(type = DataType.JSON, converter = CredExPayloadConverter.class)
     private ExchangePayload credentialOffer;
 
     @Nullable
-    @TypeDef(type = DataType.JSON, converter = ExchangePayloadConverter.class)
+    @TypeDef(type = DataType.JSON, converter = CredExPayloadConverter.class)
     private ExchangePayload ldCredential;
 
     @Nullable

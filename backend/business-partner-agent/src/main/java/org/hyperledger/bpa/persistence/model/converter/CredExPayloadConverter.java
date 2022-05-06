@@ -35,7 +35,7 @@ import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 @Slf4j
 @Singleton
 @NoArgsConstructor
-public class ExchangePayloadConverter implements AttributeConverter<BPACredentialExchange.ExchangePayload, String> {
+public class CredExPayloadConverter implements AttributeConverter<BPACredentialExchange.ExchangePayload, String> {
 
     @Inject
     ObjectMapper mapper;
