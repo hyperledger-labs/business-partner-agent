@@ -29,4 +29,5 @@ import lombok.NoArgsConstructor;
 public class APICreateInvitationResponse {
     private String invitationUrl;
     private String invitationId;
+    private String partnerId;
 }
