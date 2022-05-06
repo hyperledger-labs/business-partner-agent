@@ -78,7 +78,7 @@ class CredentialManagerTest extends BaseTest {
                 .builder()
                 .did(DID)
                 .ariesSupport(Boolean.TRUE)
-                .verifiablePresentation(conv.toMap(vp))
+                .verifiablePresentation(vp)
                 .build());
 
         String iss = mgmt.resolveIssuer(p);

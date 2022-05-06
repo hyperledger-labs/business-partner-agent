@@ -89,9 +89,11 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
     @TypeDef(type = DataType.JSON)
     private Map<String, Object> proof;
 
+    /** set when prover */
     @TypeDef(type = DataType.JSON)
     private PresentProofRequest.ProofRequest proofRequest;
 
+    /** set when verifier */
     @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
     private BPAProofTemplate proofTemplate;

@@ -98,7 +98,7 @@ public class Converter {
     public PartnerAPI toAPIObject(@NonNull Partner p) {
         PartnerAPI result = PartnerAPI.from(p);
         if (p.getVerifiablePresentation() != null) {
-            result = toAPIObject(fromMap(p.getVerifiablePresentation(), VP_TYPEREF));
+            result = toAPIObject(p.getVerifiablePresentation());
             PartnerAPI.copyFrom(result, p);
         }
         return result;
@@ -161,7 +161,7 @@ public class Converter {
                 .did(did)
                 .valid(api.getValid())
                 .verifiablePresentation(
-                        api.getVerifiablePresentation() != null ? toMap(api.getVerifiablePresentation()) : null)
+                        api.getVerifiablePresentation() != null ? api.getVerifiablePresentation() : null)
                 .build();
     }
 

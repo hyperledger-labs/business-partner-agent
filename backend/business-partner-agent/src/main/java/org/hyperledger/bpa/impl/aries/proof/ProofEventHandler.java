@@ -125,8 +125,7 @@ public class ProofEventHandler {
                             // case: this BPA sends proof to other BPA
                             // if --auto-respond-presentation-request is set to false and there is a
                             // preceding proof proposal event we can do an auto present
-                            if (PresentationExchangeState.PROPOSAL_SENT.equals(pProof.getState())
-                                    && proof.initiatorIsSelf()) {
+                            if (pProof.stateIsProposalSent() && proof.initiatorIsSelf()) {
                                 log.info(
                                         "Present_Proof: state=request_received on PresentationExchange where " +
                                                 "initator=self, responding immediately");

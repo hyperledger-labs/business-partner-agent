@@ -98,7 +98,7 @@ public class DidResolver {
                                 final PartnerAPI pAPI = partnerLookup.lookupPartner(pubDid.toString());
                                 p.setDid(pubDid.toString());
                                 p.setValid(pAPI.getValid());
-                                p.setVerifiablePresentation(converter.toMap(pAPI.getVerifiablePresentation()));
+                                p.setVerifiablePresentation(pAPI.getVerifiablePresentation());
                                 partnerRepo.update(p);
                             }
                         }

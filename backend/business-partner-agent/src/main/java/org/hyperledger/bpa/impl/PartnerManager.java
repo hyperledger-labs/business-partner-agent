@@ -179,7 +179,7 @@ public class PartnerManager {
             PartnerAPI pAPI = partnerLookup.lookupPartner(dbP.getDid());
             dbP.setValid(pAPI.getValid());
             dbP.setVerifiablePresentation(pAPI.getVerifiablePresentation() != null
-                    ? converter.toMap(pAPI.getVerifiablePresentation())
+                    ? pAPI.getVerifiablePresentation()
                     : null);
             dbP = repo.update(dbP);
             result = Optional.of(converter.toAPIObject(dbP));
