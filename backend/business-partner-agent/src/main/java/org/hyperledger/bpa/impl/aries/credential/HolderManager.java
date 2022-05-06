@@ -405,7 +405,8 @@ public class HolderManager extends CredentialManagerBase {
             if (StringUtils.isNotEmpty(p.getAlias())) {
                 issuer = p.getAlias();
             } else if (p.getVerifiablePresentation() != null) {
-                VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential> vp = Objects.requireNonNull(p.getVerifiablePresentation());
+                VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential> vp = Objects
+                        .requireNonNull(p.getVerifiablePresentation());
                 Optional<VerifiableCredential.VerifiableIndyCredential> profile = vp.getVerifiableCredential()
                         .stream().filter(ic -> ic.getType().contains("OrganizationalProfileCredential")).findAny();
                 if (profile.isPresent() && profile.get().getCredentialSubject() != null) {

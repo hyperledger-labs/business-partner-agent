@@ -28,6 +28,9 @@ import lombok.experimental.Accessors;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.present_proof.*;
 import org.hyperledger.aries.api.present_proof_v2.PresentationFormat;
+import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
+import org.hyperledger.bpa.persistence.model.converter.ProofRequestPayloadConverter;
+import org.hyperledger.bpa.persistence.model.type.PresentationFormatTranslator;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -92,8 +95,8 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
     private Map<String, PresentationExchangeRecord.RevealedAttributeGroup> proof;
 
     /** set when prover */
-    @TypeDef(type = DataType.JSON)
-    private PresentProofRequest.ProofRequest proofRequest;
+    @TypeDef(type = DataType.JSON, converter = ProofRequestPayloadConverter.class)
+    private ProofRequestPayload proofRequest;
 
     /** set when verifier */
     @Nullable
@@ -118,5 +121,24 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
             return ExchangeVersion.V1;
         }
         return exchangeVersion;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static final class ProofRequestPayload implements PresentationFormatTranslator {
+        private PresentationFormat type;
+        private PresentProofRequest.ProofRequest indy;
+        private V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter> dif;
+
+        public static PartnerProof.ProofRequestPayload indy(PresentProofRequest.ProofRequest indy) {
+            return PartnerProof.ProofRequestPayload.builder().indy(indy).type(PresentationFormat.INDY).build();
+        }
+
+        public static PartnerProof.ProofRequestPayload dif(
+                V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter> ldProof) {
+            return PartnerProof.ProofRequestPayload.builder().dif(ldProof).type(PresentationFormat.DIF).build();
+        }
     }
 }

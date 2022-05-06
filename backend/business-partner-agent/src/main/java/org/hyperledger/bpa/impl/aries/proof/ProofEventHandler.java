@@ -183,7 +183,7 @@ public class ProofEventHandler {
                 .presentationExchangeId(proof.getPresentationExchangeId())
                 .threadId(proof.getThreadId())
                 .role(proof.getRole())
-                .proofRequest(proof.getPresentationRequest())
+                .proofRequest(PartnerProof.ProofRequestPayload.indy(proof.getPresentationRequest()))
                 .exchangeVersion(proof.getVersion() != null ? proof.getVersion() : ExchangeVersion.V1)
                 .pushStateChange(proof.getState(), ts != null ? ts : Instant.now())
                 .build();

@@ -37,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
@@ -259,7 +260,8 @@ public class Converter {
         return proof;
     }
 
-    public Map<String, PresentationExchangeRecord.RevealedAttributeGroup> revealedAttrsToGroup(Map<String, PresentationExchangeRecord.RevealedAttribute> attrs,
+    public Map<String, PresentationExchangeRecord.RevealedAttributeGroup> revealedAttrsToGroup(
+            Map<String, PresentationExchangeRecord.RevealedAttribute> attrs,
             List<PresentationExchangeRecord.Identifier> identifier) {
         Map<String, PresentationExchangeRecord.RevealedAttributeGroup> attrToGroup = new LinkedHashMap<>();
         if (CollectionUtils.isNotEmpty(attrs)) {
@@ -283,13 +285,15 @@ public class Converter {
      */
     private String resolveTypeLabel(@NonNull PartnerProof p) {
         String defaultLabel = msg.getMessage("api.proof.exchange.default.name");
-        if (p.getProofRequest() != null && !"proof-request".equals(p.getProofRequest().getName())) {
-            return p.getProofRequest().getName();
+        PresentProofRequest.ProofRequest indy = Objects
+                .requireNonNullElseGet(p.getProofRequest(), PartnerProof.ProofRequestPayload::new).getIndy();
+        if (indy != null && !"proof-request".equals(indy.getName())) {
+            return indy.getName();
         }
-        if (p.getProofRequest() != null
-                && p.getProofRequest().getRequestedAttributes() != null
-                && p.getProofRequest().getRequestedAttributes().size() == 1) {
-            return p.getProofRequest().getRequestedAttributes().entrySet().stream().findFirst().map(attr -> {
+        if (indy != null
+                && indy.getRequestedAttributes() != null
+                && indy.getRequestedAttributes().size() == 1) {
+            return indy.getRequestedAttributes().entrySet().stream().findFirst().map(attr -> {
                 if (attr.getValue().getRestrictions() != null && attr.getValue().getRestrictions().size() == 1) {
                     JsonObject jo = attr.getValue().getRestrictions().get(0);
                     String credDefId = jo.get("cred_def_id") != null ? jo.get("cred_def_id").getAsString() : null;

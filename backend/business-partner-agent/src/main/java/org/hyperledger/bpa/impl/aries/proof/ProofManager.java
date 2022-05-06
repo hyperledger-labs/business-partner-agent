@@ -195,7 +195,7 @@ public class ProofManager {
                     .presentationExchangeId(exchange.getPresentationExchangeId())
                     .role(exchange.getRole())
                     .threadId(exchange.getThreadId())
-                    .proofRequest(exchange.getPresentationRequest())
+                    .proofRequest(PartnerProof.ProofRequestPayload.indy(exchange.getPresentationRequest()))
                     .proofTemplate(proofTemplate)
                     .exchangeVersion(exchange.getVersion() != null ? exchange.getVersion() : ExchangeVersion.V1)
                     .pushStateChange(exchange.getState(), Instant.now())
@@ -339,7 +339,7 @@ public class ProofManager {
         pp
                 .setValid(proof.isVerified())
                 .pushStates(proof.getState(), proof.getUpdatedAt())
-                .setProofRequest(proof.getPresentationRequest())
+                .setProofRequest(PartnerProof.ProofRequestPayload.indy(proof.getPresentationRequest()))
                 .setProof(CollectionUtils.isNotEmpty(revealedAttributeGroups)
                         ? proof.findRevealedAttributeGroups()
                         : conv.revealedAttrsToGroup(proof.findRevealedAttributedFull(), proof.getIdentifiers()));

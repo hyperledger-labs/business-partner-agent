@@ -171,7 +171,7 @@ class AriesEventHandlerTest extends BaseTest {
                 .partnerId(p.getId())
                 .presentationExchangeId(exReqSent.getPresentationExchangeId())
                 .threadId(exReqSent.getThreadId())
-                .proofRequest(exReqSent.getPresentationRequest())
+                .proofRequest(PartnerProof.ProofRequestPayload.indy(exReqSent.getPresentationRequest()))
                 .pushStateChange(PresentationExchangeState.REQUEST_SENT,
                         TimeUtil.fromISOInstant(exReqSent.getUpdatedAt()))
                 .build());

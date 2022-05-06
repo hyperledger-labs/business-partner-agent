@@ -26,6 +26,7 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -61,7 +62,8 @@ public class AriesProofExchange {
                 .id(p.getId())
                 .partnerId(p.getPartnerId())
                 .state(p.getState())
-                .proofRequest(p.getProofRequest())
+                .proofRequest(Objects.requireNonNullElseGet(p.getProofRequest(), PartnerProof.ProofRequestPayload::new)
+                        .getIndy())
                 .role(p.getRole())
                 .problemReport(p.getProblemReport())
                 .exchangeVersion(p.getExchangeVersion())
