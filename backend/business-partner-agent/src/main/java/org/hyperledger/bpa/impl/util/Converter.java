@@ -53,7 +53,6 @@ import org.hyperledger.bpa.persistence.model.MyDocument;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
 
-import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -71,9 +70,6 @@ public class Converter {
     };
 
     public static final TypeReference<VerifiablePresentation<VerifiableIndyCredential>> VP_TYPEREF = new TypeReference<>() {
-    };
-
-    public static final TypeReference<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>> ATTRIBUTE_GROUP = new TypeReference<>() {
     };
 
     @Value("${bpa.did.prefix}")
@@ -221,11 +217,11 @@ public class Converter {
         return mapper.convertValue(fromValue, STRING_STRING_MAP);
     }
 
-    public <T> T fromMap(@NonNull Map<String, Object> fromValue, @NotNull Class<T> type) {
+    public <T> T fromMap(@NonNull Map<String, Object> fromValue, @NonNull Class<T> type) {
         return mapper.convertValue(fromValue, type);
     }
 
-    public <T> T fromMap(@NonNull Map<String, Object> fromValue, @NotNull TypeReference<T> type) {
+    public <T> T fromMap(@NonNull Map<String, Object> fromValue, @NonNull TypeReference<T> type) {
         return mapper.convertValue(fromValue, type);
     }
 
@@ -246,8 +242,7 @@ public class Converter {
         JsonNode proofData = null;
         try {
             if (p.getProof() != null) {
-                Map<String, PresentationExchangeRecord.RevealedAttributeGroup> groups = fromMap(p.getProof(),
-                        ATTRIBUTE_GROUP);
+                Map<String, PresentationExchangeRecord.RevealedAttributeGroup> groups = p.getProof();
                 Map<String, AriesProofExchange.RevealedAttributeGroup> collect = groups.entrySet().stream()
                         .collect(Collectors.toMap(Map.Entry::getKey, e -> AriesProofExchange.RevealedAttributeGroup
                                 .builder()
@@ -258,13 +253,13 @@ public class Converter {
             }
         } catch (IllegalArgumentException e) {
             log.warn("Not an attribute group");
-            proofData = p.getProof() != null ? fromMap(p.getProof(), JsonNode.class) : null;
+            proofData = p.getProof() != null ? mapper.convertValue(p.getProof(), JsonNode.class) : null;
         }
         proof.setProofData(proofData);
         return proof;
     }
 
-    public Map<String, Object> revealedAttrsToGroup(Map<String, PresentationExchangeRecord.RevealedAttribute> attrs,
+    public Map<String, PresentationExchangeRecord.RevealedAttributeGroup> revealedAttrsToGroup(Map<String, PresentationExchangeRecord.RevealedAttribute> attrs,
             List<PresentationExchangeRecord.Identifier> identifier) {
         Map<String, PresentationExchangeRecord.RevealedAttributeGroup> attrToGroup = new LinkedHashMap<>();
         if (CollectionUtils.isNotEmpty(attrs)) {
@@ -274,7 +269,7 @@ public class Converter {
                     .identifier(CollectionUtils.isNotEmpty(identifier) ? identifier.get(v.getSubProofIndex()) : null)
                     .build()));
         }
-        return toMap(attrToGroup);
+        return attrToGroup;
     }
 
     /**

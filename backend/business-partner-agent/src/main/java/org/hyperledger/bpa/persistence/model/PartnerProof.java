@@ -26,10 +26,8 @@ import io.micronaut.data.model.DataType;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.hyperledger.aries.api.ExchangeVersion;
-import org.hyperledger.aries.api.present_proof.PresExStateTranslator;
-import org.hyperledger.aries.api.present_proof.PresentProofRequest;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
+import org.hyperledger.aries.api.present_proof.*;
+import org.hyperledger.aries.api.present_proof_v2.PresentationFormat;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -54,6 +52,7 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
     @AutoPopulated
     private UUID id;
 
+    // TODO one to many
     private UUID partnerId;
 
     @DateCreated
@@ -78,6 +77,9 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
     @Enumerated(EnumType.STRING)
     private PresentationExchangeRole role;
 
+    @Enumerated(EnumType.STRING)
+    private PresentationFormat type;
+
     @Nullable
     @Enumerated(EnumType.STRING)
     private ExchangeVersion exchangeVersion;
@@ -87,7 +89,7 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
 
     @Nullable
     @TypeDef(type = DataType.JSON)
-    private Map<String, Object> proof;
+    private Map<String, PresentationExchangeRecord.RevealedAttributeGroup> proof;
 
     /** set when prover */
     @TypeDef(type = DataType.JSON)

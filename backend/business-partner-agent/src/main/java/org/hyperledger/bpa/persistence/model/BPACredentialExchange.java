@@ -32,7 +32,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.CredentialType;
-import org.hyperledger.bpa.model.converter.ExchangePayloadConverter;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayloadConverter;
 import org.hyperledger.bpa.persistence.model.type.CredentialTypeTranslator;
 
 import javax.persistence.Id;

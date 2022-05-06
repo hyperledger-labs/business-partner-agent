@@ -1,0 +1,1 @@
+ALTER TABLE partner_proof ADD COLUMN type character varying(255) NOT NULL DEFAULT 'INDY';

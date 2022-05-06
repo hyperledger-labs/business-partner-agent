@@ -90,7 +90,10 @@ class DidResolverTest extends BaseTest {
     @Test
     void testIgnoreMissingDid() {
         PartnerProof pp = PartnerProof.builder()
-                .proof(Map.of("other", "not-a-did"))
+                .proof(Map.of("other", PresentationExchangeRecord.RevealedAttributeGroup
+                        .builder()
+                        .revealedAttribute("something", "not-a-did")
+                        .build()))
                 .build();
         when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.TRUE).build()));
         when(ur.getDidDocument(any())).thenReturn(Optional.of(new DIDDocument()));
@@ -101,7 +104,10 @@ class DidResolverTest extends BaseTest {
     @Test
     void testResolveDidAndUpdatePartner() {
         PartnerProof pp = PartnerProof.builder()
-                .proof(Map.of("did", "did:dummy"))
+                .proof(Map.of("did", PresentationExchangeRecord.RevealedAttributeGroup
+                        .builder()
+                        .revealedAttribute("did", "did:dummy")
+                        .build()))
                 .build();
         when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.TRUE).build()));
         when(ur.getDidDocument(any())).thenReturn(Optional.empty());

@@ -341,7 +341,7 @@ public class ProofManager {
                 .pushStates(proof.getState(), proof.getUpdatedAt())
                 .setProofRequest(proof.getPresentationRequest())
                 .setProof(CollectionUtils.isNotEmpty(revealedAttributeGroups)
-                        ? conv.toMap(proof.findRevealedAttributeGroups())
+                        ? proof.findRevealedAttributeGroups()
                         : conv.revealedAttrsToGroup(proof.findRevealedAttributedFull(), proof.getIdentifiers()));
         final PartnerProof savedProof = pProofRepo.update(pp);
         didRes.resolveDid(savedProof, proof.getIdentifiers());
