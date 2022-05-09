@@ -17,11 +17,15 @@
  */
 package org.hyperledger.bpa.persistence.model.converter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.core.convert.ConversionContext;
 import lombok.NonNull;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.bpa.api.CredentialType;
 
 import java.util.Map;
 
@@ -29,11 +33,28 @@ public class ProofPayloadConverter  extends BasePayloadConverter
         <Map<String, PresentationExchangeRecord.RevealedAttributeGroup>,
         VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential>> {
 
+    public static final TypeReference<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>> INDY_TYPE = new TypeReference<>() {};
+
     @Override
     public ExchangePayload
             <Map<String, PresentationExchangeRecord.RevealedAttributeGroup>,
             VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential>>
     convertToEntityValue(String persistedValue, @NonNull ConversionContext context) {
-        return null;
+        if (persistedValue == null) {
+            return null;
+        }
+        ExchangePayload.ExchangePayloadBuilder
+                <Map<String, PresentationExchangeRecord.RevealedAttributeGroup>,
+                VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential>>
+                b = ExchangePayload.builder();
+        try {
+            JsonNode node = mapper.readValue(persistedValue, JsonNode.class);
+            Map<String, PresentationExchangeRecord.RevealedAttributeGroup> indy = mapper.convertValue(node, INDY_TYPE);
+            b.indy(indy);
+            b.type(CredentialType.INDY);
+        } catch (JsonProcessingException e) {
+            throw new ConversionException("Could not deserialize proof exchange record");
+        }
+        return b.build();
     }
 }

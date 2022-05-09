@@ -45,13 +45,13 @@ public class ProofRequestPayloadConverter extends BasePayloadConverter
             <PresentProofRequest.ProofRequest,
                     V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>>
     convertToEntityValue(String persistedValue, @NonNull ConversionContext context) {
+        if (persistedValue == null) {
+            return null;
+        }
         ExchangePayload.ExchangePayloadBuilder
                 <PresentProofRequest.ProofRequest,
                         V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>>
                 b = ExchangePayload.builder();
-        if (persistedValue == null) {
-            return null;
-        }
         try {
             JsonNode node = mapper.readValue(persistedValue, JsonNode.class);
             if (node.has("presentation_definition")) {
@@ -66,7 +66,7 @@ public class ProofRequestPayloadConverter extends BasePayloadConverter
                 b.type(CredentialType.INDY);
             }
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Could not deserialize credential exchange record");
+            throw new ConversionException("Could not deserialize proof exchange record");
         }
         return b.build();
     }

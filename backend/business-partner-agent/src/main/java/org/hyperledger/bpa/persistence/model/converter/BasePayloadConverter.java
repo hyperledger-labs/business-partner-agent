@@ -46,7 +46,13 @@ public abstract class BasePayloadConverter<I, L> implements AttributeConverter<E
             }
             return mapper.writeValueAsString(entityValue.getIndy());
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Could not serialise exchange record");
+            throw new ConversionException("Could not serialise exchange record");
+        }
+    }
+
+    public static final class ConversionException extends RuntimeException {
+        public ConversionException(String message) {
+            super(message);
         }
     }
 }

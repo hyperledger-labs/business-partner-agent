@@ -26,6 +26,8 @@ import io.micronaut.data.model.DataType;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential;
+import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.present_proof.*;
 import org.hyperledger.aries.api.present_proof_v2.PresentationFormat;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
@@ -93,7 +95,7 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
 
     @Nullable
     @TypeDef(type = DataType.JSON, converter = ProofPayloadConverter.class)
-    private Map<String, PresentationExchangeRecord.RevealedAttributeGroup> proof;
+    private ExchangePayload<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>, VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential>> proof;
 
     /** set when prover */
     @TypeDef(type = DataType.JSON, converter = ProofRequestPayloadConverter.class)
