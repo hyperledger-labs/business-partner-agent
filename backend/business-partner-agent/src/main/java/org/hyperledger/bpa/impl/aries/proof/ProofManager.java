@@ -282,43 +282,46 @@ public class ProofManager {
         }
     }
 
-    void presentProofAcceptSelected(@NonNull PresentationExchangeRecord presentationExchangeRecord,
+    void presentProofAcceptSelected(@NonNull BasePresExRecord pres,
             @Nullable List<String> referents, @NonNull ExchangeVersion version) {
-        if (presentationExchangeRecord.stateIsRequestReceived()) {
-            getMatchingCredentials(presentationExchangeRecord.getPresentationExchangeId(), version)
-                    .ifPresentOrElse(creds -> {
-                        if (CollectionUtils.isNotEmpty(creds)) {
-                            List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> selected = getPresentationRequestCredentials(
-                                    creds, referents);
-                            PresentationRequestBuilder.acceptAll(presentationExchangeRecord, selected)
-                                    .ifPresent(pr -> {
-                                        try {
-                                            if (version.isV1()) {
-                                                ac.presentProofRecordsSendPresentation(
-                                                        presentationExchangeRecord.getPresentationExchangeId(),
-                                                        pr);
+        // TODO indy/dif switch
+        if (pres instanceof PresentationExchangeRecord presentationExchangeRecord) {
+            if (presentationExchangeRecord.stateIsRequestReceived()) {
+                getMatchingCredentials(presentationExchangeRecord.getPresentationExchangeId(), version)
+                        .ifPresentOrElse(creds -> {
+                            if (CollectionUtils.isNotEmpty(creds)) {
+                                List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> selected = getPresentationRequestCredentials(
+                                        creds, referents);
+                                PresentationRequestBuilder.acceptAll(presentationExchangeRecord, selected)
+                                        .ifPresent(pr -> {
+                                            try {
+                                                if (version.isV1()) {
+                                                    ac.presentProofRecordsSendPresentation(
+                                                            presentationExchangeRecord.getPresentationExchangeId(),
+                                                            pr);
 
-                                            } else {
-                                                ac.presentProofV2RecordsSendPresentation(
-                                                        presentationExchangeRecord.getPresentationExchangeId(),
-                                                        V20PresSpecByFormatRequest.builder()
-                                                                .indy(pr)
-                                                                .build());
+                                                } else {
+                                                    ac.presentProofV2RecordsSendPresentation(
+                                                            presentationExchangeRecord.getPresentationExchangeId(),
+                                                            V20PresSpecByFormatRequest.builder()
+                                                                    .indy(pr)
+                                                                    .build());
+                                                }
+                                            } catch (IOException e) {
+                                                log.error(ms.getMessage("acapy.unavailable"), e);
                                             }
-                                        } catch (IOException e) {
-                                            log.error(ms.getMessage("acapy.unavailable"), e);
-                                        }
-                                    });
-                        } else {
-                            String msg = ms.getMessage("api.proof.exchange.no.match",
-                                    Map.of("id", presentationExchangeRecord.getPresentationExchangeId()));
-                            log.warn(msg);
-                            pProofRepo.findByPresentationExchangeId(
-                                    presentationExchangeRecord.getPresentationExchangeId())
-                                    .ifPresent(pp -> pProofRepo.updateProblemReport(pp.getId(), msg));
-                            throw new PresentationConstructionException(msg);
-                        }
-                    }, () -> log.error("Could not load matching credentials from aca-py"));
+                                        });
+                            } else {
+                                String msg = ms.getMessage("api.proof.exchange.no.match",
+                                        Map.of("id", presentationExchangeRecord.getPresentationExchangeId()));
+                                log.warn(msg);
+                                pProofRepo.findByPresentationExchangeId(
+                                        presentationExchangeRecord.getPresentationExchangeId())
+                                        .ifPresent(pp -> pProofRepo.updateProblemReport(pp.getId(), msg));
+                                throw new PresentationConstructionException(msg);
+                            }
+                        }, () -> log.error("Could not load matching credentials from aca-py"));
+            }
         }
     }
 
