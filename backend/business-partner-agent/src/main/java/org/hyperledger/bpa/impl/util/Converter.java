@@ -245,7 +245,7 @@ public class Converter {
         JsonNode proofData = null;
         try {
             if (p.getProof() != null) {
-                Map<String, PresentationExchangeRecord.RevealedAttributeGroup> groups = p.getProof();
+                Map<String, PresentationExchangeRecord.RevealedAttributeGroup> groups = p.getProof().getIndy();
                 Map<String, AriesProofExchange.RevealedAttributeGroup> collect = groups.entrySet().stream()
                         .collect(Collectors.toMap(Map.Entry::getKey, e -> AriesProofExchange.RevealedAttributeGroup
                                 .builder()

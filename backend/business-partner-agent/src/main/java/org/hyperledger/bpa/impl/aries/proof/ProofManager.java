@@ -342,8 +342,8 @@ public class ProofManager {
                 .pushStates(proof.getState(), proof.getUpdatedAt())
                 .setProofRequest(ExchangePayload.indy(proof.getPresentationRequest()))
                 .setProof(CollectionUtils.isNotEmpty(revealedAttributeGroups)
-                        ? proof.findRevealedAttributeGroups()
-                        : conv.revealedAttrsToGroup(proof.findRevealedAttributedFull(), proof.getIdentifiers()));
+                        ? ExchangePayload.indy(proof.findRevealedAttributeGroups())
+                        : ExchangePayload.indy(conv.revealedAttrsToGroup(proof.findRevealedAttributedFull(), proof.getIdentifiers())));
         final PartnerProof savedProof = pProofRepo.update(pp);
         didRes.resolveDid(savedProof, proof.getIdentifiers());
         return savedProof;

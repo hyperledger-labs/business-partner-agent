@@ -92,7 +92,7 @@ public class DidResolver {
                         }
                         if (didDocument.isEmpty() && pp.getProof() != null) {
                             // TODO only works if the did is set in the revealed attributes
-                            Object pubDid = pp.getProof().get("did");
+                            Object pubDid = pp.getProof().getIndy().get("did");
                             if (pubDid != null) {
                                 log.debug("Resolved did: {}", pubDid);
                                 final PartnerAPI pAPI = partnerLookup.lookupPartner(pubDid.toString());
