@@ -33,6 +33,7 @@ import org.hyperledger.bpa.api.notification.PresentationRequestReceivedEvent;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.repository.PartnerProofRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
@@ -183,7 +184,7 @@ public class ProofEventHandler {
                 .presentationExchangeId(proof.getPresentationExchangeId())
                 .threadId(proof.getThreadId())
                 .role(proof.getRole())
-                .proofRequest(PartnerProof.ProofRequestPayload.indy(proof.getPresentationRequest()))
+                .proofRequest(ExchangePayload.indy(proof.getPresentationRequest()))
                 .exchangeVersion(proof.getVersion() != null ? proof.getVersion() : ExchangeVersion.V1)
                 .pushStateChange(proof.getState(), ts != null ? ts : Instant.now())
                 .build();

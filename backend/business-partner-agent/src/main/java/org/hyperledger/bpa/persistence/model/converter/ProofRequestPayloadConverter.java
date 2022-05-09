@@ -20,50 +20,35 @@ package org.hyperledger.bpa.persistence.model.converter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.core.convert.ConversionContext;
-import io.micronaut.data.model.runtime.convert.AttributeConverter;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
-import org.hyperledger.aries.api.present_proof_v2.PresentationFormat;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
-import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.api.CredentialType;
 
 @Slf4j
 @Singleton
 @NoArgsConstructor
-public class ProofRequestPayloadConverter implements AttributeConverter<PartnerProof.ProofRequestPayload, String> {
+public class ProofRequestPayloadConverter extends BasePayloadConverter
+        <PresentProofRequest.ProofRequest,
+                V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> {
 
-    public static final TypeReference<V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> DIF_TYPE = new TypeReference<>() {
+    public static final TypeReference
+            <V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> DIF_TYPE = new TypeReference<>() {
     };
 
-    @Inject
-    ObjectMapper mapper;
-
     @Override
-    public String convertToPersistedValue(PartnerProof.ProofRequestPayload pr, @NonNull ConversionContext context) {
-        if (pr == null) {
-            return null;
-        }
-        try {
-            if (pr.typeIsDif()) {
-                return mapper.writeValueAsString(pr.getDif());
-            } else {
-                return mapper.writeValueAsString(pr.getIndy());
-            }
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public PartnerProof.ProofRequestPayload convertToEntityValue(String persistedValue,
-            @NonNull ConversionContext context) {
-        PartnerProof.ProofRequestPayload.ProofRequestPayloadBuilder b = PartnerProof.ProofRequestPayload.builder();
+    public ExchangePayload
+            <PresentProofRequest.ProofRequest,
+                    V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>>
+    convertToEntityValue(String persistedValue, @NonNull ConversionContext context) {
+        ExchangePayload.ExchangePayloadBuilder
+                <PresentProofRequest.ProofRequest,
+                        V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>>
+                b = ExchangePayload.builder();
         if (persistedValue == null) {
             return null;
         }
@@ -72,13 +57,13 @@ public class ProofRequestPayloadConverter implements AttributeConverter<PartnerP
             if (node.has("presentation_definition")) {
                 V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter> dif = mapper
                         .convertValue(node, DIF_TYPE);
-                b.dif(dif);
-                b.type(PresentationFormat.DIF);
+                b.ldProof(dif);
+                b.type(CredentialType.JSON_LD);
             } else {
                 PresentProofRequest.ProofRequest indy = mapper.convertValue(node,
                         PresentProofRequest.ProofRequest.class);
                 b.indy(indy);
-                b.type(PresentationFormat.INDY);
+                b.type(CredentialType.INDY);
             }
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Could not deserialize credential exchange record");

@@ -19,50 +19,27 @@ package org.hyperledger.bpa.persistence.model.converter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.convert.ConversionContext;
-import io.micronaut.data.model.runtime.convert.AttributeConverter;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.CredentialType;
-import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
 @Slf4j
 @Singleton
 @NoArgsConstructor
-public class CredExPayloadConverter implements AttributeConverter<BPACredentialExchange.ExchangePayload, String> {
-
-    @Inject
-    ObjectMapper mapper;
+public class CredExPayloadConverter extends BasePayloadConverter
+        <V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> {
 
     @Override
-    public String convertToPersistedValue(BPACredentialExchange.ExchangePayload entityValue,
-            @NonNull ConversionContext context) {
-        if (entityValue == null) {
-            return null;
-        }
-        try {
-            if (entityValue.typeIsIndy()) {
-                return mapper.writeValueAsString(entityValue.getIndy());
-            } else if (entityValue.typeIsJsonLd()) {
-                return mapper.writeValueAsString(entityValue.getLdProof());
-            }
-            return mapper.writeValueAsString(entityValue);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Could not serialise credential exchange record");
-        }
-    }
-
-    @Override
-    public BPACredentialExchange.ExchangePayload convertToEntityValue(String persistedValue,
-            @NonNull ConversionContext context) {
-        BPACredentialExchange.ExchangePayload.ExchangePayloadBuilder b = BPACredentialExchange.ExchangePayload
-                .builder();
+    public ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal , V20CredExRecordByFormat.LdProof>
+    convertToEntityValue(String persistedValue, @NonNull ConversionContext context) {
+        ExchangePayload.ExchangePayloadBuilder
+                <V1CredentialExchange.CredentialProposalDict.CredentialProposal , V20CredExRecordByFormat.LdProof>
+                b = ExchangePayload.builder();
         if (persistedValue == null) {
             return null;
         }

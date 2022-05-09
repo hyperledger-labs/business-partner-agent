@@ -130,7 +130,8 @@ public class ConnectionManager {
                         .invitationUrl(invitationRecord.getInvitationUrl())
                         .invitationId(connId);
             }
-            Partner partner = createNewPartner(req.getAlias(), connId, invMsgId, req.getTag(), req.getTrustPing(), invitationRecord);
+            Partner partner = createNewPartner(req.getAlias(), connId, invMsgId, req.getTag(), req.getTrustPing(),
+                    invitationRecord);
             invitation.partnerId(partner.getId().toString());
         } catch (IOException e) {
             throw new NetworkException("acapy.unavailable");
@@ -443,7 +444,7 @@ public class ConnectionManager {
 
     private Partner createNewPartner(String alias, String connectionId, String invMsgId, List<Tag> tag,
             Boolean trustPing, InvitationRecord invitationRecord) {
-                return partnerRepo.save(Partner
+        return partnerRepo.save(Partner
                 .builder()
                 .ariesSupport(Boolean.TRUE)
                 .alias(StringUtils.trimToNull(alias))

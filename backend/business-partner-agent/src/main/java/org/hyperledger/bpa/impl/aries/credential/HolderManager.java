@@ -35,6 +35,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
@@ -60,6 +61,7 @@ import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.model.MyDocument;
 import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 import org.hyperledger.bpa.persistence.repository.MyDocumentRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
@@ -288,11 +290,11 @@ public class HolderManager extends CredentialManagerBase {
     public void handleV2OfferReceived(@NonNull V20CredExRecord v2CredEx) {
         if (v2CredEx.payloadIsLdProof()) {
             handleOfferReceived(v2CredEx,
-                    BPACredentialExchange.ExchangePayload.jsonLD(v2CredEx.resolveLDCredOffer()),
+                    ExchangePayload.jsonLD(v2CredEx.resolveLDCredOffer()),
                     ExchangeVersion.V2);
         } else {
             handleOfferReceived(v2CredEx,
-                    BPACredentialExchange.ExchangePayload.indy(V2ToV1IndyCredentialConverter.INSTANCE()
+                    ExchangePayload.indy(V2ToV1IndyCredentialConverter.INSTANCE()
                             .toV1Offer(v2CredEx).getCredentialProposalDict().getCredentialProposal()),
                     ExchangeVersion.V2);
         }
@@ -300,7 +302,9 @@ public class HolderManager extends CredentialManagerBase {
 
     // credential offer event
     public void handleOfferReceived(@NonNull BaseCredExRecord credExBase,
-            @NonNull BPACredentialExchange.ExchangePayload payload, @NonNull ExchangeVersion version) {
+                                    @NonNull ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal,
+                                            V20CredExRecordByFormat.LdProof> payload,
+                                    @NonNull ExchangeVersion version) {
         holderCredExRepo.findByCredentialExchangeId(credExBase.getCredentialExchangeId()).ifPresentOrElse(db -> {
             db.pushStates(credExBase.getState());
             holderCredExRepo.updateOnCredentialOfferEvent(db.getId(), db.getState(), db.getStateToTimestamp(), payload);

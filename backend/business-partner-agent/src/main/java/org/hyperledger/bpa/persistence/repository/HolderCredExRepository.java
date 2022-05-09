@@ -29,9 +29,12 @@ import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.PageableRepository;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.StateChangeDecorator;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 
 import java.time.Instant;
 import java.util.List;
@@ -81,14 +84,12 @@ public interface HolderCredExRepository extends PageableRepository<BPACredential
 
     void updateIsPublic(@Id UUID id, Boolean isPublic);
 
-    void updateState(@Id UUID id, CredentialExchangeState state);
-
     void updateStates(@Id UUID id, CredentialExchangeState state,
             StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp, @Nullable String errorMsg);
 
     void updateOnCredentialOfferEvent(@Id UUID id, CredentialExchangeState state,
             StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp,
-            BPACredentialExchange.ExchangePayload credentialOffer);
+            ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal , V20CredExRecordByFormat.LdProof> credentialOffer);
 
     void updateLabel(@Id UUID id, String label);
 

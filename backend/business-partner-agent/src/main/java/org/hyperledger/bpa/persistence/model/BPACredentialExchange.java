@@ -33,7 +33,8 @@ import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.converter.CredExPayloadConverter;
-import org.hyperledger.bpa.persistence.model.type.CredentialTypeTranslator;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
+import org.hyperledger.bpa.persistence.model.type.ExchangeTypeTranslator;
 
 import javax.persistence.Id;
 import javax.persistence.*;
@@ -58,7 +59,7 @@ import java.util.stream.Collectors;
 @Table(name = "bpa_credential_exchange")
 public class BPACredentialExchange
         extends StateChangeDecorator<BPACredentialExchange, CredentialExchangeState>
-        implements CredExStateTranslator, CredentialTypeTranslator {
+        implements CredExStateTranslator, ExchangeTypeTranslator {
 
     @Id
     @AutoPopulated
@@ -113,15 +114,15 @@ public class BPACredentialExchange
 
     @Nullable
     @TypeDef(type = DataType.JSON, converter = CredExPayloadConverter.class)
-    private ExchangePayload credentialProposal;
+    private ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal , V20CredExRecordByFormat.LdProof> credentialProposal;
 
     @Nullable
     @TypeDef(type = DataType.JSON, converter = CredExPayloadConverter.class)
-    private ExchangePayload credentialOffer;
+    private ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal , V20CredExRecordByFormat.LdProof> credentialOffer;
 
     @Nullable
     @TypeDef(type = DataType.JSON, converter = CredExPayloadConverter.class)
-    private ExchangePayload ldCredential;
+    private ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal , V20CredExRecordByFormat.LdProof> ldCredential;
 
     @Nullable
     @TypeDef(type = DataType.JSON)
@@ -151,24 +152,6 @@ public class BPACredentialExchange
     @Nullable
     private String referent;
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static final class ExchangePayload implements CredentialTypeTranslator {
-        private CredentialType type;
-        private V1CredentialExchange.CredentialProposalDict.CredentialProposal indy;
-        private V20CredExRecordByFormat.LdProof ldProof;
-
-        public static ExchangePayload indy(V1CredentialExchange.CredentialProposalDict.CredentialProposal indy) {
-            return ExchangePayload.builder().indy(indy).type(CredentialType.INDY).build();
-        }
-
-        public static ExchangePayload jsonLD(V20CredExRecordByFormat.LdProof ldProof) {
-            return ExchangePayload.builder().ldProof(ldProof).type(CredentialType.JSON_LD).build();
-        }
-    }
-
     public boolean checkIfPublic() {
         return isPublic != null && isPublic;
     }
@@ -194,14 +177,14 @@ public class BPACredentialExchange
 
     public @io.micronaut.core.annotation.NonNull Map<String, String> offerAttributesToMap() {
         if (typeIsJsonLd()) {
-            return ldAttributesToMap(credentialOffer != null ? credentialOffer.ldProof : null);
+            return ldAttributesToMap(credentialOffer != null ? credentialOffer.getLdProof(): null);
         }
         return indyAttributesToMap(credentialOffer != null ? credentialOffer.getIndy() : null);
     }
 
     public @io.micronaut.core.annotation.NonNull Map<String, String> credentialAttributesToMap() {
         if (typeIsJsonLd()) {
-            return ldAttributesToMap(ldCredential != null ? ldCredential.ldProof : null);
+            return ldAttributesToMap(ldCredential != null ? ldCredential.getLdProof() : null);
         }
         // TODO fallback to credential
         if (indyCredential == null || CollectionUtils.isEmpty(indyCredential.getAttrs())) {
@@ -238,7 +221,7 @@ public class BPACredentialExchange
         return Map.of();
     }
 
-    public ExchangePayload exchangePayloadByState() {
+    public ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal , V20CredExRecordByFormat.LdProof> exchangePayloadByState() {
         if (stateIsProposalReceived()) {
             return credentialProposal;
         } else if (stateIsOfferReceived()) {

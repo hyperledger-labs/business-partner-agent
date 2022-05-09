@@ -39,6 +39,7 @@ import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCrede
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.MyDocumentAPI;
@@ -53,6 +54,7 @@ import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.MyDocument;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -286,7 +288,8 @@ public class Converter {
     private String resolveTypeLabel(@NonNull PartnerProof p) {
         String defaultLabel = msg.getMessage("api.proof.exchange.default.name");
         PresentProofRequest.ProofRequest indy = Objects
-                .requireNonNullElseGet(p.getProofRequest(), PartnerProof.ProofRequestPayload::new).getIndy();
+                .requireNonNullElseGet(p.getProofRequest(), ExchangePayload<PresentProofRequest.ProofRequest,
+                        V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>>::new).getIndy();
         if (indy != null && !"proof-request".equals(indy.getName())) {
             return indy.getName();
         }

@@ -43,6 +43,7 @@ import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 
 import java.io.IOException;
@@ -91,7 +92,7 @@ public class HolderIndyManager {
             ac.issueCredentialSendProposal(v1CredentialProposalRequest).ifPresent(v1 -> dbCredEx
                     .threadId(v1.getThreadId())
                     .credentialExchangeId(v1.getCredentialExchangeId())
-                    .credentialProposal(BPACredentialExchange.ExchangePayload
+                    .credentialProposal(ExchangePayload
                             .indy(v1.getCredentialProposalDict().getCredentialProposal())));
         } else {
             V2CredentialExchangeFree v2Request = V1ToV2IssueCredentialConverter
@@ -100,7 +101,7 @@ public class HolderIndyManager {
                     .threadId(v2.getThreadId())
                     .credentialExchangeId(v2.getCredentialExchangeId())
                     .exchangeVersion(ExchangeVersion.V2)
-                    .credentialProposal(BPACredentialExchange.ExchangePayload
+                    .credentialProposal(ExchangePayload
                             .indy(V2ToV1IndyCredentialConverter.INSTANCE().toV1Proposal(v2)
                                     .getCredentialProposalDict()
                                     .getCredentialProposal())));

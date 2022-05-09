@@ -17,17 +17,17 @@
  */
 package org.hyperledger.bpa.persistence.model.type;
 
-import org.hyperledger.aries.api.present_proof_v2.PresentationFormat;
+import org.hyperledger.bpa.api.CredentialType;
 
-public interface PresentationFormatTranslator {
+public interface ExchangeTypeTranslator {
 
-    PresentationFormat getType();
+    CredentialType getType();
 
     default boolean typeIsIndy() {
-        return PresentationFormat.INDY.equals(getType());
+        return CredentialType.INDY.equals(getType());
     }
 
-    default boolean typeIsDif() {
-        return PresentationFormat.DIF.equals(getType());
+    default boolean typeIsJsonLd() {
+        return CredentialType.JSON_LD.equals(getType());
     }
 }

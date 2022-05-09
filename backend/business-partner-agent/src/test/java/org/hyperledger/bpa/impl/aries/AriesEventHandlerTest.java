@@ -28,6 +28,7 @@ import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.repository.PartnerProofRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
@@ -171,7 +172,7 @@ class AriesEventHandlerTest extends BaseTest {
                 .partnerId(p.getId())
                 .presentationExchangeId(exReqSent.getPresentationExchangeId())
                 .threadId(exReqSent.getThreadId())
-                .proofRequest(PartnerProof.ProofRequestPayload.indy(exReqSent.getPresentationRequest()))
+                .proofRequest(ExchangePayload.indy(exReqSent.getPresentationRequest()))
                 .pushStateChange(PresentationExchangeState.REQUEST_SENT,
                         TimeUtil.fromISOInstant(exReqSent.getUpdatedAt()))
                 .build());

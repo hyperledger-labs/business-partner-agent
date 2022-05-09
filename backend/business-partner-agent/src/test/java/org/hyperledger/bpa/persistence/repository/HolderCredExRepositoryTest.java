@@ -30,6 +30,7 @@ import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -159,7 +160,7 @@ class HolderCredExRepositoryTest extends BaseTest {
         BPACredentialExchange saved = holderCredExRepo.save(createDummyCredEx(p));
         saved.pushStates(CredentialExchangeState.OFFER_RECEIVED);
         holderCredExRepo.updateOnCredentialOfferEvent(saved.getId(), saved.getState(), saved.getStateToTimestamp(),
-                BPACredentialExchange.ExchangePayload
+                ExchangePayload
                         .indy(V1CredentialExchange.CredentialProposalDict.CredentialProposal.builder()
                                 .attributes(CredentialAttributes.from(Map.of("attr1", "value1")))
                                 .build()));

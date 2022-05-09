@@ -36,6 +36,7 @@ import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.repository.BPASchemaRepository;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 
@@ -89,7 +90,7 @@ public class HolderLDManager {
                 .credentialExchangeId(v2.getCredentialExchangeId())
                 .exchangeVersion(ExchangeVersion.V2)
                 .type(CredentialType.JSON_LD)
-                .credentialProposal(BPACredentialExchange.ExchangePayload.jsonLD(v2.resolveLDCredProposal())));
+                .credentialProposal(ExchangePayload.jsonLD(v2.resolveLDCredProposal())));
     }
 
     public BPASchema checkSchema(BaseCredExRecord credExBase) {
@@ -117,7 +118,7 @@ public class HolderLDManager {
         String label = labelStrategy.apply(dbCred.getLdCredential());
         dbCred
                 .pushStates(v2.getState(), v2.getUpdatedAt())
-                .setLdCredential(BPACredentialExchange.ExchangePayload.jsonLD(v2.resolveLDCredOffer()))
+                .setLdCredential(ExchangePayload.jsonLD(v2.resolveLDCredOffer()))
                 .setIssuer(issuer)
                 .setLabel(label);
         holderCredExRepo.update(dbCred);

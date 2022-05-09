@@ -29,9 +29,12 @@ import io.micronaut.data.repository.PageableRepository;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.StateChangeDecorator;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 
 import java.util.List;
 import java.util.Optional;
@@ -74,7 +77,9 @@ public interface IssuerCredExRepository extends PageableRepository<BPACredential
 
     Number updateCredential(@Id UUID id, Credential indyCredential);
 
-    Number updateCredential(@Id UUID id, BPACredentialExchange.ExchangePayload ldCredential);
+    Number updateCredential(@Id UUID id,
+                            ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal,
+                            V20CredExRecordByFormat.LdProof> ldCredential);
 
     Number updateAfterEventWithRevocationInfo(@Id UUID id,
             CredentialExchangeState state,

@@ -27,14 +27,15 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.credentials.Credential;
+import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.MyDocumentAPI;
 import org.hyperledger.bpa.api.aries.AriesCredential;
-import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.util.Converter;
-import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 
 import java.util.Map;
 import java.util.Optional;
@@ -93,7 +94,7 @@ public class LabelStrategy {
         return mergedLabel;
     }
 
-    public String apply(@Nullable BPACredentialExchange.ExchangePayload ldCredential) {
+    public String apply(@Nullable ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal , V20CredExRecordByFormat.LdProof> ldCredential) {
         String result = null;
         if (ldCredential != null && ldCredential.typeIsJsonLd()) {
             V20CredExRecordByFormat.LdProof ldProof = ldCredential.getLdProof();

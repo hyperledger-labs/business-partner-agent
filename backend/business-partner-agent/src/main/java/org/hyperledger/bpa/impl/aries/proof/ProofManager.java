@@ -53,6 +53,7 @@ import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerProofRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
@@ -195,7 +196,7 @@ public class ProofManager {
                     .presentationExchangeId(exchange.getPresentationExchangeId())
                     .role(exchange.getRole())
                     .threadId(exchange.getThreadId())
-                    .proofRequest(PartnerProof.ProofRequestPayload.indy(exchange.getPresentationRequest()))
+                    .proofRequest(ExchangePayload.indy(exchange.getPresentationRequest()))
                     .proofTemplate(proofTemplate)
                     .exchangeVersion(exchange.getVersion() != null ? exchange.getVersion() : ExchangeVersion.V1)
                     .pushStateChange(exchange.getState(), Instant.now())
@@ -339,7 +340,7 @@ public class ProofManager {
         pp
                 .setValid(proof.isVerified())
                 .pushStates(proof.getState(), proof.getUpdatedAt())
-                .setProofRequest(PartnerProof.ProofRequestPayload.indy(proof.getPresentationRequest()))
+                .setProofRequest(ExchangePayload.indy(proof.getPresentationRequest()))
                 .setProof(CollectionUtils.isNotEmpty(revealedAttributeGroups)
                         ? proof.findRevealedAttributeGroups()
                         : conv.revealedAttrsToGroup(proof.findRevealedAttributedFull(), proof.getIdentifiers()));
