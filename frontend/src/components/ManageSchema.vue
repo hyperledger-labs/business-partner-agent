@@ -26,7 +26,9 @@
         <v-list-item class="mt-4">
           <v-text-field
             id="schemaId"
+            ref="schemaId"
             v-model="schema.schemaId"
+            v-on:focus="$event.target.select()"
             readonly
             outlined
             dense
@@ -182,10 +184,7 @@ export default {
   },
   methods: {
     copySchemaId() {
-      let idElement = document.querySelector(
-        "#schemaId"
-      ) as HTMLTextAreaElement;
-      idElement.select();
+      this.$refs.schemaId.focus();
       let successful;
       try {
         successful = document.execCommand("copy");
@@ -201,7 +200,7 @@ export default {
             "error",
             this.$t("component.manageSchema.eventErrorCopy")
           );
-      idElement.blur();
+      this.$refs.schemaId.blur();
       window.getSelection().removeAllRanges();
     },
     deleteSchema() {
