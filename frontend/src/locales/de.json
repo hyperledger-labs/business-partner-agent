@@ -306,7 +306,9 @@
       "invitationURL": "Einladung URL",
       "useOOB": "Out of Band verwenden",
       "usePublicDid": "Öffentliche DID verwenden",
-      "eventSuccessCreatePartnerInvite": "Einladung erfolgreich erstellt"
+      "eventSuccessCreatePartnerInvite": "Einladung erfolgreich erstellt",
+      "eventSuccessCopy": "Einladung kopiert",
+      "eventErrorCopy": "Einladung kann nicht kopiert werden"
     },
     "proofTemplate": {
       "title": "Nachweisvorlagen",
