@@ -121,7 +121,19 @@
                       >
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
-                      <span class="font-weight-light">{{ invitationURL }}</span>
+                      <v-text-field
+                        id="invitationURL"
+                        ref="invitationURL"
+                        class="font-weight-light"
+                        v-model="invitationURL"
+                        v-on:focus="$event.target.select()"
+                        readonly
+                        outlined
+                        dense
+                        :label="$t('view.addPartnerbyURL.invitationURL')"
+                        :append-icon="'$vuetify.icons.copy'"
+                        @click:append="copyInvitationURL"
+                      ></v-text-field>
                     </v-expansion-panel-content>
                   </v-expansion-panel>
                 </v-expansion-panels>
@@ -205,6 +217,25 @@ export default {
         .catch((error) => {
           EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
+    },
+    copyInvitationURL() {
+      this.$refs.invitationURL.focus();
+      let successful;
+      try {
+        successful = document.execCommand("copy");
+      } catch {
+        successful = false;
+      }
+      successful
+        ? EventBus.$emit(
+            "success",
+            this.$t("view.addPartnerbyURL.eventSuccessCopy")
+          )
+        : EventBus.$emit(
+            "error",
+            this.$t("view.addPartnerbyURL.eventErrorCopy")
+          );
+      this.$refs.invitationURL.blur();
     },
   },
 };

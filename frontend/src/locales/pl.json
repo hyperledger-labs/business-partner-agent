@@ -305,7 +305,9 @@
       "createInvitation": "Wygeneruj zaproszenie (kod QR)",
       "invitationURL": "Adres URL zaproszenia",
       "useOOB": "Wykorzystanie poza pasmem",
-      "eventSuccessCreatePartnerInvite": "Partner Invitation created successfully"
+      "eventSuccessCreatePartnerInvite": "Partner Invitation created successfully",
+      "eventSuccessCopy": "Invitation copied",
+      "eventErrorCopy": "Can't copy Invitation"
     },
     "proofTemplate": {
       "title": "Szablony dowodów",
