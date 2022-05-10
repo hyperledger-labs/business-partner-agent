@@ -96,7 +96,7 @@
             v-if="
               !isWaitingForMatchingCreds &&
               isStateRequestReceived &&
-              !record.canBeFullfilled
+              !record.canBeFulfilled
             "
             dense
             border="left"
@@ -161,7 +161,7 @@ export default {
       if (item) {
         this.openItem(item);
       } else {
-        // Load record separately if items have not be resolved
+        // Load record separately if items have not been resolved
         proofExService.getProofExRecord(this.openItemById).then((resp) => {
           if (resp.data) {
             this.openItem(resp.data);
@@ -361,9 +361,9 @@ export default {
 
       return referents;
     },
-    // Checks if proof request can be fullfilled
-    canBeFullfilled() {
-      const canAttributesFullfilled = Object.values(
+    // Checks if proof request can be fulfilled
+    canBeFulfilled() {
+      const canAttributesFulfilled = Object.values(
         this.record.proofRequest.requestedAttributes
       )
         .map((attributeGroup: any) => {
@@ -377,7 +377,7 @@ export default {
           return x && y;
         }, true);
 
-      const canPredicatesFullfilled = Object.values(
+      const canPredicatesFulfilled = Object.values(
         this.record.proofRequest.requestedPredicates
       )
         .map((attributeGroup: any) => {
@@ -388,7 +388,7 @@ export default {
           return x && y;
         }, true);
 
-      return canAttributesFullfilled && canPredicatesFullfilled;
+      return canAttributesFulfilled && canPredicatesFulfilled;
     },
     getMatchingCredentials() {
       this.isWaitingForMatchingCreds = true;
@@ -433,7 +433,7 @@ export default {
           }
         }
 
-        this.record.canBeFullfilled = this.canBeFullfilled();
+        this.record.canBeFulfilled = this.canBeFulfilled();
         this.isWaitingForMatchingCreds = false;
       });
     },

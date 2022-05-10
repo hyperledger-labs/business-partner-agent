@@ -24,6 +24,7 @@ import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
 import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 
@@ -46,6 +47,7 @@ public class AriesProofExchange {
     private ExchangeVersion exchangeVersion;
     private PresentationExchangeState state;
     private PresentationExchangeRole role;
+    private CredentialType type;
 
     private Long updatedAt;
     public Map<PresentationExchangeState, Long> stateToTimestamp;
@@ -64,11 +66,9 @@ public class AriesProofExchange {
                 .id(p.getId())
                 .partnerId(p.getPartnerId())
                 .state(p.getState())
-                .proofRequest(Objects.requireNonNullElseGet(p.getProofRequest(), ExchangePayload
-                                <PresentProofRequest.ProofRequest,
-                                V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>>::new)
-                        .getIndy())
+                .proofRequest(p.getProofRequest() != null ? p.getProofRequest().getIndy() : null) // TODO json_ld
                 .role(p.getRole())
+                .type(p.getType())
                 .problemReport(p.getProblemReport())
                 .exchangeVersion(p.getExchangeVersion())
                 .stateToTimestamp(p.getStateToTimestamp() != null ? p.getStateToTimestamp().toApi() : null)

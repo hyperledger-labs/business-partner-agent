@@ -23,13 +23,7 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.convert.ConversionContext;
 import io.micronaut.data.model.runtime.convert.AttributeConverter;
 import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-@Singleton
-@NoArgsConstructor
 public abstract class BasePayloadConverter<I, L> implements AttributeConverter<ExchangePayload<I, L>, String> {
 
     @Inject

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.core.convert.ConversionContext;
+import jakarta.inject.Singleton;
 import lombok.NonNull;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
@@ -29,6 +30,7 @@ import org.hyperledger.bpa.api.CredentialType;
 
 import java.util.Map;
 
+@Singleton
 public class ProofPayloadConverter  extends BasePayloadConverter
         <Map<String, PresentationExchangeRecord.RevealedAttributeGroup>,
         VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential>> {

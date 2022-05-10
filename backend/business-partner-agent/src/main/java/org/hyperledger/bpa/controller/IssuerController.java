@@ -28,6 +28,7 @@ import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -148,6 +149,7 @@ public class IssuerController {
      * @return Redirect with encoded credential offer in the location header
      */
     @Secured(SecurityRule.IS_ANONYMOUS)
+    @Hidden
     @ApiResponse(responseCode = "301", description = "Redirect with encoded credential offer in the location header")
     @Get("/issue-credential/oob-attachment/{id}")
     public HttpResponse<Object> handleConnectionLess(@PathVariable UUID id) {

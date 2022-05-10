@@ -22,15 +22,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.convert.ConversionContext;
 import jakarta.inject.Singleton;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.CredentialType;
 
-@Slf4j
 @Singleton
-@NoArgsConstructor
 public class CredExPayloadConverter extends BasePayloadConverter
         <V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> {
 

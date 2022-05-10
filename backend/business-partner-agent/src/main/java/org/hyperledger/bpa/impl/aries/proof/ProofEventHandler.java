@@ -203,6 +203,7 @@ public class ProofEventHandler {
                 .threadId(proof.getThreadId())
                 .role(proof.getRole())
                 .proofRequest(b.build())
+                .type(b.build().getType())
                 .exchangeVersion(proof.getVersion() != null ? proof.getVersion() : ExchangeVersion.V1)
                 .pushStateChange(proof.getState(), ts != null ? ts : Instant.now())
                 .build();

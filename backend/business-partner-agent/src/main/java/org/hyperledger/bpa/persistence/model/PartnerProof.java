@@ -29,8 +29,8 @@ import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.present_proof.*;
-import org.hyperledger.aries.api.present_proof_v2.PresentationFormat;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.model.converter.ProofPayloadConverter;
 import org.hyperledger.bpa.persistence.model.converter.ProofRequestPayloadConverter;
@@ -84,7 +84,7 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
     private PresentationExchangeRole role;
 
     @Enumerated(EnumType.STRING)
-    private PresentationFormat type;
+    private CredentialType type;
 
     @Nullable
     @Enumerated(EnumType.STRING)
