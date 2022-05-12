@@ -89,7 +89,7 @@ public interface HolderCredExRepository extends PageableRepository<BPACredential
 
     void updateOnCredentialOfferEvent(@Id UUID id, CredentialExchangeState state,
             StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp,
-            ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal , V20CredExRecordByFormat.LdProof> credentialOffer);
+            ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> credentialOffer);
 
     void updateLabel(@Id UUID id, String label);
 

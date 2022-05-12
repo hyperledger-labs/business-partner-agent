@@ -37,7 +37,10 @@ export type DeclineExchangeRequest =
 export type ApproveProofRequest = components["schemas"]["ApproveProofRequest"];
 
 export type PresentationRequestCredentials =
-  components["schemas"]["PresentationRequestCredentials"];
+  components["schemas"]["PresentationRequestCredentialsIndy"];
+
+export type PresentationRequestCredentialsDif =
+  components["schemas"]["PresentationRequestCredentialsDif"];
 
 // Data and response types
 export type SchemaApi = components["schemas"]["SchemaAPI"];

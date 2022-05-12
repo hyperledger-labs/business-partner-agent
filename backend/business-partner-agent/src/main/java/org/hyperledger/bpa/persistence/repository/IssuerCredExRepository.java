@@ -78,8 +78,7 @@ public interface IssuerCredExRepository extends PageableRepository<BPACredential
     Number updateCredential(@Id UUID id, Credential indyCredential);
 
     Number updateCredential(@Id UUID id,
-                            ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal,
-                            V20CredExRecordByFormat.LdProof> ldCredential);
+            ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> ldCredential);
 
     Number updateAfterEventWithRevocationInfo(@Id UUID id,
             CredentialExchangeState state,

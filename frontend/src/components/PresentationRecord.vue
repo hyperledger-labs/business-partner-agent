@@ -8,11 +8,12 @@
 
 <template>
   <v-container>
+    <!-- Exchange States -->
     <v-list-item>
       <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
         {{ $t("view.presentationRecord.role") }}
       </v-list-item-title>
-      <v-list-item-subtitle align="">
+      <v-list-item-subtitle>
         {{ record.role | capitalize }}
       </v-list-item-subtitle>
     </v-list-item>
@@ -21,8 +22,17 @@
       <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
         {{ $t("view.presentationRecord.state") }}
       </v-list-item-title>
-      <v-list-item-subtitle align="">
+      <v-list-item-subtitle>
         {{ (record.state ? record.state.replace("_", " ") : "") | capitalize }}
+      </v-list-item-subtitle>
+    </v-list-item>
+
+    <v-list-item v-if="expertMode">
+      <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
+        {{ $t("view.presentationRecord.type") }}
+      </v-list-item-title>
+      <v-list-item-subtitle>
+        {{ (record.type ? record.type.replace("_", " ") : "") | capitalize }}
       </v-list-item-subtitle>
     </v-list-item>
 
@@ -30,10 +40,11 @@
       <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
         {{ $t("view.presentationRecord.requestName") }}
       </v-list-item-title>
-      <v-list-item-subtitle align="">
+      <v-list-item-subtitle>
         {{ record.proofRequest ? record.proofRequest.name : "" }}
       </v-list-item-subtitle>
     </v-list-item>
+
     <!-- Timeline  -->
     <Timeline :time-entries="record.stateToTimestamp"></Timeline>
 
@@ -42,8 +53,13 @@
       <h4 class="my-4">{{ $t("view.presentationRecord.requestContent") }}:</h4>
 
       <!-- Requested Attributes -->
-
-      <v-expansion-panels v-model="contentPanels" multiple accordion flat>
+      <v-expansion-panels
+        v-model="contentPanels"
+        multiple
+        accordion
+        flat
+        v-if="typeIsIndy"
+      >
         <template v-for="type in RequestTypes">
           <v-expansion-panel
             v-for="([groupName, group], idx) in Object.entries(
@@ -196,6 +212,8 @@ import {
   Predicates,
   RequestTypes,
   Restrictions,
+  PresentationExchangeRoles,
+  CredentialTypes,
 } from "@/constants";
 import Timeline from "@/components/Timeline.vue";
 export default {
@@ -207,11 +225,17 @@ export default {
     expertMode() {
       return this.$store.state.expertMode;
     },
+    roleIsProver() {
+      return this.record.role === PresentationExchangeRoles.PROVER;
+    },
     isStateVerified() {
       return this.record.state === PresentationExchangeStates.VERIFIED;
     },
     isStateProposalSent() {
       return this.record.state === PresentationExchangeStates.PROPOSAL_SENT;
+    },
+    typeIsIndy() {
+      return this.record.type === CredentialTypes.INDY.type;
     },
     contentPanels: {
       get: function () {
@@ -304,9 +328,3 @@ export default {
   components: { Timeline },
 };
 </script>
-
-<style scoped>
-.v-btn {
-  margin-left: 10px;
-}
-</style>

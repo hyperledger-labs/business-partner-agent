@@ -402,6 +402,7 @@
     "presentationRecord": {
       "role": "Rolle",
       "state": "Zustand",
+      "type": "Typ",
       "requestName": "Name der Anfrage",
       "requestContent": "Inhalt der Anfrage",
       "issuer": "Aussteller",

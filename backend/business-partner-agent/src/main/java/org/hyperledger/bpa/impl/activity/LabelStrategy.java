@@ -94,7 +94,8 @@ public class LabelStrategy {
         return mergedLabel;
     }
 
-    public String apply(@Nullable ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal , V20CredExRecordByFormat.LdProof> ldCredential) {
+    public String apply(
+            @Nullable ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> ldCredential) {
         String result = null;
         if (ldCredential != null && ldCredential.typeIsJsonLd()) {
             V20CredExRecordByFormat.LdProof ldProof = ldCredential.getLdProof();

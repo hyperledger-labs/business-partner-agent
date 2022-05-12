@@ -34,6 +34,7 @@ import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.model.converter.ProofPayloadConverter;
 import org.hyperledger.bpa.persistence.model.converter.ProofRequestPayloadConverter;
+import org.hyperledger.bpa.persistence.model.type.ExchangeTypeTranslator;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -52,7 +53,7 @@ import java.util.UUID;
 @Table(name = "partner_proof")
 @Accessors(chain = true)
 public class PartnerProof extends StateChangeDecorator<PartnerProof, PresentationExchangeState>
-        implements PresExStateTranslator {
+        implements PresExStateTranslator, ExchangeTypeTranslator {
 
     @Id
     @AutoPopulated
@@ -95,7 +96,7 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
 
     @Nullable
     @TypeDef(type = DataType.JSON, converter = ProofPayloadConverter.class)
-    private ExchangePayload<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>, VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential>> proof;
+    private ExchangePayload<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>, VerifiablePresentation<VerifiableCredential>> proof;
 
     /** set when prover */
     @TypeDef(type = DataType.JSON, converter = ProofRequestPayloadConverter.class)

@@ -244,7 +244,7 @@ public class Converter {
 
         JsonNode proofData = null;
         try {
-            if (p.getProof() != null) {
+            if (p.getProof() != null && p.typeIsIndy()) {
                 Map<String, PresentationExchangeRecord.RevealedAttributeGroup> groups = p.getProof().getIndy();
                 Map<String, AriesProofExchange.RevealedAttributeGroup> collect = groups.entrySet().stream()
                         .collect(Collectors.toMap(Map.Entry::getKey, e -> AriesProofExchange.RevealedAttributeGroup
@@ -288,8 +288,9 @@ public class Converter {
     private String resolveTypeLabel(@NonNull PartnerProof p) {
         String defaultLabel = msg.getMessage("api.proof.exchange.default.name");
         PresentProofRequest.ProofRequest indy = Objects
-                .requireNonNullElseGet(p.getProofRequest(), ExchangePayload<PresentProofRequest.ProofRequest,
-                        V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>>::new).getIndy();
+                .requireNonNullElseGet(p.getProofRequest(),
+                        ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>>::new)
+                .getIndy();
         if (indy != null && !"proof-request".equals(indy.getName())) {
             return indy.getName();
         }

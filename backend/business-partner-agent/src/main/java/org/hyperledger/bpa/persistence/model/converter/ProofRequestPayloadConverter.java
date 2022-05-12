@@ -28,26 +28,20 @@ import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.bpa.api.CredentialType;
 
 @Singleton
-public class ProofRequestPayloadConverter extends BasePayloadConverter
-        <PresentProofRequest.ProofRequest,
-                V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> {
+public class ProofRequestPayloadConverter extends
+        BasePayloadConverter<PresentProofRequest.ProofRequest, V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> {
 
-    public static final TypeReference
-            <V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> DIF_TYPE = new TypeReference<>() {
+    public static final TypeReference<V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> DIF_TYPE = new TypeReference<>() {
     };
 
     @Override
-    public ExchangePayload
-            <PresentProofRequest.ProofRequest,
-                    V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>>
-    convertToEntityValue(String persistedValue, @NonNull ConversionContext context) {
+    public ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> convertToEntityValue(
+            String persistedValue, @NonNull ConversionContext context) {
         if (persistedValue == null) {
             return null;
         }
-        ExchangePayload.ExchangePayloadBuilder
-                <PresentProofRequest.ProofRequest,
-                        V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>>
-                b = ExchangePayload.builder();
+        ExchangePayload.ExchangePayloadBuilder<PresentProofRequest.ProofRequest, V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> b = ExchangePayload
+                .builder();
         try {
             JsonNode node = mapper.readValue(persistedValue, JsonNode.class);
             if (node.has("presentationDefinition")) {

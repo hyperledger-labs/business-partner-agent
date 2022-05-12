@@ -302,9 +302,8 @@ public class HolderManager extends CredentialManagerBase {
 
     // credential offer event
     public void handleOfferReceived(@NonNull BaseCredExRecord credExBase,
-                                    @NonNull ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal,
-                                            V20CredExRecordByFormat.LdProof> payload,
-                                    @NonNull ExchangeVersion version) {
+            @NonNull ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> payload,
+            @NonNull ExchangeVersion version) {
         holderCredExRepo.findByCredentialExchangeId(credExBase.getCredentialExchangeId()).ifPresentOrElse(db -> {
             db.pushStates(credExBase.getState());
             holderCredExRepo.updateOnCredentialOfferEvent(db.getId(), db.getState(), db.getStateToTimestamp(), payload);

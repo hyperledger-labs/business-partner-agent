@@ -31,29 +31,34 @@ import org.hyperledger.bpa.api.CredentialType;
 import java.util.Map;
 
 @Singleton
-public class ProofPayloadConverter  extends BasePayloadConverter
-        <Map<String, PresentationExchangeRecord.RevealedAttributeGroup>,
-        VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential>> {
+public class ProofPayloadConverter extends
+        BasePayloadConverter<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>, VerifiablePresentation<VerifiableCredential>> {
 
-    public static final TypeReference<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>> INDY_TYPE = new TypeReference<>() {};
+    public static final TypeReference<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>> INDY_TYPE = new TypeReference<>() {
+    };
+
+    public static final TypeReference<VerifiablePresentation<VerifiableCredential>> LD_TYPE = new TypeReference<>() {
+    };
 
     @Override
-    public ExchangePayload
-            <Map<String, PresentationExchangeRecord.RevealedAttributeGroup>,
-            VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential>>
-    convertToEntityValue(String persistedValue, @NonNull ConversionContext context) {
+    public ExchangePayload<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>, VerifiablePresentation<VerifiableCredential>> convertToEntityValue(
+            String persistedValue, @NonNull ConversionContext context) {
         if (persistedValue == null) {
             return null;
         }
-        ExchangePayload.ExchangePayloadBuilder
-                <Map<String, PresentationExchangeRecord.RevealedAttributeGroup>,
-                VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential>>
-                b = ExchangePayload.builder();
+        ExchangePayload.ExchangePayloadBuilder<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>, VerifiablePresentation<VerifiableCredential>> b = ExchangePayload
+                .builder();
         try {
             JsonNode node = mapper.readValue(persistedValue, JsonNode.class);
-            Map<String, PresentationExchangeRecord.RevealedAttributeGroup> indy = mapper.convertValue(node, INDY_TYPE);
-            b.indy(indy);
-            b.type(CredentialType.INDY);
+            if (node.has("verifiableCredential")) {
+                VerifiablePresentation<VerifiableCredential> ld = mapper.convertValue(node, LD_TYPE);
+                b.ldProof(ld);
+                b.type(CredentialType.JSON_LD);
+            } else {
+                Map<String, PresentationExchangeRecord.RevealedAttributeGroup> indy = mapper.convertValue(node, INDY_TYPE);
+                b.indy(indy);
+                b.type(CredentialType.INDY);
+            }
         } catch (JsonProcessingException e) {
             throw new ConversionException("Could not deserialize proof exchange record");
         }

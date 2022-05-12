@@ -108,18 +108,12 @@ public class ProofEventHandler {
      * @param p {@link BasePresExRecord}
      */
     private void handleAckedOrVerified(BasePresExRecord p) {
-        if (p instanceof PresentationExchangeRecord proof) {
-            pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId()).ifPresent(pp -> {
-                if (CollectionUtils.isNotEmpty(proof.getIdentifiers())) {
-                    PartnerProof savedProof = proofManager.handleAckedOrVerifiedProofEvent(proof, pp);
-                    eventPublisher.publishEventAsync(PresentationRequestCompletedEvent.builder()
-                            .partnerProof(savedProof)
-                            .build());
-                } else {
-                    log.warn("Proof does not contain any identifiers event will not be persisted");
-                }
-            });
-        }
+        pProofRepo.findByPresentationExchangeId(p.getPresentationExchangeId()).ifPresent(pp -> {
+            PartnerProof savedProof = proofManager.handleAckedOrVerifiedIndyProofEvent(p, pp);
+            eventPublisher.publishEventAsync(PresentationRequestCompletedEvent.builder()
+                    .partnerProof(savedProof)
+                    .build());
+        });
     }
 
     /**
@@ -185,14 +179,13 @@ public class ProofEventHandler {
      */
     private PartnerProof defaultProof(@NonNull UUID partnerId, @NonNull BasePresExRecord proof) {
         Instant ts = TimeUtil.fromISOInstant(proof.getUpdatedAt());
-        ExchangePayload.ExchangePayloadBuilder<PresentProofRequest.ProofRequest, V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>>
-                b = ExchangePayload.builder();
+        ExchangePayload.ExchangePayloadBuilder<PresentProofRequest.ProofRequest, V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> b = ExchangePayload
+                .builder();
         if (proof instanceof PresentationExchangeRecord v1) {
             b.indy(v1.getPresentationRequest());
             b.type(CredentialType.INDY);
         } else if (proof instanceof V20PresExRecord v2) {
-            Optional<V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> o = v2.resolveDifPresentationRequest(V2DIFProofRequest.INPUT_URI_TYPE);
-            o.ifPresent(b::ldProof);
+            b.ldProof(v2.resolveDifPresentationRequest());
             b.type(CredentialType.JSON_LD);
         }
         return PartnerProof

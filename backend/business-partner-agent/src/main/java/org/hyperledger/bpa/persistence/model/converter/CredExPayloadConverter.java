@@ -27,15 +27,14 @@ import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.bpa.api.CredentialType;
 
 @Singleton
-public class CredExPayloadConverter extends BasePayloadConverter
-        <V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> {
+public class CredExPayloadConverter extends
+        BasePayloadConverter<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> {
 
     @Override
-    public ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal , V20CredExRecordByFormat.LdProof>
-    convertToEntityValue(String persistedValue, @NonNull ConversionContext context) {
-        ExchangePayload.ExchangePayloadBuilder
-                <V1CredentialExchange.CredentialProposalDict.CredentialProposal , V20CredExRecordByFormat.LdProof>
-                b = ExchangePayload.builder();
+    public ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> convertToEntityValue(
+            String persistedValue, @NonNull ConversionContext context) {
+        ExchangePayload.ExchangePayloadBuilder<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> b = ExchangePayload
+                .builder();
         if (persistedValue == null) {
             return null;
         }

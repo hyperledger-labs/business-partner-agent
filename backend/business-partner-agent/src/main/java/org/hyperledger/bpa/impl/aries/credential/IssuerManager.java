@@ -407,9 +407,8 @@ public class IssuerManager extends CredentialManagerBase {
 
     // Helpers
 
-    private ExchangePayload
-            <V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof>
-    resolveProposal(@NonNull BaseCredExRecord ex) {
+    private ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> resolveProposal(
+            @NonNull BaseCredExRecord ex) {
         if (ex instanceof V1CredentialExchange v1Indy) {
             return v1Indy.getCredentialProposalDict() != null
                     ? ExchangePayload

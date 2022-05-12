@@ -114,15 +114,15 @@ public class BPACredentialExchange
 
     @Nullable
     @TypeDef(type = DataType.JSON, converter = CredExPayloadConverter.class)
-    private ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal , V20CredExRecordByFormat.LdProof> credentialProposal;
+    private ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> credentialProposal;
 
     @Nullable
     @TypeDef(type = DataType.JSON, converter = CredExPayloadConverter.class)
-    private ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal , V20CredExRecordByFormat.LdProof> credentialOffer;
+    private ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> credentialOffer;
 
     @Nullable
     @TypeDef(type = DataType.JSON, converter = CredExPayloadConverter.class)
-    private ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal , V20CredExRecordByFormat.LdProof> ldCredential;
+    private ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> ldCredential;
 
     @Nullable
     @TypeDef(type = DataType.JSON)
@@ -177,7 +177,7 @@ public class BPACredentialExchange
 
     public @io.micronaut.core.annotation.NonNull Map<String, String> offerAttributesToMap() {
         if (typeIsJsonLd()) {
-            return ldAttributesToMap(credentialOffer != null ? credentialOffer.getLdProof(): null);
+            return ldAttributesToMap(credentialOffer != null ? credentialOffer.getLdProof() : null);
         }
         return indyAttributesToMap(credentialOffer != null ? credentialOffer.getIndy() : null);
     }
@@ -194,11 +194,7 @@ public class BPACredentialExchange
     }
 
     private Map<String, String> ldAttributesToMap(V20CredExRecordByFormat.LdProof ldProof) {
-        if (ldProof == null) {
-            return Map.of();
-        }
-        return ldProof.getCredential().getCredentialSubject().entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getAsString()));
+        return ldProof == null ? Map.of() : ldProof.toFlatMap();
     }
 
     private Map<String, String> indyAttributesToMap(V1CredentialExchange.CredentialProposalDict.CredentialProposal p) {
@@ -221,7 +217,7 @@ public class BPACredentialExchange
         return Map.of();
     }
 
-    public ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal , V20CredExRecordByFormat.LdProof> exchangePayloadByState() {
+    public ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> exchangePayloadByState() {
         if (stateIsProposalReceived()) {
             return credentialProposal;
         } else if (stateIsOfferReceived()) {

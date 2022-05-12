@@ -402,6 +402,7 @@
     "presentationRecord": {
       "role": "Role",
       "state": "State",
+      "type": "Type",
       "requestName": "Request Name",
       "requestContent": "Request Content",
       "issuer": "Issuer",
