@@ -70,7 +70,7 @@ public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUI
     void updateProblemReport(@Id UUID id, String problemReport);
 
     long updateReceivedProof(@Id UUID id, Boolean valid, PresentationExchangeState state,
-    ExchangePayload<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>, VerifiablePresentation<VerifiableCredential>> proof);
+            ExchangePayload<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>, VerifiablePresentation<VerifiableCredential>> proof);
 
     Long countByStateEquals(PresentationExchangeState state);
 
