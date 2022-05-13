@@ -239,10 +239,10 @@ public class ProofManager {
         }
     }
 
-    private Optional<List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials>> getMatchingIndyCredentials(
+    private Optional<List<PresentationRequestCredentials>> getMatchingIndyCredentials(
             @NonNull String presentationExchangeId, @NonNull ExchangeVersion version) {
         try {
-            Optional<List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials>> matches;
+            Optional<List<PresentationRequestCredentials>> matches;
             if (version.isV1()) {
                 matches = ac.presentProofRecordsCredentials(presentationExchangeId);
             } else {
@@ -322,7 +322,7 @@ public class ProofManager {
                 getMatchingIndyCredentials(presentationExchangeRecord.getPresentationExchangeId(), version)
                         .ifPresentOrElse(creds -> {
                             if (CollectionUtils.isNotEmpty(creds)) {
-                                List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> selected = getPresentationRequestCredentials(
+                                List<PresentationRequestCredentials> selected = getPresentationRequestCredentials(
                                         creds, referents);
                                 PresentationRequestBuilder.acceptAll(presentationExchangeRecord, selected)
                                         .ifPresent(pr -> {
@@ -357,8 +357,8 @@ public class ProofManager {
         }
     }
 
-    private List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> getPresentationRequestCredentials(
-            List<org.hyperledger.aries.api.present_proof.PresentationRequestCredentials> creds,
+    private List<PresentationRequestCredentials> getPresentationRequestCredentials(
+            List<PresentationRequestCredentials> creds,
             List<String> referents) {
         if (CollectionUtils.isEmpty(referents)) {
             return creds;

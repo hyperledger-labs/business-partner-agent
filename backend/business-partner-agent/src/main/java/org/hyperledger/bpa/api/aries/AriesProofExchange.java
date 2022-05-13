@@ -23,13 +23,10 @@ import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
-import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
-import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
