@@ -24,6 +24,7 @@ import jakarta.inject.Singleton;
 import lombok.NonNull;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.aries.api.issue_credential_v2.V2CredentialExchangeFree;
+import org.hyperledger.aries.api.jsonld.ProofType;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
@@ -94,7 +95,7 @@ public class LDContextHelper {
                                 .build())
                         .options(V2CredentialExchangeFree.LDProofVCDetailOptions.builder()
                                 // TODO expose key type to user
-                                .proofType(V2CredentialExchangeFree.ProofType.Ed25519Signature2018)
+                                .proofType(ProofType.Ed25519Signature2018)
                                 .build())
                         .build())
                 .build();
