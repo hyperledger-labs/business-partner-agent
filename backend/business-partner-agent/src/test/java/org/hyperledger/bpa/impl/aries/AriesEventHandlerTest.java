@@ -25,6 +25,7 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.aries.webhook.EventParser;
 import org.hyperledger.bpa.BaseTest;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
@@ -169,6 +170,7 @@ class AriesEventHandlerTest extends BaseTest {
         Partner p = createDefaultPartner(exReqSent);
         proofRepo.save(PartnerProof
                 .builder()
+                .type(CredentialType.INDY)
                 .partnerId(p.getId())
                 .presentationExchangeId(exReqSent.getPresentationExchangeId())
                 .threadId(exReqSent.getThreadId())

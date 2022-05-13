@@ -19,8 +19,11 @@ package org.hyperledger.bpa.persistence.repository;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -41,10 +44,12 @@ class PartnerProofRepositoryTest {
                 .builder()
                 .partnerId(UUID.randomUUID())
                 .presentationExchangeId("pres-1")
+                .type(CredentialType.INDY)
                 .build();
         pp = repo.save(pp);
         long uc = repo.updateReceivedProof(pp.getId(), Boolean.TRUE, PresentationExchangeState.VERIFIED,
-                Map.of("testKey", "testValue"));
+                ExchangePayload.indy(Map.of("testGroup", PresentationExchangeRecord.RevealedAttributeGroup.builder()
+                        .revealedAttribute("testKey", "testValue").build())));
         assertEquals(1, uc);
 
         PartnerProof updated = repo.findById(pp.getId()).orElseThrow();
@@ -55,6 +60,7 @@ class PartnerProofRepositoryTest {
     void testExchangeStateDecorator() {
         PartnerProof pp = PartnerProof
                 .builder()
+                .type(CredentialType.INDY)
                 .partnerId(UUID.randomUUID())
                 .presentationExchangeId("pres-1")
                 .pushStateChange(PresentationExchangeState.PROPOSAL_SENT, Instant.ofEpochMilli(1631760000000L))
