@@ -105,7 +105,7 @@ public class ProofEventHandler {
      */
     private void handleAckedOrVerified(BasePresExRecord p) {
         pProofRepo.findByPresentationExchangeId(p.getPresentationExchangeId()).ifPresent(pp -> {
-            PartnerProof savedProof = proofManager.handleAckedOrVerifiedIndyProofEvent(p, pp);
+            PartnerProof savedProof = proofManager.handleAckedOrVerifiedProofEvent(p, pp);
             eventPublisher.publishEventAsync(PresentationRequestCompletedEvent.builder()
                     .partnerProof(savedProof)
                     .build());
