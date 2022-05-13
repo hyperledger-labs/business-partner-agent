@@ -55,7 +55,8 @@ public class ProofPayloadConverter extends
                 b.ldProof(ld);
                 b.type(CredentialType.JSON_LD);
             } else {
-                Map<String, PresentationExchangeRecord.RevealedAttributeGroup> indy = mapper.convertValue(node, INDY_TYPE);
+                Map<String, PresentationExchangeRecord.RevealedAttributeGroup> indy = mapper.convertValue(node,
+                        INDY_TYPE);
                 b.indy(indy);
                 b.type(CredentialType.INDY);
             }

@@ -17,10 +17,12 @@
  */
 package org.hyperledger.bpa.persistence.model.converter;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hyperledger.aries.api.present_proof.BasePresExRecord;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.aries.api.present_proof_v2.V20PresExRecord;
+import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.type.ExchangeTypeTranslator;
 
@@ -42,5 +44,15 @@ public class ExchangePayload<I, L> implements ExchangeTypeTranslator {
     public static <I, L> ExchangePayload<I, L> jsonLD(L ldProof) {
         ExchangePayload.ExchangePayloadBuilder<I, L> b = ExchangePayload.builder();
         return b.ldProof(ldProof).type(CredentialType.JSON_LD).build();
+    }
+
+    public static ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> buildForProofRequest(
+            @NonNull BasePresExRecord presEx) {
+        if (presEx instanceof PresentationExchangeRecord v1) {
+            return ExchangePayload.indy(v1.getPresentationRequest());
+        } else if (presEx instanceof V20PresExRecord v2) {
+            return ExchangePayload.jsonLD(v2.resolveDifPresentationRequest());
+        }
+        return null;
     }
 }

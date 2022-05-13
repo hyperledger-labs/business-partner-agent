@@ -18,18 +18,14 @@
 package org.hyperledger.bpa.impl.aries.proof;
 
 import io.micronaut.context.event.ApplicationEventPublisher;
-import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.present_proof.BasePresExRecord;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
-import org.hyperledger.aries.api.present_proof_v2.V20PresExRecord;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.notification.PresentationRequestCompletedEvent;
@@ -43,7 +39,7 @@ import org.hyperledger.bpa.persistence.repository.PartnerProofRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
 import java.time.Instant;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
@@ -179,15 +175,9 @@ public class ProofEventHandler {
      */
     private PartnerProof defaultProof(@NonNull UUID partnerId, @NonNull BasePresExRecord proof) {
         Instant ts = TimeUtil.fromISOInstant(proof.getUpdatedAt());
-        ExchangePayload.ExchangePayloadBuilder<PresentProofRequest.ProofRequest, V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> b = ExchangePayload
-                .builder();
-        if (proof instanceof PresentationExchangeRecord v1) {
-            b.indy(v1.getPresentationRequest());
-            b.type(CredentialType.INDY);
-        } else if (proof instanceof V20PresExRecord v2) {
-            b.ldProof(v2.resolveDifPresentationRequest());
-            b.type(CredentialType.JSON_LD);
-        }
+        ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> pr = ExchangePayload
+                .buildForProofRequest(proof);
+        CredentialType type = Objects.requireNonNull(pr).getType();
         return PartnerProof
                 .builder()
                 .partnerId(partnerId)
@@ -195,9 +185,9 @@ public class ProofEventHandler {
                 .presentationExchangeId(proof.getPresentationExchangeId())
                 .threadId(proof.getThreadId())
                 .role(proof.getRole())
-                .proofRequest(b.build())
-                .type(b.build().getType())
-                .exchangeVersion(proof.getVersion() != null ? proof.getVersion() : ExchangeVersion.V1)
+                .proofRequest(pr)
+                .type(type)
+                .exchangeVersion(VersionHelper.determineVersion(proof.getVersion(), type))
                 .pushStateChange(proof.getState(), ts != null ? ts : Instant.now())
                 .build();
     }

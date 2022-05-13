@@ -22,6 +22,7 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
@@ -45,6 +46,7 @@ public class AriesCredential {
     private Boolean revoked;
     private Boolean revocable;
     private ExchangeVersion exchangeVersion;
+    private CredentialType type;
 
     private String label;
     private String typeLabel;
@@ -76,6 +78,7 @@ public class AriesCredential {
                 .label(c.getLabel())
                 .typeLabel(typeLabel)
                 .exchangeVersion(c.getExchangeVersion())
+                .type(c.getType())
                 .credentialData(c.attributesByState())
                 .build();
     }

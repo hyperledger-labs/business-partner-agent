@@ -119,7 +119,8 @@ public class ProofManager {
             // using null for issuerId and schemaId because the template could have multiple
             // of each.
             if (version.isV1()) {
-                ac.presentProofSendRequest(proofRequest).ifPresent(persistProof(partnerId, proofTemplate));
+                ac.presentProofSendRequest(proofRequest)
+                        .ifPresent(persistProof(partnerId, proofTemplate, CredentialType.INDY));
             } else {
                 ac.presentProofV2SendRequest(V20PresSendRequestRequest
                         .builder()
@@ -129,7 +130,7 @@ public class ProofManager {
                                 .build())
                         .build())
                         .map(V20PresExRecordToV1Converter::toV1)
-                        .ifPresent(persistProof(partnerId, proofTemplate));
+                        .ifPresent(persistProof(partnerId, proofTemplate, CredentialType.INDY));
             }
         } catch (IOException e) {
             throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
@@ -155,10 +156,10 @@ public class ProofManager {
                         .buildForAllAttributes(partner.getConnectionId(),
                                 Set.copyOf(schema.getAttrNames()), req.buildRestrictions());
                 ac.presentProofSendRequest(proofRequest).ifPresent(
-                        persistProof(partnerId, null));
+                        persistProof(partnerId, null, CredentialType.INDY));
             } else {
                 ac.presentProofSendRequest(req.getRequestRaw().toString()).ifPresent(
-                        persistProof(partnerId, null));
+                        persistProof(partnerId, null, CredentialType.INDY));
             }
         } catch (IOException e) {
             throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
@@ -169,22 +170,23 @@ public class ProofManager {
     public void sendProofProposal(@NonNull UUID partnerId, @NonNull UUID myCredentialId,
             @Nullable ExchangeVersion version) {
         partnerRepo.findById(partnerId).ifPresent(p -> holderCredExRepo.findById(myCredentialId).ifPresent(c -> {
-            ExchangeVersion v = version != null ? version : ExchangeVersion.V1;
-            Credential cred = Objects.requireNonNull(c.getIndyCredential());
+            ExchangeVersion v = VersionHelper.determineVersion(version, c);
             try {
-                if (v.isV1()) {
-                    ac.presentProofSendProposal(PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred))
-                            .ifPresent(persistProof(partnerId, null));
-                } else {
-                    if (c.typeIsIndy()) {
+                if (c.typeIsIndy()) {
+                    Credential cred = Objects.requireNonNull(c.getIndyCredential());
+                    if (v.isV1()) {
+                        ac.presentProofSendProposal(
+                                PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred))
+                                .ifPresent(persistProof(partnerId, null, CredentialType.INDY));
+                    } else if (v.isV2()) {
                         ac.presentProofV2SendProposal(PresentProofProposalBuilder.v2IndyFromCredential(
                                 p.getConnectionId(), cred, AriesStringUtil.schemaGetName(cred.getSchemaId())))
                                 .map(V20PresExRecordToV1Converter::toV1)
-                                .ifPresent(persistProof(partnerId, null));
-                    } else if (c.typeIsJsonLd()) {
-                        ac.presentProofV2SendProposal(ProverLDManager.prepareProposal(p.getConnectionId(), c));
-                        // TODO persist proof
+                                .ifPresent(persistProof(partnerId, null, CredentialType.INDY));
                     }
+                } else if (c.typeIsJsonLd()) {
+                    ac.presentProofV2SendProposal(ProverLDManager.prepareProposal(p.getConnectionId(), c))
+                            .ifPresent(persistProof(partnerId, null, CredentialType.JSON_LD));
                 }
             } catch (IOException e) {
                 throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
@@ -192,20 +194,20 @@ public class ProofManager {
         }));
     }
 
-    private Consumer<PresentationExchangeRecord> persistProof(
-            @NonNull UUID partnerId, @Nullable BPAProofTemplate proofTemplate) {
+    private Consumer<BasePresExRecord> persistProof(
+            @NonNull UUID partnerId, @Nullable BPAProofTemplate proofTemplate, @NonNull CredentialType type) {
         return exchange -> {
             final PartnerProof pp = PartnerProof
                     .builder()
                     .partnerId(partnerId)
                     .state(exchange.getState())
-                    .type(CredentialType.INDY)
+                    .type(type)
                     .presentationExchangeId(exchange.getPresentationExchangeId())
                     .role(exchange.getRole())
                     .threadId(exchange.getThreadId())
-                    .proofRequest(ExchangePayload.indy(exchange.getPresentationRequest()))
+                    .proofRequest(ExchangePayload.buildForProofRequest(exchange))
                     .proofTemplate(proofTemplate)
-                    .exchangeVersion(exchange.getVersion() != null ? exchange.getVersion() : ExchangeVersion.V1)
+                    .exchangeVersion(VersionHelper.determineVersion(exchange.getVersion(), type))
                     .pushStateChange(exchange.getState(), Instant.now())
                     .build();
             pProofRepo.save(pp);
@@ -367,24 +369,26 @@ public class ProofManager {
                 .collect(Collectors.toList());
     }
 
-    PartnerProof handleAckedOrVerifiedIndyProofEvent(@NonNull BasePresExRecord proof, @NonNull PartnerProof pp) {
+    PartnerProof handleAckedOrVerifiedProofEvent(@NonNull BasePresExRecord proof, @NonNull PartnerProof pp) {
         pp
-            .setValid(proof.isVerified())
-            .pushStates(proof.getState(), proof.getUpdatedAt());
+                .setValid(proof.isVerified())
+                .pushStates(proof.getState(), proof.getUpdatedAt());
         if (proof instanceof PresentationExchangeRecord indy) {
             // TODO check if the test for identifiers section is really needed
-            Map<String, PresentationExchangeRecord.RevealedAttributeGroup> revealedAttributeGroups = indy.findRevealedAttributeGroups();
+            Map<String, PresentationExchangeRecord.RevealedAttributeGroup> revealedAttributeGroups = indy
+                    .findRevealedAttributeGroups();
             pp
-                .setProofRequest(ExchangePayload.indy(indy.getPresentationRequest()))
-                .setProof(CollectionUtils.isNotEmpty(revealedAttributeGroups)
-                    ? ExchangePayload.indy(indy.findRevealedAttributeGroups())
-                    : ExchangePayload.indy(
-                    conv.revealedAttrsToGroup(indy.findRevealedAttributedFull(), indy.getIdentifiers())));
+                    .setProofRequest(ExchangePayload.indy(indy.getPresentationRequest()))
+                    .setProof(CollectionUtils.isNotEmpty(revealedAttributeGroups)
+                            ? ExchangePayload.indy(indy.findRevealedAttributeGroups())
+                            : ExchangePayload.indy(
+                                    conv.revealedAttrsToGroup(indy.findRevealedAttributedFull(),
+                                            indy.getIdentifiers())));
             didRes.resolveDid(pp, indy.getIdentifiers());
         } else if (proof instanceof V20PresExRecord dif) {
             pp
-                .setProofRequest(ExchangePayload.jsonLD(dif.resolveDifPresentationRequest()))
-                .setProof(ExchangePayload.jsonLD(dif.resolveDifPresentation()));
+                    .setProofRequest(ExchangePayload.jsonLD(dif.resolveDifPresentationRequest()))
+                    .setProof(ExchangePayload.jsonLD(dif.resolveDifPresentation()));
         }
         return pProofRepo.update(pp);
     }

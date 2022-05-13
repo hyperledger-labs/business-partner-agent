@@ -17,7 +17,6 @@
  */
 package org.hyperledger.bpa.impl.aries.proof;
 
-import jakarta.inject.Singleton;
 import lombok.NonNull;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -31,12 +30,12 @@ import org.hyperledger.bpa.persistence.model.BPASchema;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Singleton
 public class ProverLDManager {
 
     private static final String DEFAULT_PATH = "$.credentialSubject.";
 
-    public static V20PresProposalRequest prepareProposal(@NonNull String connectionId, @NonNull BPACredentialExchange credEx) {
+    public static V20PresProposalRequest prepareProposal(@NonNull String connectionId,
+            @NonNull BPACredentialExchange credEx) {
         BPASchema schema = credEx.getSchema();
 
         Map<UUID, DIFField> fields = buildDifFields(credEx.credentialAttributesToMap());
@@ -63,9 +62,10 @@ public class ProverLDManager {
     }
 
     private static List<SchemaInputDescriptor> buildSchemaInputDescriptor(@NonNull String schemaId) {
-        List<Object> ctx =new ArrayList<>(CredentialType.JSON_LD.getContext());
+        List<Object> ctx = new ArrayList<>(CredentialType.JSON_LD.getContext());
         ctx.add(schemaId);
-        return ctx.stream().map(o -> SchemaInputDescriptor.builder().uri((String) o).build()).collect(Collectors.toList());
+        return ctx.stream().map(o -> SchemaInputDescriptor.builder().uri((String) o).build())
+                .collect(Collectors.toList());
     }
 
     private static List<DIFHolder> buildDifHolder(@NonNull Set<UUID> fields) {
@@ -79,7 +79,7 @@ public class ProverLDManager {
 
     private static Map<UUID, DIFField> buildDifFields(@NonNull Map<String, String> ldAttributes) {
         return ldAttributes.entrySet().stream()
-                .map( e -> {
+                .map(e -> {
                     UUID key = UUID.randomUUID();
                     DIFField f = DIFField.builder()
                             .id(key.toString())
@@ -92,6 +92,5 @@ public class ProverLDManager {
                 })
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
-
 
 }
