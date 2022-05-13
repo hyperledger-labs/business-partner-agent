@@ -716,12 +716,12 @@ export interface components {
        */
       document?: { [key: string]: unknown }[];
     };
-    "IssueCredentialRequest.IssueIndyCredentialRequest": components["schemas"]["IssueCredentialRequest"] & {
+    "IssueCredentialRequest.IssueIndyCredentialRequest": {
       /** Format: uuid */
       credDefId: string;
       exchangeVersion?: components["schemas"]["ExchangeVersion"] & unknown;
     };
-    "IssueCredentialRequest.IssueLDCredentialRequest": components["schemas"]["IssueCredentialRequest"] & {
+    "IssueCredentialRequest.IssueLDCredentialRequest": {
       /** Format: uuid */
       schemaId: string;
     };
