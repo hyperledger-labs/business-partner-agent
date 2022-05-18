@@ -23,7 +23,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.hyperledger.acy_py.generated.model.*;
 import org.hyperledger.aries.api.present_proof_v2.V20PresProposalByFormat;
 import org.hyperledger.aries.api.present_proof_v2.V20PresProposalRequest;
-import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 
@@ -40,11 +40,15 @@ public class ProverLDManager {
 
         Map<UUID, DIFField> fields = buildDifFields(credEx.credentialAttributesToMap());
 
-        InputDescriptors id1 = InputDescriptors.builder()
-                .schema(SchemasInputDescriptorFilter.builder()
-                        .uriGroups(List.of(buildSchemaInputDescriptor(Objects.requireNonNull(schema).getSchemaId())))
+        V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorGroupFilter id1 = V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorGroupFilter
+                .builder()
+                .id(UUID.randomUUID().toString())
+                .name("Presentation Proposal")
+                .schema(V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorGroupFilter.Peter
+                        .builder()
+                        .oneOfFilter(List.of(buildSchemaInputDescriptor(Objects.requireNonNull(schema).getSchemaId())))
                         .build())
-                .constraints(Constraints.builder()
+                .constraints(V2DIFProofRequest.PresentationDefinition.Constraints.builder()
                         .isHolder(buildDifHolder(fields.keySet()))
                         .fields(List.copyOf(fields.values()))
                         .build())
@@ -54,24 +58,31 @@ public class ProverLDManager {
                 .connectionId(connectionId)
                 .autoPresent(Boolean.TRUE)
                 .presentationProposal(V20PresProposalByFormat.builder()
-                        .dif(DIFProofProposal.builder()
+                        .dif(V20PresProposalByFormat.DIFProofProposal.builder()
                                 .inputDescriptors(List.of(id1))
+                                .options(DIFOptions.builder()
+                                        // .challenge(UUID.randomUUID().toString())
+                                        .domain(UUID.randomUUID().toString())
+                                        .build())
                                 .build())
                         .build())
                 .build();
     }
 
-    private static List<SchemaInputDescriptor> buildSchemaInputDescriptor(@NonNull String schemaId) {
-        List<Object> ctx = new ArrayList<>(CredentialType.JSON_LD.getContext());
-        ctx.add(schemaId);
-        return ctx.stream().map(o -> SchemaInputDescriptor.builder().uri((String) o).build())
+    private static List<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter.SchemaInputDescriptorUri> buildSchemaInputDescriptor(
+            @NonNull String schemaId) {
+        List<Object> ctx = List.of(schemaId); // new ArrayList<>(CredentialType.JSON_LD.getContext());
+        // ctx.add(schemaId);
+        return ctx.stream().map(
+                o -> V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter.SchemaInputDescriptorUri
+                        .builder().uri((String) o + "#PermanentResident").build())
                 .collect(Collectors.toList());
     }
 
     private static List<DIFHolder> buildDifHolder(@NonNull Set<UUID> fields) {
         return fields
                 .stream().map(e -> DIFHolder.builder()
-                        .directive(DIFHolder.DirectiveEnum.REQUIRED)
+                        .directive(DIFHolder.DirectiveEnum.PREFERRED)
                         .fieldId(List.of(e.toString()))
                         .build())
                 .collect(Collectors.toList());
@@ -79,11 +90,13 @@ public class ProverLDManager {
 
     private static Map<UUID, DIFField> buildDifFields(@NonNull Map<String, String> ldAttributes) {
         return ldAttributes.entrySet().stream()
+                .filter(e -> !"id".equals(e.getKey())) // TODO
                 .map(e -> {
                     UUID key = UUID.randomUUID();
                     DIFField f = DIFField.builder()
                             .id(key.toString())
                             .path(List.of(DEFAULT_PATH + e.getKey()))
+                            .purpose("der karl")
                             .filter(Filter.builder()
                                     ._const(e.getValue())
                                     .build())

@@ -51,7 +51,7 @@ public class ExchangePayload<I, L> implements ExchangeTypeTranslator {
         if (presEx instanceof PresentationExchangeRecord v1) {
             return ExchangePayload.indy(v1.getPresentationRequest());
         } else if (presEx instanceof V20PresExRecord v2) {
-            return ExchangePayload.jsonLD(v2.resolveDifPresentationRequest());
+            return ExchangePayload.jsonLD(v2.resolveDifPresentationRequestGroup());
         }
         return null;
     }

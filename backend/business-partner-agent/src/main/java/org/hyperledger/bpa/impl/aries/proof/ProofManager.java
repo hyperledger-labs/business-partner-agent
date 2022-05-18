@@ -37,6 +37,7 @@ import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.present_proof.*;
 import org.hyperledger.aries.api.present_proof_v2.*;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
+import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.*;
@@ -185,7 +186,9 @@ public class ProofManager {
                                 .ifPresent(persistProof(partnerId, null, CredentialType.INDY));
                     }
                 } else if (c.typeIsJsonLd()) {
-                    ac.presentProofV2SendProposal(ProverLDManager.prepareProposal(p.getConnectionId(), c))
+                    V20PresProposalRequest proofProposal = ProverLDManager.prepareProposal(p.getConnectionId(), c);
+                    System.out.println(GsonConfig.prettyPrinter().toJson(proofProposal));
+                    ac.presentProofV2SendProposal(proofProposal)
                             .ifPresent(persistProof(partnerId, null, CredentialType.JSON_LD));
                 }
             } catch (IOException e) {
