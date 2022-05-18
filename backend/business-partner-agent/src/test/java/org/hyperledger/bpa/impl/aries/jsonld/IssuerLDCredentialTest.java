@@ -41,6 +41,7 @@ import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.repository.IssuerCredExRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -53,6 +54,7 @@ import java.util.Set;
 
 @MicronautTest
 @ExtendWith(MockitoExtension.class)
+@Disabled
 public class IssuerLDCredentialTest extends BaseTest {
 
     private final String schemaId = "https://w3id.org/citizenship/v1";
