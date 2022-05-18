@@ -89,13 +89,13 @@ public class LDContextHelper {
                                 .context(List.of(CredentialType.JSON_LD.getContext().get(0), bpaSchema.getSchemaId()))
                                 .credentialSubject(GsonConfig.defaultConfig().toJsonTree(document).getAsJsonObject())
                                 .issuanceDate(TimeUtil.toISOInstantTruncated(Instant.now()))
-                                .issuer(issuer ? identity.getMyDid() : findIssuerDidOrFallback(bpaSchema))
+                                .issuer(issuer ? identity.getDidKey() : findIssuerDidOrFallback(bpaSchema))
                                 .type(List.of(CredentialType.JSON_LD.getType().get(0),
                                         Objects.requireNonNull(bpaSchema.getLdType())))
                                 .build())
                         .options(V2CredentialExchangeFree.LDProofVCDetailOptions.builder()
                                 // TODO expose key type to user
-                                .proofType(ProofType.Ed25519Signature2018)
+                                .proofType(ProofType.BbsBlsSignature2020)
                                 .build())
                         .build())
                 .build();
@@ -117,6 +117,6 @@ public class LDContextHelper {
                 // TODO fallback to partner did, needs check if did is public as it could also
                 // be a peer did
                 .findFirst()
-                .orElse(identity.getMyDid());
+                .orElse(identity.getDidKey());
     }
 }
