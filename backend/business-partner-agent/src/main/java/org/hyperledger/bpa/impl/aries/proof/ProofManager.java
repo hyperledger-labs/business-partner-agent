@@ -398,9 +398,13 @@ public class ProofManager {
         return pProofRepo.update(pp);
     }
 
-    void handleVerifierPresentationReceived(String presentationExchangeId) {
+    void handleVerifierPresentationReceived(@NonNull ExchangeVersion version, @NonNull String presentationExchangeId) {
         try {
-            ac.presentProofV2RecordsVerifyPresentation(presentationExchangeId).ifPresent(e -> System.out.println(GsonConfig.prettyPrinter().toJson(e)));
+            if(version.isV1()) {
+                ac.presentProofRecordsVerifyPresentation(presentationExchangeId);
+            } else {
+                ac.presentProofV2RecordsVerifyPresentation(presentationExchangeId);
+            }
         } catch (IOException e) {
             log.error(ms.getMessage("acapy.unavailable"), e);
         }

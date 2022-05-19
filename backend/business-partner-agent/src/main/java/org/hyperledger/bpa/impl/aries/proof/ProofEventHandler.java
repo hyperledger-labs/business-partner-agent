@@ -68,7 +68,7 @@ public class ProofEventHandler {
             handleProofRequest(proof);
         } else if (proof.roleIsVerifier() && proof.stateIsPresentationReceived()) {
             // TODO this is a bug in aca-py, because the state of the auto verify presentation flag is always ignored
-            proofManager.handleVerifierPresentationReceived(proof.getPresentationExchangeId());
+            proofManager.handleVerifierPresentationReceived(proof.getVersion(), proof.getPresentationExchangeId());
             handleAll(proof);
         } else if (StringUtils.isNotEmpty(proof.getErrorMsg())) {
             handleProblemReport(proof);
