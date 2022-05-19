@@ -102,6 +102,9 @@ public class ProofManager {
     CredentialInfoResolver credentialInfoResolver;
 
     @Inject
+    ProverLDManager ldProof;
+
+    @Inject
     BPAMessageSource.DefaultMessageSource ms;
 
     // request proof from partner via proof template with exchange version 1
@@ -186,7 +189,7 @@ public class ProofManager {
                                 .ifPresent(persistProof(partnerId, null, CredentialType.INDY));
                     }
                 } else if (c.typeIsJsonLd()) {
-                    V20PresProposalRequest proofProposal = ProverLDManager.prepareProposal(p.getConnectionId(), c);
+                    V20PresProposalRequest proofProposal = ldProof.prepareProposal(p.getConnectionId(), c);
                     System.out.println(GsonConfig.prettyPrinter().toJson(proofProposal));
                     ac.presentProofV2SendProposal(proofProposal)
                             .ifPresent(persistProof(partnerId, null, CredentialType.JSON_LD));

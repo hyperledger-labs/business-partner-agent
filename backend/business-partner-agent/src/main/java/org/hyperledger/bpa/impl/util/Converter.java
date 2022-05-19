@@ -289,7 +289,7 @@ public class Converter {
         String defaultLabel = msg.getMessage("api.proof.exchange.default.name");
         PresentProofRequest.ProofRequest indy = Objects
                 .requireNonNullElseGet(p.getProofRequest(),
-                        ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>>::new)
+                        ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest>::new)
                 .getIndy();
         if (indy != null && !"proof-request".equals(indy.getName())) {
             return indy.getName();

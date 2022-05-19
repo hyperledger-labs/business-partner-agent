@@ -29,23 +29,23 @@ import org.hyperledger.bpa.api.CredentialType;
 
 @Singleton
 public class ProofRequestPayloadConverter extends
-        BasePayloadConverter<PresentProofRequest.ProofRequest, V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> {
+        BasePayloadConverter<PresentProofRequest.ProofRequest, V2DIFProofRequest> {
 
-    public static final TypeReference<V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> DIF_TYPE = new TypeReference<>() {
+    public static final TypeReference<V2DIFProofRequest> DIF_TYPE = new TypeReference<>() {
     };
 
     @Override
-    public ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> convertToEntityValue(
+    public ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest> convertToEntityValue(
             String persistedValue, @NonNull ConversionContext context) {
         if (persistedValue == null) {
             return null;
         }
-        ExchangePayload.ExchangePayloadBuilder<PresentProofRequest.ProofRequest, V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> b = ExchangePayload
+        ExchangePayload.ExchangePayloadBuilder<PresentProofRequest.ProofRequest, V2DIFProofRequest> b = ExchangePayload
                 .builder();
         try {
             JsonNode node = mapper.readValue(persistedValue, JsonNode.class);
             if (node.has("presentationDefinition")) {
-                V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter> dif = mapper
+                V2DIFProofRequest dif = mapper
                         .convertValue(node, DIF_TYPE);
                 b.ldProof(dif);
                 b.type(CredentialType.JSON_LD);

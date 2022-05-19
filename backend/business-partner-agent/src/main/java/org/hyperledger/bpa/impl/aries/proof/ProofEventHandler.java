@@ -175,7 +175,7 @@ public class ProofEventHandler {
      */
     private PartnerProof defaultProof(@NonNull UUID partnerId, @NonNull BasePresExRecord proof) {
         Instant ts = TimeUtil.fromISOInstant(proof.getUpdatedAt());
-        ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> pr = ExchangePayload
+        ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest> pr = ExchangePayload
                 .buildForProofRequest(proof);
         CredentialType type = Objects.requireNonNull(pr).getType();
         return PartnerProof

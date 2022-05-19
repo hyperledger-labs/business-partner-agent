@@ -100,7 +100,7 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
 
     /** set when prover */
     @TypeDef(type = DataType.JSON, converter = ProofRequestPayloadConverter.class)
-    private ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> proofRequest;
+    private ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest> proofRequest;
 
     /** set when verifier */
     @Nullable

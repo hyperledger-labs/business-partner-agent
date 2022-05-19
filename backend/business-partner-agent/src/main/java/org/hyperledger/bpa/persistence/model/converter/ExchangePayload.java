@@ -46,12 +46,12 @@ public class ExchangePayload<I, L> implements ExchangeTypeTranslator {
         return b.ldProof(ldProof).type(CredentialType.JSON_LD).build();
     }
 
-    public static ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter>> buildForProofRequest(
+    public static ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest> buildForProofRequest(
             @NonNull BasePresExRecord presEx) {
         if (presEx instanceof PresentationExchangeRecord v1) {
             return ExchangePayload.indy(v1.getPresentationRequest());
         } else if (presEx instanceof V20PresExRecord v2) {
-            return ExchangePayload.jsonLD(v2.resolveDifPresentationRequestGroup());
+            return ExchangePayload.jsonLD(v2.resolveDifPresentationRequest());
         }
         return null;
     }

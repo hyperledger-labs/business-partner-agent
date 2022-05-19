@@ -17,37 +17,48 @@
  */
 package org.hyperledger.bpa.impl.aries.proof;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.NonNull;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.hyperledger.acy_py.generated.model.*;
+import org.hyperledger.acy_py.generated.model.DIFField;
+import org.hyperledger.acy_py.generated.model.DIFHolder;
+import org.hyperledger.acy_py.generated.model.DIFOptions;
+import org.hyperledger.acy_py.generated.model.Filter;
+import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.present_proof_v2.V20PresProposalByFormat;
 import org.hyperledger.aries.api.present_proof_v2.V20PresProposalRequest;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
+import org.hyperledger.bpa.api.exception.NetworkException;
+import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
-import org.hyperledger.bpa.persistence.model.BPASchema;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Singleton
 public class ProverLDManager {
 
     private static final String DEFAULT_PATH = "$.credentialSubject.";
 
-    public static V20PresProposalRequest prepareProposal(@NonNull String connectionId,
-            @NonNull BPACredentialExchange credEx) {
-        BPASchema schema = credEx.getSchema();
+    @Inject
+    AriesClient ac;
+
+    @Inject
+    BPAMessageSource.DefaultMessageSource ms;
+
+    public V20PresProposalRequest prepareProposal(@NonNull String connectionId,
+        @NonNull BPACredentialExchange credEx) {
 
         Map<UUID, DIFField> fields = buildDifFields(credEx.credentialAttributesToMap());
 
-        V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorGroupFilter id1 = V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorGroupFilter
+        V2DIFProofRequest.PresentationDefinition.InputDescriptors id1 = V2DIFProofRequest.PresentationDefinition.InputDescriptors
                 .builder()
                 .id(UUID.randomUUID().toString())
-                .name("Presentation Proposal")
-                .schema(V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorGroupFilter.Peter
-                        .builder()
-                        .oneOfFilter(List.of(buildSchemaInputDescriptor(Objects.requireNonNull(schema).getSchemaId())))
-                        .build())
+                .name(credEx.getSchema() != null ? credEx.getSchema().getLabel() : "Presentation Proposal")
+                .schema(buildSchemaInputDescriptor(Objects.requireNonNull(credEx.getReferent())))
                 .constraints(V2DIFProofRequest.PresentationDefinition.Constraints.builder()
                         .isHolder(buildDifHolder(fields.keySet()))
                         .fields(List.copyOf(fields.values()))
@@ -61,7 +72,7 @@ public class ProverLDManager {
                         .dif(V20PresProposalByFormat.DIFProofProposal.builder()
                                 .inputDescriptors(List.of(id1))
                                 .options(DIFOptions.builder()
-                                        // .challenge(UUID.randomUUID().toString())
+                                        .challenge(UUID.randomUUID().toString())
                                         .domain(UUID.randomUUID().toString())
                                         .build())
                                 .build())
@@ -69,17 +80,21 @@ public class ProverLDManager {
                 .build();
     }
 
-    private static List<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter.SchemaInputDescriptorUri> buildSchemaInputDescriptor(
-            @NonNull String schemaId) {
-        List<Object> ctx = List.of(schemaId); // new ArrayList<>(CredentialType.JSON_LD.getContext());
-        // ctx.add(schemaId);
-        return ctx.stream().map(
-                o -> V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUriFilter.SchemaInputDescriptorUri
-                        .builder().uri((String) o + "#PermanentResident").build())
-                .collect(Collectors.toList());
+    private List<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri> buildSchemaInputDescriptor(
+            @NonNull String referent) {
+        List<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri> result = new ArrayList<>();
+        try {
+            ac.credentialW3C(referent).ifPresent(w3c -> w3c.getExpandedTypes().stream()
+                    .map(u -> V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri
+                            .builder().uri(u).build())
+                    .forEach(result::add));
+        } catch (IOException e) {
+            throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
+        }
+        return result;
     }
 
-    private static List<DIFHolder> buildDifHolder(@NonNull Set<UUID> fields) {
+    private List<DIFHolder> buildDifHolder(@NonNull Set<UUID> fields) {
         return fields
                 .stream().map(e -> DIFHolder.builder()
                         .directive(DIFHolder.DirectiveEnum.PREFERRED)
@@ -88,7 +103,7 @@ public class ProverLDManager {
                 .collect(Collectors.toList());
     }
 
-    private static Map<UUID, DIFField> buildDifFields(@NonNull Map<String, String> ldAttributes) {
+    private Map<UUID, DIFField> buildDifFields(@NonNull Map<String, String> ldAttributes) {
         return ldAttributes.entrySet().stream()
                 .filter(e -> !"id".equals(e.getKey())) // TODO
                 .map(e -> {
@@ -96,7 +111,6 @@ public class ProverLDManager {
                     DIFField f = DIFField.builder()
                             .id(key.toString())
                             .path(List.of(DEFAULT_PATH + e.getKey()))
-                            .purpose("der karl")
                             .filter(Filter.builder()
                                     ._const(e.getValue())
                                     .build())
@@ -105,5 +119,4 @@ public class ProverLDManager {
                 })
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
-
 }
