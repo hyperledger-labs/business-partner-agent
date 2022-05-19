@@ -114,10 +114,12 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleProofV2(V20PresExRecord v2) {
         log.debug("Present Proof V2 Event: {}", v2);
-        if (v2.isIndy()) {
-            proof.dispatch(V20PresExRecordToV1Converter.toV1(v2));
-        } else if (v2.isDif()) {
-            proof.dispatch(v2);
+        synchronized (proof) {
+            if (v2.isIndy()) {
+                proof.dispatch(V20PresExRecordToV1Converter.toV1(v2));
+            } else if (v2.isDif()) {
+                proof.dispatch(v2);
+            }
         }
     }
 

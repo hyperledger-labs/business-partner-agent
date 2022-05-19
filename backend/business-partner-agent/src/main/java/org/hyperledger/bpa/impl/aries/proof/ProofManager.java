@@ -398,6 +398,14 @@ public class ProofManager {
         return pProofRepo.update(pp);
     }
 
+    void handleVerifierPresentationReceived(String presentationExchangeId) {
+        try {
+            ac.presentProofV2RecordsVerifyPresentation(presentationExchangeId).ifPresent(e -> System.out.println(GsonConfig.prettyPrinter().toJson(e)));
+        } catch (IOException e) {
+            log.error(ms.getMessage("acapy.unavailable"), e);
+        }
+    }
+
     private void sendPresentProofProblemReport(@NonNull String presentationExchangeId,
             @NonNull String problemString,
             @Nullable ExchangeVersion version) throws IOException {

@@ -66,6 +66,10 @@ public class ProofEventHandler {
             handleAckedOrVerified(proof);
         } else if (proof.roleIsProverAndRequestReceived()) {
             handleProofRequest(proof);
+        } else if (proof.roleIsVerifier() && proof.stateIsPresentationReceived()) {
+            // TODO this is a bug in aca-py, because the state of the auto verify presentation flag is always ignored
+            proofManager.handleVerifierPresentationReceived(proof.getPresentationExchangeId());
+            handleAll(proof);
         } else if (StringUtils.isNotEmpty(proof.getErrorMsg())) {
             handleProblemReport(proof);
         } else {
@@ -127,7 +131,7 @@ public class ProofEventHandler {
                             if (pProof.stateIsProposalSent() && proof.initiatorIsSelf()) {
                                 log.info(
                                         "Present_Proof: state=request_received on PresentationExchange where " +
-                                                "initator=self, responding immediately");
+                                                "initiator=self, responding immediately");
                                 pProof.pushStates(proof.getState(), proof.getUpdatedAt());
                                 pProofRepo.update(pProof);
                                 if (proof.getAutoPresent() == null || !proof.getAutoPresent()) {

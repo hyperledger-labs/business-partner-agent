@@ -18,7 +18,7 @@ auto-store-credential: true # needed as there is no ui
 
 # auto presentation exchange
 auto-respond-presentation-proposal: true # needed as there is no ui
-auto-verify-presentation: true # needed as there is no ui
+auto-verify-presentation: false # always set to true in the controller
 auto-respond-presentation-request: false
 
 # credential and presentation exchanges
