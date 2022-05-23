@@ -175,7 +175,7 @@ export default {
     },
 
     fetch() {
-      //this.$store.dispatch("loadPartnerSelectList");
+      this.$store.dispatch("loadPartnerSelectList");
       // Query only for partners that can issue credentials of specified schema
       let queryParameter = "";
       if (this.onlyIssuersForSchema.length > 0) {

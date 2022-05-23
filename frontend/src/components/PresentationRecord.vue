@@ -53,13 +53,7 @@
       <h4 class="my-4">{{ $t("view.presentationRecord.requestContent") }}:</h4>
 
       <!-- Requested Attributes -->
-      <v-expansion-panels
-        v-model="contentPanels"
-        multiple
-        accordion
-        flat
-        v-if="typeIsIndy"
-      >
+      <v-expansion-panels v-model="contentPanels" multiple accordion flat>
         <template v-for="type in RequestTypes">
           <v-expansion-panel
             v-for="([groupName, group], idx) in Object.entries(
@@ -253,6 +247,9 @@ export default {
         } else {
           return [];
         }
+      },
+      set: function () {
+        return;
       },
     },
   },

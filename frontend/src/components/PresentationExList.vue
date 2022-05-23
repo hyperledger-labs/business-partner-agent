@@ -125,7 +125,7 @@
             <v-bpa-button
               :loading="isBusy"
               color="primary"
-              :disabled="!peter"
+              :disabled="!isReadyToApprove"
               @click="approve"
               >{{ $t("button.accept") }}</v-bpa-button
             >
@@ -183,7 +183,6 @@ export default {
       isLoading: false,
       isWaitingForMatchingCreds: false,
       declineReasonText: "",
-      peter: false,
     };
   },
   computed: {
@@ -356,18 +355,14 @@ export default {
     prepareReferents() {
       const referents = [];
 
-      if (this.typeIsIndy) {
-        RequestTypes.map((type) => {
-          Object.entries(this.record.proofRequest[type]).map(
-            ([groupName, group]: [string, any]) => {
-              console.log(groupName);
-              referents.push(
-                group.selectedCredential?.credentialInfo?.referent
-              );
-            }
-          );
-        });
-      }
+      RequestTypes.map((type) => {
+        Object.entries(this.record.proofRequest[type]).map(
+          ([groupName, group]: [string, any]) => {
+            console.log(groupName);
+            referents.push(group.selectedCredential?.credentialInfo?.referent);
+          }
+        );
+      });
 
       return referents;
     },
@@ -454,7 +449,6 @@ export default {
           .getMatchingDifCredentials(this.record.id)
           .then((result) => {
             this.record.canBeFulfilled = result.data.match;
-            this.peter = result.data.match;
             this.isWaitingForMatchingCreds = false;
           });
       }
