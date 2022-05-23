@@ -62,11 +62,15 @@ public class LDContextHelper {
     BPAMessageSource.DefaultMessageSource ms;
 
     public static String findSchemaId(@Nullable V20CredExRecordByFormat.LdProof ldProof) {
-        if (ldProof == null) {
-            return null;
-        }
+        return ldProof == null ? null : findSchemaId(ldProof.getCredential());
+    }
+
+    public static String findSchemaId(@Nullable VerifiableCredential vc) {
+        return vc == null ? null : findSchemaId(vc.getContext());
+    }
+
+    public static String findSchemaId(@NonNull List<Object> context) {
         // TODO this does not consider all use cases like complex schemas
-        List<Object> context = ldProof.getCredential().getContext();
         List<Object> contextCopy = new ArrayList<>(context);
         contextCopy.removeAll(CredentialType.JSON_LD.getContext());
         return (String) contextCopy.get(0);

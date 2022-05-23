@@ -50,7 +50,7 @@ public class ProverLDManager {
     BPAMessageSource.DefaultMessageSource ms;
 
     public V20PresProposalRequest prepareProposal(@NonNull String connectionId,
-        @NonNull BPACredentialExchange credEx) {
+            @NonNull BPACredentialExchange credEx) {
 
         Map<UUID, DIFField> fields = buildDifFields(credEx.credentialAttributesToMap());
 

@@ -400,7 +400,7 @@ public class ProofManager {
 
     void handleVerifierPresentationReceived(@NonNull ExchangeVersion version, @NonNull String presentationExchangeId) {
         try {
-            if(version.isV1()) {
+            if (version.isV1()) {
                 ac.presentProofRecordsVerifyPresentation(presentationExchangeId);
             } else {
                 ac.presentProofV2RecordsVerifyPresentation(presentationExchangeId);

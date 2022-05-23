@@ -35,6 +35,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
@@ -49,6 +50,7 @@ import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.credential.CredentialInfoResolver;
+import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.MyDocument;
@@ -244,15 +246,57 @@ public class Converter {
 
         JsonNode proofData = null;
         try {
-            if (p.getProof() != null && p.typeIsIndy()) {
-                Map<String, PresentationExchangeRecord.RevealedAttributeGroup> groups = p.getProof().getIndy();
-                Map<String, AriesProofExchange.RevealedAttributeGroup> collect = groups.entrySet().stream()
-                        .collect(Collectors.toMap(Map.Entry::getKey, e -> AriesProofExchange.RevealedAttributeGroup
-                                .builder()
-                                .revealedAttributes(e.getValue().getRevealedAttributes())
-                                .identifier(credentialInfoResolver.populateIdentifier(e.getValue().getIdentifier()))
-                                .build()));
-                proofData = mapper.convertValue(collect, JsonNode.class);
+            if (p.getProof() != null) {
+                if (p.typeIsIndy()) {
+                    Map<String, PresentationExchangeRecord.RevealedAttributeGroup> groups = p.getProof().getIndy();
+                    Map<String, AriesProofExchange.RevealedAttributeGroup> collect = groups.entrySet().stream()
+                            .collect(Collectors.toMap(Map.Entry::getKey, e -> AriesProofExchange.RevealedAttributeGroup
+                                    .builder()
+                                    .revealedAttributes(e.getValue().getRevealedAttributes())
+                                    .identifier(credentialInfoResolver.populateIdentifier(e.getValue().getIdentifier()))
+                                    .build()));
+                    proofData = mapper.convertValue(collect, JsonNode.class);
+                } else if (p.typeIsJsonLd()) {
+                    VerifiablePresentation<VerifiableCredential> vp = p.getProof().getLdProof();
+                    Map<String, AriesProofExchange.RevealedAttributeGroup> collect = vp.getVerifiableCredential()
+                            .stream().map(vc -> {
+                                String type = LDContextHelper.findSchemaId(vc);
+                                AriesProofExchange.RevealedAttributeGroup ag = AriesProofExchange.RevealedAttributeGroup
+                                        .builder()
+                                        .revealedAttributes(vc.subjectToFlatMap())
+                                        .identifier(credentialInfoResolver
+                                                .populateIdentifier(PresentationExchangeRecord.Identifier
+                                                        .builder()
+                                                        .schemaId(type)
+                                                        .build()))
+                                        .build();
+                                return new AbstractMap.SimpleEntry<>(type, ag);
+                            }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    proofData = mapper.convertValue(collect, JsonNode.class);
+
+                    V2DIFProofRequest proofRequest = p.getProofRequest().getLdProof();
+                    Map<String, PresentProofRequest.ProofRequest.ProofRequestedAttributes> requestedAttributes = proofRequest
+                            .getPresentationDefinition().getInputDescriptors().stream().map(id -> {
+                                PresentProofRequest.ProofRequest.ProofRequestedAttributes ra = PresentProofRequest.ProofRequest.ProofRequestedAttributes
+                                        .builder()
+                                        .names(id.getConstraints().getFields().stream()
+                                                .map(f -> f.getPath().stream()
+                                                        .map(path -> path.replace("$.credentialSubject.", ""))
+                                                        .collect(Collectors.toList()))
+                                                .flatMap(Collection::stream)
+                                                .collect(Collectors.toList()))
+                                        .build();
+                                String type = LDContextHelper.findSchemaId(id.getSchema().stream()
+                                        .map(V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri::getUri)
+                                        .collect(Collectors.toList()));
+                                return new AbstractMap.SimpleEntry<>(type, ra);
+                            })
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    proof.setProofRequest(PresentProofRequest.ProofRequest
+                            .builder()
+                            .requestedAttributes(requestedAttributes)
+                            .build());
+                }
             }
         } catch (IllegalArgumentException e) {
             log.warn("Not an attribute group");
