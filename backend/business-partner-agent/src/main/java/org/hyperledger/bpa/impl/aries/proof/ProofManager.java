@@ -290,21 +290,22 @@ public class ProofManager {
         PartnerProof proofEx = pProofRepo.findById(partnerProofId).orElseThrow(EntityNotFoundException::new);
         if (proofEx.roleIsProverAndRequestReceived()) {
             try {
-                if (proofEx.typeIsJsonLd()) {
-                    presentProofDifAcceptAll(proofEx.getPresentationExchangeId());
-                    return;
-                }
                 List<String> referents = (req == null) ? null : req.getReferents();
                 // find all the matching credentials using the (optionally) provided referent
                 // data
-                Optional<PresentationExchangeRecord> record;
+                BasePresExRecord record;
                 if (proofEx.getExchangeVersion().isV1()) {
-                    record = ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId());
+                    record = ac.presentProofRecordsGetById(proofEx.getPresentationExchangeId()).orElseThrow();
                 } else {
-                    record = ac.presentProofV2RecordsGetById(proofEx.getPresentationExchangeId())
-                            .map(V20PresExRecordToV1Converter::toV1);
+                    V20PresExRecord v2 = ac.presentProofV2RecordsGetById(proofEx.getPresentationExchangeId())
+                            .orElseThrow();
+                    if (v2.isDif()) {
+                        record = v2;
+                    } else {
+                        record = V20PresExRecordToV1Converter.toV1(v2);
+                    }
                 }
-                record.ifPresent(per -> this.presentProofAcceptSelected(per, referents, proofEx.getExchangeVersion()));
+                this.presentProofAcceptSelected(record, referents, proofEx.getExchangeVersion());
             } catch (IOException e) {
                 throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
             }
@@ -313,52 +314,74 @@ public class ProofManager {
         }
     }
 
-    void presentProofDifAcceptAll(@NonNull String presExId) throws IOException {
-        ac.presentProofV2RecordsSendPresentation(
-                presExId,
-                V20PresSpecByFormatRequest.builder()
-                        .dif(DIFPresSpec.builder().build())
-                        .build());
+    void presentProofAcceptSelected(@NonNull BasePresExRecord presExRecord,
+            @Nullable List<String> referents, @NonNull ExchangeVersion version) {
+        if (presExRecord.stateIsRequestReceived()) {
+            if (presExRecord instanceof PresentationExchangeRecord indy) {
+                acceptSelectedIndyCredentials(referents, version, indy);
+            } else if (presExRecord instanceof V20PresExRecord dif) {
+                acceptSelectedDifCredentials(dif);
+            }
+        }
     }
 
-    void presentProofAcceptSelected(@NonNull BasePresExRecord pres,
-            @Nullable List<String> referents, @NonNull ExchangeVersion version) {
-        if (pres instanceof PresentationExchangeRecord presentationExchangeRecord
-                && presentationExchangeRecord.stateIsRequestReceived()) {
-            getMatchingIndyCredentials(presentationExchangeRecord.getPresentationExchangeId(), version)
-                    .ifPresentOrElse(creds -> {
-                        if (CollectionUtils.isNotEmpty(creds)) {
-                            List<PresentationRequestCredentials> selected = getPresentationRequestCredentials(
-                                    creds, referents);
-                            PresentationRequestBuilder.acceptAll(presentationExchangeRecord, selected)
-                                    .ifPresent(pr -> {
-                                        try {
-                                            if (version.isV1()) {
-                                                ac.presentProofRecordsSendPresentation(
-                                                        presentationExchangeRecord.getPresentationExchangeId(),
-                                                        pr);
+    private void acceptSelectedIndyCredentials(@Nullable List<String> referents, @NonNull ExchangeVersion version,
+            @NonNull PresentationExchangeRecord presentationExchangeRecord) {
+        getMatchingIndyCredentials(presentationExchangeRecord.getPresentationExchangeId(), version)
+                .ifPresentOrElse(creds -> {
+                    if (CollectionUtils.isNotEmpty(creds)) {
+                        List<PresentationRequestCredentials> selected = getPresentationRequestCredentials(
+                                creds, referents);
+                        PresentationRequestBuilder.acceptAll(presentationExchangeRecord, selected)
+                                .ifPresent(pr -> {
+                                    try {
+                                        if (version.isV1()) {
+                                            ac.presentProofRecordsSendPresentation(
+                                                    presentationExchangeRecord.getPresentationExchangeId(),
+                                                    pr);
 
-                                            } else {
-                                                ac.presentProofV2RecordsSendPresentation(
-                                                        presentationExchangeRecord.getPresentationExchangeId(),
-                                                        V20PresSpecByFormatRequest.builder()
-                                                                .indy(pr)
-                                                                .build());
-                                            }
-                                        } catch (IOException e) {
-                                            log.error(ms.getMessage("acapy.unavailable"), e);
+                                        } else {
+                                            ac.presentProofV2RecordsSendPresentation(
+                                                    presentationExchangeRecord.getPresentationExchangeId(),
+                                                    V20PresSpecByFormatRequest.builder()
+                                                            .indy(pr)
+                                                            .build());
                                         }
-                                    });
-                        } else {
-                            String msg = ms.getMessage("api.proof.exchange.no.match",
-                                    Map.of("id", presentationExchangeRecord.getPresentationExchangeId()));
-                            log.warn(msg);
-                            pProofRepo.findByPresentationExchangeId(
-                                    presentationExchangeRecord.getPresentationExchangeId())
-                                    .ifPresent(pp -> pProofRepo.updateProblemReport(pp.getId(), msg));
-                            throw new PresentationConstructionException(msg);
-                        }
-                    }, () -> log.error("Could not load matching credentials from aca-py"));
+                                    } catch (IOException e) {
+                                        log.error(ms.getMessage("acapy.unavailable"), e);
+                                    }
+                                });
+                    } else {
+                        String msg = ms.getMessage("api.proof.exchange.no.match",
+                                Map.of("id", presentationExchangeRecord.getPresentationExchangeId()));
+                        log.warn(msg);
+                        pProofRepo.findByPresentationExchangeId(
+                                presentationExchangeRecord.getPresentationExchangeId())
+                                .ifPresent(pp -> pProofRepo.updateProblemReport(pp.getId(), msg));
+                        throw new PresentationConstructionException(msg);
+                    }
+                }, () -> log.error("Could not load matching credentials from aca-py"));
+    }
+
+    private void acceptSelectedDifCredentials(@NonNull V20PresExRecord dif) {
+        try {
+            List<VerifiableCredential.VerifiableCredentialMatch> matches = ac.presentProofV2RecordsCredentialsDif(
+                    dif.getPresentationExchangeId(), null)
+                    .orElseThrow();
+            if (matches.size() > 0) {
+                ac.presentProofV2RecordsSendPresentation(
+                        dif.getPresentationExchangeId(),
+                        V20PresSpecByFormatRequest.builder()
+                                .dif(DIFPresSpec.builder()
+                                        .recordIds(Map.of(
+                                                dif.resolveDifPresentationRequest().getPresentationDefinition()
+                                                        .getInputDescriptors().get(0).getId(),
+                                                List.of(matches.get(0).getRecordId())))
+                                        .build())
+                                .build());
+            }
+        } catch (IOException e) {
+            log.error(ms.getMessage("acapy.unavailable"), e);
         }
     }
 

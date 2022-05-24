@@ -260,7 +260,7 @@ public class Converter {
                     VerifiablePresentation<VerifiableCredential> vp = p.getProof().getLdProof();
                     Map<String, AriesProofExchange.RevealedAttributeGroup> collect = vp.getVerifiableCredential()
                             .stream().map(vc -> {
-                                String type = LDContextHelper.findSchemaId(vc);
+                                String type = LDContextHelper.findSchemaId(vc) + "_" + UUID.randomUUID();
                                 AriesProofExchange.RevealedAttributeGroup ag = AriesProofExchange.RevealedAttributeGroup
                                         .builder()
                                         .revealedAttributes(vc.subjectToFlatMap())
@@ -272,36 +272,40 @@ public class Converter {
                                         .build();
                                 return new AbstractMap.SimpleEntry<>(type, ag);
                             }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    // TODO duplicate key
                     proofData = mapper.convertValue(collect, JsonNode.class);
-
-                    V2DIFProofRequest proofRequest = p.getProofRequest().getLdProof();
-                    Map<String, PresentProofRequest.ProofRequest.ProofRequestedAttributes> requestedAttributes = proofRequest
-                            .getPresentationDefinition().getInputDescriptors().stream().map(id -> {
-                                PresentProofRequest.ProofRequest.ProofRequestedAttributes ra = PresentProofRequest.ProofRequest.ProofRequestedAttributes
-                                        .builder()
-                                        .names(id.getConstraints().getFields().stream()
-                                                .map(f -> f.getPath().stream()
-                                                        .map(path -> path.replace("$.credentialSubject.", ""))
-                                                        .collect(Collectors.toList()))
-                                                .flatMap(Collection::stream)
-                                                .collect(Collectors.toList()))
-                                        .build();
-                                String type = LDContextHelper.findSchemaId(id.getSchema().stream()
-                                        .map(V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri::getUri)
-                                        .collect(Collectors.toList()));
-                                return new AbstractMap.SimpleEntry<>(type, ra);
-                            })
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                    proof.setProofRequest(PresentProofRequest.ProofRequest
-                            .builder()
-                            .requestedAttributes(requestedAttributes)
-                            .build());
                 }
             }
         } catch (IllegalArgumentException e) {
             log.warn("Not an attribute group");
             proofData = p.getProof() != null ? mapper.convertValue(p.getProof(), JsonNode.class) : null;
         }
+
+        if (p.typeIsJsonLd() && p.getProofRequest() != null && p.getProofRequest().getLdProof() != null) {
+            V2DIFProofRequest proofRequest = p.getProofRequest().getLdProof();
+            Map<String, PresentProofRequest.ProofRequest.ProofRequestedAttributes> requestedAttributes = proofRequest
+                    .getPresentationDefinition().getInputDescriptors().stream().map(id -> {
+                        PresentProofRequest.ProofRequest.ProofRequestedAttributes ra = PresentProofRequest.ProofRequest.ProofRequestedAttributes
+                                .builder()
+                                .names(id.getConstraints().getFields().stream()
+                                        .map(f -> f.getPath().stream()
+                                                .map(path -> path.replace("$.credentialSubject.", ""))
+                                                .collect(Collectors.toList()))
+                                        .flatMap(Collection::stream)
+                                        .collect(Collectors.toList()))
+                                .build();
+                        String type = LDContextHelper.findSchemaId(id.getSchema().stream()
+                                .map(V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri::getUri)
+                                .collect(Collectors.toList()));
+                        return new AbstractMap.SimpleEntry<>(type, ra);
+                    })
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            proof.setProofRequest(PresentProofRequest.ProofRequest
+                    .builder()
+                    .requestedAttributes(requestedAttributes)
+                    .build());
+        }
+
         proof.setProofData(proofData);
         return proof;
     }
