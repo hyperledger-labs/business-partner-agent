@@ -67,7 +67,7 @@ public class ProverLDManager {
 
         return V20PresProposalRequest.builder()
                 .connectionId(connectionId)
-                .autoPresent(Boolean.TRUE)
+                .autoPresent(Boolean.FALSE) // is ignored with aca-py 0.7.4
                 .presentationProposal(V20PresProposalByFormat.builder()
                         .dif(V20PresProposalByFormat.DIFProofProposal.builder()
                                 .inputDescriptors(List.of(id1))
