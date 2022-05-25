@@ -105,7 +105,6 @@ public class ProverLDManager {
 
     private Map<UUID, DIFField> buildDifFields(@NonNull Map<String, String> ldAttributes) {
         return ldAttributes.entrySet().stream()
-                .filter(e -> !"id".equals(e.getKey())) // TODO
                 .map(e -> {
                     UUID key = UUID.randomUUID();
                     DIFField f = DIFField.builder()

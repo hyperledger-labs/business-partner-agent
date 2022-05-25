@@ -368,15 +368,20 @@ public class ProofManager {
             List<VerifiableCredential.VerifiableCredentialMatch> matches = ac.presentProofV2RecordsCredentialsDif(
                     dif.getPresentationExchangeId(), null)
                     .orElseThrow();
-            if (matches.size() > 0) {
+            Optional<VerifiableCredential.VerifiableCredentialMatch> match = matches.stream()
+                    .filter(m -> StringUtils.isNotEmpty(m.getIssuer()) && m.getIssuer().startsWith("did:sov"))
+                    .findFirst();
+            if (match.isPresent()) {
                 ac.presentProofV2RecordsSendPresentation(
                         dif.getPresentationExchangeId(),
                         V20PresSpecByFormatRequest.builder()
                                 .dif(DIFPresSpec.builder()
+                                        // not set automatically, won't validate if not set
+                                        .issuerId(match.get().getIssuer())
                                         .recordIds(Map.of(
                                                 dif.resolveDifPresentationRequest().getPresentationDefinition()
                                                         .getInputDescriptors().get(0).getId(),
-                                                List.of(matches.get(0).getRecordId())))
+                                                List.of(match.get().getRecordId())))
                                         .build())
                                 .build());
             }

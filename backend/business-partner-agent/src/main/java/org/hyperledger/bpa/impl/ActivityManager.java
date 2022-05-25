@@ -18,9 +18,9 @@
 package org.hyperledger.bpa.impl;
 
 import io.micronaut.context.event.ApplicationEventPublisher;
-import io.micronaut.core.annotation.NonNull;
 import jakarta.inject.Inject;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.bpa.api.aries.AriesCredential;
@@ -34,7 +34,6 @@ import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
 import org.hyperledger.bpa.persistence.repository.ActivityRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
@@ -394,8 +393,11 @@ public class ActivityManager {
         }
     }
 
-    @NotNull
+    @io.micronaut.core.annotation.NonNull
     private ActivityRole getPresentationExchangeRole(@NonNull PartnerProof partnerProof) {
+        if (partnerProof.getRole() == null) {
+            throw new IllegalStateException("Partner proof always needs a role set");
+        }
         return PresentationExchangeRole.PROVER.equals(partnerProof.getRole())
                 ? ActivityRole.PRESENTATION_EXCHANGE_PROVER
                 : ActivityRole.PRESENTATION_EXCHANGE_VERIFIER;

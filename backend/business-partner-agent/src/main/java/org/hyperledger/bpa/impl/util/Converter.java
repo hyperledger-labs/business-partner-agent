@@ -50,7 +50,6 @@ import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.credential.CredentialInfoResolver;
-import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.MyDocument;
@@ -258,21 +257,20 @@ public class Converter {
                     proofData = mapper.convertValue(collect, JsonNode.class);
                 } else if (p.typeIsJsonLd()) {
                     VerifiablePresentation<VerifiableCredential> vp = p.getProof().getLdProof();
-                    Map<String, AriesProofExchange.RevealedAttributeGroup> collect = vp.getVerifiableCredential()
-                            .stream().map(vc -> {
-                                String type = LDContextHelper.findSchemaId(vc) + "_" + UUID.randomUUID();
+                    Map<String, AriesProofExchange.RevealedAttributeGroup> collect = vp.getPresentationSubmission()
+                            .getDescriptorMap().stream().map(sub -> {
+                                VerifiableCredential vc = vp.getVerifiableCredential().get(sub.getPathAsIndex());
                                 AriesProofExchange.RevealedAttributeGroup ag = AriesProofExchange.RevealedAttributeGroup
                                         .builder()
                                         .revealedAttributes(vc.subjectToFlatMap())
                                         .identifier(credentialInfoResolver
                                                 .populateIdentifier(PresentationExchangeRecord.Identifier
                                                         .builder()
-                                                        .schemaId(type)
+                                                        .schemaId(sub.getId())
                                                         .build()))
                                         .build();
-                                return new AbstractMap.SimpleEntry<>(type, ag);
+                                return new AbstractMap.SimpleEntry<>(sub.getId(), ag);
                             }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                    // TODO duplicate key
                     proofData = mapper.convertValue(collect, JsonNode.class);
                 }
             }
@@ -294,10 +292,7 @@ public class Converter {
                                         .flatMap(Collection::stream)
                                         .collect(Collectors.toList()))
                                 .build();
-                        String type = LDContextHelper.findSchemaId(id.getSchema().stream()
-                                .map(V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri::getUri)
-                                .collect(Collectors.toList()));
-                        return new AbstractMap.SimpleEntry<>(type, ra);
+                        return new AbstractMap.SimpleEntry<>(id.getId(), ra);
                     })
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             proof.setProofRequest(PresentProofRequest.ProofRequest

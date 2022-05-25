@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.BasePresExRecord;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
+import org.hyperledger.aries.api.present_proof_v2.V20PresExRecord;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.notification.PresentationRequestCompletedEvent;
@@ -62,6 +63,7 @@ public class ProofEventHandler {
     BPAMessageSource.DefaultMessageSource msg;
 
     public void dispatch(BasePresExRecord proof) {
+        // TODO separate into holder and verifier, order by state
         if (proof.roleIsVerifierAndStateIsVerifiedOrDone() || proof.roleIsProverAndStateIsPresentationAckedOrDone()) {
             handleAckedOrVerified(proof);
         } else if (proof.roleIsProverAndRequestReceived()) {
@@ -134,6 +136,9 @@ public class ProofEventHandler {
                                         "Present_Proof: state=request_received on PresentationExchange where " +
                                                 "initiator=self, responding immediately");
                                 pProof.pushStates(proof.getState(), proof.getUpdatedAt());
+                                if (proof instanceof V20PresExRecord dif) {
+                                    pProof.setProofRequest(ExchangePayload.buildForProofRequest(dif));
+                                }
                                 pProofRepo.update(pProof);
                                 if (proof.getAutoPresent() == null || !proof.getAutoPresent()) {
                                     proofManager.presentProofAcceptSelected(proof, null, pProof.getExchangeVersion());

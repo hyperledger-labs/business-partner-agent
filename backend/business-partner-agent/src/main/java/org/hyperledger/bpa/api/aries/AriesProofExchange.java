@@ -63,7 +63,7 @@ public class AriesProofExchange {
                 .id(p.getId())
                 .partnerId(p.getPartnerId())
                 .state(p.getState())
-                .proofRequest(p.getProofRequest() != null ? p.getProofRequest().getIndy() : null) // TODO json_ld
+                .proofRequest(p.getProofRequest() != null ? p.getProofRequest().getIndy() : null)
                 .role(p.getRole())
                 .type(p.getType())
                 .problemReport(p.getProblemReport())
