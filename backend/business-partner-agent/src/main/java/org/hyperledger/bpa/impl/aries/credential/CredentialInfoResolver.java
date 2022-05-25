@@ -90,11 +90,23 @@ public class CredentialInfoResolver {
         return builder.build();
     }
 
-    private String generateIssuerLabel(@NonNull String credentialDefinitionId) {
-        String issuerLabel = restrictionsManager.findIssuerLabelByDid(credentialDefinitionId);
-        if (issuerLabel == null) {
+    public AriesProofExchange.Identifier populateIdentifier(@NonNull String schemaId, @NonNull String issuerDid) {
+        AriesProofExchange.Identifier.IdentifierBuilder builder = AriesProofExchange.Identifier.builder();
+
+        builder.schemaId(schemaId);
+        builder.schemaLabel(schemaService.getSchemaLabel(schemaId));
+
+        String issuerLabel = generateIssuerLabel(issuerDid);
+        builder.issuerLabel(issuerLabel == null ? issuerDid : issuerLabel);
+
+        return builder.build();
+    }
+
+    private String generateIssuerLabel(@NonNull String expression) {
+        String issuerLabel = restrictionsManager.findIssuerLabelByDid(expression);
+        if (issuerLabel == null && AriesStringUtil.isCredDef(expression)) {
             issuerLabel = restrictionsManager
-                    .prefixIssuerDid(AriesStringUtil.credDefIdGetDid(credentialDefinitionId));
+                    .prefixIssuerDid(AriesStringUtil.credDefIdGetDid(expression));
         }
         return issuerLabel;
     }

@@ -50,6 +50,7 @@ import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.credential.CredentialInfoResolver;
+import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.MyDocument;
@@ -264,10 +265,7 @@ public class Converter {
                                         .builder()
                                         .revealedAttributes(vc.subjectToFlatMap())
                                         .identifier(credentialInfoResolver
-                                                .populateIdentifier(PresentationExchangeRecord.Identifier
-                                                        .builder()
-                                                        .schemaId(sub.getId())
-                                                        .build()))
+                                                .populateIdentifier(LDContextHelper.findSchemaId(vc), vc.getIssuer()))
                                         .build();
                                 return new AbstractMap.SimpleEntry<>(sub.getId(), ag);
                             }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -275,7 +273,7 @@ public class Converter {
                 }
             }
         } catch (IllegalArgumentException e) {
-            log.warn("Not an attribute group");
+            log.warn("Not an attribute group", e);
             proofData = p.getProof() != null ? mapper.convertValue(p.getProof(), JsonNode.class) : null;
         }
 
