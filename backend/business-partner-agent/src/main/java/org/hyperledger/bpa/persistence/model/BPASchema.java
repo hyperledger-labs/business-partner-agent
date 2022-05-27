@@ -92,4 +92,12 @@ public class BPASchema implements ExchangeTypeTranslator {
         return result;
     }
 
+    public @Nullable String resolveSchemaLabelEscaped() {
+        String result = resolveSchemaLabel();
+        if (StringUtils.isNotEmpty(result)) {
+            result = result.replaceAll(" ", "_");
+        }
+        return result;
+    }
+
 }
