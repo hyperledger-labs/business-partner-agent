@@ -11,7 +11,7 @@ import { components } from "backend-types";
 export type IssueCredentialRequestIndy =
   components["schemas"]["IssueCredentialRequest.IssueIndyCredentialRequest"];
 
-export type IssueCredentialRequestLd =
+export type IssueCredentialRequestJsonLd =
   components["schemas"]["IssueCredentialRequest.IssueLDCredentialRequest"];
 
 export type IssueOobCredentialRequest =

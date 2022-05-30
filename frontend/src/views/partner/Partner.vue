@@ -220,6 +220,12 @@
               </template>
               <template v-slot:json-ld>
                 <!-- TODO -->
+                <IssueCredentialJsonLd
+                  :partnerId="id"
+                  hide-title
+                  @success="onCredentialIssued"
+                  @cancelled="issueCredentialDialog = false"
+                ></IssueCredentialJsonLd>
               </template>
             </credential-type-tabs>
           </v-card>
@@ -274,6 +280,7 @@ import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
 import IssueCredentialIndy from "@/components/issue/IssueCredentialIndy.vue";
 import CredentialTypeTabs from "@/components/helper/CredentialTypeTabs.vue";
+import IssueCredentialJsonLd from "@/components/issue/IssueCredentialJsonLd.vue";
 
 export default {
   name: "Partner",
@@ -283,6 +290,7 @@ export default {
     credExId: String,
   },
   components: {
+    IssueCredentialJsonLd,
     VBpaButton,
     Profile,
     PresentationExList,

@@ -19,7 +19,7 @@ import {
   ApiCreateInvitation,
   CredEx,
   Page,
-  IssueCredentialRequestLd,
+  IssueCredentialRequestJsonLd,
 } from "@/services/types-services";
 import { AxiosResponse } from "axios";
 
@@ -49,8 +49,8 @@ export default {
     return appAxios().post(`${ApiRoutes.ISSUER}/issue-credential/send`, data);
   },
 
-  issueCredentialSendLd(
-    data: IssueCredentialRequestLd
+  issueCredentialSendJsonLd(
+    data: IssueCredentialRequestJsonLd
   ): Promise<AxiosResponse<string>> {
     return appAxios().post(`${ApiRoutes.ISSUER}/issue-credential/send`, data);
   },
