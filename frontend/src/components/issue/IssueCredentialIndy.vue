@@ -227,18 +227,18 @@ export default {
     },
   },
   watch: {
-    partnerId(value) {
+    partnerId(value: string) {
       if (value) {
         this.partner = this.partnerList.find((p) => p.value === value);
       }
     },
-    credDefId(value) {
+    credDefId(value: string) {
       if (value) {
         this.credDef = this.credDefList.find((p) => p.value === value);
         this.credDefSelected();
       }
     },
-    open(value) {
+    open(value: boolean) {
       if (value) {
         // load up our partner and cred def (if needed)
         if (!this.partner?.id) {
@@ -355,7 +355,7 @@ export default {
       }
       this.submitDisabled = !enabled;
     },
-    expertLoadTypeChanged(value) {
+    expertLoadTypeChanged(value: string) {
       this.expertLoad.fileAccept =
         value === "json"
           ? "text/plain,application/json"
@@ -447,7 +447,7 @@ export default {
         }
       }
     },
-    jsonToObject(data) {
+    jsonToObject(data: any) {
       let object;
       if (data && Object.prototype.toString.call(data) === "[object String]") {
         try {
@@ -458,7 +458,7 @@ export default {
       }
       return object;
     },
-    csvToObject(data) {
+    csvToObject(data: any) {
       let object;
       if (data && Object.prototype.toString.call(data) === "[object String]") {
         try {
