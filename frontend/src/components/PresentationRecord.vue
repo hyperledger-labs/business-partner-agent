@@ -138,7 +138,7 @@
                           restrValue
                         }}</v-list-item-subtitle>
                       </v-list-item>
-                      <v-divider v-if="group.restrictions.length > 0" />
+                      <v-divider v-if="group.restrictions.length > 1" />
                     </v-list-item-group>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
