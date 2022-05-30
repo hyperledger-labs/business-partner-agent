@@ -54,7 +54,8 @@ public class ProverLDManager {
 
         Map<UUID, DIFField> fields = buildDifFields(credEx.credentialAttributesToMap());
 
-        String name = credEx.getSchema() != null ? credEx.getSchema().resolveSchemaLabelEscaped() : UUID.randomUUID().toString();
+        String name = credEx.getSchema() != null ? credEx.getSchema().resolveSchemaLabelEscaped()
+                : UUID.randomUUID().toString();
         V2DIFProofRequest.PresentationDefinition.InputDescriptors id1 = V2DIFProofRequest.PresentationDefinition.InputDescriptors
                 .builder()
                 .id(name)
