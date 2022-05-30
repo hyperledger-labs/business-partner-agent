@@ -186,7 +186,7 @@
   "moment": {
     "ignore": false,
     "name": "moment",
-    "version": "2.29.1",
+    "version": "2.29.3",
     "authors": "Iskren Ivov Chernev <iskren.chernev@gmail.com> (https://github.com/ichernev)",
     "url": "https://github.com/moment/moment",
     "license": "MIT",
@@ -248,7 +248,7 @@
   "vue-advanced-chat": {
     "ignore": false,
     "name": "vue-advanced-chat",
-    "version": "1.5.3",
+    "version": "1.5.5",
     "authors": "Antoine Dupont <antoindupontdev@gmail.com>",
     "url": "https://github.com/antoine92190/vue-advanced-chat",
     "license": "MIT",
@@ -257,7 +257,7 @@
   "vue-i18n": {
     "ignore": false,
     "name": "vue-i18n",
-    "version": "8.26.7",
+    "version": "8.26.8",
     "authors": "kazuya kawaguchi <kawakazu80@gmail.com>",
     "url": "https://github.com/kazupon/vue-i18n",
     "license": "MIT",
@@ -266,7 +266,7 @@
   "vue-json-pretty": {
     "ignore": false,
     "name": "vue-json-pretty",
-    "version": "1.8.2",
+    "version": "1.8.3",
     "authors": "leezng <im.leezng@gmail.com>",
     "url": "https://github.com/leezng/vue-json-pretty",
     "license": "MIT",
@@ -302,7 +302,7 @@
   "vue-router": {
     "ignore": false,
     "name": "vue-router",
-    "version": "3.5.3",
+    "version": "3.5.4",
     "authors": "Evan You",
     "url": "https://github.com/vuejs/vue-router",
     "license": "MIT",
@@ -320,7 +320,7 @@
   "vuetify": {
     "ignore": false,
     "name": "vuetify",
-    "version": "2.6.4",
+    "version": "2.6.6",
     "authors": "John Leider <john@vuetifyjs.com>",
     "url": "https://github.com/vuetifyjs/vuetify",
     "license": "MIT",
