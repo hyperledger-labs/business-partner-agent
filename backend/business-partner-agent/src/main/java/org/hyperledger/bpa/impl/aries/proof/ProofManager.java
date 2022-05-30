@@ -211,7 +211,7 @@ public class ProofManager {
                     .threadId(exchange.getThreadId())
                     .proofRequest(ExchangePayload.buildForProofRequest(exchange))
                     .proofTemplate(proofTemplate)
-                    .exchangeVersion(VersionHelper.determineVersion(exchange.getVersion(), type))
+                    .exchangeVersion(exchange.getVersion())
                     .pushStateChange(exchange.getState(), Instant.now())
                     .build();
             pProofRepo.save(pp);

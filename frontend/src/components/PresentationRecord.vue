@@ -207,8 +207,6 @@ import {
   Predicates,
   RequestTypes,
   Restrictions,
-  PresentationExchangeRoles,
-  CredentialTypes,
 } from "@/constants";
 import Timeline from "@/components/Timeline.vue";
 export default {
@@ -220,17 +218,11 @@ export default {
     expertMode() {
       return this.$store.state.expertMode;
     },
-    roleIsProver() {
-      return this.record.role === PresentationExchangeRoles.PROVER;
-    },
     isStateVerified() {
       return this.record.state === PresentationExchangeStates.VERIFIED;
     },
     isStateProposalSent() {
       return this.record.state === PresentationExchangeStates.PROPOSAL_SENT;
-    },
-    typeIsIndy() {
-      return this.record.type === CredentialTypes.INDY.type;
     },
     contentPanels: {
       get: function () {

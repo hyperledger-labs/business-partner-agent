@@ -19,7 +19,6 @@ package org.hyperledger.bpa.impl.aries.proof;
 
 import io.micronaut.core.annotation.Nullable;
 import lombok.NonNull;
-import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
 public class VersionHelper {
@@ -29,14 +28,6 @@ public class VersionHelper {
         return version != null
                 ? version
                 : c.typeIsIndy() ? org.hyperledger.aries.api.ExchangeVersion.V1
-                        : org.hyperledger.aries.api.ExchangeVersion.V2;
-    }
-
-    public static org.hyperledger.aries.api.ExchangeVersion determineVersion(
-            @Nullable org.hyperledger.aries.api.ExchangeVersion version, @NonNull CredentialType type) {
-        return version != null
-                ? version
-                : type.equals(CredentialType.INDY) ? org.hyperledger.aries.api.ExchangeVersion.V1
                         : org.hyperledger.aries.api.ExchangeVersion.V2;
     }
 }

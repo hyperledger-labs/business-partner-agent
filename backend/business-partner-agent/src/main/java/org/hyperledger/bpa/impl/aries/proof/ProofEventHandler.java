@@ -197,7 +197,7 @@ public class ProofEventHandler {
                 .role(proof.getRole())
                 .proofRequest(pr)
                 .type(type)
-                .exchangeVersion(VersionHelper.determineVersion(proof.getVersion(), type))
+                .exchangeVersion(proof.getVersion())
                 .pushStateChange(proof.getState(), ts != null ? ts : Instant.now())
                 .build();
     }
