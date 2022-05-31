@@ -106,10 +106,10 @@ public class VPManager {
         }
         crypto.sign(vpBuilder.build())
                 .ifPresent(vp -> didRepo.findDidDocSingle().ifPresentOrElse(
-                        didWeb -> didRepo.updateProfileJson(didWeb.getId(), converter.toMap(vp)),
+                        didWeb -> didRepo.updateProfileJson(didWeb.getId(), vp),
                         () -> didRepo.save(DidDocWeb
                                 .builder()
-                                .profileJson(converter.toMap(vp))
+                                .profileJson(vp)
                                 .build())));
     }
 
@@ -196,12 +196,7 @@ public class VPManager {
     }
 
     public Optional<VerifiablePresentation<VerifiableIndyCredential>> getVerifiablePresentation() {
-        final Optional<DidDocWeb> dbVP = didRepo.findDidDocSingle();
-        if (dbVP.isPresent() && dbVP.get().getProfileJson() != null) {
-            return Optional
-                    .of(converter.fromMap(Objects.requireNonNull(dbVP.get().getProfileJson()), Converter.VP_TYPEREF));
-        }
-        return Optional.empty();
+        return didRepo.findDidDocSingle().map(DidDocWeb::getProfileJson);
     }
 
     protected List<Object> resolveContext(@NonNull CredentialType type, @Nullable String schemaId) {

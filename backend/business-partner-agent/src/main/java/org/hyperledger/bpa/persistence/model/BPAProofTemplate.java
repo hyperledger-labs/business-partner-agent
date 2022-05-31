@@ -27,14 +27,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroups;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.time.Instant;
@@ -51,7 +49,7 @@ import java.util.stream.Stream;
 public class BPAProofTemplate {
     @Id
     @AutoPopulated
-    UUID id;
+    private UUID id;
 
     @Nullable
     @DateCreated
@@ -60,13 +58,17 @@ public class BPAProofTemplate {
     @NotEmpty
     String name;
 
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private CredentialType type = CredentialType.INDY;
+
     @NotEmpty
     @Valid
     @Column(name = "attribute_groups_json")
     @TypeDef(type = DataType.JSON)
     // using a concrete class instead of a generic list does not unmarshal correctly
     // see https://github.com/micronaut-projects/micronaut-data/issues/1064
-    BPAAttributeGroups attributeGroups;
+    private BPAAttributeGroups attributeGroups;
 
     public Stream<BPAAttributeGroup> streamAttributeGroups() {
         return attributeGroups.getAttributeGroups().stream();
