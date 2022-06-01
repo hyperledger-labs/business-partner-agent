@@ -25,11 +25,19 @@
           return-object
           v-model="credDefJsonLd"
           :items="credListJsonLd"
+          item-value="id"
           outlined
           :disabled="this.$props.credDefId !== undefined"
           dense
           @change="credDefSelected"
-        ></v-select>
+        >
+          <template v-slot:item="data"
+            >{{ data.item.label }} - {{ data.item.ldType }}</template
+          >
+          <template v-slot:selection="data"
+            >{{ data.item.label }} - {{ data.item.ldType }}</template
+          >
+        </v-select>
         <v-card v-if="credDefLoaded">
           <v-card-title class="bg-light" style="font-size: small">{{
             $t("component.issueCredential.attributesTitle")
@@ -75,6 +83,7 @@ import Vue from "vue";
 import { EventBus } from "@/main";
 import { IssueCredentialRequestJsonLd, issuerService } from "@/services";
 import VBpaButton from "@/components/BpaButton";
+import { CredentialTypes } from "@/constants";
 
 export default {
   name: "IssueCredentialJsonLd",
@@ -115,7 +124,15 @@ export default {
     credListJsonLd: {
       get() {
         // TODO: Get JSON-LD "cred defs"
-        return this.$store.getters.getCredDefSelectList;
+        let documentTypes = this.$store.getters.getSchemas;
+
+        if (this.$store.getters.getOrganizationalProfile) {
+          documentTypes = documentTypes.filter(
+            (schema) => schema.type === CredentialTypes.JSON_LD.type
+          );
+        }
+
+        return documentTypes;
       },
     },
     credDefLoaded: {
@@ -176,10 +193,8 @@ export default {
       this.isLoading = false;
     },
     async issueCredential() {
-      // create an empty document, all empty strings...
       let document: any = {};
       for (const x of this.credDefJsonLd.fields) document[x.type] = "";
-      //fill in whatever populated fields we have...
       Object.assign(document, this.credentialFields);
 
       const data: IssueCredentialRequestJsonLd = {
@@ -235,7 +250,6 @@ export default {
         this.credDefJsonLd.fields &&
         this.credDefJsonLd.fields.length > 0
       ) {
-        //ok, we have some fields to check.
         console.log(this.credentialFields);
         enabled = this.credDefJsonLd.fields.some(
           (x) =>

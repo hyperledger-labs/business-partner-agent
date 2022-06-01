@@ -24,6 +24,8 @@
           :label="$t('component.issueCredential.credDefLabel')"
           return-object
           v-model="credDef"
+          item-value="id"
+          item-text="displayText"
           :items="credDefList"
           outlined
           :disabled="this.$props.credDefId !== undefined"
@@ -111,10 +113,10 @@
             <v-row>
               <v-col>
                 <v-text-field
-                  v-for="field in credDef.fields"
-                  :key="field.type"
-                  :label="field.label"
-                  v-model="credentialFields[field.type]"
+                  v-for="field in credDef.schema.schemaAttributeNames"
+                  :key="field"
+                  :label="field"
+                  v-model="credentialFields[field]"
                   outlined
                   dense
                   @blur="enableSubmit"
@@ -163,7 +165,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { EventBus } from "@/main";
-import { IssueCredentialRequestIndy, issuerService } from "@/services";
+import { CredDef, IssueCredentialRequestIndy, issuerService } from "@/services";
 import VBpaButton from "@/components/BpaButton";
 import * as textUtils from "@/utils/textUtils";
 import * as CSV from "csv-string";
@@ -213,13 +215,13 @@ export default {
       },
     },
     credDefList: {
-      get() {
+      get(): CredDef[] {
         return this.$store.getters.getCredDefSelectList;
       },
     },
     credDefLoaded: {
       get() {
-        return this.credDef?.fields?.length;
+        return this.credDef?.schema?.schemaAttributeNames?.length;
       },
     },
     expertLoadEnabled() {
@@ -248,7 +250,7 @@ export default {
         }
         // this will happen if the form was opened with credDefId and then is cancelled and re-opened with the same credDefId
         // the credDef is empty and won't initialize unless credDefId changes.
-        if (!this.credDef?.fields) {
+        if (!this.credDef?.schema?.schemaAttributeNames) {
           this.credDef = this.credDefList.find(
             (p) => p.value === this.$props.credDefId
           );
@@ -286,7 +288,8 @@ export default {
       }
       // create an empty document, all empty strings...
       let document: any = {};
-      for (const x of this.credDef.fields) document[x.type] = "";
+      for (const x of this.credDef.schema.schemaAttributeNames)
+        document[x.type] = "";
       //fill in whatever populated fields we have...
       Object.assign(document, this.credentialFields);
 
@@ -334,7 +337,7 @@ export default {
     },
     credDefSelected() {
       this.credentialFields = {};
-      for (const x of this.credDef.fields)
+      for (const x of this.credDef.schema.schemaAttributeNames)
         Vue.set(this.credentialFields, x.type, "");
       this.submitDisabled = true;
     },
@@ -342,12 +345,13 @@ export default {
       let enabled = false;
       if (
         this.credDef &&
-        this.credDef.fields &&
-        this.credDef.fields.length > 0
+        this.credDef.schema &&
+        this.credDef.schema.schemaAttributeNames &&
+        this.credDef.schema.schemaAttributeNames.length > 0
       ) {
         //ok, we have some fields to check.
         console.log(this.credentialFields);
-        enabled = this.credDef.fields.some(
+        enabled = this.credDef.schema.schemaAttributeNames.some(
           (x) =>
             this.credentialFields[x.type] &&
             this.credentialFields[x.type]?.trim().length > 0
@@ -415,7 +419,7 @@ export default {
         if (object) {
           let count = 0;
           // see if we can populate the credential fields...
-          for (const x of this.credDef.fields) {
+          for (const x of this.credDef.schema.schemaAttributeNames) {
             if (
               object[x.type] &&
               !(

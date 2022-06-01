@@ -12,7 +12,6 @@ export const CHAT_CURRENT_USERID = "__self__";
 export const CredentialTypes = Object.freeze({
   PROFILE: {
     type: "ORGANIZATIONAL_PROFILE_CREDENTIAL",
-    label: "Organizational Profile",
   },
   INDY: {
     type: "INDY",
@@ -22,7 +21,6 @@ export const CredentialTypes = Object.freeze({
   },
   UNKNOWN: {
     type: "UNKNOWN",
-    label: "Unknown",
   },
 });
 

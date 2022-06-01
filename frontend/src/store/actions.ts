@@ -11,8 +11,6 @@ import { getPartnerProfile } from "@/utils/partnerUtils";
 import adminService from "@/services/admin-service";
 import proofTemplateService from "@/services/proof-template-service";
 import partnerService from "@/services/partner-service";
-import issuerService from "@/services/issuer-service";
-import * as textUtils from "@/utils/textUtils";
 import {
   AriesCredential,
   MyDocumentAPI,
@@ -188,38 +186,6 @@ export const loadPartnerSelectList = async ({ commit }) => {
         commit({
           type: "setPartnerSelectList",
           list: partners,
-        });
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-      EventBus.$emit("error", error);
-    });
-};
-
-// eslint-disable-next-line unicorn/prevent-abbreviations
-export const loadCredDefSelectList = async ({ commit }) => {
-  issuerService
-    .listCredDefs()
-    .then((result) => {
-      if (result.status === 200) {
-        const credDefs = result.data.map((c) => {
-          return {
-            value: c.id,
-            text: c.displayText,
-            fields: c.schema.schemaAttributeNames.map((key) => {
-              return {
-                type: key,
-                label: textUtils.schemaAttributeLabel(key),
-              };
-            }),
-            ...c,
-          };
-        });
-
-        commit({
-          type: "setCredDefSelectList",
-          list: credDefs,
         });
       }
     })

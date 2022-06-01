@@ -8,13 +8,16 @@
 
 import Vue from "vue";
 import Vuex from "vuex";
-import taa from "./modules/taa";
-import socketEvents from "./modules/socketevents";
 import * as actions from "./actions";
 import * as getters from "./getters";
-import messages from "@/store/modules/messages";
-import notifications from "@/store/modules/notifications";
 import { StateBpa } from "@/store/state-type";
+import {
+  messages,
+  notifications,
+  socketEvents,
+  taa,
+  credDefSelectList,
+} from "@/store/modules";
 
 Vue.use(Vuex);
 
@@ -27,7 +30,6 @@ const state: StateBpa = {
   proofTemplates: [],
   tags: [],
   partnerSelectList: [],
-  credDefSelectList: [],
   busyStack: 0,
   expertMode: false,
   settings: {},
@@ -35,41 +37,36 @@ const state: StateBpa = {
 
 const store = new Vuex.Store({
   state,
-
   getters: getters,
   actions: actions,
-
   mutations: {
-    loadDocumentsFinished(state, payload) {
+    loadDocumentsFinished(state: StateBpa, payload) {
       state.documents = payload.documents;
     },
-    loadCredentialsFinished(state, payload) {
+    loadCredentialsFinished(state: StateBpa, payload) {
       state.credentials = payload.credentials;
     },
-    loadPartnersFinished(state, payload) {
+    loadPartnersFinished(state: StateBpa, payload) {
       state.partners = payload.partners;
     },
-    setSchemas(state, payload) {
+    setSchemas(state: StateBpa, payload) {
       state.schemas = payload.schemas;
     },
-    setTags(state, payload) {
+    setTags(state: StateBpa, payload) {
       console.log(payload.tags);
       state.tags = payload.tags;
     },
-    setExpertMode(state, payload) {
+    setExpertMode(state: StateBpa, payload) {
       state.expertMode = payload.isExpert;
     },
-    setSettings(state, payload) {
+    setSettings(state: StateBpa, payload) {
       state.settings = payload.settings;
     },
-    setProofTemplates(state, payload) {
+    setProofTemplates(state: StateBpa, payload) {
       state.proofTemplates = payload.proofTemplates;
     },
-    setPartnerSelectList(state, payload) {
+    setPartnerSelectList(state: StateBpa, payload) {
       state.partnerSelectList = payload.list;
-    },
-    setCredDefSelectList(state, payload) {
-      state.credDefSelectList = payload.list;
     },
   },
 
@@ -78,6 +75,7 @@ const store = new Vuex.Store({
     socketEvents,
     messages,
     notifications,
+    credDefSelectList,
   },
 });
 

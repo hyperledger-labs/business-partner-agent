@@ -8,7 +8,7 @@
 import { CredentialTypes } from "@/constants";
 import { StateBpa } from "@/store/state-type";
 
-export const istBusy = (state: StateBpa) => {
+export const isBusy = (state: StateBpa) => {
   return state.busyStack > 0;
 };
 
@@ -120,9 +120,4 @@ export const getProofTemplates = (state: StateBpa) => {
 
 export const getPartnerSelectList = (state: StateBpa) => {
   return state.partnerSelectList;
-};
-
-// eslint-disable-next-line unicorn/prevent-abbreviations
-export const getCredDefSelectList = (state: StateBpa) => {
-  return state.credDefSelectList;
 };
