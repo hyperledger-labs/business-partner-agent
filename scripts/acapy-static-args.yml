@@ -29,7 +29,7 @@ auto-disclose-features: true
 
 # wallet
 auto-provision: true
-wallet-type: 'indy'
+wallet-type: 'askar'
 
 # revocation notifications (anoncreds only)
 notify-revocation: true
