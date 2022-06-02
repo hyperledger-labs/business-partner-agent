@@ -47,12 +47,19 @@
               {{ data.item.text }}
             </template>
           </v-autocomplete>
+          <v-switch
+            style="display: block; height: 35px"
+            dense
+            inset
+            class="mx-2"
+            v-model="useJsonLd"
+            label="JSON-LD"
+          ></v-switch>
           <v-autocomplete
             :label="$t('view.issueCredentials.cards.action.credDefLabel')"
             v-model="credDef"
             item-value="id"
-            item-text="displayText"
-            :items="credDefList"
+            :items="credDefOrSchemasList"
             return-object
             class="mx-4"
             flat
@@ -63,7 +70,20 @@
             outlined
             clearable
             clear-icon="$vuetify.icons.delete"
-          ></v-autocomplete>
+          >
+            <template v-slot:item="data" v-if="useJsonLd"
+              >{{ data.item.label }} - {{ data.item.ldType }}</template
+            >
+            <template v-slot:item="data" v-else>{{
+              data.item.displayText
+            }}</template>
+            <template v-slot:selection="data" v-if="useJsonLd"
+              >{{ data.item.label }} - {{ data.item.ldType }}</template
+            >
+            <template v-slot:selection="data" v-else>{{
+              data.item.displayText
+            }}</template>
+          </v-autocomplete>
           <v-dialog
             v-model="issueCredentialDialog"
             persistent
@@ -80,8 +100,17 @@
                 }}</v-bpa-button
               >
             </template>
+            <IssueCredentialJsonLd
+              v-if="!issueOutOfBoundCredential && useJsonLd"
+              :schema-id="schemaJsonLdId"
+              :partner-id="partnerId"
+              :open="issueCredentialDialog"
+              @success="credentialIssued"
+              @cancelled="issueCredentialDialog = false"
+            >
+            </IssueCredentialJsonLd>
             <IssueCredentialIndyOob
-              v-if="issueOutOfBoundCredential"
+              v-else-if="issueOutOfBoundCredential && !useJsonLd"
               :credDefId="credDefId"
               :open="issueCredentialDialog"
               @success="credentialIssued"
@@ -123,10 +152,13 @@ import * as partnerUtils from "@/utils/partnerUtils";
 import VBpaButton from "@/components/BpaButton";
 import IssueCredentialIndyOob from "@/components/issue/IssueCredentialIndyOob.vue";
 import IssueCredentialIndy from "@/components/issue/IssueCredentialIndy.vue";
+import { CredentialTypes } from "@/constants";
+import IssueCredentialJsonLd from "@/components/issue/IssueCredentialJsonLd.vue";
 
 export default {
   name: "CredentialManagement",
   components: {
+    IssueCredentialJsonLd,
     VBpaButton,
     IssueCredentialIndy,
     IssueCredentialIndyOob,
@@ -143,31 +175,62 @@ export default {
       partnerId: "",
       credDef: {},
       credDefId: "",
+      schemaJsonLd: {},
+      schemaJsonLdId: "",
       issueCredentialDisabled: true,
       issueCredentialDialog: false,
       issueOutOfBoundCredential: false,
       addSchemaDialog: false,
       createSchemaDialog: false,
+      useJsonLd: false,
     };
   },
   computed: {
     partnerList: {
       get() {
         return [
-          {
-            text: this.$t(
-              "view.issueCredentials.cards.action.invitationWithAttachmentLabel"
-            ),
-            id: "invitationWithAttachment",
-          },
-          { divider: true },
+          ...(!this.useJsonLd
+            ? [
+                {
+                  text: this.$t(
+                    "view.issueCredentials.cards.action.invitationWithAttachmentLabel"
+                  ),
+                  id: "invitationWithAttachment",
+                },
+                { divider: true },
+              ]
+            : []),
           ...this.$store.getters.getPartnerSelectList,
         ];
       },
     },
-    credDefList: {
+    credDefOrSchemasList: {
+      get() {
+        if (this.useJsonLd) {
+          const documentTypes = this.$store.getters.getSchemas;
+
+          return documentTypes.filter(
+            (schema) => schema.type === CredentialTypes.JSON_LD.type
+          );
+        } else {
+          return this.$store.getters.getCredDefSelectList;
+        }
+      },
+    },
+    // TODO
+    credDefIndyList: {
       get() {
         return this.$store.getters.getCredDefSelectList;
+      },
+    },
+    // TODO
+    schemasJsonLdList: {
+      get() {
+        const documentTypes = this.$store.getters.getSchemas;
+
+        return documentTypes.filter(
+          (schema) => schema.type === CredentialTypes.JSON_LD.type
+        );
       },
     },
   },
@@ -186,6 +249,10 @@ export default {
       this.issueCredentialDisabled =
         !value || !value.id || !this.partner || !this.partner.id;
       this.credDefId = value ? value.id : "";
+    },
+    schemaJsonLd(value) {
+      // TODO
+      this.schemaJsonLdId = value ? value.id : "";
     },
   },
   methods: {
