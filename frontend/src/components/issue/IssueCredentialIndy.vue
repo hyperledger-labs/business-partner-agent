@@ -236,7 +236,7 @@ export default {
     },
     credDefId(value: string) {
       if (value) {
-        this.credDef = this.credDefList.find((p) => p.value === value);
+        this.credDef = this.credDefList.find((p) => p.id === value);
         this.credDefSelected();
       }
     },
@@ -252,7 +252,7 @@ export default {
         // the credDef is empty and won't initialize unless credDefId changes.
         if (!this.credDef?.schema?.schemaAttributeNames) {
           this.credDef = this.credDefList.find(
-            (p) => p.value === this.$props.credDefId
+            (p) => p.id === this.$props.credDefId
           );
           this.credDefSelected();
         }
@@ -275,7 +275,7 @@ export default {
 
       if (this.$props.credDefId) {
         this.credDef = this.credDefList.find(
-          (c) => c.value === this.$props.credDefId
+          (c) => c.id === this.$props.credDefId
         );
       }
 
@@ -289,7 +289,7 @@ export default {
       // create an empty document, all empty strings...
       let document: any = {};
       for (const x of this.credDef.schema.schemaAttributeNames)
-        document[x.type] = "";
+        document[x] = "";
       //fill in whatever populated fields we have...
       Object.assign(document, this.credentialFields);
 
@@ -338,7 +338,7 @@ export default {
     credDefSelected() {
       this.credentialFields = {};
       for (const x of this.credDef.schema.schemaAttributeNames)
-        Vue.set(this.credentialFields, x.type, "");
+        Vue.set(this.credentialFields, x, "");
       this.submitDisabled = true;
     },
     enableSubmit() {
@@ -353,8 +353,8 @@ export default {
         console.log(this.credentialFields);
         enabled = this.credDef.schema.schemaAttributeNames.some(
           (x) =>
-            this.credentialFields[x.type] &&
-            this.credentialFields[x.type]?.trim().length > 0
+            this.credentialFields[x] &&
+            this.credentialFields[x]?.trim().length > 0
         );
       }
       this.submitDisabled = !enabled;
@@ -421,16 +421,16 @@ export default {
           // see if we can populate the credential fields...
           for (const x of this.credDef.schema.schemaAttributeNames) {
             if (
-              object[x.type] &&
+              object[x] &&
               !(
-                Object.prototype.toString.call(object[x.type]) ===
+                Object.prototype.toString.call(object[x]) ===
                   "[object Object]" ||
-                Object.prototype.toString.call(object[x.type]) ===
+                Object.prototype.toString.call(object[x]) ===
                   "[object Function]"
               )
             ) {
               count = count + 1;
-              Vue.set(this.credentialFields, x.type, object[x.type].toString());
+              Vue.set(this.credentialFields, x, object[x].toString());
             }
           }
           if (count) {
@@ -469,7 +469,7 @@ export default {
           const array = CSV.parse(data);
           if (array?.length > 1) {
             const names = array[0];
-            const values = array[1]; // only grab first row for now...
+            const values = array[1];
             const namesOk = names.every((value) =>
               textUtils.isValidSchemaAttributeName(value)
             );

@@ -30,6 +30,8 @@
                 return-object
                 v-model="credDef"
                 :items="credDefList"
+                item-value="id"
+                item-text="displayText"
                 outlined
                 :disabled="this.$props.credDefId !== undefined"
                 dense
@@ -124,10 +126,10 @@
                   <v-row>
                     <v-col>
                       <v-text-field
-                        v-for="field in credDef.fields"
-                        :key="field.type"
-                        :label="field.label"
-                        v-model="credentialFields[field.type]"
+                        v-for="field in credDef.schema.schemaAttributeNames"
+                        :key="field"
+                        :label="field"
+                        v-model="credentialFields[field]"
                         outlined
                         dense
                         @blur="enableSubmit"
@@ -313,7 +315,7 @@ export default {
     },
     credDefLoaded: {
       get() {
-        return this.credDef?.fields?.length;
+        return this.credDef?.schema?.schemaAttributeNames?.length;
       },
     },
     expertLoadEnabled() {
@@ -328,7 +330,7 @@ export default {
   watch: {
     credDefId(value) {
       if (value) {
-        this.credDef = this.credDefList.find((p) => p.value === value);
+        this.credDef = this.credDefList.find((p) => p.id === value);
         this.credDefSelected();
       }
     },
@@ -337,9 +339,9 @@ export default {
         // load up cred def (if needed)
         // this will happen if the form was opened with credDefId and then is cancelled and re-opened with the same credDefId
         // the credDef is empty and won't initialize unless credDefId changes.
-        if (!this.credDef?.fields) {
+        if (!this.credDef?.schema?.schemaAttributeNames) {
           this.credDef = this.credDefList.find(
-            (p) => p.value === this.$props.credDefId
+            (p) => p.id === this.$props.credDefId
           );
           this.credDefSelected();
         }
@@ -355,7 +357,7 @@ export default {
 
       if (this.$props.credDefId) {
         this.credDef = this.credDefList.find(
-          (c) => c.value === this.$props.credDefId
+          (c) => c.id === this.$props.credDefId
         );
       }
 
@@ -364,7 +366,8 @@ export default {
     async issueOobCredentialOffer(): Promise<ApiCreateInvitation> {
       // create an empty document, all empty strings
       let document: any = {};
-      for (const x of this.credDef.fields) document[x.type] = "";
+      for (const x of this.credDef.schema.schemaAttributeNames)
+        document[x] = "";
       // fill in whatever populated fields we have
       Object.assign(document, this.credentialFields);
 
@@ -422,22 +425,22 @@ export default {
     },
     credDefSelected() {
       this.credentialFields = {};
-      for (const x of this.credDef.fields)
-        Vue.set(this.credentialFields, x.type, "");
+      for (const x of this.credDef.schema.schemaAttributeNames)
+        Vue.set(this.credentialFields, x, "");
       this.createDisabled = true;
     },
     enableSubmit() {
       let enabled = false;
       if (
         this.credDef &&
-        this.credDef.fields &&
-        this.credDef.fields.length > 0
+        this.credDef.schema.schemaAttributeNames &&
+        this.credDef.schema.schemaAttributeNames.length > 0
       ) {
         console.log(this.credentialFields);
-        enabled = this.credDef.fields.some(
+        enabled = this.credDef.schema.schemaAttributeNames.some(
           (x) =>
-            this.credentialFields[x.type] &&
-            this.credentialFields[x.type]?.trim().length > 0
+            this.credentialFields[x] &&
+            this.credentialFields[x]?.trim().length > 0
         );
       }
       this.createDisabled = !enabled;
@@ -502,18 +505,18 @@ export default {
         if (object) {
           let count = 0;
           // see if we can populate the credential fields...
-          for (const x of this.credDef.fields) {
+          for (const x of this.credDef.schema.schemaAttributeNames) {
             if (
-              object[x.type] &&
+              object[x] &&
               !(
-                Object.prototype.toString.call(object[x.type]) ===
+                Object.prototype.toString.call(object[x]) ===
                   "[object Object]" ||
-                Object.prototype.toString.call(object[x.type]) ===
+                Object.prototype.toString.call(object[x]) ===
                   "[object Function]"
               )
             ) {
               count = count + 1;
-              Vue.set(this.credentialFields, x.type, object[x.type].toString());
+              Vue.set(this.credentialFields, x, object[x].toString());
             }
           }
           if (count) {

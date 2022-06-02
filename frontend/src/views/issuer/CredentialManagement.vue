@@ -50,6 +50,8 @@
           <v-autocomplete
             :label="$t('view.issueCredentials.cards.action.credDefLabel')"
             v-model="credDef"
+            item-value="id"
+            item-text="displayText"
             :items="credDefList"
             return-object
             class="mx-4"
