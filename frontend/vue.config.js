@@ -28,7 +28,7 @@ module.exports = {
   configureWebpack: {
     devtool: "source-map",
     resolve: {
-      fallback: { stream: false },
+      fallback: { stream: require.resolve("stream-browserify") },
     },
   },
 };

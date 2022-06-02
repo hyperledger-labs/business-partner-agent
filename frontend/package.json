@@ -23,6 +23,7 @@
     "axios": "0.24.0",
     "core-js": "3.19.3",
     "csv-string": "4.0.1",
+    "stream-browserify": "3.0.0",
     "deepmerge": "4.2.2",
     "font-awesome": "4.7.0",
     "jsonld-context-parser": "2.1.5",
