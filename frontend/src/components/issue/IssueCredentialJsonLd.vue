@@ -17,19 +17,19 @@
           v-model="partner"
           :items="partnerList"
           outlined
-          :disabled="this.$props.partnerId !== undefined"
+          :disabled="this.partnerId !== undefined"
           dense
         ></v-select>
         <v-select
           :label="$t('component.issueCredential.credDefLabel')"
           return-object
-          v-model="credDefJsonLd"
-          :items="credListJsonLd"
+          v-model="schemaJsonLd"
+          :items="schemasJsonLd"
           item-value="id"
           outlined
-          :disabled="this.$props.credDefId !== undefined"
+          :disabled="this.schemaId !== undefined"
           dense
-          @change="credDefSelected"
+          @change="schemaSelected"
         >
           <template v-slot:item="data"
             >{{ data.item.label }} - {{ data.item.ldType }}</template
@@ -38,7 +38,7 @@
             >{{ data.item.label }} - {{ data.item.ldType }}</template
           >
         </v-select>
-        <v-card v-if="credDefLoaded">
+        <v-card v-if="schemaLoaded">
           <v-card-title class="bg-light" style="font-size: small">{{
             $t("component.issueCredential.attributesTitle")
           }}</v-card-title>
@@ -46,10 +46,10 @@
             <v-row>
               <v-col>
                 <v-text-field
-                  v-for="field in credDefJsonLd.fields"
-                  :key="field.type"
-                  :label="field.label"
-                  v-model="credentialFields[field.type]"
+                  v-for="field in schemaJsonLd.schemaAttributeNames"
+                  :key="field"
+                  :label="field"
+                  v-model="credentialFields[field]"
                   outlined
                   dense
                   @blur="enableSubmit"
@@ -105,25 +105,20 @@ export default {
       isLoading: false,
       isBusy: false,
       partner: {},
-      credDefJsonLd: {},
+      schemaJsonLd: {},
       credential: {},
       credentialFields: {},
       submitDisabled: true,
     };
   },
   computed: {
-    expertMode() {
-      return this.$store.state.expertMode;
-    },
     partnerList: {
       get() {
         return this.$store.getters.getPartnerSelectList;
       },
     },
-    // TODO: Find correct naming as it is not a credential definition nor a credential
-    credListJsonLd: {
+    schemasJsonLd: {
       get() {
-        // TODO: Get JSON-LD "cred defs"
         let documentTypes = this.$store.getters.getSchemas;
 
         if (this.$store.getters.getOrganizationalProfile) {
@@ -135,9 +130,9 @@ export default {
         return documentTypes;
       },
     },
-    credDefLoaded: {
+    schemaLoaded: {
       get() {
-        return this.credDefJsonLd?.fields?.length;
+        return this.schemaJsonLd?.schemaAttributeNames?.length;
       },
     },
   },
@@ -147,27 +142,24 @@ export default {
         this.partner = this.partnerList.find((p) => p.value === value);
       }
     },
-    credDefId(value: string) {
+    schemaId(value: string) {
       if (value) {
-        this.credDefJsonLd = this.credListJsonLd.find((p) => p.value === value);
-        this.credDefSelected();
+        this.schemaJsonLd = this.schemasJsonLd.find((p) => p.id === value);
+        this.schemaSelected();
       }
     },
     open(value: boolean) {
       if (value) {
-        // load up our partner and cred def (if needed)
         if (!this.partner?.id) {
           this.partner = this.partnerList.find(
-            (p) => p.value === this.$props.partnerId
+            (p) => p.value === this.partnerId
           );
         }
-        // this will happen if the form was opened with credDefId and then is cancelled and re-opened with the same credDefId
-        // the credDef is empty and won't initialize unless credDefId changes.
-        if (!this.credDefJsonLd?.fields) {
-          this.credDefJsonLd = this.credListJsonLd.find(
-            (p) => p.value === this.$props.credDefId
+        if (!this.schemaJsonLd?.schemaAttributeNames) {
+          this.schemaJsonLd = this.schemasJsonLd.find(
+            (p) => p.id === this.schemaId
           );
-          this.credDefSelected();
+          this.schemaSelected();
         }
       }
     },
@@ -176,17 +168,15 @@ export default {
     async load() {
       this.isLoading = true;
       this.partner = {};
-      this.credDefJsonLd = {};
+      this.schemaJsonLd = {};
 
-      if (this.$props.partnerId) {
-        this.partner = this.partnerList.find(
-          (p) => p.value === this.$props.partnerId
-        );
+      if (this.partnerId) {
+        this.partner = this.partnerList.find((p) => p.value === this.partnerId);
       }
 
-      if (this.$props.credDefId) {
-        this.credDefJsonLd = this.credListJsonLd.find(
-          (c) => c.value === this.$props.credDefId
+      if (this.schemaId) {
+        this.schemaJsonLd = this.schemasJsonLd.find(
+          (c) => c.id === this.schemaId
         );
       }
 
@@ -194,13 +184,14 @@ export default {
     },
     async issueCredential() {
       let document: any = {};
-      for (const x of this.credDefJsonLd.fields) document[x.type] = "";
+      for (const x of this.schemaJsonLd.schemaAttributeNames) document[x] = "";
       Object.assign(document, this.credentialFields);
 
       const data: IssueCredentialRequestJsonLd = {
-        schemaId: "TODO", // TODO
+        schemaId: this.schemaJsonLd.id,
         partnerId: this.partner.id,
         document: document,
+        type: CredentialTypes.JSON_LD.type,
       };
       try {
         const resp = await issuerService.issueCredentialSendJsonLd(data);
@@ -222,7 +213,7 @@ export default {
             "success",
             this.$t("component.issueCredential.successMessage")
           );
-          this.credDefJsonLd = {};
+          this.schemaJsonLd = {};
           this.submitDisabled = true;
           this.$emit("success");
         }
@@ -232,29 +223,27 @@ export default {
       }
     },
     cancel() {
-      // clear out selected credential definition, will select (or have pre-populated) when re-open form.
-      this.credDefJsonLd = {};
+      this.schemaJsonLd = {};
       this.credentialFields = {};
       this.$emit("cancelled");
     },
-    credDefSelected() {
+    schemaSelected() {
       this.credentialFields = {};
-      for (const x of this.credDefJsonLd.fields)
-        Vue.set(this.credentialFields, x.type, "");
+      for (const x of this.schemaJsonLd.schemaAttributeNames)
+        Vue.set(this.credentialFields, x, "");
       this.submitDisabled = true;
     },
     enableSubmit() {
       let enabled = false;
       if (
-        this.credDefJsonLd &&
-        this.credDefJsonLd.fields &&
-        this.credDefJsonLd.fields.length > 0
+        this.schemaJsonLd &&
+        this.schemaJsonLd.schemaAttributeNames &&
+        this.schemaJsonLd.schemaAttributeNames.length > 0
       ) {
-        console.log(this.credentialFields);
-        enabled = this.credDefJsonLd.fields.some(
+        enabled = this.schemaJsonLd.schemaAttributeNames.some(
           (x) =>
-            this.credentialFields[x.type] &&
-            this.credentialFields[x.type]?.trim().length > 0
+            this.credentialFields[x] &&
+            this.credentialFields[x]?.trim().length > 0
         );
       }
       this.submitDisabled = !enabled;

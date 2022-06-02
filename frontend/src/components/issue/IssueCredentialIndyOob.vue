@@ -290,8 +290,7 @@ export default {
       currentStep: 1,
       alias: "",
       selectedTags: [],
-      // Disable trust ping for invitation to
-      // mobile wallets by default.
+      // Disable trust ping for invitation to mobile wallets by default
       trustPing: false,
       invitationUrl: "",
       createDisabled: true,
@@ -336,9 +335,6 @@ export default {
     },
     open(value) {
       if (value) {
-        // load up cred def (if needed)
-        // this will happen if the form was opened with credDefId and then is cancelled and re-opened with the same credDefId
-        // the credDef is empty and won't initialize unless credDefId changes.
         if (!this.credDef?.schema?.schemaAttributeNames) {
           this.credDef = this.credDefList.find(
             (p) => p.id === this.$props.credDefId
@@ -364,11 +360,10 @@ export default {
       this.isLoading = false;
     },
     async issueOobCredentialOffer(): Promise<ApiCreateInvitation> {
-      // create an empty document, all empty strings
       let document: any = {};
+
       for (const x of this.credDef.schema.schemaAttributeNames)
         document[x] = "";
-      // fill in whatever populated fields we have
       Object.assign(document, this.credentialFields);
 
       const data: IssueOobCredentialRequest = {
@@ -413,7 +408,6 @@ export default {
       }
     },
     cancel() {
-      // clear out selected credential definition, will select (or have pre-populated) when re-open form.
       this.credDef = {};
       this.credentialFields = {};
       this.alias = "";
@@ -436,7 +430,6 @@ export default {
         this.credDef.schema.schemaAttributeNames &&
         this.credDef.schema.schemaAttributeNames.length > 0
       ) {
-        console.log(this.credentialFields);
         enabled = this.credDef.schema.schemaAttributeNames.some(
           (x) =>
             this.credentialFields[x] &&
@@ -504,7 +497,6 @@ export default {
 
         if (object) {
           let count = 0;
-          // see if we can populate the credential fields...
           for (const x of this.credDef.schema.schemaAttributeNames) {
             if (
               object[x] &&
@@ -555,7 +547,7 @@ export default {
           const array = CSV.parse(data);
           if (array?.length > 1) {
             const names = array[0];
-            const values = array[1]; // only grab first row for now...
+            const values = array[1];
             const namesOk = names.every((value) =>
               textUtils.isValidSchemaAttributeName(value)
             );

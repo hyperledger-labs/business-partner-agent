@@ -283,14 +283,14 @@ export default {
     },
     async issueCredential() {
       let exVersion: ExchangeVersion;
+      let document: any = {};
+
       if (this.useV2Credential) {
         exVersion = ExchangeVersion.V2;
       }
-      // create an empty document, all empty strings...
-      let document: any = {};
+
       for (const x of this.credDef.schema.schemaAttributeNames)
         document[x] = "";
-      //fill in whatever populated fields we have...
       Object.assign(document, this.credentialFields);
 
       const data: IssueCredentialRequestIndy = {
@@ -329,7 +329,6 @@ export default {
       }
     },
     cancel() {
-      // clear out selected credential definition, will select (or have pre-populated) when re-open form.
       this.credDef = {};
       this.credentialFields = {};
       this.clearExpertLoad();
@@ -349,8 +348,6 @@ export default {
         this.credDef.schema.schemaAttributeNames &&
         this.credDef.schema.schemaAttributeNames.length > 0
       ) {
-        //ok, we have some fields to check.
-        console.log(this.credentialFields);
         enabled = this.credDef.schema.schemaAttributeNames.some(
           (x) =>
             this.credentialFields[x] &&
@@ -418,7 +415,6 @@ export default {
 
         if (object) {
           let count = 0;
-          // see if we can populate the credential fields...
           for (const x of this.credDef.schema.schemaAttributeNames) {
             if (
               object[x] &&
