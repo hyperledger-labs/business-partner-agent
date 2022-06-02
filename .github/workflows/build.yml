@@ -28,8 +28,8 @@ jobs:
       - name: Setup node and install deps
         uses: actions/setup-node@v2
         with:
-          node-version: '16'
-          check-latest: true
+          node-version: '16.15.0'
+          check-latest: false
       - run: npm --prefix frontend ci --no-optional
 
       - name: Setup Java
