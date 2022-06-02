@@ -28,5 +28,8 @@ module.exports = {
   },
   configureWebpack: {
     devtool: "source-map",
+    resolve: {
+      fallback: { stream: false },
+    },
   },
 };
