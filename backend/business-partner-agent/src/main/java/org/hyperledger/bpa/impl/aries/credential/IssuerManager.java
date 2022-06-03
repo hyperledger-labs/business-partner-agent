@@ -266,7 +266,9 @@ public class IssuerManager extends CredentialManagerBase {
      */
     public void handleV1CredentialRequest(@NonNull V1CredentialExchange ex) {
         try {
-            if (Boolean.FALSE.equals(acaPyConfig.getAutoRespondCredentialRequest())) {
+            // only needed when answering to a holder proposal, as the issuer uses the automated
+            // flow via /issue-credential/send
+            if (Boolean.FALSE.equals(acaPyConfig.getAutoRespondCredentialRequest()) && ex.initiatorIsExternal()) {
                 ac.issueCredentialRecordsIssue(ex.getCredentialExchangeId(),
                         V1CredentialIssueRequest.builder().build());
             }
