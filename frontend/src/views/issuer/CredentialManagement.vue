@@ -54,10 +54,11 @@
             class="mx-2"
             v-model="useJsonLd"
             label="JSON-LD"
+            @change="resetDropdownAndIssueButton"
           ></v-switch>
           <v-autocomplete
             :label="$t('view.issueCredentials.cards.action.credDefLabel')"
-            v-model="credDef"
+            v-model="credDefIndyOrSchemaJsonLd"
             item-value="id"
             :items="credDefOrSchemasList"
             return-object
@@ -102,8 +103,8 @@
             </template>
             <IssueCredentialJsonLd
               v-if="!issueOutOfBoundCredential && useJsonLd"
-              :schema-id="schemaJsonLdId"
-              :partner-id="partnerId"
+              :schemaId="schemaJsonLdId"
+              :partnerId="partnerId"
               :open="issueCredentialDialog"
               @success="credentialIssued"
               @cancelled="issueCredentialDialog = false"
@@ -173,9 +174,8 @@ export default {
       issuedCredentials: [],
       partner: {},
       partnerId: "",
-      credDef: {},
+      credDefIndyOrSchemaJsonLd: {},
       credDefId: "",
-      schemaJsonLd: {},
       schemaJsonLdId: "",
       issueCredentialDisabled: true,
       issueCredentialDialog: false,
@@ -217,22 +217,6 @@ export default {
         }
       },
     },
-    // TODO
-    credDefIndyList: {
-      get() {
-        return this.$store.getters.getCredDefSelectList;
-      },
-    },
-    // TODO
-    schemasJsonLdList: {
-      get() {
-        const documentTypes = this.$store.getters.getSchemas;
-
-        return documentTypes.filter(
-          (schema) => schema.type === CredentialTypes.JSON_LD.type
-        );
-      },
-    },
   },
   watch: {
     partner(value) {
@@ -245,17 +229,24 @@ export default {
 
       this.partnerId = value ? value.id : "";
     },
-    credDef(value) {
+    credDefIndyOrSchemaJsonLd(value) {
       this.issueCredentialDisabled =
         !value || !value.id || !this.partner || !this.partner.id;
-      this.credDefId = value ? value.id : "";
-    },
-    schemaJsonLd(value) {
-      // TODO
-      this.schemaJsonLdId = value ? value.id : "";
+
+      const id: string = value ? value.id : "";
+
+      if (this.useJsonLd) {
+        this.schemaJsonLdId = id;
+      } else {
+        this.credDefId = id;
+      }
     },
   },
   methods: {
+    resetDropdownAndIssueButton() {
+      this.credDefIndyOrSchemaJsonLd = {};
+      this.issueCredentialDisabled = true;
+    },
     partnerStateColor(p) {
       return partnerUtils.getPartnerStateColor(p.state);
     },
