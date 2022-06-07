@@ -71,6 +71,8 @@ export type MyDocumentAPI = components["schemas"]["MyDocumentAPI"];
 
 export type AriesCredential = components["schemas"]["AriesCredential"];
 
+export type RuntimeConfig = components["schemas"]["RuntimeConfig"];
+
 // Page response from server
 export class Page<T> {
   size?: number;

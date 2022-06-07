@@ -43,19 +43,6 @@ export const getCredentials = (state: StateBpa) => {
   return state.credentials;
 };
 
-export const getSettingByKey = (state: StateBpa) => (key: string) => {
-  if (
-    state.settings &&
-    Object.prototype.hasOwnProperty.call(state.settings, key)
-  ) {
-    return state.settings[key];
-  }
-};
-
-export const getSettings = (state: StateBpa) => {
-  return state.settings;
-};
-
 export const getProofTemplates = (state: StateBpa) => {
   return state.proofTemplates;
 };

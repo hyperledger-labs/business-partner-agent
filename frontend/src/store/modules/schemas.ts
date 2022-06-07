@@ -12,7 +12,7 @@ import { EventBus } from "@/main";
 import { SchemaApi } from "@/services";
 
 const state: IStateSchemas = {
-  schemas: new Array<any>(),
+  schemas: new Array<SchemaApi>(),
 };
 
 export default {

@@ -101,24 +101,6 @@ export const loadCredentials = async ({ commit }) => {
     });
 };
 
-export const loadSettings = async ({ commit }) => {
-  axios
-    .get(`${apiBaseUrl}/admin/config`)
-    .then((result) => {
-      if (Object.prototype.hasOwnProperty.call(result, "data")) {
-        const settings = result.data;
-        commit({
-          type: "setSettings",
-          settings: settings,
-        });
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-      EventBus.$emit("error", error);
-    });
-};
-
 export const loadProofTemplates = async ({ commit }) => {
   proofTemplateService
     .getProofTemplates()

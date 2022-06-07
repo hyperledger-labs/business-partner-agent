@@ -9,7 +9,7 @@
 import "@/assets/scss/style.scss";
 
 import Vue from "vue";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import VueNativeSock from "vue-native-websocket";
 import App from "./App.vue";
 import i18n from "./plugins/i18n";
@@ -22,6 +22,7 @@ import "@/filters";
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
 import vue_moment from "vue-moment";
+import { RuntimeConfig, settingsService } from "@/services";
 
 Vue.component("vue-json-pretty", VueJsonPretty);
 
@@ -84,11 +85,14 @@ Vue.prototype.$config = {
 // We need to load the configuration before the Vue application, so we can use the UX configuration
 (async () => {
   console.log("Loading configuration...");
-  const result = await axios
-    .get(`${apiBaseUrl}/admin/config`)
-    .catch((error) => {
-      console.error(error);
-    });
+
+  let result: AxiosResponse<RuntimeConfig>;
+
+  try {
+    result = await settingsService.getSettingsRuntimeConfig();
+  } catch (error) {
+    console.error(error);
+  }
 
   if (Object.prototype.hasOwnProperty.call(result, "data")) {
     // @ts-ignore

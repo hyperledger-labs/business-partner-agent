@@ -18,6 +18,7 @@ import {
   taa,
   credDefSelectList,
   schemas,
+  settings,
 } from "@/store/modules";
 
 Vue.use(Vuex);
@@ -56,9 +57,6 @@ const store = new Vuex.Store({
     setExpertMode(state: StateBpa, payload) {
       state.expertMode = payload.isExpert;
     },
-    setSettings(state: StateBpa, payload) {
-      state.settings = payload.settings;
-    },
     setProofTemplates(state: StateBpa, payload) {
       state.proofTemplates = payload.proofTemplates;
     },
@@ -74,6 +72,7 @@ const store = new Vuex.Store({
     notifications,
     credDefSelectList,
     schemas,
+    settings,
   },
 });
 
