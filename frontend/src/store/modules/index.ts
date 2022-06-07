@@ -10,3 +10,4 @@ export { default as notifications } from "./notifications";
 export { default as socketEvents } from "./socket-events";
 export { default as taa } from "./taa";
 export { default as credDefSelectList } from "./cred-def-select-list";
+export { default as schemas } from "./schemas";

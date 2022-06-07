@@ -17,6 +17,7 @@ import {
   socketEvents,
   taa,
   credDefSelectList,
+  schemas,
 } from "@/store/modules";
 
 Vue.use(Vuex);
@@ -26,7 +27,6 @@ const state: StateBpa = {
   editedDocument: {}, //document currently being edited
   documents: [],
   credentials: [],
-  schemas: [],
   proofTemplates: [],
   tags: [],
   partnerSelectList: [],
@@ -48,9 +48,6 @@ const store = new Vuex.Store({
     },
     loadPartnersFinished(state: StateBpa, payload) {
       state.partners = payload.partners;
-    },
-    setSchemas(state: StateBpa, payload) {
-      state.schemas = payload.schemas;
     },
     setTags(state: StateBpa, payload) {
       console.log(payload.tags);
@@ -76,6 +73,7 @@ const store = new Vuex.Store({
     messages,
     notifications,
     credDefSelectList,
+    schemas,
   },
 });
 

@@ -39,67 +39,9 @@ export const getPartnerByDID = (state: StateBpa) => (did) => {
   });
 };
 
-export const getSchemas = (state: StateBpa) => {
-  return state.schemas;
-};
-
 export const getCredentials = (state: StateBpa) => {
   return state.credentials;
 };
-
-export const getSchemaBasedSchemas = (state: StateBpa) => {
-  return state.schemas.filter((schema) => {
-    return (
-      schema.type === CredentialTypes.INDY.type ||
-      schema.type === CredentialTypes.JSON_LD.type
-    );
-  });
-};
-
-export const getSchemaById = (state: StateBpa) => (schemaId) => {
-  if (!schemaId) {
-    return;
-  }
-  return state.schemas.find((schema) => {
-    return schema.schemaId === schemaId;
-  });
-};
-
-export const getSchemaByType = (state: StateBpa) => (schemaType) => {
-  if (!schemaType) {
-    return;
-  }
-  return state.schemas.find((schema) => {
-    return schema.type === schemaType;
-  });
-};
-
-export const getSchemaLabel =
-  (state: StateBpa) => (typeName: string, schemaId: string) => {
-    let schemaType = { label: "" };
-    if (schemaId) {
-      schemaType = state.schemas.find((schema) => {
-        return schema.schemaId === schemaId;
-      });
-    } else if (typeName) {
-      schemaType = state.schemas.find((schema) => {
-        return schema.type === typeName;
-      });
-    }
-
-    if (
-      schemaType &&
-      Object.prototype.hasOwnProperty.call(schemaType, "label")
-    ) {
-      return schemaType.label;
-    }
-
-    if (schemaId) {
-      //Maybe in backend get label for schemaId
-      return schemaId;
-    }
-    return "";
-  };
 
 export const getSettingByKey = (state: StateBpa) => (key: string) => {
   if (

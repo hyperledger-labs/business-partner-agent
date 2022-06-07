@@ -12,13 +12,16 @@ export interface StateBpa {
   editedDocument: any;
   documents: any[];
   credentials: [];
-  schemas: any[];
   proofTemplates: [];
   tags: [];
   partnerSelectList: [];
   busyStack: number;
   expertMode: boolean;
   settings: any;
+}
+
+export interface IStateSchemas {
+  schemas: any[];
 }
 
 export interface IStateCredDefSelectList {

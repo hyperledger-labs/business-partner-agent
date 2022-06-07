@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-import { CredentialTypes, PartnerStates } from "@/constants";
+import { PartnerStates } from "@/constants";
 import { EventBus, axios, apiBaseUrl } from "../main";
 import { getPartnerProfile } from "@/utils/partnerUtils";
 import adminService from "@/services/admin-service";
@@ -18,40 +18,6 @@ import {
   ProofTemplate,
 } from "@/services";
 import { AxiosResponse } from "axios";
-
-export const loadSchemas = async ({ commit }) => {
-  adminService
-    .listSchemas()
-    .then((result) => {
-      const schemas = result.data;
-      schemas.map((schema) => {
-        if (Object.prototype.hasOwnProperty.call(schema, "schemaId")) {
-          if (schema.type === CredentialTypes.INDY.type) {
-            schema.type = CredentialTypes.INDY.type;
-          } else if (schema.type === CredentialTypes.JSON_LD.type) {
-            schema.type = CredentialTypes.JSON_LD.type;
-          }
-        } else if (
-          !Object.prototype.hasOwnProperty.call(schema, "schemaId") &&
-          !Object.prototype.hasOwnProperty.call(schema, "type")
-        ) {
-          schema.type = CredentialTypes.UNKNOWN.type;
-        }
-        schema.canIssue =
-          Array.isArray(schema.credentialDefinitions) &&
-          schema.credentialDefinitions.length > 0;
-      });
-      schemas.unshift(CredentialTypes.PROFILE);
-      commit({
-        type: "setSchemas",
-        schemas: schemas,
-      });
-    })
-    .catch((error) => {
-      console.error(error);
-      EventBus.$emit("error", error);
-    });
-};
 
 export const loadTags = async ({ commit }) => {
   adminService
