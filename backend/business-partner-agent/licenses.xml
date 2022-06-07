@@ -20,7 +20,12 @@
                 <name>The MIT License</name>
                 <name>The MIT License (MIT)</name>
                 <name>MIT License</name>
+                <name>MIT-0</name>
             </names>
+            <urls>
+                <url>https://spdx.org/licenses/MIT.html</url>
+                <url>https://spdx.org/licenses/MIT-0.html</url>
+            </urls>
         </license>
         <license>
             <name>Creative Commons</name>

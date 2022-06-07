@@ -36,8 +36,9 @@ notify-revocation: true
 monitor-revocation-notification: true
 
 # interoperability with other w3c wallets
+# set to false if you experience connection issues with older (mobile) wallets
 emit-new-didcomm-prefix: true
-emit-new-didcomm-mime-type: true # if true not backwards compatible with aca-py < 0.7.3
+emit-new-didcomm-mime-type: true # if true, not backwards compatible with aca-py < 0.7.3
 
 # general aca-py config
 enable-undelivered-queue: true
