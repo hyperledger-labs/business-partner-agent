@@ -34,10 +34,10 @@ import java.util.Map;
 public class ProofPayloadConverter extends
         BasePayloadConverter<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>, VerifiablePresentation<VerifiableCredential>> {
 
-    public static final TypeReference<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>> INDY_TYPE = new TypeReference<>() {
+    private static final TypeReference<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>> INDY_TYPE = new TypeReference<>() {
     };
 
-    public static final TypeReference<VerifiablePresentation<VerifiableCredential>> LD_TYPE = new TypeReference<>() {
+    private static final TypeReference<VerifiablePresentation<VerifiableCredential>> LD_TYPE = new TypeReference<>() {
     };
 
     @Override
@@ -52,7 +52,7 @@ public class ProofPayloadConverter extends
             JsonNode node = mapper.readValue(persistedValue, JsonNode.class);
             if (node.has("verifiableCredential")) {
                 VerifiablePresentation<VerifiableCredential> ld = mapper.convertValue(node, LD_TYPE);
-                b.ldProof(ld);
+                b.jsonLD(ld);
                 b.type(CredentialType.JSON_LD);
             } else {
                 Map<String, PresentationExchangeRecord.RevealedAttributeGroup> indy = mapper.convertValue(node,

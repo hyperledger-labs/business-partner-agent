@@ -98,7 +98,7 @@ public class LabelStrategy {
             @Nullable ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> ldCredential) {
         String result = null;
         if (ldCredential != null && ldCredential.typeIsJsonLd()) {
-            V20CredExRecordByFormat.LdProof ldProof = ldCredential.getLdProof();
+            V20CredExRecordByFormat.LdProof ldProof = ldCredential.getJsonLD();
             String schemaId = LDContextHelper.findSchemaId(ldProof);
             if (StringUtils.isNotEmpty(schemaId)) {
                 Optional<String> defaultAttribute = findDefaultAttribute(schemaId);

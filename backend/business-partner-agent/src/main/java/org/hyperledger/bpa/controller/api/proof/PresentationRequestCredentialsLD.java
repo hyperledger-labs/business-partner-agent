@@ -26,6 +26,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PresentationRequestCredentialsDif {
+public class PresentationRequestCredentialsLD {
     private boolean match;
 }

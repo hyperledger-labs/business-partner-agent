@@ -63,7 +63,7 @@ public class AriesCredential {
         } else if (c.typeIsJsonLd()) {
             b
                     .schemaId(LDContextHelper.findSchemaId(
-                            c.exchangePayloadByState() != null ? c.exchangePayloadByState().getLdProof() : null))
+                            c.exchangePayloadByState() != null ? c.exchangePayloadByState().getJsonLD() : null))
                     .revocable(false) // not supported with ld-credentials
             ;
         }

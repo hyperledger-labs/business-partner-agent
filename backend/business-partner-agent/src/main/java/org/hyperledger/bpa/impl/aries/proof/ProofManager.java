@@ -233,7 +233,7 @@ public class ProofManager {
 
     // TODO aggregate the result into a model that adheres to some basic dif proof
     // exchange functionality
-    public List<VerifiableCredential.VerifiableCredentialMatch> getMatchingDifCredentials(
+    public List<VerifiableCredential.VerifiableCredentialMatch> getMatchingLDCredentials(
             @NonNull UUID partnerProofId) {
         PartnerProof partnerProof = pProofRepo.findById(partnerProofId).orElseThrow(EntityNotFoundException::new);
         try {

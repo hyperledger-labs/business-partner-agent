@@ -59,7 +59,7 @@ export default {
     id: string
   ): Promise<AxiosResponse<PresentationRequestCredentialsDif>> {
     return appAxios().get(
-      `${ApiRoutes.PROOF_EXCHANGES}/${id}/matching-credentials-dif`
+      `${ApiRoutes.PROOF_EXCHANGES}/${id}/matching-credentials-ld`
     );
   },
 

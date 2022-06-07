@@ -258,7 +258,7 @@ public class Converter {
                                     .build()));
                     proofData = mapper.convertValue(collect, JsonNode.class);
                 } else if (p.typeIsJsonLd()) {
-                    VerifiablePresentation<VerifiableCredential> vp = p.getProof().getLdProof();
+                    VerifiablePresentation<VerifiableCredential> vp = p.getProof().getJsonLD();
                     Map<String, AriesProofExchange.RevealedAttributeGroup> collect = vp.getPresentationSubmission()
                             .getDescriptorMap().stream().map(sub -> {
                                 VerifiableCredential vc = vp.getVerifiableCredential().get(sub.getPathAsIndex());
@@ -278,8 +278,8 @@ public class Converter {
             proofData = p.getProof() != null ? mapper.convertValue(p.getProof(), JsonNode.class) : null;
         }
 
-        if (p.typeIsJsonLd() && p.getProofRequest() != null && p.getProofRequest().getLdProof() != null) {
-            proof.setProofRequest(LDConverter.difToIndyProofRequest(p.getProofRequest().getLdProof()));
+        if (p.typeIsJsonLd() && p.getProofRequest() != null && p.getProofRequest().getJsonLD() != null) {
+            proof.setProofRequest(LDConverter.difToIndyProofRequest(p.getProofRequest().getJsonLD()));
         }
 
         proof.setProofData(proofData);

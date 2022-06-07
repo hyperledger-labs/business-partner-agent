@@ -170,21 +170,21 @@ public class BPACredentialExchange
 
     public @io.micronaut.core.annotation.NonNull Map<String, String> proposalAttributesToMap() {
         if (typeIsJsonLd()) {
-            return ldAttributesToMap(credentialProposal != null ? credentialProposal.getLdProof() : null);
+            return ldAttributesToMap(credentialProposal != null ? credentialProposal.getJsonLD() : null);
         }
         return indyAttributesToMap(credentialProposal != null ? credentialProposal.getIndy() : null);
     }
 
     public @io.micronaut.core.annotation.NonNull Map<String, String> offerAttributesToMap() {
         if (typeIsJsonLd()) {
-            return ldAttributesToMap(credentialOffer != null ? credentialOffer.getLdProof() : null);
+            return ldAttributesToMap(credentialOffer != null ? credentialOffer.getJsonLD() : null);
         }
         return indyAttributesToMap(credentialOffer != null ? credentialOffer.getIndy() : null);
     }
 
     public @io.micronaut.core.annotation.NonNull Map<String, String> credentialAttributesToMap() {
         if (typeIsJsonLd()) {
-            return ldAttributesToMap(ldCredential != null ? ldCredential.getLdProof() : null);
+            return ldAttributesToMap(ldCredential != null ? ldCredential.getJsonLD() : null);
         }
         // TODO fallback to credential
         if (indyCredential == null || CollectionUtils.isEmpty(indyCredential.getAttrs())) {

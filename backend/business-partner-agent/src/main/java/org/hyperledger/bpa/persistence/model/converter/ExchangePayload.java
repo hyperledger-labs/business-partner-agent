@@ -34,16 +34,16 @@ public class ExchangePayload<I, L> implements ExchangeTypeTranslator {
 
     private CredentialType type;
     private I indy;
-    private L ldProof;
+    private L jsonLD;
 
     public static <I, L> ExchangePayload<I, L> indy(I indy) {
         ExchangePayload.ExchangePayloadBuilder<I, L> b = ExchangePayload.builder();
         return b.indy(indy).type(CredentialType.INDY).build();
     }
 
-    public static <I, L> ExchangePayload<I, L> jsonLD(L ldProof) {
+    public static <I, L> ExchangePayload<I, L> jsonLD(L jsonLD) {
         ExchangePayload.ExchangePayloadBuilder<I, L> b = ExchangePayload.builder();
-        return b.ldProof(ldProof).type(CredentialType.JSON_LD).build();
+        return b.jsonLD(jsonLD).type(CredentialType.JSON_LD).build();
     }
 
     public static ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest> buildForProofRequest(

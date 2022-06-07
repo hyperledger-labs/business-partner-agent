@@ -36,7 +36,7 @@ public abstract class BasePayloadConverter<I, L> implements AttributeConverter<E
         }
         try {
             if (entityValue.typeIsJsonLd()) {
-                return mapper.writeValueAsString(entityValue.getLdProof());
+                return mapper.writeValueAsString(entityValue.getJsonLD());
             }
             return mapper.writeValueAsString(entityValue.getIndy());
         } catch (JsonProcessingException e) {

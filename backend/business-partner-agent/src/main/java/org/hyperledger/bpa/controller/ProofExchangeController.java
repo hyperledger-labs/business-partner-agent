@@ -40,7 +40,7 @@ import org.hyperledger.bpa.controller.api.partner.ApproveProofRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.controller.api.partner.SendProofRequest;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsIndy;
-import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsDif;
+import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsLD;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
 
 import javax.validation.Valid;
@@ -74,11 +74,11 @@ public class ProofExchangeController {
         return HttpResponse.ok(mc);
     }
 
-    @Get("/{id}/matching-credentials-dif")
-    public HttpResponse<PresentationRequestCredentialsDif> getMatchingDifCredentials(@PathVariable UUID id) {
-        List<VerifiableCredential.VerifiableCredentialMatch> mc = proofM.getMatchingDifCredentials(id);
+    @Get("/{id}/matching-credentials-ld")
+    public HttpResponse<PresentationRequestCredentialsLD> getMatchingLDCredentials(@PathVariable UUID id) {
+        List<VerifiableCredential.VerifiableCredentialMatch> mc = proofM.getMatchingLDCredentials(id);
         return HttpResponse
-                .ok(PresentationRequestCredentialsDif.builder().match(CollectionUtils.isNotEmpty(mc)).build());
+                .ok(PresentationRequestCredentialsLD.builder().match(CollectionUtils.isNotEmpty(mc)).build());
     }
 
     /**

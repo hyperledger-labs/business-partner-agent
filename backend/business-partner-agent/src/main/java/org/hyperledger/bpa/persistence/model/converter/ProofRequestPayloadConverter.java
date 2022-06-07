@@ -31,7 +31,7 @@ import org.hyperledger.bpa.api.CredentialType;
 public class ProofRequestPayloadConverter extends
         BasePayloadConverter<PresentProofRequest.ProofRequest, V2DIFProofRequest> {
 
-    public static final TypeReference<V2DIFProofRequest> DIF_TYPE = new TypeReference<>() {
+    private static final TypeReference<V2DIFProofRequest> LD_TYPE = new TypeReference<>() {
     };
 
     @Override
@@ -46,8 +46,8 @@ public class ProofRequestPayloadConverter extends
             JsonNode node = mapper.readValue(persistedValue, JsonNode.class);
             if (node.has("presentationDefinition")) {
                 V2DIFProofRequest dif = mapper
-                        .convertValue(node, DIF_TYPE);
-                b.ldProof(dif);
+                        .convertValue(node, LD_TYPE);
+                b.jsonLD(dif);
                 b.type(CredentialType.JSON_LD);
             } else {
                 PresentProofRequest.ProofRequest indy = mapper.convertValue(node,

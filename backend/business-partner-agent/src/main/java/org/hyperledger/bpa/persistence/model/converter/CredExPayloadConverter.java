@@ -48,7 +48,7 @@ public class CredExPayloadConverter extends
             } else if (node.has("credential")) {
                 V20CredExRecordByFormat.LdProof ldProof = mapper.convertValue(node,
                         V20CredExRecordByFormat.LdProof.class);
-                b.ldProof(ldProof);
+                b.jsonLD(ldProof);
                 b.type(CredentialType.JSON_LD);
             }
         } catch (JsonProcessingException e) {

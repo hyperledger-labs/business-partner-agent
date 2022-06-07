@@ -170,7 +170,7 @@ public class VPManager {
     }
 
     private VerifiableIndyCredential buildFromLDCredential(@NonNull BPACredentialExchange cred) {
-        VerifiableCredential vc = Objects.requireNonNull(cred.getLdCredential()).getLdProof().getCredential();
+        VerifiableCredential vc = Objects.requireNonNull(cred.getLdCredential()).getJsonLD().getCredential();
 
         List<Object> ctx = new ArrayList<>(vc.getContext());
         ctx.add(ApiConstants.LABELED_CREDENTIAL_SCHEMA);
