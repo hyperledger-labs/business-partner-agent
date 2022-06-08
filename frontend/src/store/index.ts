@@ -33,7 +33,6 @@ const state: StateBpa = {
   partnerSelectList: [],
   busyStack: 0,
   expertMode: false,
-  settings: {},
 };
 
 const store = new Vuex.Store({

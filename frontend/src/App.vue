@@ -13,42 +13,44 @@
       :disable-resize-watcher="hideSidebar"
     >
       <v-list dense>
-        <router-link tag="span" :to="{ name: 'Dashboard' }">
-          <v-list-item
-            v-if="ux.navigation.avatar.agent.enabled"
-            two-line
-            class="pl-3 mt-n2 logo"
-          >
-            <v-list-item-content>
-              <v-list-item-title v-if="ux.navigation.avatar.agent.default">
-                <v-img
-                  v-if="logo"
-                  contain
-                  max-height="100"
-                  max-width="228"
-                  :src="logo"
-                ></v-img>
-                <v-img
-                  v-else
-                  contain
-                  max-height="100"
-                  max-width="228"
-                  src="@/assets/logo_default.svg"
-                ></v-img>
-              </v-list-item-title>
-              <v-list-item-title v-else>
-                <v-img
-                  contain
-                  max-height="100"
-                  max-width="228"
-                  :src="ux.navigation.avatar.agent.src"
-                ></v-img
-              ></v-list-item-title>
-              <v-list-item-subtitle class="mt-2 text-wrap nav-display-name">{{
-                getNavDisplayName
-              }}</v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
+        <router-link :to="{ name: 'Dashboard' }" custom v-slot="{ navigate }">
+          <span @click="navigate" @keypress.enter="navigate" role="link">
+            <v-list-item
+              v-if="ux.navigation.avatar.agent.enabled"
+              two-line
+              class="pl-3 mt-n2 logo"
+            >
+              <v-list-item-content>
+                <v-list-item-title v-if="ux.navigation.avatar.agent.default">
+                  <v-img
+                    v-if="logo"
+                    contain
+                    max-height="100"
+                    max-width="228"
+                    :src="logo"
+                  ></v-img>
+                  <v-img
+                    v-else
+                    contain
+                    max-height="100"
+                    max-width="228"
+                    src="@/assets/logo_default.svg"
+                  ></v-img>
+                </v-list-item-title>
+                <v-list-item-title v-else>
+                  <v-img
+                    contain
+                    max-height="100"
+                    max-width="228"
+                    :src="ux.navigation.avatar.agent.src"
+                  ></v-img
+                ></v-list-item-title>
+                <v-list-item-subtitle class="mt-2 text-wrap nav-display-name">{{
+                  getNavDisplayName
+                }}</v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </span>
         </router-link>
         <v-list-item v-if="expertMode" link :to="{ name: 'Identity' }">
           <v-list-item-action>

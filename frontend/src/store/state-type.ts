@@ -16,7 +16,6 @@ export interface StateBpa {
   partnerSelectList: [];
   busyStack: number;
   expertMode: boolean;
-  settings: any;
 }
 
 export interface IStateSchemas {

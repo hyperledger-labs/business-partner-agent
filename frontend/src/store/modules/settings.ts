@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-import { IStateSettings, StateBpa } from "@/store/state-type";
+import { IStateSettings } from "@/store/state-type";
 import { RuntimeConfig, settingsService } from "@/services";
 import { EventBus } from "@/main";
 
@@ -45,7 +45,7 @@ export default {
     },
   },
   mutations: {
-    setSettings: (state: StateBpa, settings: RuntimeConfig) => {
+    setSettings: (state: IStateSettings, settings: RuntimeConfig) => {
       state.settings = settings;
     },
   },
