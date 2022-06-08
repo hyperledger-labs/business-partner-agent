@@ -12,3 +12,4 @@ export { default as taa } from "./taa";
 export { default as credDefSelectList } from "./cred-def-select-list";
 export { default as schemas } from "./schemas";
 export { default as settings } from "./settings";
+export { default as partners } from "./partners";

@@ -7,7 +7,6 @@
  */
 import { PartnerStates } from "@/constants";
 import { EventBus, axios, apiBaseUrl } from "../main";
-import { getPartnerProfile } from "@/utils/partnerUtils";
 import adminService from "@/services/admin-service";
 import proofTemplateService from "@/services/proof-template-service";
 import partnerService from "@/services/partner-service";
@@ -29,29 +28,6 @@ export const loadTags = async ({ commit }) => {
         type: "setTags",
         tags: tags,
       });
-    })
-    .catch((error) => {
-      console.error(error);
-      EventBus.$emit("error", error);
-    });
-};
-
-export const loadPartners = async ({ commit }) => {
-  axios
-    .get(`${apiBaseUrl}/partners`)
-    .then((result) => {
-      if (Object.prototype.hasOwnProperty.call(result, "data")) {
-        let partners = result.data;
-        partners = partners.map((partner) => {
-          partner.profile = getPartnerProfile(partner);
-          return partner;
-        });
-
-        commit({
-          type: "loadPartnersFinished",
-          partners: partners,
-        });
-      }
     })
     .catch((error) => {
       console.error(error);
@@ -120,7 +96,7 @@ export const loadProofTemplates = async ({ commit }) => {
 
 export const loadPartnerSelectList = async ({ commit }) => {
   partnerService
-    .listPartners()
+    .getPartners()
     .then((result) => {
       if (result.status === 200) {
         // filter out partners that are only at the invitation stage, we can't do anything until they accept.

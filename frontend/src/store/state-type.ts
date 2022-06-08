@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-import { CredDef, RuntimeConfig } from "@/services";
+import { CredDef, PartnerAPI, RuntimeConfig } from "@/services";
 
 export interface StateBpa {
   partners: any[];
@@ -26,6 +26,10 @@ export interface IStateSchemas {
 
 export interface IStateCredDefSelectList {
   credDefSelectList: CredDef[];
+}
+
+export interface IStatePartners {
+  partners: PartnerAPI[];
 }
 
 export interface IStateSettings {

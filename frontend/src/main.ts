@@ -9,7 +9,7 @@
 import "@/assets/scss/style.scss";
 
 import Vue from "vue";
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import VueNativeSock from "vue-native-websocket";
 import App from "./App.vue";
 import i18n from "./plugins/i18n";
@@ -72,7 +72,6 @@ Vue.use(VueNativeSock, socketApi, {
   },
 });
 
-Vue.prototype.$axios = axios;
 Vue.prototype.$apiBaseUrl = apiBaseUrl;
 Vue.config.productionTip = false;
 Vue.prototype.$config = {
@@ -95,12 +94,10 @@ Vue.prototype.$config = {
   }
 
   if (Object.prototype.hasOwnProperty.call(result, "data")) {
-    // @ts-ignore
     Vue.prototype.$config = result?.data;
     const ledgerPrefix = Vue.prototype.$config.ledgerPrefix;
     const splitted = ledgerPrefix.split(":");
     Vue.prototype.$config.ledger = splitted[splitted.length - 2];
-    // @ts-ignore
     if (result?.data.ux) {
       Object.assign(Vue.prototype.$config.ux, result.data.ux);
       console.log("...Configuration loaded");
@@ -114,38 +111,13 @@ Vue.prototype.$config = {
     `i18n.locale = ${i18n.locale}, i18n.fallbackLocale = ${i18n.fallbackLocale}`
   );
 
-  Vue.prototype.$axiosErrorMessage = function (error: any) {
-    console.error(error);
-    if (!error) return "";
-    // exceptions thrown from micronaut (ex. WrongApiUsageExceptionHandler)
-    // will have the detail message in err.response.data._embedded.errors[N].message
-    // check there first
-    if (Array.isArray(error.response?.data?._embedded?.errors)) {
-      return error.response?.data?._embedded?.errors
-        .map((x: any) => x.message)
-        .join(" ");
-    }
-    // what other error message structures will we encounter?
-    // add logic here...
-
-    // controller returning something like HttpResponse.notFound() sets err.message = "Request failed with status code 404"
-    // but in err.response.statusText is a bit more understandable... "Not Found"
-    // do we want to use the status text before the default message?
-    if (error.response) {
-      return i18n.t("error.axios", { statusText: error.response.statusText });
-    }
-    if (error.message) return error.message;
-    return error.toString();
-  };
-
-  store.dispatch("loadSettings");
-  store.dispatch("loadSchemas");
-  store.dispatch("loadPartners");
-  store.dispatch("loadTags");
-  store.dispatch("loadProofTemplates");
-  // lists for Dropdowns/Selects...
-  store.dispatch("loadPartnerSelectList");
-  store.dispatch("loadCredDefSelectList");
+  await store.dispatch("loadSettings");
+  await store.dispatch("loadSchemas");
+  await store.dispatch("loadPartners");
+  await store.dispatch("loadTags");
+  await store.dispatch("loadProofTemplates");
+  await store.dispatch("loadPartnerSelectList");
+  await store.dispatch("loadCredDefSelectList");
 
   console.log("Create the Vue application");
   new Vue({

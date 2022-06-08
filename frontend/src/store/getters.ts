@@ -25,20 +25,6 @@ export const getOrganizationalProfile = (state: StateBpa) => {
   return documents.length === 1 ? documents[0] : undefined;
 };
 
-export const getPartners = (state: StateBpa) => {
-  return state.partners;
-};
-
-export const partnersCount = (state: StateBpa) => {
-  return state.partners ? state.partners.length : 0;
-};
-
-export const getPartnerByDID = (state: StateBpa) => (did) => {
-  return state.partners.find((partner) => {
-    return partner.did === did;
-  });
-};
-
 export const getCredentials = (state: StateBpa) => {
   return state.credentials;
 };

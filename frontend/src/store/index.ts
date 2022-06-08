@@ -19,6 +19,7 @@ import {
   credDefSelectList,
   schemas,
   settings,
+  partners,
 } from "@/store/modules";
 
 Vue.use(Vuex);
@@ -47,9 +48,6 @@ const store = new Vuex.Store({
     loadCredentialsFinished(state: StateBpa, payload) {
       state.credentials = payload.credentials;
     },
-    loadPartnersFinished(state: StateBpa, payload) {
-      state.partners = payload.partners;
-    },
     setTags(state: StateBpa, payload) {
       console.log(payload.tags);
       state.tags = payload.tags;
@@ -73,6 +71,7 @@ const store = new Vuex.Store({
     credDefSelectList,
     schemas,
     settings,
+    partners,
   },
 });
 
