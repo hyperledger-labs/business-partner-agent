@@ -40,7 +40,7 @@ export type PresentationRequestCredentials =
   components["schemas"]["PresentationRequestCredentialsIndy"];
 
 export type PresentationRequestCredentialsDif =
-  components["schemas"]["PresentationRequestCredentialsDif"];
+  components["schemas"]["PresentationRequestCredentialsLD"];
 
 // Data and response types
 export type SchemaApi = components["schemas"]["SchemaAPI"];
