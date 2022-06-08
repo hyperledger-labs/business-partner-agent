@@ -25,7 +25,6 @@ import {
 Vue.use(Vuex);
 
 const state: StateBpa = {
-  partners: [],
   editedDocument: {}, //document currently being edited
   documents: [],
   credentials: [],

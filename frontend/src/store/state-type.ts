@@ -8,7 +8,6 @@
 import { CredDef, PartnerAPI, RuntimeConfig } from "@/services";
 
 export interface StateBpa {
-  partners: any[];
   editedDocument: any;
   documents: any[];
   credentials: [];
