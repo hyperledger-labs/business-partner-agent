@@ -8,9 +8,34 @@
 import { AxiosResponse } from "axios";
 import { appAxios } from "@/services/interceptors";
 import { ApiRoutes } from "@/constants";
-import { DeclineExchangeRequest } from "@/services/types-services";
+import {
+  AriesCredential,
+  DeclineExchangeRequest,
+  WalletCredentialRequest,
+} from "@/services/types-services";
 
 export default {
+  getCredentialById(id: string): Promise<AxiosResponse<AriesCredential>> {
+    return appAxios().get(`${ApiRoutes.WALLET}/credential/${id}`);
+  },
+
+  deleteCredential(id: string): Promise<AxiosResponse<void>> {
+    return appAxios().delete(`${ApiRoutes.WALLET}/credential/${id}`);
+  },
+
+  updateCredential(
+    id: string,
+    content: WalletCredentialRequest
+  ): Promise<AxiosResponse<void>> {
+    return appAxios().put(`${ApiRoutes.WALLET}/credential/${id}`, content);
+  },
+
+  toggleCredentialVisibility(id: string): Promise<AxiosResponse<void>> {
+    return appAxios().get(
+      `${ApiRoutes.WALLET}/credential/${id}/toggle-visibility`
+    );
+  },
+
   acceptCredentialOffer(id: string): Promise<AxiosResponse<void>> {
     return appAxios().put(`${ApiRoutes.WALLET}/credential/${id}/accept-offer`);
   },

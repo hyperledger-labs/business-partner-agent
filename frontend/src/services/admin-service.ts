@@ -12,8 +12,11 @@ import { AxiosResponse } from "axios";
 import {
   AddSchemaRequest,
   AddTagRequest,
+  AddTrustedIssuerRequest,
   SchemaApi,
   TagApi,
+  TrustedIssuer,
+  UpdateTrustedIssuerRequest,
 } from "@/services/types-services";
 
 export default {
@@ -30,6 +33,36 @@ export default {
 
   deleteSchema(id: string): Promise<AxiosResponse<void>> {
     return appAxios().delete(`${ApiRoutes.ADMIN}/schema/${id}`);
+  },
+
+  deleteTrustedIssuer(
+    id: string,
+    trustedIssuerId: string
+  ): Promise<AxiosResponse<void>> {
+    return appAxios().delete(
+      `${ApiRoutes.ADMIN}/schema/${id}/trustedIssuer/${trustedIssuerId}`
+    );
+  },
+
+  addTrustedIssuer(
+    id: string,
+    data: AddTrustedIssuerRequest
+  ): Promise<AxiosResponse<TrustedIssuer>> {
+    return appAxios().post(
+      `${ApiRoutes.ADMIN}/schema/${id}/trustedIssuer`,
+      data
+    );
+  },
+
+  updateTrustedIssuer(
+    id: string,
+    trustedIssuerId: string,
+    data: UpdateTrustedIssuerRequest
+  ): Promise<AxiosResponse<TrustedIssuer>> {
+    return appAxios().put(
+      `${ApiRoutes.ADMIN}/schema/${id}/trustedIssuer/${trustedIssuerId}`,
+      data
+    );
   },
 
   listTags(): Promise<AxiosResponse<TagApi[]>> {

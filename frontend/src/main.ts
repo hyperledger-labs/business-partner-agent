@@ -9,6 +9,7 @@
 import "@/assets/scss/style.scss";
 
 import Vue from "vue";
+import axios from "axios";
 import { AxiosResponse } from "axios";
 import VueNativeSock from "vue-native-websocket";
 import App from "./App.vue";
@@ -74,6 +75,7 @@ Vue.use(VueNativeSock, socketApi, {
   },
 });
 
+Vue.prototype.$axios = axios;
 Vue.prototype.$apiBaseUrl = apiBaseUrl;
 Vue.config.productionTip = false;
 Vue.prototype.$config = {
@@ -112,6 +114,30 @@ Vue.prototype.$config = {
   console.log(
     `i18n.locale = ${i18n.locale}, i18n.fallbackLocale = ${i18n.fallbackLocale}`
   );
+
+  Vue.prototype.$axiosErrorMessage = function (error: any) {
+    console.error(error);
+    if (!error) return "";
+    // exceptions thrown from micronaut (ex. WrongApiUsageExceptionHandler)
+    // will have the detail message in err.response.data._embedded.errors[N].message
+    // check there first
+    if (Array.isArray(error.response?.data?._embedded?.errors)) {
+      return error.response?.data?._embedded?.errors
+        .map((x: any) => x.message)
+        .join(" ");
+    }
+    // what other error message structures will we encounter?
+    // add logic here...
+
+    // controller returning something like HttpResponse.notFound() sets err.message = "Request failed with status code 404"
+    // but in err.response.statusText is a bit more understandable... "Not Found"
+    // do we want to use the status text before the default message?
+    if (error.response) {
+      return i18n.t("error.axios", { statusText: error.response.statusText });
+    }
+    if (error.message) return error.message;
+    return error.toString();
+  };
 
   await store.dispatch("loadSettings");
   await store.dispatch("loadSchemas");

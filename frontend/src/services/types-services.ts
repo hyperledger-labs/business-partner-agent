@@ -56,6 +56,14 @@ export type BPAStats = components["schemas"]["BPAStats"];
 export type ApiCreateInvitation =
   components["schemas"]["APICreateInvitationResponse"];
 
+export type TrustedIssuer = components["schemas"]["TrustedIssuer"];
+
+export type AddTrustedIssuerRequest =
+  components["schemas"]["AddTrustedIssuerRequest"];
+
+export type UpdateTrustedIssuerRequest =
+  components["schemas"]["UpdateTrustedIssuerRequest"];
+
 export type DIDDocument = components["schemas"]["DIDDocument"];
 
 export type CredDef = components["schemas"]["CredDef"];
@@ -76,6 +84,9 @@ export type PresentationRequestVersion =
 export type MyDocumentAPI = components["schemas"]["MyDocumentAPI"];
 
 export type AriesCredential = components["schemas"]["AriesCredential"];
+
+export type WalletCredentialRequest =
+  components["schemas"]["WalletCredentialRequest"];
 
 export type RuntimeConfig = components["schemas"]["RuntimeConfig"];
 

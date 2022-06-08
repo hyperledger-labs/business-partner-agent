@@ -80,6 +80,7 @@ import { EventBus } from "@/main";
 import Cred from "@/components/Credential.vue";
 import { CredentialTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
+import { walletService } from "@/services";
 
 export default {
   name: "Credential",
@@ -110,8 +111,8 @@ export default {
   methods: {
     getCredential() {
       console.log("Get Credential ID:", this.id);
-      this.$axios
-        .get(`${this.$apiBaseUrl}/wallet/credential/${this.id}`)
+      walletService
+        .getCredentialById(this.id)
         .then((result) => {
           if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.credential = result.data;
@@ -133,16 +134,12 @@ export default {
     saveChanges() {
       const requests = [];
       if (this.credential.isPublic !== this.isPublic) {
-        requests.push(
-          this.$axios.put(
-            `${this.$apiBaseUrl}/wallet/credential/${this.id}/toggle-visibility`
-          )
-        );
+        requests.push(walletService.toggleCredentialVisibility(this.id));
       }
 
       if (this.docChanged) {
         requests.push(
-          this.$axios.put(`${this.$apiBaseUrl}/wallet/credential/${this.id}`, {
+          walletService.updateCredential(this.id, {
             label: this.credential.label,
           })
         );
@@ -176,8 +173,8 @@ export default {
         });
     },
     deleteCredential() {
-      this.$axios
-        .delete(`${this.$apiBaseUrl}/wallet/credential/${this.id}`)
+      walletService
+        .deleteCredential(this.id)
         .then((result) => {
           console.log(result);
           if (result.status === 200) {

@@ -76,6 +76,7 @@
 <script lang="ts">
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
+import { adminService } from "@/services";
 export default {
   components: { VBpaButton },
   props: {
@@ -161,14 +162,13 @@ export default {
     deleteTrustedIssuer(index) {
       let trustedIssuer = this.items[index];
       if (trustedIssuer.id) {
-        this.$axios
-          .delete(
-            `${this.$apiBaseUrl}/admin/schema/${this.schema.id}/trustedIssuer/${trustedIssuer.id}`
-          )
+        adminService
+          .deleteTrustedIssuer(this.schema.id, trustedIssuer.id)
           .then((result) => {
-            console.log(result);
-            this.items.splice(index, 1);
-            this.$emit("changed");
+            if (result.status === 200) {
+              this.items.splice(index, 1);
+              this.$emit("changed");
+            }
           })
           .catch((error) => {
             EventBus.$emit("error", this.$axiosErrorMessage(error));
@@ -198,11 +198,8 @@ export default {
       this.isBusy = true;
       let data = Object.assign({}, trustedIssuer);
       delete data.isEdit;
-      this.$axios
-        .post(
-          `${this.$apiBaseUrl}/admin/schema/${this.schema.id}/trustedIssuer`,
-          data
-        )
+      adminService
+        .addTrustedIssuer(this.schema.id, data)
         .then((result) => {
           console.log(result);
           this.isBusy = false;
@@ -228,11 +225,8 @@ export default {
       let data = Object.assign({}, trustedIssuer);
       delete data.isEdit;
 
-      this.$axios
-        .put(
-          `${this.$apiBaseUrl}/admin/schema/${this.schema.id}/trustedIssuer/${trustedIssuer.id}`,
-          data
-        )
+      adminService
+        .updateTrustedIssuer(this.schema.id, trustedIssuer.id, data)
         .then((result) => {
           console.log(result);
           this.isBusy = false;
