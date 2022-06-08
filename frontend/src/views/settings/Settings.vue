@@ -124,6 +124,7 @@ import { EventBus } from "@/main";
 import TextFieldColorPicker from "@/components/helper/TextFieldColorPicker.vue";
 import i18n from "@/plugins/i18n";
 import { LocaleMetaType } from "@/views/settings/locale-meta-type";
+import { BPAStats, statusService } from "@/services";
 
 export default {
   name: "Settings",
@@ -133,6 +134,7 @@ export default {
   },
   data: () => {
     return {
+      status: {} as BPAStats,
       isLoading: true,
       selectedLocale: {
         locale: i18n.locale,
@@ -245,8 +247,8 @@ export default {
     },
     getStatus() {
       console.log("Getting status...");
-      this.$axios
-        .get(`${this.$apiBaseUrl}/status`)
+      statusService
+        .getStatus()
         .then((result) => {
           console.log(result);
           this.isWelcome = !result.data.profile;
