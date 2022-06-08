@@ -30,7 +30,9 @@ Vue.use(vue_moment);
 // @ts-ignore
 Vue.use(SortUtil);
 
-const apiBaseUrl = process.env.VUE_APP_API_BASE_URL;
+const apiBaseUrl = process.env.VUE_APP_API_BASE_URL
+  ? process.env.VUE_APP_API_BASE_URL
+  : "/api";
 const eventsHost = process.env.VUE_APP_EVENTS_HOST
   ? process.env.VUE_APP_EVENTS_HOST
   : window.location.host;

@@ -56,6 +56,8 @@ export type BPAStats = components["schemas"]["BPAStats"];
 export type ApiCreateInvitation =
   components["schemas"]["APICreateInvitationResponse"];
 
+export type DIDDocument = components["schemas"]["DIDDocument"];
+
 export type CredDef = components["schemas"]["CredDef"];
 
 export type CredEx = components["schemas"]["CredEx"];
