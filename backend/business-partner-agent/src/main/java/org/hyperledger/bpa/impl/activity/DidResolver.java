@@ -74,7 +74,8 @@ public class DidResolver {
      * @param pp {@link PartnerProof}
      */
     @Async
-    public void resolveDid(@NonNull PartnerProof pp, @Nullable List<PresentationExchangeRecord.Identifier> identifiers) {
+    public void resolveDid(@NonNull PartnerProof pp,
+            @Nullable List<PresentationExchangeRecord.Identifier> identifiers) {
         Optional<PresentationExchangeRecord.Identifier> cr = Optional.empty();
         if (CollectionUtils.isNotEmpty(identifiers)) {
             cr = identifiers.stream()

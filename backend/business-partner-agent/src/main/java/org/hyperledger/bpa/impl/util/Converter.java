@@ -114,7 +114,7 @@ public class Converter {
                 try {
                     node = mapper.readTree(c.getCredentialSubject().toString());
                 } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
+                    node = null;
                 }
 
                 boolean verifiedCredential = false;

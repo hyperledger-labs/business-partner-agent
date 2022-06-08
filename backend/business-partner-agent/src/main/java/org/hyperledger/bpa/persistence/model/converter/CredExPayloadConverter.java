@@ -52,7 +52,7 @@ public class CredExPayloadConverter extends
                 b.type(CredentialType.JSON_LD);
             }
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Could not deserialize credential exchange record");
+            throw new ConversionException("Could not deserialize credential exchange record");
         }
         return b.build();
     }

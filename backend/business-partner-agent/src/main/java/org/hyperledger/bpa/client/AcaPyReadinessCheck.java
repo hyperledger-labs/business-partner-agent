@@ -25,11 +25,9 @@ import io.micronaut.management.health.indicator.annotation.Readiness;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.server.AdminStatusReadiness;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 
 @Singleton
 @Readiness
@@ -42,14 +40,13 @@ public class AcaPyReadinessCheck extends AbstractHealthIndicator<Map<String, Str
     @Override
     protected Map<String, String> getHealthInformation() {
         try {
-            Optional<AdminStatusReadiness> status = ac.statusReady();
-            if (status.isPresent() && status.get().isReady()) {
-                this.healthStatus = HealthStatus.UP;
-            } else {
-                this.healthStatus = HealthStatus.DOWN;
-            }
+            ac.statusReady().ifPresentOrElse(status -> {
+                if (status.isReady()) {
+                    this.healthStatus = HealthStatus.UP;
+                }
+            }, () -> this.healthStatus = HealthStatus.DOWN);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            this.healthStatus = HealthStatus.DOWN;
         }
         return null;
     }
