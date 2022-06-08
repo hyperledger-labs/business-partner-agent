@@ -227,10 +227,6 @@ public class Converter {
         return mapper.convertValue(fromValue, type);
     }
 
-    public <T> T fromMap(@NonNull Map<String, Object> fromValue, @NonNull TypeReference<T> type) {
-        return mapper.convertValue(fromValue, type);
-    }
-
     public Optional<String> writeValueAsString(Object value) {
         try {
             return Optional.of(mapper.writeValueAsString(value));
@@ -287,8 +283,8 @@ public class Converter {
     }
 
     public Map<String, PresentationExchangeRecord.RevealedAttributeGroup> revealedAttrsToGroup(
-            Map<String, PresentationExchangeRecord.RevealedAttribute> attrs,
-            List<PresentationExchangeRecord.Identifier> identifier) {
+            @Nullable Map<String, PresentationExchangeRecord.RevealedAttribute> attrs,
+            @Nullable List<PresentationExchangeRecord.Identifier> identifier) {
         Map<String, PresentationExchangeRecord.RevealedAttributeGroup> attrToGroup = new LinkedHashMap<>();
         if (CollectionUtils.isNotEmpty(attrs)) {
             attrs.forEach((k, v) -> attrToGroup.put(k, PresentationExchangeRecord.RevealedAttributeGroup

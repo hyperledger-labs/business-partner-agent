@@ -17,6 +17,8 @@
  */
 package org.hyperledger.bpa.impl.activity;
 
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.scheduling.annotation.Async;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -72,11 +74,14 @@ public class DidResolver {
      * @param pp {@link PartnerProof}
      */
     @Async
-    public void resolveDid(PartnerProof pp, @NonNull List<PresentationExchangeRecord.Identifier> identifiers) {
-        Optional<PresentationExchangeRecord.Identifier> cr = identifiers.stream()
-                .filter(i -> StringUtils.isNotEmpty(i.getSchemaId()))
-                .filter(i -> "commercialregister".equals(AriesStringUtil.schemaGetName(i.getSchemaId())))
-                .findAny();
+    public void resolveDid(@NonNull PartnerProof pp, @Nullable List<PresentationExchangeRecord.Identifier> identifiers) {
+        Optional<PresentationExchangeRecord.Identifier> cr = Optional.empty();
+        if (CollectionUtils.isNotEmpty(identifiers)) {
+            cr = identifiers.stream()
+                    .filter(i -> StringUtils.isNotEmpty(i.getSchemaId()))
+                    .filter(i -> "commercialregister".equals(AriesStringUtil.schemaGetName(i.getSchemaId())))
+                    .findAny();
+        }
         try {
             if (cr.isPresent()) {
                 partnerRepo.findById(pp.getPartnerId()).ifPresent(p -> {
