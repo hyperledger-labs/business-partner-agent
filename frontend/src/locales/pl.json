@@ -538,7 +538,7 @@
       "eventSuccess": "New credential definition added"
     },
     "createSchema": {
-      "title": "Create Schema",
+      "title": "Create Indy Schema",
       "schemaInformation": "Schema Information",
       "labelSchema": "Schema Label",
       "labelName": "Schema Name",
