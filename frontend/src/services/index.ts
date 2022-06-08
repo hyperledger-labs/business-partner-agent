@@ -14,4 +14,5 @@ export { default as proofTemplateService } from "./proof-template-service";
 export { default as jsonLdService } from "./json-ld-service";
 export { default as walletService } from "./wallet-service";
 export { default as settingsService } from "./settings-service";
+export { default as statusService } from "./status-service";
 export * from "./types-services";

@@ -33,6 +33,7 @@ export enum ApiRoutes {
   PROOF_TEMPLATES = "/proof-templates",
   ACTIVITIES = "/activities",
   WALLET = "/wallet",
+  STATUS = "/status",
 }
 
 export enum CredentialExchangeRoles {
