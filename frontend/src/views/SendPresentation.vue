@@ -54,6 +54,7 @@ import { EventBus } from "@/main";
 import MyCredentialList from "@/components/MyCredentialList.vue";
 import VBpaButton from "@/components/BpaButton";
 import { ExchangeVersion } from "@/constants";
+import { partnerService } from "@/services";
 
 export default {
   name: "SendPresentation",
@@ -104,8 +105,8 @@ export default {
       this.isBusy = true;
       const selectedCredential = this.selectedCredentials[0].id;
       if (selectedCredential) {
-        this.$axios
-          .post(`${this.$apiBaseUrl}/partners/${this.id}/proof-send`, {
+        partnerService
+          .sendProof(this.id, {
             myCredentialId: selectedCredential,
             exchangeVersion: this.useV2Exchange
               ? ExchangeVersion.V2

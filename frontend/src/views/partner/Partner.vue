@@ -68,7 +68,7 @@
 
       <v-card-text>
         <template
-          v-if="partner.bpa_state === PartnerStates.CONNECTION_REQUEST_RECEIVED"
+          v-if="partnerBpaState === PartnerStates.CONNECTION_REQUEST_RECEIVED"
         >
           <v-banner two-line>
             <v-avatar slot="icon" color="white" size="40">
@@ -95,7 +95,7 @@
           </v-banner>
         </template>
         <template
-          v-if="partner.bpa_state === PartnerStates.CONNECTION_REQUEST_SENT"
+          v-if="partnerBpaState === PartnerStates.CONNECTION_REQUEST_SENT"
         >
           <v-banner two-line>
             <v-avatar slot="icon" color="white" size="40">
@@ -219,7 +219,6 @@
                 </IssueCredentialIndy>
               </template>
               <template v-slot:json-ld>
-                <!-- TODO -->
                 <IssueCredentialJsonLd
                   :partnerId="id"
                   hide-title
@@ -270,9 +269,9 @@
 import Profile from "@/components/Profile.vue";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator.vue";
 import { CredentialTypes, PartnerStates } from "@/constants";
-import { getPartnerProfile, getPartnerState } from "@/utils/partnerUtils";
+import { getPartnerState } from "@/utils/partnerUtils";
 import { EventBus } from "@/main";
-import { partnerService } from "@/services";
+import { PartnerAPI, partnerService } from "@/services";
 import CredExList from "@/components/CredExList.vue";
 import PresentationExList from "@/components/PresentationExList.vue";
 import UpdatePartner from "@/components/UpdatePartner.vue";
@@ -317,7 +316,11 @@ export default {
       goTo: {},
       alias: "",
       did: "",
-      partner: {},
+      partner: {} as PartnerAPI,
+      partnerBpaState: {
+        value: "",
+        label: "",
+      },
       rawData: {},
       credentials: [],
       presentationExRecords: [],
@@ -331,7 +334,7 @@ export default {
       return this.$store.state.expertMode;
     },
     isActive() {
-      return this.partner.bpa_state === PartnerStates.ACTIVE_OR_RESPONSE;
+      return this.partnerBpaState === PartnerStates.ACTIVE_OR_RESPONSE;
     },
   },
   methods: {
@@ -421,19 +424,14 @@ export default {
     getPartner() {
       console.log("Getting partner...");
       this.isLoading = true;
-      this.$axios
-        .get(`${this.$apiBaseUrl}/partners/${this.id}`)
+      partnerService
+        .getPartnerById(this.id)
         .then((result) => {
           console.log(result);
           if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.rawData = result.data;
-            this.partner = {
-              ...result.data,
-
-              profile: getPartnerProfile(result.data),
-            };
-
-            this.partner.bpa_state = getPartnerState(this.partner);
+            this.partner = result.data;
+            this.partnerBpaState = getPartnerState(this.partner);
             this.alias = this.partner.name;
             this.did = this.partner.did;
             this.isReady = true;
@@ -448,8 +446,8 @@ export default {
         });
     },
     deletePartner() {
-      this.$axios
-        .delete(`${this.$apiBaseUrl}/partners/${this.id}`)
+      partnerService
+        .removePartner(this.id)
         .then((result) => {
           console.log(result);
           if (result.status === 200) {
@@ -468,8 +466,8 @@ export default {
         });
     },
     acceptPartnerRequest() {
-      this.$axios
-        .put(`${this.$apiBaseUrl}/partners/${this.id}/accept`, {})
+      partnerService
+        .acceptPartnerRequest(this.id)
         .then((result) => {
           console.log(result);
           if (result.status === 200) {
@@ -487,8 +485,8 @@ export default {
     },
     refreshPartner() {
       this.isLoading = true;
-      this.$axios
-        .get(`${this.$apiBaseUrl}/partners/${this.id}/refresh`)
+      partnerService
+        .refreshPartner(this.id)
         .then(async (result) => {
           if (
             result.status === 200 &&
@@ -496,11 +494,8 @@ export default {
           ) {
             console.log(result.data);
             this.rawData = result.data;
-            this.partner = {
-              ...result.data,
+            this.partner = result.data;
 
-              profile: getPartnerProfile(result.data),
-            };
             if (
               Object.prototype.hasOwnProperty.call(this.partner, "credential")
             ) {
@@ -510,7 +505,7 @@ export default {
               });
             }
 
-            this.partner.bpa_state = getPartnerState(this.partner);
+            this.partnerBpaState = getPartnerState(this.partner);
             this.alias = this.partner.name;
             this.did = this.partner.did;
             console.log(this.partner);

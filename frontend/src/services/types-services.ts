@@ -29,6 +29,8 @@ export type AddTagRequest = components["schemas"]["AddTagRequest"];
 
 export type SendMessageRequest = components["schemas"]["SendMessageRequest"];
 
+export type SendProofRequest = components["schemas"]["SendProofRequest"];
+
 export type AddSchemaRequest = components["schemas"]["AddSchemaRequest"];
 
 export type UpdatePartnerRequest =

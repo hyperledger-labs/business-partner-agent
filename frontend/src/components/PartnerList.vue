@@ -61,6 +61,7 @@ import { getPartnerState } from "@/utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator.vue";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
 import { CredentialTypes, PartnerStates } from "@/constants";
+import { PartnerAPI, partnerService } from "@/services";
 
 export default {
   name: "PartnerList",
@@ -176,13 +177,9 @@ export default {
 
     fetch() {
       this.$store.dispatch("loadPartnerSelectList");
-      // Query only for partners that can issue credentials of specified schema
-      let queryParameter = "";
-      if (this.onlyIssuersForSchema.length > 0) {
-        queryParameter = `?schemaId=${this.onlyIssuersForSchema}`;
-      }
-      this.$axios
-        .get(`${this.$apiBaseUrl}/partners${queryParameter}`)
+
+      partnerService
+        .getPartners(this.onlyIssuersForSchema)
         .then((result) => {
           console.log("Partner List", result);
           if (Object.prototype.hasOwnProperty.call(result, "data")) {
@@ -195,8 +192,11 @@ export default {
             }
 
             this.data = result.data.map((partner) => {
-              partner.address = this.getProfileAddress(partner);
-              return partner;
+              const tempPartner: PartnerAPI & { address: string } = {
+                address: this.getProfileAddress(partner),
+                ...partner,
+              };
+              return tempPartner;
             });
           }
         })
