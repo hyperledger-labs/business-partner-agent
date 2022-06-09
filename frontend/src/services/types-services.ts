@@ -83,6 +83,11 @@ export type PresentationRequestVersion =
 
 export type MyDocumentAPI = components["schemas"]["MyDocumentAPI"];
 
+export type WalletDocumentRequest =
+  components["schemas"]["WalletDocumentRequest"];
+
+export type PaginationCommand = components["schemas"]["PaginationCommand"];
+
 export type AriesCredential = components["schemas"]["AriesCredential"];
 
 export type WalletCredentialRequest =

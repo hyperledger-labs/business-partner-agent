@@ -12,9 +12,9 @@ import proofTemplateService from "@/services/proof-template-service";
 import partnerService from "@/services/partner-service";
 import {
   AriesCredential,
-  MyDocumentAPI,
   Page,
   ProofTemplate,
+  walletService,
 } from "@/services";
 import { AxiosResponse } from "axios";
 
@@ -36,9 +36,9 @@ export const loadTags = async ({ commit }) => {
 };
 
 export const loadDocuments = async ({ commit }) => {
-  axios
-    .get(`${apiBaseUrl}/wallet/document`)
-    .then((result: AxiosResponse<Page<MyDocumentAPI[]>>) => {
+  walletService
+    .getDocuments()
+    .then((result) => {
       commit({
         type: "loadDocumentsFinished",
         documents: result.data.content,

@@ -11,7 +11,11 @@ import { ApiRoutes } from "@/constants";
 import {
   AriesCredential,
   DeclineExchangeRequest,
+  MyDocumentAPI,
+  Page,
+  PaginationCommand,
   WalletCredentialRequest,
+  WalletDocumentRequest,
 } from "@/services/types-services";
 
 export default {
@@ -52,5 +56,44 @@ export default {
       `${ApiRoutes.WALLET}/credential/${id}/decline-offer`,
       body
     );
+  },
+
+  getDocuments(
+    pc?: PaginationCommand
+  ): Promise<AxiosResponse<Page<MyDocumentAPI[]>>> {
+    let query = "";
+
+    if (pc) {
+      query =
+        "?" +
+        Object.keys(pc)
+          .map((key) => key + "=" + pc[key])
+          .join("&");
+    }
+    return appAxios().get(`${ApiRoutes.WALLET}/document${query}`);
+  },
+
+  addDocument(
+    document: WalletDocumentRequest
+  ): Promise<AxiosResponse<MyDocumentAPI>> {
+    return appAxios().post(`${ApiRoutes.WALLET}/document`, document);
+  },
+
+  getDocumentById(documentId: string): Promise<AxiosResponse<MyDocumentAPI>> {
+    return appAxios().get(`${ApiRoutes.WALLET}/document/${documentId}`);
+  },
+
+  updateDocument(
+    documentId: string,
+    document: WalletDocumentRequest
+  ): Promise<AxiosResponse<MyDocumentAPI>> {
+    return appAxios().put(
+      `${ApiRoutes.WALLET}/document/${documentId}`,
+      document
+    );
+  },
+
+  deleteDocument(documentId: string): Promise<AxiosResponse<void>> {
+    return appAxios().delete(`${ApiRoutes.WALLET}/document/${documentId}`);
   },
 };

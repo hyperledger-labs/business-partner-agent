@@ -146,6 +146,11 @@ import { CredentialTypes } from "@/constants";
 import OrganizationalProfile from "@/components/OrganizationalProfile.vue";
 import Credential from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
+import {
+  MyDocumentAPI,
+  WalletDocumentRequest,
+  walletService,
+} from "@/services";
 
 export default {
   name: "Document",
@@ -192,7 +197,7 @@ export default {
   },
   data: () => {
     return {
-      document: {},
+      document: {} as MyDocumentAPI,
       intDoc: {},
       isBusy: false,
       isReady: false,
@@ -225,8 +230,8 @@ export default {
   watch: {},
   methods: {
     getDocument() {
-      this.$axios
-        .get(`${this.$apiBaseUrl}/wallet/document/${this.id}`)
+      walletService
+        .getDocumentById(this.id)
         .then((result) => {
           if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.document = result.data;
@@ -247,8 +252,8 @@ export default {
     saveDocument(closeDocument) {
       this.isBusy = true;
       if (this.id) {
-        this.$axios
-          .put(`${this.$apiBaseUrl}/wallet/document/${this.id}`, {
+        walletService
+          .updateDocument(this.id, {
             document: this.document.documentData,
             isPublic: this.document.isPublic,
             label: this.isProfile(this.document.type)
@@ -277,15 +282,15 @@ export default {
 
         // create new document
       } else {
-        const documentForSave = {
+        const documentForSave: WalletDocumentRequest = {
           document: this.$refs.doc.intDoc.documentData,
           label: this.$refs.doc.intDoc.label,
           isPublic: this.document.isPublic,
           type: this.type,
           schemaId: this.schemaId,
         };
-        this.$axios
-          .post(`${this.$apiBaseUrl}/wallet/document`, documentForSave)
+        walletService
+          .addDocument(documentForSave)
           .then((response) => {
             console.log(response);
             this.$emit("received-document-id", {
@@ -306,8 +311,8 @@ export default {
       }
     },
     deleteDocument() {
-      this.$axios
-        .delete(`${this.$apiBaseUrl}/wallet/document/${this.id}`)
+      walletService
+        .deleteDocument(this.id)
         .then((result) => {
           if (result.status === 200) {
             EventBus.$emit(
