@@ -37,7 +37,7 @@ public class AriesStringUtil {
     /**
      * Tests if the provided did is a did:key
      *
-     * @param did
+     * @param did decentralized identifier
      * @return true if did is a did:key, false otherwise
      */
     public static boolean isDidKey(@Nullable String did) {
@@ -52,14 +52,11 @@ public class AriesStringUtil {
     /**
      * Tests if the provided did is a did:indy
      *
-     * @param did
+     * @param did decentralized identifier
      * @return true if did is a did:indy, false otherwise
      */
     public static boolean isDidIndy(@Nullable String did) {
-        if (StringUtils.isNotEmpty(did) && (did.startsWith(DID_INDY) || did.startsWith(DID_SOV))) {
-            return true;
-        }
-        return false;
+        return StringUtils.isNotEmpty(did) && (did.startsWith(DID_INDY) || did.startsWith(DID_SOV));
     }
 
     /**

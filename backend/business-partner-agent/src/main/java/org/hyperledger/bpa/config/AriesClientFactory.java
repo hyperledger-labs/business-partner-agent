@@ -43,12 +43,6 @@ public class AriesClientFactory {
         return AriesClient.builder()
                 .url(url)
                 .apiKey(apiKey)
-                .client(new OkHttpClient.Builder()
-                        .writeTimeout(FIVE, TimeUnit.SECONDS)
-                        .readTimeout(FIVE, TimeUnit.SECONDS)
-                        .connectTimeout(FIVE, TimeUnit.SECONDS)
-                        .callTimeout(FIVE, TimeUnit.SECONDS)
-                        .build())
                 .build();
     }
 }

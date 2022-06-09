@@ -363,6 +363,8 @@ public class HolderManager extends CredentialManagerBase {
         });
     }
 
+    // TODO once aca-py 0.7.4 is released switch this to RevocationInfo to map both
+    // v1 and v2 revocation notifications
     public void handleRevocationNotification(RevocationNotificationEvent revocationNotification) {
         AriesStringUtil.RevocationInfo revocationInfo = AriesStringUtil
                 .revocationEventToRevocationInfo(revocationNotification.getThreadId());

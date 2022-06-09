@@ -15,8 +15,9 @@
         <Logger name="com.zaxxer.hikari" level="warn"/>
         <Logger name="org.flywaydb.core" level="info"/>
         <Logger name="org.hyperledger.bpa" level="debug"/>
-        <Logger name="org.hyperledger.aries" level="trace"/>
         <logger name="org.hyperledger.bpa.impl.aries" level="trace"/>
+        <Logger name="org.hyperledger.aries" level="trace"/>
+        <Logger name="org.hyperledger.aries.BaseClient" level="debug"/> <!-- set to trace to debug rest request payload -->
         <Root level="warn">
             <AppenderRef ref="ConsolePatternAppender"/>
         </Root>
