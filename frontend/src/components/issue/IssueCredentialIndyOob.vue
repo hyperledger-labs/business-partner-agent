@@ -261,9 +261,9 @@
 import Vue from "vue";
 import { EventBus } from "@/main";
 import {
-  ApiCreateInvitation,
   issuerService,
   IssueOobCredentialRequest,
+  APICreateInvitationResponse,
 } from "@/services";
 import VBpaButton from "@/components/BpaButton";
 import * as textUtils from "@/utils/textUtils";
@@ -359,7 +359,7 @@ export default {
 
       this.isLoading = false;
     },
-    async issueOobCredentialOffer(): Promise<ApiCreateInvitation> {
+    async issueOobCredentialOffer(): Promise<APICreateInvitationResponse> {
       let document: any = {};
 
       for (const x of this.credDef.schema.schemaAttributeNames)
@@ -386,7 +386,7 @@ export default {
     async submit() {
       this.isBusy = true;
       try {
-        const oobInvitation: ApiCreateInvitation =
+        const oobInvitation: APICreateInvitationResponse =
           await this.issueOobCredentialOffer();
 
         this.isBusy = false;

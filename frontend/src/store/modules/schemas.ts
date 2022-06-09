@@ -9,10 +9,10 @@ import { IStateSchemas } from "@/store/state-type";
 import { CredentialTypes } from "@/constants";
 import adminService from "@/services/admin-service";
 import { EventBus } from "@/main";
-import { SchemaApi } from "@/services";
+import { SchemaAPI } from "@/services";
 
 const state: IStateSchemas = {
-  schemas: new Array<SchemaApi>(),
+  schemas: new Array<SchemaAPI>(),
 };
 
 export default {
@@ -62,7 +62,7 @@ export default {
     },
   },
   mutations: {
-    setSchemas: (state: IStateSchemas, schemas: SchemaApi[]) => {
+    setSchemas: (state: IStateSchemas, schemas: SchemaAPI[]) => {
       state.schemas = schemas;
     },
   },

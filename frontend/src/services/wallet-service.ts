@@ -34,6 +34,21 @@ export default {
     return appAxios().put(`${ApiRoutes.WALLET}/credential/${id}`, content);
   },
 
+  getCredentials(
+    pc?: PaginationCommand
+  ): Promise<AxiosResponse<Page<AriesCredential[]>>> {
+    let query = "";
+
+    if (pc) {
+      query =
+        "?" +
+        Object.keys(pc)
+          .map((key) => key + "=" + pc[key])
+          .join("&");
+    }
+    return appAxios().get(`${ApiRoutes.WALLET}/credential${query}`);
+  },
+
   toggleCredentialVisibility(id: string): Promise<AxiosResponse<void>> {
     return appAxios().get(
       `${ApiRoutes.WALLET}/credential/${id}/toggle-visibility`

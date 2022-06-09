@@ -47,7 +47,7 @@
 <script lang="ts">
 import ManageSchema from "@/components/ManageSchema.vue";
 import store from "@/store";
-import { SchemaApi } from "@/services";
+import { SchemaAPI } from "@/services";
 import { CredentialTypes } from "@/constants";
 export default {
   props: {
@@ -96,7 +96,7 @@ export default {
     },
   },
   methods: {
-    canIssueSchema(schema: SchemaApi): boolean {
+    canIssueSchema(schema: SchemaAPI): boolean {
       return schema &&
         schema.type &&
         schema.type === CredentialTypes.JSON_LD.type

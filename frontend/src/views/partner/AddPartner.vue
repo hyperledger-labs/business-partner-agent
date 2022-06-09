@@ -245,8 +245,8 @@ export default {
     lookup() {
       this.msg = "";
       this.partnerLoading = true;
-      this.$axios
-        .get(`${this.$apiBaseUrl}/partners/lookup/${this.did}`)
+      partnerService
+        .lookupPartner(this.did)
         .then((result) => {
           this.partnerLoading = false;
           console.log(result);

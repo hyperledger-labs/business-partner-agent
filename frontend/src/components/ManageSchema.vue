@@ -205,7 +205,7 @@ export default {
     },
     deleteSchema() {
       adminService
-        .deleteSchema(this.schema.id)
+        .removeSchema(this.schema.id)
         .then((result) => {
           console.log(result);
           if (result.status === 200) {

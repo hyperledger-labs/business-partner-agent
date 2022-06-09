@@ -45,9 +45,9 @@ export type PresentationRequestCredentials =
   components["schemas"]["PresentationRequestCredentials"];
 
 // Data and response types
-export type SchemaApi = components["schemas"]["SchemaAPI"];
+export type SchemaAPI = components["schemas"]["SchemaAPI"];
 
-export type TagApi = components["schemas"]["TagAPI"];
+export type TagAPI = components["schemas"]["TagAPI"];
 
 export type PartnerAPI = components["schemas"]["PartnerAPI"];
 
@@ -66,9 +66,6 @@ export type CheckInvitationRequest =
   components["schemas"]["CheckInvitationRequest"];
 
 export type BPAStats = components["schemas"]["BPAStats"];
-
-export type ApiCreateInvitation =
-  components["schemas"]["APICreateInvitationResponse"];
 
 export type TrustedIssuer = components["schemas"]["TrustedIssuer"];
 

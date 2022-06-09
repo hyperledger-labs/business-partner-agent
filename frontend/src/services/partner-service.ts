@@ -89,4 +89,8 @@ export default {
   ): Promise<AxiosResponse<AriesProofExchange[]>> {
     return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/proof-exchanges`);
   },
+
+  lookupPartner(did: string): Promise<AxiosResponse<PartnerAPI>> {
+    return appAxios().get(`${ApiRoutes.PARTNERS}/lookup/${did}`);
+  },
 };

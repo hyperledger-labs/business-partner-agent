@@ -13,8 +13,8 @@ import {
   AddSchemaRequest,
   AddTagRequest,
   AddTrustedIssuerRequest,
-  SchemaApi,
-  TagApi,
+  SchemaAPI,
+  TagAPI,
   TrustedIssuer,
   UpdateTrustedIssuerRequest,
 } from "@/services/types-services";
@@ -23,15 +23,19 @@ export default {
   //
   // Admin API
   //
-  listSchemas(): Promise<AxiosResponse<SchemaApi[]>> {
+  listSchemas(): Promise<AxiosResponse<SchemaAPI[]>> {
     return appAxios().get(`${ApiRoutes.ADMIN}/schema`);
   },
 
-  addSchema(data: AddSchemaRequest): Promise<AxiosResponse<SchemaApi>> {
+  addSchema(data: AddSchemaRequest): Promise<AxiosResponse<SchemaAPI>> {
     return appAxios().post(`${ApiRoutes.ADMIN}/schema`, data);
   },
 
-  deleteSchema(id: string): Promise<AxiosResponse<void>> {
+  getSchema(id: string): Promise<AxiosResponse<SchemaAPI>> {
+    return appAxios().get(`${ApiRoutes.ADMIN}/schema/${id}`);
+  },
+
+  removeSchema(id: string): Promise<AxiosResponse<void>> {
     return appAxios().delete(`${ApiRoutes.ADMIN}/schema/${id}`);
   },
 
@@ -65,11 +69,11 @@ export default {
     );
   },
 
-  listTags(): Promise<AxiosResponse<TagApi[]>> {
+  listTags(): Promise<AxiosResponse<TagAPI[]>> {
     return appAxios().get(`${ApiRoutes.ADMIN}/tag`);
   },
 
-  addTag(data: AddTagRequest): Promise<AxiosResponse<TagApi>> {
+  addTag(data: AddTagRequest): Promise<AxiosResponse<TagAPI>> {
     return appAxios().post(`${ApiRoutes.ADMIN}/tag`, data);
   },
 

@@ -68,6 +68,7 @@ import { EventBus } from "@/main";
 import TrustedIssuers from "../components/TrustedIssuers.vue";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
+import { adminService } from "@/services";
 export default {
   name: "Schema",
   props: {
@@ -94,8 +95,8 @@ export default {
   methods: {
     fetch() {
       this.isLoading = true;
-      this.$axios
-        .get(`${this.$apiBaseUrl}/admin/schema/${this.id}`)
+      adminService
+        .getSchema(this.id)
         .then((result) => {
           console.log(result);
           if (Object.prototype.hasOwnProperty.call(result, "data")) {
@@ -119,8 +120,8 @@ export default {
         });
     },
     deleteSchema() {
-      this.$axios
-        .delete(`${this.$apiBaseUrl}/admin/schema/${this.id}`)
+      adminService
+        .removeSchema(this.id)
         .then((result) => {
           console.log(result);
           if (result.status === 200) {

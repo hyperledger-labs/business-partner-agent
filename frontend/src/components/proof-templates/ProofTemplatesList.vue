@@ -38,6 +38,7 @@ create new ones
 <script lang="ts">
 import store from "@/store";
 import { EventBus } from "@/main";
+import { proofTemplateService } from "@/services";
 
 export default {
   props: {
@@ -117,8 +118,8 @@ export default {
     deleteProofTemplate(proofTemplate) {
       console.log(JSON.stringify(proofTemplate));
 
-      this.$axios
-        .delete(`${this.$apiBaseUrl}/proof-templates/${proofTemplate.id}`)
+      proofTemplateService
+        .deleteProofTemplate(proofTemplate.id)
         .then((result) => {
           if (result.status === 200) {
             this.$emit("removedItem", proofTemplate.id);

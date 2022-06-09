@@ -10,16 +10,16 @@ import { appAxios } from "@/services/interceptors";
 import { ApiRoutes } from "@/constants";
 import {
   CreateCredDefRequest,
-  SchemaApi,
+  SchemaAPI,
   CreateSchemaRequest,
   CredentialOfferRequest,
   IssueCredentialRequestIndy,
   IssueOobCredentialRequest,
   CredDef,
-  ApiCreateInvitation,
   CredEx,
   Page,
   IssueCredentialRequestJsonLd,
+  APICreateInvitationResponse,
 } from "@/services/types-services";
 import { AxiosResponse } from "axios";
 
@@ -27,7 +27,7 @@ export default {
   //
   // Issuer API
   //
-  createSchema(data: CreateSchemaRequest): Promise<AxiosResponse<SchemaApi>> {
+  createSchema(data: CreateSchemaRequest): Promise<AxiosResponse<SchemaAPI>> {
     return appAxios().post(`${ApiRoutes.ISSUER}/schema`, data);
   },
 
@@ -61,7 +61,7 @@ export default {
    */
   issueOobCredentialOfferCreate(
     data: IssueOobCredentialRequest
-  ): Promise<AxiosResponse<ApiCreateInvitation>> {
+  ): Promise<AxiosResponse<APICreateInvitationResponse>> {
     return appAxios().post(
       `${ApiRoutes.ISSUER}/issue-credential/oob-attachment`,
       data
