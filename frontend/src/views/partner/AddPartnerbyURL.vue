@@ -158,6 +158,7 @@ import { EventBus } from "@/main";
 import QrcodeVue from "qrcode.vue";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
+import { invitationsService } from "@/services";
 export default {
   name: "AddPartnerbyURL",
   components: {
@@ -200,8 +201,8 @@ export default {
         useOutOfBand: this.useOutOfBand,
         usePublicDid: this.useOutOfBand ? this.usePublicDid : undefined,
       };
-      this.$axios
-        .post(`${this.$apiBaseUrl}/invitations`, partnerToAdd)
+      invitationsService
+        .requestConnectionInvitation(partnerToAdd)
         .then((result) => {
           this.invitationURL = result.data.invitationUrl;
 

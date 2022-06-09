@@ -10,6 +10,7 @@ import { appAxios } from "@/services/interceptors";
 import { ApiRoutes } from "@/constants";
 import { AxiosResponse } from "axios";
 import {
+  AddPartnerRequest,
   AriesProofExchange,
   ChatMessage,
   PartnerAPI,
@@ -22,6 +23,10 @@ export default {
   //
   // Partner API
   //
+
+  addPartner(partner: AddPartnerRequest): Promise<AxiosResponse<PartnerAPI>> {
+    return appAxios().post(`${ApiRoutes.PARTNERS}`, partner);
+  },
 
   // Query used only for partners that can issue credentials of specified schema
   getPartners(schemaId?: string): Promise<AxiosResponse<PartnerAPI[]>> {

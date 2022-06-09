@@ -51,6 +51,20 @@ export type TagApi = components["schemas"]["TagAPI"];
 
 export type PartnerAPI = components["schemas"]["PartnerAPI"];
 
+export type AddPartnerRequest = components["schemas"]["AddPartnerRequest"];
+
+export type APICreateInvitationResponse =
+  components["schemas"]["APICreateInvitationResponse"];
+
+export type CreatePartnerInvitationRequest =
+  components["schemas"]["CreatePartnerInvitationRequest"];
+
+export type AcceptInvitationRequest =
+  components["schemas"]["AcceptInvitationRequest"];
+
+export type CheckInvitationRequest =
+  components["schemas"]["CheckInvitationRequest"];
+
 export type BPAStats = components["schemas"]["BPAStats"];
 
 export type ApiCreateInvitation =

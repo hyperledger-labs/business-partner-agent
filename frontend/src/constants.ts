@@ -34,6 +34,7 @@ export enum ApiRoutes {
   ACTIVITIES = "/activities",
   WALLET = "/wallet",
   STATUS = "/status",
+  INVITATIONS = "/invitations",
 }
 
 export enum CredentialExchangeRoles {

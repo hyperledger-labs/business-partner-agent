@@ -207,6 +207,7 @@ import Profile from "@/components/Profile.vue";
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
+import { invitationsService, partnerService } from "@/services";
 
 export default {
   name: "AddPartner",
@@ -291,8 +292,8 @@ export default {
       });
 
       partnerToAdd.trustPing = this.trustPing;
-      this.$axios
-        .post(`${this.$apiBaseUrl}/partners`, partnerToAdd)
+      partnerService
+        .addPartner(partnerToAdd)
         .then((result) => {
           if (result.status === 201) {
             store.dispatch("loadPartners");
@@ -325,11 +326,11 @@ export default {
       if (this.invitationUrl) {
         this.invitationUrlLoading = true;
         let request = {
-          invitationUrl: encodeURIComponent(this.invitationUrl),
+          invitationUri: encodeURIComponent(this.invitationUrl),
         };
 
-        this.$axios
-          .post(`${this.$apiBaseUrl}/invitations/check`, request)
+        invitationsService
+          .checkInvitation(request)
           .then((result) => {
             this.invitationUrlLoading = false;
             this.receivedInvitation = Object.assign({}, result.data);
@@ -361,8 +362,8 @@ export default {
         request.trustPing = this.trustPing;
 
         // send if off and add a new partner
-        this.$axios
-          .post(`${this.$apiBaseUrl}/invitations/accept`, request)
+        invitationsService
+          .acceptInvitation(request)
           .then(() => {
             store.dispatch("loadPartners");
             this.receivedInvitation = {};

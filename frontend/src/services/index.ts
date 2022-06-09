@@ -16,4 +16,5 @@ export { default as walletService } from "./wallet-service";
 export { default as settingsService } from "./settings-service";
 export { default as statusService } from "./status-service";
 export { default as didService } from "./did-service";
+export { default as invitationsService } from "./invitations-service";
 export * from "./types-services";
