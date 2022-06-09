@@ -9,7 +9,6 @@
 import "@/assets/scss/style.scss";
 
 import Vue from "vue";
-import axios from "axios";
 import { AxiosResponse } from "axios";
 import VueNativeSock from "vue-native-websocket";
 import App from "./App.vue";
@@ -75,7 +74,6 @@ Vue.use(VueNativeSock, socketApi, {
   },
 });
 
-Vue.prototype.$axios = axios;
 Vue.prototype.$apiBaseUrl = apiBaseUrl;
 Vue.config.productionTip = false;
 Vue.prototype.$config = {

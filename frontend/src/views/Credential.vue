@@ -81,6 +81,7 @@ import Cred from "@/components/Credential.vue";
 import { CredentialTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
 import { walletService } from "@/services";
+import axios from "axios";
 
 export default {
   name: "Credential",
@@ -99,6 +100,7 @@ export default {
       intDocument: {},
       isBusy: false,
       isReady: false,
+      isPublic: false,
       docChanged: false,
       CredentialTypes: CredentialTypes,
     };
@@ -145,10 +147,10 @@ export default {
         );
       }
 
-      this.$axios
+      axios
         .all(requests)
         .then(
-          this.$axios.spread((...responses) => {
+          axios.spread((...responses) => {
             const allResponsesTrue = responses.every((response) => {
               console.log(response);
               return response.status === 200;

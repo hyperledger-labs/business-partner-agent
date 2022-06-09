@@ -88,11 +88,16 @@
 </template>
 
 <script lang="ts">
-import { CredentialExchangeStates, CredentialTypes } from "@/constants";
+import {
+  ApiRoutes,
+  CredentialExchangeStates,
+  CredentialTypes,
+} from "@/constants";
 import { EventBus } from "@/main";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
 import { Page, PageOptions } from "@/services";
 import { AxiosResponse } from "axios";
+import { appAxios } from "@/services/interceptors";
 
 export default {
   props: {
@@ -172,8 +177,8 @@ export default {
   },
   methods: {
     fetch() {
-      this.$axios
-        .get(`${this.$apiBaseUrl}/wallet/${this.type}`, {
+      appAxios()
+        .get(`${ApiRoutes.WALLET}/${this.type}`, {
           params: this.queryFilter,
         })
         .then((result: AxiosResponse<Page<any>>) => {
