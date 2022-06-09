@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2021 - for information on the respective copyright owner
+ * Copyright (c) 2020-2022 - for information on the respective copyright owner
  * see the NOTICE file and/or the repository at
  * https://github.com/hyperledger-labs/business-partner-agent
  *
@@ -22,16 +22,11 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.env.Environment;
 import jakarta.inject.Singleton;
-import okhttp3.OkHttpClient;
 import org.hyperledger.aries.AriesClient;
-
-import java.util.concurrent.TimeUnit;
 
 @Factory
 @Requires(notEnv = Environment.TEST)
 public class AriesClientFactory {
-
-    private static final long FIVE = 300;
 
     @Value("${bpa.acapy.url}")
     private String url;
