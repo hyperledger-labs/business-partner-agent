@@ -14,7 +14,11 @@ export default {
   // Activities API
   //
 
-  listActivities(tasks, activities, filter) {
+  listActivities(
+    tasks: string,
+    activities: string,
+    filter: { name: string; value: string }
+  ) {
     let qs = `task=${tasks}&activity=${activities}`;
     if (filter && filter.name && filter.value) {
       qs = `${qs}&${filter.name}=${filter.value}`;

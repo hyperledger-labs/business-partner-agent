@@ -21,7 +21,7 @@ export default {
         state.settings &&
         Object.prototype.hasOwnProperty.call(state.settings, key)
       ) {
-        return state.settings[key];
+        return state.settings[key as keyof RuntimeConfig];
       }
     },
     getSettings: (state: IStateSettings) => {

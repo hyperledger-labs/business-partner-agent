@@ -64,7 +64,7 @@ export default {
       };
 
       credentialService
-        .sendCredentialRequest(this.id, data)
+        .requestCredential(this.id, data)
         .then(() => {
           EventBus.$emit(
             "success",

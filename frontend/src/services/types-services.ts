@@ -104,6 +104,9 @@ export type AriesCredential = components["schemas"]["AriesCredential"];
 export type WalletCredentialRequest =
   components["schemas"]["WalletCredentialRequest"];
 
+export type RequestCredentialRequest =
+  components["schemas"]["RequestCredentialRequest"];
+
 export type RuntimeConfig = components["schemas"]["RuntimeConfig"];
 
 // Page response from server

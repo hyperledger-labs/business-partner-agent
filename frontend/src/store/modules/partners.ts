@@ -23,7 +23,7 @@ export default {
     partnersCount: (state: IStatePartners) => {
       return state.partners ? state.partners.length : 0;
     },
-    getPartnerByDID: (state: IStatePartners) => (did) => {
+    getPartnerByDID: (state: IStatePartners) => (did: string) => {
       return state.partners.find((partner) => {
         return partner.did === did;
       });

@@ -29,7 +29,7 @@ export default {
         );
       });
     },
-    getSchemaById: (state: IStateSchemas) => (schemaId) => {
+    getSchemaById: (state: IStateSchemas) => (schemaId: string) => {
       if (!schemaId) {
         return;
       }
@@ -37,7 +37,8 @@ export default {
         return schema.schemaId === schemaId;
       });
     },
-    getSchemaByType: (state: IStateSchemas) => (schemaType) => {
+    // schemaType is CredentialType
+    getSchemaByType: (state: IStateSchemas) => (schemaType: string) => {
       if (!schemaType) {
         return;
       }

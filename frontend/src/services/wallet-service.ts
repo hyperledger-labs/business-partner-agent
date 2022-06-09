@@ -42,8 +42,8 @@ export default {
     if (pc) {
       query =
         "?" +
-        Object.keys(pc)
-          .map((key) => key + "=" + pc[key])
+        Object.entries(pc)
+          .map(([key, value]) => `${key}=${value}`)
           .join("&");
     }
     return appAxios().get(`${ApiRoutes.WALLET}/credential${query}`);
@@ -81,8 +81,8 @@ export default {
     if (pc) {
       query =
         "?" +
-        Object.keys(pc)
-          .map((key) => key + "=" + pc[key])
+        Object.entries(pc)
+          .map(([key, value]) => `${key}=${value}`)
           .join("&");
     }
     return appAxios().get(`${ApiRoutes.WALLET}/document${query}`);

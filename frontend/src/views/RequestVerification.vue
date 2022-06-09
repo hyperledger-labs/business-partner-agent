@@ -165,7 +165,7 @@ export default {
       };
 
       credentialService
-        .sendCredentialRequest(this.partner.id, data)
+        .requestCredential(this.partner.id, data)
         .then((response) => {
           console.log(response);
           this.isBusy = false;

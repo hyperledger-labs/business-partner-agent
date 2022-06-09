@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-import { CredDef, PartnerAPI, RuntimeConfig } from "@/services";
+import { CredDef, PartnerAPI, RuntimeConfig, SchemaAPI } from "@/services";
 
 export interface StateBpa {
   editedDocument: any;
@@ -19,7 +19,32 @@ export interface StateBpa {
 }
 
 export interface IStateSchemas {
-  schemas: any[];
+  schemas: SchemaAPI[];
+}
+
+// TODO
+export interface IStateNotifications {
+  activityNotifications: any;
+  credentialNotifications: any;
+  partnerNotifications: any;
+  presentationNotifications: any;
+  taskNotifications: any;
+}
+
+export interface IStateSocketEvents {
+  socket: {
+    isConnected: boolean;
+    message: string;
+    reconnectError: boolean;
+  };
+}
+
+export interface IStateTransactionAuthorAgreement {
+  taaRequired: boolean;
+  taaText: string;
+  taaDigest: string;
+  taaVersion: string;
+  taaLoaded: boolean;
 }
 
 export interface IStateCredDefSelectList {
