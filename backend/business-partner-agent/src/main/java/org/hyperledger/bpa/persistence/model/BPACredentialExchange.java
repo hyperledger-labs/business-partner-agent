@@ -146,8 +146,6 @@ public class BPACredentialExchange
     // holder only
     @Nullable
     private Boolean isPublic;
-    @Nullable
-    private String issuer;
     /** aca-py credential identifier, referent when indy, record_id when json-ld */
     @Nullable
     private String referent;

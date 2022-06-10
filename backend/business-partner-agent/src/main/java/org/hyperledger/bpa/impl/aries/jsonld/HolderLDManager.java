@@ -113,13 +113,11 @@ public class HolderLDManager {
         return schema;
     }
 
-    public void handleV2CredentialReceived(@NonNull V20CredExRecord v2, @NonNull BPACredentialExchange dbCred,
-            String issuer) {
+    public void handleV2CredentialReceived(@NonNull V20CredExRecord v2, @NonNull BPACredentialExchange dbCred) {
         String label = labelStrategy.apply(dbCred.getLdCredential());
         dbCred
                 .pushStates(v2.getState(), v2.getUpdatedAt())
                 .setLdCredential(ExchangePayload.jsonLD(v2.resolveLDCredOffer()))
-                .setIssuer(issuer)
                 .setLabel(label);
         holderCredExRepo.update(dbCred);
     }

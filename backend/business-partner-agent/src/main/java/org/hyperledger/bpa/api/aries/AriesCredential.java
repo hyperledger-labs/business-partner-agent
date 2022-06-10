@@ -53,7 +53,12 @@ public class AriesCredential {
     private Map<String, String> credentialData;
 
     public static AriesCredential fromBPACredentialExchange(@NonNull BPACredentialExchange c,
-            @Nullable String typeLabel) {
+        @Nullable String typeLabel) {
+        return fromBPACredentialExchange(c, typeLabel, null);
+    }
+
+    public static AriesCredential fromBPACredentialExchange(@NonNull BPACredentialExchange c,
+            @Nullable String typeLabel, @Nullable String issuer) {
         AriesCredentialBuilder b = AriesCredential.builder();
         if (c.typeIsIndy() && c.getIndyCredential() != null) {
             b
@@ -72,7 +77,7 @@ public class AriesCredential {
                 .issuedAt(c.calculateIssuedAt() != null ? c.calculateIssuedAt().toEpochMilli() : null)
                 .state(c.getState())
                 .isPublic(c.checkIfPublic())
-                .issuer(c.getIssuer())
+                .issuer(issuer)
                 .connectionId(c.getPartner() != null ? c.getPartner().getConnectionId() : null)
                 .revoked(c.getRevoked())
                 .label(c.getLabel())

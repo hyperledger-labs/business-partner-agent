@@ -49,9 +49,11 @@ public interface HolderCredExRepository extends PageableRepository<BPACredential
     @NonNull
     @Override
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     Optional<BPACredentialExchange> findById(@NonNull UUID id);
 
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
     Page<BPACredentialExchange> findByRoleEqualsAndStateInAndTypeIn(
             CredentialExchangeRole role,
             List<CredentialExchangeState> state,
@@ -98,9 +100,6 @@ public interface HolderCredExRepository extends PageableRepository<BPACredential
             StateChangeDecorator.StateToTimestamp<CredentialExchangeState> stateToTimestamp);
 
     Number updateReferent(@Id UUID id, @Nullable String referent);
-
-    @Query("UPDATE bpa_credential_exchange SET issuer = :issuer WHERE partner_id = :partnerId AND role = 'HOLDER'")
-    Number updateIssuerByPartnerId(UUID partnerId, @Nullable String issuer);
 
     @Query("UPDATE bpa_credential_exchange SET partner_id = null WHERE partner_id = :partnerId AND role = 'HOLDER'")
     Number setPartnerIdToNull(UUID partnerId);

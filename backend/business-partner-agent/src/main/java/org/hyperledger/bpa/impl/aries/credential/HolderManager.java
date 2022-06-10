@@ -280,7 +280,6 @@ public class HolderManager extends CredentialManagerBase {
                     .setCredRevId(credEx.getCredential() != null ? credEx.getCredential().getCredRevId() : null)
                     .setRevRegId(credEx.getCredential() != null ? credEx.getCredential().getRevRegId() : null)
                     .setLabel(label)
-                    .setIssuer(resolveIssuer(db.getPartner()))
                     .pushStates(credEx.getState(), TimeUtil.fromISOInstant(credEx.getUpdatedAt()));
             holderCredExRepo.update(db);
             fireCredentialAddedEvent(db);
@@ -338,11 +337,10 @@ public class HolderManager extends CredentialManagerBase {
 
     public void handleV2CredentialReceived(@NonNull V20CredExRecord credEx) {
         holderCredExRepo.findByCredentialExchangeId(credEx.getCredentialExchangeId()).ifPresent(dbCred -> {
-            String issuer = resolveIssuer(dbCred.getPartner());
             if (dbCred.typeIsIndy()) {
-                indy.handleV2CredentialReceived(credEx, dbCred, issuer);
+                indy.handleV2CredentialReceived(credEx, dbCred);
             } else {
-                ld.handleV2CredentialReceived(credEx, dbCred, issuer);
+                ld.handleV2CredentialReceived(credEx, dbCred);
             }
             fireCredentialAddedEvent(dbCred);
         });
@@ -404,7 +402,7 @@ public class HolderManager extends CredentialManagerBase {
      *         id is null
      */
     @Nullable
-    public String resolveIssuer(@Nullable Partner p) {
+    public static String resolveIssuer(@Nullable Partner p) {
         String issuer = null;
         if (p != null) {
             if (StringUtils.isNotEmpty(p.getAlias())) {
@@ -432,6 +430,7 @@ public class HolderManager extends CredentialManagerBase {
 
     private AriesCredential buildCredential(@NonNull BPACredentialExchange dbCred) {
         return AriesCredential.fromBPACredentialExchange(dbCred,
-                dbCred.getSchema() != null ? dbCred.getSchema().resolveSchemaLabel() : null);
+                dbCred.getSchema() != null ? dbCred.getSchema().resolveSchemaLabel() : null,
+                resolveIssuer(dbCred.getPartner()));
     }
 }

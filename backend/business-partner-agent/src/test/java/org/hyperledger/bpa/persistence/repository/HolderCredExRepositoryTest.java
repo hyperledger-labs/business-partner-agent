@@ -97,12 +97,8 @@ class HolderCredExRepositoryTest extends BaseTest {
         ex1 = holderCredExRepo.findById(ex1.getId()).orElseThrow();
         assertNull(ex1.getPartner());
 
-        updated = holderCredExRepo.updateIssuerByPartnerId(other.getId(), "My Bank");
-        assertEquals(1, updated.intValue());
-
         final List<BPACredentialExchange> cred = holderCredExRepo.findByPartnerId(other.getId());
         assertEquals(1, cred.size());
-        assertEquals("My Bank", cred.get(0).getIssuer());
     }
 
     @Test

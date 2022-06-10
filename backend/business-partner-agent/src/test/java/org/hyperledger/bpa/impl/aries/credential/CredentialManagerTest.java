@@ -36,9 +36,6 @@ class CredentialManagerTest extends BaseTest {
     private static final String DID = "did:sov:M6Mbe3qx7vB4wpZF4sBRjt";
 
     @Inject
-    HolderManager mgmt;
-
-    @Inject
     PartnerRepository partnerRepo;
 
     @Inject
@@ -52,7 +49,7 @@ class CredentialManagerTest extends BaseTest {
                 .ariesSupport(Boolean.TRUE)
                 .build());
 
-        String iss = mgmt.resolveIssuer(p);
+        String iss = HolderManager.resolveIssuer(p);
         assertEquals(DID, iss);
     }
 
@@ -65,7 +62,7 @@ class CredentialManagerTest extends BaseTest {
                 .ariesSupport(Boolean.TRUE)
                 .build());
 
-        String iss = mgmt.resolveIssuer(p);
+        String iss = HolderManager.resolveIssuer(p);
         assertEquals("My Bank", iss);
     }
 
@@ -81,7 +78,7 @@ class CredentialManagerTest extends BaseTest {
                 .verifiablePresentation(vp)
                 .build());
 
-        String iss = mgmt.resolveIssuer(p);
+        String iss = HolderManager.resolveIssuer(p);
         assertEquals("Test Corp", iss);
     }
 
@@ -95,13 +92,13 @@ class CredentialManagerTest extends BaseTest {
                 .label("Their Label")
                 .build());
 
-        String iss = mgmt.resolveIssuer(p);
+        String iss = HolderManager.resolveIssuer(p);
         assertEquals("Their Label", iss);
     }
 
     @Test
     void testResolveIssuerNull() {
-        String iss = mgmt.resolveIssuer(null);
+        String iss = HolderManager.resolveIssuer(null);
         assertNull(iss);
     }
 

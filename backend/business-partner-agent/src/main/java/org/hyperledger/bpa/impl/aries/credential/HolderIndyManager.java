@@ -140,18 +140,15 @@ public class HolderIndyManager {
     // credential event handling
 
     // v2 credential, signed and stored in wallet
-    public void handleV2CredentialReceived(@NonNull V20CredExRecord credEx, @NonNull BPACredentialExchange dbCred,
-            String issuer) {
+    public void handleV2CredentialReceived(@NonNull V20CredExRecord credEx, @NonNull BPACredentialExchange dbCred) {
         V2ToV1IndyCredentialConverter.INSTANCE().toV1Credential(credEx)
                 .ifPresent(c -> {
                     String label = labelStrategy.apply(c);
                     dbCred
                             .pushStates(credEx.getState(), credEx.getUpdatedAt())
                             .setIndyCredential(c)
-                            .setLabel(label)
-                            .setIssuer(issuer);
+                            .setLabel(label);
                     holderCredExRepo.update(dbCred);
-
                 });
     }
 
