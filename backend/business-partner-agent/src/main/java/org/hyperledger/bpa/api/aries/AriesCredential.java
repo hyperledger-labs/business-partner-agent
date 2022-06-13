@@ -53,7 +53,7 @@ public class AriesCredential {
     private Map<String, String> credentialData;
 
     public static AriesCredential fromBPACredentialExchange(@NonNull BPACredentialExchange c,
-        @Nullable String typeLabel) {
+            @Nullable String typeLabel) {
         return fromBPACredentialExchange(c, typeLabel, null);
     }
 
