@@ -15,23 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.persistence.model.type;
+package org.hyperledger.bpa.impl.aries.proof;
 
-import org.hyperledger.bpa.api.CredentialType;
+import io.micronaut.core.annotation.Nullable;
+import lombok.NonNull;
+import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
-public interface CredentialTypeTranslator {
+public class VersionHelper {
 
-    CredentialType getType();
-
-    default boolean typeIsIndy() {
-        return CredentialType.INDY.equals(getType());
-    }
-
-    default boolean typeIsJsonLd() {
-        return CredentialType.JSON_LD.equals(getType());
-    }
-
-    default boolean typeIsOrgProfile() {
-        return CredentialType.ORGANIZATIONAL_PROFILE_CREDENTIAL.equals(getType());
+    public static org.hyperledger.aries.api.ExchangeVersion determineVersion(
+            @Nullable org.hyperledger.aries.api.ExchangeVersion version, @NonNull BPACredentialExchange c) {
+        return version != null
+                ? version
+                : c.typeIsIndy() ? org.hyperledger.aries.api.ExchangeVersion.V1
+                        : org.hyperledger.aries.api.ExchangeVersion.V2;
     }
 }

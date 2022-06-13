@@ -41,6 +41,7 @@ import org.hyperledger.bpa.impl.aries.credential.IssuerManager;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.repository.BPASchemaRepository;
 import org.hyperledger.bpa.persistence.repository.IssuerCredExRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
@@ -95,7 +96,7 @@ public class IssuerLDManager {
                     .state(CredentialExchangeState.OFFER_SENT)
                     // same behaviour as indy, in this case proposal == offer == credential
                     .pushStateChange(CredentialExchangeState.OFFER_SENT, Instant.now())
-                    .ldCredential(BPACredentialExchange.ExchangePayload.jsonLD(exRecord.resolveLDCredOffer()))
+                    .ldCredential(ExchangePayload.jsonLD(exRecord.resolveLDCredOffer()))
                     .credentialExchangeId(exRecord.getCredentialExchangeId())
                     .threadId(exRecord.getThreadId())
                     .exchangeVersion(ExchangeVersion.V2)
@@ -135,7 +136,7 @@ public class IssuerLDManager {
                         .build())
                 .orElseThrow();
         credExRepo.updateCredential(credEx.getId(),
-                BPACredentialExchange.ExchangePayload.jsonLD(v20CredExRecord.resolveLDCredOffer()));
+                ExchangePayload.jsonLD(v20CredExRecord.resolveLDCredOffer()));
         return CredEx.from(credEx);
     }
 

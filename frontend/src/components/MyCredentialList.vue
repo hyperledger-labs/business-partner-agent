@@ -19,6 +19,7 @@
       :show-select="selectable"
       single-select
       sort-by="createdAt"
+      sort-desc
       @click:row="open"
     >
       <template v-slot:[`item.label`]="{ item }">

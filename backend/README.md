@@ -47,7 +47,7 @@ scripts/.env-example -> scripts/.env
 3. Start dependent services
 ```s
 # e.g. run from the scripts directory
-docker-compose up bpa-agent1 bpa-wallet-db1
+docker compose up bpa-agent1 bpa-wallet-db1
 ```
 
 4. Set VM Options

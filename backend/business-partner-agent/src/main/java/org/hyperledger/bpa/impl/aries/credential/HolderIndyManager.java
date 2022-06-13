@@ -43,6 +43,7 @@ import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 
 import java.io.IOException;
@@ -91,7 +92,7 @@ public class HolderIndyManager {
             ac.issueCredentialSendProposal(v1CredentialProposalRequest).ifPresent(v1 -> dbCredEx
                     .threadId(v1.getThreadId())
                     .credentialExchangeId(v1.getCredentialExchangeId())
-                    .credentialProposal(BPACredentialExchange.ExchangePayload
+                    .credentialProposal(ExchangePayload
                             .indy(v1.getCredentialProposalDict().getCredentialProposal())));
         } else {
             V2CredentialExchangeFree v2Request = V1ToV2IssueCredentialConverter
@@ -100,7 +101,7 @@ public class HolderIndyManager {
                     .threadId(v2.getThreadId())
                     .credentialExchangeId(v2.getCredentialExchangeId())
                     .exchangeVersion(ExchangeVersion.V2)
-                    .credentialProposal(BPACredentialExchange.ExchangePayload
+                    .credentialProposal(ExchangePayload
                             .indy(V2ToV1IndyCredentialConverter.INSTANCE().toV1Proposal(v2)
                                     .getCredentialProposalDict()
                                     .getCredentialProposal())));
@@ -139,18 +140,15 @@ public class HolderIndyManager {
     // credential event handling
 
     // v2 credential, signed and stored in wallet
-    public void handleV2CredentialReceived(@NonNull V20CredExRecord credEx, @NonNull BPACredentialExchange dbCred,
-            String issuer) {
+    public void handleV2CredentialReceived(@NonNull V20CredExRecord credEx, @NonNull BPACredentialExchange dbCred) {
         V2ToV1IndyCredentialConverter.INSTANCE().toV1Credential(credEx)
                 .ifPresent(c -> {
                     String label = labelStrategy.apply(c);
                     dbCred
                             .pushStates(credEx.getState(), credEx.getUpdatedAt())
                             .setIndyCredential(c)
-                            .setLabel(label)
-                            .setIssuer(issuer);
+                            .setLabel(label);
                     holderCredExRepo.update(dbCred);
-
                 });
     }
 

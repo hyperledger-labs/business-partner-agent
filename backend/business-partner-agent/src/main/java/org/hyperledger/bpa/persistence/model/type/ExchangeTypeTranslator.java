@@ -15,29 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.config;
+package org.hyperledger.bpa.persistence.model.type;
 
-import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Requires;
-import io.micronaut.context.annotation.Value;
-import io.micronaut.context.env.Environment;
-import jakarta.inject.Singleton;
-import org.hyperledger.aries.AriesClient;
+import org.hyperledger.bpa.api.CredentialType;
 
-@Factory
-@Requires(notEnv = Environment.TEST)
-public class AriesClientFactory {
+public interface ExchangeTypeTranslator {
 
-    @Value("${bpa.acapy.url}")
-    private String url;
-    @Value("${bpa.acapy.apiKey}")
-    private String apiKey;
+    CredentialType getType();
 
-    @Singleton
-    public AriesClient ariesClient() {
-        return AriesClient.builder()
-                .url(url)
-                .apiKey(apiKey)
-                .build();
+    default boolean typeIsIndy() {
+        return CredentialType.INDY.equals(getType());
+    }
+
+    default boolean typeIsJsonLd() {
+        return CredentialType.JSON_LD.equals(getType());
     }
 }

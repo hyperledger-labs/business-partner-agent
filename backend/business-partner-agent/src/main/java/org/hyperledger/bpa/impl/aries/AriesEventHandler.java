@@ -40,7 +40,7 @@ import org.hyperledger.bpa.impl.aries.credential.HolderManager;
 import org.hyperledger.bpa.impl.aries.credential.IssuerManager;
 import org.hyperledger.bpa.impl.aries.jsonld.LDEventHandler;
 import org.hyperledger.bpa.impl.aries.proof.ProofEventHandler;
-import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 
 import java.util.Optional;
 
@@ -114,7 +114,13 @@ public class AriesEventHandler extends EventHandler {
     @Override
     public void handleProofV2(V20PresExRecord v2) {
         log.debug("Present Proof V2 Event: {}", v2);
-        handleProof(V20PresExRecordToV1Converter.toV1(v2));
+        synchronized (proof) {
+            if (v2.isIndy()) {
+                proof.dispatch(V20PresExRecordToV1Converter.toV1(v2));
+            } else if (v2.isDif()) {
+                proof.dispatch(v2);
+            }
+        }
     }
 
     @Override
@@ -126,7 +132,7 @@ public class AriesEventHandler extends EventHandler {
                 if (v1CredEx.stateIsCredentialAcked()) {
                     credHolder.handleV1CredentialExchangeAcked(v1CredEx);
                 } else if (v1CredEx.stateIsOfferReceived()) {
-                    credHolder.handleOfferReceived(v1CredEx, BPACredentialExchange.ExchangePayload
+                    credHolder.handleOfferReceived(v1CredEx, ExchangePayload
                             .indy(v1CredEx.getCredentialProposalDict().getCredentialProposal()), ExchangeVersion.V1);
                 } else {
                     credHolder.handleStateChangesOnly(

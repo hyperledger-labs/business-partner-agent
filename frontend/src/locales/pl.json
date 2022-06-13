@@ -401,6 +401,7 @@
     "presentationRecord": {
       "role": "Role",
       "state": "State",
+      "type": "Type",
       "requestName": "Request Name",
       "requestContent": "Request Content",
       "issuer": "Issuer",
@@ -537,7 +538,7 @@
       "eventSuccess": "New credential definition added"
     },
     "createSchema": {
-      "title": "Create Schema",
+      "title": "Create Indy Schema",
       "schemaInformation": "Schema Information",
       "labelSchema": "Schema Label",
       "labelName": "Schema Name",

@@ -20,6 +20,7 @@
       :options.sync="options"
       :server-items-length="totalNumberOfElements"
       sort-by="updatedAt"
+      sort-desc
       single-select
       @click:row="openItem"
     >

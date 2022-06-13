@@ -24,7 +24,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.hyperledger.bpa.api.CredentialType;
-import org.hyperledger.bpa.persistence.model.type.CredentialTypeTranslator;
+import org.hyperledger.bpa.persistence.model.type.ExchangeTypeTranslator;
 
 import javax.persistence.Id;
 import javax.persistence.*;
@@ -44,7 +44,7 @@ import java.util.UUID;
 @Accessors(chain = true)
 @Entity
 @Table(name = "my_document")
-public class MyDocument implements CredentialTypeTranslator {
+public class MyDocument implements ExchangeTypeTranslator {
 
     @Id
     @AutoPopulated

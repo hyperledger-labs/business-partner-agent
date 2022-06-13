@@ -107,7 +107,7 @@
         <dependency><!-- Overwrite for jakarta-annotations-api -->
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-annotations-api</artifactId>
-            <version>10.1.0-M14</version>
+            <version>10.1.0-M15</version>
         </dependency>
 
         <!-- Logging -->
@@ -128,7 +128,7 @@
         <dependency>
             <groupId>network.idu.acapy</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.7.23</version>
+            <version>0.7.24</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>
@@ -155,7 +155,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>5.6.3</version>
+            <version>5.7.1</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
@@ -183,7 +183,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.3.4</version>
+            <version>42.3.6</version>
         </dependency>
         <dependency>
             <groupId>io.micronaut.flyway</groupId>
@@ -417,8 +417,8 @@
                                 </goals>
                                 <configuration>
                                     <!-- See https://nodejs.org/en/download/ -->
-                                    <nodeVersion>v16.14.2</nodeVersion>
-                                    <npmVersion>8.5.0</npmVersion>
+                                    <nodeVersion>v16.15.0</nodeVersion>
+                                    <npmVersion>8.5.5</npmVersion>
                                 </configuration>
                             </execution>
                             <execution>
@@ -428,7 +428,7 @@
                                     <goal>npm</goal>
                                 </goals>
                                 <configuration>
-                                    <arguments>install --no-optional</arguments>
+                                    <arguments>ci --no-optional</arguments>
                                 </configuration>
                             </execution>
                             <execution>

@@ -59,6 +59,11 @@ export enum CredentialExchangeStates {
   DONE = "done",
 }
 
+export enum PresentationExchangeRoles {
+  PROVER = "prover",
+  VERIFIER = "verifier",
+}
+
 export enum PresentationExchangeStates {
   PROPOSAL_SENT = "proposal_sent",
   PROPOSAL_RECEIVED = "proposal_received",

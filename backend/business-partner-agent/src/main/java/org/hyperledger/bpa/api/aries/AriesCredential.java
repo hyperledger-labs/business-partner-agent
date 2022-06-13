@@ -22,6 +22,7 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
@@ -45,13 +46,19 @@ public class AriesCredential {
     private Boolean revoked;
     private Boolean revocable;
     private ExchangeVersion exchangeVersion;
+    private CredentialType type;
 
     private String label;
     private String typeLabel;
     private Map<String, String> credentialData;
 
     public static AriesCredential fromBPACredentialExchange(@NonNull BPACredentialExchange c,
-            @Nullable String typeLabel) {
+        @Nullable String typeLabel) {
+        return fromBPACredentialExchange(c, typeLabel, null);
+    }
+
+    public static AriesCredential fromBPACredentialExchange(@NonNull BPACredentialExchange c,
+            @Nullable String typeLabel, @Nullable String issuer) {
         AriesCredentialBuilder b = AriesCredential.builder();
         if (c.typeIsIndy() && c.getIndyCredential() != null) {
             b
@@ -61,7 +68,7 @@ public class AriesCredential {
         } else if (c.typeIsJsonLd()) {
             b
                     .schemaId(LDContextHelper.findSchemaId(
-                            c.exchangePayloadByState() != null ? c.exchangePayloadByState().getLdProof() : null))
+                            c.exchangePayloadByState() != null ? c.exchangePayloadByState().getJsonLD() : null))
                     .revocable(false) // not supported with ld-credentials
             ;
         }
@@ -70,12 +77,13 @@ public class AriesCredential {
                 .issuedAt(c.calculateIssuedAt() != null ? c.calculateIssuedAt().toEpochMilli() : null)
                 .state(c.getState())
                 .isPublic(c.checkIfPublic())
-                .issuer(c.getIssuer())
+                .issuer(issuer)
                 .connectionId(c.getPartner() != null ? c.getPartner().getConnectionId() : null)
                 .revoked(c.getRevoked())
                 .label(c.getLabel())
                 .typeLabel(typeLabel)
                 .exchangeVersion(c.getExchangeVersion())
+                .type(c.getType())
                 .credentialData(c.attributesByState())
                 .build();
     }

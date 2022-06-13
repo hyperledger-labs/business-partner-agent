@@ -23,8 +23,12 @@ import io.micronaut.data.annotation.Join;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential;
+import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 
 import java.time.Instant;
 import java.util.List;
@@ -66,7 +70,7 @@ public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUI
     void updateProblemReport(@Id UUID id, String problemReport);
 
     long updateReceivedProof(@Id UUID id, Boolean valid, PresentationExchangeState state,
-            Map<String, Object> proof);
+            ExchangePayload<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>, VerifiablePresentation<VerifiableCredential>> proof);
 
     Long countByStateEquals(PresentationExchangeState state);
 

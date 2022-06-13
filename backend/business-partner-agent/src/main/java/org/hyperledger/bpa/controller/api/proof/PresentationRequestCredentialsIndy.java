@@ -29,7 +29,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PresentationRequestCredentials {
+public class PresentationRequestCredentialsIndy {
 
     private CredentialInfo credentialInfo;
 
@@ -78,10 +78,10 @@ public class PresentationRequestCredentials {
         }
     }
 
-    public static PresentationRequestCredentials from(
+    public static PresentationRequestCredentialsIndy from(
             @NonNull org.hyperledger.aries.api.present_proof.PresentationRequestCredentials aca,
             @NonNull AriesCredential.BPACredentialInfo bpa) {
-        return PresentationRequestCredentials
+        return PresentationRequestCredentialsIndy
                 .builder()
                 .credentialInfo(CredentialInfo.mergeInfo(aca.getCredentialInfo(), bpa))
                 .interval(aca.getInterval())

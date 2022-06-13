@@ -140,10 +140,6 @@ export interface paths {
      */
     post: operations["issueCredentialConnectionLess"];
   };
-  "/api/issuer/issue-credential/oob-attachment/{id}": {
-    /** Issue OOB credential step 2 - redirect with encoded offer */
-    get: operations["handleConnectionLess"];
-  };
   "/api/issuer/issue-credential/send": {
     /** Auto credential exchange: Issuer sends credential to holder */
     post: operations["issueCredential"];
@@ -281,6 +277,9 @@ export interface paths {
      */
     get: operations["getMatchingCredentials"];
   };
+  "/api/proof-exchanges/{id}/matching-credentials-ld": {
+    get: operations["getMatchingDifCredentials"];
+  };
   "/api/proof-exchanges/{id}/prove": {
     /** Manual proof exchange flow. Answer ProofRequest with matching attributes */
     post: operations["responseToProofRequest"];
@@ -346,18 +345,6 @@ export interface paths {
     /** Delete a wallet document by id */
     delete: operations["deleteDocument"];
   };
-  "/api/webhook": {
-    /** List registered webhooks */
-    get: operations["listRegisteredWebhooks"];
-    /** Register a new webhook */
-    post: operations["registerWebhook"];
-  };
-  "/api/webhook/{id}": {
-    /** Update a registered webhook */
-    put: operations["updateWebhook"];
-    /** Delete a registered webhook */
-    delete: operations["deleteWebhook"];
-  };
   "/profile.jsonld": {
     get: operations["getMasterdata"];
   };
@@ -368,6 +355,7 @@ export interface components {
     APICreateInvitationResponse: {
       invitationUrl?: string;
       invitationId?: string;
+      partnerId?: string;
     };
     AcceptInvitationRequest: {
       invitationBlock?: string;
@@ -459,6 +447,7 @@ export interface components {
       revoked?: boolean;
       revocable?: boolean;
       exchangeVersion?: components["schemas"]["ExchangeVersion"];
+      type?: components["schemas"]["CredentialType"];
       label?: string;
       typeLabel?: string;
       credentialData?: { [key: string]: string };
@@ -471,6 +460,7 @@ export interface components {
       exchangeVersion?: components["schemas"]["ExchangeVersion"];
       state?: components["schemas"]["PresentationExchangeState"];
       role?: components["schemas"]["PresentationExchangeRole"];
+      type?: components["schemas"]["CredentialType"];
       /** Format: int64 */
       updatedAt?: number;
       stateToTimestamp?: { [key: string]: number };
@@ -532,7 +522,7 @@ export interface components {
     ChatMessage: {
       /** Format: uuid */
       id?: string;
-      partner: components["schemas"]["Partner"] & (unknown | null);
+      partner?: components["schemas"]["Partner"] | null;
       content?: string;
       incoming?: boolean;
     };
@@ -712,20 +702,29 @@ export interface components {
       trace: boolean;
       updatedAt: string;
     };
-    IssueCredentialRequest: {
-      /** Format: uuid */
-      credDefId: string;
-      /** Format: uuid */
-      schemaId?: string;
+    IssueCredentialRequest: (
+      | components["schemas"]["IssueCredentialRequest.IssueIndyCredentialRequest"]
+      | components["schemas"]["IssueCredentialRequest.IssueLDCredentialRequest"]
+    ) & {
       /** Format: uuid */
       partnerId: string;
-      exchangeVersion?: components["schemas"]["ExchangeVersion"] & unknown;
+      /** @description credential exchange type */
       type?: components["schemas"]["CredentialType"] & unknown;
       /**
        * @description credential body key value pairs
-       * @example [object Object]
+       * @example {}
        */
       document?: { [key: string]: unknown }[];
+    };
+    "IssueCredentialRequest.IssueIndyCredentialRequest": {
+      /** Format: uuid */
+      credDefId: string;
+      /** @description credential exchange api version */
+      exchangeVersion?: components["schemas"]["ExchangeVersion"] & unknown;
+    };
+    "IssueCredentialRequest.IssueLDCredentialRequest": {
+      /** Format: uuid */
+      schemaId: string;
     };
     IssueOOBCredentialRequest: {
       alias?: string;
@@ -735,7 +734,7 @@ export interface components {
       credDefId: string;
       /**
        * @description credential body key value pairs
-       * @example [object Object]
+       * @example {}
        */
       document?: { [key: string]: unknown }[];
     };
@@ -801,7 +800,7 @@ export interface components {
       nonce?: string;
       proofPurpose?: string;
       proofValue?: string;
-      type?: string;
+      type?: components["schemas"]["ProofType"];
       verificationMethod?: string;
     };
     "MessageTemplateCmd.ApiMessageTemplate": {
@@ -871,7 +870,7 @@ export interface components {
       schemaId?: string;
       isPublic?: boolean;
       label?: string;
-      /** @example [object Object] */
+      /** @example {} */
       documentData?: { [key: string]: unknown }[];
     };
     Number: { [key: string]: unknown };
@@ -906,9 +905,10 @@ export interface components {
       ariesSupport?: boolean;
       /** @description aries connection id */
       connectionId?: string | null;
-      state?: components["schemas"]["ConnectionState"] & (unknown | null);
-      stateToTimestamp?: components["schemas"]["StateChangeDecorator.StateToTimestamp_ConnectionState_"] &
-        unknown;
+      /** @description the current aries connection state */
+      state?: components["schemas"]["ConnectionState"] | null;
+      /** @description history of aries connection states - excluding ping */
+      stateToTimestamp?: unknown;
       /**
        * @description aries connection label, if incoming connection set by the partner via the
        *  --label flag, or through rest overwrite
@@ -928,9 +928,11 @@ export interface components {
        * @description The Partners Public Profile VerifiablePresentation to be used in the
        *  PartnerAPI
        */
-      verifiablePresentation?: { [key: string]: unknown } | null;
-      invitationRecord?: components["schemas"]["InvitationRecord"] &
-        (unknown | null);
+      verifiablePresentation?:
+        | components["schemas"]["VerifiablePresentation_VerifiableCredential.VerifiableIndyCredential_"]
+        | null;
+      /** @description credential offer or proof request when using OOB invitations with attachments */
+      invitationRecord?: components["schemas"]["InvitationRecord"] | null;
       /**
        * @description Serialized PartnerCredentialType to allow filtering partners by
        *  supported credentials
@@ -973,7 +975,7 @@ export interface components {
       indyCredential?: boolean;
       issuer?: string;
       schemaId?: string;
-      /** @example [object Object] */
+      /** @example {} */
       credentialData?: { [key: string]: unknown }[];
     };
     "PresentProofRequest.ProofRequest": {
@@ -1028,12 +1030,18 @@ export interface components {
       | "DONE"
       | "ABANDONED"
       | "DECLINED";
-    PresentationRequestCredentials: {
-      credentialInfo?: components["schemas"]["PresentationRequestCredentials.CredentialInfo"];
+    "PresentationRequestCredentials.Interval": {
+      /** Format: int32 */
+      from?: number;
+      /** Format: int32 */
+      to?: number;
+    };
+    PresentationRequestCredentialsIndy: {
+      credentialInfo?: components["schemas"]["PresentationRequestCredentialsIndy.CredentialInfo"];
       interval?: components["schemas"]["PresentationRequestCredentials.Interval"];
       presentationReferents?: string[];
     };
-    "PresentationRequestCredentials.CredentialInfo": {
+    "PresentationRequestCredentialsIndy.CredentialInfo": {
       /**
        * Format: uuid
        * @description internal credentialId BPACredentialExchange - matched via referent
@@ -1048,13 +1056,11 @@ export interface components {
       credentialDefinitionId?: string;
       issuerLabel?: string;
     };
-    "PresentationRequestCredentials.Interval": {
-      /** Format: int32 */
-      from?: number;
-      /** Format: int32 */
-      to?: number;
+    PresentationRequestCredentialsLD: {
+      match?: boolean;
     };
     PresentationRequestVersion: {
+      /** @description presentation exchange api version */
       exchangeVersion?: components["schemas"]["ExchangeVersion"] & unknown;
     };
     ProofTemplate: {
@@ -1064,24 +1070,8 @@ export interface components {
       name: string;
       attributeGroups: components["schemas"]["AttributeGroup"][];
     };
-    RegisteredWebhook: {
-      url: string;
-      registeredEvent?: components["schemas"]["RegisteredWebhook.WebhookEventType"][];
-      credentials?: components["schemas"]["RegisteredWebhook.WebhookCredentials"];
-    };
-    "RegisteredWebhook.RegisteredWebhookResponse": components["schemas"]["RegisteredWebhook"] & {
-      /** Format: uuid */
-      id: string;
-    };
-    "RegisteredWebhook.WebhookCredentials": {
-      username?: string;
-      password?: string;
-    };
     /** @enum {string} */
-    "RegisteredWebhook.WebhookEventType":
-      | "ALL"
-      | "PARTNER_ADD"
-      | "PARTNER_UPDATE";
+    ProofType: "Ed25519Signature2018" | "BbsBlsSignature2020";
     RequestCredentialRequest: {
       documentId?: string;
       exchangeVersion?: components["schemas"]["ExchangeVersion"];
@@ -1092,7 +1082,7 @@ export interface components {
       partnerId?: string;
       /**
        * @description Any valid proof request
-       * @example [object Object]
+       * @example {}
        */
       requestRaw?: { [key: string]: unknown }[];
     };
@@ -1253,7 +1243,7 @@ export interface components {
       id?: string | null;
       issuanceDate?: string | null;
       issuer?: string | null;
-      proof?: components["schemas"]["LinkedDataProof"] & (unknown | null);
+      proof?: components["schemas"]["LinkedDataProof"] | null;
       type?: string[];
     };
     "VerifiableCredential.LabeledVerifiableCredential": components["schemas"]["VerifiableCredential"] & {
@@ -1265,16 +1255,30 @@ export interface components {
         schemaId?: string | null;
         credDefId?: string | null;
       };
+    "VerifiablePresentation.PresentationSubmission": {
+      /** Format: uuid */
+      id?: string;
+      /** Format: uuid */
+      definitionId?: string;
+      descriptorMap?: components["schemas"]["VerifiablePresentation.PresentationSubmission.DescriptorMap"][];
+    };
+    "VerifiablePresentation.PresentationSubmission.DescriptorMap": {
+      /** Format: int32 */
+      pathAsIndex?: number;
+      id?: string;
+      format?: string;
+      path?: string;
+    };
     "VerifiablePresentation_VerifiableCredential.VerifiableIndyCredential_": {
       verifiableCredential?:
         | components["schemas"]["VerifiableCredential.VerifiableIndyCredential"][]
         | null;
       "@context": string[];
-      id?: string | null;
       type: string[];
-      proof?: components["schemas"]["LinkedDataProof"] & (unknown | null);
+      id?: string | null;
+      presentationSubmission?: components["schemas"]["VerifiablePresentation.PresentationSubmission"];
+      proof?: components["schemas"]["LinkedDataProof"] | null;
     };
-    Void: { [key: string]: unknown };
     WalletCredentialRequest: {
       label?: string;
     };
@@ -1283,7 +1287,7 @@ export interface components {
       schemaId?: string;
       isPublic?: boolean;
       label?: string;
-      /** @example [object Object] */
+      /** @example {} */
       document?: { [key: string]: unknown }[];
     };
   };
@@ -1307,7 +1311,7 @@ export interface operations {
       query: {
         activity?: boolean | null;
         task?: boolean | null;
-        type?: components["schemas"]["ActivityType"] & (unknown | null);
+        type?: components["schemas"]["ActivityType"] | null;
       };
     };
     responses: {
@@ -1340,11 +1344,7 @@ export interface operations {
     parameters: {};
     responses: {
       /** HttpResponse */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
     /** TAADigestRequest */
     requestBody: {
@@ -1711,11 +1711,7 @@ export interface operations {
     };
     responses: {
       /** HttpResponse */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
   };
   /** List issued or received credentials */
@@ -1723,10 +1719,9 @@ export interface operations {
     parameters: {
       query: {
         /** PaginationCommand */
-        pc?: components["schemas"]["PaginationCommand"] & (unknown | null);
+        pc?: components["schemas"]["PaginationCommand"] | null;
         /** issuer or holder */
-        role?: components["schemas"]["CredentialExchangeRole"] &
-          (unknown | null);
+        role?: components["schemas"]["CredentialExchangeRole"] | null;
         /** partner id */
         partnerId?: string | null;
       };
@@ -1769,11 +1764,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
     /** DeclineExchangeRequest */
     requestBody: {
@@ -1795,11 +1786,7 @@ export interface operations {
     };
     responses: {
       /** HttpResponse */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
   };
   /** Revoke an issued credential */
@@ -1866,19 +1853,6 @@ export interface operations {
       };
     };
   };
-  /** Issue OOB credential step 2 - redirect with encoded offer */
-  handleConnectionLess: {
-    parameters: {
-      path: {
-        /** UUID */
-        id: string;
-      };
-    };
-    responses: {
-      /** Redirect with encoded credential offer in the location header */
-      301: never;
-    };
-  };
   /** Auto credential exchange: Issuer sends credential to holder */
   issueCredential: {
     parameters: {};
@@ -1920,11 +1894,7 @@ export interface operations {
     parameters: {};
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
     /** AdHocMessageRequest */
     requestBody: {
@@ -1973,11 +1943,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
     /** MessageTemplateCmd.MessageTemplateRequest */
     requestBody: {
@@ -1996,11 +1962,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
   };
   /** List message trigger configuration */
@@ -2043,11 +2005,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
     /** MessageTriggerConfigCmd.TriggerConfigRequest */
     requestBody: {
@@ -2066,11 +2024,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
   };
   /** List user info */
@@ -2113,11 +2067,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
     /** MessageUserInfoCmd.UserInfoRequest */
     requestBody: {
@@ -2136,11 +2086,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
   };
   /** Get known partners */
@@ -2245,11 +2191,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status, no Body */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
   };
   /** Manual connection flow. Accept partner connection request */
@@ -2262,11 +2204,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status, no Body */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
   };
   /** Request credential from partner */
@@ -2279,11 +2217,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
     /** RequestCredentialRequest */
     requestBody: {
@@ -2342,11 +2276,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
     /** SendMessageRequest */
     requestBody: {
@@ -2386,11 +2316,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
     /** One of requestBySchema or requestRaw */
     requestBody: {
@@ -2411,11 +2337,7 @@ export interface operations {
     };
     responses: {
       /** Http Status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
     /** PresentationRequestVersion */
     requestBody: {
@@ -2438,11 +2360,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
     /** SendProofRequest */
     requestBody: {
@@ -2473,11 +2391,7 @@ export interface operations {
     parameters: {};
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
     /** One of requestBySchema or requestRaw */
     requestBody: {
@@ -2491,11 +2405,7 @@ export interface operations {
     parameters: {};
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
     /** SendProofRequest */
     requestBody: {
@@ -2531,11 +2441,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
   };
   /** Manual proof exchange flow. Reject ProofRequest received from a partner */
@@ -2548,11 +2454,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
     /** DeclineExchangeRequest */
     requestBody: {
@@ -2573,10 +2475,25 @@ export interface operations {
       };
     };
     responses: {
-      /** list of PresentationRequestCredentials */
+      /** list of PresentationRequestCredentialsIndy */
       200: {
         content: {
-          "application/json": components["schemas"]["PresentationRequestCredentials"][];
+          "application/json": components["schemas"]["PresentationRequestCredentialsIndy"][];
+        };
+      };
+    };
+  };
+  getMatchingDifCredentials: {
+    parameters: {
+      path: {
+        id: string;
+      };
+    };
+    responses: {
+      /** getMatchingDifCredentials 200 response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["PresentationRequestCredentialsLD"];
         };
       };
     };
@@ -2591,11 +2508,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
     /** ApproveProofRequest */
     requestBody: {
@@ -2673,11 +2586,7 @@ export interface operations {
     };
     responses: {
       /** Http Status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
   };
   /** Get simple BPA information and usage statistics */
@@ -2697,7 +2606,7 @@ export interface operations {
     parameters: {
       query: {
         /** PaginationCommand */
-        pc?: components["schemas"]["PaginationCommand"] & (unknown | null);
+        pc?: components["schemas"]["PaginationCommand"] | null;
       };
     };
     responses: {
@@ -2736,11 +2645,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
     /** WalletCredentialRequest */
     requestBody: {
@@ -2759,11 +2664,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
   };
   /**
@@ -2779,11 +2680,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
   };
   /** Manual credential exchange: Holder declines credential offer from issuer */
@@ -2796,11 +2693,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
     /** DeclineExchangeRequest */
     requestBody: {
@@ -2819,11 +2712,7 @@ export interface operations {
     };
     responses: {
       /** HttpResponse */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
   };
   /** List wallet documents */
@@ -2831,7 +2720,7 @@ export interface operations {
     parameters: {
       query: {
         /** PaginationCommand multi value list of types to filter */
-        pc?: components["schemas"]["PaginationCommand"] & (unknown | null);
+        pc?: components["schemas"]["PaginationCommand"] | null;
       };
     };
     responses: {
@@ -2911,81 +2800,7 @@ export interface operations {
     };
     responses: {
       /** HTTP status */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
-    };
-  };
-  /** List registered webhooks */
-  listRegisteredWebhooks: {
-    parameters: {};
-    responses: {
-      /** list of RegisteredWebhookResponse */
-      200: {
-        content: {
-          "application/json": components["schemas"]["RegisteredWebhook.RegisteredWebhookResponse"][];
-        };
-      };
-    };
-  };
-  /** Register a new webhook */
-  registerWebhook: {
-    parameters: {};
-    responses: {
-      /** RegisteredWebhookResponse */
-      200: {
-        content: {
-          "application/json": components["schemas"]["RegisteredWebhook.RegisteredWebhookResponse"];
-        };
-      };
-    };
-    /** RegisteredWebhook */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RegisteredWebhook"];
-      };
-    };
-  };
-  /** Update a registered webhook */
-  updateWebhook: {
-    parameters: {
-      path: {
-        /** the webhook's id */
-        id: string;
-      };
-    };
-    responses: {
-      /** RegisteredWebhookResponse */
-      200: {
-        content: {
-          "application/json": components["schemas"]["RegisteredWebhook.RegisteredWebhookResponse"];
-        };
-      };
-    };
-    /** RegisteredWebhook */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RegisteredWebhook"];
-      };
-    };
-  };
-  /** Delete a registered webhook */
-  deleteWebhook: {
-    parameters: {
-      path: {
-        /** the webhook's id */
-        id: string;
-      };
-    };
-    responses: {
-      /** always OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Void"];
-        };
-      };
+      200: unknown;
     };
   };
   getMasterdata: {

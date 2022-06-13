@@ -105,6 +105,7 @@
             v-if="expertMode && enableV2Switch"
             v-model="useV2Exchange"
             :label="$t('button.useV2')"
+            :disabled="isV2"
           ></v-switch>
           <v-bpa-button color="secondary" @click="cancel()">{{
             $t("button.cancel")
@@ -188,6 +189,7 @@ export default {
       this.document.isPublic = this.isProfile(this.document.type);
       this.isReady = true;
       this.intDoc = { ...this.document };
+      this.useV2Exchange = this.isV2;
     }
   },
   data: () => {
@@ -220,6 +222,11 @@ export default {
       return this.createButtonLabel
         ? this.createButtonLabel
         : this.$t("button.save");
+    },
+    isV2(): boolean {
+      return (
+        this.document && CredentialTypes.JSON_LD.type === this.document.type
+      );
     },
   },
   watch: {},
@@ -353,9 +360,5 @@ export default {
 <style scoped>
 .bg-light {
   background-color: #fafafa;
-}
-
-.bg-light-2 {
-  background-color: #ececec;
 }
 </style>

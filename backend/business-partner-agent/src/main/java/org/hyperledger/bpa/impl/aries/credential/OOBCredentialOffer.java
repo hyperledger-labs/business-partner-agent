@@ -44,6 +44,7 @@ import org.hyperledger.bpa.persistence.model.BPACredentialDefinition;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.Tag;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.repository.BPACredentialDefinitionRepository;
 import org.hyperledger.bpa.persistence.repository.IssuerCredExRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
@@ -165,7 +166,7 @@ public class OOBCredentialOffer {
                 .credentialExchangeId(r.getCredentialExchangeId())
                 .threadId(r.getThreadId())
                 .credentialOffer(r.getCredentialProposalDict() != null
-                        ? BPACredentialExchange.ExchangePayload
+                        ? ExchangePayload
                                 .indy(r.getCredentialProposalDict().getCredentialProposal())
                         : null)
                 .indyCredential(Credential.builder()

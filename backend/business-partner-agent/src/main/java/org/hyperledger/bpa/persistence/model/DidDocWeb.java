@@ -27,12 +27,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential;
+import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.api.resolver.DIDDocument;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.Instant;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -62,13 +64,13 @@ public class DidDocWeb {
      */
     @Nullable
     @TypeDef(type = DataType.JSON)
-    private Map<String, Object> didDoc;
+    private DIDDocument didDoc;
 
     /**
      * My public profile, verifiable presentation structure
      */
     @Nullable
     @TypeDef(type = DataType.JSON)
-    private Map<String, Object> profileJson;
+    private VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential> profileJson;
 
 }

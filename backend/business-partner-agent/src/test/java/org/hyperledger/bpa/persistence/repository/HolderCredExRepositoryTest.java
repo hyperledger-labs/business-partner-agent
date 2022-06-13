@@ -30,6 +30,7 @@ import org.hyperledger.bpa.BaseTest;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -96,12 +97,8 @@ class HolderCredExRepositoryTest extends BaseTest {
         ex1 = holderCredExRepo.findById(ex1.getId()).orElseThrow();
         assertNull(ex1.getPartner());
 
-        updated = holderCredExRepo.updateIssuerByPartnerId(other.getId(), "My Bank");
-        assertEquals(1, updated.intValue());
-
         final List<BPACredentialExchange> cred = holderCredExRepo.findByPartnerId(other.getId());
         assertEquals(1, cred.size());
-        assertEquals("My Bank", cred.get(0).getIssuer());
     }
 
     @Test
@@ -159,7 +156,7 @@ class HolderCredExRepositoryTest extends BaseTest {
         BPACredentialExchange saved = holderCredExRepo.save(createDummyCredEx(p));
         saved.pushStates(CredentialExchangeState.OFFER_RECEIVED);
         holderCredExRepo.updateOnCredentialOfferEvent(saved.getId(), saved.getState(), saved.getStateToTimestamp(),
-                BPACredentialExchange.ExchangePayload
+                ExchangePayload
                         .indy(V1CredentialExchange.CredentialProposalDict.CredentialProposal.builder()
                                 .attributes(CredentialAttributes.from(Map.of("attr1", "value1")))
                                 .build()));

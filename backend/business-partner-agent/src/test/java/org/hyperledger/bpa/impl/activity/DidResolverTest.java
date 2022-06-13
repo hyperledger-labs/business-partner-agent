@@ -26,6 +26,7 @@ import org.hyperledger.bpa.client.DidDocClient;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -90,7 +91,10 @@ class DidResolverTest extends BaseTest {
     @Test
     void testIgnoreMissingDid() {
         PartnerProof pp = PartnerProof.builder()
-                .proof(Map.of("other", "not-a-did"))
+                .proof(ExchangePayload.indy(Map.of("other", PresentationExchangeRecord.RevealedAttributeGroup
+                        .builder()
+                        .revealedAttribute("something", "not-a-did")
+                        .build())))
                 .build();
         when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.TRUE).build()));
         when(ur.getDidDocument(any())).thenReturn(Optional.of(new DIDDocument()));
@@ -101,7 +105,10 @@ class DidResolverTest extends BaseTest {
     @Test
     void testResolveDidAndUpdatePartner() {
         PartnerProof pp = PartnerProof.builder()
-                .proof(Map.of("did", "did:dummy"))
+                .proof(ExchangePayload.indy(Map.of("did", PresentationExchangeRecord.RevealedAttributeGroup
+                        .builder()
+                        .revealedAttribute("did", "did:dummy")
+                        .build())))
                 .build();
         when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.TRUE).build()));
         when(ur.getDidDocument(any())).thenReturn(Optional.empty());

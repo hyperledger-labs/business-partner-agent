@@ -176,7 +176,7 @@ export default {
       this.currentRoomId = room.roomId;
     },
 
-    async sendMessage({ content, roomId, file, replyMessage }) {
+    async sendMessage({ content, roomId }) {
       // we are sending content to currentRoomId (partner)...
       await partnerService.sendMessage(roomId, content);
       // reload our messages (will include our persisted message we just sent)

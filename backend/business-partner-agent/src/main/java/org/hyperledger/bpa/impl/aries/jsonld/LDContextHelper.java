@@ -24,6 +24,7 @@ import jakarta.inject.Singleton;
 import lombok.NonNull;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.aries.api.issue_credential_v2.V2CredentialExchangeFree;
+import org.hyperledger.aries.api.jsonld.ProofType;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
@@ -61,11 +62,15 @@ public class LDContextHelper {
     BPAMessageSource.DefaultMessageSource ms;
 
     public static String findSchemaId(@Nullable V20CredExRecordByFormat.LdProof ldProof) {
-        if (ldProof == null) {
-            return null;
-        }
+        return ldProof == null ? null : findSchemaId(ldProof.getCredential());
+    }
+
+    public static String findSchemaId(@Nullable VerifiableCredential vc) {
+        return vc == null ? null : findSchemaId(vc.getContext());
+    }
+
+    public static String findSchemaId(@NonNull List<Object> context) {
         // TODO this does not consider all use cases like complex schemas
-        List<Object> context = ldProof.getCredential().getContext();
         List<Object> contextCopy = new ArrayList<>(context);
         contextCopy.removeAll(CredentialType.JSON_LD.getContext());
         return (String) contextCopy.get(0);
@@ -94,7 +99,7 @@ public class LDContextHelper {
                                 .build())
                         .options(V2CredentialExchangeFree.LDProofVCDetailOptions.builder()
                                 // TODO expose key type to user
-                                .proofType(V2CredentialExchangeFree.ProofType.Ed25519Signature2018)
+                                .proofType(ProofType.Ed25519Signature2018)
                                 .build())
                         .build())
                 .build();

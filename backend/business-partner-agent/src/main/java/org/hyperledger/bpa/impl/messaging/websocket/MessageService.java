@@ -20,7 +20,6 @@ package org.hyperledger.bpa.impl.messaging.websocket;
 import io.micronaut.scheduling.annotation.Async;
 import io.micronaut.websocket.WebSocketSession;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
-import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.MessageQueue;
 import org.hyperledger.bpa.persistence.repository.MessageQueueRepository;
 import org.slf4j.Logger;
@@ -39,8 +38,6 @@ public interface MessageService {
 
     MessageQueueRepository getQueue();
 
-    Converter getConv();
-
     Logger getLog();
 
     default String baseChannel() {
@@ -54,7 +51,7 @@ public interface MessageService {
             if (hasConnectedSessions()) {
                 send(message);
             } else {
-                MessageQueue msg = MessageQueue.builder().message(getConv().toMap(message)).build();
+                MessageQueue msg = MessageQueue.builder().message(message).build();
                 getQueue().save(msg);
             }
         } catch (Exception e) {
@@ -66,10 +63,7 @@ public interface MessageService {
     default void sendStored() {
         StreamSupport.stream(getQueue().findAll().spliterator(), false)
                 .filter(msg -> msg.getMessage() != null)
-                .forEach(msg -> {
-                    WebSocketMessageBody toSend = getConv().fromMap(msg.getMessage(), WebSocketMessageBody.class);
-                    send(toSend);
-                });
+                .forEach(msg -> send(msg.getMessage()));
         getQueue().deleteAll();
     }
 }
