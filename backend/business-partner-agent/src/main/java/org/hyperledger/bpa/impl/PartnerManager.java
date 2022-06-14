@@ -98,11 +98,8 @@ public class PartnerManager {
     }
 
     public void removePartnerById(@NonNull UUID id) {
-        repo.findById(id).ifPresent(p -> {
-            if (p.getConnectionId() != null) {
-                cm.removeConnection(p.getConnectionId());
-            }
-        });
+        Partner p = repo.findById(id).orElseThrow(EntityNotFoundException::new);
+        cm.removeConnection(p);
         repo.deleteByPartnerId(id);
     }
 

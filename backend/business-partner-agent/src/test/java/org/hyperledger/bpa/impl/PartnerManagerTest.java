@@ -19,9 +19,15 @@ package org.hyperledger.bpa.impl;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.controller.api.partner.UpdatePartnerRequest;
+import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
+import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.Tag;
+import org.hyperledger.bpa.persistence.repository.BPASchemaRepository;
+import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 import org.hyperledger.bpa.persistence.repository.TagRepository;
 import org.junit.jupiter.api.Assertions;
@@ -40,6 +46,12 @@ public class PartnerManagerTest {
 
     @Inject
     PartnerRepository partnerRepo;
+
+    @Inject
+    HolderCredExRepository holderRepo;
+
+    @Inject
+    BPASchemaRepository schemaRepo;
 
     @Test
     void testAddAndRemovePartnerTag() {
@@ -96,6 +108,29 @@ public class PartnerManagerTest {
         Optional<Tag> dbTag1 = tagRepo.findById(t1.getId());
         Assertions.assertTrue(dbTag1.isPresent());
         Assertions.assertEquals(0, dbTag1.get().getPartners().size());
+    }
+
+    @Test
+    void testRemovePartner() {
+        Partner p = partnerRepo.save(buildPartnerWithoutTag().build());
+        BPASchema schema = schemaRepo.save(BPASchema.builder()
+                .schemaId("mySchema")
+                .schemaAttributeName("test")
+                .type(CredentialType.JSON_LD)
+                .build());
+        BPACredentialExchange credEx = holderRepo.save(BPACredentialExchange
+                .builder()
+                .partner(p)
+                .schema(schema)
+                .credentialExchangeId("1")
+                .threadId("2")
+                .state(CredentialExchangeState.CREDENTIAL_ACKED)
+                .build());
+        partnerManager.removePartnerById(p.getId());
+
+        Assertions.assertTrue(partnerRepo.findById(p.getId()).isEmpty());
+        Assertions.assertTrue(holderRepo.findById(credEx.getId()).isEmpty());
+        Assertions.assertEquals(0, holderRepo.count());
     }
 
     private void checkTagOnPartner(UUID partnerId, String... tagName) {

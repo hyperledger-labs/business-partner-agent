@@ -101,7 +101,10 @@ public interface HolderCredExRepository extends PageableRepository<BPACredential
 
     Number updateReferent(@Id UUID id, @Nullable String referent);
 
-    @Query("UPDATE bpa_credential_exchange SET partner_id = null WHERE partner_id = :partnerId AND role = 'HOLDER'")
+    @Query("UPDATE bpa_credential_exchange SET partner_id = null " +
+            "WHERE partner_id = :partnerId " +
+            "AND role = 'HOLDER' " +
+            "AND state IN ('CREDENTIAL_ACKED', 'DONE')")
     Number setPartnerIdToNull(UUID partnerId);
 
     // count

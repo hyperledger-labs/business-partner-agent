@@ -166,6 +166,27 @@ class HolderCredExRepositoryTest extends BaseTest {
         assertEquals("value1", exchange.getCredentialOffer().getIndy().getAttributes().get(0).getValue());
     }
 
+    @Test
+    void testSetPartnerIdToNull() {
+        Partner p = createRandomPartner();
+        Partner p2 = createRandomPartner();
+        holderCredExRepo.save(createDummyCredEx(p));
+        BPACredentialExchange done = createDummyCredEx(p).setState(CredentialExchangeState.DONE);
+        holderCredExRepo.save(done);
+        holderCredExRepo.save(createDummyCredEx(p).setState(CredentialExchangeState.CREDENTIAL_RECEIVED));
+        holderCredExRepo.save(createDummyCredEx(p).setState(CredentialExchangeState.PROBLEM));
+
+        Assertions.assertEquals(4, holderCredExRepo.count());
+
+        holderCredExRepo.setPartnerIdToNull(p.getId());
+        partnerRepo.deleteByPartnerId(p.getId());
+
+        Assertions.assertEquals(2, holderCredExRepo.count());
+        Assertions.assertNull(holderCredExRepo.findById(done.getId()).orElseThrow().getPartner());
+
+        partnerRepo.deleteByPartnerId(p2.getId());
+    }
+
     private static BPACredentialExchange createDummyCredEx(Partner partner) {
         return BPACredentialExchange
                 .builder()
