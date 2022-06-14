@@ -28,7 +28,3 @@ export const getOrganizationalProfile = (state: StateBpa) => {
 export const getCredentials = (state: StateBpa) => {
   return state.credentials;
 };
-
-export const getProofTemplates = (state: StateBpa) => {
-  return state.proofTemplates;
-};

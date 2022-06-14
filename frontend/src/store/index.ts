@@ -21,6 +21,7 @@ import {
   settings,
   partners,
   partnerSelectList,
+  proofTemplates,
 } from "@/store/modules";
 
 Vue.use(Vuex);
@@ -29,7 +30,6 @@ const state: StateBpa = {
   editedDocument: {}, //document currently being edited
   documents: [],
   credentials: [],
-  proofTemplates: [],
   tags: [],
   busyStack: 0,
   expertMode: false,
@@ -53,9 +53,6 @@ const store = new Vuex.Store({
     setExpertMode(state: StateBpa, payload) {
       state.expertMode = payload.isExpert;
     },
-    setProofTemplates(state: StateBpa, payload) {
-      state.proofTemplates = payload.proofTemplates;
-    },
   },
 
   modules: {
@@ -68,6 +65,7 @@ const store = new Vuex.Store({
     settings,
     partners,
     partnerSelectList,
+    proofTemplates,
   },
 });
 

@@ -5,17 +5,9 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-import { PartnerStates } from "@/constants";
 import { EventBus, axios, apiBaseUrl } from "../main";
 import adminService from "@/services/admin-service";
-import proofTemplateService from "@/services/proof-template-service";
-import partnerService from "@/services/partner-service";
-import {
-  AriesCredential,
-  Page,
-  ProofTemplate,
-  walletService,
-} from "@/services";
+import { AriesCredential, Page, walletService } from "@/services";
 import { AxiosResponse } from "axios";
 
 export const loadTags = async ({ commit }) => {
@@ -69,23 +61,6 @@ export const loadCredentials = async ({ commit }) => {
       commit({
         type: "loadCredentialsFinished",
         credentials: credentials,
-      });
-    })
-    .catch((error) => {
-      console.error(error);
-      EventBus.$emit("error", error);
-    });
-};
-
-export const loadProofTemplates = async ({ commit }) => {
-  proofTemplateService
-    .getProofTemplates()
-    .then((result) => {
-      const proofTemplates: ProofTemplate[] = result.data;
-
-      commit({
-        type: "setProofTemplates",
-        proofTemplates: proofTemplates,
       });
     })
     .catch((error) => {

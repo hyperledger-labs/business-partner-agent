@@ -5,13 +5,18 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-import { CredDef, PartnerAPI, RuntimeConfig, SchemaAPI } from "@/services";
+import {
+  CredDef,
+  PartnerAPI,
+  ProofTemplate,
+  RuntimeConfig,
+  SchemaAPI,
+} from "@/services";
 
 export interface StateBpa {
   editedDocument: any;
   documents: any[];
   credentials: [];
-  proofTemplates: [];
   tags: [];
   busyStack: number;
   expertMode: boolean;
@@ -56,6 +61,10 @@ export interface IStateCredDefSelectList {
 
 export interface IStatePartners {
   partners: PartnerAPI[];
+}
+
+export interface IStateProofTemplates {
+  proofTemplates: ProofTemplate[];
 }
 
 export interface IStateSettings {
