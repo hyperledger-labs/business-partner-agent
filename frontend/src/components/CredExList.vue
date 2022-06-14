@@ -117,6 +117,8 @@
             :label="$t('component.credExList.dialog.partnerLabel')"
             v-model="partner"
             :items="partnerList"
+            item-value="id"
+            item-text="name"
             outlined
             disabled
             dense
@@ -127,6 +129,8 @@
             return-object
             v-model="credDef"
             :items="credDefList"
+            item-value="id"
+            item-text="displayText"
             outlined
             :disabled="!documentStateIsProposalReceived"
             dense
@@ -265,9 +269,11 @@
 </style>
 <script lang="ts">
 import {
+  CredDef,
   CredentialOfferRequest,
   issuerService,
   PageOptions,
+  PartnerAPI,
   walletService,
 } from "@/services";
 import Cred from "@/components/Credential.vue";
@@ -306,7 +312,7 @@ export default {
     // Open Item directly. Is used for links from notifications/activity
     if (this.openItemById) {
       // FIXME: items observable is typically not resolved yet. Then items is empty
-      const item = this.items.find((item) => item.id === this.openItemById);
+      const item = this.exchanges.find((item) => item.id === this.openItemById);
       if (item) {
         this.openItem(item);
       } else {
@@ -429,8 +435,8 @@ export default {
       hideFooter: false,
       exchanges: [],
       document: {},
-      partner: {},
-      credDef: {},
+      partner: {} as PartnerAPI,
+      credDef: {} as CredDef,
       revoked: [],
     };
   },
@@ -471,8 +477,12 @@ export default {
     },
     openItem(item) {
       this.dialog = true;
-      this.partner = this.partnerList.find((p) => p.value === item.partner.id);
-      this.credDef = this.credDefList.find((p) => p.value === item.credDef.id);
+      this.partner = this.partnerList.find(
+        (p: PartnerAPI) => p.id === item.partner.id
+      );
+      this.credDef = this.credDefList.find(
+        (p: CredDef) => p.id === item.credDef.id
+      );
 
       const credentialStateToTimestamp = Object.entries(item.stateToTimestamp);
       for (const stateElement of credentialStateToTimestamp) {

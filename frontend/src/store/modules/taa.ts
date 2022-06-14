@@ -6,32 +6,33 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { EventBus, axios, apiBaseUrl } from "../../main";
+import { IStateTransactionAuthorAgreement } from "@/store/state-type";
 
-const state = {
+const state: IStateTransactionAuthorAgreement = {
   taaRequired: false,
   taaText: "No Transaction Author Agreement loaded",
-  taaDigest: String,
+  taaDigest: "",
   taaVersion: "-",
   taaLoaded: false,
 };
 
 const getters = {
-  taaRequired: (state) => {
+  taaRequired: (state: IStateTransactionAuthorAgreement) => {
     return state.taaRequired;
   },
-  taaText: (state) => {
+  taaText: (state: IStateTransactionAuthorAgreement) => {
     return state.taaText;
   },
-  taaVersion: (state) => {
+  taaVersion: (state: IStateTransactionAuthorAgreement) => {
     return state.taaVersion;
   },
-  taaLoaded: (state) => {
+  taaLoaded: (state: IStateTransactionAuthorAgreement) => {
     return state.taaLoaded;
   },
 };
 
 const mutations = {
-  setTaa(state, payload) {
+  setTaa(state: IStateTransactionAuthorAgreement, payload) {
     if (payload) {
       state.taaText = payload.taa.text;
       state.taaDigest = payload.taa.digest;
@@ -39,7 +40,7 @@ const mutations = {
     }
     state.taaLoaded = true;
   },
-  setTaaRequired(state, payload) {
+  setTaaRequired(state: IStateTransactionAuthorAgreement, payload) {
     state.taaRequired = payload.taaRequired;
   },
 };
