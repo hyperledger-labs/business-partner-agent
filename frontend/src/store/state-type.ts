@@ -13,9 +13,12 @@ export interface StateBpa {
   credentials: [];
   proofTemplates: [];
   tags: [];
-  partnerSelectList: [];
   busyStack: number;
   expertMode: boolean;
+}
+
+export interface IStatePartnerSelectList {
+  partnerSelectList: PartnerAPI[];
 }
 
 export interface IStateSchemas {

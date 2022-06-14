@@ -16,6 +16,8 @@
           :label="$t('component.issueCredential.partnerLabel')"
           v-model="partner"
           :items="partnerList"
+          item-value="id"
+          item-text="name"
           outlined
           :disabled="this.$props.partnerId !== undefined"
           dense
@@ -165,7 +167,12 @@
 <script lang="ts">
 import Vue from "vue";
 import { EventBus } from "@/main";
-import { CredDef, IssueCredentialRequestIndy, issuerService } from "@/services";
+import {
+  CredDef,
+  IssueCredentialRequestIndy,
+  issuerService,
+  PartnerAPI,
+} from "@/services";
 import VBpaButton from "@/components/BpaButton";
 import * as textUtils from "@/utils/textUtils";
 import * as CSV from "csv-string";
@@ -190,8 +197,8 @@ export default {
     return {
       isLoading: false,
       isBusy: false,
-      partner: {},
-      credDef: {},
+      partner: {} as PartnerAPI,
+      credDef: {} as CredDef,
       credential: {},
       credentialFields: {},
       submitDisabled: true,
@@ -210,7 +217,7 @@ export default {
       return this.$store.state.expertMode;
     },
     partnerList: {
-      get() {
+      get(): PartnerAPI[] {
         return this.$store.getters.getPartnerSelectList;
       },
     },
@@ -231,12 +238,12 @@ export default {
   watch: {
     partnerId(value: string) {
       if (value) {
-        this.partner = this.partnerList.find((p) => p.value === value);
+        this.partner = this.partnerList.find((p: PartnerAPI) => p.id === value);
       }
     },
     credDefId(value: string) {
       if (value) {
-        this.credDef = this.credDefList.find((p) => p.id === value);
+        this.credDef = this.credDefList.find((p: CredDef) => p.id === value);
         this.credDefSelected();
       }
     },
@@ -245,14 +252,14 @@ export default {
         // load up our partner and cred def (if needed)
         if (!this.partner?.id) {
           this.partner = this.partnerList.find(
-            (p) => p.value === this.$props.partnerId
+            (p: PartnerAPI) => p.id === this.$props.partnerId
           );
         }
         // this will happen if the form was opened with credDefId and then is cancelled and re-opened with the same credDefId
         // the credDef is empty and won't initialize unless credDefId changes.
         if (!this.credDef?.schema?.schemaAttributeNames) {
           this.credDef = this.credDefList.find(
-            (p) => p.id === this.$props.credDefId
+            (p: CredDef) => p.id === this.$props.credDefId
           );
           this.credDefSelected();
         }
@@ -269,13 +276,13 @@ export default {
 
       if (this.$props.partnerId) {
         this.partner = this.partnerList.find(
-          (p) => p.value === this.$props.partnerId
+          (p: PartnerAPI) => p.id === this.$props.partnerId
         );
       }
 
       if (this.$props.credDefId) {
         this.credDef = this.credDefList.find(
-          (c) => c.id === this.$props.credDefId
+          (c: CredDef) => c.id === this.$props.credDefId
         );
       }
 

@@ -20,6 +20,7 @@ import {
   schemas,
   settings,
   partners,
+  partnerSelectList,
 } from "@/store/modules";
 
 Vue.use(Vuex);
@@ -30,7 +31,6 @@ const state: StateBpa = {
   credentials: [],
   proofTemplates: [],
   tags: [],
-  partnerSelectList: [],
   busyStack: 0,
   expertMode: false,
 };
@@ -56,9 +56,6 @@ const store = new Vuex.Store({
     setProofTemplates(state: StateBpa, payload) {
       state.proofTemplates = payload.proofTemplates;
     },
-    setPartnerSelectList(state: StateBpa, payload) {
-      state.partnerSelectList = payload.list;
-    },
   },
 
   modules: {
@@ -70,6 +67,7 @@ const store = new Vuex.Store({
     schemas,
     settings,
     partners,
+    partnerSelectList,
   },
 });
 

@@ -32,7 +32,3 @@ export const getCredentials = (state: StateBpa) => {
 export const getProofTemplates = (state: StateBpa) => {
   return state.proofTemplates;
 };
-
-export const getPartnerSelectList = (state: StateBpa) => {
-  return state.partnerSelectList;
-};

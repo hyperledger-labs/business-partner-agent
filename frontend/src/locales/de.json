@@ -587,6 +587,7 @@
       "title": "Berechtigungsnachweis ausstellen",
       "partnerLabel": "Geschäftspartner",
       "credDefLabel": "Berechtigungsnachweis Definition",
+      "jsonLdSchemaLabel": "JSON-LD Schema",
       "successMessage": "Berechtigungsnachweis ausgestellt",
       "attributesTitle": "Berechtigungsnachweis Inhalt",
       "options": {

@@ -93,28 +93,3 @@ export const loadProofTemplates = async ({ commit }) => {
       EventBus.$emit("error", error);
     });
 };
-
-export const loadPartnerSelectList = async ({ commit }) => {
-  partnerService
-    .getPartners()
-    .then((result) => {
-      if (result.status === 200) {
-        // filter out partners that are only at the invitation stage, we can't do anything until they accept.
-        const partners = result.data
-          .filter((partner) => {
-            return partner.state !== PartnerStates.INVITATION.value;
-          })
-          .map((p) => {
-            return { value: p.id, text: p.name, ...p };
-          });
-        commit({
-          type: "setPartnerSelectList",
-          list: partners,
-        });
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-      EventBus.$emit("error", error);
-    });
-};

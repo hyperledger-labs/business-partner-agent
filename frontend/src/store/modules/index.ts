@@ -13,3 +13,4 @@ export { default as credDefSelectList } from "./cred-def-select-list";
 export { default as schemas } from "./schemas";
 export { default as settings } from "./settings";
 export { default as partners } from "./partners";
+export { default as partnerSelectList } from "./partner-select-list";

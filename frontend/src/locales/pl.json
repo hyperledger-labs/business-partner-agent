@@ -586,6 +586,7 @@
       "title": "Wystaw uprawnienia",
       "partnerLabel": "Partner",
       "credDefLabel": "Definicja uprawnień",
+      "jsonLdSchemaLabel": "JSON-LD Schema",
       "successMessage": "Wydano uprawnienia",
       "attributesTitle": "Zawartość uprawnień",
       "options": {

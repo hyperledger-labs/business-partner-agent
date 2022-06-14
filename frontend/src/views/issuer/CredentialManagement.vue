@@ -17,6 +17,7 @@
             :label="$t('view.issueCredentials.cards.action.partnerLabel')"
             v-model="partner"
             :items="partnerList"
+            item-value="id"
             return-object
             class="mx-4"
             flat
@@ -35,7 +36,7 @@
                 :color="partnerStateColor(data.item)"
                 >$vuetify.icons.partnerState</v-icon
               >
-              {{ data.item.text }}
+              {{ data.item.name }}
             </template>
             <template v-slot:selection="data">
               <v-icon
@@ -44,7 +45,7 @@
                 :color="partnerStateColor(data.item)"
                 >$vuetify.icons.partnerState</v-icon
               >
-              {{ data.item.text }}
+              {{ data.item.name }}
             </template>
           </v-autocomplete>
           <v-switch
@@ -155,6 +156,7 @@ import IssueCredentialIndyOob from "@/components/issue/IssueCredentialIndyOob.vu
 import IssueCredentialIndy from "@/components/issue/IssueCredentialIndy.vue";
 import { CredentialTypes } from "@/constants";
 import IssueCredentialJsonLd from "@/components/issue/IssueCredentialJsonLd.vue";
+import { PartnerAPI } from "@/services";
 
 export default {
   name: "CredentialManagement",
@@ -172,7 +174,7 @@ export default {
     return {
       isLoadingCredentials: false,
       issuedCredentials: [],
-      partner: {},
+      partner: {} as PartnerAPI,
       partnerId: "",
       credDefIndyOrSchemaJsonLd: {},
       credDefId: "",
@@ -187,12 +189,12 @@ export default {
   },
   computed: {
     partnerList: {
-      get() {
+      get(): PartnerAPI[] {
         return [
           ...(!this.useJsonLd
             ? [
                 {
-                  text: this.$t(
+                  name: this.$t(
                     "view.issueCredentials.cards.action.invitationWithAttachmentLabel"
                   ),
                   id: "invitationWithAttachment",

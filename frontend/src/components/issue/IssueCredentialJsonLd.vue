@@ -16,12 +16,14 @@
           :label="$t('component.issueCredential.partnerLabel')"
           v-model="partner"
           :items="partnerList"
+          item-value="id"
+          item-text="name"
           outlined
           :disabled="this.partnerId !== undefined"
           dense
         ></v-select>
         <v-select
-          :label="$t('component.issueCredential.credDefLabel')"
+          :label="$t('component.issueCredential.jsonLdSchemaLabel')"
           return-object
           v-model="schemaJsonLd"
           :items="schemasJsonLd"
@@ -139,7 +141,7 @@ export default {
   watch: {
     partnerId(value: string) {
       if (value) {
-        this.partner = this.partnerList.find((p) => p.value === value);
+        this.partner = this.partnerList.find((p) => p.id === value);
       }
     },
     schemaId(value: string) {
@@ -151,9 +153,7 @@ export default {
     open(value: boolean) {
       if (value) {
         if (!this.partner?.id) {
-          this.partner = this.partnerList.find(
-            (p) => p.value === this.partnerId
-          );
+          this.partner = this.partnerList.find((p) => p.id === this.partnerId);
         }
         if (!this.schemaJsonLd?.schemaAttributeNames) {
           this.schemaJsonLd = this.schemasJsonLd.find(
@@ -171,7 +171,7 @@ export default {
       this.schemaJsonLd = {};
 
       if (this.partnerId) {
-        this.partner = this.partnerList.find((p) => p.value === this.partnerId);
+        this.partner = this.partnerList.find((p) => p.id === this.partnerId);
       }
 
       if (this.schemaId) {
