@@ -230,6 +230,9 @@ export default {
           return [];
         }
       },
+      set: function (value) {
+        this.dummy = value;
+      },
     },
   },
   methods: {
@@ -299,6 +302,7 @@ export default {
       Predicates,
       Restrictions,
       RequestTypes,
+      dummy: [],
     };
   },
   components: { Timeline },

@@ -17,7 +17,7 @@
     "update-backend-typings": "./update-backend-typings.sh",
     "postinstall": "npm run license && npm run prettify",
     "prepare": "cd ../ && husky install ./frontend/.husky",
-    "prettify": "prettier --write '**/*.{css,html,js,json,mjs,scss,ts,tsx,yml,md,vue}'"
+    "prettify": "prettier --write \"**/*.{css,html,js,json,mjs,scss,ts,tsx,yml,md,vue}\""
   },
   "dependencies": {
     "axios": "0.24.0",
