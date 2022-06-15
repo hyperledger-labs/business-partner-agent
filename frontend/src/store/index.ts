@@ -22,14 +22,13 @@ import {
   partners,
   partnerSelectList,
   proofTemplates,
+  credentials,
 } from "@/store/modules";
 
 Vue.use(Vuex);
 
 const state: StateBpa = {
   editedDocument: {}, //document currently being edited
-  documents: [],
-  credentials: [],
   tags: [],
   busyStack: 0,
   expertMode: false,
@@ -40,12 +39,6 @@ const store = new Vuex.Store({
   getters: getters,
   actions: actions,
   mutations: {
-    loadDocumentsFinished(state: StateBpa, payload) {
-      state.documents = payload.documents;
-    },
-    loadCredentialsFinished(state: StateBpa, payload) {
-      state.credentials = payload.credentials;
-    },
     setTags(state: StateBpa, payload) {
       console.log(payload.tags);
       state.tags = payload.tags;
@@ -66,6 +59,7 @@ const store = new Vuex.Store({
     partners,
     partnerSelectList,
     proofTemplates,
+    credentials,
   },
 });
 

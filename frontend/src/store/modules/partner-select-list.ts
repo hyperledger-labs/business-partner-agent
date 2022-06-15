@@ -32,12 +32,6 @@ export default {
             const partners: PartnerAPI[] = result.data.filter((partner) => {
               return partner.state !== PartnerStates.INVITATION.value;
             });
-            /*
-              .map((p) => {
-                return p; //{ value: p.id, text: p.name, ...p };
-              });
-
-             */
 
             context.commit("setPartnerSelectList", partners);
           }

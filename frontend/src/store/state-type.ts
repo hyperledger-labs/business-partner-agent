@@ -6,7 +6,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import {
+  AriesCredential,
   CredDef,
+  MyDocumentAPI,
   PartnerAPI,
   ProofTemplate,
   RuntimeConfig,
@@ -15,8 +17,6 @@ import {
 
 export interface StateBpa {
   editedDocument: any;
-  documents: any[];
-  credentials: [];
   tags: [];
   busyStack: number;
   expertMode: boolean;
@@ -30,7 +30,7 @@ export interface IStateSchemas {
   schemas: SchemaAPI[];
 }
 
-// TODO
+// TODO: Find out types
 export interface IStateNotifications {
   activityNotifications: any;
   credentialNotifications: any;
@@ -61,6 +61,11 @@ export interface IStateCredDefSelectList {
 
 export interface IStatePartners {
   partners: PartnerAPI[];
+}
+
+export interface IStateCredentialsAndDocuments {
+  credentials: AriesCredential[];
+  documents: MyDocumentAPI[];
 }
 
 export interface IStateProofTemplates {

@@ -5,10 +5,8 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-import { EventBus, axios, apiBaseUrl } from "../main";
+import { EventBus } from "@/main";
 import adminService from "@/services/admin-service";
-import { AriesCredential, Page, walletService } from "@/services";
-import { AxiosResponse } from "axios";
 
 export const loadTags = async ({ commit }) => {
   adminService
@@ -19,48 +17,6 @@ export const loadTags = async ({ commit }) => {
       commit({
         type: "setTags",
         tags: tags,
-      });
-    })
-    .catch((error) => {
-      console.error(error);
-      EventBus.$emit("error", error);
-    });
-};
-
-export const loadDocuments = async ({ commit }) => {
-  walletService
-    .getDocuments()
-    .then((result) => {
-      commit({
-        type: "loadDocumentsFinished",
-        documents: result.data.content,
-      });
-    })
-    .catch((error) => {
-      console.error(error);
-      EventBus.$emit("error", error);
-    });
-};
-
-export const loadCredentials = async ({ commit }) => {
-  axios
-    .get(`${apiBaseUrl}/wallet/credential`)
-    .then((result: AxiosResponse<Page<AriesCredential[]>>) => {
-      const credentials: AriesCredential[] = [];
-      for (const credentialReference of result.data.content) {
-        axios
-          .get(`${apiBaseUrl}/wallet/credential/${credentialReference.id}`)
-          .then((result: AxiosResponse<AriesCredential>) => {
-            credentials.push(result.data);
-          })
-          .catch((error) => {
-            console.error(error);
-            EventBus.$emit("error", error);
-          });
-      }
-      commit({
-        type: "loadCredentialsFinished",
-        credentials: credentials,
       });
     })
     .catch((error) => {
