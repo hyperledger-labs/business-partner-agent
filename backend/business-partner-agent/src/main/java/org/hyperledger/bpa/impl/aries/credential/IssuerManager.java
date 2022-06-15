@@ -323,7 +323,7 @@ public class IssuerManager extends CredentialManagerBase {
     public void handleV2CredentialRequest(@NonNull V20CredExRecord ex) {
         issuerCredExRepo.findByCredentialExchangeId(ex.getCredentialExchangeId()).ifPresentOrElse(db -> {
             try {
-                if (Boolean.FALSE.equals(acaPyConfig.getAutoRespondCredentialRequest())) {
+                if (Boolean.FALSE.equals(acaPyConfig.getAutoRespondCredentialRequest()) && !ex.autoIssueEnabled()) {
                     ac.issueCredentialV2RecordsIssue(ex.getCredentialExchangeId(),
                             V20CredIssueRequest.builder().build());
                 }
