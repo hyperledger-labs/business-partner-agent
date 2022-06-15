@@ -5,11 +5,11 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-export { default as chat } from "./messages";
+export { default as chat } from "./chat";
 export { default as notifications } from "./notifications";
 export { default as socketEvents } from "./socket-events";
 export { default as taa } from "./taa";
-export { default as credentialDefinitions } from "./cred-def-select-list";
+export { default as credentialDefinitions } from "./credential-definitions";
 export { default as schemas } from "./schemas";
 export { default as settings } from "./settings";
 export { default as partners } from "./partners";
