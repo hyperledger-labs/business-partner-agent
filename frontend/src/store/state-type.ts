@@ -13,11 +13,11 @@ import {
   ProofTemplate,
   RuntimeConfig,
   SchemaAPI,
+  TagAPI,
 } from "@/services";
 
 export interface StateBpa {
   editedDocument: any;
-  tags: [];
   busyStack: number;
   expertMode: boolean;
 }
@@ -74,6 +74,10 @@ export interface IStateProofTemplates {
 
 export interface IStateSettings {
   settings: RuntimeConfig;
+}
+
+export interface IStateTags {
+  tags: TagAPI[];
 }
 
 export interface StateMessages {

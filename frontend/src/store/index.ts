@@ -8,7 +8,6 @@
 
 import Vue from "vue";
 import Vuex from "vuex";
-import * as actions from "./actions";
 import * as getters from "./getters";
 import { StateBpa } from "@/store/state-type";
 import {
@@ -29,7 +28,6 @@ Vue.use(Vuex);
 
 const state: StateBpa = {
   editedDocument: {}, //document currently being edited
-  tags: [],
   busyStack: 0,
   expertMode: false,
 };
@@ -37,12 +35,7 @@ const state: StateBpa = {
 const store = new Vuex.Store({
   state,
   getters: getters,
-  actions: actions,
   mutations: {
-    setTags(state: StateBpa, payload) {
-      console.log(payload.tags);
-      state.tags = payload.tags;
-    },
     setExpertMode(state: StateBpa, payload) {
       state.expertMode = payload.isExpert;
     },

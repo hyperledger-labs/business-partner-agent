@@ -16,3 +16,4 @@ export { default as partners } from "./partners";
 export { default as partnerSelectList } from "./partner-select-list";
 export { default as proofTemplates } from "./proof-templates";
 export { default as credentials } from "./credentials-documents";
+export { default as tags } from "./tags";
