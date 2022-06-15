@@ -179,6 +179,8 @@
                             multiple
                             v-model="selectedTags"
                             :items="tags"
+                            item-text="name"
+                            item-value="id"
                             chips
                             deletable-chips
                           >
@@ -264,6 +266,7 @@ import {
   issuerService,
   IssueOobCredentialRequest,
   APICreateInvitationResponse,
+  Tag,
 } from "@/services";
 import VBpaButton from "@/components/BpaButton";
 import * as textUtils from "@/utils/textUtils";
@@ -289,7 +292,7 @@ export default {
       credentialFields: {},
       currentStep: 1,
       alias: "",
-      selectedTags: [],
+      selectedTags: new Array<Tag>(),
       // Disable trust ping for invitation to mobile wallets by default
       trustPing: false,
       invitationUrl: "",
@@ -321,9 +324,7 @@ export default {
       return this.expertLoad.data?.trim().length > 0;
     },
     tags() {
-      return this.$store.getters.getTags
-        ? this.$store.getters.getTags.map((tag) => tag.name)
-        : [];
+      return this.$store.getters.getTags ? this.$store.getters.getTags : [];
     },
   },
   watch: {
@@ -366,9 +367,13 @@ export default {
         document[x] = "";
       Object.assign(document, this.credentialFields);
 
+      const tags: Tag[] = this.tags.filter((tag: Tag) =>
+        this.selectedTags.includes(tag.id)
+      );
+
       const data: IssueOobCredentialRequest = {
         alias: this.alias,
-        tag: this.selectedTags,
+        tag: tags,
         trustPing: this.trustPing,
         credDefId: this.credDef.id,
         document: document,
