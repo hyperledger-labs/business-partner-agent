@@ -53,7 +53,7 @@ import VBpaButton from "@/components/BpaButton";
 import ProofTemplatesList from "@/components/proof-templates/ProofTemplatesList.vue";
 import proofTemplateService from "@/services/proof-template-service";
 import { ExchangeVersion } from "@/constants";
-import { PresentationRequestVersion } from "@/services";
+import { PresentationRequestVersion, ProofTemplate } from "@/services";
 
 export default {
   name: "RequestPresentation",
@@ -67,9 +67,7 @@ export default {
   data: () => {
     return {
       isBusy: false,
-      selectedProofTemplate: [],
-      selectedSchema: [],
-      selectedIssuer: [],
+      selectedProofTemplate: [] as ProofTemplate[],
       useV2Exchange: false,
     };
   },

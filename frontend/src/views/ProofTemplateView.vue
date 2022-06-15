@@ -91,6 +91,7 @@ import { EventBus } from "@/main";
 import AttributeGroup from "@/components/proof-templates/AttributeGroup.vue";
 import proofTemplateService from "@/services/proof-template-service";
 import VBpaButton from "@/components/BpaButton";
+import { SchemaAPI } from "@/services";
 
 export default {
   name: "ProofTemplates",
@@ -120,7 +121,7 @@ export default {
   computed: {
     schemas() {
       return this.$store.getters.getSchemas.filter(
-        (schema) => schema.type === "INDY"
+        (schema: SchemaAPI) => schema.type === "INDY"
       );
     },
   },

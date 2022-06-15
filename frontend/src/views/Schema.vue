@@ -68,7 +68,8 @@ import { EventBus } from "@/main";
 import TrustedIssuers from "../components/TrustedIssuers.vue";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
-import { adminService } from "@/services";
+import { adminService, SchemaAPI, TrustedIssuer } from "@/services";
+import { AxiosResponse } from "axios";
 export default {
   name: "Schema",
   props: {
@@ -86,9 +87,9 @@ export default {
   },
   data: () => {
     return {
-      data: [],
+      data: [] as SchemaAPI[],
       isLoading: true,
-      trustedIssuers: [],
+      trustedIssuers: [] as TrustedIssuer[],
     };
   },
   computed: {},
@@ -97,7 +98,7 @@ export default {
       this.isLoading = true;
       adminService
         .getSchema(this.id)
-        .then((result) => {
+        .then((result: AxiosResponse<SchemaAPI>) => {
           console.log(result);
           if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.data = result.data;

@@ -132,7 +132,7 @@ export default {
           EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
-    deleteTag(tag, hardDelete = false) {
+    deleteTag(tag: string, hardDelete = false) {
       adminService
         .deleteTag(tag, hardDelete)
         .then((response) => {

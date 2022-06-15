@@ -125,6 +125,7 @@ import TextFieldColorPicker from "@/components/helper/TextFieldColorPicker.vue";
 import i18n from "@/plugins/i18n";
 import { LocaleMetaType } from "@/views/settings/locale-meta-type";
 import { BPAStats, statusService } from "@/services";
+import { VuetifyThemeItem } from "vuetify/types/services/theme";
 
 export default {
   name: "Settings",
@@ -216,30 +217,32 @@ export default {
     },
     settings: {
       get() {
-        return this.settingsHeader.map((setting) => {
-          return {
-            text: setting.text,
-            value: this.$store.getters.getSettingByKey(setting.value),
-          };
-        });
+        return this.settingsHeader.map(
+          (setting: { text: string; value: string }) => {
+            return {
+              text: setting.text,
+              value: this.$store.getters.getSettingByKey(setting.value),
+            };
+          }
+        );
       },
     },
   },
   methods: {
-    changeLanguage(locale) {
+    changeLanguage(locale: string) {
       i18n.locale = locale;
       this.$vuetify.lang.current = locale;
       localStorage.setItem("locale", locale);
       EventBus.$emit("title", this.$t("view.settings.title"));
     },
-    onPickColor(c) {
+    onPickColor(c: VuetifyThemeItem) {
       this.$vuetify.theme.themes.light.primary = c;
-      localStorage.setItem("uiColor", c);
+      localStorage.setItem("uiColor", c.toString());
       this.isEditingColor = false;
     },
-    onPickColorIcons(c) {
+    onPickColorIcons(c: VuetifyThemeItem) {
       this.$vuetify.theme.themes.light.icons = c;
-      localStorage.setItem("uiColorIcons", c);
+      localStorage.setItem("uiColorIcons", c.toString());
       this.isEditingColorIcons = false;
     },
     getStatus() {

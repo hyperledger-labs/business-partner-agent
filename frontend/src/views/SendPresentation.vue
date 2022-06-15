@@ -74,7 +74,7 @@ export default {
     return {
       isBusy: false,
       useV2Exchange: false,
-      selectedCredentials: [],
+      selectedCredentials: [] as any[],
     };
   },
   computed: {

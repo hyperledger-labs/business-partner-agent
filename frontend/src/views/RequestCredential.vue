@@ -70,9 +70,7 @@ export default {
   data: () => {
     return {
       isBusy: false,
-      selectedDocument: [],
-      selectedSchema: [],
-      selectedIssuer: [],
+      selectedDocument: [] as any[],
       useV2Exchange: false,
     };
   },
