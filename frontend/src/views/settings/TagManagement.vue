@@ -104,7 +104,7 @@ export default {
   },
   computed: {
     tags() {
-      return this.$store.state.tags;
+      return this.$store.getters.getTags;
     },
     fieldEmpty() {
       return this.newTag.length === 0;

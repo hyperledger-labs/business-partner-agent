@@ -130,7 +130,7 @@ export default {
       return this.expertMode && this.type !== CredentialTypes.JSON_LD.type;
     },
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
   },
   methods: {

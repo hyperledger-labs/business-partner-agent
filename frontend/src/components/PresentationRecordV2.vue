@@ -118,7 +118,7 @@ export default {
   },
   computed: {
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
     isStateVerified() {
       return this.record.state === PresentationExchangeStates.VERIFIED;

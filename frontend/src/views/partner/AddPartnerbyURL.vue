@@ -185,8 +185,8 @@ export default {
   },
   computed: {
     tags() {
-      return this.$store.state.tags
-        ? this.$store.state.tags.map((tag) => tag.name)
+      return this.$store.getters.getTags
+        ? this.$store.getters.getTags.map((tag) => tag.name)
         : [];
     },
   },
@@ -194,7 +194,7 @@ export default {
     createInvitation() {
       let partnerToAdd = {
         alias: `${this.alias}`,
-        tag: this.$store.state.tags.filter((tag) => {
+        tag: this.$store.getters.getTags.filter((tag) => {
           return this.selectedTags.includes(tag.name);
         }),
         trustPing: this.trustPing,

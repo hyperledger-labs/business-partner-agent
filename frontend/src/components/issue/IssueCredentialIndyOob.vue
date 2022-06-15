@@ -305,7 +305,7 @@ export default {
   },
   computed: {
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
     credDefList: {
       get() {
@@ -321,8 +321,8 @@ export default {
       return this.expertLoad.data?.trim().length > 0;
     },
     tags() {
-      return this.$store.state.tags
-        ? this.$store.state.tags.map((tag) => tag.name)
+      return this.$store.getters.getTags
+        ? this.$store.getters.getTags.map((tag) => tag.name)
         : [];
     },
   },

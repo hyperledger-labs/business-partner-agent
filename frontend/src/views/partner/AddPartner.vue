@@ -236,8 +236,8 @@ export default {
   },
   computed: {
     tags() {
-      return this.$store.state.tags
-        ? this.$store.state.tags.map((tag) => tag.name)
+      return this.$store.getters.getTags
+        ? this.$store.getters.getTags.map((tag) => tag.name)
         : [];
     },
   },
@@ -287,7 +287,7 @@ export default {
         partnerToAdd.alias = this.alias;
       }
 
-      partnerToAdd.tag = this.$store.state.tags.filter((tag) => {
+      partnerToAdd.tag = this.$store.getters.getTags.filter((tag) => {
         return this.selectedTags.includes(tag.name);
       });
 
@@ -356,7 +356,7 @@ export default {
         } else if (this.aliasPlaceholder && this.aliasPlaceholder !== "") {
           request.alias = this.aliasPlaceholder;
         }
-        request.tag = this.$store.state.tags.filter((tag) => {
+        request.tag = this.$store.getters.getTags.filter((tag) => {
           return this.selectedTags.includes(tag.name);
         });
         request.trustPing = this.trustPing;

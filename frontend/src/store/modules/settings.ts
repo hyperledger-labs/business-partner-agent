@@ -24,7 +24,7 @@ export default {
         return state.config[key as keyof RuntimeConfig];
       }
     },
-    getSettings: (state: IStateSettings) => {
+    getSettingsConfig: (state: IStateSettings) => {
       return state.config;
     },
   },

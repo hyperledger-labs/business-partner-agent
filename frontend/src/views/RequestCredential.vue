@@ -85,7 +85,7 @@ export default {
       );
     },
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
     docHeaders() {
       return [

@@ -331,7 +331,7 @@ export default {
   },
   computed: {
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
     isActive() {
       return this.partnerBpaState === PartnerStates.ACTIVE_OR_RESPONSE;

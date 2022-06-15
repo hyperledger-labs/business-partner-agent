@@ -77,7 +77,7 @@ export default {
   },
   computed: {
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
     credHeaders() {
       return [

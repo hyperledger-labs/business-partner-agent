@@ -385,23 +385,22 @@ export default {
   }),
   computed: {
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
     showFooter() {
-      return (this.$store.state.settings.imprint &&
-        typeof this.$store.state.settings.imprint === "string") ||
-        (this.$store.state.settings.dataPrivacyPolicy &&
-          typeof this.$store.state.settings.dataPrivacyPolicy === "string")
-        ? this.$store.state.settings.imprint.length +
-            this.$store.state.settings.dataPrivacyPolicy.length >
-            0
+      const settings = this.$store.getters.getSettingsConfig;
+
+      return (settings.imprint && typeof settings.imprint === "string") ||
+        (settings.dataPrivacyPolicy &&
+          typeof settings.dataPrivacyPolicy === "string")
+        ? settings.imprint.length + settings.dataPrivacyPolicy.length > 0
         : undefined;
     },
     imprintUrl() {
-      return this.$store.state.settings.imprint;
+      return this.$store.getters.getSettingsConfig.imprint;
     },
     privacyPolicyUrl() {
-      return this.$store.state.settings.dataPrivacyPolicy;
+      return this.$store.getters.getSettingsConfig.dataPrivacyPolicy;
     },
     messagesReceivedCount() {
       return this.$store.getters.messagesCount;
