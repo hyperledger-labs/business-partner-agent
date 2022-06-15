@@ -11,14 +11,14 @@ import { EventBus } from "@/main";
 import { IStateProofTemplates } from "@/store/state-type";
 
 const state: IStateProofTemplates = {
-  proofTemplates: new Array<ProofTemplate>(),
+  proofTemplateList: new Array<ProofTemplate>(),
 };
 
 export default {
   state,
   getters: {
     getProofTemplates: (state: IStateProofTemplates) => {
-      return state.proofTemplates;
+      return state.proofTemplateList;
     },
   },
   actions: {
@@ -41,7 +41,7 @@ export default {
       state: IStateProofTemplates,
       proofTemplates: ProofTemplate[]
     ) => {
-      state.proofTemplates = proofTemplates;
+      state.proofTemplateList = proofTemplates;
     },
   },
 };

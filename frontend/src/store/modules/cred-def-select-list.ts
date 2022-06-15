@@ -6,18 +6,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { CredDef } from "@/services";
-import { IStateCredDefSelectList } from "@/store/state-type";
+import { IStateCredentialDefinitions } from "@/store/state-type";
 import issuerService from "@/services/issuer-service";
 import { EventBus } from "@/main";
 
-const state: IStateCredDefSelectList = {
+const state: IStateCredentialDefinitions = {
   credDefSelectList: new Array<CredDef>(),
 };
 
 export default {
   state,
   getters: {
-    getCredDefSelectList: (state: IStateCredDefSelectList): CredDef[] => {
+    getCredDefSelectList: (state: IStateCredentialDefinitions): CredDef[] => {
       return state.credDefSelectList;
     },
   },
@@ -38,7 +38,7 @@ export default {
   },
   mutations: {
     setCredDefSelectList: (
-      state: IStateCredDefSelectList,
+      state: IStateCredentialDefinitions,
       credDefs: CredDef[]
     ) => {
       state.credDefSelectList = credDefs;

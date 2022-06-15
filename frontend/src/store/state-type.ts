@@ -16,10 +16,8 @@ import {
   TagAPI,
 } from "@/services";
 
-export interface StateBpa {
-  editedDocument: any;
-  busyStack: number;
-  expertMode: boolean;
+export interface IStateExpertMode {
+  isExpert: boolean;
 }
 
 export interface IStatePartnerSelectList {
@@ -27,7 +25,7 @@ export interface IStatePartnerSelectList {
 }
 
 export interface IStateSchemas {
-  schemas: SchemaAPI[];
+  schemaList: SchemaAPI[];
 }
 
 // TODO: Find out types
@@ -55,31 +53,31 @@ export interface IStateTransactionAuthorAgreement {
   taaLoaded: boolean;
 }
 
-export interface IStateCredDefSelectList {
+export interface IStateCredentialDefinitions {
   credDefSelectList: CredDef[];
 }
 
 export interface IStatePartners {
-  partners: PartnerAPI[];
+  partnerList: PartnerAPI[];
 }
 
 export interface IStateCredentialsAndDocuments {
-  credentials: AriesCredential[];
-  documents: MyDocumentAPI[];
+  credentialList: AriesCredential[];
+  documentList: MyDocumentAPI[];
 }
 
 export interface IStateProofTemplates {
-  proofTemplates: ProofTemplate[];
+  proofTemplateList: ProofTemplate[];
 }
 
 export interface IStateSettings {
-  settings: RuntimeConfig;
+  config: RuntimeConfig;
 }
 
 export interface IStateTags {
-  tags: TagAPI[];
+  tagList: TagAPI[];
 }
 
-export interface StateMessages {
+export interface IStateChat {
   messages: any[];
 }

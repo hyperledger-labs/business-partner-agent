@@ -8,60 +8,39 @@
 
 import Vue from "vue";
 import Vuex from "vuex";
-import * as getters from "./getters";
-import { StateBpa } from "@/store/state-type";
 import {
-  messages,
+  chat,
   notifications,
   socketEvents,
   taa,
-  credDefSelectList,
+  credentialDefinitions,
   schemas,
   settings,
   partners,
   partnerSelectList,
   proofTemplates,
-  credentials,
+  credentialsAndDocuments,
+  expertMode,
+  tags,
 } from "@/store/modules";
 
 Vue.use(Vuex);
 
-const state: StateBpa = {
-  editedDocument: {}, //document currently being edited
-  busyStack: 0,
-  expertMode: false,
-};
-
 const store = new Vuex.Store({
-  state,
-  getters: getters,
-  mutations: {
-    setExpertMode(state: StateBpa, payload) {
-      state.expertMode = payload.isExpert;
-    },
-  },
-
   modules: {
     taa,
     socketEvents,
-    messages,
+    chat,
     notifications,
-    credDefSelectList,
+    credentialDefinitions,
     schemas,
     settings,
     partners,
     partnerSelectList,
     proofTemplates,
-    credentials,
-  },
-});
-
-store.subscribeAction({
-  before: (action, state) => {
-    state.busyStack = state.busyStack + 1;
-  },
-  after: (action, state) => {
-    state.busyStack = state.busyStack - 1;
+    credentialsAndDocuments,
+    tags,
+    expertMode,
   },
 });
 

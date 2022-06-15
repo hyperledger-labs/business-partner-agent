@@ -207,14 +207,11 @@ export default {
       });
     },
     expertMode: {
-      set(body) {
-        this.$store.commit({
-          type: "setExpertMode",
-          isExpert: body,
-        });
+      set(body: boolean) {
+        this.$store.dispatch("manuallySetExpertMode", body);
       },
       get() {
-        return this.$store.state.expertMode;
+        return this.$store.getters.getExpertMode;
       },
     },
     settings: {

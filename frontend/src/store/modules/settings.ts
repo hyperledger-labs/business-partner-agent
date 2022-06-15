@@ -10,7 +10,7 @@ import { RuntimeConfig, settingsService } from "@/services";
 import { EventBus } from "@/main";
 
 const state: IStateSettings = {
-  settings: {} as RuntimeConfig,
+  config: {} as RuntimeConfig,
 };
 
 export default {
@@ -18,14 +18,14 @@ export default {
   getters: {
     getSettingByKey: (state: IStateSettings) => (key: string) => {
       if (
-        state.settings &&
-        Object.prototype.hasOwnProperty.call(state.settings, key)
+        state.config &&
+        Object.prototype.hasOwnProperty.call(state.config, key)
       ) {
-        return state.settings[key as keyof RuntimeConfig];
+        return state.config[key as keyof RuntimeConfig];
       }
     },
     getSettings: (state: IStateSettings) => {
-      return state.settings;
+      return state.config;
     },
   },
   actions: {
@@ -46,7 +46,7 @@ export default {
   },
   mutations: {
     setSettings: (state: IStateSettings, settings: RuntimeConfig) => {
-      state.settings = settings;
+      state.config = settings;
     },
   },
 };

@@ -11,20 +11,20 @@ import partnerService from "@/services/partner-service";
 import { EventBus } from "@/main";
 
 const state: IStatePartners = {
-  partners: new Array<PartnerAPI>(),
+  partnerList: new Array<PartnerAPI>(),
 };
 
 export default {
   state,
   getters: {
     getPartners: (state: IStatePartners) => {
-      return state.partners;
+      return state.partnerList;
     },
     partnersCount: (state: IStatePartners) => {
-      return state.partners ? state.partners.length : 0;
+      return state.partnerList ? state.partnerList.length : 0;
     },
     getPartnerByDID: (state: IStatePartners) => (did: string) => {
-      return state.partners.find((partner) => {
+      return state.partnerList.find((partner) => {
         return partner.did === did;
       });
     },
@@ -46,7 +46,7 @@ export default {
   },
   mutations: {
     loadPartnersFinished: (state: IStatePartners, partners: PartnerAPI[]) => {
-      state.partners = partners;
+      state.partnerList = partners;
     },
   },
 };

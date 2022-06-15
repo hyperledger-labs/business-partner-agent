@@ -12,17 +12,17 @@ import { EventBus } from "@/main";
 import { SchemaAPI } from "@/services";
 
 const state: IStateSchemas = {
-  schemas: new Array<SchemaAPI>(),
+  schemaList: new Array<SchemaAPI>(),
 };
 
 export default {
   state,
   getters: {
     getSchemas: (state: IStateSchemas) => {
-      return state.schemas;
+      return state.schemaList;
     },
     getSchemaBasedSchemas: (state: IStateSchemas) => {
-      return state.schemas.filter((schema) => {
+      return state.schemaList.filter((schema) => {
         return (
           schema.type === CredentialTypes.INDY.type ||
           schema.type === CredentialTypes.JSON_LD.type
@@ -33,7 +33,7 @@ export default {
       if (!schemaId) {
         return;
       }
-      return state.schemas.find((schema) => {
+      return state.schemaList.find((schema) => {
         return schema.schemaId === schemaId;
       });
     },
@@ -42,7 +42,7 @@ export default {
       if (!schemaType) {
         return;
       }
-      return state.schemas.find((schema) => {
+      return state.schemaList.find((schema) => {
         return schema.type === schemaType;
       });
     },
@@ -64,7 +64,7 @@ export default {
   },
   mutations: {
     setSchemas: (state: IStateSchemas, schemas: SchemaAPI[]) => {
-      state.schemas = schemas;
+      state.schemaList = schemas;
     },
   },
 };

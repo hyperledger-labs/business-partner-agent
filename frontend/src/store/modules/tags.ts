@@ -11,14 +11,14 @@ import { IStateTags } from "@/store/state-type";
 import { TagAPI } from "@/services";
 
 const state: IStateTags = {
-  tags: new Array<TagAPI>(),
+  tagList: new Array<TagAPI>(),
 };
 
 export default {
   state,
   getters: {
     getTags: (state: IStateTags) => {
-      return state.tags;
+      return state.tagList;
     },
   },
   actions: {
@@ -38,7 +38,7 @@ export default {
   },
   mutations: {
     setTags: (state: IStateTags, tags) => {
-      state.tags = tags;
+      state.tagList = tags;
     },
   },
 };

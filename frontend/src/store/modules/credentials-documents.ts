@@ -17,23 +17,23 @@ import { IStateCredentialsAndDocuments } from "@/store/state-type";
 import { CredentialTypes } from "@/constants";
 
 const state: IStateCredentialsAndDocuments = {
-  credentials: new Array<AriesCredential>(),
-  documents: new Array<MyDocumentAPI>(),
+  credentialList: new Array<AriesCredential>(),
+  documentList: new Array<MyDocumentAPI>(),
 };
 
 export default {
   state,
   getters: {
     getCredentials: (state: IStateCredentialsAndDocuments) => {
-      return state.credentials;
+      return state.credentialList;
     },
     publicDocumentsAndCredentials: (state: IStateCredentialsAndDocuments) => {
-      return [...state.credentials, ...state.documents].filter(
+      return [...state.credentialList, ...state.documentList].filter(
         (d) => d.isPublic === true
       );
     },
     getOrganizationalProfile: (state: IStateCredentialsAndDocuments) => {
-      const documents = state.documents.filter(
+      const documents = state.documentList.filter(
         (d) => d.type === CredentialTypes.PROFILE.type
       );
       return documents.length === 1 ? documents[0] : undefined;
@@ -80,13 +80,13 @@ export default {
       state: IStateCredentialsAndDocuments,
       credentials: AriesCredential[]
     ) => {
-      state.credentials = credentials;
+      state.credentialList = credentials;
     },
     loadDocumentsFinished(
       state: IStateCredentialsAndDocuments,
       documents: MyDocumentAPI[]
     ) {
-      state.documents = documents;
+      state.documentList = documents;
     },
   },
 };
