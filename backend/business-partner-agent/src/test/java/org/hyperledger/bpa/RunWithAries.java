@@ -56,6 +56,10 @@ public abstract class RunWithAries extends BaseTest {
                         + " -e http://0.0.0.0"
                         + " --log-level info"
                         + " --no-ledger"
+                        + " --wallet-type askar"
+                        + " --wallet-name testWallet"
+                        + " --wallet-key testKey"
+                        + " --auto-provision"
                         + " --plugin aries_cloudagent.messaging.jsonld")
                 .waitingFor(Wait.defaultWaitStrategy())
                 .withLogConsumer(new Slf4jLogConsumer(log));

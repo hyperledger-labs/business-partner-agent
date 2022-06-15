@@ -21,6 +21,7 @@ import io.micronaut.data.exceptions.DataAccessException;
 import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
@@ -139,6 +140,7 @@ class BPAProofTemplateRepositoryTest {
                 .partnerId(UUID.randomUUID())
                 .presentationExchangeId("presentationExchangeId")
                 .proofTemplate(savedTemplate)
+                .type(CredentialType.INDY)
                 .build());
 
         assertTrue(proofRepository.findById(proof.getId()).map(PartnerProof::getProofTemplate).isPresent());
@@ -156,6 +158,7 @@ class BPAProofTemplateRepositoryTest {
                 .partnerId(UUID.randomUUID())
                 .presentationExchangeId("presentationExchangeId")
                 .proofTemplate(savedTemplate)
+                .type(CredentialType.INDY)
                 .build());
 
         assertThrows(DataAccessException.class, () -> repo.deleteById(savedTemplate.getId()));

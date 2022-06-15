@@ -35,6 +35,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
@@ -60,6 +61,7 @@ import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.model.MyDocument;
 import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.repository.HolderCredExRepository;
 import org.hyperledger.bpa.persistence.repository.MyDocumentRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
@@ -278,7 +280,6 @@ public class HolderManager extends CredentialManagerBase {
                     .setCredRevId(credEx.getCredential() != null ? credEx.getCredential().getCredRevId() : null)
                     .setRevRegId(credEx.getCredential() != null ? credEx.getCredential().getRevRegId() : null)
                     .setLabel(label)
-                    .setIssuer(resolveIssuer(db.getPartner()))
                     .pushStates(credEx.getState(), TimeUtil.fromISOInstant(credEx.getUpdatedAt()));
             holderCredExRepo.update(db);
             fireCredentialAddedEvent(db);
@@ -288,11 +289,11 @@ public class HolderManager extends CredentialManagerBase {
     public void handleV2OfferReceived(@NonNull V20CredExRecord v2CredEx) {
         if (v2CredEx.payloadIsLdProof()) {
             handleOfferReceived(v2CredEx,
-                    BPACredentialExchange.ExchangePayload.jsonLD(v2CredEx.resolveLDCredOffer()),
+                    ExchangePayload.jsonLD(v2CredEx.resolveLDCredOffer()),
                     ExchangeVersion.V2);
         } else {
             handleOfferReceived(v2CredEx,
-                    BPACredentialExchange.ExchangePayload.indy(V2ToV1IndyCredentialConverter.INSTANCE()
+                    ExchangePayload.indy(V2ToV1IndyCredentialConverter.INSTANCE()
                             .toV1Offer(v2CredEx).getCredentialProposalDict().getCredentialProposal()),
                     ExchangeVersion.V2);
         }
@@ -300,7 +301,8 @@ public class HolderManager extends CredentialManagerBase {
 
     // credential offer event
     public void handleOfferReceived(@NonNull BaseCredExRecord credExBase,
-            @NonNull BPACredentialExchange.ExchangePayload payload, @NonNull ExchangeVersion version) {
+            @NonNull ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> payload,
+            @NonNull ExchangeVersion version) {
         holderCredExRepo.findByCredentialExchangeId(credExBase.getCredentialExchangeId()).ifPresentOrElse(db -> {
             db.pushStates(credExBase.getState());
             holderCredExRepo.updateOnCredentialOfferEvent(db.getId(), db.getState(), db.getStateToTimestamp(), payload);
@@ -335,11 +337,10 @@ public class HolderManager extends CredentialManagerBase {
 
     public void handleV2CredentialReceived(@NonNull V20CredExRecord credEx) {
         holderCredExRepo.findByCredentialExchangeId(credEx.getCredentialExchangeId()).ifPresent(dbCred -> {
-            String issuer = resolveIssuer(dbCred.getPartner());
             if (dbCred.typeIsIndy()) {
-                indy.handleV2CredentialReceived(credEx, dbCred, issuer);
+                indy.handleV2CredentialReceived(credEx, dbCred);
             } else {
-                ld.handleV2CredentialReceived(credEx, dbCred, issuer);
+                ld.handleV2CredentialReceived(credEx, dbCred);
             }
             fireCredentialAddedEvent(dbCred);
         });
@@ -360,6 +361,8 @@ public class HolderManager extends CredentialManagerBase {
         });
     }
 
+    // TODO once aca-py 0.7.4 is released switch this to RevocationInfo to map both
+    // v1 and v2 revocation notifications
     public void handleRevocationNotification(RevocationNotificationEvent revocationNotification) {
         AriesStringUtil.RevocationInfo revocationInfo = AriesStringUtil
                 .revocationEventToRevocationInfo(revocationNotification.getThreadId());
@@ -399,14 +402,14 @@ public class HolderManager extends CredentialManagerBase {
      *         id is null
      */
     @Nullable
-    public String resolveIssuer(@Nullable Partner p) {
+    public static String resolveIssuer(@Nullable Partner p) {
         String issuer = null;
         if (p != null) {
             if (StringUtils.isNotEmpty(p.getAlias())) {
                 issuer = p.getAlias();
             } else if (p.getVerifiablePresentation() != null) {
-                VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential> vp = conv
-                        .fromMap(Objects.requireNonNull(p.getVerifiablePresentation()), Converter.VP_TYPEREF);
+                VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential> vp = Objects
+                        .requireNonNull(p.getVerifiablePresentation());
                 Optional<VerifiableCredential.VerifiableIndyCredential> profile = vp.getVerifiableCredential()
                         .stream().filter(ic -> ic.getType().contains("OrganizationalProfileCredential")).findAny();
                 if (profile.isPresent() && profile.get().getCredentialSubject() != null) {
@@ -427,6 +430,7 @@ public class HolderManager extends CredentialManagerBase {
 
     private AriesCredential buildCredential(@NonNull BPACredentialExchange dbCred) {
         return AriesCredential.fromBPACredentialExchange(dbCred,
-                dbCred.getSchema() != null ? dbCred.getSchema().resolveSchemaLabel() : null);
+                dbCred.getSchema() != null ? dbCred.getSchema().resolveSchemaLabel() : null,
+                resolveIssuer(dbCred.getPartner()));
     }
 }

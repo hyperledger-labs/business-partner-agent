@@ -48,12 +48,12 @@ The Business Partner Agent is built on top of the Hyperledger Self-Sovereign Ide
 |                  | scheduled revocation check on all received credentials                 | indy: v1, v2 <br/>w3c: n/a        |
 |                  | receive revocation notification                                        | indy: v1, v2 <br/>w3c: n/a        |
 | Prover           |                                                                        |                                   |
-|                  | auto: send presentation to verifier                                    | indy: v1, v2                      |
+|                  | auto: send presentation to verifier                                    | indy: v1, v2 <br/>w3c: v2         |
 |                  | auto: answer presentation request                                      | indy: v1, v2                      |
 |                  | manual: accept/decline presentation request and provide reason         | indy: v1, v2                      |
 | Verifier         |                                                                        |                                   |
 |                  | auto: request presentation from prover based on proof template         | indy: v1, v2                      |
-|                  | auto: receive and verify presentation from prover                      | indy: v1, v2                      |
+|                  | auto: receive and verify presentation from prover                      | indy: v1, v2 <br/>w3c: v2         |
 | Connection       |                                                                        |                                   |
 |                  | connect by did:sov, did:web (if endpoint is aca-py)                    | did-exchange                      |
 |                  | receive invitation by URL                                              | connection-protocol, OOB          |

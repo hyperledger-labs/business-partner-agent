@@ -35,9 +35,12 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential.VerifiableIndyCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.MyDocumentAPI;
@@ -47,13 +50,15 @@ import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.credential.CredentialInfoResolver;
+import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
+import org.hyperledger.bpa.impl.aries.jsonld.LDConverter;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.MyDocument;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 
-import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -71,9 +76,6 @@ public class Converter {
     };
 
     public static final TypeReference<VerifiablePresentation<VerifiableIndyCredential>> VP_TYPEREF = new TypeReference<>() {
-    };
-
-    public static final TypeReference<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>> ATTRIBUTE_GROUP = new TypeReference<>() {
     };
 
     @Value("${bpa.did.prefix}")
@@ -98,7 +100,7 @@ public class Converter {
     public PartnerAPI toAPIObject(@NonNull Partner p) {
         PartnerAPI result = PartnerAPI.from(p);
         if (p.getVerifiablePresentation() != null) {
-            result = toAPIObject(fromMap(p.getVerifiablePresentation(), VP_TYPEREF));
+            result = toAPIObject(p.getVerifiablePresentation());
             PartnerAPI.copyFrom(result, p);
         }
         return result;
@@ -112,7 +114,7 @@ public class Converter {
                 try {
                     node = mapper.readTree(c.getCredentialSubject().toString());
                 } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
+                    node = null;
                 }
 
                 boolean verifiedCredential = false;
@@ -161,7 +163,7 @@ public class Converter {
                 .did(did)
                 .valid(api.getValid())
                 .verifiablePresentation(
-                        api.getVerifiablePresentation() != null ? toMap(api.getVerifiablePresentation()) : null)
+                        api.getVerifiablePresentation() != null ? api.getVerifiablePresentation() : null)
                 .build();
     }
 
@@ -221,11 +223,7 @@ public class Converter {
         return mapper.convertValue(fromValue, STRING_STRING_MAP);
     }
 
-    public <T> T fromMap(@NonNull Map<String, Object> fromValue, @NotNull Class<T> type) {
-        return mapper.convertValue(fromValue, type);
-    }
-
-    public <T> T fromMap(@NonNull Map<String, Object> fromValue, @NotNull TypeReference<T> type) {
+    public <T> T fromMap(@NonNull Map<String, Object> fromValue, @NonNull Class<T> type) {
         return mapper.convertValue(fromValue, type);
     }
 
@@ -246,26 +244,47 @@ public class Converter {
         JsonNode proofData = null;
         try {
             if (p.getProof() != null) {
-                Map<String, PresentationExchangeRecord.RevealedAttributeGroup> groups = fromMap(p.getProof(),
-                        ATTRIBUTE_GROUP);
-                Map<String, AriesProofExchange.RevealedAttributeGroup> collect = groups.entrySet().stream()
-                        .collect(Collectors.toMap(Map.Entry::getKey, e -> AriesProofExchange.RevealedAttributeGroup
-                                .builder()
-                                .revealedAttributes(e.getValue().getRevealedAttributes())
-                                .identifier(credentialInfoResolver.populateIdentifier(e.getValue().getIdentifier()))
-                                .build()));
-                proofData = mapper.convertValue(collect, JsonNode.class);
+                if (p.typeIsIndy()) {
+                    Map<String, PresentationExchangeRecord.RevealedAttributeGroup> groups = p.getProof().getIndy();
+                    Map<String, AriesProofExchange.RevealedAttributeGroup> collect = groups.entrySet().stream()
+                            .collect(Collectors.toMap(Map.Entry::getKey, e -> AriesProofExchange.RevealedAttributeGroup
+                                    .builder()
+                                    .revealedAttributes(e.getValue().getRevealedAttributes())
+                                    .identifier(credentialInfoResolver.populateIdentifier(e.getValue().getIdentifier()))
+                                    .build()));
+                    proofData = mapper.convertValue(collect, JsonNode.class);
+                } else if (p.typeIsJsonLd()) {
+                    VerifiablePresentation<VerifiableCredential> vp = p.getProof().getJsonLD();
+                    Map<String, AriesProofExchange.RevealedAttributeGroup> collect = vp.getPresentationSubmission()
+                            .getDescriptorMap().stream().map(sub -> {
+                                VerifiableCredential vc = vp.getVerifiableCredential().get(sub.getPathAsIndex());
+                                AriesProofExchange.RevealedAttributeGroup ag = AriesProofExchange.RevealedAttributeGroup
+                                        .builder()
+                                        .revealedAttributes(vc.subjectToFlatMap())
+                                        .identifier(credentialInfoResolver
+                                                .populateIdentifier(LDContextHelper.findSchemaId(vc), vc.getIssuer()))
+                                        .build();
+                                return new AbstractMap.SimpleEntry<>(sub.getId(), ag);
+                            }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    proofData = mapper.convertValue(collect, JsonNode.class);
+                }
             }
         } catch (IllegalArgumentException e) {
-            log.warn("Not an attribute group");
-            proofData = p.getProof() != null ? fromMap(p.getProof(), JsonNode.class) : null;
+            log.warn("Not an attribute group", e);
+            proofData = p.getProof() != null ? mapper.convertValue(p.getProof(), JsonNode.class) : null;
         }
+
+        if (p.typeIsJsonLd() && p.getProofRequest() != null && p.getProofRequest().getJsonLD() != null) {
+            proof.setProofRequest(LDConverter.difToIndyProofRequest(p.getProofRequest().getJsonLD()));
+        }
+
         proof.setProofData(proofData);
         return proof;
     }
 
-    public Map<String, Object> revealedAttrsToGroup(Map<String, PresentationExchangeRecord.RevealedAttribute> attrs,
-            List<PresentationExchangeRecord.Identifier> identifier) {
+    public Map<String, PresentationExchangeRecord.RevealedAttributeGroup> revealedAttrsToGroup(
+            @Nullable Map<String, PresentationExchangeRecord.RevealedAttribute> attrs,
+            @Nullable List<PresentationExchangeRecord.Identifier> identifier) {
         Map<String, PresentationExchangeRecord.RevealedAttributeGroup> attrToGroup = new LinkedHashMap<>();
         if (CollectionUtils.isNotEmpty(attrs)) {
             attrs.forEach((k, v) -> attrToGroup.put(k, PresentationExchangeRecord.RevealedAttributeGroup
@@ -274,7 +293,7 @@ public class Converter {
                     .identifier(CollectionUtils.isNotEmpty(identifier) ? identifier.get(v.getSubProofIndex()) : null)
                     .build()));
         }
-        return toMap(attrToGroup);
+        return attrToGroup;
     }
 
     /**
@@ -288,13 +307,17 @@ public class Converter {
      */
     private String resolveTypeLabel(@NonNull PartnerProof p) {
         String defaultLabel = msg.getMessage("api.proof.exchange.default.name");
-        if (p.getProofRequest() != null && !"proof-request".equals(p.getProofRequest().getName())) {
-            return p.getProofRequest().getName();
+        PresentProofRequest.ProofRequest indy = Objects
+                .requireNonNullElseGet(p.getProofRequest(),
+                        ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest>::new)
+                .getIndy();
+        if (indy != null && !"proof-request".equals(indy.getName())) {
+            return indy.getName();
         }
-        if (p.getProofRequest() != null
-                && p.getProofRequest().getRequestedAttributes() != null
-                && p.getProofRequest().getRequestedAttributes().size() == 1) {
-            return p.getProofRequest().getRequestedAttributes().entrySet().stream().findFirst().map(attr -> {
+        if (indy != null
+                && indy.getRequestedAttributes() != null
+                && indy.getRequestedAttributes().size() == 1) {
+            return indy.getRequestedAttributes().entrySet().stream().findFirst().map(attr -> {
                 if (attr.getValue().getRestrictions() != null && attr.getValue().getRestrictions().size() == 1) {
                     JsonObject jo = attr.getValue().getRestrictions().get(0);
                     String credDefId = jo.get("cred_def_id") != null ? jo.get("cred_def_id").getAsString() : null;

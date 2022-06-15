@@ -96,7 +96,7 @@
             v-if="
               !isWaitingForMatchingCreds &&
               isStateRequestReceived &&
-              !record.canBeFullfilled
+              !record.canBeFulfilled
             "
             dense
             border="left"
@@ -143,7 +143,11 @@
 <script lang="ts">
 import { PresentationRequestCredentials, proofExService } from "@/services";
 import { EventBus } from "@/main";
-import { PresentationExchangeStates, RequestTypes } from "@/constants";
+import {
+  CredentialTypes,
+  PresentationExchangeStates,
+  RequestTypes,
+} from "@/constants";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
 import PresentationRecord from "@/components/PresentationRecord.vue";
 import PresentationRecordV2 from "@/components/PresentationRecordV2.vue";
@@ -161,7 +165,7 @@ export default {
       if (item) {
         this.openItem(item);
       } else {
-        // Load record separately if items have not be resolved
+        // Load record separately if items have not been resolved
         proofExService.getProofExRecord(this.openItemById).then((resp) => {
           if (resp.data) {
             this.openItem(resp.data);
@@ -238,9 +242,10 @@ export default {
         });
         // eslint-disable-next-line unicorn/no-array-reduce
         return groupsWithCredentials.flat().reduce((x, y) => x && y);
-      } else {
-        return false;
-      }
+      } else return false;
+    },
+    typeIsIndy() {
+      return this.record.type === CredentialTypes.INDY.type;
     },
   },
   methods: {
@@ -361,9 +366,9 @@ export default {
 
       return referents;
     },
-    // Checks if proof request can be fullfilled
-    canBeFullfilled() {
-      const canAttributesFullfilled = Object.values(
+    // Checks if proof request can be fulfilled
+    canBeFulfilled() {
+      const canAttributesFulfilled = Object.values(
         this.record.proofRequest.requestedAttributes
       )
         .map((attributeGroup: any) => {
@@ -377,7 +382,7 @@ export default {
           return x && y;
         }, true);
 
-      const canPredicatesFullfilled = Object.values(
+      const canPredicatesFulfilled = Object.values(
         this.record.proofRequest.requestedPredicates
       )
         .map((attributeGroup: any) => {
@@ -388,54 +393,65 @@ export default {
           return x && y;
         }, true);
 
-      return canAttributesFullfilled && canPredicatesFullfilled;
+      return canAttributesFulfilled && canPredicatesFulfilled;
     },
     getMatchingCredentials() {
       this.isWaitingForMatchingCreds = true;
-      proofExService.getMatchingCredentials(this.record.id).then((result) => {
-        const matchingCreds: PresentationRequestCredentials[] = result.data;
-        // Match to request
-        for (const cred of matchingCreds) {
-          for (const c of cred.presentationReferents) {
-            const attribute = this.record.proofRequest.requestedAttributes[c];
-            const pred = this.record.proofRequest.requestedPredicates[c];
-            if (attribute) {
-              if (
-                !Object.hasOwnProperty.call(attribute, "matchingCredentials")
-              ) {
-                attribute.matchingCredentials = [];
-              }
-              const hasMatchingCred = attribute.matchingCredentials.some(
-                (item) => {
-                  return (
-                    item.credentialInfo.referent ===
-                    cred.credentialInfo.referent
-                  );
+      if (this.typeIsIndy) {
+        proofExService.getMatchingCredentials(this.record.id).then((result) => {
+          const matchingCreds: PresentationRequestCredentials[] = result.data;
+          // Match to request
+          for (const cred of matchingCreds) {
+            for (const c of cred.presentationReferents) {
+              const attribute = this.record.proofRequest.requestedAttributes[c];
+              const pred = this.record.proofRequest.requestedPredicates[c];
+              if (attribute) {
+                if (
+                  !Object.hasOwnProperty.call(attribute, "matchingCredentials")
+                ) {
+                  attribute.matchingCredentials = [];
                 }
-              );
-              if (!hasMatchingCred) {
-                attribute.matchingCredentials.push(cred);
-              }
-            } else if (pred) {
-              if (!Object.hasOwnProperty.call(pred, "matchingCredentials")) {
-                pred.matchingCredentials = [];
-              }
-
-              const hasMatchingPred = pred.matchingCredentials.some((item) => {
-                return (
-                  item.credentialInfo.referent === cred.credentialInfo.referent
+                const hasMatchingCred = attribute.matchingCredentials.some(
+                  (item) => {
+                    return (
+                      item.credentialInfo.referent ===
+                      cred.credentialInfo.referent
+                    );
+                  }
                 );
-              });
-              if (!hasMatchingPred) {
-                pred.matchingCredentials.push(cred);
+                if (!hasMatchingCred) {
+                  attribute.matchingCredentials.push(cred);
+                }
+              } else if (pred) {
+                if (!Object.hasOwnProperty.call(pred, "matchingCredentials")) {
+                  pred.matchingCredentials = [];
+                }
+
+                const hasMatchingPred = pred.matchingCredentials.some(
+                  (item) => {
+                    return (
+                      item.credentialInfo.referent ===
+                      cred.credentialInfo.referent
+                    );
+                  }
+                );
+                if (!hasMatchingPred) {
+                  pred.matchingCredentials.push(cred);
+                }
               }
             }
           }
-        }
-
-        this.record.canBeFullfilled = this.canBeFullfilled();
-        this.isWaitingForMatchingCreds = false;
-      });
+          this.record.canBeFulfilled = this.canBeFulfilled();
+          this.isWaitingForMatchingCreds = false;
+        });
+      } else {
+        proofExService
+          .getMatchingDifCredentials(this.record.id)
+          .then((result) => {
+            this.record.canBeFulfilled = result.data.match;
+            this.isWaitingForMatchingCreds = false;
+          });
+      }
     },
   },
   watch: {

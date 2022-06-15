@@ -25,6 +25,7 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.aries.api.issue_credential_v1.V1CredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -76,7 +77,7 @@ public class IssuerCredExRepositoryTest {
                 .builder()
                 .threadId(UUID.randomUUID().toString())
                 .credentialExchangeId(UUID.randomUUID().toString())
-                .credentialProposal(BPACredentialExchange.ExchangePayload
+                .credentialProposal(ExchangePayload
                         .indy(V1CredentialExchange.CredentialProposalDict.CredentialProposal.builder()
                                 .attributes(CredentialAttributes.from(Map.of("attr1", "value1")))
                                 .build()))

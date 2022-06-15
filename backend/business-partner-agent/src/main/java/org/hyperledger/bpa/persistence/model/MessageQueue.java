@@ -26,12 +26,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.Instant;
-import java.util.Map;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -51,5 +51,5 @@ public class MessageQueue {
 
     @Nullable
     @TypeDef(type = DataType.JSON)
-    private Map<String, Object> message;
+    private WebSocketMessageBody message;
 }

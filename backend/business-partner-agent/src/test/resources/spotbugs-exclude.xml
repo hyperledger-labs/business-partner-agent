@@ -52,6 +52,16 @@
         <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" />
     </Match>
 
+    <!-- False positives -->
+    <Match>
+        <Class name="org.hyperledger.bpa.config.LocalAuthProvider" />
+        <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_THROWABLE" />
+    </Match>
+    <Match>
+        <Class name="~.*org.hyperledger.bpa.config.acapy.*" />
+        <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_THROWABLE" />
+    </Match>
+
     <!-- findsecbugs exclusion: See log4j2.xml -->
     <Match>
         <Bug pattern="CRLF_INJECTION_LOGS" />

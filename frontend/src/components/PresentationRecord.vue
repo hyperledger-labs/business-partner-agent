@@ -8,11 +8,12 @@
 
 <template>
   <v-container>
+    <!-- Exchange States -->
     <v-list-item>
       <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
         {{ $t("view.presentationRecord.role") }}
       </v-list-item-title>
-      <v-list-item-subtitle align="">
+      <v-list-item-subtitle>
         {{ record.role | capitalize }}
       </v-list-item-subtitle>
     </v-list-item>
@@ -21,8 +22,17 @@
       <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
         {{ $t("view.presentationRecord.state") }}
       </v-list-item-title>
-      <v-list-item-subtitle align="">
+      <v-list-item-subtitle>
         {{ (record.state ? record.state.replace("_", " ") : "") | capitalize }}
+      </v-list-item-subtitle>
+    </v-list-item>
+
+    <v-list-item v-if="expertMode">
+      <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
+        {{ $t("view.presentationRecord.type") }}
+      </v-list-item-title>
+      <v-list-item-subtitle>
+        {{ (record.type ? record.type.replace("_", " ") : "") | capitalize }}
       </v-list-item-subtitle>
     </v-list-item>
 
@@ -30,10 +40,11 @@
       <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
         {{ $t("view.presentationRecord.requestName") }}
       </v-list-item-title>
-      <v-list-item-subtitle align="">
+      <v-list-item-subtitle>
         {{ record.proofRequest ? record.proofRequest.name : "" }}
       </v-list-item-subtitle>
     </v-list-item>
+
     <!-- Timeline  -->
     <Timeline :time-entries="record.stateToTimestamp"></Timeline>
 
@@ -42,7 +53,6 @@
       <h4 class="my-4">{{ $t("view.presentationRecord.requestContent") }}:</h4>
 
       <!-- Requested Attributes -->
-
       <v-expansion-panels v-model="contentPanels" multiple accordion flat>
         <template v-for="type in RequestTypes">
           <v-expansion-panel
@@ -128,6 +138,7 @@
                           restrValue
                         }}</v-list-item-subtitle>
                       </v-list-item>
+                      <v-divider v-if="group.restrictions.length > 1" />
                     </v-list-item-group>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
@@ -230,8 +241,8 @@ export default {
           return [];
         }
       },
-      set: function (value) {
-        this.dummy = value;
+      set: function () {
+        return;
       },
     },
   },
@@ -302,15 +313,8 @@ export default {
       Predicates,
       Restrictions,
       RequestTypes,
-      dummy: [],
     };
   },
   components: { Timeline },
 };
 </script>
-
-<style scoped>
-.v-btn {
-  margin-left: 10px;
-}
-</style>

@@ -27,6 +27,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 import org.hyperledger.acy_py.generated.model.InvitationRecord;
 import org.hyperledger.aries.api.connection.ConnectionState;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
@@ -123,7 +124,7 @@ public class Partner extends StateChangeDecorator<Partner, ConnectionState> {
      */
     @Nullable
     @TypeDef(type = DataType.JSON)
-    private Map<String, Object> verifiablePresentation;
+    private VerifiablePresentation<VerifiableCredential.VerifiableIndyCredential> verifiablePresentation;
 
     /**
      * credential offer or proof request when using OOB invitations with attachments

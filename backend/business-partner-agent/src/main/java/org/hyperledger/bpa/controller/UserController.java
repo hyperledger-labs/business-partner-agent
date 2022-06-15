@@ -19,17 +19,16 @@ package org.hyperledger.bpa.controller;
 
 import io.micronaut.context.annotation.Value;
 import io.micronaut.core.util.StringUtils;
-import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
-import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Put;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
-import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
-import io.micronaut.security.session.SessionLoginHandler;
 import io.micronaut.views.View;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,7 +39,6 @@ import org.hyperledger.bpa.persistence.model.BPAUser;
 import org.hyperledger.bpa.persistence.repository.BPAUserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -64,9 +62,6 @@ public class UserController {
 
     @Inject
     BCryptPasswordEncoder enc;
-
-    @Inject
-    SessionLoginHandler session;
 
     @View("signin")
     @Get("/signin")
@@ -93,31 +88,6 @@ public class UserController {
             model.put("footer", Boolean.TRUE);
         }
         return model;
-    }
-
-    @Secured({ "ROLE_ADMIN" })
-    @Post(value = "/register", consumes = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED })
-    public HttpResponse<?> registerUser(@Body BPAUser user, HttpRequest<?> request) {
-        Optional<BPAUser> existing = userRepo.findByUsername(user.getUsername());
-        if (existing.isPresent()) {
-            log.warn("User with name: {} already exists.", user.getUsername());
-            return HttpResponse
-                    .status(HttpStatus.SEE_OTHER, "{\"message\": \"user already exists\"}")
-                    .header("Location", "/user/registerFailed");
-        }
-
-        BPAUser dbUser = BPAUser
-                .builder()
-                .username(user.getUsername())
-                .password(enc.encode(user.getPassword()))
-                .roles("ROLE_USER")
-                .build();
-        userRepo.save(dbUser);
-
-        return session.loginSuccess(Authentication.build(
-                dbUser.getUsername(),
-                Arrays.asList(dbUser.getRoles().split(",")),
-                Map.of("userId", dbUser.getId())), request);
     }
 
     @Put(value = "/authenticate", consumes = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_FORM_URLENCODED })

@@ -15,29 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.config;
+package org.hyperledger.bpa.controller.api.proof;
 
-import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Requires;
-import io.micronaut.context.annotation.Value;
-import io.micronaut.context.env.Environment;
-import jakarta.inject.Singleton;
-import org.hyperledger.aries.AriesClient;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Factory
-@Requires(notEnv = Environment.TEST)
-public class AriesClientFactory {
-
-    @Value("${bpa.acapy.url}")
-    private String url;
-    @Value("${bpa.acapy.apiKey}")
-    private String apiKey;
-
-    @Singleton
-    public AriesClient ariesClient() {
-        return AriesClient.builder()
-                .url(url)
-                .apiKey(apiKey)
-                .build();
-    }
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class PresentationRequestCredentialsLD {
+    private boolean match;
 }

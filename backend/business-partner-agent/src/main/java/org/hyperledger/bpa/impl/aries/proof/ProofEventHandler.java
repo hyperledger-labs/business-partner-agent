@@ -18,25 +18,29 @@
 package org.hyperledger.bpa.impl.aries.proof;
 
 import io.micronaut.context.event.ApplicationEventPublisher;
-import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.aries.api.ExchangeVersion;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.aries.api.present_proof.BasePresExRecord;
+import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
+import org.hyperledger.aries.api.present_proof_v2.V20PresExRecord;
+import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.notification.PresentationRequestCompletedEvent;
 import org.hyperledger.bpa.api.notification.PresentationRequestDeclinedEvent;
 import org.hyperledger.bpa.api.notification.PresentationRequestReceivedEvent;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.repository.PartnerProofRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
@@ -58,11 +62,15 @@ public class ProofEventHandler {
     @Inject
     BPAMessageSource.DefaultMessageSource msg;
 
-    public void dispatch(PresentationExchangeRecord proof) {
+    public void dispatch(BasePresExRecord proof) {
+        // TODO separate into holder and verifier, order by state
         if (proof.roleIsVerifierAndStateIsVerifiedOrDone() || proof.roleIsProverAndStateIsPresentationAckedOrDone()) {
             handleAckedOrVerified(proof);
         } else if (proof.roleIsProverAndRequestReceived()) {
             handleProofRequest(proof);
+        } else if (proof.roleIsVerifier() && proof.stateIsPresentationReceived()) {
+            proofManager.handleVerifierPresentationReceived(proof.getVersion(), proof.getPresentationExchangeId());
+            handleAll(proof);
         } else if (StringUtils.isNotEmpty(proof.getErrorMsg())) {
             handleProblemReport(proof);
         } else {
@@ -78,9 +86,9 @@ public class ProofEventHandler {
      * Default presentation exchange event handler that either stores or updates
      * partner proofs
      *
-     * @param exchange {@link PresentationExchangeRecord}
+     * @param exchange {@link BasePresExRecord}
      */
-    private void handleAll(PresentationExchangeRecord exchange) {
+    private void handleAll(BasePresExRecord exchange) {
         pProofRepo.findByPresentationExchangeId(exchange.getPresentationExchangeId()).ifPresentOrElse(
                 pp -> {
                     if (exchange.getState() != null) {
@@ -98,39 +106,37 @@ public class ProofEventHandler {
      * Handles all events that are either acked or verified connectionless proofs
      * are currently not handled
      *
-     * @param proof {@link PresentationExchangeRecord}
+     * @param p {@link BasePresExRecord}
      */
-    private void handleAckedOrVerified(PresentationExchangeRecord proof) {
-        pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId()).ifPresent(pp -> {
-            if (CollectionUtils.isNotEmpty(proof.getIdentifiers())) {
-                PartnerProof savedProof = proofManager.handleAckedOrVerifiedProofEvent(proof, pp);
-                eventPublisher.publishEventAsync(PresentationRequestCompletedEvent.builder()
-                        .partnerProof(savedProof)
-                        .build());
-            } else {
-                log.warn("Proof does not contain any identifiers event will not be persisted");
-            }
+    private void handleAckedOrVerified(BasePresExRecord p) {
+        pProofRepo.findByPresentationExchangeId(p.getPresentationExchangeId()).ifPresent(pp -> {
+            PartnerProof savedProof = proofManager.handleAckedOrVerifiedProofEvent(p, pp);
+            eventPublisher.publishEventAsync(PresentationRequestCompletedEvent.builder()
+                    .partnerProof(savedProof)
+                    .build());
         });
     }
 
     /**
      * Handles all proof request
      *
-     * @param proof {@link PresentationExchangeRecord}
+     * @param proof {@link BasePresExRecord}
      */
-    private void handleProofRequest(@NonNull PresentationExchangeRecord proof) {
+    private void handleProofRequest(@NonNull BasePresExRecord proof) {
         partnerRepo.findByConnectionId(proof.getConnectionId()).ifPresent(
                 p -> pProofRepo.findByPresentationExchangeId(proof.getPresentationExchangeId())
                         .ifPresentOrElse(pProof -> {
                             // case: this BPA sends proof to other BPA
                             // if --auto-respond-presentation-request is set to false and there is a
                             // preceding proof proposal event we can do an auto present
-                            if (PresentationExchangeState.PROPOSAL_SENT.equals(pProof.getState())
-                                    && proof.initiatorIsSelf()) {
+                            if (pProof.stateIsProposalSent() && proof.initiatorIsSelf()) {
                                 log.info(
                                         "Present_Proof: state=request_received on PresentationExchange where " +
-                                                "initator=self, responding immediately");
+                                                "initiator=self, responding immediately");
                                 pProof.pushStates(proof.getState(), proof.getUpdatedAt());
+                                if (proof instanceof V20PresExRecord dif) {
+                                    pProof.setProofRequest(ExchangePayload.buildForProofRequest(dif));
+                                }
                                 pProofRepo.update(pProof);
                                 if (proof.getAutoPresent() == null || !proof.getAutoPresent()) {
                                     proofManager.presentProofAcceptSelected(proof, null, pProof.getExchangeVersion());
@@ -151,9 +157,9 @@ public class ProofEventHandler {
     /**
      * Handle present proof problem report event message
      *
-     * @param exchange {@link PresentationExchangeRecord}
+     * @param exchange {@link BasePresExRecord}
      */
-    private void handleProblemReport(@NonNull PresentationExchangeRecord exchange) {
+    private void handleProblemReport(@NonNull BasePresExRecord exchange) {
         pProofRepo.findByPresentationExchangeId(exchange.getPresentationExchangeId()).ifPresent(pp -> {
             String errorMsg = org.apache.commons.lang3.StringUtils.truncate(exchange.getErrorMsg(), 255);
             // not a useful response, but this is what we get and what it means
@@ -172,11 +178,14 @@ public class ProofEventHandler {
      * Build db proof representation with all mandatory fields that are required
      *
      * @param partnerId the partner id
-     * @param proof     {@link PresentationExchangeRecord}
+     * @param proof     {@link BasePresExRecord}
      * @return {@link PartnerProof}
      */
-    private PartnerProof defaultProof(@NonNull UUID partnerId, @NonNull PresentationExchangeRecord proof) {
+    private PartnerProof defaultProof(@NonNull UUID partnerId, @NonNull BasePresExRecord proof) {
         Instant ts = TimeUtil.fromISOInstant(proof.getUpdatedAt());
+        ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest> pr = ExchangePayload
+                .buildForProofRequest(proof);
+        CredentialType type = Objects.requireNonNull(pr).getType();
         return PartnerProof
                 .builder()
                 .partnerId(partnerId)
@@ -184,8 +193,9 @@ public class ProofEventHandler {
                 .presentationExchangeId(proof.getPresentationExchangeId())
                 .threadId(proof.getThreadId())
                 .role(proof.getRole())
-                .proofRequest(proof.getPresentationRequest())
-                .exchangeVersion(proof.getVersion() != null ? proof.getVersion() : ExchangeVersion.V1)
+                .proofRequest(pr)
+                .type(type)
+                .exchangeVersion(proof.getVersion())
                 .pushStateChange(proof.getState(), ts != null ? ts : Instant.now())
                 .build();
     }

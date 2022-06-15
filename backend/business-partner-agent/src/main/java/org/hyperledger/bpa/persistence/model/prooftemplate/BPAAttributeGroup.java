@@ -42,19 +42,19 @@ import java.util.stream.Collectors;
 public class BPAAttributeGroup {
     @NotNull
     @ValidBPASchemaId
-    String schemaId;
+    private String schemaId;
     @NotNull
     @Singular
     @Valid
     @DistinctAttributeNames
-    List<BPAAttribute> attributes;
+    private List<BPAAttribute> attributes;
     @NotNull
     @Builder.Default
-    Boolean nonRevoked = Boolean.FALSE;
+    private Boolean nonRevoked = Boolean.FALSE;
     @NotNull
     @Builder.Default
     @Valid
-    List<BPASchemaRestrictions> schemaLevelRestrictions = List.of(BPASchemaRestrictions.builder().build());
+    private List<BPASchemaRestrictions> schemaLevelRestrictions = List.of(BPASchemaRestrictions.builder().build());
 
     public AttributeGroup toRepresentation() {
         return AttributeGroup

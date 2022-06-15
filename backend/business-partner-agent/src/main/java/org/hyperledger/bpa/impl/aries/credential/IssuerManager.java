@@ -31,6 +31,7 @@ import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.exception.AriesException;
 import org.hyperledger.aries.api.issue_credential_v1.*;
 import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecord;
+import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.aries.api.issue_credential_v2.V2IssueIndyCredentialEvent;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.bpa.api.aries.AriesCredential;
@@ -52,6 +53,7 @@ import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.repository.BPACredentialDefinitionRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
@@ -264,7 +266,9 @@ public class IssuerManager extends CredentialManagerBase {
      */
     public void handleV1CredentialRequest(@NonNull V1CredentialExchange ex) {
         try {
-            if (Boolean.FALSE.equals(acaPyConfig.getAutoRespondCredentialRequest())) {
+            // only needed when answering to a holder proposal, as the issuer uses the
+            // automated flow via /issue-credential/send
+            if (Boolean.FALSE.equals(acaPyConfig.getAutoRespondCredentialRequest()) && ex.initiatorIsExternal()) {
                 ac.issueCredentialRecordsIssue(ex.getCredentialExchangeId(),
                         V1CredentialIssueRequest.builder().build());
             }
@@ -319,7 +323,7 @@ public class IssuerManager extends CredentialManagerBase {
     public void handleV2CredentialRequest(@NonNull V20CredExRecord ex) {
         issuerCredExRepo.findByCredentialExchangeId(ex.getCredentialExchangeId()).ifPresentOrElse(db -> {
             try {
-                if (Boolean.FALSE.equals(acaPyConfig.getAutoRespondCredentialRequest())) {
+                if (Boolean.FALSE.equals(acaPyConfig.getAutoRespondCredentialRequest()) && !ex.autoIssueEnabled()) {
                     ac.issueCredentialV2RecordsIssue(ex.getCredentialExchangeId(),
                             V20CredIssueRequest.builder().build());
                 }
@@ -366,7 +370,7 @@ public class IssuerManager extends CredentialManagerBase {
                                                 Credential.builder().attrs(attr).build()));
                             } else {
                                 issuerCredExRepo.updateCredential(bpaEx.getId(),
-                                        BPACredentialExchange.ExchangePayload.jsonLD(ex.resolveLDCredential()));
+                                        ExchangePayload.jsonLD(ex.resolveLDCredential()));
                             }
                             // TODO events
                         }
@@ -405,14 +409,15 @@ public class IssuerManager extends CredentialManagerBase {
 
     // Helpers
 
-    private BPACredentialExchange.ExchangePayload resolveProposal(@NonNull BaseCredExRecord ex) {
+    private ExchangePayload<V1CredentialExchange.CredentialProposalDict.CredentialProposal, V20CredExRecordByFormat.LdProof> resolveProposal(
+            @NonNull BaseCredExRecord ex) {
         if (ex instanceof V1CredentialExchange v1Indy) {
             return v1Indy.getCredentialProposalDict() != null
-                    ? BPACredentialExchange.ExchangePayload
+                    ? ExchangePayload
                             .indy(v1Indy.getCredentialProposalDict().getCredentialProposal())
                     : null;
         } else if (ex instanceof V20CredExRecord v2) {
-            return BPACredentialExchange.ExchangePayload.jsonLD(Objects.requireNonNull(v2.resolveLDCredProposal()));
+            return ExchangePayload.jsonLD(Objects.requireNonNull(v2.resolveLDCredProposal()));
         }
         throw new IllegalStateException();
     }

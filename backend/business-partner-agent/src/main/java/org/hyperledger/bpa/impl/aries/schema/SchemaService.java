@@ -195,6 +195,7 @@ public class SchemaService {
     public List<SchemaAPI> listSchemas() {
         return StreamSupport.stream(schemaRepo.findAll().spliterator(), false)
                 .map(dbS -> SchemaAPI.from(dbS, id))
+                .sorted(Comparator.comparing(SchemaAPI::getType))
                 .collect(Collectors.toList());
     }
 

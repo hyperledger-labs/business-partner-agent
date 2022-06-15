@@ -18,7 +18,7 @@ auto-store-credential: true # needed as there is no ui
 
 # auto presentation exchange
 auto-respond-presentation-proposal: true # needed as there is no ui
-auto-verify-presentation: true # needed as there is no ui
+auto-verify-presentation: false # always set to true in the controller
 auto-respond-presentation-request: false
 
 # credential and presentation exchanges
@@ -29,15 +29,16 @@ auto-disclose-features: true
 
 # wallet
 auto-provision: true
-wallet-type: 'indy'
+wallet-type: 'askar'
 
 # revocation notifications (anoncreds only)
 notify-revocation: true
 monitor-revocation-notification: true
 
 # interoperability with other w3c wallets
+# set to false if you experience connection issues with older (mobile) wallets
 emit-new-didcomm-prefix: true
-emit-new-didcomm-mime-type: true # if true not backwards compatible with aca-py < 0.7.3
+emit-new-didcomm-mime-type: true # if true, not backwards compatible with aca-py < 0.7.3
 
 # general aca-py config
 enable-undelivered-queue: true

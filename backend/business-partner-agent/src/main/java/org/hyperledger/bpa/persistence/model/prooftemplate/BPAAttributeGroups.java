@@ -39,7 +39,7 @@ public class BPAAttributeGroups {
     @Singular
     @Valid
     @NotNull
-    List<BPAAttributeGroup> attributeGroups;
+    private List<BPAAttributeGroup> attributeGroups;
 
     public List<AttributeGroup> toRepresentation() {
         return attributeGroups.stream()

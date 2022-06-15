@@ -32,7 +32,6 @@ import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttribute;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
-import org.jetbrains.annotations.NotNull;
 
 import javax.validation.Valid;
 import java.time.Clock;
@@ -88,7 +87,7 @@ public class ProofTemplateConversion {
         return schemaService.getSchema(UUID.fromString(databaseSchemaId)).map(SchemaAPI::getSchemaId);
     }
 
-    @NotNull
+    @NonNull
     private Stream<Pair<String, BPAAttribute>> pairSchemaIdWithAttributes(@NonNull BPAAttributeGroup ag) {
         Optional<Pair.PairBuilder<String, BPAAttribute>> pairBuilder = resolveLedgerSchemaId(ag.getSchemaId())
                 .map(Pair.<String, BPAAttribute>builder()::left);

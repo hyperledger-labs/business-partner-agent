@@ -26,10 +26,15 @@ import io.micronaut.data.model.DataType;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.hyperledger.aries.api.ExchangeVersion;
-import org.hyperledger.aries.api.present_proof.PresExStateTranslator;
-import org.hyperledger.aries.api.present_proof.PresentProofRequest;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential;
+import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
+import org.hyperledger.aries.api.present_proof.*;
+import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
+import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
+import org.hyperledger.bpa.persistence.model.converter.ProofPayloadConverter;
+import org.hyperledger.bpa.persistence.model.converter.ProofRequestPayloadConverter;
+import org.hyperledger.bpa.persistence.model.type.ExchangeTypeTranslator;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -48,12 +53,13 @@ import java.util.UUID;
 @Table(name = "partner_proof")
 @Accessors(chain = true)
 public class PartnerProof extends StateChangeDecorator<PartnerProof, PresentationExchangeState>
-        implements PresExStateTranslator {
+        implements PresExStateTranslator, ExchangeTypeTranslator {
 
     @Id
     @AutoPopulated
     private UUID id;
 
+    // TODO one to many
     private UUID partnerId;
 
     @DateCreated
@@ -78,6 +84,9 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
     @Enumerated(EnumType.STRING)
     private PresentationExchangeRole role;
 
+    @Enumerated(EnumType.STRING)
+    private CredentialType type;
+
     @Nullable
     @Enumerated(EnumType.STRING)
     private ExchangeVersion exchangeVersion;
@@ -86,12 +95,14 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
     private String problemReport;
 
     @Nullable
-    @TypeDef(type = DataType.JSON)
-    private Map<String, Object> proof;
+    @TypeDef(type = DataType.JSON, converter = ProofPayloadConverter.class)
+    private ExchangePayload<Map<String, PresentationExchangeRecord.RevealedAttributeGroup>, VerifiablePresentation<VerifiableCredential>> proof;
 
-    @TypeDef(type = DataType.JSON)
-    private PresentProofRequest.ProofRequest proofRequest;
+    /** set when prover */
+    @TypeDef(type = DataType.JSON, converter = ProofRequestPayloadConverter.class)
+    private ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest> proofRequest;
 
+    /** set when verifier */
     @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
     private BPAProofTemplate proofTemplate;

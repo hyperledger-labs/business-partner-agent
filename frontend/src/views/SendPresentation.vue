@@ -23,6 +23,7 @@
           type="credential"
           selectable
           use-indy
+          use-json-ld
         ></MyCredentialList>
       </v-card-text>
 
@@ -32,6 +33,7 @@
             v-if="expertMode"
             v-model="useV2Exchange"
             :label="$t('button.useV2')"
+            :disabled="isV2"
           ></v-switch>
           <v-bpa-button color="secondary" @click="cancel()">{{
             $t("button.cancel")
@@ -53,7 +55,7 @@
 import { EventBus } from "@/main";
 import MyCredentialList from "@/components/MyCredentialList.vue";
 import VBpaButton from "@/components/BpaButton";
-import { ExchangeVersion } from "@/constants";
+import { CredentialTypes, ExchangeVersion } from "@/constants";
 import { partnerService } from "@/services";
 
 export default {
@@ -78,6 +80,12 @@ export default {
   computed: {
     expertMode() {
       return this.$store.getters.getExpertMode;
+    },
+    isV2(): boolean {
+      return (
+        this.selectedCredentials[0] &&
+        CredentialTypes.JSON_LD.type === this.selectedCredentials[0].type
+      );
     },
     credHeaders() {
       return [
@@ -108,9 +116,10 @@ export default {
         partnerService
           .sendProof(this.id, {
             myCredentialId: selectedCredential,
-            exchangeVersion: this.useV2Exchange
-              ? ExchangeVersion.V2
-              : ExchangeVersion.V1,
+            exchangeVersion:
+              this.useV2Exchange || this.isV2
+                ? ExchangeVersion.V2
+                : ExchangeVersion.V1,
           })
           .then((response) => {
             console.log(response);

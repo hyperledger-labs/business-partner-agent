@@ -26,7 +26,7 @@ import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
-import org.hyperledger.bpa.persistence.model.type.CredentialTypeTranslator;
+import org.hyperledger.bpa.persistence.model.type.ExchangeTypeTranslator;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -40,7 +40,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "bpa_schema")
-public class BPASchema implements CredentialTypeTranslator {
+public class BPASchema implements ExchangeTypeTranslator {
 
     @Id
     @AutoPopulated
@@ -88,6 +88,14 @@ public class BPASchema implements CredentialTypeTranslator {
             result = ldType;
         } else if (StringUtils.isEmpty(result) && typeIsIndy()) {
             result = AriesStringUtil.schemaGetName(schemaId);
+        }
+        return result;
+    }
+
+    public @Nullable String resolveSchemaLabelEscaped() {
+        String result = resolveSchemaLabel();
+        if (StringUtils.isNotEmpty(result)) {
+            result = result.replaceAll(" ", "_");
         }
         return result;
     }

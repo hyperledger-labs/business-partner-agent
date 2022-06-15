@@ -28,13 +28,11 @@ import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.config.runtime.RequiresWeb;
 import org.hyperledger.bpa.impl.DidDocManager;
 import org.hyperledger.bpa.impl.aries.wallet.Identity;
-import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.DidDocWeb;
 import org.hyperledger.bpa.persistence.repository.DidDocWebRepository;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -94,10 +92,9 @@ public class WebDidDocManager implements DidDocManager {
                 .build();
 
         try {
-            Map<String, Object> didDocDb = mapper.convertValue(didDoc, Converter.STRING_OBJECT_MAP);
             didRepo.findDidDocSingle().ifPresentOrElse(
-                    dd -> didRepo.updateDidDoc(dd.getId(), didDocDb),
-                    () -> didRepo.save(DidDocWeb.builder().didDoc(didDocDb).build()));
+                    dd -> didRepo.updateDidDoc(dd.getId(), didDoc),
+                    () -> didRepo.save(DidDocWeb.builder().didDoc(didDoc).build()));
         } catch (IllegalArgumentException e) {
             log.error("Could not convert did document", e);
         }
@@ -105,16 +102,6 @@ public class WebDidDocManager implements DidDocManager {
 
     @Override
     public Optional<DIDDocument> getDidDocument() {
-        Optional<DIDDocument> result = Optional.empty();
-        Optional<DidDocWeb> didDocDB = didRepo.findDidDocSingle();
-        if (didDocDB.isPresent()) {
-            try {
-                DIDDocument api = mapper.convertValue(didDocDB.get().getDidDoc(), DIDDocument.class);
-                result = Optional.of(api);
-            } catch (IllegalArgumentException e) {
-                log.error("Could not convert persisted did document", e);
-            }
-        }
-        return result;
+        return didRepo.findDidDocSingle().map(DidDocWeb::getDidDoc);
     }
 }

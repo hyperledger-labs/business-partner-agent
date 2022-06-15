@@ -42,6 +42,7 @@ micronaut:
       cookie-same-site: strict
       cookie-name: __HOST-SESSION
       cookie-max-age: ${micronaut.session.max-inactive-interval}
+      cookie-secure: true
   router:
     # note also check the AppController
     static-resources:
