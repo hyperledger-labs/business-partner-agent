@@ -278,7 +278,7 @@ export interface paths {
     get: operations["getMatchingCredentials"];
   };
   "/api/proof-exchanges/{id}/matching-credentials-ld": {
-    get: operations["getMatchingDifCredentials"];
+    get: operations["getMatchingLDCredentials"];
   };
   "/api/proof-exchanges/{id}/prove": {
     /** Manual proof exchange flow. Answer ProofRequest with matching attributes */
@@ -702,6 +702,7 @@ export interface components {
       trace: boolean;
       updatedAt: string;
     };
+    // @ts-ignore
     IssueCredentialRequest: (
       | components["schemas"]["IssueCredentialRequest.IssueIndyCredentialRequest"]
       | components["schemas"]["IssueCredentialRequest.IssueLDCredentialRequest"]
@@ -709,20 +710,22 @@ export interface components {
       /** Format: uuid */
       partnerId: string;
       /** @description credential exchange type */
-      type?: components["schemas"]["CredentialType"] & unknown;
+      type?: unknown;
       /**
        * @description credential body key value pairs
        * @example {}
        */
       document?: { [key: string]: unknown }[];
     };
-    "IssueCredentialRequest.IssueIndyCredentialRequest": {
+    // @ts-ignore
+    "IssueCredentialRequest.IssueIndyCredentialRequest": components["schemas"]["IssueCredentialRequest"] & {
       /** Format: uuid */
       credDefId: string;
       /** @description credential exchange api version */
-      exchangeVersion?: components["schemas"]["ExchangeVersion"] & unknown;
+      exchangeVersion?: unknown;
     };
-    "IssueCredentialRequest.IssueLDCredentialRequest": {
+    // @ts-ignore
+    "IssueCredentialRequest.IssueLDCredentialRequest": components["schemas"]["IssueCredentialRequest"] & {
       /** Format: uuid */
       schemaId: string;
     };
@@ -1061,7 +1064,7 @@ export interface components {
     };
     PresentationRequestVersion: {
       /** @description presentation exchange api version */
-      exchangeVersion?: components["schemas"]["ExchangeVersion"] & unknown;
+      exchangeVersion?: unknown;
     };
     ProofTemplate: {
       id: string | null;
@@ -2483,14 +2486,14 @@ export interface operations {
       };
     };
   };
-  getMatchingDifCredentials: {
+  getMatchingLDCredentials: {
     parameters: {
       path: {
         id: string;
       };
     };
     responses: {
-      /** getMatchingDifCredentials 200 response */
+      /** getMatchingLDCredentials 200 response */
       200: {
         content: {
           "application/json": components["schemas"]["PresentationRequestCredentialsLD"];
