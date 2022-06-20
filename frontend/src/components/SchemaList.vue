@@ -104,7 +104,7 @@ export default {
         : Array.isArray(schema.credentialDefinitions) &&
             schema.credentialDefinitions.length > 0;
     },
-    openItem(item) {
+    openItem(item: SchemaAPI) {
       this.dialog = true;
       this.dirty = false;
       this.schema = item;

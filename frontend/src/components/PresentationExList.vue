@@ -141,7 +141,11 @@
 }
 </style>
 <script lang="ts">
-import { PresentationRequestCredentials, proofExService } from "@/services";
+import {
+  AriesProofExchange,
+  PresentationRequestCredentials,
+  proofExService,
+} from "@/services";
 import { EventBus } from "@/main";
 import {
   CredentialTypes,
@@ -161,7 +165,9 @@ export default {
     // Open Item directly. Is used for links from notifications/activity
     if (this.openItemById) {
       // FIXME: items observable is typically not resolved yet. Then items is empty
-      const item = this.items.find((index) => index.id === this.openItemById);
+      const item = this.items.find(
+        (index: AriesProofExchange) => index.id === this.openItemById
+      );
       if (item) {
         this.openItem(item);
       } else {
@@ -176,8 +182,7 @@ export default {
   },
   data: () => {
     return {
-      selected: [],
-      record: {},
+      record: {} as AriesProofExchange,
       dialog: false,
       isBusy: false,
       isLoading: false,
@@ -190,7 +195,7 @@ export default {
       get() {
         return this.value;
       },
-      set(value) {
+      set(value: AriesProofExchange[]) {
         this.$emit("input", value);
       },
     },
@@ -283,8 +288,8 @@ export default {
         EventBus.$emit("error", this.$axiosErrorMessage(error));
       }
     },
-    openItem(item) {
-      const itemCopy: any = {};
+    openItem(item: AriesProofExchange) {
+      const itemCopy: AriesProofExchange = {};
       Object.assign(itemCopy, item);
 
       const presentationStateToTimestamp = Object.entries(
@@ -302,7 +307,9 @@ export default {
         }
       }
 
-      itemCopy.stateToTimestamp = presentationStateToTimestamp;
+      itemCopy.stateToTimestamp = Object.fromEntries(
+        presentationStateToTimestamp
+      );
 
       this.record = itemCopy;
       this.dialog = true;
@@ -313,15 +320,17 @@ export default {
       this.closeDialog();
       this.record = {};
     },
-    isStateVerified(item) {
-      return item && item.state === PresentationExchangeStates.VERIFIED;
+    isStateVerified(item: AriesProofExchange) {
+      return (
+        item && item.state === PresentationExchangeStates.VERIFIED.toLowerCase()
+      );
     },
     async deleteItem() {
       try {
         const resp = await proofExService.deleteProofExRecord(this.record.id);
         if (resp.status === 200) {
           const index = this.items.findIndex(
-            (item) => item.id === this.record.id
+            (item: AriesProofExchange) => item.id === this.record.id
           );
           this.items.splice(index, 1);
           EventBus.$emit(
@@ -352,8 +361,8 @@ export default {
         });
       }
     },
-    prepareReferents() {
-      const referents = [];
+    prepareReferents(): string[] {
+      const referents: string[] = [];
 
       RequestTypes.map((type) => {
         Object.entries(this.record.proofRequest[type]).map(
@@ -412,7 +421,7 @@ export default {
                   attribute.matchingCredentials = [];
                 }
                 const hasMatchingCred = attribute.matchingCredentials.some(
-                  (item) => {
+                  (item: PresentationRequestCredentials) => {
                     return (
                       item.credentialInfo.referent ===
                       cred.credentialInfo.referent
@@ -428,7 +437,7 @@ export default {
                 }
 
                 const hasMatchingPred = pred.matchingCredentials.some(
-                  (item) => {
+                  (item: PresentationRequestCredentials) => {
                     return (
                       item.credentialInfo.referent ===
                       cred.credentialInfo.referent
@@ -455,7 +464,7 @@ export default {
     },
   },
   watch: {
-    dialog(visible) {
+    dialog(visible: boolean) {
       if (visible) {
         this.$store.commit("presentationNotificationSeen", {
           id: this.record.id,

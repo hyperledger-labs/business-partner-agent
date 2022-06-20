@@ -172,6 +172,13 @@
   </v-container>
 </template>
 <script lang="ts">
+import {
+  AttributeGroup,
+  SchemaAPI,
+  SchemaRestrictions,
+  TrustedIssuer,
+} from "@/services";
+
 export default {
   props: {
     requestData: Array,
@@ -221,12 +228,12 @@ export default {
         },
       ];
     },
-    schemaTrustedIssuers() {
+    schemaTrustedIssuers(): TrustedIssuer[] {
       const schemas = this.$store.getters.getSchemas.filter(
-        (schema) => schema.type === "INDY"
+        (schema: SchemaAPI) => schema.type === "INDY"
       );
 
-      let trustedIssuerArrays = [];
+      let trustedIssuerArrays: TrustedIssuer[] = [];
 
       for (const schema of schemas) {
         if (schema.trustedIssuer !== undefined) {
@@ -240,9 +247,9 @@ export default {
     },
   },
   methods: {
-    getIssuerLabel(restriction) {
+    getIssuerLabel(restriction: SchemaRestrictions) {
       const filteredIssuers = this.schemaTrustedIssuers.find(
-        (s) => s.issuerDid === restriction.issuerDid
+        (s: TrustedIssuer) => s.issuerDid === restriction.issuerDid
       );
 
       return filteredIssuers !== undefined &&
@@ -250,28 +257,26 @@ export default {
         ? filteredIssuers.label
         : "";
     },
-    renderSchemaLabelId(attributeGroup) {
-      // FIXME: This needs refactoring
-      // This tries to show a schema and label but will show the attribute group if
-      let schemaId;
-      let internalSchemaId;
+    renderSchemaLabelId(attributeGroup: AttributeGroup) {
+      let schemaId: string;
+      let internalSchemaId: string;
       if (attributeGroup.schemaId) {
         internalSchemaId = attributeGroup.schemaId;
       } else if (
         attributeGroup.schemaLevelRestrictions &&
-        attributeGroup.schemaLevelRestrictions.schemaId
+        attributeGroup.schemaLevelRestrictions[0].schemaId
       ) {
-        schemaId = attributeGroup.schemaLevelRestrictions.schemaId;
+        schemaId = attributeGroup.schemaLevelRestrictions[0].schemaId;
       }
 
       let schema;
       if (schemaId) {
         schema = this.$store.getters.getSchemas.find(
-          (s) => s.schemaId === schemaId
+          (s: SchemaAPI) => s.schemaId === schemaId
         );
       } else if (internalSchemaId) {
         schema = this.$store.getters.getSchemas.find(
-          (s) => s.id === internalSchemaId
+          (s: SchemaAPI) => s.id === internalSchemaId
         );
       }
 
