@@ -106,14 +106,9 @@ public class ProofManager {
     @Inject
     BPAMessageSource.DefaultMessageSource ms;
 
-    // request proof from partner via proof template with exchange version 1
-    public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
-        sendPresentProofRequest(partnerId, proofTemplate, ExchangeVersion.V1);
-    }
-
     // request proof from partner via proof template
-    public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate,
-            @NonNull ExchangeVersion version) {
+    public void sendPresentProofRequestIndy(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate,
+        @NonNull ExchangeVersion version) {
         try {
             PresentProofRequest proofRequest = proofTemplateConversion.proofRequestViaVisitorFrom(partnerId,
                     proofTemplate);
@@ -140,8 +135,12 @@ public class ProofManager {
         }
     }
 
+    public void sendPresentProofRequestJsonLD(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
+
+    }
+
     // request proof from partner - currently not used by the frontend
-    public void sendPresentProofRequest(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {
+    public void sendPresentProofRequestIndy(@NonNull UUID partnerId, @NonNull RequestProofRequest req) {
         try {
             final Partner partner = partnerRepo.findById(partnerId)
                     .orElseThrow(() -> new PartnerException(

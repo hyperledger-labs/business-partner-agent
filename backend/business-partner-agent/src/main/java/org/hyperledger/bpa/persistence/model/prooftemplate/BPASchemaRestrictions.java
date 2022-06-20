@@ -38,9 +38,18 @@ import java.util.Optional;
 @Introspected
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public class BPASchemaRestrictions {
+
+    // dif and indy
+
     @Nullable
     @ValidUUID
     private String schemaId;
+
+    @Nullable
+    private String issuerDid;
+
+    // indy only
+
     @Nullable
     private String schemaName;
     @Nullable
@@ -49,8 +58,6 @@ public class BPASchemaRestrictions {
     private String schemaIssuerDid;
     @Nullable
     private String credentialDefinitionId;
-    @Nullable
-    private String issuerDid;
 
     public SchemaRestrictions toRepresentation() {
         return SchemaRestrictions.builder()

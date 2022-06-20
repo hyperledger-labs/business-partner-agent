@@ -23,11 +23,11 @@ import lombok.*;
 import org.hyperledger.bpa.controller.api.prooftemplates.AttributeGroup;
 import org.hyperledger.bpa.impl.verification.prooftemplates.DistinctAttributeNames;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidBPASchemaId;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Data
@@ -40,17 +40,20 @@ import java.util.stream.Collectors;
 // using a concrete class instead of a generic list does not unmarshal correctly
 // see https://github.com/micronaut-projects/micronaut-data/issues/1064
 public class BPAAttributeGroup {
+
     @NotNull
-    @ValidBPASchemaId
-    private String schemaId;
+    private UUID schemaId;
+
     @NotNull
     @Singular
     @Valid
     @DistinctAttributeNames
     private List<BPAAttribute> attributes;
+
     @NotNull
     @Builder.Default
     private Boolean nonRevoked = Boolean.FALSE;
+
     @NotNull
     @Builder.Default
     @Valid

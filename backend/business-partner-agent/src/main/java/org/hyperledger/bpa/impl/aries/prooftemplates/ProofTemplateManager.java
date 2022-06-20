@@ -25,7 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.api.exception.DataPersistenceException;
-import org.hyperledger.bpa.api.exception.ProofTemplateException;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
@@ -57,10 +57,14 @@ public class ProofTemplateManager {
     public void invokeProofRequestByTemplate(@NonNull UUID id, @NonNull UUID partnerId,
             @Nullable ExchangeVersion version) {
         BPAProofTemplate proofTemplate = repo.findById(id)
-                .orElseThrow(() -> new ProofTemplateException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         ms.getMessage("api.proof.template.not.found", Map.of("id", id))));
-        version = version != null ? version : ExchangeVersion.V1;
-        proofManager.sendPresentProofRequest(partnerId, proofTemplate, version);
+        if (proofTemplate.typeIsIndy()) {
+            version = version != null ? version : ExchangeVersion.V1;
+            proofManager.sendPresentProofRequestIndy(partnerId, proofTemplate, version);
+        } else if (proofTemplate.typeIsJsonLD()) {
+            proofManager.sendPresentProofRequestJsonLD(partnerId, proofTemplate);
+        }
     }
 
     public Optional<BPAProofTemplate> getProofTemplate(@NonNull UUID id) {

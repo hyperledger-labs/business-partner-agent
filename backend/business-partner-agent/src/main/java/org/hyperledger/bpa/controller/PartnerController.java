@@ -280,7 +280,7 @@ public class PartnerController {
         if (req.isRequestBySchema() && StringUtils.isEmpty(req.getRequestBySchema().getSchemaId())) {
             throw new WrongApiUsageException(msg.getMessage("api.partner.proof.request.no.schema.id"));
         }
-        proofM.sendPresentProofRequest(id, req);
+        proofM.sendPresentProofRequestIndy(id, req);
         return HttpResponse.ok();
     }
 

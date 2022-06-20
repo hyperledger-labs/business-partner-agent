@@ -77,12 +77,12 @@ class ProofTemplateManagerTest {
         // reset created at with value from db., because Java's value is more detailed
         // that the database's.
         repo.findById(template.getId()).map(BPAProofTemplate::getCreatedAt).ifPresent(template::setCreatedAt);
-        doNothing().when(proofManager).sendPresentProofRequest(eq(partnerId), eq(template));
+        doNothing().when(proofManager).sendPresentProofRequestIndy(eq(partnerId), eq(template), ExchangeVersion.V1);
 
         ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, msg);
         sut.invokeProofRequestByTemplate(template.getId(), partnerId);
 
-        verify(proofManager, times(1)).sendPresentProofRequest(partnerId, template, ExchangeVersion.V1);
+        verify(proofManager, times(1)).sendPresentProofRequestIndy(partnerId, template, ExchangeVersion.V1);
     }
 
     @Test
@@ -93,7 +93,7 @@ class ProofTemplateManagerTest {
                 ProofTemplateException.class,
                 () -> sut.invokeProofRequestByTemplate(UUID.randomUUID(), UUID.randomUUID()),
                 "Expected a ProofTemplateException if there is ProofTemplate with the given id.");
-        verify(proofManager, never()).sendPresentProofRequest(any(UUID.class), any(BPAProofTemplate.class));
+        verify(proofManager, never()).sendPresentProofRequestIndy(any(UUID.class), any(BPAProofTemplate.class), ExchangeVersion.V1);
     }
 
     @Test

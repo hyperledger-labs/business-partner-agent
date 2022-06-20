@@ -124,7 +124,7 @@ public class ProofExchangeController {
         if (req.isRequestBySchema() && StringUtils.isEmpty(req.getRequestBySchema().getSchemaId())) {
             throw new WrongApiUsageException(msg.getMessage("api.partner.proof.request.no.schema.id"));
         }
-        proofM.sendPresentProofRequest(req.getPartnerId(), req);
+        proofM.sendPresentProofRequestIndy(req.getPartnerId(), req);
         return HttpResponse.ok();
     }
 

@@ -177,7 +177,7 @@ class BPAProofTemplateRepositoryTest {
                         BPAAttributeGroups.builder()
                                 .attributeGroup(
                                         BPAAttributeGroup.builder()
-                                                .schemaId(schemaId.toString())
+                                                .schemaId(schemaId)
                                                 .attribute(
                                                         BPAAttribute.builder()
                                                                 .name("myAttribute")

@@ -76,7 +76,7 @@ public class BPAProofTemplate {
 
     public ProofTemplate toRepresentation() {
         return new ProofTemplate(
-                id.toString(),
+                id,
                 createdAt,
                 name,
                 attributeGroups.toRepresentation());
@@ -85,12 +85,20 @@ public class BPAProofTemplate {
     public static BPAProofTemplate fromRepresentation(ProofTemplate proofTemplate) {
         UUID id = null;
         if (proofTemplate.getId() != null) {
-            id = UUID.fromString(proofTemplate.getId());
+            id = proofTemplate.getId();
         }
         return BPAProofTemplate.builder()
                 .id(id)
                 .name(proofTemplate.getName())
                 .attributeGroups(BPAAttributeGroups.fromRepresentation(proofTemplate.getAttributeGroups()))
                 .build();
+    }
+
+    public boolean typeIsIndy() {
+        return CredentialType.INDY.equals(type);
+    }
+
+    public boolean typeIsJsonLD() {
+        return CredentialType.JSON_LD.equals(type);
     }
 }

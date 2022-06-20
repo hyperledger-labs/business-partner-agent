@@ -88,8 +88,6 @@ public class ValidatorFactory {
             if (value != null) {
                 Optional<Predicate<String>> attributeInSchema = Optional.of(value)
                         .map(BPAAttributeGroup::getSchemaId)
-                        .filter(this::isUUID)
-                        .map(UUID::fromString)
                         .flatMap(schemaService::getSchema)
                         .map(SchemaAPI::getSchemaId)
                         .map(schemaId -> schemaService

@@ -21,12 +21,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.annotation.Nullable;
 import lombok.*;
-import org.hyperledger.bpa.impl.verification.ValidUUID;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -34,15 +34,17 @@ import java.util.List;
 @Builder
 @Introspected
 public class ProofTemplate {
+
     @Nullable
-    @ValidUUID
-    private String id;
+    private UUID id;
+
     @Nullable
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
     private Instant createdAt;
 
     @NotEmpty
     String name;
+
     @NotEmpty
     @Valid
     @Singular
