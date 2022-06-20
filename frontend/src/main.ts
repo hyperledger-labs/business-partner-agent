@@ -48,7 +48,7 @@ Vue.use(VueNativeSock, socketApi, {
   store: store,
   format: "json",
   reconnection: true,
-  passToStoreHandler: function (eventName, event) {
+  passToStoreHandler: function (eventName: string, event: any) {
     if (!eventName.startsWith("SOCKET_")) {
       return;
     }

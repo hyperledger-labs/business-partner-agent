@@ -110,19 +110,7 @@ export default {
   name: "ContactPerson",
   components: { VBpaButton },
   props: {
-    value: {
-      type: {
-        type: String,
-        salutation: String,
-        academicTitle: String,
-        firstName: String,
-        lastName: String,
-        email: String,
-        phone: String,
-        mobilePhone: String,
-        country: String,
-      },
-    },
+    value: {},
   },
   computed: {
     person: {
