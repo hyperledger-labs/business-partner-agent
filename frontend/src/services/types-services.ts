@@ -95,6 +95,8 @@ export type AriesProofExchange = components["schemas"]["AriesProofExchange"];
 
 export type ProofTemplate = components["schemas"]["ProofTemplate"];
 
+export type ConnectionState = components["schemas"]["ConnectionState"];
+
 export type AttributeGroupUi = {
   ui: {
     selectedAttributes: Attribute[];
@@ -112,6 +114,8 @@ export type WalletDocumentRequest =
   components["schemas"]["WalletDocumentRequest"];
 
 export type PaginationCommand = components["schemas"]["PaginationCommand"];
+
+export type CredentialType = components["schemas"]["CredentialType"];
 
 export type AriesCredential = components["schemas"]["AriesCredential"];
 

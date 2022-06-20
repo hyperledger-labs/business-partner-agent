@@ -198,7 +198,7 @@ export default {
         name: "Wallet",
       });
     },
-    fieldModified(keyValue) {
+    fieldModified(keyValue: { key: string; value: string }) {
       this.docChanged = Object.keys(this.intDoc).find((key) => {
         return this.credential[key] !== this.intDoc[key];
       });

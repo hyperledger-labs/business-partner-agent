@@ -156,7 +156,7 @@ import IssueCredentialIndyOob from "@/components/issue/IssueCredentialIndyOob.vu
 import IssueCredentialIndy from "@/components/issue/IssueCredentialIndy.vue";
 import { CredentialTypes } from "@/constants";
 import IssueCredentialJsonLd from "@/components/issue/IssueCredentialJsonLd.vue";
-import { PartnerAPI } from "@/services";
+import { CredDef, PartnerAPI, SchemaAPI } from "@/services";
 
 export default {
   name: "CredentialManagement",
@@ -173,7 +173,6 @@ export default {
   data: () => {
     return {
       isLoadingCredentials: false,
-      issuedCredentials: [],
       partner: {} as PartnerAPI,
       partnerId: "",
       credDefIndyOrSchemaJsonLd: {},
@@ -212,7 +211,7 @@ export default {
           const documentTypes = this.$store.getters.getSchemas;
 
           return documentTypes.filter(
-            (schema) => schema.type === CredentialTypes.JSON_LD.type
+            (schema: SchemaAPI) => schema.type === CredentialTypes.JSON_LD.type
           );
         } else {
           return this.$store.getters.getCredDefSelectList;
@@ -221,7 +220,7 @@ export default {
     },
   },
   watch: {
-    partner(value) {
+    partner(value: PartnerAPI) {
       const isNotSelected: boolean = !value || !value.id;
       this.issueCredentialDisabled =
         isNotSelected || !this.credDef || !this.credDef.id;
@@ -231,7 +230,7 @@ export default {
 
       this.partnerId = value ? value.id : "";
     },
-    credDefIndyOrSchemaJsonLd(value) {
+    credDefIndyOrSchemaJsonLd(value: SchemaAPI | CredDef) {
       this.issueCredentialDisabled =
         !value || !value.id || !this.partner || !this.partner.id;
 
@@ -249,8 +248,8 @@ export default {
       this.credDefIndyOrSchemaJsonLd = {};
       this.issueCredentialDisabled = true;
     },
-    partnerStateColor(p) {
-      return partnerUtils.getPartnerStateColor(p.state);
+    partnerStateColor(partner: PartnerAPI) {
+      return partnerUtils.getPartnerStateColor(partner.state);
     },
     async loadCredentials() {
       this.partner = {};

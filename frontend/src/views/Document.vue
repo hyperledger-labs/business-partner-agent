@@ -148,6 +148,7 @@ import OrganizationalProfile from "@/components/OrganizationalProfile.vue";
 import Credential from "@/components/Credential.vue";
 import VBpaButton from "@/components/BpaButton";
 import {
+  CredentialType,
   MyDocumentAPI,
   WalletDocumentRequest,
   walletService,
@@ -200,7 +201,7 @@ export default {
   data: () => {
     return {
       document: {} as MyDocumentAPI,
-      intDoc: {},
+      intDoc: {} as MyDocumentAPI,
       isBusy: false,
       isReady: false,
       useV2Exchange: false,
@@ -256,7 +257,7 @@ export default {
           EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
-    saveDocument(closeDocument) {
+    saveDocument(closeDocument: boolean) {
       this.isBusy = true;
       if (this.id) {
         walletService
@@ -336,7 +337,7 @@ export default {
     cancel() {
       this.$router.go(-1);
     },
-    isProfile(schemaType) {
+    isProfile(schemaType: CredentialType): boolean {
       return !this.schemaId && schemaType === CredentialTypes.PROFILE.type;
     },
     fieldModified() {
@@ -345,7 +346,7 @@ export default {
       });
       this.docModified();
     },
-    documentDataFieldChanged(credChanged) {
+    documentDataFieldChanged(credChanged: boolean) {
       this.credChanged = credChanged;
       this.docModified();
     },
