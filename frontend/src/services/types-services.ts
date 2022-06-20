@@ -92,6 +92,14 @@ export type AriesProofExchange = components["schemas"]["AriesProofExchange"];
 
 export type ProofTemplate = components["schemas"]["ProofTemplate"];
 
+export type AttributeGroupUi = {
+  ui: {
+    selectedAttributes: Attribute[];
+    selectedRestrictionsByTrustedIssuer: SchemaRestrictions[];
+    predicateConditionsErrorCount: number;
+  };
+};
+
 export type PresentationRequestVersion =
   components["schemas"]["PresentationRequestVersion"];
 
@@ -103,6 +111,14 @@ export type WalletDocumentRequest =
 export type PaginationCommand = components["schemas"]["PaginationCommand"];
 
 export type AriesCredential = components["schemas"]["AriesCredential"];
+
+export type AttributeGroup = components["schemas"]["AttributeGroup"];
+
+export type Attribute = components["schemas"]["Attribute"];
+
+export type SchemaRestrictions = components["schemas"]["SchemaRestrictions"];
+
+export type ValueCondition = components["schemas"]["ValueCondition"];
 
 export type WalletCredentialRequest =
   components["schemas"]["WalletCredentialRequest"];
