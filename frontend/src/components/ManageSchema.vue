@@ -57,7 +57,7 @@
         </v-tabs>
         <v-tabs-items v-model="tab">
           <v-tab-item transition="false" value="schema-attributes">
-            <v-card flat class="mt-2">
+            <v-card flat class="mt-2" v-if="!isEdit">
               <v-list-item
                 v-for="attribute in schema.schemaAttributeNames"
                 :key="attribute.id"
@@ -72,6 +72,48 @@
                 </p>
               </v-list-item>
             </v-card>
+            <!--              TESTCODE###################### TODO:-->
+            <v-form v-if="isEdit">
+              <v-card flat class="mt-2">
+                <v-row>
+                  <v-col cols="8" class="py-0"
+                    ><p class="grey--text">
+                      {{ $t("component.createSchema.headersColumn.name") }}
+                    </p></v-col
+                  >
+                  <v-col cols="2" class="py-0"
+                    ><p class="grey--text">
+                      {{ $t("component.createSchema.headersColumn.isDefault") }}
+                    </p></v-col
+                  >
+                </v-row>
+                <v-row
+                  v-for="(attr, index) in schema.schemaAttributeNames"
+                  v-bind:key="attr.type"
+                >
+                  <v-col cols="8" class="py-0">
+                    <v-text-field
+                      :value="attr"
+                      disabled
+                      outlined
+                      dense
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="2" class="py-0">
+                    <v-checkbox
+                      v-model="attr.defaultAttributeName"
+                      outlined
+                      dense
+                      style="margin-top: 4px; padding-top: 4px"
+                      @change="
+                        makeDefaultAttribute(index, attr.defaultAttributeName)
+                      "
+                    ></v-checkbox>
+                  </v-col>
+                </v-row>
+              </v-card>
+            </v-form>
+            <!--              TESTCODE!-->
           </v-tab-item>
           <v-tab-item transition="false" value="credential-definitions">
             <v-card flat class="mt-2">
@@ -98,6 +140,12 @@
 
       <v-card-actions>
         <v-layout align-end justify-end>
+          <v-bpa-button v-if="!isEdit" color="secondary" @click="editSchema()"
+            >{{ $t("button.edit") }}
+          </v-bpa-button>
+          <v-bpa-button v-else color="secondary" @click="updateSchema()">{{
+            $t("button.save")
+          }}</v-bpa-button>
           <v-bpa-button color="primary" @click="closed">{{
             $t("button.close")
           }}</v-bpa-button>
@@ -146,6 +194,7 @@ export default {
   },
   data: () => {
     return {
+      isEdit: false,
       tab: undefined,
       resetChildForms: false,
     };
@@ -156,9 +205,11 @@ export default {
     },
     schema: {
       get() {
+        console.log("############ value:", this.value);
         return this.value;
       },
       set(value) {
+        console.log("############ value:", this.value);
         this.$emit("input", value);
       },
     },
@@ -203,6 +254,42 @@ export default {
       this.$refs.schemaId.blur();
       window.getSelection().removeAllRanges();
     },
+    makeDefaultAttribute(index, value) {
+      // if setting true, set all others to false...
+      console.log("### makeDefaultAttribute-value:", value);
+      console.log("### makeDefaultAttribute-index:", index);
+      console.log(
+        "### schema.schemaAttributeNames.entries()",
+        this.schema.schemaAttributeNames.entries()
+      );
+      if (value) {
+        for (const [index_, v] of this.schema.schemaAttributeNames.entries())
+          v.defaultAttributeName = index === index_;
+      }
+    },
+    editSchema() {
+      this.isEdit = true;
+    },
+    updateSchema() {
+      // adminService
+      // .updateSchema(this.schema.defaultAttributeName)
+      // .then((result) => {
+      //   console.log(result);
+      //   if (result.status === 200) {
+      //     EventBus.$emit(
+      //       "success",
+      //       this.$t("component.manageSchema.eventSuccessUpdate")
+      //     );
+      //     this.$emit("changed");
+      //     this.$emit("updated");
+      //   }
+      // })
+      // .catch((error) =>{
+      //   EventBus.$emit("error", this.$axiosErrorMessage(error));
+      //   }
+      // )
+      this.isEdit = false;
+    },
     deleteSchema() {
       adminService
         .deleteSchema(this.schema.id)
@@ -226,6 +313,7 @@ export default {
     },
     closed() {
       this.resetChildForms = !this.resetChildForms;
+      this.isEdit = false;
       this.$emit("closed");
     },
   },

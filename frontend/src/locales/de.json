@@ -573,7 +573,10 @@
         "identifier": "Kennung",
         "sectionTitle": "Informationen zum Unternehmen",
         "companyName": "Rechtlicher Name der Firma",
-        "companyAltName": "Unternehmen Alternativer Name"
+        "companyAltName": "Unternehmen Alternativer Name",
+        "myDID": "Dezentrale Identität (DID) des Unternehmens",
+        "eventSuccessCopy": "Schema ID copied",
+        "eventErrorCopy": "Can't copy Schema ID"
       },
       "addressInfo": {
         "sectionTitle": "Informationen zur Anschrift",

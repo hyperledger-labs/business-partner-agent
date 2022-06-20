@@ -16,6 +16,17 @@
       </v-col>
       <v-col cols="8" class="pb-0">
         <v-text-field
+          :label="$t('component.organizationProfile.companyInfo.myDID')"
+          v-if="!isLoading"
+          id="myDID"
+          v-model="myDID"
+          outlined
+          readonly
+          dense
+          :append-icon="'$vuetify.icons.copy'"
+          @click:append="copyDID"
+        ></v-text-field>
+        <v-text-field
           :label="$t('component.organizationProfile.companyInfo.type')"
           v-model="documentData.type"
           outlined
@@ -155,6 +166,7 @@
 <script lang="ts">
 import { profileModel } from "@/models/model";
 import VBpaButton from "@/components/BpaButton";
+import { EventBus } from "@/main";
 export default {
   props: {
     isReadOnly: Boolean,
@@ -166,9 +178,11 @@ export default {
   created() {
     this.intDoc.documentData = this.documentData;
     this.intDoc.label = this.documentData.legalName;
+    this.getStatus();
   },
   data: () => {
     return {
+      isLoading: true,
       identifierTypes: ["LEI", "GLN", "D-U-N-S", "VAT", "USCC"],
       intDoc: Object,
     };
@@ -176,14 +190,37 @@ export default {
   computed: {
     documentData: {
       get() {
+        console.log("#### docData: value:####", this.value);
         return this.value;
       },
       set(value) {
+        console.log("#### docData: value:####", this.value);
         this.$emit("input", value);
+      },
+    },
+    myDID: {
+      // getter
+      get: function () {
+        return this.status.did;
       },
     },
   },
   methods: {
+    getStatus() {
+      console.log("Getting status...");
+      this.$axios
+        .get(`${this.$apiBaseUrl}/status`)
+        .then((result) => {
+          console.log(result);
+          this.isWelcome = !result.data.profile;
+          this.status = result.data;
+          this.isLoading = false;
+        })
+        .catch((error) => {
+          this.isLoading = false;
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
+        });
+    },
     addIdentifier() {
       this.documentData.identifier.push({
         id: "",
@@ -196,6 +233,29 @@ export default {
     onLegalNameChange(event) {
       this.documentData.legalName = event;
       this.intDoc.label = event;
+    },
+    copyDID() {
+      let idElement = document.querySelector("#myDID") as HTMLTextAreaElement;
+      idElement.select();
+      let successful;
+      try {
+        successful = document.execCommand("copy");
+      } catch {
+        successful = false;
+      }
+      successful
+        ? EventBus.$emit(
+            "success",
+            this.$t(
+              "component.organizationProfile.companyInfo.eventSuccessCopy"
+            )
+          )
+        : EventBus.$emit(
+            "error",
+            this.$t("component.organizationProfile.companyInfo.eventErrorCopy")
+          );
+      idElement.blur();
+      window.getSelection().removeAllRanges();
     },
   },
   components: { VBpaButton },

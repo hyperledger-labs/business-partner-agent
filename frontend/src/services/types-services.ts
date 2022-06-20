@@ -28,6 +28,8 @@ export type SendMessageRequest = components["schemas"]["SendMessageRequest"];
 
 export type AddSchemaRequest = components["schemas"]["AddSchemaRequest"];
 
+export type UpdateSchemaRequest = components["schemas"]["UpdateSchemaRequest"];
+
 export type UpdatePartnerRequest =
   components["schemas"]["UpdatePartnerRequest"];
 
