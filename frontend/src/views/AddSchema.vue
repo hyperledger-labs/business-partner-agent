@@ -93,7 +93,7 @@ export default {
   computed: {
     rules() {
       return {
-        required: (value) => !!value || this.$t("app.rules.required"),
+        required: (value: string) => !!value || this.$t("app.rules.required"),
       };
     },
     fieldsEmpty() {
