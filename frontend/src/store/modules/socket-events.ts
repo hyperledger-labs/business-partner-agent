@@ -19,25 +19,25 @@ const state: IStateSocketEvents = {
 const getters = {};
 
 const mutations = {
-  SOCKET_ONOPEN(state: IStateSocketEvents, event) {
+  SOCKET_ONOPEN(state: IStateSocketEvents, event: any) {
     console.log(event);
     Vue.prototype.$socket = event.currentTarget;
     state.socket.isConnected = true;
   },
-  SOCKET_ONCLOSE(state: IStateSocketEvents, event) {
+  SOCKET_ONCLOSE(state: IStateSocketEvents, event: any) {
     console.log(event);
     state.socket.isConnected = false;
   },
-  SOCKET_ONERROR(state: IStateSocketEvents, event) {
+  SOCKET_ONERROR(state: IStateSocketEvents, event: any) {
     console.error(state, event);
   },
   // default handler called for all methods
-  SOCKET_ONMESSAGE(state: IStateSocketEvents, message) {
+  SOCKET_ONMESSAGE(state: IStateSocketEvents, message: any) {
     console.log(message);
     state.socket.message = message;
   },
   // mutations for reconnect methods
-  SOCKET_RECONNECT(state: IStateSocketEvents, count) {
+  SOCKET_RECONNECT(state: IStateSocketEvents, count: any) {
     console.info(state, count);
   },
   SOCKET_RECONNECT_ERROR(state: IStateSocketEvents) {

@@ -14,6 +14,8 @@ import {
   AddTagRequest,
   AddTrustedIssuerRequest,
   SchemaAPI,
+  TAADigestRequest,
+  TAARecord,
   TagAPI,
   TrustedIssuer,
   UpdateTrustedIssuerRequest,
@@ -77,7 +79,7 @@ export default {
     return appAxios().post(`${ApiRoutes.ADMIN}/tag`, data);
   },
 
-  deleteTag(id: string, hardDelete: boolean) {
+  deleteTag(id: string, hardDelete: boolean): Promise<AxiosResponse<void>> {
     let parameters;
     if (hardDelete) {
       parameters = new URLSearchParams([["force", "true"]]);
@@ -85,5 +87,14 @@ export default {
     return appAxios().delete(`${ApiRoutes.ADMIN}/tag/${id}`, {
       params: parameters,
     });
+  },
+  isEndpointsWriteRequired(): Promise<AxiosResponse<boolean>> {
+    return appAxios().get(`${ApiRoutes.ADMIN}/endpoints/registrationRequired`);
+  },
+  getTAARecord(): Promise<AxiosResponse<TAARecord>> {
+    return appAxios().get(`${ApiRoutes.ADMIN}/taa/get`);
+  },
+  registerEndpoints(data: TAADigestRequest): Promise<AxiosResponse<void>> {
+    return appAxios().post(`${ApiRoutes.ADMIN}/endpoints/register`, data);
   },
 };

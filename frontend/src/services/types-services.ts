@@ -127,6 +127,10 @@ export type SchemaRestrictions = components["schemas"]["SchemaRestrictions"];
 
 export type ValueCondition = components["schemas"]["ValueCondition"];
 
+export type TAARecord = components["schemas"]["TAAInfo.TAARecord"];
+
+export type TAADigestRequest = components["schemas"]["TAADigestRequest"];
+
 export type WalletCredentialRequest =
   components["schemas"]["WalletCredentialRequest"];
 

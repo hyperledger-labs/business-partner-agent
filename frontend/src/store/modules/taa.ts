@@ -5,8 +5,9 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-import { EventBus, axios, apiBaseUrl } from "../../main";
+import { EventBus } from "@/main";
 import { IStateTransactionAuthorAgreement } from "@/store/state-type";
+import { adminService } from "@/services";
 
 const state: IStateTransactionAuthorAgreement = {
   taaRequired: false,
@@ -32,7 +33,7 @@ const getters = {
 };
 
 const mutations = {
-  setTaa(state: IStateTransactionAuthorAgreement, payload) {
+  setTaa(state: IStateTransactionAuthorAgreement, payload: any) {
     if (payload) {
       state.taaText = payload.taa.text;
       state.taaDigest = payload.taa.digest;
@@ -40,21 +41,21 @@ const mutations = {
     }
     state.taaLoaded = true;
   },
-  setTaaRequired(state: IStateTransactionAuthorAgreement, payload) {
+  setTaaRequired(state: IStateTransactionAuthorAgreement, payload: any) {
     state.taaRequired = payload.taaRequired;
   },
 };
 
 const actions = {
-  validateTaa({ commit, dispatch }) {
-    axios
-      .get(`${apiBaseUrl}/admin/endpoints/registrationRequired`)
+  validateTaa(context: any) {
+    adminService
+      .isEndpointsWriteRequired()
       .then((result) => {
         const required = result.data;
         if (required) {
-          dispatch("getTaa");
+          context.dispatch("getTaa");
         }
-        commit({ type: "setTaaRequired", taaRequired: required });
+        context.commit({ type: "setTaaRequired", taaRequired: required });
       })
       .catch((error) => {
         console.error(error);
@@ -62,14 +63,14 @@ const actions = {
       });
   },
 
-  getTaa({ commit }) {
-    axios
-      .get(`${apiBaseUrl}/admin/taa/get`)
+  getTaa(context: any) {
+    adminService
+      .getTAARecord()
       .then((result) => {
-        commit({ type: "setTaa", taa: result.data });
+        context.commit({ type: "setTaa", taa: result.data });
       })
       .catch((error) => {
-        commit({
+        context.commit({
           type: "setTaa",
           taa: { digest: "", version: state.taaVersion, text: state.taaText },
         });
@@ -78,14 +79,14 @@ const actions = {
       });
   },
 
-  registerTaa({ dispatch }) {
-    axios
-      .post(`${apiBaseUrl}/admin/endpoints/register`, {
+  registerTaa(context: any) {
+    adminService
+      .registerEndpoints({
         digest: state.taaDigest,
       })
       .then(() => {
         EventBus.$emit("success", "TAA registration fired");
-        dispatch("validateTaa");
+        context.dispatch("validateTaa");
       })
       .catch((error) => {
         console.error(error);

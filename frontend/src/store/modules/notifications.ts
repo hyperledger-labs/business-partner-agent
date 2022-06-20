@@ -7,11 +7,11 @@
  */
 import { IStateNotifications } from "@/store/state-type";
 
-const addItem = (collection, id, payload) => {
+const addItem = (collection: any, id: any, payload: any) => {
   return { ...collection, [id]: payload };
 };
 
-const removeItem = (collection, id) => {
+const removeItem = (collection: any, id: any) => {
   if (Object.prototype.hasOwnProperty.call(collection, id)) {
     const temporary = { ...collection };
     delete temporary[id];
@@ -20,7 +20,7 @@ const removeItem = (collection, id) => {
   return collection;
 };
 
-const removeItemByMessageInfoLinkId = (collection, linkId) => {
+const removeItemByMessageInfoLinkId = (collection: any, linkId: any) => {
   const temporary = { ...collection };
   const keys = Object.keys(temporary);
   let k;
@@ -83,7 +83,7 @@ const getters = {
 const actions = {};
 
 const mutations = {
-  onNotification(state: IStateNotifications, payload) {
+  onNotification(state: IStateNotifications, payload: any) {
     const type = payload.message.type;
     const id = payload.message.linkId;
     console.log(`onNotification(type=${type}, id=${id})`);
@@ -146,11 +146,11 @@ const mutations = {
         console.log(`Unknown notification type: ${type}`);
     }
   },
-  activityNotificationSeen(state: IStateNotifications, payload) {
+  activityNotificationSeen(state: IStateNotifications, payload: any) {
     const id = payload.id;
     state.activityNotifications = removeItem(state.activityNotifications, id);
   },
-  credentialNotificationSeen(state: IStateNotifications, payload) {
+  credentialNotificationSeen(state: IStateNotifications, payload: any) {
     const id = payload.id;
     state.credentialNotifications = removeItem(
       state.credentialNotifications,
@@ -161,18 +161,18 @@ const mutations = {
       id
     );
   },
-  partnerNotificationSeen(state: IStateNotifications, payload) {
+  partnerNotificationSeen(state: IStateNotifications, payload: any) {
     const id = payload.id;
     state.partnerNotifications = removeItem(state.partnerNotifications, id);
   },
-  presentationNotificationSeen(state: IStateNotifications, payload) {
+  presentationNotificationSeen(state: IStateNotifications, payload: any) {
     const id = payload.id;
     state.presentationNotifications = removeItem(
       state.presentationNotifications,
       id
     );
   },
-  taskNotificationSeen(state: IStateNotifications, payload) {
+  taskNotificationSeen(state: IStateNotifications, payload: any) {
     const id = payload.id;
     state.taskNotifications = removeItem(state.taskNotifications, id);
   },
