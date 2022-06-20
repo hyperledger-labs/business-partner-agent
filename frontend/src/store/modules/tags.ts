@@ -37,7 +37,7 @@ export default {
     },
   },
   mutations: {
-    setTags: (state: IStateTags, tags) => {
+    setTags: (state: IStateTags, tags: TagAPI[]) => {
       state.tagList = tags;
     },
   },

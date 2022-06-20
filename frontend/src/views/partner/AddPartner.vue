@@ -207,7 +207,7 @@ import Profile from "@/components/Profile.vue";
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
-import { invitationsService, partnerService } from "@/services";
+import { invitationsService, partnerService, TagAPI } from "@/services";
 
 export default {
   name: "AddPartner",
@@ -225,7 +225,7 @@ export default {
       aliasPlaceholder: "",
       partner: {},
       search: "",
-      selectedTags: [],
+      selectedTags: new Array<string>(),
       trustPing: true,
       invitationUrl: "",
       invitationUrlLoaded: false,
@@ -237,7 +237,7 @@ export default {
   computed: {
     tags() {
       return this.$store.getters.getTags
-        ? this.$store.getters.getTags.map((tag) => tag.name)
+        ? this.$store.getters.getTags.map((tag: TagAPI) => tag.name)
         : [];
     },
   },
@@ -287,7 +287,7 @@ export default {
         partnerToAdd.alias = this.alias;
       }
 
-      partnerToAdd.tag = this.$store.getters.getTags.filter((tag) => {
+      partnerToAdd.tag = this.$store.getters.getTags.filter((tag: TagAPI) => {
         return this.selectedTags.includes(tag.name);
       });
 
@@ -356,7 +356,7 @@ export default {
         } else if (this.aliasPlaceholder && this.aliasPlaceholder !== "") {
           request.alias = this.aliasPlaceholder;
         }
-        request.tag = this.$store.getters.getTags.filter((tag) => {
+        request.tag = this.$store.getters.getTags.filter((tag: TagAPI) => {
           return this.selectedTags.includes(tag.name);
         });
         request.trustPing = this.trustPing;

@@ -56,6 +56,9 @@ export type PartnerAPI = components["schemas"]["PartnerAPI"];
 
 export type AddPartnerRequest = components["schemas"]["AddPartnerRequest"];
 
+export type PartnerCredential =
+  components["schemas"]["PartnerAPI.PartnerCredential"];
+
 export type APICreateInvitationResponse =
   components["schemas"]["APICreateInvitationResponse"];
 

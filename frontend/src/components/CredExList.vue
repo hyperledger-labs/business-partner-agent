@@ -272,6 +272,7 @@
 import {
   CredDef,
   CredentialOfferRequest,
+  CredEx,
   issuerService,
   PageOptions,
   PartnerAPI,
@@ -292,10 +293,12 @@ export default {
   props: {
     isActiveFn: {
       type: Function,
-      default: (item) =>
-        item.state === CredentialExchangeStates.CREDENTIAL_ISSUED ||
-        item.state === CredentialExchangeStates.CREDENTIAL_ACKED ||
-        item.state === CredentialExchangeStates.DONE,
+      default: (item: CredEx) =>
+        item.state ===
+          CredentialExchangeStates.CREDENTIAL_ISSUED.toLowerCase() ||
+        item.state ===
+          CredentialExchangeStates.CREDENTIAL_ACKED.toLowerCase() ||
+        item.state === CredentialExchangeStates.DONE.toLowerCase(),
     },
     headerRole: {
       type: Boolean,
@@ -313,7 +316,9 @@ export default {
     // Open Item directly. Is used for links from notifications/activity
     if (this.openItemById) {
       // FIXME: items observable is typically not resolved yet. Then items is empty
-      const item = this.exchanges.find((item) => item.id === this.openItemById);
+      const item = this.exchanges.find(
+        (item: CredEx) => item.id === this.openItemById
+      );
       if (item) {
         this.openItem(item);
       } else {
@@ -434,18 +439,14 @@ export default {
       isLoadingCredentials: false,
       totalNumberOfElements: 0,
       hideFooter: false,
-      exchanges: [],
+      exchanges: new Array<CredEx>(),
       document: {},
       partner: {} as PartnerAPI,
       credDef: {} as CredDef,
-      revoked: [],
+      revoked: new Array<string>(),
     };
   },
   watch: {
-    items(value) {
-      console.log("Credential Exchange Item refresh");
-      console.log(value);
-    },
     options: {
       handler() {
         this.loadCredentials();
@@ -461,14 +462,14 @@ export default {
         params.set("role", CredentialExchangeRoles.ISSUER);
       }
       try {
-        const iresp = await issuerService.listCredentialExchanges(
+        const response = await issuerService.listCredentialExchanges(
           this.partnerId,
           params
         );
-        if (iresp.status === 200) {
+        if (response.status === 200) {
           const { itemsPerPage } = this.options;
-          this.exchanges = iresp.data.content;
-          this.totalNumberOfElements = iresp.data.totalSize;
+          this.exchanges = response.data.content;
+          this.totalNumberOfElements = response.data.totalSize;
           this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
         }
       } catch (error) {
@@ -476,7 +477,7 @@ export default {
       }
       this.isLoadingCredentials = false;
     },
-    openItem(item) {
+    openItem(item: CredEx) {
       this.dialog = true;
       this.partner = this.partnerList.find(
         (p: PartnerAPI) => p.id === item.partner.id
@@ -517,10 +518,10 @@ export default {
       this.$store.commit("credentialNotificationSeen", { id: item.id });
       this.$emit("openItem", item);
     },
-    stateIsProblemOrDeclined(item) {
+    stateIsProblemOrDeclined(item: CredEx) {
       return (
-        item.state === CredentialExchangeStates.DECLINED ||
-        item.state === CredentialExchangeStates.PROBLEM
+        item.state === CredentialExchangeStates.DECLINED.toLowerCase() ||
+        item.state === CredentialExchangeStates.PROBLEM.toLowerCase()
       );
     },
     resetCredentialEdit() {
@@ -544,30 +545,30 @@ export default {
       this.$emit("changed");
       this.dialog = false;
     },
-    isItemActive(item) {
+    isItemActive(item: CredEx) {
       return this.isActiveFn(item);
     },
-    revokeCredential(id) {
+    revokeCredential(id: string) {
       this.revoked.push(id);
       issuerService.revokeCredential(id);
     },
-    async acceptCredentialOffer(id) {
+    async acceptCredentialOffer(id: string) {
       await walletService.acceptCredentialOffer(id);
       this.closeDialog();
     },
-    async declineCredentialOffer(id) {
+    async declineCredentialOffer(id: string) {
       await walletService.declineCredentialOffer(id, this.declineReasonText);
       this.closeDialog();
     },
-    async declineCredentialProposal(id) {
+    async declineCredentialProposal(id: string) {
       await issuerService.declineCredentialProposal(id, this.declineReasonText);
       this.closeDialog();
     },
-    async reIssueCredential(id) {
+    async reIssueCredential(id: string) {
       await issuerService.reIssueCredential(id);
       this.closeDialog();
     },
-    async sendCounterOffer(acceptAll) {
+    async sendCounterOffer(acceptAll: boolean) {
       this.isLoadingSendCounterOffer = true;
 
       let acceptProposal = false;

@@ -191,7 +191,6 @@
       <CredExList
         ref="credExList"
         v-if="isReady"
-        v-bind:items="issuedCredentials"
         header-role
         v-bind:partnerId="id"
         v-bind:openItemById="credExId"
@@ -271,7 +270,12 @@ import PartnerStateIndicator from "@/components/PartnerStateIndicator.vue";
 import { CredentialTypes, PartnerStates } from "@/constants";
 import { getPartnerState } from "@/utils/partnerUtils";
 import { EventBus } from "@/main";
-import { PartnerAPI, partnerService } from "@/services";
+import {
+  AriesProofExchange,
+  PartnerAPI,
+  PartnerCredential,
+  partnerService,
+} from "@/services";
 import CredExList from "@/components/CredExList.vue";
 import PresentationExList from "@/components/PresentationExList.vue";
 import UpdatePartner from "@/components/UpdatePartner.vue";
@@ -321,10 +325,9 @@ export default {
         value: "",
         label: "",
       },
-      rawData: {},
-      credentials: [],
-      presentationExRecords: [],
-      issuedCredentials: [],
+      rawData: {} as PartnerAPI,
+      credentials: new Array<PartnerCredential>(),
+      presentationExRecords: new Array<AriesProofExchange>(),
       PartnerStates: PartnerStates,
       issueCredentialDialog: false,
     };
@@ -500,9 +503,11 @@ export default {
               Object.prototype.hasOwnProperty.call(this.partner, "credential")
             ) {
               // Show only creds other than OrgProfile in credential list
-              this.credentials = this.partner.credential.filter((cred) => {
-                return cred.type !== CredentialTypes.PROFILE.type;
-              });
+              this.credentials = this.partner.credential.filter(
+                (cred: PartnerCredential) => {
+                  return cred.type !== CredentialTypes.PROFILE.type;
+                }
+              );
             }
 
             this.partnerBpaState = getPartnerState(this.partner);

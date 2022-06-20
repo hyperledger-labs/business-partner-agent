@@ -78,7 +78,6 @@ export default {
       search: "",
       refresh: false,
       showInvitations: false,
-      partners: [],
     };
   },
 };
