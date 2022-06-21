@@ -129,17 +129,17 @@ export const PartnerStates = Object.freeze({
   },
 });
 
-export const ActivityTypes = Object.freeze({
+export const ActivityTypes: any = Object.freeze({
   CONNECTION_REQUEST: {
-    value: "connection_request",
+    value: "CONNECTION_REQUEST",
     label: i18n.t("constants.activityTypes.connectionRequest"),
   },
   CREDENTIAL_EXCHANGE: {
-    value: "credential_exchange",
+    value: "CREDENTIAL_EXCHANGE",
     label: i18n.t("constants.activityTypes.credentialExchange"),
   },
   PRESENTATION_EXCHANGE: {
-    value: "presentation_exchange",
+    value: "PRESENTATION_EXCHANGE",
     label: i18n.t("constants.activityTypes.presentationExchange"),
   },
 });

@@ -92,6 +92,10 @@ export type CredEx = components["schemas"]["CredEx"];
 
 export type Tag = components["schemas"]["Tag"];
 
+export type ActivityType = components["schemas"]["ActivityType"];
+
+export type ActivityItem = components["schemas"]["ActivityItem"];
+
 export type ChatMessage = components["schemas"]["ChatMessage"];
 
 export type AriesProofExchange = components["schemas"]["AriesProofExchange"];

@@ -333,6 +333,7 @@ import BasicMessages from "@/components/messages/BasicMessages.vue";
 import merge from "deepmerge";
 import i18n from "@/plugins/i18n";
 import { getBooleanFromString } from "@/utils/textUtils";
+import { AxiosError } from "axios";
 
 export default {
   components: {
@@ -496,17 +497,17 @@ export default {
     // Global Error handling
     // Todo: Put in extra component
 
-    EventBus.$on("title", (title) => {
+    EventBus.$on("title", (title: string) => {
       this.title = title;
     });
 
-    EventBus.$on("success", (message) => {
+    EventBus.$on("success", (message: string) => {
       (this.snackbarMsg = message),
         (this.color = "green"),
         (this.snackbar = true);
     });
 
-    EventBus.$on("error", (message) => {
+    EventBus.$on("error", (message: AxiosError) => {
       console.log(message.response);
 
       if (

@@ -28,7 +28,6 @@ export interface IStateSchemas {
   schemaList: SchemaAPI[];
 }
 
-// TODO: Find out types
 export interface IStateNotifications {
   activityNotifications: any;
   credentialNotifications: any;
