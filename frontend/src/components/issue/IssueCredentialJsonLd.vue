@@ -83,7 +83,12 @@
 <script lang="ts">
 import Vue from "vue";
 import { EventBus } from "@/main";
-import { IssueCredentialRequestJsonLd, issuerService } from "@/services";
+import {
+  IssueCredentialRequestJsonLd,
+  issuerService,
+  PartnerAPI,
+  SchemaAPI,
+} from "@/services";
 import VBpaButton from "@/components/BpaButton";
 import { CredentialTypes } from "@/constants";
 
@@ -121,7 +126,7 @@ export default {
     },
     schemasJsonLd: {
       get() {
-        let documentTypes = this.$store.getters.getSchemas;
+        let documentTypes: SchemaAPI[] = this.$store.getters.getSchemas;
 
         if (this.$store.getters.getOrganizationalProfile) {
           documentTypes = documentTypes.filter(
@@ -141,23 +146,29 @@ export default {
   watch: {
     partnerId(value: string) {
       if (value) {
-        this.partner = this.partnerList.find((p) => p.id === value);
+        this.partner = this.partnerList.find(
+          (partner: PartnerAPI) => partner.id === value
+        );
       }
     },
     schemaId(value: string) {
       if (value) {
-        this.schemaJsonLd = this.schemasJsonLd.find((p) => p.id === value);
+        this.schemaJsonLd = this.schemasJsonLd.find(
+          (schemaJsonLd: SchemaAPI) => schemaJsonLd.id === value
+        );
         this.schemaSelected();
       }
     },
     open(value: boolean) {
       if (value) {
         if (!this.partner?.id) {
-          this.partner = this.partnerList.find((p) => p.id === this.partnerId);
+          this.partner = this.partnerList.find(
+            (partner: PartnerAPI) => partner.id === this.partnerId
+          );
         }
         if (!this.schemaJsonLd?.schemaAttributeNames) {
           this.schemaJsonLd = this.schemasJsonLd.find(
-            (p) => p.id === this.schemaId
+            (schemaJsonLd: SchemaAPI) => schemaJsonLd.id === this.schemaId
           );
           this.schemaSelected();
         }
@@ -171,12 +182,14 @@ export default {
       this.schemaJsonLd = {};
 
       if (this.partnerId) {
-        this.partner = this.partnerList.find((p) => p.id === this.partnerId);
+        this.partner = this.partnerList.find(
+          (p: PartnerAPI) => p.id === this.partnerId
+        );
       }
 
       if (this.schemaId) {
         this.schemaJsonLd = this.schemasJsonLd.find(
-          (c) => c.id === this.schemaId
+          (schemaJsonLd: SchemaAPI) => schemaJsonLd.id === this.schemaId
         );
       }
 
@@ -241,9 +254,9 @@ export default {
         this.schemaJsonLd.schemaAttributeNames.length > 0
       ) {
         enabled = this.schemaJsonLd.schemaAttributeNames.some(
-          (x) =>
-            this.credentialFields[x] &&
-            this.credentialFields[x]?.trim().length > 0
+          (attributeName: string) =>
+            this.credentialFields[attributeName] &&
+            this.credentialFields[attributeName]?.trim().length > 0
         );
       }
       this.submitDisabled = !enabled;

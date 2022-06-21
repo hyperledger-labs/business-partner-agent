@@ -202,11 +202,11 @@ export default {
       credential: {},
       credentialFields: {},
       submitDisabled: true,
-      useV2Credential: undefined,
+      useV2Credential: undefined as boolean,
       expertLoad: {
         show: false,
         data: "",
-        file: undefined,
+        file: undefined as File,
         type: "json",
         fileAccept: "text/plain,application/json",
       },
@@ -356,9 +356,9 @@ export default {
         this.credDef.schema.schemaAttributeNames.length > 0
       ) {
         enabled = this.credDef.schema.schemaAttributeNames.some(
-          (x) =>
-            this.credentialFields[x] &&
-            this.credentialFields[x]?.trim().length > 0
+          (attributeName: string) =>
+            this.credentialFields[attributeName] &&
+            this.credentialFields[attributeName]?.trim().length > 0
         );
       }
       this.submitDisabled = !enabled;
@@ -369,12 +369,12 @@ export default {
           ? "text/plain,application/json"
           : "text/plain,text/csv";
     },
-    uploadExpertLoadFile(v) {
-      this.expertLoad.file = v;
-      if (v) {
+    uploadExpertLoadFile(file: File) {
+      this.expertLoad.file = file;
+      if (file) {
         try {
           let reader = new FileReader();
-          reader.readAsText(v, "UTF-8");
+          reader.readAsText(file, "UTF-8");
           reader.addEventListener("load", (event_) => {
             this.expertLoad.data = event_.target.result;
           });
@@ -383,7 +383,7 @@ export default {
               "error",
               `${this.$t(
                 "component.issueCredential.expertLoad.errorMessages.readFile"
-              )} '${v.name}'.`
+              )} '${file.name}'.`
             );
           });
         } catch (error) {
@@ -391,7 +391,7 @@ export default {
             "error",
             `${this.$t(
               "component.issueCredential.expertLoad.errorMessages.readFile"
-            )} '${v.name}'. ${error.message}`
+            )} '${file.name}'. ${error.message}`
           );
         }
       }
@@ -466,7 +466,7 @@ export default {
       return object;
     },
     csvToObject(data: any) {
-      let object;
+      let object: any;
       if (data && Object.prototype.toString.call(data) === "[object String]") {
         try {
           const array = CSV.parse(data);

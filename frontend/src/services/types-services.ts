@@ -142,6 +142,11 @@ export type RequestCredentialRequest =
 
 export type RuntimeConfig = components["schemas"]["RuntimeConfig"];
 
+export type CustomSchemaAttribute = {
+  defaultAttribute: boolean;
+  text: string;
+};
+
 // Page response from server
 export class Page<T> {
   size?: number;

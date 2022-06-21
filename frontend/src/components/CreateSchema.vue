@@ -142,7 +142,12 @@
 
 <script lang="ts">
 import { EventBus } from "@/main";
-import { SchemaAPI, CreateSchemaRequest, issuerService } from "@/services";
+import {
+  SchemaAPI,
+  CreateSchemaRequest,
+  issuerService,
+  CustomSchemaAttribute,
+} from "@/services";
 import VBpaButton from "@/components/BpaButton";
 import * as textUtils from "@/utils/textUtils";
 
@@ -157,7 +162,9 @@ export default {
       schemaName: "",
       schemaVersion: "",
       schemaAttributeText: "",
-      schemaAttributes: [{ defaultAttribute: true, text: "" }],
+      schemaAttributes: [
+        { defaultAttribute: true, text: "" },
+      ] as CustomSchemaAttribute[],
       isBusy: false,
     };
   },
@@ -169,30 +176,34 @@ export default {
         !textUtils.isValidSchemaName(this.schemaName) ||
         this.schemaVersion.length === 0 ||
         !textUtils.isValidSchemaVersion(this.schemaVersion) ||
-        this.schemaAttributes.filter((x) => x.text.trim().length).length ===
-          0 ||
+        this.schemaAttributes.filter(
+          (x: CustomSchemaAttribute) => x.text.trim().length
+        ).length === 0 ||
         this.schemaAttributes
-          .filter((x) => x.text.trim().length)
-          .some((x) => !textUtils.isValidSchemaAttributeName(x.text))
+          .filter((x: CustomSchemaAttribute) => x.text.trim().length)
+          .some(
+            (x: CustomSchemaAttribute) =>
+              !textUtils.isValidSchemaAttributeName(x.text)
+          )
       );
     },
     rules() {
       return {
-        required: (value) => !!value || this.$t("app.rules.required"),
-        version: (value) =>
+        required: (value: string) => !!value || this.$t("app.rules.required"),
+        version: (value: string) =>
           textUtils.isValidSchemaVersion(value) ||
           this.$t("app.rules.validVersion"),
-        schemaName: (value) =>
+        schemaName: (value: string) =>
           textUtils.isValidSchemaName(value) ||
           this.$t("app.rules.validSchema"),
-        schemaAttributeName: (value) =>
+        schemaAttributeName: (value: string) =>
           textUtils.isValidSchemaAttributeName(value) ||
           this.$t("app.rules.validAttributeName"),
       };
     },
   },
   methods: {
-    makeDefaultAttribute(index, value) {
+    makeDefaultAttribute(index: number, value: boolean) {
       // if setting true, set all others to false...
       if (value) {
         for (const [index_, v] of this.schemaAttributes.entries())
@@ -205,18 +216,18 @@ export default {
         text: "",
       });
     },
-    deleteAttribute(index) {
+    deleteAttribute(index: number) {
       this.schemaAttributes.splice(index, 1);
     },
-    fixSchemaParams(s) {
+    fixSchemaParams(s: string) {
       return s.trim().replace(/ /g, "_");
     },
     getSchemaFormData(): CreateSchemaRequest {
       const attributes = this.schemaAttributes
-        .filter((x) => x.text.trim().length)
-        .map((x) => this.fixSchemaParams(x.text));
+        .filter((x: CustomSchemaAttribute) => x.text.trim().length)
+        .map((x: CustomSchemaAttribute) => this.fixSchemaParams(x.text));
       const defaultAttribute = this.schemaAttributes.find(
-        (x) => x.defaultAttribute
+        (x: CustomSchemaAttribute) => x.defaultAttribute
       );
       return {
         schemaLabel: this.schemaLabel,

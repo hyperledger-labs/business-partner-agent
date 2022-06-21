@@ -19,7 +19,7 @@ const state: IStateSchemas = {
 export default {
   state,
   getters: {
-    getSchemas: (state: IStateSchemas) => {
+    getSchemas: (state: IStateSchemas): SchemaAPI[] => {
       return state.schemaList;
     },
     getSchemaBasedSchemas: (state: IStateSchemas) => {
