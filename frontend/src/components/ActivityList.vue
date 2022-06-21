@@ -211,7 +211,7 @@ export default {
 
       console.log(item);
 
-      switch (item.type) {
+      switch (item.type.toUpperCase()) {
         case ActivityTypes.CONNECTION_REQUEST.value: {
           this.$router.push({
             name: "Partner",
