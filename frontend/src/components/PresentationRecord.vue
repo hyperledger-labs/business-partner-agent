@@ -46,7 +46,7 @@
     </v-list-item>
 
     <!-- Timeline  -->
-    <Timeline :time-entries="record.stateToTimestamp"></Timeline>
+    <Timeline :time-entries="record.stateToTimestampUiTimeline"></Timeline>
 
     <!-- Request Content -->
     <template v-if="!isStateProposalSent">
@@ -218,7 +218,9 @@ import {
 export default {
   name: "PresentationRecord",
   props: {
-    record: {} as AriesProofExchange,
+    record: {} as AriesProofExchange & {
+      stateToTimestampUiTimeline: [string, number][];
+    },
   },
   computed: {
     expertMode() {

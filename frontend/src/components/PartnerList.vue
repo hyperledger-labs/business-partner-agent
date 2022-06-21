@@ -61,7 +61,7 @@ import { getPartnerState } from "@/utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator.vue";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
 import { CredentialTypes, PartnerStates } from "@/constants";
-import { PartnerAPI, partnerService } from "@/services";
+import { PartnerAPI, PartnerCredential, partnerService } from "@/services";
 
 export default {
   name: "PartnerList",
@@ -104,8 +104,8 @@ export default {
   },
   data: () => {
     return {
-      selected: [],
-      data: [],
+      selected: new Array<any>(),
+      data: new Array<PartnerAPI & { address: string }>(),
       isBusy: true,
       getPartnerState: getPartnerState,
     };
@@ -142,7 +142,7 @@ export default {
     },
     filteredData() {
       return !this.showInvitations
-        ? this.data.filter((partner) => {
+        ? this.data.filter((partner: PartnerAPI & { address: string }) => {
             return partner.state !== PartnerStates.INVITATION.value;
           })
         : this.data;
@@ -152,13 +152,13 @@ export default {
     },
   },
   watch: {
-    refresh: function (newValue) {
+    refresh: function (newValue: boolean) {
       if (newValue) {
         this.fetch();
         this.$emit("refreshed");
       }
     },
-    partnerNotifications: function (newValue) {
+    partnerNotifications: function (newValue: any) {
       if (newValue) {
         // TODO: Don't fetch all partners but only add new partner
         this.fetch();
@@ -166,7 +166,7 @@ export default {
     },
   },
   methods: {
-    open(partner) {
+    open(partner: PartnerAPI & { address: string }) {
       this.$router.push({
         name: "Partner",
         params: {
@@ -191,7 +191,7 @@ export default {
               });
             }
 
-            this.data = result.data.map((partner) => {
+            this.data = result.data.map((partner: PartnerAPI) => {
               const tempPartner: PartnerAPI & { address: string } = {
                 address: this.getProfileAddress(partner),
                 ...partner,
@@ -205,9 +205,9 @@ export default {
           EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
-    getProfileAddress(credential) {
-      if (credential.credential && credential.credential.length > 0) {
-        const profile = credential.credential.find((item) => {
+    getProfileAddress(partner: PartnerAPI) {
+      if (partner.credential && partner.credential.length > 0) {
+        const profile: any = partner.credential.find((item) => {
           return item.type === CredentialTypes.PROFILE.type;
         });
         let address = "";

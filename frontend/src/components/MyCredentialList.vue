@@ -96,9 +96,10 @@ import {
 } from "@/constants";
 import { EventBus } from "@/main";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
-import { Page, PageOptions } from "@/services";
+import { AriesCredential, MyDocumentAPI, Page, PageOptions } from "@/services";
 import { AxiosResponse } from "axios";
 import { appAxios } from "@/services/interceptors";
+import { RawLocation } from "vue-router";
 
 export default {
   props: {
@@ -131,7 +132,7 @@ export default {
   },
   data: () => {
     return {
-      data: [],
+      data: new Array<AriesCredential | MyDocumentAPI>(),
       options: {},
       totalNumberOfElements: 0,
       hideFooter: false,
@@ -151,20 +152,20 @@ export default {
       }
       return params;
     },
-    credentialNotifications() {
+    credentialNotifications(): any {
       return this.$store.getters.credentialNotifications;
     },
     inputValue: {
       get() {
         return this.value;
       },
-      set(value) {
+      set(value: AriesCredential | MyDocumentAPI) {
         this.$emit("input", value);
       },
     },
   },
   watch: {
-    credentialNotifications: function (newValue) {
+    credentialNotifications: function (newValue: any) {
       if (newValue && this.type === "credential") {
         // TODO: Don't fetch all partners but only add new credential data
         this.fetch();
@@ -182,17 +183,18 @@ export default {
         .get(`${ApiRoutes.WALLET}/${this.type}`, {
           params: this.queryFilter,
         })
-        .then((result: AxiosResponse<Page<any>>) => {
+        .then((result: AxiosResponse<Page<any[]>>) => {
           const { itemsPerPage } = this.options;
           this.isBusy = false;
           this.totalNumberOfElements = result.data.totalSize;
           this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
           this.data =
             this.type === "credential"
-              ? result.data.content.filter((item) => {
+              ? result.data.content.filter((item: AriesCredential) => {
                   return (
-                    item.state === CredentialExchangeStates.CREDENTIAL_ACKED ||
-                    item.state === CredentialExchangeStates.DONE
+                    item.state ===
+                      CredentialExchangeStates.CREDENTIAL_ACKED.toLowerCase() ||
+                    item.state === CredentialExchangeStates.DONE.toLowerCase()
                   );
                 })
               : result.data.content;
@@ -206,23 +208,25 @@ export default {
           }
         });
     },
-    open(document_) {
-      console.log("Open Document:", document_);
+    open(documentOrCredential: AriesCredential | MyDocumentAPI) {
+      console.log("Open Document:", documentOrCredential);
       if (this.type === "document") {
-        this.$router.push({
+        const documentLocation: RawLocation = {
           name: "Document",
           params: {
-            id: document_.id,
+            id: documentOrCredential.id,
             disableVerificationRequest: this.disableVerificationRequest,
             // type: doc.type,
           },
-        });
+        };
+
+        this.$router.push(documentLocation);
       } else {
         this.$router.push({
           name: "Credential",
           params: {
-            id: document_.id,
-            type: document_.type,
+            id: documentOrCredential.id,
+            type: documentOrCredential.type,
           },
         });
       }

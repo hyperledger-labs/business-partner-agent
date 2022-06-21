@@ -12,7 +12,6 @@ const state: IStateExpertMode = {
 };
 
 export default {
-  root: true,
   state,
   getters: {
     getExpertMode: (state: IStateExpertMode): boolean => {

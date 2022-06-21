@@ -56,7 +56,7 @@ import { EventBus } from "@/main";
 import MyCredentialList from "@/components/MyCredentialList.vue";
 import VBpaButton from "@/components/BpaButton";
 import { CredentialTypes, ExchangeVersion } from "@/constants";
-import { partnerService } from "@/services";
+import { AriesCredential, partnerService } from "@/services";
 
 export default {
   name: "SendPresentation",
@@ -74,7 +74,7 @@ export default {
     return {
       isBusy: false,
       useV2Exchange: false,
-      selectedCredentials: [] as any[],
+      selectedCredentials: [] as AriesCredential[],
     };
   },
   computed: {

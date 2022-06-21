@@ -9,7 +9,8 @@ import { IStateSchemas } from "@/store/state-type";
 import { CredentialTypes } from "@/constants";
 import adminService from "@/services/admin-service";
 import { EventBus } from "@/main";
-import { SchemaAPI } from "@/services";
+import { CredentialType, SchemaAPI } from "@/services";
+import i18n from "@/plugins/i18n";
 
 const state: IStateSchemas = {
   schemaList: new Array<SchemaAPI>(),
@@ -53,6 +54,16 @@ export default {
         .listSchemas()
         .then((result) => {
           if (result.status === 200) {
+            const schemas = result.data;
+
+            // Create empty organizational profile - necessary for initial setup
+            schemas.unshift({
+              type: CredentialTypes.PROFILE.type as CredentialType,
+              label: i18n
+                .t("component.profile.organizationalProfile.title")
+                .toString(),
+            });
+
             context.commit("setSchemas", result.data);
           }
         })

@@ -84,7 +84,7 @@
     </v-card>
 
     <!-- Timeline  -->
-    <Timeline v-bind:timeEntries="record.stateToTimestamp" />
+    <Timeline v-bind:timeEntries="record.stateToTimestampUiTimeline" />
 
     <!-- ExpertMode: Raw data -->
     <v-expansion-panels class="mt-4" v-if="expertMode" accordion flat>
@@ -120,7 +120,9 @@ import {
 export default {
   name: "PresentationRecord",
   props: {
-    record: {} as AriesProofExchange,
+    record: {} as AriesProofExchange & {
+      stateToTimestampUiTimeline: [string, number][];
+    },
   },
   computed: {
     expertMode() {

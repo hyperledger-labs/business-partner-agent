@@ -55,6 +55,7 @@ import { ExchangeVersion, CredentialTypes } from "@/constants";
 import MyCredentialList from "@/components/MyCredentialList.vue";
 import VBpaButton from "@/components/BpaButton";
 import credentialService from "@/services/credential-service";
+import { MyDocumentAPI } from "@/services";
 
 export default {
   name: "RequestPresentation",
@@ -70,7 +71,7 @@ export default {
   data: () => {
     return {
       isBusy: false,
-      selectedDocument: [] as any[],
+      selectedDocument: [] as MyDocumentAPI[],
       useV2Exchange: false,
     };
   },

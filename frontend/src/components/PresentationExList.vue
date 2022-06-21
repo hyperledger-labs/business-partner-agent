@@ -182,7 +182,9 @@ export default {
   },
   data: () => {
     return {
-      record: {} as AriesProofExchange,
+      record: {} as AriesProofExchange & {
+        stateToTimestampUiTimeline: [string, number][];
+      },
       dialog: false,
       isBusy: false,
       isLoading: false,
@@ -288,8 +290,14 @@ export default {
         EventBus.$emit("error", this.$axiosErrorMessage(error));
       }
     },
-    openItem(item: AriesProofExchange) {
-      const itemCopy: AriesProofExchange = {};
+    openItem(
+      item: AriesProofExchange & {
+        stateToTimestampUiTimeline: [string, number][];
+      }
+    ) {
+      const itemCopy = {} as AriesProofExchange & {
+        stateToTimestampUiTimeline: [string, number][];
+      };
       Object.assign(itemCopy, item);
 
       const presentationStateToTimestamp = Object.entries(
@@ -307,9 +315,7 @@ export default {
         }
       }
 
-      itemCopy.stateToTimestamp = Object.fromEntries(
-        presentationStateToTimestamp
-      );
+      itemCopy.stateToTimestampUiTimeline = presentationStateToTimestamp;
 
       this.record = itemCopy;
       this.dialog = true;
