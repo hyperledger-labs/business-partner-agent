@@ -31,12 +31,13 @@
 </template>
 
 <script lang="ts">
-import ChatWindow from "vue-advanced-chat";
+import ChatWindow, { Message, MessageAction, Room } from "vue-advanced-chat";
 import "vue-advanced-chat/dist/vue-advanced-chat.css";
 import partnerService from "@/services/partner-service";
 import { mapMutations } from "vuex";
 import { CHAT_CURRENT_USERID, PartnerStates } from "@/constants";
 import { formatDateLong } from "@/filters";
+import { ChatMessage } from "@/services";
 
 export default {
   components: {
@@ -49,12 +50,12 @@ export default {
     return {
       currentUserId: CHAT_CURRENT_USERID,
       responsiveBreakpoint: 9999,
-      rooms: [],
+      rooms: new Array<Room>(),
       roomsLoaded: true,
-      currentRoomId: undefined,
-      messages: [],
+      currentRoomId: undefined as string,
+      messages: new Array<Message>(),
       messagesLoaded: true,
-      messageActions: [],
+      messageActions: new Array<MessageAction>(),
       showNewMessageDivider: false,
       textMessages: {
         CONVERSATION_STARTED: "",
@@ -71,12 +72,12 @@ export default {
   },
   watch: {
     // eslint-disable-next-line no-unused-vars
-    partnersCount(value) {
+    partnersCount(value: number) {
       console.log(`partnersCount(${value})`);
       this.loadRooms();
     },
     // eslint-disable-next-line no-unused-vars
-    messagesCount(value) {
+    messagesCount(value: number) {
       console.log(`messagesCount(${value})`);
       // update room message counts..
       this.updateRoomCounts();
@@ -100,7 +101,8 @@ export default {
             // each room is for a single partner/connection
             // so set the room id to the partner id.
             // add users to represent the partner and us.
-            const room = {
+            const room: Room = {
+              avatar: undefined,
               roomId: p.id,
               roomName: name,
               unreadCount: this.getUnreadCount(p.id),
@@ -108,10 +110,14 @@ export default {
                 {
                   _id: p.id,
                   username: name,
+                  avatar: undefined,
+                  status: undefined,
                 },
                 {
                   _id: CHAT_CURRENT_USERID,
                   username: this.$t("app.chat.usernameDefault"),
+                  avatar: undefined,
+                  status: undefined,
                 },
               ],
             };
@@ -141,12 +147,15 @@ export default {
         this.messagesLoaded = false;
         this.messages = [];
         this.showNewMessageDivider = false;
-        const _msgs = [];
+        const _msgs: Message[] = [];
         const _pms = await partnerService.getMessages(room.roomId);
 
         let newMessages = false;
         if (Array.isArray(_pms.data)) {
-          for (const message of _pms.data) {
+          // createdAtTs is received but not declared in backend
+          for (const message of _pms.data as (ChatMessage & {
+            createdAtTs: string;
+          })[]) {
             const _seen = this.markSeen(message.id);
             if (!_seen) {
               newMessages = true;
@@ -157,8 +166,8 @@ export default {
               senderId: message.incoming
                 ? message.partner.id
                 : CHAT_CURRENT_USERID,
-              // @ts-ignore createdAtTs actually exists
               timestamp: formatDateLong(message.createdAtTs),
+              date: undefined,
               seen: _seen,
             });
           }
@@ -176,7 +185,13 @@ export default {
       this.currentRoomId = room.roomId;
     },
 
-    async sendMessage({ content, roomId }) {
+    async sendMessage({
+      content,
+      roomId,
+    }: {
+      content: { content: string };
+      roomId: string;
+    }) {
       // we are sending content to currentRoomId (partner)...
       await partnerService.sendMessage(roomId, content);
       // reload our messages (will include our persisted message we just sent)
@@ -185,14 +200,14 @@ export default {
         options: { reset: true },
       });
     },
-    toggleRoomsList({ opened }) {
+    toggleRoomsList({ opened }: { opened: boolean }) {
       // if the room list is open, clear out the room id...
       // we don't want to refresh a room's message list if we are on the partner/room list
       if (opened) {
         this.currentRoomId = undefined;
       }
     },
-    markSeen(id) {
+    markSeen(id: string) {
       const _unseen = this.$store.getters.messages;
       if (Array.isArray(_unseen)) {
         for (const _message of _unseen) {
@@ -203,7 +218,7 @@ export default {
       }
       return true;
     },
-    getUnreadCount(id) {
+    getUnreadCount(id: string) {
       const _unread = this.$store.getters.messages;
       let _count = 0;
       if (Array.isArray(_unread)) {

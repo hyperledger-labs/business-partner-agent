@@ -17,7 +17,7 @@ export default {
     messages: (state: IStateChat) => {
       return state.messages;
     },
-    messagesCount: (state: IStateChat) => {
+    messagesCount: (state: IStateChat): number => {
       return state.messages.length;
     },
   },
