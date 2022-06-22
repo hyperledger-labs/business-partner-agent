@@ -30,8 +30,10 @@ import org.hyperledger.aries.api.present_proof_v2.DIFField;
 import org.hyperledger.aries.api.present_proof_v2.V20PresProposalByFormat;
 import org.hyperledger.aries.api.present_proof_v2.V20PresProposalRequest;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
+import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
@@ -50,9 +52,12 @@ public class ProverLDManager {
     AriesClient ac;
 
     @Inject
+    SchemaService schemaService;
+
+    @Inject
     BPAMessageSource.DefaultMessageSource ms;
 
-    public static V2DIFProofRequest prepareRequest(@NonNull BPAProofTemplate proofTemplate) {
+    public V2DIFProofRequest prepareRequest(@NonNull BPAProofTemplate proofTemplate) {
         return V2DIFProofRequest.builder()
                 .options(DIFOptions.builder()
                         .challenge(UUID.randomUUID().toString())
@@ -62,22 +67,9 @@ public class ProverLDManager {
                         .id(UUID.randomUUID())
                         .name(proofTemplate.getName())
                         .inputDescriptors(proofTemplate.streamAttributeGroups()
-                                .map(ProverLDManager::groupToDescriptor)
+                                .map(this::groupToDescriptor)
                                 .collect(Collectors.toList()))
                         .build())
-                .build();
-    }
-
-    public static V2DIFProofRequest.PresentationDefinition.InputDescriptors groupToDescriptor(BPAAttributeGroup group) {
-        return V2DIFProofRequest.PresentationDefinition.InputDescriptors
-                .builder()
-                //.id(name)
-                //.name(name)
-                //.schema() // collect to uri group
-                //.constraints(V2DIFProofRequest.PresentationDefinition.Constraints.builder()
-                //        .isHolder(buildDifHolder(fields.keySet()))
-                //        .fields(List.copyOf(fields.values()))
-                //        .build())
                 .build();
     }
 
@@ -92,7 +84,7 @@ public class ProverLDManager {
                 .builder()
                 .id(name)
                 .name(name)
-                .schema(buildSchemaInputDescriptor(Objects.requireNonNull(credEx.getReferent())))
+                .schema(referentToDescriptor(Objects.requireNonNull(credEx.getReferent())))
                 .constraints(V2DIFProofRequest.PresentationDefinition.Constraints.builder()
                         .isHolder(buildDifHolder(fields.keySet()))
                         .fields(List.copyOf(fields.values()))
@@ -114,7 +106,7 @@ public class ProverLDManager {
                 .build();
     }
 
-    private List<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri> buildSchemaInputDescriptor(
+    private List<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri> referentToDescriptor(
             @NonNull String referent) {
         List<V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri> result = new ArrayList<>();
         try {
@@ -128,6 +120,24 @@ public class ProverLDManager {
         return result;
     }
 
+    private V2DIFProofRequest.PresentationDefinition.InputDescriptors groupToDescriptor(BPAAttributeGroup group) {
+        Map<UUID, DIFField> fields = buildDifFieldsFromCondition(group.nameToCondition());
+        SchemaAPI schemaAPI = schemaService.getSchema(group.getSchemaId()).orElseThrow();
+        V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri uri = V2DIFProofRequest
+                .PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri
+                .builder().uri(schemaAPI.getSchemaId()).build();
+        return V2DIFProofRequest.PresentationDefinition.InputDescriptors
+                .builder()
+                .id(schemaAPI.getLabel())
+                .name(schemaAPI.getLabel())
+                .schema(List.of(uri))
+                .constraints(V2DIFProofRequest.PresentationDefinition.Constraints.builder()
+                        .isHolder(buildDifHolder(fields.keySet()))
+                        .fields(List.copyOf(fields.values()))
+                        .build())
+                .build();
+    }
+
     private List<DIFHolder> buildDifHolder(@NonNull Set<UUID> fields) {
         return fields
                 .stream().map(e -> DIFHolder.builder()
@@ -138,45 +148,28 @@ public class ProverLDManager {
     }
 
     private Map<UUID, DIFField> buildDifFields(@NonNull Map<String, String> ldAttributes) {
-        return ldAttributes.entrySet().stream()
-                .map(e -> {
-                    UUID key = UUID.randomUUID();
-                    DIFField f = DIFField.builder()
-                            .id(key.toString())
-                            .path(List.of(DEFAULT_PATH + e.getKey()))
-                            .filter(DIFField.Filter.builder()
-                                    ._const(e.getValue())
-                                    .build())
-                            .build();
-                    return new ImmutablePair<>(key, f);
-                })
+        return ldAttributes.entrySet()
+                .stream()
+                .map(e -> pair(e.getKey(), DIFField.Filter.builder()
+                        ._const(e.getValue())
+                        .build()))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
-    private static Map<UUID, DIFField> foo(@NonNull Map<String, BPACondition> nameToCondition) {
-        return nameToCondition.entrySet().stream()
-                .map(e -> {
-                    UUID key = UUID.randomUUID();
-                    DIFField f = DIFField.builder()
-                            .id(key.toString())
-                            .path(List.of(DEFAULT_PATH + e.getKey()))
-                            .filter(buildFilter(e.getValue()))
-                            .build();
-                    return new ImmutablePair<>(key, f);
-                })
+    private Map<UUID, DIFField> buildDifFieldsFromCondition(@NonNull Map<String, BPACondition> nameToCondition) {
+        return nameToCondition.entrySet()
+                .stream()
+                .map(e -> pair(e.getKey(), e.getValue() != null ? e.getValue().toDifFieldFilter() : null))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
-    private static DIFField.Filter buildFilter(@Nullable BPACondition condition) {
-        if (condition == null) {
-            return null;
-        }
-        DIFField.Filter.FilterBuilder b = DIFField.Filter.builder();
-        switch (condition.getOperator()) {
-            case EQUALS -> b._const(condition.getValue());
-            case LESS_THAN -> b.exclusiveMaximum(Integer.parseInt(condition.getValue()));
-
-        }
-        return null;
+    private ImmutablePair<UUID, DIFField> pair(@NonNull String path, @Nullable DIFField.Filter filter) {
+        UUID key = UUID.randomUUID();
+        DIFField f = DIFField.builder()
+                .id(key.toString())
+                .path(List.of(DEFAULT_PATH + path))
+                .filter(filter)
+                .build();
+        return new ImmutablePair<>(key, f);
     }
 }

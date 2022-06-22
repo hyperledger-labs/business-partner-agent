@@ -98,6 +98,9 @@ public class ProofManager {
     ProofTemplateConversion proofTemplateConversion;
 
     @Inject
+    ProverLDManager ldRequest;
+
+    @Inject
     CredentialInfoResolver credentialInfoResolver;
 
     @Inject
@@ -142,7 +145,7 @@ public class ProofManager {
                             .builder()
                             .connectionId(p.getConnectionId())
                             .presentationRequest(V20PresSendRequestRequest.V20PresRequestByFormat.builder()
-                                    .dif(ProverLDManager.prepareRequest(proofTemplate))
+                                    .dif(ldRequest.prepareRequest(proofTemplate))
                                     .build())
                             .build())
                     .ifPresent(persistProof(partnerId, proofTemplate, CredentialType.JSON_LD));
