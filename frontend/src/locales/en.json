@@ -515,6 +515,7 @@
     "manageSchema": {
       "labelSchemaId": "Schema ID",
       "labelCheckbox": "My Schema",
+      "eventSuccessUpdate": "Schema updated",
       "eventSuccessCopy": "Schema ID copied",
       "eventErrorCopy": "Can't copy Schema ID",
       "eventSuccessDelete": "Schema deleted",
