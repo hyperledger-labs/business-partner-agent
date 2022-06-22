@@ -5,32 +5,32 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-import { StateMessages } from "@/store/state-type";
+import { IStateChat } from "@/store/state-type";
 
-const messagesState: StateMessages = {
+const state: IStateChat = {
   messages: [],
 };
 
 export default {
-  state: messagesState,
+  state,
   getters: {
-    messages: (state: StateMessages) => {
+    messages: (state: IStateChat) => {
       return state.messages;
     },
-    messagesCount: (state: StateMessages) => {
+    messagesCount: (state: IStateChat): number => {
       return state.messages.length;
     },
   },
   actions: {},
   mutations: {
-    onMessageReceived(state: StateMessages, payload: any) {
+    onMessageReceived(state: IStateChat, payload: any) {
       const basicMessage = payload.message.info;
 
       const msgs: any[] = state.messages ? state.messages : [];
       msgs.push(basicMessage);
       state.messages = msgs;
     },
-    markMessagesSeen(state: StateMessages, partnerId: string) {
+    markMessagesSeen(state: IStateChat, partnerId: string) {
       // seen means we remove them from the store for a given partner/room
       const msgs: any[] = state.messages ? state.messages : [];
       state.messages = msgs.filter((m) => m.partnerId !== partnerId);

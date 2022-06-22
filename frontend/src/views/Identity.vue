@@ -19,6 +19,7 @@
 
 <script lang="ts">
 import { EventBus } from "@/main";
+import { didService } from "@/services";
 export default {
   name: "Identity",
   components: {},
@@ -35,8 +36,8 @@ export default {
   methods: {
     getIdentity() {
       console.log("Getting partner...");
-      this.$axios
-        .get(`${this.$apiBaseUrl.replace("/api", "")}/.well-known/did.json`)
+      didService
+        .getWellKnownDid()
         .then((result) => {
           console.log(result);
           this.didDocLoaded = true;

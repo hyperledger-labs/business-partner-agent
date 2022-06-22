@@ -8,7 +8,7 @@
 <template>
   <v-container>
     <v-card class="mx-auto">
-      <v-card-title class="bg-light">{{
+      <v-card-title v-show="!hideTitle" class="bg-light">{{
         $t("component.issueCredential.title")
       }}</v-card-title>
       <v-card-text>
@@ -16,6 +16,8 @@
           :label="$t('component.issueCredential.partnerLabel')"
           v-model="partner"
           :items="partnerList"
+          item-value="id"
+          item-text="name"
           outlined
           :disabled="this.$props.partnerId !== undefined"
           dense
@@ -24,6 +26,8 @@
           :label="$t('component.issueCredential.credDefLabel')"
           return-object
           v-model="credDef"
+          item-value="id"
+          item-text="displayText"
           :items="credDefList"
           outlined
           :disabled="this.$props.credDefId !== undefined"
@@ -111,10 +115,10 @@
             <v-row>
               <v-col>
                 <v-text-field
-                  v-for="field in credDef.fields"
-                  :key="field.type"
-                  :label="field.label"
-                  v-model="credentialFields[field.type]"
+                  v-for="field in credDef.schema.schemaAttributeNames"
+                  :key="field"
+                  :label="field"
+                  v-model="credentialFields[field]"
                   outlined
                   dense
                   @blur="enableSubmit"
@@ -163,20 +167,28 @@
 <script lang="ts">
 import Vue from "vue";
 import { EventBus } from "@/main";
-import { issuerService } from "@/services";
+import {
+  CredDef,
+  IssueCredentialRequestIndy,
+  issuerService,
+  PartnerAPI,
+} from "@/services";
 import VBpaButton from "@/components/BpaButton";
 import * as textUtils from "@/utils/textUtils";
 import * as CSV from "csv-string";
 import { ExchangeVersion } from "@/constants";
-import { IssueCredentialRequest } from "@/services/types-services";
 
 export default {
-  name: "IssueCredential",
+  name: "IssueCredentialIndy",
   components: { VBpaButton },
   props: {
     partnerId: String,
     credDefId: String,
     open: Boolean,
+    hideTitle: {
+      type: Boolean,
+      default: false,
+    },
   },
   mounted() {
     this.load();
@@ -185,16 +197,16 @@ export default {
     return {
       isLoading: false,
       isBusy: false,
-      partner: {},
-      credDef: {},
+      partner: {} as PartnerAPI,
+      credDef: {} as CredDef,
       credential: {},
       credentialFields: {},
       submitDisabled: true,
-      useV2Credential: undefined,
+      useV2Credential: undefined as boolean,
       expertLoad: {
         show: false,
         data: "",
-        file: undefined,
+        file: undefined as File,
         type: "json",
         fileAccept: "text/plain,application/json",
       },
@@ -202,21 +214,21 @@ export default {
   },
   computed: {
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
     partnerList: {
-      get() {
+      get(): PartnerAPI[] {
         return this.$store.getters.getPartnerSelectList;
       },
     },
     credDefList: {
-      get() {
+      get(): CredDef[] {
         return this.$store.getters.getCredDefSelectList;
       },
     },
     credDefLoaded: {
       get() {
-        return this.credDef?.fields?.length;
+        return this.credDef?.schema?.schemaAttributeNames?.length;
       },
     },
     expertLoadEnabled() {
@@ -224,30 +236,30 @@ export default {
     },
   },
   watch: {
-    partnerId(value) {
+    partnerId(value: string) {
       if (value) {
-        this.partner = this.partnerList.find((p) => p.value === value);
+        this.partner = this.partnerList.find((p: PartnerAPI) => p.id === value);
       }
     },
-    credDefId(value) {
+    credDefId(value: string) {
       if (value) {
-        this.credDef = this.credDefList.find((p) => p.value === value);
+        this.credDef = this.credDefList.find((p: CredDef) => p.id === value);
         this.credDefSelected();
       }
     },
-    open(value) {
+    open(value: boolean) {
       if (value) {
         // load up our partner and cred def (if needed)
         if (!this.partner?.id) {
           this.partner = this.partnerList.find(
-            (p) => p.value === this.$props.partnerId
+            (p: PartnerAPI) => p.id === this.$props.partnerId
           );
         }
         // this will happen if the form was opened with credDefId and then is cancelled and re-opened with the same credDefId
         // the credDef is empty and won't initialize unless credDefId changes.
-        if (!this.credDef?.fields) {
+        if (!this.credDef?.schema?.schemaAttributeNames) {
           this.credDef = this.credDefList.find(
-            (p) => p.value === this.$props.credDefId
+            (p: CredDef) => p.id === this.$props.credDefId
           );
           this.credDefSelected();
         }
@@ -264,37 +276,38 @@ export default {
 
       if (this.$props.partnerId) {
         this.partner = this.partnerList.find(
-          (p) => p.value === this.$props.partnerId
+          (p: PartnerAPI) => p.id === this.$props.partnerId
         );
       }
 
       if (this.$props.credDefId) {
         this.credDef = this.credDefList.find(
-          (c) => c.value === this.$props.credDefId
+          (c: CredDef) => c.id === this.$props.credDefId
         );
       }
 
       this.isLoading = false;
     },
     async issueCredential() {
-      let exVersion;
+      let exVersion: ExchangeVersion;
+      let document: any = {};
+
       if (this.useV2Credential) {
         exVersion = ExchangeVersion.V2;
       }
-      // create an empty document, all empty strings...
-      let document: any = {};
-      for (const x of this.credDef.fields) document[x.type] = "";
-      //fill in whatever populated fields we have...
+
+      for (const x of this.credDef.schema.schemaAttributeNames)
+        document[x] = "";
       Object.assign(document, this.credentialFields);
 
-      const data: IssueCredentialRequest = {
+      const data: IssueCredentialRequestIndy = {
         credDefId: this.credDef.id,
         partnerId: this.partner.id,
         document: document,
         exchangeVersion: exVersion,
       };
       try {
-        const resp = await issuerService.issueCredentialSend(data);
+        const resp = await issuerService.issueCredentialSendIndy(data);
 
         if (resp.status === 200) {
           return resp.data;
@@ -323,7 +336,6 @@ export default {
       }
     },
     cancel() {
-      // clear out selected credential definition, will select (or have pre-populated) when re-open form.
       this.credDef = {};
       this.credentialFields = {};
       this.clearExpertLoad();
@@ -331,39 +343,38 @@ export default {
     },
     credDefSelected() {
       this.credentialFields = {};
-      for (const x of this.credDef.fields)
-        Vue.set(this.credentialFields, x.type, "");
+      for (const x of this.credDef.schema.schemaAttributeNames)
+        Vue.set(this.credentialFields, x, "");
       this.submitDisabled = true;
     },
     enableSubmit() {
       let enabled = false;
       if (
         this.credDef &&
-        this.credDef.fields &&
-        this.credDef.fields.length > 0
+        this.credDef.schema &&
+        this.credDef.schema.schemaAttributeNames &&
+        this.credDef.schema.schemaAttributeNames.length > 0
       ) {
-        //ok, we have some fields to check.
-        console.log(this.credentialFields);
-        enabled = this.credDef.fields.some(
-          (x) =>
-            this.credentialFields[x.type] &&
-            this.credentialFields[x.type]?.trim().length > 0
+        enabled = this.credDef.schema.schemaAttributeNames.some(
+          (attributeName: string) =>
+            this.credentialFields[attributeName] &&
+            this.credentialFields[attributeName]?.trim().length > 0
         );
       }
       this.submitDisabled = !enabled;
     },
-    expertLoadTypeChanged(value) {
+    expertLoadTypeChanged(value: string) {
       this.expertLoad.fileAccept =
         value === "json"
           ? "text/plain,application/json"
           : "text/plain,text/csv";
     },
-    uploadExpertLoadFile(v) {
-      this.expertLoad.file = v;
-      if (v) {
+    uploadExpertLoadFile(file: File) {
+      this.expertLoad.file = file;
+      if (file) {
         try {
           let reader = new FileReader();
-          reader.readAsText(v, "UTF-8");
+          reader.readAsText(file, "UTF-8");
           reader.addEventListener("load", (event_) => {
             this.expertLoad.data = event_.target.result;
           });
@@ -372,7 +383,7 @@ export default {
               "error",
               `${this.$t(
                 "component.issueCredential.expertLoad.errorMessages.readFile"
-              )} '${v.name}'.`
+              )} '${file.name}'.`
             );
           });
         } catch (error) {
@@ -380,7 +391,7 @@ export default {
             "error",
             `${this.$t(
               "component.issueCredential.expertLoad.errorMessages.readFile"
-            )} '${v.name}'. ${error.message}`
+            )} '${file.name}'. ${error.message}`
           );
         }
       }
@@ -411,19 +422,18 @@ export default {
 
         if (object) {
           let count = 0;
-          // see if we can populate the credential fields...
-          for (const x of this.credDef.fields) {
+          for (const x of this.credDef.schema.schemaAttributeNames) {
             if (
-              object[x.type] &&
+              object[x] &&
               !(
-                Object.prototype.toString.call(object[x.type]) ===
+                Object.prototype.toString.call(object[x]) ===
                   "[object Object]" ||
-                Object.prototype.toString.call(object[x.type]) ===
+                Object.prototype.toString.call(object[x]) ===
                   "[object Function]"
               )
             ) {
               count = count + 1;
-              Vue.set(this.credentialFields, x.type, object[x.type].toString());
+              Vue.set(this.credentialFields, x, object[x].toString());
             }
           }
           if (count) {
@@ -444,7 +454,7 @@ export default {
         }
       }
     },
-    jsonToObject(data) {
+    jsonToObject(data: any) {
       let object;
       if (data && Object.prototype.toString.call(data) === "[object String]") {
         try {
@@ -455,14 +465,14 @@ export default {
       }
       return object;
     },
-    csvToObject(data) {
-      let object;
+    csvToObject(data: any) {
+      let object: any;
       if (data && Object.prototype.toString.call(data) === "[object String]") {
         try {
           const array = CSV.parse(data);
           if (array?.length > 1) {
             const names = array[0];
-            const values = array[1]; // only grab first row for now...
+            const values = array[1];
             const namesOk = names.every((value) =>
               textUtils.isValidSchemaAttributeName(value)
             );

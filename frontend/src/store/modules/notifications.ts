@@ -5,11 +5,13 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-const addItem = (collection, id, payload) => {
+import { IStateNotifications } from "@/store/state-type";
+
+const addItem = (collection: any, id: any, payload: any) => {
   return { ...collection, [id]: payload };
 };
 
-const removeItem = (collection, id) => {
+const removeItem = (collection: any, id: any) => {
   if (Object.prototype.hasOwnProperty.call(collection, id)) {
     const temporary = { ...collection };
     delete temporary[id];
@@ -18,7 +20,7 @@ const removeItem = (collection, id) => {
   return collection;
 };
 
-const removeItemByMessageInfoLinkId = (collection, linkId) => {
+const removeItemByMessageInfoLinkId = (collection: any, linkId: any) => {
   const temporary = { ...collection };
   const keys = Object.keys(temporary);
   let k;
@@ -37,7 +39,7 @@ const removeItemByMessageInfoLinkId = (collection, linkId) => {
   return collection;
 };
 
-const state = {
+const state: IStateNotifications = {
   activityNotifications: {},
   credentialNotifications: {},
   partnerNotifications: {},
@@ -46,34 +48,34 @@ const state = {
 };
 
 const getters = {
-  activityNotifications: (state) => {
+  activityNotifications: (state: IStateNotifications) => {
     return state.activityNotifications;
   },
-  activityNotificationsCount: (state) => {
+  activityNotificationsCount: (state: IStateNotifications) => {
     return Object.keys(state.activityNotifications).length;
   },
-  credentialNotifications: (state) => {
+  credentialNotifications: (state: IStateNotifications) => {
     return state.credentialNotifications;
   },
-  credentialNotificationsCount: (state) => {
+  credentialNotificationsCount: (state: IStateNotifications) => {
     return Object.keys(state.credentialNotifications).length;
   },
-  partnerNotifications: (state) => {
+  partnerNotifications: (state: IStateNotifications) => {
     return state.partnerNotifications;
   },
-  partnerNotificationsCount: (state) => {
+  partnerNotificationsCount: (state: IStateNotifications) => {
     return Object.keys(state.partnerNotifications).length;
   },
-  presentationNotifications: (state) => {
+  presentationNotifications: (state: IStateNotifications) => {
     return state.presentationNotifications;
   },
-  presentationNotificationsCount: (state) => {
+  presentationNotificationsCount: (state: IStateNotifications) => {
     return Object.keys(state.presentationNotifications).length;
   },
-  taskNotifications: (state) => {
+  taskNotifications: (state: IStateNotifications) => {
     return state.taskNotifications;
   },
-  taskNotificationsCount: (state) => {
+  taskNotificationsCount: (state: IStateNotifications) => {
     return Object.keys(state.taskNotifications).length;
   },
 };
@@ -81,7 +83,7 @@ const getters = {
 const actions = {};
 
 const mutations = {
-  onNotification(state, payload) {
+  onNotification(state: IStateNotifications, payload: any) {
     const type = payload.message.type;
     const id = payload.message.linkId;
     console.log(`onNotification(type=${type}, id=${id})`);
@@ -144,11 +146,11 @@ const mutations = {
         console.log(`Unknown notification type: ${type}`);
     }
   },
-  activityNotificationSeen(state, payload) {
+  activityNotificationSeen(state: IStateNotifications, payload: any) {
     const id = payload.id;
     state.activityNotifications = removeItem(state.activityNotifications, id);
   },
-  credentialNotificationSeen(state, payload) {
+  credentialNotificationSeen(state: IStateNotifications, payload: any) {
     const id = payload.id;
     state.credentialNotifications = removeItem(
       state.credentialNotifications,
@@ -159,37 +161,37 @@ const mutations = {
       id
     );
   },
-  partnerNotificationSeen(state, payload) {
+  partnerNotificationSeen(state: IStateNotifications, payload: any) {
     const id = payload.id;
     state.partnerNotifications = removeItem(state.partnerNotifications, id);
   },
-  presentationNotificationSeen(state, payload) {
+  presentationNotificationSeen(state: IStateNotifications, payload: any) {
     const id = payload.id;
     state.presentationNotifications = removeItem(
       state.presentationNotifications,
       id
     );
   },
-  taskNotificationSeen(state, payload) {
+  taskNotificationSeen(state: IStateNotifications, payload: any) {
     const id = payload.id;
     state.taskNotifications = removeItem(state.taskNotifications, id);
   },
-  activityNotificationClear(state) {
-    state.activityNotification = {};
+  activityNotificationClear(state: IStateNotifications) {
+    state.activityNotifications = {};
   },
-  credentialNotificationsClear(state) {
+  credentialNotificationsClear(state: IStateNotifications) {
     state.credentialNotifications = {};
   },
-  partnerNotificationsClear(state) {
+  partnerNotificationsClear(state: IStateNotifications) {
     state.partnerNotifications = {};
   },
-  presentationNotificationsClear(state) {
+  presentationNotificationsClear(state: IStateNotifications) {
     state.presentationNotifications = {};
   },
-  taskNotificationsClear(state) {
+  taskNotificationsClear(state: IStateNotifications) {
     state.taskNotifications = {};
   },
-  allNotificationsClear(state) {
+  allNotificationsClear(state: IStateNotifications) {
     state.activityNotifications = {};
     state.credentialNotifications = {};
     state.partnerNotifications = {};

@@ -38,6 +38,7 @@ create new ones
 <script lang="ts">
 import store from "@/store";
 import { EventBus } from "@/main";
+import { ProofTemplate, proofTemplateService } from "@/services";
 
 export default {
   props: {
@@ -81,13 +82,13 @@ export default {
       get() {
         return this.value;
       },
-      set(value) {
+      set(value: ProofTemplate) {
         this.$emit("input", value);
       },
     },
   },
   methods: {
-    openItem(proofTemplate) {
+    openItem(proofTemplate: ProofTemplate) {
       this.dialog = true;
       this.dirty = false;
       this.proofTemplate = proofTemplate;
@@ -106,7 +107,7 @@ export default {
     onChanged() {
       this.dirty = true;
     },
-    viewProofTemplate(proofTemplate) {
+    viewProofTemplate(proofTemplate: ProofTemplate) {
       this.$router.push({
         name: "ProofTemplateView",
         params: {
@@ -114,11 +115,11 @@ export default {
         },
       });
     },
-    deleteProofTemplate(proofTemplate) {
+    deleteProofTemplate(proofTemplate: ProofTemplate) {
       console.log(JSON.stringify(proofTemplate));
 
-      this.$axios
-        .delete(`${this.$apiBaseUrl}/proof-templates/${proofTemplate.id}`)
+      proofTemplateService
+        .deleteProofTemplate(proofTemplate.id)
         .then((result) => {
           if (result.status === 200) {
             this.$emit("removedItem", proofTemplate.id);

@@ -1,7 +1,7 @@
 # Dockerfile that builds frontend and backend, mainly used by the docker-compose files
 
 # Vue Build Container
-FROM node:16-alpine as VUE
+FROM node:16-alpine3.13 as VUE
 WORKDIR /frontend
 COPY frontend .
 RUN npm install && npm run build

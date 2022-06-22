@@ -61,6 +61,7 @@ import { getPartnerState } from "@/utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator.vue";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
 import { CredentialTypes, PartnerStates } from "@/constants";
+import { PartnerAPI, partnerService } from "@/services";
 
 export default {
   name: "PartnerList",
@@ -103,8 +104,8 @@ export default {
   },
   data: () => {
     return {
-      selected: [],
-      data: [],
+      selected: new Array<any>(),
+      data: new Array<PartnerAPI & { address: string }>(),
       isBusy: true,
       getPartnerState: getPartnerState,
     };
@@ -137,11 +138,11 @@ export default {
       ];
     },
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
     filteredData() {
       return !this.showInvitations
-        ? this.data.filter((partner) => {
+        ? this.data.filter((partner: PartnerAPI & { address: string }) => {
             return partner.state !== PartnerStates.INVITATION.value;
           })
         : this.data;
@@ -151,13 +152,13 @@ export default {
     },
   },
   watch: {
-    refresh: function (newValue) {
+    refresh: function (newValue: boolean) {
       if (newValue) {
         this.fetch();
         this.$emit("refreshed");
       }
     },
-    partnerNotifications: function (newValue) {
+    partnerNotifications: function (newValue: any) {
       if (newValue) {
         // TODO: Don't fetch all partners but only add new partner
         this.fetch();
@@ -165,7 +166,7 @@ export default {
     },
   },
   methods: {
-    open(partner) {
+    open(partner: PartnerAPI & { address: string }) {
       this.$router.push({
         name: "Partner",
         params: {
@@ -176,13 +177,9 @@ export default {
 
     fetch() {
       this.$store.dispatch("loadPartnerSelectList");
-      // Query only for partners that can issue credentials of specified schema
-      let queryParameter = "";
-      if (this.onlyIssuersForSchema.length > 0) {
-        queryParameter = `?schemaId=${this.onlyIssuersForSchema}`;
-      }
-      this.$axios
-        .get(`${this.$apiBaseUrl}/partners${queryParameter}`)
+
+      partnerService
+        .getPartners(this.onlyIssuersForSchema)
         .then((result) => {
           console.log("Partner List", result);
           if (Object.prototype.hasOwnProperty.call(result, "data")) {
@@ -194,9 +191,12 @@ export default {
               });
             }
 
-            this.data = result.data.map((partner) => {
-              partner.address = this.getProfileAddress(partner);
-              return partner;
+            this.data = result.data.map((partner: PartnerAPI) => {
+              const tempPartner: PartnerAPI & { address: string } = {
+                address: this.getProfileAddress(partner),
+                ...partner,
+              };
+              return tempPartner;
             });
           }
         })
@@ -205,9 +205,9 @@ export default {
           EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
-    getProfileAddress(credential) {
-      if (credential.credential && credential.credential.length > 0) {
-        const profile = credential.credential.find((item) => {
+    getProfileAddress(partner: PartnerAPI) {
+      if (partner.credential && partner.credential.length > 0) {
+        const profile: any = partner.credential.find((item) => {
           return item.type === CredentialTypes.PROFILE.type;
         });
         let address = "";

@@ -7,7 +7,7 @@
  */
 
 import Vue from "vue";
-import VueRouter from "vue-router";
+import VueRouter, { RouteConfig } from "vue-router";
 import Dashboard from "@/views/Dashboard.vue";
 import Identity from "@/views/Identity.vue";
 import PublicProfile from "@/views/PublicProfile.vue";
@@ -39,7 +39,7 @@ import RequestCredentialCreateDocument from "@/views/RequestCredentialCreateDocu
 
 Vue.use(VueRouter);
 
-const routes = [
+const routes: RouteConfig[] = [
   {
     path: "/",
     name: "Dashboard",

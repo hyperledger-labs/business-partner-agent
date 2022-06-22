@@ -30,6 +30,8 @@
                 return-object
                 v-model="credDef"
                 :items="credDefList"
+                item-value="id"
+                item-text="displayText"
                 outlined
                 :disabled="this.$props.credDefId !== undefined"
                 dense
@@ -124,10 +126,10 @@
                   <v-row>
                     <v-col>
                       <v-text-field
-                        v-for="field in credDef.fields"
-                        :key="field.type"
-                        :label="field.label"
-                        v-model="credentialFields[field.type]"
+                        v-for="field in credDef.schema.schemaAttributeNames"
+                        :key="field"
+                        :label="field"
+                        v-model="credentialFields[field]"
                         outlined
                         dense
                         @blur="enableSubmit"
@@ -141,7 +143,7 @@
                 <v-card-title class="bg-light" style="font-size: small">
                   {{ $t("component.issueOobCredential.options.title") }}
                 </v-card-title>
-                <v-card-text v-if="expertMode">
+                <v-card-text>
                   <v-col>
                     <v-list-item>
                       <v-list-item-content>
@@ -162,42 +164,46 @@
                       </v-list-item-action>
                     </v-list-item>
                   </v-col>
-                  <v-col>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <v-list-item-title
-                          class="grey--text text--darken-2 font-weight-medium"
-                        >
-                          {{ $t("view.addPartner.setTags") }}
-                        </v-list-item-title>
-                      </v-list-item-content>
-                      <v-list-item-action>
-                        <v-autocomplete
-                          multiple
-                          v-model="selectedTags"
-                          :items="tags"
-                          chips
-                          deletable-chips
-                        >
-                        </v-autocomplete>
-                      </v-list-item-action>
-                    </v-list-item>
-                  </v-col>
-                  <v-col>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <v-list-item-title
-                          class="grey--text text--darken-2 font-weight-medium"
-                          >{{
-                            $t("view.addPartner.trustPing")
-                          }}</v-list-item-title
-                        >
-                      </v-list-item-content>
-                      <v-list-item-action>
-                        <v-switch v-model="trustPing"></v-switch>
-                      </v-list-item-action>
-                    </v-list-item>
-                  </v-col>
+                  <div v-if="expertMode">
+                    <v-col>
+                      <v-list-item>
+                        <v-list-item-content>
+                          <v-list-item-title
+                            class="grey--text text--darken-2 font-weight-medium"
+                          >
+                            {{ $t("view.addPartner.setTags") }}
+                          </v-list-item-title>
+                        </v-list-item-content>
+                        <v-list-item-action>
+                          <v-autocomplete
+                            multiple
+                            v-model="selectedTags"
+                            :items="tags"
+                            item-text="name"
+                            item-value="id"
+                            chips
+                            deletable-chips
+                          >
+                          </v-autocomplete>
+                        </v-list-item-action>
+                      </v-list-item>
+                    </v-col>
+                    <v-col>
+                      <v-list-item>
+                        <v-list-item-content>
+                          <v-list-item-title
+                            class="grey--text text--darken-2 font-weight-medium"
+                            >{{
+                              $t("view.addPartner.trustPing")
+                            }}</v-list-item-title
+                          >
+                        </v-list-item-content>
+                        <v-list-item-action>
+                          <v-switch v-model="trustPing"></v-switch>
+                        </v-list-item-action>
+                      </v-list-item>
+                    </v-col>
+                  </div>
                 </v-card-text>
               </v-card>
             </v-stepper-content>
@@ -257,9 +263,11 @@
 import Vue from "vue";
 import { EventBus } from "@/main";
 import {
-  ApiCreateInvitation,
   issuerService,
   IssueOobCredentialRequest,
+  APICreateInvitationResponse,
+  Tag,
+  CredDef,
 } from "@/services";
 import VBpaButton from "@/components/BpaButton";
 import * as textUtils from "@/utils/textUtils";
@@ -267,7 +275,7 @@ import * as CSV from "csv-string";
 import QrcodeVue from "qrcode.vue";
 
 export default {
-  name: "IssueCredential",
+  name: "IssueCredentialIndyOob",
   components: { VBpaButton, QrcodeVue },
   props: {
     credDefId: String,
@@ -285,16 +293,15 @@ export default {
       credentialFields: {},
       currentStep: 1,
       alias: "",
-      selectedTags: [],
-      // Disable trust ping for invitation to
-      // mobile wallets by default.
+      selectedTags: new Array<Tag>(),
+      // Disable trust ping for invitation to mobile wallets by default
       trustPing: false,
       invitationUrl: "",
       createDisabled: true,
       expertLoad: {
         show: false,
         data: "",
-        file: undefined,
+        file: undefined as File,
         type: "json",
         fileAccept: "text/plain,application/json",
       },
@@ -302,7 +309,7 @@ export default {
   },
   computed: {
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
     credDefList: {
       get() {
@@ -311,33 +318,30 @@ export default {
     },
     credDefLoaded: {
       get() {
-        return this.credDef?.fields?.length;
+        return this.credDef?.schema?.schemaAttributeNames?.length;
       },
     },
     expertLoadEnabled() {
       return this.expertLoad.data?.trim().length > 0;
     },
     tags() {
-      return this.$store.state.tags
-        ? this.$store.state.tags.map((tag) => tag.name)
-        : [];
+      return this.$store.getters.getTags ? this.$store.getters.getTags : [];
     },
   },
   watch: {
-    credDefId(value) {
+    credDefId(value: string) {
       if (value) {
-        this.credDef = this.credDefList.find((p) => p.value === value);
+        this.credDef = this.credDefList.find(
+          (credDef: CredDef) => credDef.id === value
+        );
         this.credDefSelected();
       }
     },
-    open(value) {
+    open(value: boolean) {
       if (value) {
-        // load up cred def (if needed)
-        // this will happen if the form was opened with credDefId and then is cancelled and re-opened with the same credDefId
-        // the credDef is empty and won't initialize unless credDefId changes.
-        if (!this.credDef?.fields) {
+        if (!this.credDef?.schema?.schemaAttributeNames) {
           this.credDef = this.credDefList.find(
-            (p) => p.value === this.$props.credDefId
+            (credDef: CredDef) => credDef.id === this.$props.credDefId
           );
           this.credDefSelected();
         }
@@ -353,22 +357,26 @@ export default {
 
       if (this.$props.credDefId) {
         this.credDef = this.credDefList.find(
-          (c) => c.value === this.$props.credDefId
+          (credDef: CredDef) => credDef.id === this.$props.credDefId
         );
       }
 
       this.isLoading = false;
     },
-    async issueOobCredentialOffer(): Promise<ApiCreateInvitation> {
-      // create an empty document, all empty strings
+    async issueOobCredentialOffer(): Promise<APICreateInvitationResponse> {
       let document: any = {};
-      for (const x of this.credDef.fields) document[x.type] = "";
-      // fill in whatever populated fields we have
+
+      for (const x of this.credDef.schema.schemaAttributeNames)
+        document[x] = "";
       Object.assign(document, this.credentialFields);
+
+      const tags: Tag[] = this.tags.filter((tag: Tag) =>
+        this.selectedTags.includes(tag.id)
+      );
 
       const data: IssueOobCredentialRequest = {
         alias: this.alias,
-        tag: this.selectedTags,
+        tag: tags,
         trustPing: this.trustPing,
         credDefId: this.credDef.id,
         document: document,
@@ -386,7 +394,7 @@ export default {
     async submit() {
       this.isBusy = true;
       try {
-        const oobInvitation: ApiCreateInvitation =
+        const oobInvitation: APICreateInvitationResponse =
           await this.issueOobCredentialOffer();
 
         this.isBusy = false;
@@ -408,7 +416,6 @@ export default {
       }
     },
     cancel() {
-      // clear out selected credential definition, will select (or have pre-populated) when re-open form.
       this.credDef = {};
       this.credentialFields = {};
       this.alias = "";
@@ -420,38 +427,37 @@ export default {
     },
     credDefSelected() {
       this.credentialFields = {};
-      for (const x of this.credDef.fields)
-        Vue.set(this.credentialFields, x.type, "");
+      for (const x of this.credDef.schema.schemaAttributeNames)
+        Vue.set(this.credentialFields, x, "");
       this.createDisabled = true;
     },
     enableSubmit() {
       let enabled = false;
       if (
         this.credDef &&
-        this.credDef.fields &&
-        this.credDef.fields.length > 0
+        this.credDef.schema.schemaAttributeNames &&
+        this.credDef.schema.schemaAttributeNames.length > 0
       ) {
-        console.log(this.credentialFields);
-        enabled = this.credDef.fields.some(
-          (x) =>
-            this.credentialFields[x.type] &&
-            this.credentialFields[x.type]?.trim().length > 0
+        enabled = this.credDef.schema.schemaAttributeNames.some(
+          (attributeName: string) =>
+            this.credentialFields[attributeName] &&
+            this.credentialFields[attributeName]?.trim().length > 0
         );
       }
       this.createDisabled = !enabled;
     },
-    expertLoadTypeChanged(value) {
+    expertLoadTypeChanged(value: string) {
       this.expertLoad.fileAccept =
         value === "json"
           ? "text/plain,application/json"
           : "text/plain,text/csv";
     },
-    uploadExpertLoadFile(v) {
-      this.expertLoad.file = v;
-      if (v) {
+    uploadExpertLoadFile(file: File) {
+      this.expertLoad.file = file;
+      if (file) {
         try {
           let reader = new FileReader();
-          reader.readAsText(v, "UTF-8");
+          reader.readAsText(file, "UTF-8");
           reader.addEventListener("load", (event_) => {
             this.expertLoad.data = event_.target.result;
           });
@@ -460,7 +466,7 @@ export default {
               "error",
               `${this.$t(
                 "component.issueCredential.expertLoad.errorMessages.readFile"
-              )} '${v.name}'.`
+              )} '${file.name}'.`
             );
           });
         } catch (error) {
@@ -468,7 +474,7 @@ export default {
             "error",
             `${this.$t(
               "component.issueCredential.expertLoad.errorMessages.readFile"
-            )} '${v.name}'. ${error.message}`
+            )} '${file.name}'. ${error.message}`
           );
         }
       }
@@ -499,19 +505,18 @@ export default {
 
         if (object) {
           let count = 0;
-          // see if we can populate the credential fields...
-          for (const x of this.credDef.fields) {
+          for (const x of this.credDef.schema.schemaAttributeNames) {
             if (
-              object[x.type] &&
+              object[x] &&
               !(
-                Object.prototype.toString.call(object[x.type]) ===
+                Object.prototype.toString.call(object[x]) ===
                   "[object Object]" ||
-                Object.prototype.toString.call(object[x.type]) ===
+                Object.prototype.toString.call(object[x]) ===
                   "[object Function]"
               )
             ) {
               count = count + 1;
-              Vue.set(this.credentialFields, x.type, object[x.type].toString());
+              Vue.set(this.credentialFields, x, object[x].toString());
             }
           }
           if (count) {
@@ -532,7 +537,7 @@ export default {
         }
       }
     },
-    jsonToObject(data) {
+    jsonToObject(data: string) {
       let object;
       if (data && Object.prototype.toString.call(data) === "[object String]") {
         try {
@@ -543,14 +548,14 @@ export default {
       }
       return object;
     },
-    csvToObject(data) {
-      let object;
+    csvToObject(data: string) {
+      let object: any;
       if (data && Object.prototype.toString.call(data) === "[object String]") {
         try {
-          const array = CSV.parse(data);
+          const array: string[][] = CSV.parse(data);
           if (array?.length > 1) {
             const names = array[0];
-            const values = array[1]; // only grab first row for now...
+            const values = array[1];
             const namesOk = names.every((value) =>
               textUtils.isValidSchemaAttributeName(value)
             );

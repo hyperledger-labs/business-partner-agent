@@ -25,7 +25,7 @@
         >
       </template>
       <template v-slot:[`item.canIssue`]="{ item }">
-        <v-icon v-if="item.canIssue">$vuetify.icons.check</v-icon>
+        <v-icon v-if="canIssueSchema(item)">$vuetify.icons.check</v-icon>
       </template>
       <template v-slot:[`item.isMine`]="{ item }">
         <v-icon v-if="item.isMine">$vuetify.icons.check</v-icon>
@@ -47,6 +47,8 @@
 <script lang="ts">
 import ManageSchema from "@/components/ManageSchema.vue";
 import store from "@/store";
+import { SchemaAPI } from "@/services";
+import { CredentialTypes } from "@/constants";
 export default {
   props: {
     isLoading: Boolean,
@@ -94,7 +96,15 @@ export default {
     },
   },
   methods: {
-    openItem(item) {
+    canIssueSchema(schema: SchemaAPI): boolean {
+      return schema &&
+        schema.type &&
+        schema.type === CredentialTypes.JSON_LD.type
+        ? true
+        : Array.isArray(schema.credentialDefinitions) &&
+            schema.credentialDefinitions.length > 0;
+    },
+    openItem(item: SchemaAPI) {
       this.dialog = true;
       this.dirty = false;
       this.schema = item;

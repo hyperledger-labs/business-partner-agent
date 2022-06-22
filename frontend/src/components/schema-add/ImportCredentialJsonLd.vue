@@ -154,9 +154,11 @@ export default {
     async submitSchemaJsonLd() {
       this.isBusy = true;
 
-      this.selectedJsonLdAttributes.map((selectedAttribute) => {
-        this.schemaJsonLd.attributes.push(selectedAttribute.name);
-      });
+      this.selectedJsonLdAttributes.map(
+        (selectedAttribute: { name: string }) => {
+          this.schemaJsonLd.attributes.push(selectedAttribute.name);
+        }
+      );
 
       adminService
         .addSchema(this.schemaJsonLd)

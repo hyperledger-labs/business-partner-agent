@@ -85,6 +85,7 @@ import { ActivityRoles, ActivityStates, ActivityTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
 import activitiesService from "@/services/activities-service";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
+import { ActivityItem, ActivityType, PartnerAPI } from "@/services";
 
 export default {
   name: "ActivityList",
@@ -112,22 +113,22 @@ export default {
   data: () => {
     return {
       isBusy: true,
-      items: [],
-      filter: undefined,
-      filterValue: undefined,
-      filterValueList: [],
+      items: new Array<ActivityItem>(),
+      filter: undefined as { text: string; value: string },
+      filterValue: undefined as { text: string; value: string },
+      filterValueList: new Array<{ text: string; value: string }>(),
     };
   },
   watch: {
-    filter(value) {
+    filter(value: { text: string; value: string }) {
       this.filterValue = undefined;
       this.filterValueList = [];
       if (value && value.value === "type") {
         this.filterValueList = [];
         for (let k in ActivityTypes) {
           this.filterValueList.push({
-            text: ActivityTypes[k].label,
-            value: ActivityTypes[k].value,
+            text: ActivityTypes[k as ActivityType].label,
+            value: ActivityTypes[k as ActivityType].value,
           });
         }
       }
@@ -137,7 +138,9 @@ export default {
     filterList() {
       return [
         {
-          text: this.headers.find((x) => x.value === "type").text,
+          text: this.headers.find(
+            (x: { text: string; value: string }) => x.value === "type"
+          ).text,
           value: "type",
         },
       ];
@@ -201,14 +204,14 @@ export default {
           }
         });
     },
-    openItem(item) {
+    openItem(item: ActivityItem) {
       // if we click on it, mark it seen...
       this.$store.commit("activityNotificationSeen", { id: item.id });
       this.$store.commit("taskNotificationSeen", { id: item.id });
 
       console.log(item);
 
-      switch (item.type) {
+      switch (item.type.toUpperCase()) {
         case ActivityTypes.CONNECTION_REQUEST.value: {
           this.$router.push({
             name: "Partner",
@@ -264,19 +267,22 @@ export default {
         // No default
       }
     },
-    activityTypeLabel(type) {
-      const o = ActivityTypes[type.toUpperCase()];
+    activityTypeLabel(type: string) {
+      const o: { value: string; label: string } =
+        ActivityTypes[type.toUpperCase() as keyof unknown];
       return o ? o.label : type;
     },
-    activityStateLabel(state) {
-      const o = ActivityStates[state.toUpperCase()];
+    activityStateLabel(state: string) {
+      const o: { value: string; label: string } =
+        ActivityStates[state.toUpperCase() as keyof unknown];
       return o ? o.label : state;
     },
-    activityRoleLabel(role) {
-      const o = ActivityRoles[role.toUpperCase()];
+    activityRoleLabel(role: string) {
+      const o: { value: string; label: string } =
+        ActivityRoles[role.toUpperCase() as keyof unknown];
       return o ? o.label : role;
     },
-    partnerLabel(partner) {
+    partnerLabel(partner: PartnerAPI) {
       return partner
         ? partner.name
         : this.$t("component.activityList.labelPartnerUnknown");
