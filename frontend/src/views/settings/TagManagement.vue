@@ -104,7 +104,7 @@ export default {
   },
   computed: {
     tags() {
-      return this.$store.state.tags;
+      return this.$store.getters.getTags;
     },
     fieldEmpty() {
       return this.newTag.length === 0;
@@ -132,7 +132,7 @@ export default {
           EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
-    deleteTag(tag, hardDelete = false) {
+    deleteTag(tag: string, hardDelete = false) {
       adminService
         .deleteTag(tag, hardDelete)
         .then((response) => {

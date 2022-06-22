@@ -56,6 +56,7 @@ import { EventBus } from "@/main";
 import MyCredentialList from "@/components/MyCredentialList.vue";
 import VBpaButton from "@/components/BpaButton";
 import { CredentialTypes, ExchangeVersion } from "@/constants";
+import { AriesCredential, partnerService } from "@/services";
 
 export default {
   name: "SendPresentation",
@@ -73,12 +74,12 @@ export default {
     return {
       isBusy: false,
       useV2Exchange: false,
-      selectedCredentials: [],
+      selectedCredentials: [] as AriesCredential[],
     };
   },
   computed: {
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
     isV2(): boolean {
       return (
@@ -112,8 +113,8 @@ export default {
       this.isBusy = true;
       const selectedCredential = this.selectedCredentials[0].id;
       if (selectedCredential) {
-        this.$axios
-          .post(`${this.$apiBaseUrl}/partners/${this.id}/proof-send`, {
+        partnerService
+          .sendProof(this.id, {
             myCredentialId: selectedCredential,
             exchangeVersion:
               this.useV2Exchange || this.isV2

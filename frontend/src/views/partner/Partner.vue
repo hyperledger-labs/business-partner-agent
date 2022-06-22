@@ -68,7 +68,7 @@
 
       <v-card-text>
         <template
-          v-if="partner.bpa_state === PartnerStates.CONNECTION_REQUEST_RECEIVED"
+          v-if="partnerBpaState === PartnerStates.CONNECTION_REQUEST_RECEIVED"
         >
           <v-banner two-line>
             <v-avatar slot="icon" color="white" size="40">
@@ -95,7 +95,7 @@
           </v-banner>
         </template>
         <template
-          v-if="partner.bpa_state === PartnerStates.CONNECTION_REQUEST_SENT"
+          v-if="partnerBpaState === PartnerStates.CONNECTION_REQUEST_SENT"
         >
           <v-banner two-line>
             <v-avatar slot="icon" color="white" size="40">
@@ -191,7 +191,6 @@
       <CredExList
         ref="credExList"
         v-if="isReady"
-        v-bind:items="issuedCredentials"
         header-role
         v-bind:partnerId="id"
         v-bind:openItemById="credExId"
@@ -204,12 +203,30 @@
               $t("view.partner.credentialExchanges.button.issueCredential")
             }}</v-bpa-button>
           </template>
-          <IssueCredential
-            :partnerId="id"
-            @success="onCredentialIssued"
-            @cancelled="issueCredentialDialog = false"
-          >
-          </IssueCredential>
+          <v-card class="mx-auto">
+            <v-card-title class="bg-light"
+              >{{ $t("component.issueCredential.title") }}
+            </v-card-title>
+            <credential-type-tabs>
+              <template v-slot:indy>
+                <IssueCredentialIndy
+                  :partnerId="id"
+                  hide-title
+                  @success="onCredentialIssued"
+                  @cancelled="issueCredentialDialog = false"
+                >
+                </IssueCredentialIndy>
+              </template>
+              <template v-slot:json-ld>
+                <IssueCredentialJsonLd
+                  :partnerId="id"
+                  hide-title
+                  @success="onCredentialIssued"
+                  @cancelled="issueCredentialDialog = false"
+                ></IssueCredentialJsonLd>
+              </template>
+            </credential-type-tabs>
+          </v-card>
         </v-dialog>
         <v-bpa-button
           style="margin-left: 8px"
@@ -251,15 +268,22 @@
 import Profile from "@/components/Profile.vue";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator.vue";
 import { CredentialTypes, PartnerStates } from "@/constants";
-import { getPartnerProfile, getPartnerState } from "@/utils/partnerUtils";
+import { getPartnerState } from "@/utils/partnerUtils";
 import { EventBus } from "@/main";
-import { partnerService } from "@/services";
+import {
+  AriesProofExchange,
+  PartnerAPI,
+  PartnerCredential,
+  partnerService,
+} from "@/services";
 import CredExList from "@/components/CredExList.vue";
 import PresentationExList from "@/components/PresentationExList.vue";
-import IssueCredential from "@/components/IssueCredential.vue";
 import UpdatePartner from "@/components/UpdatePartner.vue";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
+import IssueCredentialIndy from "@/components/issue/IssueCredentialIndy.vue";
+import CredentialTypeTabs from "@/components/helper/CredentialTypeTabs.vue";
+import IssueCredentialJsonLd from "@/components/issue/IssueCredentialJsonLd.vue";
 
 export default {
   name: "Partner",
@@ -269,13 +293,15 @@ export default {
     credExId: String,
   },
   components: {
+    IssueCredentialJsonLd,
     VBpaButton,
     Profile,
     PresentationExList,
     PartnerStateIndicator,
     CredExList,
-    IssueCredential,
+    IssueCredentialIndy,
     UpdatePartner,
+    CredentialTypeTabs,
   },
   created() {
     EventBus.$emit("title", this.$t("view.partner.title"));
@@ -294,21 +320,24 @@ export default {
       goTo: {},
       alias: "",
       did: "",
-      partner: {},
-      rawData: {},
-      credentials: [],
-      presentationExRecords: [],
-      issuedCredentials: [],
+      partner: {} as PartnerAPI,
+      partnerBpaState: {
+        value: "",
+        label: "",
+      },
+      rawData: {} as PartnerAPI,
+      credentials: new Array<PartnerCredential>(),
+      presentationExRecords: new Array<AriesProofExchange>(),
       PartnerStates: PartnerStates,
       issueCredentialDialog: false,
     };
   },
   computed: {
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
     isActive() {
-      return this.partner.bpa_state === PartnerStates.ACTIVE_OR_RESPONSE;
+      return this.partnerBpaState === PartnerStates.ACTIVE_OR_RESPONSE;
     },
   },
   methods: {
@@ -398,19 +427,14 @@ export default {
     getPartner() {
       console.log("Getting partner...");
       this.isLoading = true;
-      this.$axios
-        .get(`${this.$apiBaseUrl}/partners/${this.id}`)
+      partnerService
+        .getPartnerById(this.id)
         .then((result) => {
           console.log(result);
           if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.rawData = result.data;
-            this.partner = {
-              ...result.data,
-
-              profile: getPartnerProfile(result.data),
-            };
-
-            this.partner.bpa_state = getPartnerState(this.partner);
+            this.partner = result.data;
+            this.partnerBpaState = getPartnerState(this.partner);
             this.alias = this.partner.name;
             this.did = this.partner.did;
             this.isReady = true;
@@ -425,8 +449,8 @@ export default {
         });
     },
     deletePartner() {
-      this.$axios
-        .delete(`${this.$apiBaseUrl}/partners/${this.id}`)
+      partnerService
+        .removePartner(this.id)
         .then((result) => {
           console.log(result);
           if (result.status === 200) {
@@ -445,8 +469,8 @@ export default {
         });
     },
     acceptPartnerRequest() {
-      this.$axios
-        .put(`${this.$apiBaseUrl}/partners/${this.id}/accept`, {})
+      partnerService
+        .acceptPartnerRequest(this.id)
         .then((result) => {
           console.log(result);
           if (result.status === 200) {
@@ -464,8 +488,8 @@ export default {
     },
     refreshPartner() {
       this.isLoading = true;
-      this.$axios
-        .get(`${this.$apiBaseUrl}/partners/${this.id}/refresh`)
+      partnerService
+        .refreshPartner(this.id)
         .then(async (result) => {
           if (
             result.status === 200 &&
@@ -473,21 +497,20 @@ export default {
           ) {
             console.log(result.data);
             this.rawData = result.data;
-            this.partner = {
-              ...result.data,
+            this.partner = result.data;
 
-              profile: getPartnerProfile(result.data),
-            };
             if (
               Object.prototype.hasOwnProperty.call(this.partner, "credential")
             ) {
               // Show only creds other than OrgProfile in credential list
-              this.credentials = this.partner.credential.filter((cred) => {
-                return cred.type !== CredentialTypes.PROFILE.type;
-              });
+              this.credentials = this.partner.credential.filter(
+                (cred: PartnerCredential) => {
+                  return cred.type !== CredentialTypes.PROFILE.type;
+                }
+              );
             }
 
-            this.partner.bpa_state = getPartnerState(this.partner);
+            this.partnerBpaState = getPartnerState(this.partner);
             this.alias = this.partner.name;
             this.did = this.partner.did;
             console.log(this.partner);

@@ -130,7 +130,7 @@ export default {
       return this.expertMode && this.type !== CredentialTypes.JSON_LD.type;
     },
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
   },
   methods: {
@@ -165,7 +165,7 @@ export default {
       };
 
       credentialService
-        .sendCredentialRequest(this.partner.id, data)
+        .requestCredential(this.partner.id, data)
         .then((response) => {
           console.log(response);
           this.isBusy = false;

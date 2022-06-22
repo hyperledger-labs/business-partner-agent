@@ -6,6 +6,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { VBtn } from "vuetify/lib";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import Routable from "vuetify/es5/mixins/routable/index";
 
 export default {
@@ -17,7 +19,7 @@ export default {
     // we will use the color property to determine our config
     // ux.buttons.primary or ux.buttons.secondary...
     getRuntimeConfiguration() {
-      const runtimeConfig = {
+      const runtimeConfig: any = {
         primary: {
           text: false,
           outlined: false,

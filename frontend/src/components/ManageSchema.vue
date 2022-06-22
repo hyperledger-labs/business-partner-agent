@@ -109,7 +109,7 @@
 
 <script lang="ts">
 import { EventBus } from "@/main";
-import { adminService } from "@/services";
+import { adminService, SchemaAPI } from "@/services";
 import TrustedIssuers from "@/components/TrustedIssuers.vue";
 import CredentialDefinitions from "@/components/CredentialDefinitions.vue";
 import VBpaButton from "@/components/BpaButton";
@@ -137,7 +137,7 @@ export default {
     TrustedIssuers,
   },
   watch: {
-    dialog(value) {
+    dialog(value: boolean) {
       // if dialog is opening, reset to first tab
       if (value) {
         this.tab = "schema-attributes";
@@ -146,7 +146,7 @@ export default {
   },
   data: () => {
     return {
-      tab: undefined,
+      tab: undefined as string,
       resetChildForms: false,
     };
   },
@@ -158,7 +158,7 @@ export default {
       get() {
         return this.value;
       },
-      set(value) {
+      set(value: SchemaAPI) {
         this.$emit("input", value);
       },
     },
@@ -205,7 +205,7 @@ export default {
     },
     deleteSchema() {
       adminService
-        .deleteSchema(this.schema.id)
+        .removeSchema(this.schema.id)
         .then((result) => {
           console.log(result);
           if (result.status === 200) {

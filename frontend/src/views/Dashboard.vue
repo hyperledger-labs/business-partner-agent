@@ -96,6 +96,7 @@ import { EventBus } from "@/main";
 import { CredentialTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
 import DashboardCard from "@/components/DashboardCard.vue";
+import { BPAStats, statusService } from "@/services";
 
 export default {
   name: "Dashboard",
@@ -106,6 +107,7 @@ export default {
   },
   data: () => {
     return {
+      status: {} as BPAStats,
       isWelcome: true,
       isLoading: true,
       CredentialTypes,
@@ -122,8 +124,8 @@ export default {
   methods: {
     getStatus() {
       console.log("Getting status...");
-      this.$axios
-        .get(`${this.$apiBaseUrl}/status`)
+      statusService
+        .getStatus()
         .then((result) => {
           console.log(result);
           this.isWelcome = !result.data.profile;

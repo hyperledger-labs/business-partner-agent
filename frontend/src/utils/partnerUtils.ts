@@ -7,13 +7,14 @@
  */
 
 import { CredentialTypes, PartnerStates } from "@/constants";
-import { PartnerAPI } from "@/services";
+import { PartnerAPI, PartnerCredential } from "@/services";
 
-export const getPartnerProfile = (partner: PartnerAPI) => {
+export const getPartnerProfile = (partner: PartnerAPI): any => {
   if (partner && Object.prototype.hasOwnProperty.call(partner, "credential")) {
-    const partnerProfile = partner.credential.find((cred) => {
-      return cred.type === CredentialTypes.PROFILE.type;
-    });
+    const partnerProfile: PartnerCredential & { documentData?: any } =
+      partner.credential.find((cred) => {
+        return cred.type === CredentialTypes.PROFILE.type;
+      });
     if (partnerProfile) {
       if (
         Object.prototype.hasOwnProperty.call(partnerProfile, "credentialData")
@@ -22,8 +23,6 @@ export const getPartnerProfile = (partner: PartnerAPI) => {
       } else if (
         Object.prototype.hasOwnProperty.call(partnerProfile, "documentData")
       ) {
-        // FIXME: This value should not exist on type Partner
-        // @ts-ignore
         return partnerProfile.documentData;
       }
     }
@@ -32,21 +31,18 @@ export const getPartnerProfile = (partner: PartnerAPI) => {
 
 export const getPartnerProfileRoute = (partner: PartnerAPI) => {
   if (partner && Object.prototype.hasOwnProperty.call(partner, "credential")) {
-    const partnerProfile = partner.credential.find((cred) => {
-      return cred.type === CredentialTypes.PROFILE.type;
-    });
+    const partnerProfile: PartnerCredential & { id?: any } =
+      partner.credential.find((cred) => {
+        return cred.type === CredentialTypes.PROFILE.type;
+      });
     if (partnerProfile) {
       if (
         Object.prototype.hasOwnProperty.call(partnerProfile, "credentialData")
       ) {
-        // FIXME: This value should not exist on type Partner
-        // @ts-ignore
         return { name: "Credential", params: { id: partnerProfile.id } };
       } else if (
         Object.prototype.hasOwnProperty.call(partnerProfile, "documentData")
       ) {
-        // FIXME: This value should not exist on type Partner
-        // @ts-ignore
         return { name: "Document", params: { id: partnerProfile.id } };
       }
     }

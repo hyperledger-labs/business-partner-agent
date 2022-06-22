@@ -30,9 +30,9 @@
 </template>
 
 <script lang="ts">
-import CredentialTypeTabs from "@/components/schema-add/CredentialTypeTabs.vue";
 import ImportCredentialIndy from "@/components/schema-add/ImportCredentialIndy.vue";
 import ImportCredentialJsonLd from "@/components/schema-add/ImportCredentialJsonLd.vue";
+import CredentialTypeTabs from "@/components/helper/CredentialTypeTabs.vue";
 
 export default {
   name: "SchemaAdd",

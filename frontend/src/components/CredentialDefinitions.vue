@@ -64,7 +64,7 @@
 import { EventBus } from "@/main";
 import issuerService from "@/services/issuer-service";
 import VBpaButton from "@/components/BpaButton";
-import { CreateCredDefRequest } from "@/services";
+import { CreateCredDefRequest, CredDef } from "@/services";
 
 export default {
   components: { VBpaButton },
@@ -74,7 +74,7 @@ export default {
     },
     credentialDefinitions: {
       type: Array,
-      default: function () {
+      default: function (): CredDef[] {
         return [];
       },
     },
@@ -88,12 +88,12 @@ export default {
       this.isEdit = false;
       this.editingItem = false;
     },
-    credentialDefinitions(value) {
+    credentialDefinitions(value: CredDef[]) {
       this.items = [...value];
       this.isEdit = false;
       this.editingItem = false;
     },
-    reset(newValue, oldValue) {
+    reset(newValue: boolean, oldValue: boolean) {
       // use this to reset the form, remove any outstanding items that are not saved.
       if (newValue !== oldValue) {
         this.items = [...this.credentialDefinitions];
@@ -107,9 +107,9 @@ export default {
   },
   data: () => {
     return {
-      items: [],
+      items: new Array<CredDef & { isEdit: boolean }>(),
       isEdit: false,
-      editingItem: undefined,
+      editingItem: undefined as boolean,
       isBusy: false,
     };
   },
@@ -128,7 +128,7 @@ export default {
         isEdit: true,
       });
     },
-    deleteItem(index) {
+    deleteItem(index: number) {
       let item = this.items[index];
       if (item.id) {
         issuerService
@@ -145,10 +145,10 @@ export default {
         this.items.splice(index, 1);
       }
     },
-    saveItem(item) {
+    saveItem(item: CredDef & { isEdit: boolean }) {
       this.createNewItem(item);
     },
-    createNewItem(item) {
+    createNewItem(item: CredDef & { isEdit: boolean }) {
       this.isBusy = true;
       const data: CreateCredDefRequest = {
         schemaId: this.schema.schemaId,
@@ -177,7 +177,7 @@ export default {
         });
     },
 
-    cancelSaveItem(index) {
+    cancelSaveItem(index: number) {
       this.isEdit = false;
       this.editingItem = false;
       this.items.splice(index, 1);

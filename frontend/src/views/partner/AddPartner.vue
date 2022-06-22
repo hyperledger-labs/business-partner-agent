@@ -207,6 +207,7 @@ import Profile from "@/components/Profile.vue";
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
+import { invitationsService, partnerService, TagAPI } from "@/services";
 
 export default {
   name: "AddPartner",
@@ -224,7 +225,7 @@ export default {
       aliasPlaceholder: "",
       partner: {},
       search: "",
-      selectedTags: [],
+      selectedTags: new Array<string>(),
       trustPing: true,
       invitationUrl: "",
       invitationUrlLoaded: false,
@@ -235,8 +236,8 @@ export default {
   },
   computed: {
     tags() {
-      return this.$store.state.tags
-        ? this.$store.state.tags.map((tag) => tag.name)
+      return this.$store.getters.getTags
+        ? this.$store.getters.getTags.map((tag: TagAPI) => tag.name)
         : [];
     },
   },
@@ -244,8 +245,8 @@ export default {
     lookup() {
       this.msg = "";
       this.partnerLoading = true;
-      this.$axios
-        .get(`${this.$apiBaseUrl}/partners/lookup/${this.did}`)
+      partnerService
+        .lookupPartner(this.did)
         .then((result) => {
           this.partnerLoading = false;
           console.log(result);
@@ -286,13 +287,13 @@ export default {
         partnerToAdd.alias = this.alias;
       }
 
-      partnerToAdd.tag = this.$store.state.tags.filter((tag) => {
+      partnerToAdd.tag = this.$store.getters.getTags.filter((tag: TagAPI) => {
         return this.selectedTags.includes(tag.name);
       });
 
       partnerToAdd.trustPing = this.trustPing;
-      this.$axios
-        .post(`${this.$apiBaseUrl}/partners`, partnerToAdd)
+      partnerService
+        .addPartner(partnerToAdd)
         .then((result) => {
           if (result.status === 201) {
             store.dispatch("loadPartners");
@@ -325,11 +326,11 @@ export default {
       if (this.invitationUrl) {
         this.invitationUrlLoading = true;
         let request = {
-          invitationUrl: encodeURIComponent(this.invitationUrl),
+          invitationUri: encodeURIComponent(this.invitationUrl),
         };
 
-        this.$axios
-          .post(`${this.$apiBaseUrl}/invitations/check`, request)
+        invitationsService
+          .checkInvitation(request)
           .then((result) => {
             this.invitationUrlLoading = false;
             this.receivedInvitation = Object.assign({}, result.data);
@@ -355,14 +356,14 @@ export default {
         } else if (this.aliasPlaceholder && this.aliasPlaceholder !== "") {
           request.alias = this.aliasPlaceholder;
         }
-        request.tag = this.$store.state.tags.filter((tag) => {
+        request.tag = this.$store.getters.getTags.filter((tag: TagAPI) => {
           return this.selectedTags.includes(tag.name);
         });
         request.trustPing = this.trustPing;
 
         // send if off and add a new partner
-        this.$axios
-          .post(`${this.$apiBaseUrl}/invitations/accept`, request)
+        invitationsService
+          .acceptInvitation(request)
           .then(() => {
             store.dispatch("loadPartners");
             this.receivedInvitation = {};

@@ -10,10 +10,12 @@ import { appAxios } from "@/services/interceptors";
 import { ApiRoutes } from "@/constants";
 import { AxiosResponse } from "axios";
 import {
+  AddPartnerRequest,
   AriesProofExchange,
   ChatMessage,
   PartnerAPI,
   SendMessageRequest,
+  SendProofRequest,
   UpdatePartnerRequest,
 } from "@/services/types-services";
 
@@ -22,8 +24,35 @@ export default {
   // Partner API
   //
 
-  listPartners(): Promise<AxiosResponse<PartnerAPI[]>> {
-    return appAxios().get(`${ApiRoutes.PARTNERS}`);
+  addPartner(partner: AddPartnerRequest): Promise<AxiosResponse<PartnerAPI>> {
+    return appAxios().post(`${ApiRoutes.PARTNERS}`, partner);
+  },
+
+  // Query used only for partners that can issue credentials of specified schema
+  getPartners(schemaId?: string): Promise<AxiosResponse<PartnerAPI[]>> {
+    let query = "";
+
+    if (schemaId && schemaId.length > 0) {
+      query = `?schemaId=${schemaId}`;
+    }
+
+    return appAxios().get(`${ApiRoutes.PARTNERS}${query}`);
+  },
+
+  getPartnerById(id: string): Promise<AxiosResponse<PartnerAPI>> {
+    return appAxios().get(`${ApiRoutes.PARTNERS}/${id}`);
+  },
+
+  removePartner(id: string): Promise<AxiosResponse<void>> {
+    return appAxios().delete(`${ApiRoutes.PARTNERS}/${id}`);
+  },
+
+  acceptPartnerRequest(id: string): Promise<AxiosResponse<void>> {
+    return appAxios().put(`${ApiRoutes.PARTNERS}/${id}/accept`);
+  },
+
+  refreshPartner(id: string): Promise<AxiosResponse<PartnerAPI>> {
+    return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/refresh`);
   },
 
   updatePartner(
@@ -31,6 +60,15 @@ export default {
     data: UpdatePartnerRequest
   ): Promise<AxiosResponse<PartnerAPI>> {
     return appAxios().put(`${ApiRoutes.PARTNERS}/${id}`, data);
+  },
+
+  sendProof(
+    id: string,
+    content: SendProofRequest
+  ): Promise<AxiosResponse<void>> {
+    return appAxios().post(`${ApiRoutes.PARTNERS}/${id}/proof-send`, {
+      content: content,
+    });
   },
 
   sendMessage(
@@ -50,5 +88,9 @@ export default {
     id: string
   ): Promise<AxiosResponse<AriesProofExchange[]>> {
     return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/proof-exchanges`);
+  },
+
+  lookupPartner(did: string): Promise<AxiosResponse<PartnerAPI>> {
+    return appAxios().get(`${ApiRoutes.PARTNERS}/lookup/${did}`);
   },
 };

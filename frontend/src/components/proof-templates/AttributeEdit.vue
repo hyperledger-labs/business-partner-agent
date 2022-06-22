@@ -70,6 +70,7 @@
 </template>
 <script lang="ts">
 import proofTemplateService from "@/services/proof-template-service";
+import { AttributeGroup, AttributeGroupUi } from "@/services";
 
 export default {
   name: "AttributeEdit",
@@ -129,7 +130,10 @@ export default {
     },
   },
   methods: {
-    setPredicateConditionsErrorCount(event: boolean, attributeGroup) {
+    setPredicateConditionsErrorCount(
+      event: boolean,
+      attributeGroup: AttributeGroup & AttributeGroupUi
+    ) {
       if (event === true) {
         attributeGroup.ui.predicateConditionsErrorCount += 1;
       } else if (

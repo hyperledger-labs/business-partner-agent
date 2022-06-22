@@ -588,6 +588,7 @@
       "title": "Issue Credential",
       "partnerLabel": "Partner",
       "credDefLabel": "Credential Definition",
+      "jsonLdSchemaLabel": "JSON-LD Schema",
       "successMessage": "Credential issued",
       "attributesTitle": "Credential Details",
       "options": {

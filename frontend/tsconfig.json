@@ -12,9 +12,9 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "baseUrl": ".",
-    "types": ["webpack-env", "jest"],
+    "types": ["webpack-env", "jest", "vuetify"],
     "paths": {
       "@/*": ["src/*"],
       "@@/*": ["test-config/*"]

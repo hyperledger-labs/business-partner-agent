@@ -41,6 +41,7 @@ import { EventBus } from "@/main";
 import Document from "@/views/Document.vue";
 import { CredentialTypes, ExchangeVersion } from "@/constants";
 import credentialService from "@/services/credential-service";
+import { SchemaAPI } from "@/services";
 
 export default {
   name: "RequestCredentialCreateDocument",
@@ -50,11 +51,14 @@ export default {
   },
   data: () => {
     return {
-      selectedSchema: undefined,
+      selectedSchema: undefined as SchemaAPI,
     };
   },
   methods: {
-    async submitRequest(documentIdAndExchangeVersion) {
+    async submitRequest(documentIdAndExchangeVersion: {
+      documentId: string;
+      useV2Exchange: boolean;
+    }) {
       this.isBusy = true;
       let data = {
         documentId: documentIdAndExchangeVersion.documentId,
@@ -64,7 +68,7 @@ export default {
       };
 
       credentialService
-        .sendCredentialRequest(this.id, data)
+        .requestCredential(this.id, data)
         .then(() => {
           EventBus.$emit(
             "success",
@@ -81,7 +85,7 @@ export default {
   },
   computed: {
     newDocumentTypes() {
-      let documentTypes = this.$store.getters.getSchemas;
+      let documentTypes: SchemaAPI[] = this.$store.getters.getSchemas;
       if (this.$store.getters.getOrganizationalProfile) {
         documentTypes = documentTypes.filter(
           (schema) => schema.type !== CredentialTypes.PROFILE.type

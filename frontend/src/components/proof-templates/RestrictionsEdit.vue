@@ -159,6 +159,13 @@
 </template>
 <script lang="ts">
 import VBpaButton from "@/components/BpaButton";
+import {
+  AttributeGroup,
+  AttributeGroupUi,
+  SchemaAPI,
+  SchemaRestrictions,
+  TrustedIssuer,
+} from "@/services";
 
 export default {
   name: "RestrictionsEdit",
@@ -179,7 +186,7 @@ export default {
       get() {
         return this.value;
       },
-      set(value) {
+      set(value: AttributeGroup & AttributeGroupUi) {
         this.$emit("input", value);
       },
     },
@@ -203,12 +210,12 @@ export default {
         },
       ];
     },
-    schemaTrustedIssuers() {
+    schemaTrustedIssuers(): TrustedIssuer[] {
       const schemas = this.$store.getters.getSchemas.filter(
-        (schema) => schema.type === "INDY"
+        (schema: SchemaAPI) => schema.type === "INDY"
       );
 
-      let trustedIssuerArrays = [];
+      let trustedIssuerArrays = new Array<TrustedIssuer>();
 
       for (const schema of schemas) {
         if (schema.trustedIssuer !== undefined) {
@@ -222,9 +229,9 @@ export default {
     },
   },
   methods: {
-    getIssuerLabel(restriction) {
+    getIssuerLabel(restriction: SchemaRestrictions) {
       const filteredIssuers = this.schemaTrustedIssuers.find(
-        (s) => s.issuerDid === restriction.issuerDid
+        (s: TrustedIssuer) => s.issuerDid === restriction.issuerDid
       );
 
       return filteredIssuers !== undefined &&
@@ -236,7 +243,7 @@ export default {
       this.addTrustedIssuerDialog.visible = false;
       this.addTrustedIssuerDialog.did = "";
     },
-    addTrustedIssuerRestrictionObject(attributeGroup) {
+    addTrustedIssuerRestrictionObject(attributeGroup: AttributeGroup) {
       attributeGroup.schemaLevelRestrictions.push({
         schemaId: "",
         schemaName: "",

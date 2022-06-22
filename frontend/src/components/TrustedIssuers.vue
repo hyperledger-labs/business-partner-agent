@@ -76,6 +76,7 @@
 <script lang="ts">
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
+import { adminService, TrustedIssuer } from "@/services";
 export default {
   components: { VBpaButton },
   props: {
@@ -85,7 +86,7 @@ export default {
     trustedIssuers: {
       type: Array,
       default: function () {
-        return [];
+        return new Array<TrustedIssuer>();
       },
     },
     reset: {
@@ -98,12 +99,12 @@ export default {
       this.isEdit = false;
       this.editingItem = false;
     },
-    trustedIssuers(value) {
+    trustedIssuers(value: (TrustedIssuer & { isEdit: boolean })[]) {
       this.items = [...value];
       this.isEdit = false;
       this.editingTrustedIssuer = undefined;
     },
-    reset(newValue, oldValue) {
+    reset(newValue: boolean, oldValue: boolean) {
       // use this to reset the form, remove any outstanding items that are not saved.
       if (newValue !== oldValue) {
         this.items = [...this.trustedIssuers];
@@ -117,16 +118,16 @@ export default {
   },
   data: () => {
     return {
-      items: [],
+      items: new Array<TrustedIssuer & { isEdit: boolean }>(),
       isEdit: false,
       isDirty: false,
-      editingTrustedIssuer: undefined,
+      editingTrustedIssuer: {} as TrustedIssuer & { isEdit: boolean },
       isBusy: false,
     };
   },
   computed: {},
   methods: {
-    isNew(entry) {
+    isNew(entry: TrustedIssuer & { isEdit: boolean }) {
       return !Object.prototype.hasOwnProperty.call(entry, "id");
     },
     onDidChanged() {
@@ -143,12 +144,12 @@ export default {
         isEdit: true,
       });
     },
-    editTrustedIssuer(index) {
+    editTrustedIssuer(index: number) {
       this.editingTrustedIssuer = Object.assign({}, this.items[index]);
       this.isEdit = true;
       this.items[index].isEdit = true;
     },
-    cancelEditTrustedIssuer(index) {
+    cancelEditTrustedIssuer(index: number) {
       this.isEdit = false;
       if (!this.editingTrustedIssuer) {
         this.items.splice(index, 1);
@@ -158,15 +159,12 @@ export default {
       }
       this.editingTrustedIssuer = undefined;
     },
-    deleteTrustedIssuer(index) {
+    deleteTrustedIssuer(index: number) {
       let trustedIssuer = this.items[index];
       if (trustedIssuer.id) {
-        this.$axios
-          .delete(
-            `${this.$apiBaseUrl}/admin/schema/${this.schema.id}/trustedIssuer/${trustedIssuer.id}`
-          )
-          .then((result) => {
-            console.log(result);
+        adminService
+          .deleteTrustedIssuer(this.schema.id, trustedIssuer.id)
+          .then(() => {
             this.items.splice(index, 1);
             this.$emit("changed");
           })
@@ -178,7 +176,7 @@ export default {
       }
     },
 
-    saveTrustedIssuer(trustedIssuer) {
+    saveTrustedIssuer(trustedIssuer: TrustedIssuer & { isEdit: boolean }) {
       // update existing trusted issuer
       if (this.isDirty) {
         if (trustedIssuer.id) {
@@ -194,15 +192,12 @@ export default {
         trustedIssuer.isEdit = false;
       }
     },
-    createNewTrustedIssuer(trustedIssuer) {
+    createNewTrustedIssuer(trustedIssuer: TrustedIssuer & { isEdit: boolean }) {
       this.isBusy = true;
       let data = Object.assign({}, trustedIssuer);
       delete data.isEdit;
-      this.$axios
-        .post(
-          `${this.$apiBaseUrl}/admin/schema/${this.schema.id}/trustedIssuer`,
-          data
-        )
+      adminService
+        .addTrustedIssuer(this.schema.id, data)
         .then((result) => {
           console.log(result);
           this.isBusy = false;
@@ -223,16 +218,13 @@ export default {
           EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
-    updateTrustedIssuer(trustedIssuer) {
+    updateTrustedIssuer(trustedIssuer: TrustedIssuer & { isEdit: boolean }) {
       this.isBusy = true;
       let data = Object.assign({}, trustedIssuer);
       delete data.isEdit;
 
-      this.$axios
-        .put(
-          `${this.$apiBaseUrl}/admin/schema/${this.schema.id}/trustedIssuer/${trustedIssuer.id}`,
-          data
-        )
+      adminService
+        .updateTrustedIssuer(this.schema.id, trustedIssuer.id, data)
         .then((result) => {
           console.log(result);
           this.isBusy = false;

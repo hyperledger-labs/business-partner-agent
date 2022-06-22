@@ -12,7 +12,7 @@ Vue.use(VueI18n);
 
 function loadLocaleMessages() {
   const locales = require.context("../locales", true, /[\s\w,-]+\.json$/i);
-  const messages = {};
+  const messages: any = {};
   for (const key of locales.keys()) {
     const matched = key.match(/([\w-]+)\./i);
     if (matched && matched.length > 1) {

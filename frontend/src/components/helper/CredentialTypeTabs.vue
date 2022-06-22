@@ -27,7 +27,7 @@ export default {
   name: "credential-type-tabs",
   data: () => {
     return {
-      tab: undefined,
+      tab: undefined as string,
     };
   },
   computed: {

@@ -74,6 +74,7 @@
 import { EventBus } from "@/main";
 import TrustedIssuer from "../components/TrustedIssuers.vue";
 import VBpaButton from "@/components/BpaButton";
+import { AddSchemaRequest, adminService } from "@/services";
 export default {
   name: "AddSchema",
   components: {
@@ -85,14 +86,14 @@ export default {
       schema: {
         label: "",
         schemaId: "",
-      },
+      } as AddSchemaRequest,
       isBusyAddSchema: false,
     };
   },
   computed: {
     rules() {
       return {
-        required: (value) => !!value || this.$t("app.rules.required"),
+        required: (value: string) => !!value || this.$t("app.rules.required"),
       };
     },
     fieldsEmpty() {
@@ -114,8 +115,8 @@ export default {
       }
       console.log(this.schema);
 
-      this.$axios
-        .post(`${this.$apiBaseUrl}/admin/schema`, this.schema)
+      adminService
+        .addSchema(this.schema)
         .then((result) => {
           console.log(result);
           this.isBusyAddSchema = false;
