@@ -61,7 +61,7 @@ import { getPartnerState } from "@/utils/partnerUtils";
 import PartnerStateIndicator from "@/components/PartnerStateIndicator.vue";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
 import { CredentialTypes, PartnerStates } from "@/constants";
-import { PartnerAPI, PartnerCredential, partnerService } from "@/services";
+import { PartnerAPI, partnerService } from "@/services";
 
 export default {
   name: "PartnerList",

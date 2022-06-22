@@ -264,6 +264,7 @@ export default {
         internalSchemaId = attributeGroup.schemaId;
       } else if (
         attributeGroup.schemaLevelRestrictions &&
+        attributeGroup.schemaLevelRestrictions.length > 0 &&
         attributeGroup.schemaLevelRestrictions[0].schemaId
       ) {
         schemaId = attributeGroup.schemaLevelRestrictions[0].schemaId;
