@@ -164,11 +164,9 @@ export default {
       if (trustedIssuer.id) {
         adminService
           .deleteTrustedIssuer(this.schema.id, trustedIssuer.id)
-          .then((result) => {
-            if (result.status === 200) {
-              this.items.splice(index, 1);
-              this.$emit("changed");
-            }
+          .then(() => {
+            this.items.splice(index, 1);
+            this.$emit("changed");
           })
           .catch((error) => {
             EventBus.$emit("error", this.$axiosErrorMessage(error));

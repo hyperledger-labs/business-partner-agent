@@ -294,11 +294,9 @@ export default {
     isActiveFn: {
       type: Function,
       default: (item: CredEx) =>
-        item.state ===
-          CredentialExchangeStates.CREDENTIAL_ISSUED.toLowerCase() ||
-        item.state ===
-          CredentialExchangeStates.CREDENTIAL_ACKED.toLowerCase() ||
-        item.state === CredentialExchangeStates.DONE.toLowerCase(),
+        item.state === (CredentialExchangeStates.CREDENTIAL_ISSUED as string) ||
+        item.state === (CredentialExchangeStates.CREDENTIAL_ACKED as string) ||
+        item.state === (CredentialExchangeStates.DONE as string),
     },
     headerRole: {
       type: Boolean,
@@ -520,8 +518,8 @@ export default {
     },
     stateIsProblemOrDeclined(item: CredEx) {
       return (
-        item.state === CredentialExchangeStates.DECLINED.toLowerCase() ||
-        item.state === CredentialExchangeStates.PROBLEM.toLowerCase()
+        item.state === (CredentialExchangeStates.DECLINED as string) ||
+        item.state === (CredentialExchangeStates.PROBLEM as string)
       );
     },
     resetCredentialEdit() {

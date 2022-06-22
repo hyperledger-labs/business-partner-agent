@@ -193,8 +193,8 @@ export default {
               ? result.data.content.filter((item: AriesCredential) => {
                   return (
                     item.state ===
-                      CredentialExchangeStates.CREDENTIAL_ACKED.toLowerCase() ||
-                    item.state === CredentialExchangeStates.DONE.toLowerCase()
+                      (CredentialExchangeStates.CREDENTIAL_ACKED as string) ||
+                    item.state === (CredentialExchangeStates.DONE as string)
                   );
                 })
               : result.data.content;
