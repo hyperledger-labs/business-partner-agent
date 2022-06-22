@@ -17,22 +17,25 @@
  */
 package org.hyperledger.bpa.impl.aries.proof;
 
+import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.hyperledger.acy_py.generated.model.DIFField;
 import org.hyperledger.acy_py.generated.model.DIFHolder;
 import org.hyperledger.acy_py.generated.model.DIFOptions;
-import org.hyperledger.acy_py.generated.model.Filter;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.present_proof_v2.DIFField;
 import org.hyperledger.aries.api.present_proof_v2.V20PresProposalByFormat;
 import org.hyperledger.aries.api.present_proof_v2.V20PresProposalRequest;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
+import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
+import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
+import org.hyperledger.bpa.persistence.model.prooftemplate.BPACondition;
 
 import java.io.IOException;
 import java.util.*;
@@ -48,6 +51,35 @@ public class ProverLDManager {
 
     @Inject
     BPAMessageSource.DefaultMessageSource ms;
+
+    public static V2DIFProofRequest prepareRequest(@NonNull BPAProofTemplate proofTemplate) {
+        return V2DIFProofRequest.builder()
+                .options(DIFOptions.builder()
+                        .challenge(UUID.randomUUID().toString())
+                        .domain(UUID.randomUUID().toString())
+                        .build())
+                .presentationDefinition(V2DIFProofRequest.PresentationDefinition.builder()
+                        .id(UUID.randomUUID())
+                        .name(proofTemplate.getName())
+                        .inputDescriptors(proofTemplate.streamAttributeGroups()
+                                .map(ProverLDManager::groupToDescriptor)
+                                .collect(Collectors.toList()))
+                        .build())
+                .build();
+    }
+
+    public static V2DIFProofRequest.PresentationDefinition.InputDescriptors groupToDescriptor(BPAAttributeGroup group) {
+        return V2DIFProofRequest.PresentationDefinition.InputDescriptors
+                .builder()
+                //.id(name)
+                //.name(name)
+                //.schema() // collect to uri group
+                //.constraints(V2DIFProofRequest.PresentationDefinition.Constraints.builder()
+                //        .isHolder(buildDifHolder(fields.keySet()))
+                //        .fields(List.copyOf(fields.values()))
+                //        .build())
+                .build();
+    }
 
     public V20PresProposalRequest prepareProposal(@NonNull String connectionId,
             @NonNull BPACredentialExchange credEx) {
@@ -72,7 +104,7 @@ public class ProverLDManager {
                 .autoPresent(Boolean.FALSE) // is ignored with aca-py 0.7.4
                 .presentationProposal(V20PresProposalByFormat.builder()
                         .dif(V20PresProposalByFormat.DIFProofProposal.builder()
-                                .inputDescriptors(List.of(id1))
+                                .inputDescriptor(id1)
                                 .options(DIFOptions.builder()
                                         .challenge(UUID.randomUUID().toString())
                                         .domain(UUID.randomUUID().toString())
@@ -112,12 +144,39 @@ public class ProverLDManager {
                     DIFField f = DIFField.builder()
                             .id(key.toString())
                             .path(List.of(DEFAULT_PATH + e.getKey()))
-                            .filter(Filter.builder()
+                            .filter(DIFField.Filter.builder()
                                     ._const(e.getValue())
                                     .build())
                             .build();
                     return new ImmutablePair<>(key, f);
                 })
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+    }
+
+    private static Map<UUID, DIFField> foo(@NonNull Map<String, BPACondition> nameToCondition) {
+        return nameToCondition.entrySet().stream()
+                .map(e -> {
+                    UUID key = UUID.randomUUID();
+                    DIFField f = DIFField.builder()
+                            .id(key.toString())
+                            .path(List.of(DEFAULT_PATH + e.getKey()))
+                            .filter(buildFilter(e.getValue()))
+                            .build();
+                    return new ImmutablePair<>(key, f);
+                })
+                .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+    }
+
+    private static DIFField.Filter buildFilter(@Nullable BPACondition condition) {
+        if (condition == null) {
+            return null;
+        }
+        DIFField.Filter.FilterBuilder b = DIFField.Filter.builder();
+        switch (condition.getOperator()) {
+            case EQUALS -> b._const(condition.getValue());
+            case LESS_THAN -> b.exclusiveMaximum(Integer.parseInt(condition.getValue()));
+
+        }
+        return null;
     }
 }

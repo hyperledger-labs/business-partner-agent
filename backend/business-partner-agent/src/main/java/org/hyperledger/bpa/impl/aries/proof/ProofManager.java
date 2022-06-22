@@ -136,6 +136,19 @@ public class ProofManager {
     }
 
     public void sendPresentProofRequestJsonLD(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate) {
+        Partner p = partnerRepo.findById(partnerId).orElseThrow(EntityNotFoundException::new);
+        try {
+            ac.presentProofV2SendRequest(V20PresSendRequestRequest
+                            .builder()
+                            .connectionId(p.getConnectionId())
+                            .presentationRequest(V20PresSendRequestRequest.V20PresRequestByFormat.builder()
+                                    .dif(ProverLDManager.prepareRequest(proofTemplate))
+                                    .build())
+                            .build())
+                    .ifPresent(persistProof(partnerId, proofTemplate, CredentialType.JSON_LD));
+        } catch (IOException e) {
+            throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
+        }
 
     }
 

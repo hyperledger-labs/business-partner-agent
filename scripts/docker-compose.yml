@@ -36,13 +36,15 @@ services:
       - ${BPA_PORT}:${BPA_PORT}
     restart: always
   bpa-agent1:
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4-rc3
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4-rc4
     ports:
       - ${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}
       - ${ACAPY_HTTP_PORT}:${ACAPY_HTTP_PORT}
     depends_on:
       - bpa-wallet-db1
     entrypoint: /bin/bash
+    #environment:
+      # - RUST_LOG=debug
     command: [
         "-c",
         "sleep 15;
@@ -119,7 +121,7 @@ services:
   bpa-agent2:
     profiles:
       - second_bpa
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4-rc2
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4-rc4
     ports:
       - ${ACAPY2_ADMIN_PORT}:${ACAPY2_ADMIN_PORT}
       - ${ACAPY2_HTTP_PORT}:${ACAPY2_HTTP_PORT}
