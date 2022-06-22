@@ -22,13 +22,13 @@ import io.micronaut.core.annotation.Introspected;
 import io.micronaut.core.util.CollectionUtils;
 import lombok.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.hyperledger.bpa.controller.api.prooftemplates.AttributeGroup;
 import org.hyperledger.bpa.impl.verification.prooftemplates.DistinctAttributeNames;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -95,8 +95,8 @@ public class BPAAttributeGroup {
         return attributes != null ? attributes.stream()
                 .map(attr -> new ImmutablePair<>(attr.getName(),
                         // Frontend does not support more than one
-                        CollectionUtils.isNotEmpty(attr.getConditions()) ? attr.getConditions().get(0) : null ))
-                .collect(Collectors.toMap(Pair::getKey, Pair::getValue))
+                        CollectionUtils.isNotEmpty(attr.getConditions()) ? attr.getConditions().get(0) : null))
+                .collect(HashMap::new, (m, v) -> m.put(v.getKey(), v.getValue()), HashMap::putAll)
                 : Map.of();
     }
 }

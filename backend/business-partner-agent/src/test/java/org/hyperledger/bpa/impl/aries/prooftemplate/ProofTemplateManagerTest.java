@@ -93,7 +93,8 @@ class ProofTemplateManagerTest {
                 ProofTemplateException.class,
                 () -> sut.invokeProofRequestByTemplate(UUID.randomUUID(), UUID.randomUUID()),
                 "Expected a ProofTemplateException if there is ProofTemplate with the given id.");
-        verify(proofManager, never()).sendPresentProofRequestIndy(any(UUID.class), any(BPAProofTemplate.class), ExchangeVersion.V1);
+        verify(proofManager, never()).sendPresentProofRequestIndy(any(UUID.class), any(BPAProofTemplate.class),
+                ExchangeVersion.V1);
     }
 
     @Test

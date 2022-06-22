@@ -111,7 +111,7 @@ public class ProofManager {
 
     // request proof from partner via proof template
     public void sendPresentProofRequestIndy(@NonNull UUID partnerId, @NonNull @Valid BPAProofTemplate proofTemplate,
-        @NonNull ExchangeVersion version) {
+            @NonNull ExchangeVersion version) {
         try {
             PresentProofRequest proofRequest = proofTemplateConversion.proofRequestViaVisitorFrom(partnerId,
                     proofTemplate);
@@ -142,12 +142,12 @@ public class ProofManager {
         Partner p = partnerRepo.findById(partnerId).orElseThrow(EntityNotFoundException::new);
         try {
             ac.presentProofV2SendRequest(V20PresSendRequestRequest
-                            .builder()
-                            .connectionId(p.getConnectionId())
-                            .presentationRequest(V20PresSendRequestRequest.V20PresRequestByFormat.builder()
-                                    .dif(ldRequest.prepareRequest(proofTemplate))
-                                    .build())
+                    .builder()
+                    .connectionId(p.getConnectionId())
+                    .presentationRequest(V20PresSendRequestRequest.V20PresRequestByFormat.builder()
+                            .dif(ldRequest.prepareRequest(proofTemplate))
                             .build())
+                    .build())
                     .ifPresent(persistProof(partnerId, proofTemplate, CredentialType.JSON_LD));
         } catch (IOException e) {
             throw new NetworkException(ms.getMessage("acapy.unavailable"), e);

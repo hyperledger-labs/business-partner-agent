@@ -48,11 +48,11 @@ public class BPACondition {
     public DIFField.Filter toDifFieldFilter() {
         DIFField.Filter.FilterBuilder b = DIFField.Filter.builder();
         switch (operator) {
-            case EQUALS -> b._const(value);
-            case LESS_THAN -> b.exclusiveMaximum(Integer.parseInt(value));
-            case GREATER_THAN -> b.exclusiveMinimum(Integer.parseInt(value));
-            case LESS_THAN_OR_EQUAL_TO -> b.maximum(Integer.valueOf(value));
-            case GREATER_THAN_OR_EQUAL_TO -> b.minimum(Integer.valueOf(value));
+        case EQUALS -> b._const(value);
+        case LESS_THAN -> b.exclusiveMaximum(Integer.parseInt(value));
+        case GREATER_THAN -> b.exclusiveMinimum(Integer.parseInt(value));
+        case LESS_THAN_OR_EQUAL_TO -> b.maximum(Integer.valueOf(value));
+        case GREATER_THAN_OR_EQUAL_TO -> b.minimum(Integer.valueOf(value));
         }
         return b.build();
     }

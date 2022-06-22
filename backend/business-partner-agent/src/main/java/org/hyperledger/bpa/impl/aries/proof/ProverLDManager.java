@@ -123,8 +123,7 @@ public class ProverLDManager {
     private V2DIFProofRequest.PresentationDefinition.InputDescriptors groupToDescriptor(BPAAttributeGroup group) {
         Map<UUID, DIFField> fields = buildDifFieldsFromCondition(group.nameToCondition());
         SchemaAPI schemaAPI = schemaService.getSchema(group.getSchemaId()).orElseThrow();
-        V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri uri = V2DIFProofRequest
-                .PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri
+        V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri uri = V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri
                 .builder().uri(schemaAPI.getSchemaId()).build();
         return V2DIFProofRequest.PresentationDefinition.InputDescriptors
                 .builder()
