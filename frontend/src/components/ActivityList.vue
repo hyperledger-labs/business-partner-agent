@@ -85,7 +85,7 @@ import { ActivityRoles, ActivityStates, ActivityTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
 import activitiesService from "@/services/activities-service";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
-import { ActivityItem, PartnerAPI } from "@/services";
+import { ActivityItem, ActivityType, PartnerAPI } from "@/services";
 
 export default {
   name: "ActivityList",
@@ -127,8 +127,8 @@ export default {
         this.filterValueList = [];
         for (let k in ActivityTypes) {
           this.filterValueList.push({
-            text: ActivityTypes[k].label,
-            value: ActivityTypes[k].value,
+            text: ActivityTypes[k as ActivityType].label,
+            value: ActivityTypes[k as ActivityType].value,
           });
         }
       }

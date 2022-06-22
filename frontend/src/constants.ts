@@ -6,6 +6,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import i18n from "@/plugins/i18n";
+import { ActivityType } from "@/services";
+import { TranslateResult } from "vue-i18n";
 
 export const CHAT_CURRENT_USERID = "__self__";
 
@@ -57,11 +59,6 @@ export enum CredentialExchangeStates {
   CREDENTIAL_ACKED = "credential_acked",
   CREDENTIAL_REVOKED = "credential_revoked",
   DONE = "done",
-}
-
-export enum PresentationExchangeRoles {
-  PROVER = "prover",
-  VERIFIER = "verifier",
 }
 
 export enum PresentationExchangeStates {
@@ -129,7 +126,13 @@ export const PartnerStates = Object.freeze({
   },
 });
 
-export const ActivityTypes: any = Object.freeze({
+type ActivityTypesValueLabel = { label: TranslateResult; value: ActivityType };
+
+export const ActivityTypes: Readonly<{
+  CREDENTIAL_EXCHANGE: ActivityTypesValueLabel;
+  CONNECTION_REQUEST: ActivityTypesValueLabel;
+  PRESENTATION_EXCHANGE: ActivityTypesValueLabel;
+}> = Object.freeze({
   CONNECTION_REQUEST: {
     value: "CONNECTION_REQUEST",
     label: i18n.t("constants.activityTypes.connectionRequest"),
