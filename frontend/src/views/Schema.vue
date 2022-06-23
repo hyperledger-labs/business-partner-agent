@@ -68,6 +68,8 @@ import { EventBus } from "@/main";
 import TrustedIssuers from "../components/TrustedIssuers.vue";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
+import { adminService, SchemaAPI, TrustedIssuer } from "@/services";
+import { AxiosResponse } from "axios";
 export default {
   name: "Schema",
   props: {
@@ -85,18 +87,18 @@ export default {
   },
   data: () => {
     return {
-      data: [],
+      data: [] as SchemaAPI[],
       isLoading: true,
-      trustedIssuers: [],
+      trustedIssuers: [] as TrustedIssuer[],
     };
   },
   computed: {},
   methods: {
     fetch() {
       this.isLoading = true;
-      this.$axios
-        .get(`${this.$apiBaseUrl}/admin/schema/${this.id}`)
-        .then((result) => {
+      adminService
+        .getSchema(this.id)
+        .then((result: AxiosResponse<SchemaAPI>) => {
           console.log(result);
           if (Object.prototype.hasOwnProperty.call(result, "data")) {
             this.data = result.data;
@@ -119,8 +121,8 @@ export default {
         });
     },
     deleteSchema() {
-      this.$axios
-        .delete(`${this.$apiBaseUrl}/admin/schema/${this.id}`)
+      adminService
+        .removeSchema(this.id)
         .then((result) => {
           console.log(result);
           if (result.status === 200) {

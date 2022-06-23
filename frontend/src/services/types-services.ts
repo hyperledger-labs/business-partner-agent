@@ -8,8 +8,11 @@
 import { components } from "backend-types";
 
 // Request types
-export type IssueCredentialRequest =
-  components["schemas"]["IssueCredentialRequest"];
+export type IssueCredentialRequestIndy =
+  components["schemas"]["IssueCredentialRequest.IssueIndyCredentialRequest"];
+
+export type IssueCredentialRequestJsonLd =
+  components["schemas"]["IssueCredentialRequest.IssueLDCredentialRequest"];
 
 export type IssueOobCredentialRequest =
   components["schemas"]["IssueOOBCredentialRequest"];
@@ -26,6 +29,8 @@ export type AddTagRequest = components["schemas"]["AddTagRequest"];
 
 export type SendMessageRequest = components["schemas"]["SendMessageRequest"];
 
+export type SendProofRequest = components["schemas"]["SendProofRequest"];
+
 export type AddSchemaRequest = components["schemas"]["AddSchemaRequest"];
 
 export type UpdateSchemaRequest = components["schemas"]["UpdateSchemaRequest"];
@@ -38,6 +43,9 @@ export type DeclineExchangeRequest =
 
 export type ApproveProofRequest = components["schemas"]["ApproveProofRequest"];
 
+export type ProofRequestedAttributes =
+  components["schemas"]["PresentProofRequest.ProofRequest.ProofRequestedAttributes"];
+
 export type PresentationRequestCredentials =
   components["schemas"]["PresentationRequestCredentialsIndy"];
 
@@ -45,14 +53,40 @@ export type PresentationRequestCredentialsDif =
   components["schemas"]["PresentationRequestCredentialsLD"];
 
 // Data and response types
-export type SchemaApi = components["schemas"]["SchemaAPI"];
+export type SchemaAPI = components["schemas"]["SchemaAPI"];
 
-export type TagApi = components["schemas"]["TagAPI"];
+export type TagAPI = components["schemas"]["TagAPI"];
 
 export type PartnerAPI = components["schemas"]["PartnerAPI"];
 
-export type ApiCreateInvitation =
+export type AddPartnerRequest = components["schemas"]["AddPartnerRequest"];
+
+export type PartnerCredential =
+  components["schemas"]["PartnerAPI.PartnerCredential"];
+
+export type APICreateInvitationResponse =
   components["schemas"]["APICreateInvitationResponse"];
+
+export type CreatePartnerInvitationRequest =
+  components["schemas"]["CreatePartnerInvitationRequest"];
+
+export type AcceptInvitationRequest =
+  components["schemas"]["AcceptInvitationRequest"];
+
+export type CheckInvitationRequest =
+  components["schemas"]["CheckInvitationRequest"];
+
+export type BPAStats = components["schemas"]["BPAStats"];
+
+export type TrustedIssuer = components["schemas"]["TrustedIssuer"];
+
+export type AddTrustedIssuerRequest =
+  components["schemas"]["AddTrustedIssuerRequest"];
+
+export type UpdateTrustedIssuerRequest =
+  components["schemas"]["UpdateTrustedIssuerRequest"];
+
+export type DIDDocument = components["schemas"]["DIDDocument"];
 
 export type CredDef = components["schemas"]["CredDef"];
 
@@ -60,18 +94,64 @@ export type CredEx = components["schemas"]["CredEx"];
 
 export type Tag = components["schemas"]["Tag"];
 
+export type ActivityType = components["schemas"]["ActivityType"];
+
+export type ActivityItem = components["schemas"]["ActivityItem"];
+
 export type ChatMessage = components["schemas"]["ChatMessage"];
 
 export type AriesProofExchange = components["schemas"]["AriesProofExchange"];
 
 export type ProofTemplate = components["schemas"]["ProofTemplate"];
 
+export type ConnectionState = components["schemas"]["ConnectionState"];
+
+export type AttributeGroupUi = {
+  ui: {
+    selectedAttributes: Attribute[];
+    selectedRestrictionsByTrustedIssuer: SchemaRestrictions[];
+    predicateConditionsErrorCount: number;
+  };
+};
+
 export type PresentationRequestVersion =
   components["schemas"]["PresentationRequestVersion"];
 
 export type MyDocumentAPI = components["schemas"]["MyDocumentAPI"];
 
+export type WalletDocumentRequest =
+  components["schemas"]["WalletDocumentRequest"];
+
+export type PaginationCommand = components["schemas"]["PaginationCommand"];
+
+export type CredentialType = components["schemas"]["CredentialType"];
+
 export type AriesCredential = components["schemas"]["AriesCredential"];
+
+export type AttributeGroup = components["schemas"]["AttributeGroup"];
+
+export type Attribute = components["schemas"]["Attribute"];
+
+export type SchemaRestrictions = components["schemas"]["SchemaRestrictions"];
+
+export type ValueCondition = components["schemas"]["ValueCondition"];
+
+export type TAARecord = components["schemas"]["TAAInfo.TAARecord"];
+
+export type TAADigestRequest = components["schemas"]["TAADigestRequest"];
+
+export type WalletCredentialRequest =
+  components["schemas"]["WalletCredentialRequest"];
+
+export type RequestCredentialRequest =
+  components["schemas"]["RequestCredentialRequest"];
+
+export type RuntimeConfig = components["schemas"]["RuntimeConfig"];
+
+export type CustomSchemaAttribute = {
+  defaultAttribute: boolean;
+  text: string;
+};
 
 // Page response from server
 export class Page<T> {

@@ -14,7 +14,7 @@ import moment from "moment";
  * @param {Date, String, Long} value A date object
  * @returns {String} A string representation of `value`
  */
-export function formatDate(value) {
+export function formatDate(value: string) {
   if (value) {
     return moment(value).format("YYYY-MM-DD");
   }
@@ -26,19 +26,19 @@ export function formatDate(value) {
  * @param {Date, String, Long} value A date object
  * @returns {String} A string representation of `value`
  */
-export function formatDateLong(value) {
+export function formatDateLong(value: string | number) {
   if (value) {
     return moment(value).format("YYYY-MM-DD HH:mm");
   }
 }
 
-export function credentialTag(credDefinitionId) {
+export function credentialTag(credDefinitionId: string) {
   if (!credDefinitionId) return "";
   const pos = credDefinitionId.lastIndexOf(":");
   return credDefinitionId.slice(Math.max(0, pos + 1));
 }
 
-export function capitalize(string) {
+export function capitalize(string: string) {
   return string && string !== ""
     ? string.replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()))
     : "";

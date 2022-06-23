@@ -55,6 +55,7 @@ import { ExchangeVersion, CredentialTypes } from "@/constants";
 import MyCredentialList from "@/components/MyCredentialList.vue";
 import VBpaButton from "@/components/BpaButton";
 import credentialService from "@/services/credential-service";
+import { MyDocumentAPI } from "@/services";
 
 export default {
   name: "RequestPresentation",
@@ -70,9 +71,7 @@ export default {
   data: () => {
     return {
       isBusy: false,
-      selectedDocument: [],
-      selectedSchema: [],
-      selectedIssuer: [],
+      selectedDocument: [] as MyDocumentAPI[],
       useV2Exchange: false,
     };
   },
@@ -85,7 +84,7 @@ export default {
       );
     },
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
     docHeaders() {
       return [
@@ -131,7 +130,7 @@ export default {
       };
 
       credentialService
-        .sendCredentialRequest(this.id, data)
+        .requestCredential(this.id, data)
         .then(() => {
           EventBus.$emit(
             "success",

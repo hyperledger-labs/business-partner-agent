@@ -118,7 +118,7 @@ export default {
     };
   },
   filters: {
-    truncate: function (value) {
+    truncate: function (value: string) {
       if (!value) return "";
       let t = String(value);
       if (t.length > 40) {
@@ -134,7 +134,7 @@ export default {
     credentials: function () {
       let creds = [];
       if (Object.prototype.hasOwnProperty.call(this.partner, "credential")) {
-        creds = this.partner.credential.filter((cred) => {
+        creds = this.partner.credential.filter((cred: any) => {
           if (cred.type !== CredentialTypes.PROFILE.type) {
             return this.prepareCredential(cred);
           }
@@ -144,7 +144,7 @@ export default {
     },
   },
   methods: {
-    prepareCredential(credential) {
+    prepareCredential(credential: any) {
       if (
         Object.prototype.hasOwnProperty.call(credential, "credentialData") &&
         typeof credential.credentialData === "object" &&
@@ -156,7 +156,7 @@ export default {
             delete credential.credentialData.id;
           } else if (typeof value === "object" && value !== null) {
             Object.keys(value).map(function (key2) {
-              credential.credentialData[key2] = value[key2];
+              credential.credentialData[key2] = value[key2 as keyof unknown];
             });
             delete credential.credentialData[key];
           }

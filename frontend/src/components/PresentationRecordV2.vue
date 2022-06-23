@@ -84,7 +84,7 @@
     </v-card>
 
     <!-- Timeline  -->
-    <Timeline v-bind:timeEntries="record.stateToTimestamp" />
+    <Timeline v-bind:timeEntries="record.stateToTimestampUiTimeline" />
 
     <!-- ExpertMode: Raw data -->
     <v-expansion-panels class="mt-4" v-if="expertMode" accordion flat>
@@ -110,15 +110,23 @@ import {
 } from "@/constants";
 import CredentialCard from "@/components/CredentialCard.vue";
 import Timeline from "@/components/Timeline.vue";
+import {
+  AriesProofExchange,
+  PresentationRequestCredentials,
+  ProofRequestedAttributes,
+  SchemaAPI,
+} from "@/services";
 
 export default {
   name: "PresentationRecord",
   props: {
-    record: Object,
+    record: {} as AriesProofExchange & {
+      stateToTimestampUiTimeline: [string, number][];
+    },
   },
   computed: {
     expertMode() {
-      return this.$store.state.expertMode;
+      return this.$store.getters.getExpertMode;
     },
     isStateVerified() {
       return this.record.state === PresentationExchangeStates.VERIFIED;
@@ -146,16 +154,16 @@ export default {
     },
   },
   methods: {
-    selectedCredential(group, credential) {
+    selectedCredential(group: any, credential: PresentationRequestCredentials) {
       group.cvalues = {};
-      this.names(group).map((name) => {
+      this.names(group).map((name: string) => {
         group.cvalues[name] = credential.credentialInfo.attrs[name];
       });
     },
-    names(item) {
+    names(item: ProofRequestedAttributes) {
       return item.names ? item.names : [item.name];
     },
-    toRestrictionLabel(restrType) {
+    toRestrictionLabel(restrType: string) {
       const index = Object.values(Restrictions).findIndex((restriction) => {
         return restriction.value === restrType;
       });
@@ -163,7 +171,7 @@ export default {
         ? Object.values(Restrictions)[index].label
         : restrType;
     },
-    toCredentialLabel(matchedCred) {
+    toCredentialLabel(matchedCred: PresentationRequestCredentials) {
       if (matchedCred.credentialInfo) {
         const credInfo = matchedCred.credentialInfo;
 
@@ -182,14 +190,14 @@ export default {
         );
       }
     },
-    renderSchemaLabel(attributeGroupName) {
+    renderSchemaLabel(attributeGroupName: string) {
       // If groupName contains schema id, try to render label else show group name
       const end = attributeGroupName.lastIndexOf(".");
 
       if (end !== -1) {
         const schemaId = attributeGroupName.slice(0, Math.max(0, end + 2));
         const schema = this.$store.getters.getSchemas.find(
-          (s) => s.schemaId === schemaId
+          (s: SchemaAPI) => s.schemaId === schemaId
         );
 
         return schema && schema.label
@@ -202,7 +210,6 @@ export default {
   },
   data: () => {
     return {
-      matchingCredentials: undefined,
       Predicates,
       Restrictions,
       RequestTypes,

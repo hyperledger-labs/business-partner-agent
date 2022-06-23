@@ -13,42 +13,81 @@ import {
   AddSchemaRequest,
   UpdateSchemaRequest,
   AddTagRequest,
-  SchemaApi,
-  TagApi,
+  AddTrustedIssuerRequest,
+  SchemaAPI,
+  TAADigestRequest,
+  TAARecord,
+  TagAPI,
+  TrustedIssuer,
+  UpdateTrustedIssuerRequest,
 } from "@/services/types-services";
 
 export default {
   //
   // Admin API
   //
-  listSchemas(): any /*Promise<AxiosResponse<SchemaApi[]>> TODO: actions.ts needs to be refactored*/ {
+  listSchemas(): Promise<AxiosResponse<SchemaAPI[]>> {
     return appAxios().get(`${ApiRoutes.ADMIN}/schema`);
   },
 
-  addSchema(data: AddSchemaRequest): Promise<AxiosResponse<SchemaApi>> {
+  addSchema(data: AddSchemaRequest): Promise<AxiosResponse<SchemaAPI>> {
     return appAxios().post(`${ApiRoutes.ADMIN}/schema`, data);
+  },
+
+  getSchema(id: string): Promise<AxiosResponse<SchemaAPI>> {
+    return appAxios().get(`${ApiRoutes.ADMIN}/schema/${id}`);
   },
 
   updateSchema(
     id: string,
     data: UpdateSchemaRequest
-  ): Promise<AxiosResponse<SchemaApi>> {
+  ): Promise<AxiosResponse<SchemaAPI>> {
     return appAxios().put(`${ApiRoutes.ADMIN}/schema/${id}`, data);
   },
 
-  deleteSchema(id: string): Promise<AxiosResponse<void>> {
+  removeSchema(id: string): Promise<AxiosResponse<void>> {
     return appAxios().delete(`${ApiRoutes.ADMIN}/schema/${id}`);
   },
 
-  listTags(): Promise<AxiosResponse<TagApi[]>> {
+  deleteTrustedIssuer(
+    id: string,
+    trustedIssuerId: string
+  ): Promise<AxiosResponse<void>> {
+    return appAxios().delete(
+      `${ApiRoutes.ADMIN}/schema/${id}/trustedIssuer/${trustedIssuerId}`
+    );
+  },
+
+  addTrustedIssuer(
+    id: string,
+    data: AddTrustedIssuerRequest
+  ): Promise<AxiosResponse<TrustedIssuer>> {
+    return appAxios().post(
+      `${ApiRoutes.ADMIN}/schema/${id}/trustedIssuer`,
+      data
+    );
+  },
+
+  updateTrustedIssuer(
+    id: string,
+    trustedIssuerId: string,
+    data: UpdateTrustedIssuerRequest
+  ): Promise<AxiosResponse<TrustedIssuer>> {
+    return appAxios().put(
+      `${ApiRoutes.ADMIN}/schema/${id}/trustedIssuer/${trustedIssuerId}`,
+      data
+    );
+  },
+
+  listTags(): Promise<AxiosResponse<TagAPI[]>> {
     return appAxios().get(`${ApiRoutes.ADMIN}/tag`);
   },
 
-  addTag(data: AddTagRequest): Promise<AxiosResponse<TagApi>> {
+  addTag(data: AddTagRequest): Promise<AxiosResponse<TagAPI>> {
     return appAxios().post(`${ApiRoutes.ADMIN}/tag`, data);
   },
 
-  deleteTag(id: string, hardDelete: boolean) {
+  deleteTag(id: string, hardDelete: boolean): Promise<AxiosResponse<void>> {
     let parameters;
     if (hardDelete) {
       parameters = new URLSearchParams([["force", "true"]]);
@@ -56,5 +95,14 @@ export default {
     return appAxios().delete(`${ApiRoutes.ADMIN}/tag/${id}`, {
       params: parameters,
     });
+  },
+  isEndpointsWriteRequired(): Promise<AxiosResponse<boolean>> {
+    return appAxios().get(`${ApiRoutes.ADMIN}/endpoints/registrationRequired`);
+  },
+  getTAARecord(): Promise<AxiosResponse<TAARecord>> {
+    return appAxios().get(`${ApiRoutes.ADMIN}/taa/get`);
+  },
+  registerEndpoints(data: TAADigestRequest): Promise<AxiosResponse<void>> {
+    return appAxios().post(`${ApiRoutes.ADMIN}/endpoints/register`, data);
   },
 };

@@ -6,13 +6,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import i18n from "@/plugins/i18n";
+import { ActivityType } from "@/services";
+import { TranslateResult } from "vue-i18n";
 
 export const CHAT_CURRENT_USERID = "__self__";
 
 export const CredentialTypes = Object.freeze({
   PROFILE: {
     type: "ORGANIZATIONAL_PROFILE_CREDENTIAL",
-    label: "Organizational Profile",
   },
   INDY: {
     type: "INDY",
@@ -22,7 +23,6 @@ export const CredentialTypes = Object.freeze({
   },
   UNKNOWN: {
     type: "UNKNOWN",
-    label: "Unknown",
   },
 });
 
@@ -35,6 +35,8 @@ export enum ApiRoutes {
   PROOF_TEMPLATES = "/proof-templates",
   ACTIVITIES = "/activities",
   WALLET = "/wallet",
+  STATUS = "/status",
+  INVITATIONS = "/invitations",
 }
 
 export enum CredentialExchangeRoles {
@@ -57,11 +59,6 @@ export enum CredentialExchangeStates {
   CREDENTIAL_ACKED = "credential_acked",
   CREDENTIAL_REVOKED = "credential_revoked",
   DONE = "done",
-}
-
-export enum PresentationExchangeRoles {
-  PROVER = "prover",
-  VERIFIER = "verifier",
 }
 
 export enum PresentationExchangeStates {
@@ -129,17 +126,23 @@ export const PartnerStates = Object.freeze({
   },
 });
 
-export const ActivityTypes = Object.freeze({
+type ActivityTypesValueLabel = { label: TranslateResult; value: ActivityType };
+
+export const ActivityTypes: Readonly<{
+  CREDENTIAL_EXCHANGE: ActivityTypesValueLabel;
+  CONNECTION_REQUEST: ActivityTypesValueLabel;
+  PRESENTATION_EXCHANGE: ActivityTypesValueLabel;
+}> = Object.freeze({
   CONNECTION_REQUEST: {
-    value: "connection_request",
+    value: "CONNECTION_REQUEST",
     label: i18n.t("constants.activityTypes.connectionRequest"),
   },
   CREDENTIAL_EXCHANGE: {
-    value: "credential_exchange",
+    value: "CREDENTIAL_EXCHANGE",
     label: i18n.t("constants.activityTypes.credentialExchange"),
   },
   PRESENTATION_EXCHANGE: {
-    value: "presentation_exchange",
+    value: "PRESENTATION_EXCHANGE",
     label: i18n.t("constants.activityTypes.presentationExchange"),
   },
 });

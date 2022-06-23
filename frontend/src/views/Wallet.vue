@@ -89,6 +89,7 @@ import { CredentialTypes } from "@/constants";
 import MyCredentialList from "@/components/MyCredentialList.vue";
 import { EventBus } from "@/main";
 import VBpaButton from "@/components/BpaButton";
+import { SchemaAPI } from "@/services";
 
 export default {
   name: "Wallet",
@@ -107,16 +108,12 @@ export default {
     };
   },
   methods: {
-    createDocument: function (documentType) {
-      documentType =
-        documentType && documentType.type
-          ? documentType
-          : CredentialTypes.UNKNOWN;
+    createDocument: function (document: SchemaAPI) {
       this.$router.push({
         name: "DocumentAdd",
         params: {
-          type: documentType.type,
-          schemaId: documentType.schemaId,
+          type: document.type,
+          schemaId: document.schemaId,
         },
       });
     },
@@ -179,7 +176,7 @@ export default {
       let documentTypes = this.$store.getters.getSchemas;
       if (this.$store.getters.getOrganizationalProfile) {
         documentTypes = documentTypes.filter(
-          (schema) => schema.type !== CredentialTypes.PROFILE.type
+          (schema: SchemaAPI) => schema.type !== CredentialTypes.PROFILE.type
         );
       }
       return documentTypes;

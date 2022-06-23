@@ -158,6 +158,7 @@ import { EventBus } from "@/main";
 import QrcodeVue from "qrcode.vue";
 import VBpaButton from "@/components/BpaButton";
 import store from "@/store";
+import { invitationsService, TagAPI } from "@/services";
 export default {
   name: "AddPartnerbyURL",
   components: {
@@ -173,7 +174,7 @@ export default {
       did: "",
       alias: "",
       partner: {},
-      selectedTags: [],
+      selectedTags: new Array<string>(),
       // Disable trust ping for invitation to
       // mobile wallets by default.
       trustPing: false,
@@ -184,8 +185,8 @@ export default {
   },
   computed: {
     tags() {
-      return this.$store.state.tags
-        ? this.$store.state.tags.map((tag) => tag.name)
+      return this.$store.getters.getTags
+        ? this.$store.getters.getTags.map((tag: TagAPI) => tag.name)
         : [];
     },
   },
@@ -193,15 +194,15 @@ export default {
     createInvitation() {
       let partnerToAdd = {
         alias: `${this.alias}`,
-        tag: this.$store.state.tags.filter((tag) => {
+        tag: this.$store.getters.getTags.filter((tag: TagAPI) => {
           return this.selectedTags.includes(tag.name);
         }),
         trustPing: this.trustPing,
         useOutOfBand: this.useOutOfBand,
         usePublicDid: this.useOutOfBand ? this.usePublicDid : undefined,
       };
-      this.$axios
-        .post(`${this.$apiBaseUrl}/invitations`, partnerToAdd)
+      invitationsService
+        .requestConnectionInvitation(partnerToAdd)
         .then((result) => {
           this.invitationURL = result.data.invitationUrl;
 
