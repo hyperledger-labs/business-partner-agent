@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: '16'
           check-latest: true
-      - run: npm --prefix frontend ci --no-optional --legacy-peer-deps
+      - run: npm --prefix frontend ci --legacy-peer-deps
 
       - name: Setup Java
         uses: actions/setup-java@v2
