@@ -417,8 +417,8 @@
                                 </goals>
                                 <configuration>
                                     <!-- See https://nodejs.org/en/download/ -->
-                                    <nodeVersion>v16.15.0</nodeVersion>
-                                    <npmVersion>8.5.5</npmVersion>
+                                    <nodeVersion>v16.15.1</nodeVersion>
+                                    <npmVersion>8.11.0</npmVersion>
                                 </configuration>
                             </execution>
                             <execution>
@@ -428,7 +428,7 @@
                                     <goal>npm</goal>
                                 </goals>
                                 <configuration>
-                                    <arguments>ci --no-optional</arguments>
+                                    <arguments>ci --no-optional --legacy-peer-deps</arguments>
                                 </configuration>
                             </execution>
                             <execution>
