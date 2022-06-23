@@ -1,10 +1,10 @@
 # Dockerfile that builds frontend and backend, mainly used by the docker-compose files
 
 # Vue Build Container
-FROM node:16-buster-slim as VUE
+FROM node:16-buster as VUE
 WORKDIR /frontend
 COPY frontend .
-RUN npm ci --no-optional --legacy-peer-deps && npm run build
+RUN npm ci --legacy-peer-deps && npm run build
 
 # Micronaut build
 FROM maven:3-eclipse-temurin-17 as MAVEN

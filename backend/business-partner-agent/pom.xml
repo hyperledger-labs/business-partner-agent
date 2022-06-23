@@ -428,7 +428,7 @@
                                     <goal>npm</goal>
                                 </goals>
                                 <configuration>
-                                    <arguments>ci --no-optional --legacy-peer-deps</arguments>
+                                    <arguments>ci --legacy-peer-deps</arguments>
                                 </configuration>
                             </execution>
                             <execution>
