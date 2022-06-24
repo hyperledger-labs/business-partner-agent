@@ -228,6 +228,14 @@
       />
       <v-toolbar-title>{{ getTitle }}</v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn icon v-bind="attrs" v-on="on" @click="copyDid()">
+            <v-icon>$vuetify.icons.identity</v-icon>
+          </v-btn>
+        </template>
+        <span id="testDID">{{ this.status.did }}</span>
+      </v-tooltip>
       <v-btn v-if="ux.header.logout.enabled" icon @click="logout()">
         <v-icon>$vuetify.icons.signout</v-icon>
       </v-btn>
@@ -334,6 +342,7 @@ import merge from "deepmerge";
 import i18n from "@/plugins/i18n";
 import { getBooleanFromString } from "@/utils/textUtils";
 import { AxiosError } from "axios";
+import { BPAStats, statusService } from "@/services";
 
 export default {
   components: {
@@ -347,7 +356,8 @@ export default {
     title: "",
     drawer: !getBooleanFromString(window.env.SIDEBAR_CLOSE_ON_STARTUP),
     logo: process.env.VUE_APP_LOGO_URL,
-
+    // navbar stuff
+    status: {} as BPAStats,
     // snackbar stuff
     snackbar: false,
     color: "",
@@ -443,8 +453,15 @@ export default {
     getTitle() {
       return this.title;
     },
+    // myDID: {
+    //   // getter
+    //   get: function () {
+    //     return this.status.did;
+    //   },
+    // },
   },
   created() {
+    this.getStatus();
     // Set the browser/tab title...
     document.title = this.$config.title;
     if (this.$config.ux) {
@@ -490,7 +507,6 @@ export default {
           .setAttribute("href", this.ux.favicon.href);
       }
     }
-
     this.$store.dispatch("validateTaa");
     this.$store.dispatch("loadDocuments");
 
@@ -545,6 +561,40 @@ export default {
       }
       // now, open or close it
       this.chatWindow = !this.chatWindow;
+    },
+    getStatus() {
+      console.log("Getting status...");
+      statusService
+        .getStatus()
+        .then((result) => {
+          console.log(result);
+          this.isWelcome = !result.data.profile;
+          this.status = result.data;
+          this.isLoading = false;
+        })
+        .catch((error) => {
+          this.isLoading = false;
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
+        });
+    },
+    copyDid() {
+      let didElement = document.querySelector("#testDID");
+      const element = document.createElement("textarea");
+      element.value = didElement.innerHTML.trim();
+      document.body.append(element);
+      element.select();
+
+      let successful;
+      try {
+        successful = document.execCommand("copy");
+      } catch {
+        successful = false;
+      }
+      successful
+        ? EventBus.$emit("success", this.$t("app.toolbar.eventSuccessCopy"))
+        : EventBus.$emit("error", this.$t("app.toolbar.eventErrorCopy"));
+      element.remove();
+      window.getSelection().removeAllRanges();
     },
   },
 };

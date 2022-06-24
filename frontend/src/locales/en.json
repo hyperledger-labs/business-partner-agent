@@ -11,6 +11,10 @@
     "chat": {
       "usernameDefault": "Me"
     },
+    "toolbar": {
+      "eventSuccessCopy": "DID copied",
+      "eventErrorCopy": "Can't copy DID"
+    },
     "search": "Search",
     "rules": {
       "required": "Required",
