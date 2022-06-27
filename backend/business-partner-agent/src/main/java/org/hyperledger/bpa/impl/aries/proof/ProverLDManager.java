@@ -33,6 +33,7 @@ import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.impl.aries.jsonld.SchemaContextResolver;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
@@ -53,6 +54,9 @@ public class ProverLDManager {
 
     @Inject
     SchemaService schemaService;
+
+    @Inject
+    SchemaContextResolver ctx;
 
     @Inject
     BPAMessageSource.DefaultMessageSource ms;
@@ -123,13 +127,17 @@ public class ProverLDManager {
     private V2DIFProofRequest.PresentationDefinition.InputDescriptors groupToDescriptor(BPAAttributeGroup group) {
         Map<UUID, DIFField> fields = buildDifFieldsFromCondition(group.nameToCondition());
         SchemaAPI schemaAPI = schemaService.getSchema(group.getSchemaId()).orElseThrow();
-        V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri uri = V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri
-                .builder().uri(schemaAPI.getSchemaId()).build();
+        String expandedType = schemaAPI.getExpandedType() == null
+                ? ctx.resolve(schemaAPI.getSchemaId(), schemaAPI.getLdType())
+                : schemaAPI.getExpandedType();
         return V2DIFProofRequest.PresentationDefinition.InputDescriptors
                 .builder()
                 .id(schemaAPI.getLabel())
                 .name(schemaAPI.getLabel())
-                .schema(List.of(uri))
+                .schema(List
+                        .of(V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri.builder()
+                                .uri(expandedType)
+                                .build()))
                 .constraints(V2DIFProofRequest.PresentationDefinition.Constraints.builder()
                         .isHolder(buildDifHolder(fields.keySet()))
                         .fields(List.copyOf(fields.values()))

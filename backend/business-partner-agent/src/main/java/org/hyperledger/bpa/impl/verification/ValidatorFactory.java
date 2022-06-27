@@ -24,16 +24,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.util.Pair;
-import org.hyperledger.bpa.impl.verification.prooftemplates.DistinctAttributeNames;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondition;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidBPASchemaId;
+import org.hyperledger.bpa.impl.verification.prooftemplates.*;
+import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttribute;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPACondition;
+import org.hyperledger.bpa.persistence.repository.BPASchemaRepository;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Factory
 public class ValidatorFactory {
@@ -67,6 +67,16 @@ public class ValidatorFactory {
                 .map(UUID::fromString)
                 .flatMap(schemaService::getSchema)
                 .isPresent();
+    }
+
+    @Singleton
+    ConstraintValidator<SameSchemaType, BPAProofTemplate> sameSchemaType(BPASchemaRepository schemaRepository) {
+        return (value, annotationMetadata, context) -> {
+            List<UUID> ids = value.streamAttributeGroups()
+                    .map(BPAAttributeGroup::getSchemaId)
+                    .collect(Collectors.toList());
+            return schemaRepository.countSchemaTypes(ids) == 1;
+        };
     }
 
     // TODO find a way to validate single list entries in isolation. This shows the

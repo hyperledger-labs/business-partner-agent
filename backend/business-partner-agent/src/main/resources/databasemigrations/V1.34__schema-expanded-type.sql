@@ -1,0 +1,1 @@
+ALTER TABLE bpa_schema ADD COLUMN expanded_type character varying(255);

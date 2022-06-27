@@ -76,6 +76,9 @@ public class BPASchema implements ExchangeTypeTranslator {
     @Nullable
     private String ldType;
 
+    @Nullable
+    private String expandedType;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "schema", cascade = { CascadeType.PERSIST, CascadeType.REFRESH })
     private List<BPARestrictions> restrictions;
 

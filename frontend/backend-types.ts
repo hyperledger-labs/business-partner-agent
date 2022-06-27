@@ -1071,6 +1071,7 @@ export interface components {
       /** Format: date-time */
       createdAt: string | null;
       name: string;
+      type: string;
       attributeGroups: components["schemas"]["AttributeGroup"][];
     };
     /** @enum {string} */

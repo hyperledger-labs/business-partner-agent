@@ -60,6 +60,8 @@ public class SchemaAPI {
 
     private String ldType;
 
+    private String expandedType;
+
     // indy only
 
     private String version;
@@ -102,6 +104,7 @@ public class SchemaAPI {
                 .id(s.getId())
                 .type(s.getType())
                 .ldType(s.getLdType())
+                .expandedType(s.getExpandedType())
                 .label(s.getLabel())
                 .schemaId(s.getSchemaId())
                 .schemaAttributeNames(s.getSchemaAttributeNames() != null ? s.getSchemaAttributeNames() : Set.of())

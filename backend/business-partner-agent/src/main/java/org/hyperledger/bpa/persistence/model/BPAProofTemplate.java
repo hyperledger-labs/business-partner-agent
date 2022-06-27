@@ -29,6 +29,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
+import org.hyperledger.bpa.impl.verification.prooftemplates.SameSchemaType;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroups;
 
@@ -45,6 +46,7 @@ import java.util.stream.Stream;
 @Builder
 @Introspected
 @Entity
+@SameSchemaType
 @Table(name = "bpa_proof_template")
 public class BPAProofTemplate {
     @Id
@@ -79,6 +81,7 @@ public class BPAProofTemplate {
                 id,
                 createdAt,
                 name,
+                type,
                 attributeGroups.toRepresentation());
     }
 

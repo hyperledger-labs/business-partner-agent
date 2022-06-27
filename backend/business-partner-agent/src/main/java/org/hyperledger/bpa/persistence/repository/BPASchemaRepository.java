@@ -20,6 +20,7 @@ package org.hyperledger.bpa.persistence.repository;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.annotation.Id;
 import io.micronaut.data.annotation.Join;
+import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
@@ -50,4 +51,7 @@ public interface BPASchemaRepository extends CrudRepository<BPASchema, UUID> {
     Optional<BPASchema> findById(@NonNull UUID id);
 
     void updateDefaultAttributeName(@Id UUID id, String defaultAttributeName);
+
+    @Query("select count(distinct type) from bpa_schema where id in (:id)")
+    Long countSchemaTypes(List<UUID> id);
 }

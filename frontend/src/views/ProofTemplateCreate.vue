@@ -118,11 +118,12 @@
                 <v-list-item
                   v-for="(schema, idx) in schemas"
                   :key="idx"
-                  @click="addAttributeGroup(schema.id)"
+                  @click="addAttributeGroup(schema)"
                   :disabled="
                     proofTemplate.attributeGroups.some(
                       (existingAttributeGroup) =>
-                        existingAttributeGroup.schemaId === schema.id
+                        existingAttributeGroup.schemaId === schema.id ||
+                        proofTemplate.type !== schema.type
                     )
                   "
                 >
@@ -246,7 +247,8 @@ export default {
     },
     schemas(): SchemaAPI[] {
       return this.$store.getters.getSchemas.filter(
-        (schema: SchemaAPI) => schema.type === "INDY"
+        (schema: SchemaAPI) =>
+          schema.type === "INDY" || schema.type === "JSON_LD"
       );
     },
     overallValidationErrors() {
@@ -284,8 +286,11 @@ export default {
       );
       return `${schema.label}<em>&nbsp;(${schema.schemaId})</em>`;
     },
-    addAttributeGroup: function (schemaId: string) {
+    addAttributeGroup: function (schema: SchemaAPI) {
+      const schemaId = schema.id;
       const schemaLevelRestrictions: SchemaLevelRestriction[] = [];
+
+      this.proofTemplate.type = schema.type;
 
       const { schemaAttributeNames, trustedIssuer } = this.schemas.find(
         (s: SchemaAPI) => s.id === schemaId
