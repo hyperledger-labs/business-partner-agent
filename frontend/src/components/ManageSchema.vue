@@ -250,7 +250,7 @@ export default {
       this.$refs.schemaId.blur();
       window.getSelection().removeAllRanges();
     },
-    isDefaultAttribute(attribute): boolean {
+    isDefaultAttribute(attribute: string): boolean {
       return attribute === this.schema.defaultAttributeName;
     },
     editSchema() {
