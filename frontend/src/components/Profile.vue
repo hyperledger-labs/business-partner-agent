@@ -111,8 +111,7 @@ import {
 } from "@/utils/partnerUtils";
 import { mdiCalendarCheck, mdiCalendarRemove } from "@mdi/js";
 import VBpaButton from "@/components/BpaButton";
-import { EventBus } from "@/main";
-import { BPAStats, statusService } from "@/services";
+import { BPAStats } from "@/services";
 
 export default {
   components: {
@@ -130,7 +129,6 @@ export default {
   data: () => {
     return {
       // navbar stuff
-      status: {} as BPAStats,
       CredentialTypes: CredentialTypes,
       validFrom: mdiCalendarCheck,
       validUntil: mdiCalendarRemove,
@@ -171,17 +169,9 @@ export default {
   methods: {
     getStatus() {
       console.log("Getting status...");
-      statusService
-        .getStatus()
-        .then((result) => {
-          console.log(result);
-          this.isWelcome = !result.data.profile;
-          this.status = result.data;
-          this.myDid = this.status.did;
-        })
-        .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
-        });
+
+      const status: BPAStats = this.$store.getters.getStatus;
+      this.myDid = status.did;
     },
     async copyDid() {
       await navigator.clipboard.writeText(this.myDid);

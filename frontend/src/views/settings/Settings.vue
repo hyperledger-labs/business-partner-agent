@@ -124,7 +124,7 @@ import { EventBus } from "@/main";
 import TextFieldColorPicker from "@/components/helper/TextFieldColorPicker.vue";
 import i18n from "@/plugins/i18n";
 import { LocaleMetaType } from "@/views/settings/locale-meta-type";
-import { BPAStats, statusService } from "@/services";
+import { BPAStats } from "@/services";
 import { VuetifyThemeItem } from "vuetify/types/services/theme";
 
 export default {
@@ -247,18 +247,8 @@ export default {
     },
     getStatus() {
       console.log("Getting status...");
-      statusService
-        .getStatus()
-        .then((result) => {
-          console.log(result);
-          this.isWelcome = !result.data.profile;
-          this.status = result.data;
-          this.isLoading = false;
-        })
-        .catch((error) => {
-          this.isLoading = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
-        });
+      this.status = this.$store.getters.getStatus;
+      this.isLoading = false;
     },
     copyDid() {
       let didElement = document.querySelector("#did");

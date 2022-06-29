@@ -96,7 +96,7 @@ import { EventBus } from "@/main";
 import { CredentialTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
 import DashboardCard from "@/components/DashboardCard.vue";
-import { BPAStats, statusService } from "@/services";
+import { BPAStats } from "@/services";
 
 export default {
   name: "Dashboard",
@@ -124,18 +124,11 @@ export default {
   methods: {
     getStatus() {
       console.log("Getting status...");
-      statusService
-        .getStatus()
-        .then((result) => {
-          console.log(result);
-          this.isWelcome = !result.data.profile;
-          this.status = result.data;
-          this.isLoading = false;
-        })
-        .catch((error) => {
-          this.isLoading = false;
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
-        });
+
+      const status = this.$store.getters.getStatus;
+      this.isWelcome = !status.profile;
+      this.status = status;
+      this.isLoading = false;
     },
   },
 };

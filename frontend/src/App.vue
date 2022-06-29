@@ -343,7 +343,7 @@ import merge from "deepmerge";
 import i18n from "@/plugins/i18n";
 import { getBooleanFromString } from "@/utils/textUtils";
 import { AxiosError } from "axios";
-import { BPAStats, statusService } from "@/services";
+import { BPAStats } from "@/services";
 
 export default {
   components: {
@@ -559,18 +559,10 @@ export default {
       this.chatWindow = !this.chatWindow;
     },
     getStatus() {
-      console.log("Getting status...");
-      statusService
-        .getStatus()
-        .then((result) => {
-          console.log(result);
-          this.isWelcome = !result.data.profile;
-          this.status = result.data;
-          this.myDid = this.status.did;
-        })
-        .catch((error) => {
-          EventBus.$emit("error", this.$axiosErrorMessage(error));
-        });
+      const status = this.$store.getters.getStatus;
+
+      this.status = status;
+      this.myDid = this.status.did;
     },
     async copyDid() {
       await navigator.clipboard.writeText(this.myDid);
