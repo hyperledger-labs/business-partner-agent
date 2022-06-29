@@ -196,7 +196,7 @@
           <v-list-item
             v-if="ux.navigation.logout.enabled"
             bottom
-            @click="logout()"
+            @click="logout"
           >
             <v-list-item-action>
               <v-icon>$vuetify.icons.signout</v-icon>
@@ -230,11 +230,12 @@
       <v-spacer></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn icon v-bind="attrs" v-on="on" @click="copyDid()">
+          <v-btn icon v-bind="attrs" v-on="on" @click="copyDid">
             <v-icon>$vuetify.icons.identity</v-icon>
           </v-btn>
         </template>
-        <span id="testDID">{{ this.status.did }}</span>
+        <span>{{ myDid }}</span>
+        <!--        <span><input v-model="myDid" type="text"></span>-->
       </v-tooltip>
       <v-btn v-if="ux.header.logout.enabled" icon @click="logout()">
         <v-icon>$vuetify.icons.signout</v-icon>
@@ -358,6 +359,7 @@ export default {
     logo: process.env.VUE_APP_LOGO_URL,
     // navbar stuff
     status: {} as BPAStats,
+    myDid: "not initialized yet!",
     // snackbar stuff
     snackbar: false,
     color: "",
@@ -453,12 +455,6 @@ export default {
     getTitle() {
       return this.title;
     },
-    // myDID: {
-    //   // getter
-    //   get: function () {
-    //     return this.status.did;
-    //   },
-    // },
   },
   created() {
     this.getStatus();
@@ -570,31 +566,14 @@ export default {
           console.log(result);
           this.isWelcome = !result.data.profile;
           this.status = result.data;
-          this.isLoading = false;
+          this.myDid = this.status.did;
         })
         .catch((error) => {
-          this.isLoading = false;
           EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
-    copyDid() {
-      let didElement = document.querySelector("#testDID");
-      const element = document.createElement("textarea");
-      element.value = didElement.innerHTML.trim();
-      document.body.append(element);
-      element.select();
-
-      let successful;
-      try {
-        successful = document.execCommand("copy");
-      } catch {
-        successful = false;
-      }
-      successful
-        ? EventBus.$emit("success", this.$t("app.toolbar.eventSuccessCopy"))
-        : EventBus.$emit("error", this.$t("app.toolbar.eventErrorCopy"));
-      element.remove();
-      window.getSelection().removeAllRanges();
+    async copyDid() {
+      await navigator.clipboard.writeText(this.myDid);
     },
   },
 };

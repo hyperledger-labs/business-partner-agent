@@ -135,6 +135,7 @@ Vue.prototype.$config = {
   };
 
   await store.dispatch("loadSettings");
+  // await sore.dispatch("loadStatus"); // DID etc.
   await store.dispatch("loadSchemas");
   await store.dispatch("loadPartners");
   await store.dispatch("loadTags");
