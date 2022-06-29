@@ -33,6 +33,10 @@ micronaut:
         http-method: GET
         access:
           - isAnonymous()
+      - pattern: /views/bootstrap*
+        http-method: GET
+        access:
+          - isAnonymous()
       - pattern: /**
         access:
           - isAuthenticated()
@@ -56,6 +60,9 @@ micronaut:
       frontend:
         paths: classpath:public
         mapping: /**
+      login:
+        paths: classpath:views
+        mapping: /views/**
   caches:
     '*':
       maximum-size: 5000
