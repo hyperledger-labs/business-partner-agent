@@ -261,7 +261,6 @@ export default {
       this.isEditingColorIcons = false;
     },
     getStatus() {
-      console.log("Getting status...");
       this.status = this.$store.getters.getStatus;
       this.myDid = this.status.did;
       this.isLoading = false;

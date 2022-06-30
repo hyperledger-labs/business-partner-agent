@@ -134,13 +134,13 @@ Vue.prototype.$config = {
     return error.toString();
   };
 
-  store.dispatch("loadSettings");
   store.dispatch("loadSchemas");
   store.dispatch("loadPartners");
   store.dispatch("loadTags");
   store.dispatch("loadProofTemplates");
   store.dispatch("loadPartnerSelectList");
   store.dispatch("loadCredDefSelectList");
+  await store.dispatch("loadSettings");
   await store.dispatch("loadStatus");
 
   console.log("Create the Vue application");

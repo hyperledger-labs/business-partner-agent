@@ -169,7 +169,6 @@ export default {
   },
   data: () => {
     return {
-      isLoading: true,
       identifierTypes: ["LEI", "GLN", "D-U-N-S", "VAT", "USCC"],
       intDoc: Object,
     };

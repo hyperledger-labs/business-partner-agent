@@ -128,7 +128,6 @@ export default {
   },
   data: () => {
     return {
-      // navbar stuff
       CredentialTypes: CredentialTypes,
       validFrom: mdiCalendarCheck,
       validUntil: mdiCalendarRemove,
@@ -168,7 +167,6 @@ export default {
   },
   methods: {
     getStatus() {
-      console.log("Getting status...");
       const status: BPAStats = this.$store.getters.getStatus;
       this.myDid = status.did;
     },

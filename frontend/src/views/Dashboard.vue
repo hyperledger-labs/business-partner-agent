@@ -123,8 +123,6 @@ export default {
   },
   methods: {
     getStatus() {
-      console.log("Getting status...");
-
       const status = this.$store.getters.getStatus;
       this.isWelcome = !status.profile;
       this.status = status;

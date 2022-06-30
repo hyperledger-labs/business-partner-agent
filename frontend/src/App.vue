@@ -235,7 +235,6 @@
           </v-btn>
         </template>
         <span>{{ myDid }}</span>
-        <!--        <span><input v-model="myDid" type="text"></span>-->
       </v-tooltip>
       <v-btn v-if="ux.header.logout.enabled" icon @click="logout()">
         <v-icon>$vuetify.icons.signout</v-icon>
@@ -357,10 +356,10 @@ export default {
     title: "",
     drawer: !getBooleanFromString(window.env.SIDEBAR_CLOSE_ON_STARTUP),
     logo: process.env.VUE_APP_LOGO_URL,
-    // navbar stuff
+
     status: {} as BPAStats,
-    myDid: "not initialized yet!",
-    // snackbar stuff
+    myDid: "",
+
     snackbar: false,
     color: "",
     snackbarMsg: "",
