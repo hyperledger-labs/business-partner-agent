@@ -196,7 +196,7 @@
           <v-list-item
             v-if="ux.navigation.logout.enabled"
             bottom
-            @click="logout()"
+            @click="logout"
           >
             <v-list-item-action>
               <v-icon>$vuetify.icons.signout</v-icon>
@@ -228,6 +228,14 @@
       />
       <v-toolbar-title>{{ getTitle }}</v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn icon v-bind="attrs" v-on="on" @click="copyDid">
+            <v-icon>$vuetify.icons.identity</v-icon>
+          </v-btn>
+        </template>
+        <span>{{ myDid }}</span>
+      </v-tooltip>
       <v-btn v-if="ux.header.logout.enabled" icon @click="logout()">
         <v-icon>$vuetify.icons.signout</v-icon>
       </v-btn>
@@ -334,6 +342,7 @@ import merge from "deepmerge";
 import i18n from "@/plugins/i18n";
 import { getBooleanFromString } from "@/utils/textUtils";
 import { AxiosError } from "axios";
+import { BPAStats } from "@/services";
 
 export default {
   components: {
@@ -348,7 +357,9 @@ export default {
     drawer: !getBooleanFromString(window.env.SIDEBAR_CLOSE_ON_STARTUP),
     logo: process.env.VUE_APP_LOGO_URL,
 
-    // snackbar stuff
+    status: {} as BPAStats,
+    myDid: "",
+
     snackbar: false,
     color: "",
     snackbarMsg: "",
@@ -445,6 +456,7 @@ export default {
     },
   },
   created() {
+    this.getStatus();
     // Set the browser/tab title...
     document.title = this.$config.title;
     if (this.$config.ux) {
@@ -490,7 +502,6 @@ export default {
           .setAttribute("href", this.ux.favicon.href);
       }
     }
-
     this.$store.dispatch("validateTaa");
     this.$store.dispatch("loadDocuments");
 
@@ -545,6 +556,15 @@ export default {
       }
       // now, open or close it
       this.chatWindow = !this.chatWindow;
+    },
+    getStatus() {
+      const status = this.$store.getters.getStatus;
+
+      this.status = status;
+      this.myDid = this.status.did;
+    },
+    async copyDid() {
+      await navigator.clipboard.writeText(this.myDid);
     },
   },
 };

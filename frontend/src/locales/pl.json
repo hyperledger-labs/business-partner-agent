@@ -68,7 +68,9 @@
     "revoke": "Odwołać",
     "reissue": "Ponowne wydanie",
     "useV2": "Zastosowanie V2",
-    "writeToLedger": "Write endpoints to ledger"
+    "writeToLedger": "Write endpoints to ledger",
+    "copied": "Copied",
+    "clickToCopy": "Click to copy"
   },
   "credentialType": {
     "indy": "Indy",
