@@ -27,12 +27,24 @@
         <v-list-item-title class="grey--text text--darken-2 font-weight-medium">
           {{ $t("view.settings.walletDID") }}
         </v-list-item-title>
-        <v-list-item-subtitle align="end" id="did">
-          {{ this.status.did }}
+        <v-list-item-subtitle align="end">
+          {{ myDid }}
         </v-list-item-subtitle>
-        <v-btn icon x-small @click="copyDid">
-          <v-icon dark>$vuetify.icons.copy</v-icon>
-        </v-btn>
+        <v-tooltip top>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              icon
+              x-small
+              v-bind="attrs"
+              v-on="on"
+              @click="copyDid"
+              @mouseout="reset"
+            >
+              <v-icon dark>$vuetify.icons.copy</v-icon>
+            </v-btn>
+          </template>
+          <span>{{ copyText }}</span>
+        </v-tooltip>
       </v-list-item>
       <v-list-item>
         <v-list-item-content>
@@ -132,6 +144,7 @@ export default {
   created() {
     EventBus.$emit("title", this.$t("view.settings.title"));
     this.getStatus();
+    this.copyText = this.$t("button.clickToCopy");
   },
   data: () => {
     return {
@@ -142,6 +155,8 @@ export default {
       },
       isEditingColor: false,
       isEditingColorIcons: false,
+      myDid: "",
+      copyText: "",
     };
   },
   computed: {
@@ -248,26 +263,15 @@ export default {
     getStatus() {
       console.log("Getting status...");
       this.status = this.$store.getters.getStatus;
+      this.myDid = this.status.did;
       this.isLoading = false;
     },
-    copyDid() {
-      let didElement = document.querySelector("#did");
-      const element = document.createElement("textarea");
-      element.value = didElement.innerHTML.trim();
-      document.body.append(element);
-      element.select();
-
-      let successful;
-      try {
-        successful = document.execCommand("copy");
-      } catch {
-        successful = false;
-      }
-      successful
-        ? EventBus.$emit("success", this.$t("view.settings.eventSuccessCopy"))
-        : EventBus.$emit("error", this.$t("view.settings.eventErrorCopy"));
-      element.remove();
-      window.getSelection().removeAllRanges();
+    async copyDid() {
+      await navigator.clipboard.writeText(this.myDid);
+      this.copyText = this.$t("button.copied");
+    },
+    reset() {
+      this.copyText = this.$t("button.clickToCopy");
     },
   },
   components: {

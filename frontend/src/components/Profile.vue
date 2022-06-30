@@ -169,7 +169,6 @@ export default {
   methods: {
     getStatus() {
       console.log("Getting status...");
-
       const status: BPAStats = this.$store.getters.getStatus;
       this.myDid = status.did;
     },
@@ -180,12 +179,6 @@ export default {
     reset() {
       this.copyText = this.$t("button.clickToCopy");
     },
-    // onCopy: function (e) {
-    //   alert('You just copied: ' + e)
-    // },
-    // onError: function (e) {
-    //   alert('Failed to copy DID')
-    // },
     prepareCredential(credential: any) {
       if (
         Object.prototype.hasOwnProperty.call(credential, "credentialData") &&
