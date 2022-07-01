@@ -62,7 +62,7 @@
         <micronaut.openapi.version>4.3.0</micronaut.openapi.version>
         <micronaut.security.version>3.6.1</micronaut.security.version>
         <mockito.version>4.6.1</mockito.version>
-        <okhttp.version>4.9.3</okhttp.version>
+        <okhttp.version>4.10.0</okhttp.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
         <pmd.version>6.47.0</pmd.version>
         <spotbugs.version>4.7.1</spotbugs.version>

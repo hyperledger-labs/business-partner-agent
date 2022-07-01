@@ -14,6 +14,7 @@ import {
   RuntimeConfig,
   SchemaAPI,
   TagAPI,
+  BPAStats,
 } from "@/services";
 
 export interface IStateExpertMode {
@@ -79,4 +80,8 @@ export interface IStateTags {
 
 export interface IStateChat {
   messages: any[];
+}
+
+export interface IStateStatus {
+  status: BPAStats;
 }
