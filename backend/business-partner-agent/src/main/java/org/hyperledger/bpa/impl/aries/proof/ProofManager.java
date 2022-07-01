@@ -46,6 +46,7 @@ import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.partner.ApproveProofRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsIndy;
+import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsLD;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.aries.credential.CredentialInfoResolver;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateConversion;
@@ -248,11 +249,14 @@ public class ProofManager {
 
     // TODO aggregate the result into a model that adheres to some basic dif proof
     // exchange functionality
-    public List<VerifiableCredential.VerifiableCredentialMatch> getMatchingLDCredentials(
+    public List<PresentationRequestCredentialsIndy.CredentialInfo> getMatchingLDCredentials(
             @NonNull UUID partnerProofId) {
         PartnerProof partnerProof = pProofRepo.findById(partnerProofId).orElseThrow(EntityNotFoundException::new);
         try {
-            return ac.presentProofV2RecordsCredentialsDif(partnerProof.getPresentationExchangeId(), null).orElseThrow();
+            return ac.presentProofV2RecordsCredentialsDif(partnerProof.getPresentationExchangeId(), null)
+                    .orElseThrow()
+                    .stream()
+                    .map(match -> credentialInfoResolver.populateCredentialInfo(match)).collect(Collectors.toList());
         } catch (IOException e) {
             throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
         }

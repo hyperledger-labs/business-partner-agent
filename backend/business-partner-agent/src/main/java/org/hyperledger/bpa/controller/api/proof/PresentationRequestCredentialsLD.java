@@ -27,5 +27,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class PresentationRequestCredentialsLD {
-    private boolean match;
+    // this needs to be the input descriptor id, but this is not exposed by aca-py
+    private String schemaId;
+    private String referent;
+    private PresentationRequestCredentialsIndy.CredentialInfo credentialInfo;
 }

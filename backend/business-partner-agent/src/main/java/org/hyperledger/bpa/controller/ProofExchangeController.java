@@ -18,7 +18,6 @@
 package org.hyperledger.bpa.controller;
 
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
@@ -31,7 +30,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
@@ -40,12 +38,12 @@ import org.hyperledger.bpa.controller.api.partner.ApproveProofRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.controller.api.partner.SendProofRequest;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsIndy;
-import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsLD;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller("/api/proof-exchanges")
@@ -75,10 +73,12 @@ public class ProofExchangeController {
     }
 
     @Get("/{id}/matching-credentials-ld")
-    public HttpResponse<PresentationRequestCredentialsLD> getMatchingLDCredentials(@PathVariable UUID id) {
-        List<VerifiableCredential.VerifiableCredentialMatch> mc = proofM.getMatchingLDCredentials(id);
+    public HttpResponse<List<PresentationRequestCredentialsIndy>> getMatchingLDCredentials(
+            @PathVariable UUID id) {
+        List<PresentationRequestCredentialsIndy.CredentialInfo> mc = proofM.getMatchingLDCredentials(id);
         return HttpResponse
-                .ok(PresentationRequestCredentialsLD.builder().match(CollectionUtils.isNotEmpty(mc)).build());
+                .ok(mc.stream().map(i -> PresentationRequestCredentialsIndy.builder().credentialInfo(i).build())
+                        .collect(Collectors.toList()));
     }
 
     /**

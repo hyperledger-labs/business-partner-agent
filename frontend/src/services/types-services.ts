@@ -47,8 +47,8 @@ export type ProofRequestedAttributes =
 export type PresentationRequestCredentials =
   components["schemas"]["PresentationRequestCredentialsIndy"];
 
-export type PresentationRequestCredentialsDif =
-  components["schemas"]["PresentationRequestCredentialsLD"];
+export type CredentialInfo =
+  components["schemas"]["PresentationRequestCredentialsIndy.CredentialInfo"];
 
 // Data and response types
 export type SchemaAPI = components["schemas"]["SchemaAPI"];

@@ -143,6 +143,7 @@
 <script lang="ts">
 import {
   AriesProofExchange,
+  CredentialInfo,
   PresentationRequestCredentials,
   proofExService,
 } from "@/services";
@@ -463,7 +464,34 @@ export default {
         proofExService
           .getMatchingDifCredentials(this.record.id)
           .then((result) => {
-            this.record.canBeFulfilled = result.data.match;
+            const matches: PresentationRequestCredentials[] = result.data;
+
+            for (const match of matches) {
+              const attribute =
+                this.record.proofRequest.requestedAttributes[
+                  match.credentialInfo.schemaId
+                ];
+              if (attribute) {
+                if (
+                  !Object.hasOwnProperty.call(attribute, "matchingCredentials")
+                ) {
+                  attribute.matchingCredentials = [];
+                }
+                const hasMatchingCred = attribute.matchingCredentials.some(
+                  (item: PresentationRequestCredentials) => {
+                    return (
+                      item.credentialInfo.referent ===
+                      match.credentialInfo.referent
+                    );
+                  }
+                );
+                if (!hasMatchingCred) {
+                  attribute.matchingCredentials.push(match);
+                }
+              }
+            }
+
+            this.record.canBeFulfilled = result.data.length > 0;
             this.isWaitingForMatchingCreds = false;
           });
       }
