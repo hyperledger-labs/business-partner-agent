@@ -39,7 +39,7 @@ import org.hyperledger.aries.api.issue_credential_v2.V20CredExRecordByFormat;
 import org.hyperledger.aries.api.issue_credential_v2.V2ToV1IndyCredentialConverter;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
-import org.hyperledger.aries.api.revocation.RevocationNotificationEvent;
+import org.hyperledger.aries.api.revocation.RevocationNotificationBase;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.AriesCredential;
@@ -53,7 +53,6 @@ import org.hyperledger.bpa.impl.activity.LabelStrategy;
 import org.hyperledger.bpa.impl.aries.jsonld.HolderLDManager;
 import org.hyperledger.bpa.impl.aries.jsonld.VPManager;
 import org.hyperledger.bpa.impl.aries.wallet.Identity;
-import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.CryptoUtil;
 import org.hyperledger.bpa.impl.util.TimeUtil;
@@ -361,12 +360,10 @@ public class HolderManager extends CredentialManagerBase {
         });
     }
 
-    // TODO once aca-py 0.7.4 is released switch this to RevocationInfo to map both
     // v1 and v2 revocation notifications
-    public void handleRevocationNotification(RevocationNotificationEvent revocationNotification) {
-        AriesStringUtil.RevocationInfo revocationInfo = AriesStringUtil
-                .revocationEventToRevocationInfo(revocationNotification.getThreadId());
-        holderCredExRepo.findByRevRegIdAndCredRevId(revocationInfo.getRevRegId(), revocationInfo.getCredRevId())
+    public void handleRevocationNotification(RevocationNotificationBase.RevocationInfo revocationNotification) {
+        holderCredExRepo
+                .findByRevRegIdAndCredRevId(revocationNotification.getRevRegId(), revocationNotification.getCredRevId())
                 .ifPresent(credEx -> {
                     credEx.pushStates(CredentialExchangeState.CREDENTIAL_REVOKED, Instant.now());
                     holderCredExRepo.updateRevoked(credEx.getId(), true, credEx.getState(),

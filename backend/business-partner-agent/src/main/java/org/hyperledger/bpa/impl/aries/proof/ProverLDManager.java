@@ -22,11 +22,10 @@ import jakarta.inject.Singleton;
 import lombok.NonNull;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.hyperledger.acy_py.generated.model.DIFField;
 import org.hyperledger.acy_py.generated.model.DIFHolder;
 import org.hyperledger.acy_py.generated.model.DIFOptions;
-import org.hyperledger.acy_py.generated.model.Filter;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.present_proof_v2.DIFField;
 import org.hyperledger.aries.api.present_proof_v2.V20PresProposalByFormat;
 import org.hyperledger.aries.api.present_proof_v2.V20PresProposalRequest;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
@@ -112,7 +111,7 @@ public class ProverLDManager {
                     DIFField f = DIFField.builder()
                             .id(key.toString())
                             .path(List.of(DEFAULT_PATH + e.getKey()))
-                            .filter(Filter.builder()
+                            .filter(DIFField.Filter.builder()
                                     ._const(e.getValue())
                                     .build())
                             .build();
