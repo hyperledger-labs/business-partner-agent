@@ -18,3 +18,4 @@ export { default as proofTemplates } from "./proof-templates";
 export { default as credentialsAndDocuments } from "./credentials-documents";
 export { default as tags } from "./tags";
 export { default as expertMode } from "./expert-mode";
+export { default as status } from "./status";

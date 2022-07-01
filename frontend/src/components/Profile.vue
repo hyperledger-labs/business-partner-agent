@@ -9,9 +9,24 @@
 <template>
   <div>
     <v-card class="my-4" v-if="profile">
-      <v-card-title class="bg-light">{{
-        $t("component.profile.organizationalProfile.title")
-      }}</v-card-title>
+      <v-card-title class="bg-light"
+        >{{ $t("component.profile.organizationalProfile.title") }}
+        <v-tooltip top>
+          <template v-slot:activator="{ on, attrs }">
+            <v-card-subtitle
+              class="pa-0 ma-0 ml-auto"
+              v-bind="attrs"
+              v-on="on"
+              @click="copyDid"
+              @mouseout="reset"
+              style="cursor: pointer"
+            >
+              {{ myDid }}
+            </v-card-subtitle>
+          </template>
+          <span>{{ copyText }}</span>
+        </v-tooltip>
+      </v-card-title>
       <OrganizationalProfile
         v-model="profile"
         v-if="profile"
@@ -96,6 +111,7 @@ import {
 } from "@/utils/partnerUtils";
 import { mdiCalendarCheck, mdiCalendarRemove } from "@mdi/js";
 import VBpaButton from "@/components/BpaButton";
+import { BPAStats } from "@/services";
 
 export default {
   components: {
@@ -115,7 +131,13 @@ export default {
       CredentialTypes: CredentialTypes,
       validFrom: mdiCalendarCheck,
       validUntil: mdiCalendarRemove,
+      myDid: "",
+      copyText: "",
     };
+  },
+  created() {
+    this.getStatus();
+    this.copyText = this.$t("button.clickToCopy");
   },
   filters: {
     truncate: function (value: string) {
@@ -144,6 +166,17 @@ export default {
     },
   },
   methods: {
+    getStatus() {
+      const status: BPAStats = this.$store.getters.getStatus;
+      this.myDid = status.did;
+    },
+    async copyDid() {
+      await navigator.clipboard.writeText(this.myDid);
+      this.copyText = this.$t("button.copied");
+    },
+    reset() {
+      this.copyText = this.$t("button.clickToCopy");
+    },
     prepareCredential(credential: any) {
       if (
         Object.prototype.hasOwnProperty.call(credential, "credentialData") &&

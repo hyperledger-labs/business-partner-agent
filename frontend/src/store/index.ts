@@ -22,6 +22,7 @@ import {
   credentialsAndDocuments,
   expertMode,
   tags,
+  status,
 } from "@/store/modules";
 
 Vue.use(Vuex);
@@ -41,6 +42,7 @@ const store = new Vuex.Store({
     credentialsAndDocuments,
     tags,
     expertMode,
+    status,
   },
 });
 

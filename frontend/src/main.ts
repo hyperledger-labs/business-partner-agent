@@ -134,15 +134,17 @@ Vue.prototype.$config = {
     return error.toString();
   };
 
+  store.dispatch("loadSchemas");
+  store.dispatch("loadPartners");
+  store.dispatch("loadTags");
+  store.dispatch("loadProofTemplates");
+  store.dispatch("loadPartnerSelectList");
+  store.dispatch("loadCredDefSelectList");
   await store.dispatch("loadSettings");
-  await store.dispatch("loadSchemas");
-  await store.dispatch("loadPartners");
-  await store.dispatch("loadTags");
-  await store.dispatch("loadProofTemplates");
-  await store.dispatch("loadPartnerSelectList");
-  await store.dispatch("loadCredDefSelectList");
+  await store.dispatch("loadStatus");
 
   console.log("Create the Vue application");
+
   new Vue({
     vuetify,
     router,

@@ -68,7 +68,9 @@
     "revoke": "Widerrufen",
     "reissue": "Neu ausstellen",
     "useV2": "V2 verwenden",
-    "writeToLedger": "Endpunkte auf Register schreiben"
+    "writeToLedger": "Endpunkte auf Register schreiben",
+    "copied": "Kopiert",
+    "clickToCopy": "In Zwischenablage kopieren"
   },
   "credentialType": {
     "indy": "Indy",
