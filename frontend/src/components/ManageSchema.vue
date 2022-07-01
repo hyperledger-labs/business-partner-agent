@@ -57,7 +57,7 @@
         </v-tabs>
         <v-tabs-items v-model="tab">
           <v-tab-item transition="false" value="schema-attributes">
-            <v-card flat class="mt-2" v-if="!isEdit">
+            <v-card flat class="mt-2" v-show="!isEdit">
               <v-list-item
                 v-for="attribute in schema.schemaAttributeNames"
                 :key="attribute.id"
@@ -65,21 +65,18 @@
                 <p class="grey--text text--darken-2 font-weight-medium">
                   {{ attribute }}
                   <v-icon
+                    :key="checkBoxGroup"
                     x-small
-                    v-if="attribute === schema.defaultAttributeName"
+                    v-show="isDefaultAttribute(attribute)"
                     >$vuetify.icons.asterisk</v-icon
                   >
                 </p>
               </v-list-item>
             </v-card>
-            <v-form v-if="isEdit">
+            <v-form v-show="isEdit">
               <v-card flat class="mt-2">
                 <v-row>
-                  <v-col cols="8" class="py-0"
-                    ><p class="grey--text">
-                      {{ $t("component.createSchema.headersColumn.name") }}
-                    </p></v-col
-                  >
+                  <v-col cols="8" class="py-0"> </v-col>
                   <v-col cols="2" class="py-0"
                     ><p class="grey--text">
                       {{ $t("component.createSchema.headersColumn.isDefault") }}
@@ -88,13 +85,13 @@
                 </v-row>
                 <v-row
                   v-for="(attr, index) in schema.schemaAttributeNames"
-                  v-bind:key="attr.id"
+                  :key="attr.id"
                 >
                   <v-col cols="8" class="py-0">
                     <v-list-item>
                       <p class="grey--text text--darken-2 font-weight-medium">
                         {{ attr }}
-                        <v-icon x-small v-if="isDefaultAttribute(attr)"
+                        <v-icon x-small v-show="isDefaultAttribute(attr)"
                           >$vuetify.icons.asterisk</v-icon
                         >
                       </p>
@@ -137,12 +134,15 @@
       </v-container>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-bpa-button v-if="!isEdit" color="secondary" @click="editSchema()"
+          <v-bpa-button v-show="!isEdit" color="secondary" @click="editSchema()"
             >{{ $t("button.edit") }}
           </v-bpa-button>
-          <v-bpa-button v-else color="secondary" @click="updateSchema()">{{
-            $t("button.save")
-          }}</v-bpa-button>
+          <v-bpa-button
+            v-show="isEdit"
+            color="secondary"
+            @click="updateSchema()"
+            >{{ $t("button.save") }}</v-bpa-button
+          >
           <v-bpa-button color="primary" @click="closed">{{
             $t("button.close")
           }}</v-bpa-button>
@@ -154,6 +154,7 @@
 
 <script lang="ts">
 import { EventBus } from "@/main";
+import store from "@/store";
 import { adminService, UpdateSchemaRequest, SchemaAPI } from "@/services";
 import TrustedIssuers from "@/components/TrustedIssuers.vue";
 import CredentialDefinitions from "@/components/CredentialDefinitions.vue";
@@ -258,6 +259,7 @@ export default {
       this.isEdit = true;
     },
     getUpdatedSchema(): UpdateSchemaRequest {
+      console.log("### this.checkboxvalue:", this.checkBoxGroup);
       const newDefaultAttribute =
         this.schema.schemaAttributeNames[this.checkBoxGroup - 1];
       return {
@@ -266,15 +268,16 @@ export default {
     },
     async updateSchema() {
       const newDefaultAttribute: UpdateSchemaRequest = this.getUpdatedSchema();
+      this.schema.defaultAttributeName = newDefaultAttribute.defaultAttribute;
       adminService
         .updateSchema(this.schema.id, newDefaultAttribute)
         .then((result) => {
-          console.log("+++++++++ updateSchema result:", result);
           if (result.status === 200) {
             EventBus.$emit(
               "success",
               this.$t("component.manageSchema.eventSuccessUpdate")
             );
+            store.dispatch("loadSchemas");
             this.$emit("changed");
             this.$emit("updated");
           }
@@ -288,7 +291,6 @@ export default {
       adminService
         .removeSchema(this.schema.id)
         .then((result) => {
-          console.log(result);
           if (result.status === 200) {
             EventBus.$emit(
               "success",
