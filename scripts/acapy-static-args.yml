@@ -49,4 +49,4 @@ log-level: info
 
 # multi ledger support
 # currently, there is an issue with the tails file failing to upload if this is enabled
-# genesis-transactions-list: './genesis-transaction-list.yml'
+genesis-transactions-list: './genesis-transaction-list.yml'

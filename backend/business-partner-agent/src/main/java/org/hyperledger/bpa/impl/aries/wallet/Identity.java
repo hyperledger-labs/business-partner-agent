@@ -32,6 +32,7 @@ import org.hyperledger.acy_py.generated.model.DIDCreateOptions;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.resolver.DIDDocument;
 import org.hyperledger.aries.api.wallet.ListWalletDidFilter;
+import org.hyperledger.aries.api.wallet.WalletDIDCreate;
 import org.hyperledger.bpa.api.ApiConstants;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.client.CachingAriesClient;
@@ -120,7 +121,8 @@ public class Identity {
                 if (walletDids.isPresent() && !walletDids.get().isEmpty()) {
                     walletDid = Optional.of(walletDids.get().get(0));
                 } else {
-                    walletDid = acaPy.walletDidCreate(DIDCreate.builder().method(DIDCreate.MethodEnum.SOV).build());
+                    walletDid = acaPy
+                            .walletDidCreate(WalletDIDCreate.builder().method(DIDCreate.MethodEnum.SOV).build());
                 }
             }
             if (walletDid.isPresent()) {
@@ -159,7 +161,7 @@ public class Identity {
                     .method(DID.MethodEnum.KEY)
                     .build());
             if (didKey.isEmpty() || CollectionUtils.isEmpty(didKey.get())) {
-                DID did = acaPy.walletDidCreate(DIDCreate
+                DID did = acaPy.walletDidCreate(WalletDIDCreate
                         .builder()
                         .method(DIDCreate.MethodEnum.KEY)
                         .options(DIDCreateOptions.builder()

@@ -31,6 +31,7 @@ import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof_v2.V20PresExRecord;
 import org.hyperledger.aries.api.present_proof_v2.V20PresExRecordToV1Converter;
 import org.hyperledger.aries.api.revocation.RevocationNotificationEvent;
+import org.hyperledger.aries.api.revocation.RevocationNotificationEventV2;
 import org.hyperledger.aries.api.trustping.PingEvent;
 import org.hyperledger.aries.webhook.EventHandler;
 import org.hyperledger.bpa.impl.aries.chat.ChatMessageManager;
@@ -207,7 +208,12 @@ public class AriesEventHandler extends EventHandler {
 
     @Override
     public void handleRevocationNotification(RevocationNotificationEvent revocationNotification) {
-        credHolder.handleRevocationNotification(revocationNotification);
+        credHolder.handleRevocationNotification(revocationNotification.toRevocationInfo());
+    }
+
+    @Override
+    public void handleRevocationNotificationV2(RevocationNotificationEventV2 revocationNotificationV2) {
+        credHolder.handleRevocationNotification(revocationNotificationV2.toRevocationInfo());
     }
 
     @Override
