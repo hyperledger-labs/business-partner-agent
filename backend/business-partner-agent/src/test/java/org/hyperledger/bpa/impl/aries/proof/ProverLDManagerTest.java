@@ -24,6 +24,7 @@ import org.hyperledger.aries.api.present_proof_v2.V20PresSendRequestRequest;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.RunWithAries;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.impl.aries.jsonld.LDContextResolver;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
@@ -58,11 +59,14 @@ public class ProverLDManagerTest extends RunWithAries {
         Mockito.when(schema.getSchema(Mockito.any(UUID.class))).thenReturn(Optional.of(SchemaAPI.builder()
                 .schemaId("https://w3id.org/citizenship/v1")
                 .label("label")
+                .type(CredentialType.JSON_LD)
+                .ldType("PermanentResident")
                 .build()));
         Mockito.when(ctx.resolve(Mockito.anyString(), Mockito.anyString()))
                 .thenReturn("https://w3id.org/citizenship#PermanentResident");
         BPAProofTemplate t = BPAProofTemplate.builder()
                 .name("test")
+                .type(CredentialType.JSON_LD)
                 .attributeGroups(BPAAttributeGroups.builder()
                         .attributeGroup(BPAAttributeGroup.builder()
                                 .schemaId(UUID.randomUUID())
