@@ -22,6 +22,7 @@ import io.micronaut.context.annotation.Factory;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPASchema;
+import org.hyperledger.bpa.persistence.repository.BPASchemaRepository;
 import org.mockito.Mockito;
 
 import java.util.Optional;
@@ -32,7 +33,7 @@ import java.util.UUID;
 public class SchemaMockFactory {
 
     @Bean
-    public SchemaMock prepareSchemaWithAttributes(SchemaService schemaService) {
+    public SchemaMock prepareSchemaWithAttributes(SchemaService schemaService, BPASchemaRepository schemaRepo) {
         return (ledgerSchemaId, attributes) -> {
             UUID schemaId = UUID.randomUUID();
             if (attributes.length > 0) {
@@ -50,6 +51,7 @@ public class SchemaMockFactory {
                 Mockito.when(schemaService.getSchemaAttributeNames(ledgerSchemaId))
                         .thenReturn(Set.of());
             }
+            Mockito.when(schemaService.distinctSchemaType(Mockito.anyList())).thenReturn(true);
             return schemaId;
         };
     }

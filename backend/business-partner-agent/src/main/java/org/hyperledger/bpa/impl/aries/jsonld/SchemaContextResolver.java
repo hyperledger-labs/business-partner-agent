@@ -19,6 +19,8 @@ package org.hyperledger.bpa.impl.aries.jsonld;
 
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.env.Environment;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.AllArgsConstructor;
@@ -30,11 +32,13 @@ import org.hyperledger.bpa.client.DidDocClient;
 import java.util.Optional;
 
 @Singleton
-public class SchemaContextResolver {
+@Requires(notEnv = Environment.TEST)
+public class SchemaContextResolver implements LDContextResolver {
 
     @Inject
     DidDocClient http;
 
+    @Override
     public String resolve(@NonNull String uri, @NonNull String type) {
         Optional<LDContext> ld = http.call(uri, LDContext.class);
         LDContext ldContext = ld.orElse(new LDContext());

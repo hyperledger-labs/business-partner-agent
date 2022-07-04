@@ -25,7 +25,6 @@ import org.hyperledger.bpa.api.CredentialType;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Null;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;

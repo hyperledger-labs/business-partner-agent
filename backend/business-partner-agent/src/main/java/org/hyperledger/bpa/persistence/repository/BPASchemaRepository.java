@@ -24,7 +24,6 @@ import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
-import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 
 import java.util.List;
@@ -41,8 +40,6 @@ public interface BPASchemaRepository extends CrudRepository<BPASchema, UUID> {
     @Join(value = "restrictions", type = Join.Type.LEFT_FETCH)
     @Join(value = "credentialDefinitions", type = Join.Type.LEFT_FETCH)
     Iterable<BPASchema> findAll();
-
-    List<BPASchema> findByType(CredentialType type);
 
     @Override
     @NonNull

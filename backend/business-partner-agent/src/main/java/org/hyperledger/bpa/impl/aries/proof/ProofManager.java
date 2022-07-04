@@ -46,7 +46,6 @@ import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.controller.api.partner.ApproveProofRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsIndy;
-import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsLD;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.aries.credential.CredentialInfoResolver;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateConversion;
@@ -99,13 +98,13 @@ public class ProofManager {
     ProofTemplateConversion proofTemplateConversion;
 
     @Inject
-    ProverLDManager ldRequest;
+    ProverLDManager ldProver;
+
+    @Inject
+    VerifierLDManager ldVerifier;
 
     @Inject
     CredentialInfoResolver credentialInfoResolver;
-
-    @Inject
-    ProverLDManager ldProof;
 
     @Inject
     BPAMessageSource.DefaultMessageSource ms;
@@ -146,7 +145,7 @@ public class ProofManager {
                     .builder()
                     .connectionId(p.getConnectionId())
                     .presentationRequest(V20PresSendRequestRequest.V20PresRequestByFormat.builder()
-                            .dif(ldRequest.prepareRequest(proofTemplate))
+                            .dif(ldVerifier.prepareRequest(proofTemplate))
                             .build())
                     .build())
                     .ifPresent(persistProof(partnerId, proofTemplate, CredentialType.JSON_LD));
@@ -189,6 +188,9 @@ public class ProofManager {
     public void sendProofProposal(@NonNull UUID partnerId, @NonNull UUID myCredentialId,
             @Nullable ExchangeVersion version) {
         partnerRepo.findById(partnerId).ifPresent(p -> holderCredExRepo.findById(myCredentialId).ifPresent(c -> {
+            if (StringUtils.isNotEmpty(p.getConnectionId())) {
+                throw new WrongApiUsageException(ms.getMessage("api.partner.no.connection"));
+            }
             ExchangeVersion v = VersionHelper.determineVersion(version, c);
             try {
                 if (c.typeIsIndy()) {
@@ -204,7 +206,7 @@ public class ProofManager {
                                 .ifPresent(persistProof(partnerId, null, CredentialType.INDY));
                     }
                 } else if (c.typeIsJsonLd()) {
-                    V20PresProposalRequest proofProposal = ldProof.prepareProposal(p.getConnectionId(), c);
+                    V20PresProposalRequest proofProposal = ldProver.prepareProposal(p.getConnectionId(), c);
                     ac.presentProofV2SendProposal(proofProposal)
                             .ifPresent(persistProof(partnerId, null, CredentialType.JSON_LD));
                 }

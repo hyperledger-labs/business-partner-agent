@@ -17,65 +17,32 @@
  */
 package org.hyperledger.bpa.impl.aries.proof;
 
-import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.hyperledger.acy_py.generated.model.DIFHolder;
 import org.hyperledger.acy_py.generated.model.DIFOptions;
 import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.present_proof_v2.DIFField;
 import org.hyperledger.aries.api.present_proof_v2.V20PresProposalByFormat;
 import org.hyperledger.aries.api.present_proof_v2.V20PresProposalRequest;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
-import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
-import org.hyperledger.bpa.impl.aries.jsonld.SchemaContextResolver;
-import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
-import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
-import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
-import org.hyperledger.bpa.persistence.model.prooftemplate.BPACondition;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Singleton
-public class ProverLDManager {
-
-    private static final String DEFAULT_PATH = "$.credentialSubject.";
+public class ProverLDManager extends BaseLDManager {
 
     @Inject
     AriesClient ac;
 
     @Inject
-    SchemaService schemaService;
-
-    @Inject
-    SchemaContextResolver ctx;
-
-    @Inject
     BPAMessageSource.DefaultMessageSource ms;
-
-    public V2DIFProofRequest prepareRequest(@NonNull BPAProofTemplate proofTemplate) {
-        return V2DIFProofRequest.builder()
-                .options(DIFOptions.builder()
-                        .challenge(UUID.randomUUID().toString())
-                        .domain(UUID.randomUUID().toString())
-                        .build())
-                .presentationDefinition(V2DIFProofRequest.PresentationDefinition.builder()
-                        .id(UUID.randomUUID())
-                        .name(proofTemplate.getName())
-                        .inputDescriptors(proofTemplate.streamAttributeGroups()
-                                .map(this::groupToDescriptor)
-                                .collect(Collectors.toList()))
-                        .build())
-                .build();
-    }
 
     public V20PresProposalRequest prepareProposal(@NonNull String connectionId,
             @NonNull BPACredentialExchange credEx) {
@@ -124,36 +91,6 @@ public class ProverLDManager {
         return result;
     }
 
-    private V2DIFProofRequest.PresentationDefinition.InputDescriptors groupToDescriptor(BPAAttributeGroup group) {
-        Map<UUID, DIFField> fields = buildDifFieldsFromCondition(group.nameToCondition());
-        SchemaAPI schemaAPI = schemaService.getSchema(group.getSchemaId()).orElseThrow();
-        String expandedType = schemaAPI.getExpandedType() == null
-                ? ctx.resolve(schemaAPI.getSchemaId(), schemaAPI.getLdType())
-                : schemaAPI.getExpandedType();
-        return V2DIFProofRequest.PresentationDefinition.InputDescriptors
-                .builder()
-                .id(schemaAPI.getLabel())
-                .name(schemaAPI.getLabel())
-                .schema(List
-                        .of(V2DIFProofRequest.PresentationDefinition.InputDescriptors.SchemaInputDescriptorUri.builder()
-                                .uri(expandedType)
-                                .build()))
-                .constraints(V2DIFProofRequest.PresentationDefinition.Constraints.builder()
-                        .isHolder(buildDifHolder(fields.keySet()))
-                        .fields(List.copyOf(fields.values()))
-                        .build())
-                .build();
-    }
-
-    private List<DIFHolder> buildDifHolder(@NonNull Set<UUID> fields) {
-        return fields
-                .stream().map(e -> DIFHolder.builder()
-                        .directive(DIFHolder.DirectiveEnum.PREFERRED)
-                        .fieldId(List.of(e.toString()))
-                        .build())
-                .collect(Collectors.toList());
-    }
-
     private Map<UUID, DIFField> buildDifFields(@NonNull Map<String, String> ldAttributes) {
         return ldAttributes.entrySet()
                 .stream()
@@ -161,22 +98,5 @@ public class ProverLDManager {
                         ._const(e.getValue())
                         .build()))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
-    }
-
-    private Map<UUID, DIFField> buildDifFieldsFromCondition(@NonNull Map<String, BPACondition> nameToCondition) {
-        return nameToCondition.entrySet()
-                .stream()
-                .map(e -> pair(e.getKey(), e.getValue() != null ? e.getValue().toDifFieldFilter() : null))
-                .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
-    }
-
-    private ImmutablePair<UUID, DIFField> pair(@NonNull String path, @Nullable DIFField.Filter filter) {
-        UUID key = UUID.randomUUID();
-        DIFField f = DIFField.builder()
-                .id(key.toString())
-                .path(List.of(DEFAULT_PATH + path))
-                .filter(filter)
-                .build();
-        return new ImmutablePair<>(key, f);
     }
 }

@@ -46,7 +46,3 @@ exch-use-unencrypted-tags: true
 plugin: 'aries_cloudagent.messaging.jsonld'
 outbound-transport: http
 log-level: info
-
-# multi ledger support
-# currently, there is an issue with the tails file failing to upload if this is enabled
-genesis-transactions-list: './genesis-transaction-list.yml'

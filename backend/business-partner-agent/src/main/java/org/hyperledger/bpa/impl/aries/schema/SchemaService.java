@@ -39,7 +39,7 @@ import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.config.SchemaConfig;
 import org.hyperledger.bpa.controller.api.admin.AddTrustedIssuerRequest;
-import org.hyperledger.bpa.impl.aries.jsonld.SchemaContextResolver;
+import org.hyperledger.bpa.impl.aries.jsonld.LDContextResolver;
 import org.hyperledger.bpa.impl.aries.wallet.Identity;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.persistence.model.BPASchema;
@@ -60,7 +60,7 @@ public class SchemaService {
     BPASchemaRepository schemaRepo;
 
     @Inject
-    SchemaContextResolver ctx;
+    LDContextResolver schemaContextResolver;
 
     @Inject
     AriesClient ac;
@@ -183,7 +183,7 @@ public class SchemaService {
                 .defaultAttributeName(defaultAttributeName)
                 .type(CredentialType.JSON_LD)
                 .ldType(ldType)
-                .expandedType(ctx.resolve(schemaId, ldType))
+                .expandedType(schemaContextResolver.resolve(schemaId, ldType))
                 .build();
         BPASchema saved = schemaRepo.save(dbS);
         return SchemaAPI.from(saved);
@@ -281,5 +281,9 @@ public class SchemaService {
                 && !StringUtils.containsAnyIgnoreCase(defaultAttributeName, attributes.toArray(String[]::new))) {
             throw new WrongApiUsageException(ms.getMessage("api.schema.default.attribute.mismatch"));
         }
+    }
+
+    public boolean distinctSchemaType(@NonNull List<UUID> ids) {
+        return schemaRepo.countSchemaTypes(ids) == 1;
     }
 }

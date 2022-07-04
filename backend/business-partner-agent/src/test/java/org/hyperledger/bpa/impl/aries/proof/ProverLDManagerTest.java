@@ -25,6 +25,7 @@ import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.RunWithAries;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
+import org.hyperledger.bpa.impl.aries.jsonld.LDContextResolver;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 import org.hyperledger.bpa.persistence.model.prooftemplate.*;
@@ -46,8 +47,11 @@ public class ProverLDManagerTest extends RunWithAries {
     @Mock
     SchemaService schema;
 
+    @Mock
+    LDContextResolver ctx;
+
     @InjectMocks
-    ProverLDManager ld;
+    VerifierLDManager ld;
 
     @Test
     void testSimpleTemplate() throws IOException {
@@ -55,6 +59,8 @@ public class ProverLDManagerTest extends RunWithAries {
                 .schemaId("https://w3id.org/citizenship/v1")
                 .label("label")
                 .build()));
+        Mockito.when(ctx.resolve(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn("https://w3id.org/citizenship#PermanentResident");
         BPAProofTemplate t = BPAProofTemplate.builder()
                 .name("test")
                 .attributeGroups(BPAAttributeGroups.builder()

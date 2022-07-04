@@ -21,7 +21,7 @@ import io.micronaut.test.annotation.MockBean;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.ExchangeVersion;
-import org.hyperledger.bpa.api.exception.ProofTemplateException;
+import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateManager;
@@ -77,7 +77,7 @@ class ProofTemplateManagerTest {
         // reset created at with value from db., because Java's value is more detailed
         // that the database's.
         repo.findById(template.getId()).map(BPAProofTemplate::getCreatedAt).ifPresent(template::setCreatedAt);
-        doNothing().when(proofManager).sendPresentProofRequestIndy(eq(partnerId), eq(template), ExchangeVersion.V1);
+        doNothing().when(proofManager).sendPresentProofRequestIndy(eq(partnerId), eq(template), eq(ExchangeVersion.V1));
 
         ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, msg);
         sut.invokeProofRequestByTemplate(template.getId(), partnerId);
@@ -90,11 +90,11 @@ class ProofTemplateManagerTest {
         ProofTemplateManager sut = new ProofTemplateManager(repo, proofManager, msg);
 
         Assertions.assertThrows(
-                ProofTemplateException.class,
+                EntityNotFoundException.class,
                 () -> sut.invokeProofRequestByTemplate(UUID.randomUUID(), UUID.randomUUID()),
                 "Expected a ProofTemplateException if there is ProofTemplate with the given id.");
         verify(proofManager, never()).sendPresentProofRequestIndy(any(UUID.class), any(BPAProofTemplate.class),
-                ExchangeVersion.V1);
+                any(ExchangeVersion.class));
     }
 
     @Test

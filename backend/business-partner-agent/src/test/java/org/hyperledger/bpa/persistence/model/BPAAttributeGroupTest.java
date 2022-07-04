@@ -58,7 +58,7 @@ class BPAAttributeGroupTest {
         BPAAttributeGroup sut = BPAAttributeGroup.builder().schemaId(schemaId).build();
         Set<ConstraintViolation<BPAAttributeGroup>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(1, constraintViolations.size());
-        Assertions.assertEquals(schemaId.toString(),
+        Assertions.assertEquals(schemaId,
                 constraintViolations.stream().findFirst().map(ConstraintViolation::getInvalidValue).orElse(null));
     }
 

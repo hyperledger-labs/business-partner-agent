@@ -25,6 +25,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.hyperledger.bpa.controller.api.prooftemplates.AttributeGroup;
 import org.hyperledger.bpa.impl.verification.prooftemplates.DistinctAttributeNames;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
+import org.hyperledger.bpa.impl.verification.prooftemplates.ValidBPASchemaId;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -46,6 +47,7 @@ import java.util.stream.Collectors;
 public class BPAAttributeGroup {
 
     @NotNull
+    @ValidBPASchemaId
     private UUID schemaId;
 
     @NotNull

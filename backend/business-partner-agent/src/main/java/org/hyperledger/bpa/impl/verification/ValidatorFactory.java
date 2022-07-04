@@ -29,7 +29,6 @@ import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttribute;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPACondition;
-import org.hyperledger.bpa.persistence.repository.BPASchemaRepository;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -60,22 +59,23 @@ public class ValidatorFactory {
     }
 
     @Singleton
-    ConstraintValidator<ValidBPASchemaId, CharSequence> schemaIdValidator(SchemaService schemaService) {
+    ConstraintValidator<ValidBPASchemaId, UUID> schemaIdValidator(SchemaService schemaService) {
         return (value, annotationMetadata, context) -> Optional.ofNullable(value)
-                .map(String::valueOf)
-                .filter(this::isUUID)
-                .map(UUID::fromString)
                 .flatMap(schemaService::getSchema)
                 .isPresent();
     }
 
     @Singleton
-    ConstraintValidator<SameSchemaType, BPAProofTemplate> sameSchemaType(BPASchemaRepository schemaRepository) {
+    ConstraintValidator<SameSchemaType, BPAProofTemplate> sameSchemaType(SchemaService schemaService) {
         return (value, annotationMetadata, context) -> {
+            if (value == null || value.getAttributeGroups() == null) {
+                return true;
+            }
             List<UUID> ids = value.streamAttributeGroups()
                     .map(BPAAttributeGroup::getSchemaId)
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toList());
-            return schemaRepository.countSchemaTypes(ids) == 1;
+            return ids.isEmpty() || schemaService.distinctSchemaType(ids);
         };
     }
 
