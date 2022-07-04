@@ -36,7 +36,7 @@ services:
       - ${BPA_PORT}:${BPA_PORT}
     restart: always
   bpa-agent1:
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4-rc4
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4
     ports:
       - ${ACAPY_ADMIN_PORT}:${ACAPY_ADMIN_PORT}
       - ${ACAPY_HTTP_PORT}:${ACAPY_HTTP_PORT}
@@ -119,7 +119,7 @@ services:
   bpa-agent2:
     profiles:
       - second_bpa
-    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4-rc4
+    image: bcgovimages/aries-cloudagent:py36-1.16-1_0.7.4
     ports:
       - ${ACAPY2_ADMIN_PORT}:${ACAPY2_ADMIN_PORT}
       - ${ACAPY2_HTTP_PORT}:${ACAPY2_HTTP_PORT}
