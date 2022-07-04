@@ -25,17 +25,30 @@
       <v-container>
         <v-list-item class="mt-4">
           <v-text-field
-            id="schemaId"
-            ref="schemaId"
             v-model="schema.schemaId"
-            v-on:focus="$event.target.select()"
             readonly
             outlined
             dense
             :label="$t('component.manageSchema.labelSchemaId')"
-            :append-icon="'$vuetify.icons.copy'"
-            @click:append="copySchemaId"
-          ></v-text-field>
+          >
+            <template v-slot:append>
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    class="mr-0"
+                    icon
+                    @click="copySchemaId"
+                    v-bind="attrs"
+                    v-on="on"
+                    @mouseout="reset"
+                  >
+                    <v-icon> $vuetify.icons.copy </v-icon>
+                  </v-btn>
+                </template>
+                <span>{{ copyText }}</span>
+              </v-tooltip>
+            </template>
+          </v-text-field>
         </v-list-item>
         <v-list-item class="mt-4">
           <v-checkbox
@@ -134,11 +147,14 @@
       </v-container>
       <v-card-actions>
         <v-layout align-end justify-end>
-          <v-bpa-button v-show="!isEdit" color="secondary" @click="editSchema()"
+          <v-bpa-button
+            v-show="!isEdit && this.tab === 'schema-attributes'"
+            color="secondary"
+            @click="editSchema()"
             >{{ $t("button.edit") }}
           </v-bpa-button>
           <v-bpa-button
-            v-show="isEdit"
+            v-show="isEdit && this.tab === 'schema-attributes'"
             color="secondary"
             @click="updateSchema()"
             >{{ $t("button.save") }}</v-bpa-button
@@ -196,7 +212,11 @@ export default {
       tab: undefined as string,
       resetChildForms: false,
       checkBoxGroup: 0,
+      copyText: "",
     };
+  },
+  created() {
+    this.copyText = this.$t("button.clickToCopy");
   },
   computed: {
     typeIsJsonLD() {
@@ -231,25 +251,12 @@ export default {
     },
   },
   methods: {
-    copySchemaId() {
-      this.$refs.schemaId.focus();
-      let successful;
-      try {
-        successful = document.execCommand("copy");
-      } catch {
-        successful = false;
-      }
-      successful
-        ? EventBus.$emit(
-            "success",
-            this.$t("component.manageSchema.eventSuccessCopy")
-          )
-        : EventBus.$emit(
-            "error",
-            this.$t("component.manageSchema.eventErrorCopy")
-          );
-      this.$refs.schemaId.blur();
-      window.getSelection().removeAllRanges();
+    async copySchemaId() {
+      await navigator.clipboard.writeText(this.schema.schemaId);
+      this.copyText = this.$t("button.copied");
+    },
+    reset() {
+      this.copyText = this.$t("button.clickToCopy");
     },
     isDefaultAttribute(attribute: string): boolean {
       return attribute === this.schema.defaultAttributeName;

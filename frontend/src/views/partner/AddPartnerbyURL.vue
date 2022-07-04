@@ -122,18 +122,31 @@
                     </v-expansion-panel-header>
                     <v-expansion-panel-content>
                       <v-text-field
-                        id="invitationURL"
-                        ref="invitationURL"
                         class="font-weight-light"
                         v-model="invitationURL"
-                        v-on:focus="$event.target.select()"
                         readonly
                         outlined
                         dense
                         :label="$t('view.addPartnerbyURL.invitationURL')"
-                        :append-icon="'$vuetify.icons.copy'"
-                        @click:append="copyInvitationURL"
-                      ></v-text-field>
+                      >
+                        <template v-slot:append>
+                          <v-tooltip top>
+                            <template v-slot:activator="{ on, attrs }">
+                              <v-btn
+                                class="mr-0"
+                                icon
+                                @click="copyInvitationURL"
+                                v-bind="attrs"
+                                v-on="on"
+                                @mouseout="reset"
+                              >
+                                <v-icon> $vuetify.icons.copy </v-icon>
+                              </v-btn>
+                            </template>
+                            <span>{{ copyText }}</span>
+                          </v-tooltip>
+                        </template>
+                      </v-text-field>
                     </v-expansion-panel-content>
                   </v-expansion-panel>
                 </v-expansion-panels>
@@ -170,6 +183,7 @@ export default {
       partnerLoading: false,
       partnerLoaded: false,
       invitationURL: "",
+      copyText: "",
       msg: "",
       did: "",
       alias: "",
@@ -182,6 +196,9 @@ export default {
       useOutOfBand: false,
       usePublicDid: true,
     };
+  },
+  created() {
+    this.copyText = this.$t("button.clickToCopy");
   },
   computed: {
     tags() {
@@ -219,24 +236,12 @@ export default {
           EventBus.$emit("error", this.$axiosErrorMessage(error));
         });
     },
-    copyInvitationURL() {
-      this.$refs.invitationURL.focus();
-      let successful;
-      try {
-        successful = document.execCommand("copy");
-      } catch {
-        successful = false;
-      }
-      successful
-        ? EventBus.$emit(
-            "success",
-            this.$t("view.addPartnerbyURL.eventSuccessCopy")
-          )
-        : EventBus.$emit(
-            "error",
-            this.$t("view.addPartnerbyURL.eventErrorCopy")
-          );
-      this.$refs.invitationURL.blur();
+    async copyInvitationURL() {
+      await navigator.clipboard.writeText(this.invitationURL);
+      this.copyText = this.$t("button.copied");
+    },
+    reset() {
+      this.copyText = this.$t("button.clickToCopy");
     },
   },
 };
