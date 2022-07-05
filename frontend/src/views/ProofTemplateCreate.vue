@@ -79,6 +79,7 @@
                   <!-- Schema Restrictions -->
                   <RestrictionsEdit
                     v-model="proofTemplate.attributeGroups[idx]"
+                    :type="proofTemplate.type"
                   />
 
                   <v-card-actions>
@@ -222,6 +223,7 @@ export default {
       useV2Exchange: false,
       proofTemplate: {
         name: "",
+        type: "",
         attributeGroups: new Array<AttributeGroup & AttributeGroupUi>(),
       },
       snackbar: {

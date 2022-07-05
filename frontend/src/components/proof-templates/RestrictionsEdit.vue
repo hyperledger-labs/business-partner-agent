@@ -39,7 +39,7 @@
           <td :colspan="headers.length" style="padding: 0">
             <v-simple-table>
               <tbody>
-                <tr>
+                <tr v-if="typeIsIndy">
                   <td>
                     {{ $t("view.proofTemplate.restrictions.schemaName") }}
                   </td>
@@ -51,7 +51,7 @@
                     ></v-text-field>
                   </td>
                 </tr>
-                <tr>
+                <tr v-if="typeIsIndy">
                   <td>
                     {{ $t("view.proofTemplate.restrictions.schemaVersion") }}
                   </td>
@@ -63,7 +63,7 @@
                     ></v-text-field>
                   </td>
                 </tr>
-                <tr>
+                <tr v-if="typeIsIndy">
                   <td>
                     {{ $t("view.proofTemplate.restrictions.schemaIssuerDid") }}
                   </td>
@@ -88,7 +88,7 @@
                     ></v-text-field>
                   </td>
                 </tr>
-                <tr>
+                <tr v-if="typeIsIndy">
                   <td>
                     {{
                       $t(
@@ -172,6 +172,7 @@ export default {
   components: { VBpaButton },
   props: {
     value: {},
+    type: undefined,
   },
   data: () => {
     return {
@@ -182,6 +183,9 @@ export default {
     };
   },
   computed: {
+    typeIsIndy() {
+      return this.type === "INDY";
+    },
     attributeGroup: {
       get() {
         return this.value;
