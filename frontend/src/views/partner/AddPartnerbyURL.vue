@@ -128,6 +128,7 @@
                         outlined
                         dense
                         :label="$t('view.addPartnerbyURL.invitationURL')"
+                        @blur="reset"
                       >
                         <template v-slot:append>
                           <v-tooltip top>
@@ -135,9 +136,9 @@
                               <v-btn
                                 class="mr-0"
                                 icon
-                                @click="copyInvitationURL"
                                 v-bind="attrs"
                                 v-on="on"
+                                @click="copyInvitationURL"
                                 @mouseout="reset"
                               >
                                 <v-icon> $vuetify.icons.copy </v-icon>

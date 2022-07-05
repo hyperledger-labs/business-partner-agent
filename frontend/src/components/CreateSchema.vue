@@ -91,10 +91,10 @@
                 </v-col>
                 <v-col cols="2" class="py-0">
                   <v-checkbox
+                    class="mt-1 pt-1"
                     v-model="attr.defaultAttribute"
                     outlined
                     dense
-                    style="margin-top: 4px; padding-top: 4px"
                     @change="makeDefaultAttribute(index, attr.defaultAttribute)"
                   ></v-checkbox>
                 </v-col>

@@ -30,6 +30,7 @@
             outlined
             dense
             :label="$t('component.manageSchema.labelSchemaId')"
+            @blur="reset"
           >
             <template v-slot:append>
               <v-tooltip top>
@@ -37,10 +38,10 @@
                   <v-btn
                     class="mr-0"
                     icon
-                    @click="copySchemaId"
                     v-bind="attrs"
                     v-on="on"
-                    @mouseout="reset"
+                    @click="copySchemaId"
+                    @mouseleave="reset"
                   >
                     <v-icon> $vuetify.icons.copy </v-icon>
                   </v-btn>
@@ -87,9 +88,9 @@
               </v-list-item>
             </v-card>
             <v-form v-show="isEdit">
-              <v-card flat class="mt-2">
+              <v-card flat class="mt-3">
                 <v-row>
-                  <v-col cols="8" class="py-0"> </v-col>
+                  <v-col cols="8" class="py-0" />
                   <v-col cols="2" class="py-0"
                     ><p class="grey--text">
                       {{ $t("component.createSchema.headersColumn.isDefault") }}
@@ -112,11 +113,11 @@
                   </v-col>
                   <v-col cols="2" class="py-0">
                     <v-checkbox
+                      class="mt-1 pt-1"
                       v-model="checkBoxGroup"
                       :value="index + 1"
                       outlined
                       dense
-                      style="margin-top: 4px; padding-top: 4px"
                     ></v-checkbox>
                   </v-col>
                 </v-row>
