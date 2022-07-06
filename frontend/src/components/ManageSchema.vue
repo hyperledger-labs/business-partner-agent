@@ -265,11 +265,9 @@ export default {
       return attribute === this.schema.defaultAttributeName;
     },
     editSchema() {
-      // TODO: check if a seperate function is needed
       this.isEdit = true;
     },
     getUpdatedSchema(): UpdateSchemaRequest {
-      console.log("### this.checkboxvalue:", this.checkBoxGroup);
       const newDefaultAttribute =
         this.schema.schemaAttributeNames[this.checkBoxGroup - 1];
       return {
