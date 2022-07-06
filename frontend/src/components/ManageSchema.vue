@@ -29,8 +29,8 @@
             readonly
             outlined
             dense
-            :label="$t('component.manageSchema.labelSchemaId')"
             @blur="reset"
+            :label="$t('component.manageSchema.labelSchemaId')"
           >
             <template v-slot:append>
               <v-tooltip top>
@@ -41,7 +41,6 @@
                     v-bind="attrs"
                     v-on="on"
                     @click="copySchemaId"
-                    @mouseleave="reset"
                   >
                     <v-icon> $vuetify.icons.copy </v-icon>
                   </v-btn>
@@ -149,13 +148,13 @@
       <v-card-actions>
         <v-layout align-end justify-end>
           <v-bpa-button
-            v-show="!isEdit && this.tab === 'schema-attributes'"
+            v-show="!isEditingAttributes"
             color="secondary"
             @click="editSchema()"
             >{{ $t("button.edit") }}
           </v-bpa-button>
           <v-bpa-button
-            v-show="isEdit && this.tab === 'schema-attributes'"
+            v-show="isEditingAttributes"
             color="secondary"
             @click="updateSchema()"
             >{{ $t("button.save") }}</v-bpa-button
@@ -249,6 +248,9 @@ export default {
           key: "trusted-issuers",
         });
       return tabs;
+    },
+    isEditingAttributes() {
+      return this.isEdit && this.tab === "schema-attributes";
     },
   },
   methods: {

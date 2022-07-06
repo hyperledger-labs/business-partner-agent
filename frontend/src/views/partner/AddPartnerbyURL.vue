@@ -139,7 +139,6 @@
                                 v-bind="attrs"
                                 v-on="on"
                                 @click="copyInvitationURL"
-                                @mouseout="reset"
                               >
                                 <v-icon> $vuetify.icons.copy </v-icon>
                               </v-btn>
