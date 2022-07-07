@@ -24,14 +24,19 @@ import jakarta.inject.Singleton;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.hyperledger.aries.api.ExchangeVersion;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.exception.DataPersistenceException;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
+import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
+import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
+import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.persistence.model.prooftemplate.ValueOperators;
 import org.hyperledger.bpa.persistence.repository.BPAProofTemplateRepository;
 
+import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,6 +51,9 @@ public class ProofTemplateManager {
 
     @Inject
     ProofManager proofManager;
+
+    @Inject
+    SchemaService schemaService;
 
     @Inject
     BPAMessageSource.DefaultMessageSource ms;
@@ -71,10 +79,15 @@ public class ProofTemplateManager {
         return repo.findById(id);
     }
 
-    public BPAProofTemplate addProofTemplate(@NonNull BPAProofTemplate template) {
-        // TODO
-        // find matching credentials-ld
-        // UI disable v2 switch
+    public BPAProofTemplate addProofTemplate(@NonNull @Valid BPAProofTemplate template) {
+        UUID sId = template.streamAttributeGroups()
+                .map(BPAAttributeGroup::getSchemaId)
+                .findFirst()
+                .orElseThrow(WrongApiUsageException::new);
+        CredentialType type = schemaService.getSchema(sId)
+                .orElseThrow(WrongApiUsageException::new)
+                .getType();
+        template.setType(type);
         return repo.save(template);
     }
 

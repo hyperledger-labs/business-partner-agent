@@ -60,9 +60,8 @@ public class BPAProofTemplate {
     @NotEmpty
     String name;
 
-    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private CredentialType type = CredentialType.INDY;
+    private CredentialType type;
 
     @NotEmpty
     @Valid
