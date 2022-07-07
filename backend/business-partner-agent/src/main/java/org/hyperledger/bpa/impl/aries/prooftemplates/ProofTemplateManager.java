@@ -73,11 +73,8 @@ public class ProofTemplateManager {
 
     public BPAProofTemplate addProofTemplate(@NonNull BPAProofTemplate template) {
         // TODO
-        // determine template type - done
-        // validate that all groups are linked to the same schema type - done
         // find matching credentials-ld
         // UI disable v2 switch
-        // UI once one type is selected disable all other types, or filter - done
         return repo.save(template);
     }
 

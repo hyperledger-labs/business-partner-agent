@@ -148,6 +148,7 @@
         <v-layout align-center align-end justify-end>
           <v-switch
             v-if="expertMode && enableV2Switch"
+            :disabled="'INDY' !== this.proofTemplate.type"
             v-model="useV2Exchange"
             :label="$t('button.useV2')"
           ></v-switch>
