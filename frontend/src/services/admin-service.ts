@@ -11,6 +11,7 @@ import { ApiRoutes } from "@/constants";
 import { AxiosResponse } from "axios";
 import {
   AddSchemaRequest,
+  UpdateSchemaRequest,
   AddTagRequest,
   AddTrustedIssuerRequest,
   SchemaAPI,
@@ -35,6 +36,13 @@ export default {
 
   getSchema(id: string): Promise<AxiosResponse<SchemaAPI>> {
     return appAxios().get(`${ApiRoutes.ADMIN}/schema/${id}`);
+  },
+
+  updateSchema(
+    id: string,
+    data: UpdateSchemaRequest
+  ): Promise<AxiosResponse<SchemaAPI>> {
+    return appAxios().put(`${ApiRoutes.ADMIN}/schema/${id}`, data);
   },
 
   removeSchema(id: string): Promise<AxiosResponse<void>> {

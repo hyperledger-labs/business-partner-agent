@@ -25,17 +25,30 @@
       <v-container>
         <v-list-item class="mt-4">
           <v-text-field
-            id="schemaId"
-            ref="schemaId"
             v-model="schema.schemaId"
-            v-on:focus="$event.target.select()"
             readonly
             outlined
             dense
+            @blur="reset"
             :label="$t('component.manageSchema.labelSchemaId')"
-            :append-icon="'$vuetify.icons.copy'"
-            @click:append="copySchemaId"
-          ></v-text-field>
+          >
+            <template v-slot:append>
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    class="mr-0"
+                    icon
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="copySchemaId"
+                  >
+                    <v-icon> $vuetify.icons.copy </v-icon>
+                  </v-btn>
+                </template>
+                <span>{{ copyText }}</span>
+              </v-tooltip>
+            </template>
+          </v-text-field>
         </v-list-item>
         <v-list-item class="mt-4">
           <v-checkbox
@@ -57,7 +70,7 @@
         </v-tabs>
         <v-tabs-items v-model="tab">
           <v-tab-item transition="false" value="schema-attributes">
-            <v-card flat class="mt-2">
+            <v-card flat class="mt-2" v-show="!isEdit">
               <v-list-item
                 v-for="attribute in schema.schemaAttributeNames"
                 :key="attribute.id"
@@ -65,13 +78,50 @@
                 <p class="grey--text text--darken-2 font-weight-medium">
                   {{ attribute }}
                   <v-icon
+                    :key="checkBoxGroup"
                     x-small
-                    v-if="attribute === schema.defaultAttributeName"
+                    v-show="isDefaultAttribute(attribute)"
                     >$vuetify.icons.asterisk</v-icon
                   >
                 </p>
               </v-list-item>
             </v-card>
+            <v-form v-show="isEdit">
+              <v-card flat class="mt-3">
+                <v-row>
+                  <v-col cols="8" class="py-0" />
+                  <v-col cols="2" class="py-0"
+                    ><p class="grey--text">
+                      {{ $t("component.createSchema.headersColumn.isDefault") }}
+                    </p></v-col
+                  >
+                </v-row>
+                <v-row
+                  v-for="(attr, index) in schema.schemaAttributeNames"
+                  :key="attr.id"
+                >
+                  <v-col cols="8" class="py-0">
+                    <v-list-item>
+                      <p class="grey--text text--darken-2 font-weight-medium">
+                        {{ attr }}
+                        <v-icon x-small v-show="isDefaultAttribute(attr)"
+                          >$vuetify.icons.asterisk</v-icon
+                        >
+                      </p>
+                    </v-list-item>
+                  </v-col>
+                  <v-col cols="2" class="py-0">
+                    <v-checkbox
+                      class="mt-1 pt-1"
+                      v-model="checkBoxGroup"
+                      :value="index + 1"
+                      outlined
+                      dense
+                    ></v-checkbox>
+                  </v-col>
+                </v-row>
+              </v-card>
+            </v-form>
           </v-tab-item>
           <v-tab-item transition="false" value="credential-definitions">
             <v-card flat class="mt-2">
@@ -95,9 +145,20 @@
           </v-tab-item>
         </v-tabs-items>
       </v-container>
-
       <v-card-actions>
         <v-layout align-end justify-end>
+          <v-bpa-button
+            v-show="!isEditingAttributes"
+            color="secondary"
+            @click="editSchema()"
+            >{{ $t("button.edit") }}
+          </v-bpa-button>
+          <v-bpa-button
+            v-show="isEditingAttributes"
+            color="secondary"
+            @click="updateSchema()"
+            >{{ $t("button.save") }}</v-bpa-button
+          >
           <v-bpa-button color="primary" @click="closed">{{
             $t("button.close")
           }}</v-bpa-button>
@@ -109,7 +170,8 @@
 
 <script lang="ts">
 import { EventBus } from "@/main";
-import { adminService, SchemaAPI } from "@/services";
+import store from "@/store";
+import { adminService, UpdateSchemaRequest, SchemaAPI } from "@/services";
 import TrustedIssuers from "@/components/TrustedIssuers.vue";
 import CredentialDefinitions from "@/components/CredentialDefinitions.vue";
 import VBpaButton from "@/components/BpaButton";
@@ -146,9 +208,15 @@ export default {
   },
   data: () => {
     return {
+      isEdit: false,
       tab: undefined as string,
       resetChildForms: false,
+      checkBoxGroup: 0,
+      copyText: "",
     };
+  },
+  created() {
+    this.copyText = this.$t("button.clickToCopy");
   },
   computed: {
     typeIsJsonLD() {
@@ -181,33 +249,56 @@ export default {
         });
       return tabs;
     },
+    isEditingAttributes() {
+      return this.isEdit && this.tab === "schema-attributes";
+    },
   },
   methods: {
-    copySchemaId() {
-      this.$refs.schemaId.focus();
-      let successful;
-      try {
-        successful = document.execCommand("copy");
-      } catch {
-        successful = false;
-      }
-      successful
-        ? EventBus.$emit(
-            "success",
-            this.$t("component.manageSchema.eventSuccessCopy")
-          )
-        : EventBus.$emit(
-            "error",
-            this.$t("component.manageSchema.eventErrorCopy")
-          );
-      this.$refs.schemaId.blur();
-      window.getSelection().removeAllRanges();
+    async copySchemaId() {
+      await navigator.clipboard.writeText(this.schema.schemaId);
+      this.copyText = this.$t("button.copied");
+    },
+    reset() {
+      this.copyText = this.$t("button.clickToCopy");
+    },
+    isDefaultAttribute(attribute: string): boolean {
+      return attribute === this.schema.defaultAttributeName;
+    },
+    editSchema() {
+      this.isEdit = true;
+    },
+    getUpdatedSchema(): UpdateSchemaRequest {
+      const newDefaultAttribute =
+        this.schema.schemaAttributeNames[this.checkBoxGroup - 1];
+      return {
+        defaultAttribute: newDefaultAttribute,
+      };
+    },
+    async updateSchema() {
+      const newDefaultAttribute: UpdateSchemaRequest = this.getUpdatedSchema();
+      this.schema.defaultAttributeName = newDefaultAttribute.defaultAttribute;
+      adminService
+        .updateSchema(this.schema.id, newDefaultAttribute)
+        .then((result) => {
+          if (result.status === 200) {
+            EventBus.$emit(
+              "success",
+              this.$t("component.manageSchema.eventSuccessUpdate")
+            );
+            store.dispatch("loadSchemas");
+            this.$emit("changed");
+            this.$emit("updated");
+          }
+        })
+        .catch((error) => {
+          EventBus.$emit("error", this.$axiosErrorMessage(error));
+        });
+      this.isEdit = false;
     },
     deleteSchema() {
       adminService
         .removeSchema(this.schema.id)
         .then((result) => {
-          console.log(result);
           if (result.status === 200) {
             EventBus.$emit(
               "success",
@@ -226,6 +317,7 @@ export default {
     },
     closed() {
       this.resetChildForms = !this.resetChildForms;
+      this.isEdit = false;
       this.$emit("closed");
     },
   },
