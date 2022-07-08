@@ -36,7 +36,6 @@ import javax.validation.ConstraintViolation;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @MicronautTest
 class BPAProofTemplateTest {
@@ -79,8 +78,8 @@ class BPAProofTemplateTest {
 
         Set<ConstraintViolation<BPAProofTemplate>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(2, constraintViolations.size());
-        List<Object> violatingValues = constraintViolations.stream().map(ConstraintViolation::getMessageTemplate)
-                .collect(Collectors.toList());
+        List<String> violatingValues = constraintViolations.stream().map(ConstraintViolation::getMessageTemplate)
+                .toList();
         Assertions.assertTrue(violatingValues.contains(ValidBPASchemaId.MESSAGE_TEMPLATE));
         Assertions.assertTrue(violatingValues.contains(ValidAttributeGroup.MESSAGE_TEMPLATE));
     }

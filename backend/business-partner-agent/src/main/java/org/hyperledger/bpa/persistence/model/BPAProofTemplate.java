@@ -36,6 +36,7 @@ import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroups;
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -63,8 +64,8 @@ public class BPAProofTemplate {
     @Enumerated(EnumType.STRING)
     private CredentialType type;
 
-    @NotEmpty
     @Valid
+    @NotNull
     @Column(name = "attribute_groups_json")
     @TypeDef(type = DataType.JSON)
     // using a concrete class instead of a generic list does not unmarshal correctly
