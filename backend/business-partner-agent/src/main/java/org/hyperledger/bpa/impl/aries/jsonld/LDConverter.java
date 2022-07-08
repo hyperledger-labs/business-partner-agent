@@ -45,6 +45,7 @@ public class LDConverter {
                                     .flatMap(Collection::stream)
                                     .collect(Collectors.toList()))
                             .restrictions(restrictionFromInputDescriptor(id))
+                            // TODO predicates
                             .build();
                     return new AbstractMap.SimpleEntry<>(id.getId(), ra);
                 })
@@ -72,21 +73,20 @@ public class LDConverter {
             }
             return null;
         }
-        return id.getConstraints().getFields().stream().map(f -> {
-            PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder b = PresentProofRequest.ProofRequest.ProofRestrictions
-                    .builder();
+        PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder b = PresentProofRequest
+                .ProofRequest.ProofRestrictions.builder();
+        id.getConstraints().getFields().forEach(f -> {
             String path = f.getPath().stream()
                     .map(p -> p.replace(PATH, ""))
                     .findFirst()
                     .orElse(null);
-            if (path != null && f.getFilter() != null) {
+            if (path != null && f.getFilter() != null && f.getFilter().get_const() != null) {
                 b.addAttributeValueRestriction(path, (String) f.getFilter().get_const());
             }
-            return b
-                    .schemaId(schemaId)
-                    .build()
-                    .toJsonObject();
-        })
-                .collect(Collectors.toList());
+        });
+        return List.of(b
+                .schemaId(schemaId)
+                .build()
+                .toJsonObject());
     }
 }

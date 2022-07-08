@@ -35,7 +35,7 @@ public abstract class BaseLDManager {
     List<DIFHolder> buildDifHolder(@NonNull Set<UUID> fields) {
         return fields
                 .stream().map(e -> DIFHolder.builder()
-                        .directive(DIFHolder.DirectiveEnum.PREFERRED)
+                        .directive(DIFHolder.DirectiveEnum.REQUIRED)
                         .fieldId(List.of(e.toString()))
                         .build())
                 .collect(Collectors.toList());
