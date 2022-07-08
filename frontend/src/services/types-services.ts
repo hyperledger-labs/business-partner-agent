@@ -33,6 +33,8 @@ export type SendProofRequest = components["schemas"]["SendProofRequest"];
 
 export type AddSchemaRequest = components["schemas"]["AddSchemaRequest"];
 
+export type UpdateSchemaRequest = components["schemas"]["UpdateSchemaRequest"];
+
 export type UpdatePartnerRequest =
   components["schemas"]["UpdatePartnerRequest"];
 

@@ -51,6 +51,7 @@
   },
   "button": {
     "accept": "Accept",
+    "edit": "Edit",
     "save": "Save",
     "saveAndSend": "Save and Send",
     "saveAndClose": "Save and Close",
@@ -516,6 +517,7 @@
     "manageSchema": {
       "labelSchemaId": "Schema ID",
       "labelCheckbox": "My Schema",
+      "eventSuccessUpdate": "Schema updated",
       "eventSuccessCopy": "Schema ID copied",
       "eventErrorCopy": "Can't copy Schema ID",
       "eventSuccessDelete": "Schema deleted",
@@ -575,7 +577,10 @@
         "identifier": "Identifier",
         "sectionTitle": "Administrative Information",
         "companyName": "Organization Legal Name",
-        "companyAltName": "Organization Alternate Name"
+        "companyAltName": "Organization Alternate Name",
+        "myDID": "Organization Decentralized Identifier (DID)",
+        "eventSuccessCopy": "Schema ID copied",
+        "eventErrorCopy": "Can't copy Schema ID"
       },
       "addressInfo": {
         "sectionTitle": "Address",

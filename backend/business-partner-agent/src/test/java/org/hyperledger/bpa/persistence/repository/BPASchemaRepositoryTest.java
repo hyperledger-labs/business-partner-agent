@@ -23,7 +23,6 @@ import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
 import java.util.List;
 
 @MicronautTest
@@ -69,5 +68,21 @@ public class BPASchemaRepositoryTest {
         Assertions.assertEquals(2, schemaRepo.countSchemaTypes(List.of(schema1.getId(), schema3.getId())));
         Assertions.assertEquals(2, schemaRepo
                 .countSchemaTypes(List.of(schema1.getId(), schema2.getId(), schema3.getId(), schema4.getId())));
+    }
+
+    @Test
+    void testSetDefaultAttribute(){
+        BPASchema schema1 = BPASchema.builder()
+                .schemaId("testSchema").schemaAttributeName("name")
+                .defaultAttributeName("name").type(CredentialType.INDY)
+                .build();
+        schema1 = schemaRepo.save(schema1);
+        BPASchema schema2 = schemaRepo.findById(schema1.getId()).orElseThrow();
+        Assertions.assertEquals(schema1.getId(), schema2.getId());
+
+        schemaRepo.updateDefaultAttributeName(schema1.getId(), null);
+
+        BPASchema schema3 = schemaRepo.findById(schema1.getId()).orElseThrow();
+        Assertions.assertNull(schema3.getDefaultAttributeName());
     }
 }
