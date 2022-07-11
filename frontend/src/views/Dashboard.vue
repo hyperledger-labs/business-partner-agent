@@ -122,7 +122,8 @@ export default {
     },
   },
   methods: {
-    getStatus() {
+    async getStatus() {
+      await this.$store.dispatch("loadStatus");
       const status = this.$store.getters.getStatus;
       this.isWelcome = !status.profile;
       this.status = status;
