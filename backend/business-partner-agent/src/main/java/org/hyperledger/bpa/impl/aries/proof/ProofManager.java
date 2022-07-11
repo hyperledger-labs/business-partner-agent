@@ -258,7 +258,8 @@ public class ProofManager {
             return ac.presentProofV2RecordsCredentialsDif(partnerProof.getPresentationExchangeId(), null)
                     .orElseThrow()
                     .stream()
-                    .map(match -> credentialInfoResolver.populateCredentialInfo(match)).collect(Collectors.toList());
+                    .map(match -> credentialInfoResolver.populateCredentialInfo(match))
+                    .collect(Collectors.toList());
         } catch (IOException e) {
             throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
         }

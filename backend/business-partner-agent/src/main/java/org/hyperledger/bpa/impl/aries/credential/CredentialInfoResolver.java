@@ -97,6 +97,7 @@ public class CredentialInfoResolver {
                 builder.credentialId(cred.getId());
                 builder.credentialLabel(cred.getLabel());
                 builder.attrs(cred.credentialAttributesToMap());
+                builder.referent(matchingVC.getRecordId());
             });
         }
         if (StringUtils.isNotEmpty(matchingVC.getIssuer())) {

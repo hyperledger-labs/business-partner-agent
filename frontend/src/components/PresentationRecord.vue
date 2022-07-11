@@ -287,7 +287,7 @@ export default {
         } else if (credInfo.schemaLabel) {
           return credInfo.issuerLabel
             ? `${credInfo.schemaLabel} (${credInfo.credentialId}) - ${credInfo.issuerLabel} ${revokedLabel}`
-            : `${credInfo.schemaLabel} ${revokedLabel}`;
+            : `${credInfo.schemaLabel} (${credInfo.credentialId}) ${revokedLabel}`;
         } else {
           return `${credInfo.credentialId} ${revokedLabel}`;
         }
