@@ -74,6 +74,7 @@ services:
       ]
     volumes:
       - "./acapy-static-args.yml:/home/indy/acapy-static-args.yml"
+      - "./genesis-transaction-list.yml:/home/indy/genesis-transaction-list.yml"
     extra_hosts:
      - host.docker.internal:host-gateway
   bpa-wallet-db1:
@@ -159,6 +160,7 @@ services:
       ]
     volumes:
       - "./acapy-static-args.yml:/home/indy/acapy-static-args.yml"
+      - "./genesis-transaction-list.yml:/home/indy/genesis-transaction-list.yml"
     extra_hosts:
      - host.docker.internal:host-gateway
   bpa-wallet-db2:
