@@ -27,7 +27,7 @@ import org.hyperledger.bpa.persistence.model.Partner;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class PartnerRequestCompletedEvent {
+public class PartnerRequestCompletedEvent extends Event {
 
     private Partner partner;
 

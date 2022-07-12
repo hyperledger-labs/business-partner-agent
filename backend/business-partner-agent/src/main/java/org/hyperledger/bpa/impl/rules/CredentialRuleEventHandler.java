@@ -23,48 +23,48 @@ public class CredentialRuleEventHandler {
 
     @EventListener
     @Async
-    public void onCredentialAcceptedEvent (CredentialAcceptedEvent event) {
+    public void onCredentialAcceptedEvent(CredentialAcceptedEvent event) {
         log.debug("detected {}", event.getClass());
     }
 
     @EventListener
     @Async
-    public void onCredentialAddedEvent (CredentialAddedEvent event) {
+    public void onCredentialAddedEvent(CredentialAddedEvent event) {
         log.debug("detected {}", event.getClass());
     }
 
     @EventListener
     @Async
-    public void onCredentialIssuedEvent (CredentialIssuedEvent event) {
+    public void onCredentialIssuedEvent(CredentialIssuedEvent event) {
         log.debug("detected {}", event.getClass());
     }
 
     @EventListener
     @Async
-    public void onCredentialOfferedEvent (CredentialOfferedEvent event) {
+    public void onCredentialOfferedEvent(CredentialOfferedEvent event) {
         log.debug("detected {}", event.getClass());
     }
 
     @EventListener
     @Async
-    public void onCredentialProblemEvent (CredentialProblemEvent event) {
+    public void onCredentialProblemEvent(CredentialProblemEvent event) {
         log.debug("detected {}", event.getClass());
     }
 
     @EventListener
     @Async
-    public void onCredentialProposalEvent (CredentialProposalEvent event) {
+    public void onCredentialProposalEvent(CredentialProposalEvent event) {
         log.debug("detected {}", event.getClass());
     }
 
-    public void runRule (Object event) {
+    public void runRule(Object event) {
         List<RulesData> rules = rs.getAll();
         log.debug("Running event against {} active rules", rules.size());
         rules.parallelStream().forEach(r -> {
             // if (r.getTrigger().apply(event)) {
-            //    log.debug("Run rule with id: {}", r.getRuleId());
-            //    r.getAction().run(event);
-            //}
+            // log.debug("Run rule with id: {}", r.getRuleId());
+            // r.getAction().run(event);
+            // }
         });
     }
 }

@@ -4,6 +4,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.hyperledger.bpa.api.notification.Event;
 import org.hyperledger.bpa.persistence.model.ActiveRules;
 import org.hyperledger.bpa.persistence.repository.RulesRepository;
 

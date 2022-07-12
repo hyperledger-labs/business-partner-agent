@@ -3,13 +3,22 @@ package org.hyperledger.bpa.impl.rules;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import jdk.jfr.Event;
+
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.connection.ConnectionTheirRole;
+import org.hyperledger.bpa.api.TagAPI;
+import org.hyperledger.bpa.api.notification.Event;
+import org.hyperledger.bpa.controller.api.partner.UpdatePartnerRequest;
 import org.hyperledger.bpa.persistence.model.ActiveRules;
+import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.Tag;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -26,15 +35,21 @@ public class RulesData {
             property = "type")
     @JsonSubTypes({
             @JsonSubTypes.Type(value = Trigger.ConnectionTrigger.class, name = Trigger.CONNECTION_TRIGGER_NAME),
-            @JsonSubTypes.Type(value = Trigger.ProofReceivedTrigger.class, name = Trigger.PROOF_RECEIVED_TRIGGER_NAME)
+            @JsonSubTypes.Type(value = Trigger.ProofReceivedTrigger.class, name = Trigger.PROOF_RECEIVED_TRIGGER_NAME),
+            @JsonSubTypes.Type(value = Trigger.EventTrigger.class, name = Trigger.EVENT_TRIGGER_NAME)
     })
     @NoArgsConstructor
     public abstract static class Trigger {
 
         public static final String CONNECTION_TRIGGER_NAME = "connection";
         public static final String PROOF_RECEIVED_TRIGGER_NAME = "proof_received";
+        public static final String EVENT_TRIGGER_NAME = "event";
 
         abstract boolean apply(EventContext ctx);
+
+        boolean apply(Event event) {
+            return false;
+        }
 
         @SuppressWarnings("unused")
         private String type;
@@ -58,6 +73,26 @@ public class RulesData {
                     apply = apply && role.equals(connRec.getTheirRole());
                 }
                 return apply;
+            }
+        }
+
+        @JsonTypeName(Trigger.EVENT_TRIGGER_NAME)
+        @Builder
+        @Data
+        @EqualsAndHashCode(callSuper = true)
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class EventTrigger extends Trigger {
+            private String eventClassName;
+
+            @Override
+            public boolean apply(EventContext ctx) {
+                return false;
+            }
+
+            @Override
+            public boolean apply(Event event) {
+                return event.getClass().getSimpleName().equals(this.eventClassName);
             }
         }
 
@@ -108,7 +143,18 @@ public class RulesData {
 
             @Override
             void run(EventContext ctx) {
-                log.debug("tag: {}", tag);
+                // TODO: get partner by connection Id and update tags
+                Optional<Partner> partner = ctx.getPartnerRepo().findByConnectionId(connectionId);
+
+                if (partner.isPresent()) {
+                    TagAPI tagApi = ctx.getTagService().addTag(tag);
+                    ctx.getPartnerManager().updatePartner(partner.get().getId(),
+                    UpdatePartnerRequest.builder().tag(List.of(Tag.builder().id(tagApi.getId())
+                    .name(tagApi.getName()).build())).build());
+                    
+                    log.debug("partner tagged with tag: {}", tag);
+                }
+                log.debug("tag: {}, connectionId: {}", tag, connectionId);
             }
         }
 
