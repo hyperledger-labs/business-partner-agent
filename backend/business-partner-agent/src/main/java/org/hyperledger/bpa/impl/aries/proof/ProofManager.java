@@ -47,6 +47,7 @@ import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsIndy;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.aries.credential.CredentialInfoResolver;
+import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
@@ -339,7 +340,7 @@ public class ProofManager {
             if (presExRecord instanceof PresentationExchangeRecord indy) {
                 acceptSelectedIndyCredentials(referents, version, indy);
             } else if (presExRecord instanceof V20PresExRecord dif) {
-                acceptSelectedDifCredentials(dif);
+                acceptSelectedDifCredentials(dif, referents);
             }
         }
     }
@@ -382,38 +383,26 @@ public class ProofManager {
                 }, () -> log.error("Could not load matching credentials from aca-py"));
     }
 
-    private void acceptSelectedDifCredentials(@NonNull V20PresExRecord dif) {
+    private void acceptSelectedDifCredentials(@NonNull V20PresExRecord dif, @Nullable List<String> referents) {
         try {
             List<VerifiableCredential.VerifiableCredentialMatch> matches = ac.presentProofV2RecordsCredentialsDif(
                     dif.getPresentationExchangeId(), null)
                     .orElseThrow();
-            Optional<VerifiableCredential.VerifiableCredentialMatch> match = matches.stream()
-                    .filter(m -> StringUtils.isNotEmpty(m.getIssuer()) && m.getIssuer().startsWith(didPrefix))
-                    .findFirst();
-            if (match.isPresent()) {
-
+            Map<String, List<String>> singleMatches = matches.stream()
+                    .filter(m -> CollectionUtils.isEmpty(referents) || referents.contains(m.getRecordId()))
+                    .map(m -> new AbstractMap.SimpleEntry<>(LDContextHelper.findSchemaId(m), List.of(m.getRecordId())))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            if (CollectionUtils.isNotEmpty(singleMatches)) {
                 // set holder to null
-                V2DIFProofRequest.PresentationDefinition presentationDefinition = dif.resolveDifPresentationRequest()
-                        .getPresentationDefinition();
-                if (presentationDefinition.getInputDescriptors() != null) {
-                    presentationDefinition.getInputDescriptors().forEach(id -> {
-                        if (id.getConstraints() != null) {
-                            id.getConstraints().setIsHolder(null);
-                        }
-                    });
-                }
+                V2DIFProofRequest presentationRequest = dif
+                        .resolveDifPresentationRequest()
+                        .resetHolderConstraints();
                 ac.presentProofV2RecordsSendPresentation(
                         dif.getPresentationExchangeId(),
                         V20PresSpecByFormatRequest.builder()
                                 .dif(DIFPresSpec.builder()
-                                        // not set automatically, won't validate if not set
-                                        //.issuerId(match.get().getIssuer())
-                                        //.presentationDefinition(dif.resolveDifPresentationRequest().getPresentationDefinition())
-                                        .presentationDefinition(presentationDefinition)
-                                        .recordIds(Map.of(
-                                                dif.resolveDifPresentationRequest().getPresentationDefinition()
-                                                        .getInputDescriptors().get(0).getId(),
-                                                List.of(match.get().getRecordId())))
+                                        .presentationDefinition(presentationRequest.getPresentationDefinition())
+                                        .recordIds(singleMatches)
                                         .build())
                                 .build());
             }
