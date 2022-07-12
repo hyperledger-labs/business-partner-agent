@@ -26,7 +26,6 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.hyperledger.acy_py.generated.model.DIFPresSpec;
 import org.hyperledger.acy_py.generated.model.V10PresentationProblemReportRequest;
 import org.hyperledger.acy_py.generated.model.V20PresProblemReportRequest;
 import org.hyperledger.aries.AriesClient;
@@ -389,15 +388,28 @@ public class ProofManager {
                     dif.getPresentationExchangeId(), null)
                     .orElseThrow();
             Optional<VerifiableCredential.VerifiableCredentialMatch> match = matches.stream()
-                    .filter(m -> StringUtils.isNotEmpty(m.getIssuer()) && m.getIssuer().startsWith("did:sov"))
+                    .filter(m -> StringUtils.isNotEmpty(m.getIssuer()) && m.getIssuer().startsWith(didPrefix))
                     .findFirst();
             if (match.isPresent()) {
+
+                // set holder to null
+                V2DIFProofRequest.PresentationDefinition presentationDefinition = dif.resolveDifPresentationRequest()
+                        .getPresentationDefinition();
+                if (presentationDefinition.getInputDescriptors() != null) {
+                    presentationDefinition.getInputDescriptors().forEach(id -> {
+                        if (id.getConstraints() != null) {
+                            id.getConstraints().setIsHolder(null);
+                        }
+                    });
+                }
                 ac.presentProofV2RecordsSendPresentation(
                         dif.getPresentationExchangeId(),
                         V20PresSpecByFormatRequest.builder()
                                 .dif(DIFPresSpec.builder()
                                         // not set automatically, won't validate if not set
-                                        .issuerId(match.get().getIssuer())
+                                        //.issuerId(match.get().getIssuer())
+                                        //.presentationDefinition(dif.resolveDifPresentationRequest().getPresentationDefinition())
+                                        .presentationDefinition(presentationDefinition)
                                         .recordIds(Map.of(
                                                 dif.resolveDifPresentationRequest().getPresentationDefinition()
                                                         .getInputDescriptors().get(0).getId(),
