@@ -23,7 +23,6 @@ import lombok.NonNull;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hyperledger.acy_py.generated.model.DIFOptions;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.jsonld.ProofType;
 import org.hyperledger.aries.api.present_proof_v2.DIFField;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
