@@ -46,3 +46,6 @@ exch-use-unencrypted-tags: true
 plugin: 'aries_cloudagent.messaging.jsonld'
 outbound-transport: http
 log-level: info
+
+# multi ledger support
+genesis-transactions-list: './genesis-transaction-list.yml'
