@@ -1,0 +1,23 @@
+# https://github.com/hyperledger/aries-cloudagent-python/blob/main/Multiledger.md
+### Multiledger with other ledgers works but is not sensible in local scenario
+### DIDs have to be created on ledgers for full support
+- id: localVonNetwork
+  is_production: false
+  is_write: true
+  genesis_url: 'http://host.docker.internal:9000/genesis'
+- id: BoschTest
+  is_production: false
+  is_write: false
+  genesis_url: 'https://indy-test.bosch-digital.de/genesis'
+- id: bcorvinTest
+  is_production: false
+  is_write: false
+  genesis_url: 'http://test.bcovrin.vonx.io/genesis'
+- id: IDUnionTest
+  is_production: false
+  is_write: false
+  genesis_url: 'https://raw.githubusercontent.com/IDunion/IDunion_TestNet_Genesis/master/pool_transactions_genesis'
+- id: SovrinBuilderNet
+  is_production: false
+  is_write: false
+  genesis_url: 'https://raw.githubusercontent.com/sovrin-foundation/sovrin/stable/sovrin/pool_transactions_builder_genesis'
