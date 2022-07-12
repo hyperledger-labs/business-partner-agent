@@ -35,7 +35,8 @@ public abstract class BaseLDManager {
     List<DIFHolder> buildDifHolder(@NonNull Set<UUID> fields) {
         return fields
                 .stream().map(e -> DIFHolder.builder()
-                        .directive(DIFHolder.DirectiveEnum.REQUIRED)
+                        // required means use selective disclosure
+                        .directive(DIFHolder.DirectiveEnum.PREFERRED)
                         .fieldId(List.of(e.toString()))
                         .build())
                 .collect(Collectors.toList());
