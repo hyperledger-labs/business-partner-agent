@@ -90,20 +90,23 @@ public class LDConverter {
                     } else {
                         typeToValue = new TypeToValue(null, null);
                     }
-                    List<String> paths = f.getPath().stream()
-                            .map(path -> path.replace(PATH, ""))
-                            .collect(Collectors.toList());
-                    if (CollectionUtils.isNotEmpty(paths)) {
-                        paths.forEach(p -> {
-                            PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder rp = PresentProofRequest.ProofRequest.ProofRequestedPredicates
-                                    .builder();
-                            rp.name(p);
-                            rp.pType(typeToValue.type);
-                            rp.pValue(typeToValue.value != null ? typeToValue.value.intValue() : null);
-                            rp.restriction(PresentProofRequest.ProofRequest.ProofRestrictions.builder()
-                                    .schemaId(schemaId).build().toJsonObject());
-                            result.put(id.getId() + "-" + c.counter().incrementAndGet(), rp.build());
-                        });
+                    if (typeToValue.type != null && typeToValue.value != null) {
+                        List<String> paths = f.getPath().stream()
+                                .map(path -> path.replace(PATH, ""))
+                                .collect(Collectors.toList());
+                        if (CollectionUtils.isNotEmpty(paths)) {
+                            paths.forEach(p -> {
+                                PresentProofRequest.ProofRequest.ProofRequestedPredicates
+                                        .ProofRequestedPredicatesBuilder rp = PresentProofRequest.ProofRequest.ProofRequestedPredicates
+                                        .builder();
+                                rp.name(p);
+                                rp.pType(typeToValue.type);
+                                rp.pValue(typeToValue.value.intValue());
+                                rp.restriction(PresentProofRequest.ProofRequest.ProofRestrictions.builder()
+                                        .schemaId(schemaId).build().toJsonObject());
+                                result.put(id.getId() + "-" + c.counter().incrementAndGet(), rp.build());
+                            });
+                        }
                     }
                 }
             });
@@ -114,19 +117,26 @@ public class LDConverter {
     private static Map<String, PresentProofRequest.ProofRequest.ProofRequestedAttributes> requestedAttributesFromInputDescriptor(
             @NonNull List<V2DIFProofRequest.PresentationDefinition.InputDescriptors> ids) {
         return ids.stream()
+                .filter(id -> id.getConstraints() != null && id.getConstraints().getFields() != null)
                 .map(id -> {
-                    PresentProofRequest.ProofRequest.ProofRequestedAttributes ra = PresentProofRequest.ProofRequest.ProofRequestedAttributes
-                            .builder()
-                            .names(id.getConstraints().getFields().stream()
-                                    .map(f -> f.getPath().stream()
-                                            .map(path -> path.replace(PATH, ""))
-                                            .collect(Collectors.toList()))
-                                    .flatMap(Collection::stream)
+                    List<String> names = id.getConstraints().getFields().stream()
+                            .filter(f -> f.getFilter() == null || f.getFilter().get_const() != null)
+                            .map(f -> f.getPath().stream()
+                                    .map(path -> path.replace(PATH, ""))
                                     .collect(Collectors.toList()))
-                            .restrictions(restrictionFromInputDescriptor(id))
-                            .build();
-                    return new AbstractMap.SimpleEntry<>(id.getId(), ra);
+                            .flatMap(Collection::stream)
+                            .collect(Collectors.toList());
+                    if (CollectionUtils.isNotEmpty(names)) {
+                        PresentProofRequest.ProofRequest.ProofRequestedAttributes ra = PresentProofRequest.ProofRequest.ProofRequestedAttributes
+                                .builder()
+                                .names(names)
+                                .restrictions(restrictionFromInputDescriptor(id))
+                                .build();
+                        return new AbstractMap.SimpleEntry<>(id.getId(), ra);
+                    }
+                    return null;
                 })
+                .filter(Objects::nonNull)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
