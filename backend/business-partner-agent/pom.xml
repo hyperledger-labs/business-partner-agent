@@ -60,8 +60,8 @@
             <version>${micronaut.data.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>jakarta.transaction</groupId>
-                    <artifactId>jakarta.transaction-api</artifactId>
+                    <groupId>javax.transaction</groupId>
+                    <artifactId>javax.transaction-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

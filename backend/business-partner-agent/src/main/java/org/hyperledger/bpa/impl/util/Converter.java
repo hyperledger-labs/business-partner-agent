@@ -307,11 +307,11 @@ public class Converter {
      */
     private String resolveTypeLabel(@NonNull PartnerProof p) {
         String defaultLabel = msg.getMessage("api.proof.exchange.default.name");
+        ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest> pr = Objects
+                .requireNonNullElseGet(p.getProofRequest(),
+                        ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest>::new);
         if (p.typeIsIndy()) {
-            PresentProofRequest.ProofRequest indy = Objects
-                    .requireNonNullElseGet(p.getProofRequest(),
-                            ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest>::new)
-                    .getIndy();
+            PresentProofRequest.ProofRequest indy = pr.getIndy();
             if (!"proof-request".equals(indy.getName())) {
                 return indy.getName();
             }
@@ -329,9 +329,7 @@ public class Converter {
                 }).orElse(defaultLabel);
             }
         } else if (p.typeIsJsonLd()) {
-            V2DIFProofRequest ld = Objects.requireNonNullElseGet(p.getProofRequest(),
-                    ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest>::new)
-                    .getJsonLD();
+            V2DIFProofRequest ld = pr.getJsonLD();
             String name = ld.getPresentationDefinition() != null ? ld.getPresentationDefinition().getName() : null;
             if (StringUtils.isNotEmpty(name)) {
                 return name;
