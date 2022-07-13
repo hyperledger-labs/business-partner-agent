@@ -110,7 +110,7 @@ public class ProverLDManager extends BaseLDManager {
     void acceptSelectedDifCredentials(@NonNull V20PresExRecord dif, @Nullable List<String> referents) {
         try {
             List<VerifiableCredential.VerifiableCredentialMatch> matches = ac.presentProofV2RecordsCredentialsDif(
-                            dif.getPresentationExchangeId(), null)
+                    dif.getPresentationExchangeId(), null)
                     .orElseThrow();
             Map<String, List<String>> singleMatches = matches.stream()
                     .filter(m -> CollectionUtils.isEmpty(referents) || referents.contains(m.getRecordId()))

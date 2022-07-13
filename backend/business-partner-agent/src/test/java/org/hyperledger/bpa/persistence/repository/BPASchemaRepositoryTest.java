@@ -71,7 +71,7 @@ public class BPASchemaRepositoryTest {
     }
 
     @Test
-    void testSetDefaultAttribute(){
+    void testSetDefaultAttribute() {
         BPASchema schema1 = BPASchema.builder()
                 .schemaId("testSchema").schemaAttributeName("name")
                 .defaultAttributeName("name").type(CredentialType.INDY)

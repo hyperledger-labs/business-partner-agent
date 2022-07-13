@@ -330,7 +330,7 @@ public class Converter {
             }
         } else if (p.typeIsJsonLd()) {
             V2DIFProofRequest ld = Objects.requireNonNullElseGet(p.getProofRequest(),
-                            ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest>::new)
+                    ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest>::new)
                     .getJsonLD();
             String name = ld.getPresentationDefinition() != null ? ld.getPresentationDefinition().getName() : null;
             if (StringUtils.isNotEmpty(name)) {

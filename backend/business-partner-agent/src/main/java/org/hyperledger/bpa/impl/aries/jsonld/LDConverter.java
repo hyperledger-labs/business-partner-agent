@@ -52,6 +52,9 @@ public class LDConverter {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         return PresentProofRequest.ProofRequest
                 .builder()
+                .name(proofRequest.getPresentationDefinition() != null
+                        ? proofRequest.getPresentationDefinition().getName()
+                        : null)
                 .requestedAttributes(requestedAttributes)
                 .build();
     }
@@ -73,8 +76,8 @@ public class LDConverter {
             }
             return null;
         }
-        PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder b = PresentProofRequest
-                .ProofRequest.ProofRestrictions.builder();
+        PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder b = PresentProofRequest.ProofRequest.ProofRestrictions
+                .builder();
         id.getConstraints().getFields().forEach(f -> {
             String path = f.getPath().stream()
                     .map(p -> p.replace(PATH, ""))

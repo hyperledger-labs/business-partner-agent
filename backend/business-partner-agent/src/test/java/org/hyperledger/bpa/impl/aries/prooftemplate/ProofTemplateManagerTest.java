@@ -76,19 +76,19 @@ class ProofTemplateManagerTest {
 
         UUID partnerId = UUID.randomUUID();
         BPAProofTemplate template = repo.save(
-            BPAProofTemplate.builder()
-                .name("myTemplate")
-                .type(CredentialType.INDY)
-                .attributeGroups(
-                    BPAAttributeGroups.builder()
-                        .attributeGroup(BPAAttributeGroup.builder()
-                            .schemaId(schemaId)
-                            .attribute(BPAAttribute.builder()
-                                .name("something")
-                            .build())
-                        .build())
-                    .build())
-                .build());
+                BPAProofTemplate.builder()
+                        .name("myTemplate")
+                        .type(CredentialType.INDY)
+                        .attributeGroups(
+                                BPAAttributeGroups.builder()
+                                        .attributeGroup(BPAAttributeGroup.builder()
+                                                .schemaId(schemaId)
+                                                .attribute(BPAAttribute.builder()
+                                                        .name("something")
+                                                        .build())
+                                                .build())
+                                        .build())
+                        .build());
         // reset created at with value from db., because Java's value is more detailed
         // that the database's.
         repo.findById(template.getId()).map(BPAProofTemplate::getCreatedAt).ifPresent(template::setCreatedAt);
@@ -113,18 +113,18 @@ class ProofTemplateManagerTest {
     void testAddProofTemplate() {
         UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId", "something");
         BPAProofTemplate template = BPAProofTemplate.builder()
-            .name("myTemplate")
-            .type(CredentialType.INDY)
-            .attributeGroups(
-                BPAAttributeGroups.builder()
-                    .attributeGroup(BPAAttributeGroup.builder()
-                        .schemaId(schemaId)
-                        .attribute(BPAAttribute.builder()
-                            .name("something")
-                        .build())
-                    .build())
-                .build())
-            .build();
+                .name("myTemplate")
+                .type(CredentialType.INDY)
+                .attributeGroups(
+                        BPAAttributeGroups.builder()
+                                .attributeGroup(BPAAttributeGroup.builder()
+                                        .schemaId(schemaId)
+                                        .attribute(BPAAttribute.builder()
+                                                .name("something")
+                                                .build())
+                                        .build())
+                                .build())
+                .build();
 
         Assertions.assertEquals(0, repo.count(), "There should be no templates initially.");
         BPAProofTemplate expected = sut.addProofTemplate(template);
@@ -153,17 +153,17 @@ class ProofTemplateManagerTest {
     void listProofTemplates() {
         UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId", "something");
         BPAProofTemplate.BPAProofTemplateBuilder templateBuilder = BPAProofTemplate.builder()
-            .name("myFirstTemplate")
-            .type(CredentialType.INDY)
-            .attributeGroups(
-                BPAAttributeGroups.builder()
-                    .attributeGroup(BPAAttributeGroup.builder()
-                        .schemaId(schemaId)
-                        .attribute(BPAAttribute.builder()
-                            .name("something")
-                        .build())
-                    .build())
-                .build());
+                .name("myFirstTemplate")
+                .type(CredentialType.INDY)
+                .attributeGroups(
+                        BPAAttributeGroups.builder()
+                                .attributeGroup(BPAAttributeGroup.builder()
+                                        .schemaId(schemaId)
+                                        .attribute(BPAAttribute.builder()
+                                                .name("something")
+                                                .build())
+                                        .build())
+                                .build());
         repo.save(templateBuilder
                 .name("myFirstTemplate")
                 .build());
@@ -183,19 +183,19 @@ class ProofTemplateManagerTest {
         UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId", "something");
         UUID templateId = repo.save(
                 BPAProofTemplate.builder()
-                    .name("myFirstTemplate")
-                    .type(CredentialType.INDY)
-                    .attributeGroups(
-                        BPAAttributeGroups.builder()
-                            .attributeGroup(BPAAttributeGroup.builder()
-                                .schemaId(schemaId)
-                                .attribute(BPAAttribute.builder()
-                                .name("something")
-                            .build())
+                        .name("myFirstTemplate")
+                        .type(CredentialType.INDY)
+                        .attributeGroups(
+                                BPAAttributeGroups.builder()
+                                        .attributeGroup(BPAAttributeGroup.builder()
+                                                .schemaId(schemaId)
+                                                .attribute(BPAAttribute.builder()
+                                                        .name("something")
+                                                        .build())
+                                                .build())
+                                        .build())
                         .build())
-                    .build())
-                .build())
-            .getId();
+                .getId();
 
         assertTrue(repo.findById(templateId).isPresent(), "The to-be-removed proof template should exist.");
         sut.removeProofTemplate(templateId);

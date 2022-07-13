@@ -175,20 +175,20 @@ class BPAProofTemplateRepositoryTest {
                 .name("myProofTemplate")
                 .type(CredentialType.INDY)
                 .attributeGroups(
-                    BPAAttributeGroups.builder()
-                        .attributeGroup(
-                            BPAAttributeGroup.builder()
-                                .schemaId(schemaId)
-                                .attribute(
-                                    BPAAttribute.builder()
-                                        .name("myAttribute")
-                                        .condition(
-                                            BPACondition.builder()
-                                                .value("113")
-                                                .operator(ValueOperators.LESS_THAN)
-                                            .build())
-                                        .build())
-                                    .build())
-                            .build());
+                        BPAAttributeGroups.builder()
+                                .attributeGroup(
+                                        BPAAttributeGroup.builder()
+                                                .schemaId(schemaId)
+                                                .attribute(
+                                                        BPAAttribute.builder()
+                                                                .name("myAttribute")
+                                                                .condition(
+                                                                        BPACondition.builder()
+                                                                                .value("113")
+                                                                                .operator(ValueOperators.LESS_THAN)
+                                                                                .build())
+                                                                .build())
+                                                .build())
+                                .build());
     }
 }
