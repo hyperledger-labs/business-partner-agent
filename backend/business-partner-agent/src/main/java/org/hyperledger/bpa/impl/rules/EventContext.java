@@ -1,6 +1,8 @@
 package org.hyperledger.bpa.impl.rules;
 
 import io.micronaut.context.ApplicationContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import lombok.Builder;
 import lombok.Data;
 import org.hyperledger.aries.api.connection.ConnectionRecord;

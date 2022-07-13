@@ -22,6 +22,7 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import lombok.extern.slf4j.Slf4j;
 import jakarta.inject.Inject;
 import org.hyperledger.bpa.api.notification.PartnerAddedEvent;
+import org.hyperledger.bpa.impl.PartnerManager;
 import org.hyperledger.bpa.impl.aries.connection.ConnectionManager;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -66,12 +68,15 @@ public class PartnerRuleEventHandlerTest {
     TagRepository tagRepo;
 
     @Inject
+    PartnerManager partnerManager;
+
+    @Inject
     ApplicationEventPublisher<PartnerAddedEvent> eventPublisher;
 
     @Test
     void testTagPartnerOnConnection() throws InterruptedException {
 
-        String connectionId = "de0d51e8-4c7f-4dc9-8b7b-a8f57182d8a5";
+        String connectionId = "de0d51e8-4c7f-4dc9-8b7b-a8f57182d822";
         String did = "did:1";
         String tag = "some-tag";
 
@@ -82,29 +87,29 @@ public class PartnerRuleEventHandlerTest {
         assertEquals(rulesService.getAll().size(), 1);
         log.debug(rulesService.getAll().toString());
 
-        partnerRepo.save(Partner
+        Partner partner = partnerRepo.save(Partner
                 .builder()
                 .ariesSupport(Boolean.TRUE)
                 .did(did)
                 .connectionId(connectionId)
                 .build());
 
-        Assertions.assertEquals(partnerRepo.count(),1);
+        Assertions.assertEquals(partnerRepo.count(), 1);
 
-        Optional<Partner> pBefore = partnerRepo.findByConnectionId(connectionId);
+        Optional<Partner> pBefore = partnerRepo.findById(partner.getId());
         assert (pBefore.isPresent());
         Assertions.assertEquals(Set.of(), pBefore.get().getTags());
 
         eventPublisher.publishEvent(PartnerAddedEvent.builder().partner(pBefore.get()).build());
 
-        Assertions.assertEquals(partnerRepo.count(),1);
-        Assertions.assertEquals(tagRepo.count(),1);
-
-        Optional<Partner> pAfter = partnerRepo.findByConnectionId(connectionId);
+        Assertions.assertEquals(partnerRepo.count(), 1);
+        while (tagRepo.count() < 1) {
+            TimeUnit.MILLISECONDS.sleep(100);
+        }
+        Assertions.assertEquals(tagRepo.count(), 1);
+        Optional<Partner> pAfter = partnerRepo.findById(partner.getId());
         assert (pAfter.isPresent());
         Assertions.assertNotEquals(Set.of(), pAfter.get().getTags());
-
-        log.debug("partner: {}", pAfter.get());
         checkTagOnPartner(pAfter.get().getId(), tag);
     }
 

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.connection.ConnectionTheirRole;
+import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.TagAPI;
 import org.hyperledger.bpa.api.notification.Event;
 import org.hyperledger.bpa.controller.api.partner.UpdatePartnerRequest;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Data
@@ -147,12 +149,14 @@ public class RulesData {
                 Optional<Partner> partner = ctx.getPartnerRepo().findByConnectionId(connectionId);
 
                 if (partner.isPresent()) {
-                    TagAPI tagApi = ctx.getTagService().addTag(tag);
-                    ctx.getPartnerManager().updatePartner(partner.get().getId(),
-                    UpdatePartnerRequest.builder().tag(List.of(Tag.builder().id(tagApi.getId())
-                    .name(tagApi.getName()).build())).build());
-                    
-                    log.debug("partner tagged with tag: {}", tag);
+                    Tag t1 = ctx.getTagRepo().save(Tag
+                            .builder()
+                            .name(tag)
+                            .build());
+                    Optional<PartnerAPI> result = ctx.getPartnerManager().updatePartner(partner.get().getId(),
+                            UpdatePartnerRequest.builder().tag(List.of(t1)).build());
+                    Optional<Partner> updatedPartner = ctx.getPartnerRepo().findByConnectionId(connectionId);
+                    log.debug("partner {} tagged with tag: {}", updatedPartner.get(), tag);
                 }
                 log.debug("tag: {}, connectionId: {}", tag, connectionId);
             }

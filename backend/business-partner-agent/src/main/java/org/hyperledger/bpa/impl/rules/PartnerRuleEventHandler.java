@@ -70,10 +70,9 @@ public class PartnerRuleEventHandler {
     public void runRule(Event event) {
         List<RulesData> rules = rs.getAll();
         log.debug("Running event against {} active rules", rs.getAll().size());
-        log.debug("Count of Partners {}", partnerRepo.findAll());
         EventContext ctx = EventContext.builder().partnerRepo(partnerRepo)
-        .tagService(tagService).partnerManager(partnerManager)
-        .tagRepo(tagRepo).build();
+                .tagService(tagService).partnerManager(partnerManager)
+                .tagRepo(tagRepo).build();
         rules.parallelStream().forEach(r -> {
             if (r.getTrigger().apply(event)) {
                 log.debug("Run rule with event id: {}", r.getRuleId());
