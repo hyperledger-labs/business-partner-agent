@@ -59,6 +59,7 @@
             <artifactId>micronaut-data-jdbc</artifactId>
             <version>${micronaut.data.version}</version>
             <exclusions>
+                <!-- micronaut-data >= 3.5.0 -->
                 <exclusion>
                     <groupId>javax.transaction</groupId>
                     <artifactId>javax.transaction-api</artifactId>
