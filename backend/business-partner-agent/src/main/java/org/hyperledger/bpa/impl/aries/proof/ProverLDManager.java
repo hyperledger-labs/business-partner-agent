@@ -17,29 +17,36 @@
  */
 package org.hyperledger.bpa.impl.aries.proof;
 
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.util.CollectionUtils;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hyperledger.acy_py.generated.model.DIFOptions;
 import org.hyperledger.aries.AriesClient;
-import org.hyperledger.aries.api.present_proof_v2.DIFField;
-import org.hyperledger.aries.api.present_proof_v2.V20PresProposalByFormat;
-import org.hyperledger.aries.api.present_proof_v2.V20PresProposalRequest;
-import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential;
+import org.hyperledger.aries.api.present_proof_v2.*;
 import org.hyperledger.bpa.api.exception.NetworkException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
+import org.hyperledger.bpa.impl.aries.wallet.Identity;
 import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Singleton
 public class ProverLDManager extends BaseLDManager {
 
     @Inject
     AriesClient ac;
+
+    @Inject
+    Identity identity;
 
     @Inject
     BPAMessageSource.DefaultMessageSource ms;
@@ -98,5 +105,34 @@ public class ProverLDManager extends BaseLDManager {
                         ._const(e.getValue())
                         .build()))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+    }
+
+    void acceptSelectedDifCredentials(@NonNull V20PresExRecord dif, @Nullable List<String> referents) {
+        try {
+            List<VerifiableCredential.VerifiableCredentialMatch> matches = ac.presentProofV2RecordsCredentialsDif(
+                            dif.getPresentationExchangeId(), null)
+                    .orElseThrow();
+            Map<String, List<String>> singleMatches = matches.stream()
+                    .filter(m -> CollectionUtils.isEmpty(referents) || referents.contains(m.getRecordId()))
+                    .map(m -> new AbstractMap.SimpleEntry<>(LDContextHelper.findSchemaId(m), List.of(m.getRecordId())))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            if (CollectionUtils.isNotEmpty(singleMatches)) {
+                // set holder to null
+                V2DIFProofRequest presentationRequest = dif
+                        .resolveDifPresentationRequest()
+                        .resetHolderConstraints();
+                ac.presentProofV2RecordsSendPresentation(
+                        dif.getPresentationExchangeId(),
+                        V20PresSpecByFormatRequest.builder()
+                                .dif(DIFPresSpec.builder()
+                                        .issuerId(identity.getMyDid())
+                                        .presentationDefinition(presentationRequest.getPresentationDefinition())
+                                        .recordIds(singleMatches)
+                                        .build())
+                                .build());
+            }
+        } catch (IOException e) {
+            log.error(ms.getMessage("acapy.unavailable"), e);
+        }
     }
 }

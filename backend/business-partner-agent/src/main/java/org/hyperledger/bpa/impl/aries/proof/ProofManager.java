@@ -32,7 +32,6 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.exception.AriesException;
-import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.present_proof.*;
 import org.hyperledger.aries.api.present_proof_v2.*;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
@@ -47,7 +46,6 @@ import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsIndy;
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.aries.credential.CredentialInfoResolver;
-import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
@@ -340,7 +338,7 @@ public class ProofManager {
             if (presExRecord instanceof PresentationExchangeRecord indy) {
                 acceptSelectedIndyCredentials(referents, version, indy);
             } else if (presExRecord instanceof V20PresExRecord dif) {
-                acceptSelectedDifCredentials(dif, referents);
+                ldProver.acceptSelectedDifCredentials(dif, referents);
             }
         }
     }
@@ -381,34 +379,6 @@ public class ProofManager {
                         throw new PresentationConstructionException(msg);
                     }
                 }, () -> log.error("Could not load matching credentials from aca-py"));
-    }
-
-    private void acceptSelectedDifCredentials(@NonNull V20PresExRecord dif, @Nullable List<String> referents) {
-        try {
-            List<VerifiableCredential.VerifiableCredentialMatch> matches = ac.presentProofV2RecordsCredentialsDif(
-                    dif.getPresentationExchangeId(), null)
-                    .orElseThrow();
-            Map<String, List<String>> singleMatches = matches.stream()
-                    .filter(m -> CollectionUtils.isEmpty(referents) || referents.contains(m.getRecordId()))
-                    .map(m -> new AbstractMap.SimpleEntry<>(LDContextHelper.findSchemaId(m), List.of(m.getRecordId())))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-            if (CollectionUtils.isNotEmpty(singleMatches)) {
-                // set holder to null
-                V2DIFProofRequest presentationRequest = dif
-                        .resolveDifPresentationRequest()
-                        .resetHolderConstraints();
-                ac.presentProofV2RecordsSendPresentation(
-                        dif.getPresentationExchangeId(),
-                        V20PresSpecByFormatRequest.builder()
-                                .dif(DIFPresSpec.builder()
-                                        .presentationDefinition(presentationRequest.getPresentationDefinition())
-                                        .recordIds(singleMatches)
-                                        .build())
-                                .build());
-            }
-        } catch (IOException e) {
-            log.error(ms.getMessage("acapy.unavailable"), e);
-        }
     }
 
     private List<PresentationRequestCredentials> getPresentationRequestCredentials(
