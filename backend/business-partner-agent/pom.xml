@@ -63,6 +63,10 @@
                     <groupId>javax.transaction</groupId>
                     <artifactId>javax.transaction-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>jakarta.transaction</groupId>
+                    <artifactId>jakarta.transaction-api</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
