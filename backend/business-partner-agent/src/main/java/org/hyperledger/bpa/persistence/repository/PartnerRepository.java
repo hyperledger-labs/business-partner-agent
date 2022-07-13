@@ -51,15 +51,19 @@ public interface PartnerRepository extends CrudRepository<Partner, UUID> {
     @Join(value = "tags", type = Join.Type.LEFT_FETCH)
     Iterable<Partner> findAll();
 
+    @Join(value = "tags", type = Join.Type.LEFT_FETCH)
     Optional<Partner> findByConnectionId(String connectionId);
 
+    @Join(value = "tags", type = Join.Type.LEFT_FETCH)
     Optional<Partner> findByConnectionIdOrInvitationMsgId(@Nullable String connectionId,
             @Nullable String invitationMsgId);
 
+    @Join(value = "tags", type = Join.Type.LEFT_FETCH)
     Optional<Partner> findByDid(String did);
 
     List<Partner> findByDidIn(List<String> did);
 
+    @Join(value = "tags", type = Join.Type.LEFT_FETCH)
     Optional<Partner> findByInvitationMsgId(String invitationMsgId);
 
     @Query("SELECT distinct partner.* FROM partner,jsonb_to_recordset(partner.supported_credentials->'wrapped') as items(seqno text) where items.seqno = :seqNo")

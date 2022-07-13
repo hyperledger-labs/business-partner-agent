@@ -27,6 +27,7 @@ import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.bpa.controller.api.partner.PartnerCredentialType;
 import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.persistence.model.Partner;
+import org.hyperledger.bpa.persistence.model.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -34,6 +35,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -262,7 +264,7 @@ class PartnerRepositoryTest {
     }
 
     @Test
-    void testFinByConnectionOrInvitationId() {
+    void testFindByConnectionOrInvitationId() {
         partnerRepo.save(Partner.builder().did("empty").alias("empty").ariesSupport(Boolean.FALSE).build());
         partnerRepo.save(
                 Partner.builder().did("connId").alias("connId").ariesSupport(Boolean.FALSE).connectionId("1").build());
@@ -282,6 +284,38 @@ class PartnerRepositoryTest {
 
         p = partnerRepo.findByConnectionIdOrInvitationMsgId("4", "3").orElseThrow();
         assertEquals("both", p.getAlias());
+    }
+
+    @Test
+    void testTagsOnFoundPartner() {
+        Tag tag = tagRepo.save(Tag
+                .builder()
+                .name("tag")
+                .build());
+
+        Set<Tag> tags = Set.of(tag);
+
+        Partner partner = partnerRepo.save(Partner.builder().did("did").alias("alias")
+                .ariesSupport(Boolean.FALSE).connectionId("connectionId")
+                .invitationMsgId("invitationMsgId")
+                .tags(tags).build());
+
+        Optional<Partner> partnerById = partnerRepo.findById(partner.getId());
+        assert (partnerById.isPresent());
+        assertEquals("tag", partnerById.get().getTags().iterator().next().getName());
+
+        Optional<Partner> partnerByConnectionId = partnerRepo.findByConnectionId("connectionId");
+        assertEquals(partnerById, partnerByConnectionId);
+
+        Optional<Partner> partnerByInvitationMsgId = partnerRepo.findByInvitationMsgId("invitationMsgId");
+        assertEquals(partnerById, partnerByInvitationMsgId);
+
+        Optional<Partner> partnerByConnectionIdOrInvitationMsgId = partnerRepo
+                .findByConnectionIdOrInvitationMsgId("connectionId", "invitationMsgId");
+        assertEquals(partnerById, partnerByConnectionIdOrInvitationMsgId);
+
+        Optional<Partner> partnerByDid = partnerRepo.findByDid("did");
+        assertEquals(partnerById, partnerByDid);
     }
 
     @Data
