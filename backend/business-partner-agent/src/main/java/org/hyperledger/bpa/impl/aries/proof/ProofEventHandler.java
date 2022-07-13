@@ -69,7 +69,9 @@ public class ProofEventHandler {
         } else if (proof.roleIsProverAndRequestReceived()) {
             handleProofRequest(proof);
         } else if (proof.roleIsVerifier() && proof.stateIsPresentationReceived()) {
-            proofManager.handleVerifierPresentationReceived(proof.getVersion(), proof.getPresentationExchangeId());
+            if (proof.isNotAutoVerify()) {
+                proofManager.handleVerifierPresentationReceived(proof.getVersion(), proof.getPresentationExchangeId());
+            }
             handleAll(proof);
         } else if (StringUtils.isNotEmpty(proof.getErrorMsg())) {
             handleProblemReport(proof);
@@ -138,7 +140,7 @@ public class ProofEventHandler {
                                     pProof.setProofRequest(ExchangePayload.buildForProofRequest(dif));
                                 }
                                 pProofRepo.update(pProof);
-                                if (proof.getAutoPresent() == null || !proof.getAutoPresent()) {
+                                if (proof.isNotAutoPresent()) {
                                     proofManager.presentProofAcceptSelected(proof, null, pProof.getExchangeVersion());
                                 }
                             }
