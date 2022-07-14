@@ -143,7 +143,6 @@
 <script lang="ts">
 import {
   AriesProofExchange,
-  CredentialInfo,
   PresentationRequestCredentials,
   proofExService,
 } from "@/services";
@@ -420,41 +419,9 @@ export default {
           for (const cred of matchingCreds) {
             for (const c of cred.presentationReferents) {
               const attribute = this.record.proofRequest.requestedAttributes[c];
+              this.pushIfMatch(attribute, cred);
               const pred = this.record.proofRequest.requestedPredicates[c];
-              if (attribute) {
-                if (
-                  !Object.hasOwnProperty.call(attribute, "matchingCredentials")
-                ) {
-                  attribute.matchingCredentials = [];
-                }
-                const hasMatchingCred = attribute.matchingCredentials.some(
-                  (item: PresentationRequestCredentials) => {
-                    return (
-                      item.credentialInfo.referent ===
-                      cred.credentialInfo.referent
-                    );
-                  }
-                );
-                if (!hasMatchingCred) {
-                  attribute.matchingCredentials.push(cred);
-                }
-              } else if (pred) {
-                if (!Object.hasOwnProperty.call(pred, "matchingCredentials")) {
-                  pred.matchingCredentials = [];
-                }
-
-                const hasMatchingPred = pred.matchingCredentials.some(
-                  (item: PresentationRequestCredentials) => {
-                    return (
-                      item.credentialInfo.referent ===
-                      cred.credentialInfo.referent
-                    );
-                  }
-                );
-                if (!hasMatchingPred) {
-                  pred.matchingCredentials.push(cred);
-                }
-              }
+              this.pushIfMatch(pred, cred);
             }
           }
           this.record.canBeFulfilled = this.canBeFulfilled();
@@ -471,29 +438,46 @@ export default {
                 this.record.proofRequest.requestedAttributes[
                   match.credentialInfo.schemaId
                 ];
-              if (attribute) {
-                if (
-                  !Object.hasOwnProperty.call(attribute, "matchingCredentials")
-                ) {
-                  attribute.matchingCredentials = [];
-                }
-                const hasMatchingCred = attribute.matchingCredentials.some(
-                  (item: PresentationRequestCredentials) => {
-                    return (
-                      item.credentialInfo.referent ===
-                      match.credentialInfo.referent
-                    );
-                  }
-                );
-                if (!hasMatchingCred) {
-                  attribute.matchingCredentials.push(match);
+              this.pushIfMatch(attribute, match);
+              for (const key of Object.keys(
+                this.record.proofRequest.requestedPredicates
+              )) {
+                if (key.startsWith(match.credentialInfo.schemaId)) {
+                  this.pushIfMatch(
+                    this.record.proofRequest.requestedPredicates[key],
+                    match
+                  );
                 }
               }
             }
-
             this.record.canBeFulfilled = result.data.length > 0;
             this.isWaitingForMatchingCreds = false;
           });
+      }
+    },
+    pushIfMatch(
+      attributeOrPredicate: any,
+      match: PresentationRequestCredentials
+    ): void {
+      if (attributeOrPredicate) {
+        if (
+          !Object.hasOwnProperty.call(
+            attributeOrPredicate,
+            "matchingCredentials"
+          )
+        ) {
+          attributeOrPredicate.matchingCredentials = [];
+        }
+        const hasMatchingCred = attributeOrPredicate.matchingCredentials.some(
+          (item: PresentationRequestCredentials) => {
+            return (
+              item.credentialInfo.referent === match.credentialInfo.referent
+            );
+          }
+        );
+        if (!hasMatchingCred) {
+          attributeOrPredicate.matchingCredentials.push(match);
+        }
       }
     },
   },
