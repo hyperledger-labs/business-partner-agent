@@ -79,7 +79,7 @@
     <pluginRepositories>
         <pluginRepository>
             <id>plugin-snapshots</id>
-            <url>https://nexus.bosch-digital.com/repository/bds-snapshots</url>
+            <url>https://nexus.idu.network/repository/bds-snapshots</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
