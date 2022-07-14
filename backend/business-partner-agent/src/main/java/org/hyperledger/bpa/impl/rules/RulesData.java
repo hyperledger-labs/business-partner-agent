@@ -9,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.connection.ConnectionRecord;
 import org.hyperledger.aries.api.connection.ConnectionState;
 import org.hyperledger.aries.api.connection.ConnectionTheirRole;
-import org.hyperledger.bpa.api.PartnerAPI;
-import org.hyperledger.bpa.api.TagAPI;
 import org.hyperledger.bpa.api.notification.Event;
 import org.hyperledger.bpa.controller.api.partner.UpdatePartnerRequest;
 import org.hyperledger.bpa.persistence.model.ActiveRules;
@@ -19,9 +17,7 @@ import org.hyperledger.bpa.persistence.model.Tag;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Data
@@ -145,20 +141,23 @@ public class RulesData {
 
             @Override
             void run(EventContext ctx) {
-                // TODO: get partner by connection Id and update tags
-                Optional<Partner> partner = ctx.getPartnerRepo().findByConnectionId(connectionId);
+                Optional<Partner> partner = ctx.getPartnerRepo().findById(ctx.getPartner().getId());
 
                 if (partner.isPresent()) {
-                    Tag t1 = ctx.getTagRepo().save(Tag
-                            .builder()
-                            .name(tag)
-                            .build());
-                    Optional<PartnerAPI> result = ctx.getPartnerManager().updatePartner(partner.get().getId(),
-                            UpdatePartnerRequest.builder().tag(List.of(t1)).build());
-                    Optional<Partner> updatedPartner = ctx.getPartnerRepo().findByConnectionId(connectionId);
-                    log.debug("partner {} tagged with tag: {}", updatedPartner.get(), tag);
+                    this.connectionId = partner.get().getConnectionId();
+                    Optional<Tag> t1 = ctx.getTagRepo().findByName(tag);
+                    Tag t2;
+                    if (t1.isPresent()) {
+                        t2 = t1.get();
+                    } else {
+                        t2 = ctx.getTagRepo().save(Tag
+                                .builder()
+                                .name(tag)
+                                .build());
+                    }
+                    ctx.getPartnerManager().updatePartner(partner.get().getId(),
+                            UpdatePartnerRequest.builder().tag(List.of(t2)).build());
                 }
-                log.debug("tag: {}, connectionId: {}", tag, connectionId);
             }
         }
 

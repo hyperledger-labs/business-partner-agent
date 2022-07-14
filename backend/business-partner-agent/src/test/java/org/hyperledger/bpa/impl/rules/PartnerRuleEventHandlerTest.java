@@ -78,6 +78,7 @@ public class PartnerRuleEventHandlerTest {
 
         String connectionId = "de0d51e8-4c7f-4dc9-8b7b-a8f57182d822";
         String did = "did:1";
+        String did2 = "did:2";
         String tag = "some-tag";
 
         RulesData data = rulesService.add(new RulesData.Trigger.EventTrigger(PartnerAddedEvent.class.getSimpleName()),
@@ -89,7 +90,7 @@ public class PartnerRuleEventHandlerTest {
 
         Partner partner = partnerRepo.save(Partner
                 .builder()
-                .ariesSupport(Boolean.TRUE)
+                .ariesSupport(Boolean.FALSE)
                 .did(did)
                 .connectionId(connectionId)
                 .build());
@@ -111,6 +112,18 @@ public class PartnerRuleEventHandlerTest {
         assert (pAfter.isPresent());
         Assertions.assertNotEquals(Set.of(), pAfter.get().getTags());
         checkTagOnPartner(pAfter.get().getId(), tag);
+
+        Partner partner2 = partnerRepo.save(Partner
+                .builder()
+                .ariesSupport(Boolean.FALSE)
+                .did(did2)
+                .build());
+        eventPublisher.publishEvent(PartnerAddedEvent.builder().partner(partner2).build());
+        TimeUnit.MILLISECONDS.sleep(100);
+        Assertions.assertEquals(tagRepo.count(), 1);
+        Optional<Partner> p2After = partnerRepo.findById(partner2.getId());
+        assert (p2After.isPresent());
+        checkTagOnPartner(p2After.get().getId(), tag);
     }
 
     private void checkTagOnPartner(UUID partnerId, String... tagName) {
