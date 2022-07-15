@@ -93,7 +93,7 @@ Registering DID for ACAPY_SEED
   "seed": "12345678912345678912345678912300",
   "verkey": "FW4MZZhmcSsFnDZLCT5689EoUvzuEXqNRNYem1X6PZFYt"
 }
-Registration on https://indy-test.bosch-digital.de successful
+Registration on https://indy-test.idu.network successful
 Setting ACAPY_SEED in .env file
 .env does not exist
 Creating .env from .env-example
@@ -103,7 +103,7 @@ Registering DID for ACAPY_SEED2
 
 Alternatively, you can register a DID manually:
 
-1. Go to https://indy-test.bosch-digital.de/
+1. Go to https://indy-test.idu.network/
 2. Provide a 32 character wallet seed on the right side under "Authenticate a new DID" and click on "Register DID"
 3. Make a copy of the provided [.env-example file](.env-example) with the name `.env`. Set the `AGENT1_SEED` to the wallet seed. Repeat this process for the second DID if needed, and set the `ACAPY_SEED2` to the second wallet seed.
 
