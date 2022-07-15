@@ -37,7 +37,7 @@ In order to embed Indy Anconcreds in the public profile, we wrap their content i
 
 #### Example of a wrapped in Indy Credential
 
-Given an Indy Credential based on [this schema](https://indy-test.bosch-digital.de/browse/domain?page=1&query=M6Mbe3qx7vB4wpZF4sBRjt%3A2%3Abank_account%3A1.0&txn_type=), we dynamically create the following unsigned VC.
+Given an Indy Credential based on [this schema](https://indy-test.idu.network/browse/domain?page=1&query=M6Mbe3qx7vB4wpZF4sBRjt%3A2%3Abank_account%3A1.0&txn_type=), we dynamically create the following unsigned VC.
 It becomes verifiably self-attested by including it in a signed VP (see example at the end). The actual content of the original credential gets included in the `credentialSubject`.
 ```
 {

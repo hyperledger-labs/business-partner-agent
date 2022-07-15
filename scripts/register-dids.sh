@@ -34,7 +34,7 @@ SRC_FILE=${SRC_FILE:-".env-example"}
 DEST_FILE=${DEST_FILE:-".env"}
 
 # Set URL
-URL=${LEDGER_URL:-https://indy-test.bosch-digital.de}
+URL=${LEDGER_URL:-https://indy-test.idu.network}
 
 register_did() {
     # arg 1 is the env file var we are replacing
