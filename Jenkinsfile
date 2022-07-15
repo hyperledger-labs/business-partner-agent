@@ -21,7 +21,7 @@ pipeline {
                   jdk: "java-17",
                   maven: "${MVN_VERSION}",
                   globalMavenSettingsConfig: "${SETTINGS_ID}") {
-                     sh "mvn clean deploy -Pbuild-frontend -DaltDeploymentRepository=bds-nexus::default::https://nexus.bosch-digital.com/repository/bds-snapshots/"
+                     sh "mvn clean deploy -Pbuild-frontend -DaltDeploymentRepository=bds-nexus::default::https://nexus.idu.network/repository/bds-snapshots/"
                      sh "mvn docker:build docker:push -Ddocker.push.registry=nexus.bosch-digital.com:5000 -Ddocker.name=bds/%a"
                }
             }
