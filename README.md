@@ -93,7 +93,7 @@ It is not ready for production use.  Releases are in general considered "alpha",
 
 The Business Partner Agent supports two modes
 1. Web mode: Serves a did:web identity and allows to publish a public organizational profile.
-2. Indy mode: Utilizes an identity on an Hyperledger Indy ledger (default: https://indy-test.bosch-digital.de/)
+2. Indy mode: Utilizes an identity on an Hyperledger Indy ledger (default: https://indy-test.idu.network/)
 
 Both modes are currently coupled with a specific instance of an Indy network in order to read schemas and credential definitions.
 The agent is started in Indy mode per default and tries to connect with our test network. Please refer to the [.env-example file](scripts/.env-example) to start the agent in web mode or connect to a different Indy network.
