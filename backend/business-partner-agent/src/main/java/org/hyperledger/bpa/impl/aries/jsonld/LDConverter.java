@@ -101,7 +101,7 @@ public class LDConverter {
                                         .builder();
                                 rp.name(p);
                                 rp.pType(typeToValue.type);
-                                rp.pValue(typeToValue.value.intValue());
+                                rp.pValue(Integer.parseInt(typeToValue.value));
                                 rp.restriction(PresentProofRequest.ProofRequest.ProofRestrictions.builder()
                                         .schemaId(schemaId).build().toJsonObject());
                                 result.put(id.getId() + "-" + c.counter().incrementAndGet(), rp.build());
@@ -183,6 +183,6 @@ public class LDConverter {
     record Counter(AtomicInteger counter) {
     }
 
-    record TypeToValue(IndyProofReqPredSpec.PTypeEnum type, Number value) {
+    record TypeToValue(IndyProofReqPredSpec.PTypeEnum type, String value) {
     }
 }

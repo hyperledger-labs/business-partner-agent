@@ -23,6 +23,7 @@ import lombok.NonNull;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hyperledger.acy_py.generated.model.DIFOptions;
 import org.hyperledger.aries.AriesClient;
+import org.hyperledger.aries.api.jsonld.ProofType;
 import org.hyperledger.aries.api.present_proof_v2.DIFField;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
@@ -58,11 +59,11 @@ public class VerifierLDManager extends BaseLDManager {
                 .presentationDefinition(V2DIFProofRequest.PresentationDefinition.builder()
                         .id(UUID.randomUUID())
                         .name(proofTemplate.getName())
-//                        .format(V2DIFProofRequest.PresentationDefinition.ClaimFormat.builder()
-//                                .ldpVp(V2DIFProofRequest.PresentationDefinition.ClaimFormat.LdpVp.builder()
-//                                        .addProofType(ProofType.Ed25519Signature2018)
-//                                        .build())
-//                                .build())
+                        .format(V2DIFProofRequest.PresentationDefinition.ClaimFormat.builder()
+                                .ldpVp(V2DIFProofRequest.PresentationDefinition.ClaimFormat.LdpVp.builder()
+                                        .addProofType(ProofType.Ed25519Signature2018)
+                                        .build())
+                                .build())
                         .inputDescriptors(proofTemplate.streamAttributeGroups()
                                 .map(this::groupToDescriptor)
                                 .collect(Collectors.toList()))
