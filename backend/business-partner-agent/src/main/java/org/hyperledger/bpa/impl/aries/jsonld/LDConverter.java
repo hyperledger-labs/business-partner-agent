@@ -77,9 +77,9 @@ public class LDConverter {
                 if (filter != null) {
                     TypeToValue typeToValue;
                     if (filter.getMinimum() != null) {
-                        typeToValue = new TypeToValue(IndyProofReqPredSpec.PTypeEnum.LESS_THAN, filter.getMinimum());
+                        typeToValue = new TypeToValue(IndyProofReqPredSpec.PTypeEnum.GREATER_THAN_OR_EQUAL_TO, filter.getMinimum());
                     } else if (filter.getMaximum() != null) {
-                        typeToValue = new TypeToValue(IndyProofReqPredSpec.PTypeEnum.GREATER_THAN_OR_EQUAL_TO,
+                        typeToValue = new TypeToValue(IndyProofReqPredSpec.PTypeEnum.LESS_THAN_OR_EQUAL_TO,
                                 filter.getMaximum());
                     } else if (filter.getExclusiveMaximum() != null) {
                         typeToValue = new TypeToValue(IndyProofReqPredSpec.PTypeEnum.LESS_THAN,
