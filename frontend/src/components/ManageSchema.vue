@@ -146,15 +146,12 @@
         </v-tabs-items>
       </v-container>
       <v-card-actions>
-        <v-layout align-end justify-end>
-          <v-bpa-button
-            v-show="!isEditingAttributes"
-            color="secondary"
-            @click="editSchema()"
+        <v-layout align-end justify-end v-show="tabIsSchemaAttribute">
+          <v-bpa-button v-show="!isEdit" color="secondary" @click="editSchema()"
             >{{ $t("button.edit") }}
           </v-bpa-button>
           <v-bpa-button
-            v-show="isEditingAttributes"
+            v-show="isEdit"
             color="secondary"
             @click="updateSchema()"
             >{{ $t("button.save") }}</v-bpa-button
@@ -249,8 +246,8 @@ export default {
         });
       return tabs;
     },
-    isEditingAttributes() {
-      return this.isEdit && this.tab === "schema-attributes";
+    tabIsSchemaAttribute() {
+      return this.tab === "schema-attributes";
     },
   },
   methods: {
