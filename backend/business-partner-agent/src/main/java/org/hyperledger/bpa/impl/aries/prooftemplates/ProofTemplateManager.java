@@ -103,7 +103,10 @@ public class ProofTemplateManager {
         }
     }
 
-    public Set<String> getKnownConditionOperators() {
+    public Set<String> getKnownConditionOperators(@Nullable CredentialType type) {
+        if (CredentialType.JSON_LD.equals(type)) {
+            return Set.of(ValueOperators.EQUALS.getValue());
+        }
         return Arrays.stream(ValueOperators.values()).map(ValueOperators::getValue).collect(Collectors.toSet());
     }
 }

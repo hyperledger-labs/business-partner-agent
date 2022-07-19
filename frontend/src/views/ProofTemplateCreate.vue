@@ -74,7 +74,10 @@
                   </div>
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                  <AttributeEdit v-model="proofTemplate.attributeGroups[idx]" />
+                  <AttributeEdit
+                    v-model="proofTemplate.attributeGroups[idx]"
+                    :type="proofTemplate.type"
+                  />
 
                   <!-- Schema Restrictions -->
                   <RestrictionsEdit
