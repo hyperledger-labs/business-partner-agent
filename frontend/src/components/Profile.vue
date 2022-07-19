@@ -14,8 +14,8 @@
         <v-tooltip top>
           <template v-slot:activator="{ on, attrs }">
             <v-card-subtitle
-              class="pa-0 ma-0 ml-auto"
               v-bind="attrs"
+              class="pa-0 ma-0 ml-auto"
               v-on="on"
               @click="copyDid"
               @mouseout="reset"
@@ -41,7 +41,7 @@
         </v-layout>
       </v-card-actions>
     </v-card>
-    <v-card class="my-4" v-for="item in credentials" v-bind:key="item.id">
+    <v-card v-bind:key="item.id" class="my-4" v-for="item in credentials">
       <v-card-title class="bg-light">
         <span v-if="item.type === CredentialTypes.UNKNOWN.type">
           {{ $filters.credentialTag(item.credentialDefinitionId) }}

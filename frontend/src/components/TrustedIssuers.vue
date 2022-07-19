@@ -8,7 +8,7 @@
 
 <template>
   <v-container>
-    <v-row v-for="(entry, index) in items" v-bind:key="index">
+    <v-row v-bind:key="index" v-for="(entry, index) in items">
       <v-col cols="4" class="py-0">
         <v-text-field
           :label="$t('component.trustedIssuers.labelDid')"

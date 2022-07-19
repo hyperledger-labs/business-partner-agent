@@ -48,7 +48,8 @@
       <v-card-actions>
         <v-menu>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn
+            <v-btn              
+              v-bind="attrs"
               color="primary"
               dark
               small
@@ -56,7 +57,6 @@
               bottom
               left
               fab
-              v-bind="attrs"
               v-on="on"
             >
               <v-icon>$vuetify.icons.add</v-icon>

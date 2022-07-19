@@ -50,10 +50,10 @@
           <v-tooltip v-if="item.problemReport" top>
             <template v-slot:activator="{ on, attrs }">
               <v-icon
+                v-bind="attrs"
                 color="error"
                 small
                 class="iconHeight"
-                v-bind="attrs"
                 v-on="on"
               >
                 $vuetify.icons.connectionAlert

@@ -134,9 +134,9 @@
                           <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
                               <v-btn
+                                v-bind="attrs"
                                 class="mr-0"
                                 icon
-                                v-bind="attrs"
                                 v-on="on"
                                 @click="copyInvitationURL"
                               >

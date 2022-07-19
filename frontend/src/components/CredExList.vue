@@ -17,7 +17,7 @@
       :hide-default-footer="hideFooter"
       :headers="headers"
       :items="exchanges"
-      :options.sync="options"
+      :options="options"
       :server-items-length="totalNumberOfElements"
       sort-by="updatedAt"
       sort-desc
@@ -44,10 +44,10 @@
           <v-tooltip v-if="item.errorMsg && stateIsProblemOrDeclined(item)" top>
             <template v-slot:activator="{ on, attrs }">
               <v-icon
+                v-bind="attrs"
                 color="error"
                 class="iconHeight"
                 small
-                v-bind="attrs"
                 v-on="on"
               >
                 $vuetify.icons.connectionAlert

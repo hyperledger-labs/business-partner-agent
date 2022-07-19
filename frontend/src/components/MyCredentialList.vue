@@ -14,7 +14,7 @@
       v-model="inputValue"
       :headers="headers"
       :items="data"
-      :options.sync="options"
+      :options="options"
       :server-items-length="totalNumberOfElements"
       :show-select="selectable"
       single-select
@@ -36,11 +36,11 @@
           "
           v-bind:class="{ 'font-weight-medium': !item.new }"
         >
-       {{
+          {{
             $filters
               .credentialTag(item.credentialDefinitionId)
               .capitalize(item.credentialDefinitionId)
-        }}        
+          }}
         </div>
         <div v-else v-bind:class="{ 'font-weight-medium': item.new }">
           {{ item.typeLabel }}

@@ -75,8 +75,8 @@
                 </v-col>
               </v-row>
               <v-row
-                v-for="(attr, index) in schemaAttributes"
                 v-bind:key="attr.type"
+                v-for="(attr, index) in schemaAttributes"
               >
                 <v-col cols="8" class="py-0">
                   <v-text-field

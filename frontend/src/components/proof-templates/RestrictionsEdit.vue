@@ -120,7 +120,7 @@
       max-width="600px"
     >
       <template v-slot:activator="{ on, attrs }">
-        <v-bpa-button color="secondary" v-bind="attrs" v-on="on">{{
+        <v-bpa-button v-bind="attrs" color="secondary" v-on="on">{{
           $t("view.proofTemplate.restrictions.dialog.addTrustedIssuer")
         }}</v-bpa-button>
       </template>

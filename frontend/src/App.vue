@@ -230,7 +230,7 @@
       <v-spacer></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn icon v-bind="attrs" v-on="on" @click="copyDid">
+          <v-btn v-bind="attrs" icon v-on="on" @click="copyDid">
             <v-icon>$vuetify.icons.identity</v-icon>
           </v-btn>
         </template>

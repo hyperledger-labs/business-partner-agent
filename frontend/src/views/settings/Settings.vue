@@ -33,9 +33,9 @@
         <v-tooltip top>
           <template v-slot:activator="{ on, attrs }">
             <v-btn
+              v-bind="attrs"
               icon
               x-small
-              v-bind="attrs"
               v-on="on"
               @click="copyDid"
               @mouseout="reset"

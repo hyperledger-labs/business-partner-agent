@@ -39,10 +39,10 @@
           <v-expansion-panel-content>
             <v-list dense>
               <v-list-item
+                v-bind:key="key"
                 v-for="[key, value] in Object.entries(
                   this.document.proofData.identifier
                 )"
-                v-bind:key="key"
               >
                 <v-list-item-content>
                   <v-list-item-title class="font-weight-medium">

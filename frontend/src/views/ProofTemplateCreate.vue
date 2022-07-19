@@ -104,11 +104,11 @@
             <v-menu>
               <template v-slot:activator="{ on, attrs }">
                 <v-bpa-button
+                  v-bind="attrs"
                   color="primary"
                   bottom
                   left
                   fab
-                  v-bind="attrs"
                   v-on="on"
                 >
                   <v-icon>$vuetify.icons.add</v-icon>
@@ -168,7 +168,7 @@
     <v-snackbar v-model="snackbar.deleteShow" :timeout="snackbar.timeout">
       {{ snackbar.text }}
       <template v-slot:action="{ attrs }">
-        <v-bpa-button text v-bind="attrs" @click="snackbar.deleteShow = false">
+        <v-bpa-button v-bind="attrs" text @click="snackbar.deleteShow = false">
           {{ $t("app.snackBar.close") }}
         </v-bpa-button>
       </template>
