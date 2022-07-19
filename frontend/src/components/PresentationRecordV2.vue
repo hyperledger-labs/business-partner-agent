@@ -30,9 +30,9 @@
         v-for="([groupName, group], idx) in Object.entries(
           record.proofRequest['requestedAttributes']
         )"
+        :key="groupName + idx"
       >
-        <CredentialCard :key="groupName + idx" v-bind:document="group">
-        </CredentialCard>
+        <CredentialCard v-bind:document="group"> </CredentialCard>
       </template>
     </v-container>
 

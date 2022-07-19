@@ -25,6 +25,8 @@ import {
   status,
 } from "@/store/modules";
 
+// TODO upgrade Vuex to vue3 compatible version
+// @ts-ignore
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
