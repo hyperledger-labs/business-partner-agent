@@ -2,7 +2,7 @@
 - id: BoschTest
   is_production: true
   is_write: true
-  genesis_url: 'https://indy-test.bosch-digital.de/genesis'
+  genesis_url: 'https://indy-test.idu.network/genesis'
 - id: bcorvinTest
   is_production: false
   is_write: false
