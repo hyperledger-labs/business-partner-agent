@@ -32,6 +32,8 @@ import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.aries.api.credentials.Credential;
 import org.hyperledger.aries.api.exception.AriesException;
+import org.hyperledger.aries.api.jsonld.VerifiableCredential;
+import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.present_proof.*;
 import org.hyperledger.aries.api.present_proof_v2.*;
 import org.hyperledger.aries.api.schema.SchemaSendResponse.Schema;
@@ -409,9 +411,15 @@ public class ProofManager {
                                             indy.getIdentifiers())));
             didRes.resolveDid(pp, indy.getIdentifiers());
         } else if (proof instanceof V20PresExRecord dif) {
+            VerifiablePresentation<VerifiableCredential> ldProof = dif.resolveDifPresentation();
+            if (CollectionUtils.isEmpty(ldProof.getVerifiableCredential())) {
+                // received empty presentation, this happens if there was no match
+                // as aca-py only verifies the signatures the presentation is still marked valid
+                pp.setValid(Boolean.FALSE);
+            }
             pp
                     .setProofRequest(ExchangePayload.jsonLD(dif.resolveDifPresentationRequest()))
-                    .setProof(ExchangePayload.jsonLD(dif.resolveDifPresentation()));
+                    .setProof(ExchangePayload.jsonLD(ldProof));
         }
         return pProofRepo.update(pp);
     }
