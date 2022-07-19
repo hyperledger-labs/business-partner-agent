@@ -74,7 +74,7 @@
       </template>
 
       <template v-slot:[`item.updatedAt`]="{ item }">
-        {{ item.updatedAt | formatDateLong }}
+        {{ $filters.formatDateLong(item.updatedAt) }}
       </template>
     </v-data-table>
   </v-container>
