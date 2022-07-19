@@ -36,24 +36,27 @@
           "
           v-bind:class="{ 'font-weight-medium': !item.new }"
         >
-          {{ item.credentialDefinitionId | credentialTag | capitalize }}
+       {{
+            $filters
+              .credentialTag(item.credentialDefinitionId)
+              .capitalize(item.credentialDefinitionId)
+        }}        
         </div>
-
         <div v-else v-bind:class="{ 'font-weight-medium': item.new }">
           {{ item.typeLabel }}
         </div>
       </template>
 
       <template v-slot:[`item.createdAt`]="{ item }">
-        {{ item.createdAt | formatDateLong }}
+        {{ $filters.formatDateLong(item.createdAt) }}
       </template>
 
       <template v-slot:[`item.updatedAt`]="{ item }">
-        {{ item.updatedAt | formatDateLong }}
+        {{ $filters.formatDateLong(item.updatedAt) }}
       </template>
 
       <template v-slot:[`item.issuedAt`]="{ item }">
-        {{ item.issuedAt | formatDateLong }}
+        {{ $filters.formatDateLong(item.issuedAt) }}
       </template>
 
       <template v-slot:[`item.revoked`]="{ item }">

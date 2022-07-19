@@ -51,7 +51,7 @@
             {{ $t("view.presentationRecord.role") }}
           </v-list-item-title>
           <v-list-item-subtitle align="">
-            {{ record.role | capitalize }}
+            {{ $filters.capitalize(record.role) }}
           </v-list-item-subtitle>
         </v-list-item>
         <v-divider></v-divider>
@@ -63,7 +63,9 @@
           </v-list-item-title>
           <v-list-item-subtitle align="">
             {{
-              (record.state ? record.state.replace("_", " ") : "") | capitalize
+              $filters.capitalize(
+                record.state ? record.state.replace("_", " ") : ""
+              )
             }}
           </v-list-item-subtitle>
         </v-list-item>

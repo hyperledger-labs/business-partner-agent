@@ -22,11 +22,11 @@
           >
             <v-row class="pt-1">
               <v-col cols="3">
-                {{ item[1] | formatDateLong }}
+                {{ $filters.formatDateLong(item[1]) }}
               </v-col>
               <v-col>
                 <strong>
-                  {{ item[0].replace("_", " ") | capitalize }}
+                  {{ $filters.capitalize(item[0].replace("_", " ")) }}
                 </strong>
                 <div class="text-caption">
                   {{ item[2] }}

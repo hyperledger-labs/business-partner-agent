@@ -13,10 +13,10 @@
           <v-icon dark>$vuetify.icons.prev</v-icon>
         </v-btn>
         <div v-if="credential.type === CredentialTypes.UNKNOWN.type">
-          {{ credential.credentialDefinitionId | credentialTag }}
+          {{ $filters.credentialTag(credential.credentialDefinitionId) }}
         </div>
         <div v-else>
-          {{ credential.typeLabel | capitalize }}
+          {{ $filters.capitalize(credential.typeLabel) }}
         </div>
         <v-layout align-end justify-end>
           <v-btn depressed color="red" icon @click="deleteCredential()">

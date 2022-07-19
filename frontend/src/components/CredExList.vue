@@ -29,7 +29,9 @@
       </template>
       <template v-slot:[`item.state`]="{ item }">
         <span>
-          {{ (item.state ? item.state.replace("_", " ") : "") | capitalize }}
+          {{
+            $filters.capitalize(item.state ? item.state.replace("_", " ") : "")
+          }}
           <v-icon
             v-if="isItemActive(item) && !item.revoked"
             class="iconHeight"
@@ -56,13 +58,13 @@
         </span>
       </template>
       <template v-slot:[`item.updatedAt`]="{ item }">
-        {{ item.updatedAt | formatDateLong }}
+        {{ $filters.formatDateLong(item.updatedAt) }}
       </template>
       <template v-slot:[`item.createdAt`]="{ item }">
-        {{ item.createdAt | formatDateLong }}
+        {{ $filters.formatDateLong(item.createdAt) }}
       </template>
       <template v-slot:[`item.role`]="{ item }">
-        {{ item.role | capitalize }}
+        {{ $filters.capitalize(item.role) }}
       </template>
       <template v-slot:[`item.revocable`]="{ item }">
         <span v-if="item.revocable && item.revoked"

@@ -16,7 +16,7 @@ import i18n from "./plugins/i18n";
 import vuetify from "./plugins/vuetify";
 import router from "./router";
 import store from "./store";
-import "@/filters";
+import filters from "@/filters";
 
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
@@ -26,6 +26,10 @@ import { RuntimeConfig, settingsService } from "@/services";
 Vue.component("vue-json-pretty", VueJsonPretty);
 
 //Vue.use(vue_moment);
+
+//TODO uncomment line to activate global filters when app is created 
+//with vue3 function createApp()
+//app.config.globalProperties.$filters = filters;
 
 const apiBaseUrl = process.env.VUE_APP_API_BASE_URL
   ? process.env.VUE_APP_API_BASE_URL

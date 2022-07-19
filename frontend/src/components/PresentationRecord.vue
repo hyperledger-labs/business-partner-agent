@@ -14,7 +14,7 @@
         {{ $t("view.presentationRecord.role") }}
       </v-list-item-title>
       <v-list-item-subtitle>
-        {{ record.role | capitalize }}
+        {{ $filters.capitalize(record.role) }}
       </v-list-item-subtitle>
     </v-list-item>
 
@@ -23,8 +23,11 @@
         {{ $t("view.presentationRecord.state") }}
       </v-list-item-title>
       <v-list-item-subtitle>
-        {{ (record.state ? record.state.replace("_", " ") : "") | capitalize }}
-      </v-list-item-subtitle>
+        {{
+          $filters.capitalize(
+            record.state ? record.state.replace("_", " ") : ""
+          )
+        }}      </v-list-item-subtitle>
     </v-list-item>
 
     <v-list-item v-if="expertMode">
@@ -32,8 +35,9 @@
         {{ $t("view.presentationRecord.type") }}
       </v-list-item-title>
       <v-list-item-subtitle>
-        {{ (record.type ? record.type.replace("_", " ") : "") | capitalize }}
-      </v-list-item-subtitle>
+        {{
+          $filters.capitalize(record.type ? record.type.replace("_", " ") : "")
+        }}      </v-list-item-subtitle>
     </v-list-item>
 
     <v-list-item>
