@@ -25,7 +25,7 @@ import { RuntimeConfig, settingsService } from "@/services";
 
 Vue.component("vue-json-pretty", VueJsonPretty);
 
-Vue.use(vue_moment);
+//Vue.use(vue_moment);
 
 const apiBaseUrl = process.env.VUE_APP_API_BASE_URL
   ? process.env.VUE_APP_API_BASE_URL
@@ -150,7 +150,7 @@ Vue.prototype.$config = {
     router,
     store,
     i18n,
-    render: (h) => h(App),
+    render: (h: any) => h(App),
   }).$mount("#app");
 })();
 
