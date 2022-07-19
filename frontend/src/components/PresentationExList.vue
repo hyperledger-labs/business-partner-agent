@@ -9,12 +9,13 @@
 <template>
   <v-container>
     <v-data-table
-      :loading="isLoading"
-      :hide-default-footer="items.length < 10"
+      :hide-default-footer="hideFooter"
       :headers="headers"
       :items="items"
-      :sort-by="['updatedAt']"
-      :sort-desc="[true]"
+      options.sync="pageOptions"
+      :server-items-length="totalNumberOfElements"
+      sort-by="updatedAt"
+      sort-desc
       single-select
       @click:row="openItem"
     >
@@ -143,6 +144,7 @@
 <script lang="ts">
 import {
   AriesProofExchange,
+  PageOptions,
   PresentationRequestCredentials,
   proofExService,
 } from "@/services";
@@ -160,6 +162,10 @@ export default {
   props: {
     value: Array,
     openItemById: String,
+    partnerId: String,
+    pageOptions: {},
+    totalNumberOfElements: Number,
+    hideFooter: Boolean,
   },
   mounted() {
     // Open Item directly. Is used for links from notifications/activity
@@ -187,7 +193,8 @@ export default {
       },
       dialog: false,
       isBusy: false,
-      isLoading: false,
+      // hideFooter: true,
+      // totalNumberOfElements: 0,
       isWaitingForMatchingCreds: false,
       declineReasonText: "",
     };
@@ -201,6 +208,14 @@ export default {
         this.$emit("input", value);
       },
     },
+    // options: {
+    //   get() {
+    //     return this.pageOptions;
+    //   },
+    //   set(pageOptions: PageOptions) {
+    //     this.$emit("input", pageOptions);
+    //   },
+    // },
     headers() {
       return [
         {

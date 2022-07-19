@@ -150,7 +150,11 @@
       <PresentationExList
         v-if="isReady"
         v-model="presentationExRecords"
-        v-bind:openItemById="presExId"
+        v-bind:partnerId="this.id"
+        v-bind:openItemById="this.presExId"
+        v-bind:pageOptions="this.presExPagingOptions"
+        v-bind:totalNumberOfElements="this.totalNumberOfPresExElements"
+        v-bind:hideFooter="this.hidePresExFooter"
         @changed="refreshPresentationRecords"
       />
       <v-card-actions>
@@ -167,9 +171,10 @@
             class="grey--text text--darken-2 font-weight-medium bg-light"
             >{{ $t("showRawData") }}</v-expansion-panel-header
           >
-          <v-expansion-panel-content class="bg-light">
-            <vue-json-pretty :data="presentationExRecords"></vue-json-pretty>
-          </v-expansion-panel-content>
+          <!--          TODO: wichtigkeit im dev meeting bereden. do it with references.-->
+          <!--          <v-expansion-panel-content class="bg-light">-->
+          <!--            <vue-json-pretty :data="presentationExRecords"></vue-json-pretty>-->
+          <!--          </v-expansion-panel-content>-->
         </v-expansion-panel>
       </v-expansion-panels>
     </v-card>
@@ -272,6 +277,7 @@ import { getPartnerState } from "@/utils/partnerUtils";
 import { EventBus } from "@/main";
 import {
   AriesProofExchange,
+  PageOptions,
   PartnerAPI,
   PartnerCredential,
   partnerService,
@@ -328,9 +334,19 @@ export default {
       rawData: {} as PartnerAPI,
       credentials: new Array<PartnerCredential>(),
       presentationExRecords: new Array<AriesProofExchange>(),
+      presExPagingOptions: {},
+      totalNumberOfPresExElements: 0,
+      hidePresExFooter: false,
       PartnerStates: PartnerStates,
       issueCredentialDialog: false,
     };
+  },
+  watch: {
+    presExPagingOptions: {
+      handler() {
+        this.getPresentationRecords();
+      },
+    },
   },
   computed: {
     expertMode() {
@@ -385,23 +401,27 @@ export default {
     refreshPresentationRecords() {
       this.getPresentationRecords();
     },
-    getPresentationRecords() {
+    async getPresentationRecords() {
       console.log("Getting presentation records...");
       this.isLoadingPresExRecords = true;
-      partnerService
-        .getPresentationExRecords(this.id)
-        .then((result) => {
-          this.isLoadingPresExRecords = false;
-          if (Object.prototype.hasOwnProperty.call(result, "data")) {
-            let data = result.data;
-            console.log(data);
-            this.presentationExRecords = data;
-          }
-        })
-        .catch((error) => {
-          this.isLoadingPresExRecords = false;
-          console.error(error);
-        });
+      this.presentationExRecords = [];
+      const params = PageOptions.toUrlSearchParams(this.presExPagingOptions);
+      try {
+        const response = await partnerService.getPresentationExRecords(
+          this.id,
+          params
+        );
+        if (response.status === 200) {
+          const { itemsPerPage } = this.presExPagingOptions;
+          this.presentationExRecords = response.data.content;
+          this.totalNumberOfPresExElements = response.data.totalSize;
+          this.hidePresExFooter =
+            this.totalNumberOfPresExElements <= itemsPerPage;
+        }
+      } catch (error) {
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
+      }
+      this.isLoadingPresExRecords = false;
     },
     refreshIssuedCredentialRecords() {
       this.$refs.credExList.loadCredentials();

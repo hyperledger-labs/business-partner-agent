@@ -13,6 +13,7 @@ import {
   ApproveProofRequest,
   AriesProofExchange,
   DeclineExchangeRequest,
+  Page,
   PresentationRequestCredentials,
   PresentationRequestCredentialsDif,
 } from "@/services/types-services";
@@ -22,6 +23,17 @@ export default {
   // Presentation/Proof Exchange API
   //
 
+  // listPresentationExRecords(
+  //   id?: string,
+  //   params: URLSearchParams = new URLSearchParams()
+  // ): Promise<AxiosResponse<Page<AriesProofExchange[]>>> {
+  //   if (id) {
+  //     params.set("partnerId", id);
+  //   }
+  //   return appAxios().get(`${ApiRoutes.PROOF_EXCHANGES}/${id}`, {
+  //     params: params,
+  //   });
+  // },
   declineProofRequest(
     id: string,
     reasonMessage: string

@@ -22,6 +22,8 @@ import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -451,10 +453,13 @@ public class ProofManager {
 
     // CRUD methods
 
-    public List<AriesProofExchange> listPartnerProofs(@NonNull UUID partnerId) {
-        return pProofRepo.findByPartnerIdOrderByRole(partnerId).stream()
-                .map(conv::toAPIObject)
-                .collect(Collectors.toList());
+    public Page<AriesProofExchange> listPartnerProofs(@NonNull UUID partnerId, @NonNull Pageable pageable) {
+      Page<PartnerProof> pExchanges = pProofRepo.findByPartnerIdOrderByRole(partnerId, pageable);
+      return pExchanges.map(conv::toAPIObject);
+
+//      return pProofRepo.findByPartnerIdOrderByRole(partnerId).stream()
+//                .map(conv::toAPIObject)
+//                .collect(Collectors.toList());
     }
 
     public AriesProofExchange getPartnerProofById(@NonNull UUID id) {

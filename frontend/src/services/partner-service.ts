@@ -13,6 +13,7 @@ import {
   AddPartnerRequest,
   AriesProofExchange,
   ChatMessage,
+  Page,
   PartnerAPI,
   SendMessageRequest,
   SendProofRequest,
@@ -85,9 +86,12 @@ export default {
   },
 
   getPresentationExRecords(
-    id: string
-  ): Promise<AxiosResponse<AriesProofExchange[]>> {
-    return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/proof-exchanges`);
+    id?: string,
+    params: URLSearchParams = new URLSearchParams()
+  ): Promise<AxiosResponse<Page<AriesProofExchange[]>>> {
+    return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/proof-exchanges`, {
+      params: params,
+    });
   },
 
   lookupPartner(did: string): Promise<AxiosResponse<PartnerAPI>> {
