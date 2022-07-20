@@ -86,9 +86,10 @@ export default {
   },
 
   getPresentationExRecords(
-    id?: string,
+    id: string,
     params: URLSearchParams = new URLSearchParams()
   ): Promise<AxiosResponse<Page<AriesProofExchange[]>>> {
+    params.set("partnerId", id);
     return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/proof-exchanges`, {
       params: params,
     });

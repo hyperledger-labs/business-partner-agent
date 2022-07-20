@@ -143,18 +143,11 @@
           </v-bpa-button>
         </v-layout>
       </v-card-title>
-      <v-progress-linear
-        v-if="isLoadingPresExRecords"
-        indeterminate
-      ></v-progress-linear>
       <PresentationExList
+        ref="presExList"
         v-if="isReady"
-        v-model="presentationExRecords"
         v-bind:partnerId="this.id"
         v-bind:openItemById="this.presExId"
-        v-bind:pageOptions="this.presExPagingOptions"
-        v-bind:totalNumberOfElements="this.totalNumberOfPresExElements"
-        v-bind:hideFooter="this.hidePresExFooter"
         @changed="refreshPresentationRecords"
       />
       <v-card-actions>
@@ -277,7 +270,6 @@ import { getPartnerState } from "@/utils/partnerUtils";
 import { EventBus } from "@/main";
 import {
   AriesProofExchange,
-  PageOptions,
   PartnerAPI,
   PartnerCredential,
   partnerService,
@@ -312,7 +304,6 @@ export default {
   created() {
     EventBus.$emit("title", this.$t("view.partner.title"));
     this.getPartner();
-    this.getPresentationRecords();
     this.$store.commit("partnerNotificationSeen", { id: this.id });
   },
   data: () => {
@@ -320,7 +311,6 @@ export default {
       isReady: false,
       isBusy: false,
       isLoading: true,
-      isLoadingPresExRecords: true,
       attentionPartnerStateDialog: false,
       updatePartnerDialog: false,
       goTo: {},
@@ -334,19 +324,9 @@ export default {
       rawData: {} as PartnerAPI,
       credentials: new Array<PartnerCredential>(),
       presentationExRecords: new Array<AriesProofExchange>(),
-      presExPagingOptions: {},
-      totalNumberOfPresExElements: 0,
-      hidePresExFooter: false,
       PartnerStates: PartnerStates,
       issueCredentialDialog: false,
     };
-  },
-  watch: {
-    presExPagingOptions: {
-      handler() {
-        this.getPresentationRecords();
-      },
-    },
   },
   computed: {
     expertMode() {
@@ -399,29 +379,7 @@ export default {
       }
     },
     refreshPresentationRecords() {
-      this.getPresentationRecords();
-    },
-    async getPresentationRecords() {
-      console.log("Getting presentation records...");
-      this.isLoadingPresExRecords = true;
-      this.presentationExRecords = [];
-      const params = PageOptions.toUrlSearchParams(this.presExPagingOptions);
-      try {
-        const response = await partnerService.getPresentationExRecords(
-          this.id,
-          params
-        );
-        if (response.status === 200) {
-          const { itemsPerPage } = this.presExPagingOptions;
-          this.presentationExRecords = response.data.content;
-          this.totalNumberOfPresExElements = response.data.totalSize;
-          this.hidePresExFooter =
-            this.totalNumberOfPresExElements <= itemsPerPage;
-        }
-      } catch (error) {
-        EventBus.$emit("error", this.$axiosErrorMessage(error));
-      }
-      this.isLoadingPresExRecords = false;
+      this.$refs.presExList.loadPresentationRecords();
     },
     refreshIssuedCredentialRecords() {
       this.$refs.credExList.loadCredentials();

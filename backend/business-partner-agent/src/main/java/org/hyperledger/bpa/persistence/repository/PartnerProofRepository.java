@@ -25,9 +25,11 @@ import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
+import io.micronaut.data.repository.PageableRepository;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
 import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
@@ -39,7 +41,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUID> {
+public interface PartnerProofRepository extends PageableRepository<PartnerProof, UUID> {
 
     @Override
     @NonNull
@@ -65,7 +67,14 @@ public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUI
 
     @NonNull
     @Join(value = "proofTemplate", type = Join.Type.LEFT_FETCH)
-    Page<PartnerProof> findByPartnerIdOrderByRole(UUID partnerId, @NonNull Pageable pageable);
+    List<PartnerProof> findByPartnerIdOrderByRole(UUID partnerId);
+
+    @NonNull
+    @Join(value = "proofTemplate", type = Join.Type.LEFT_FETCH)
+    Page<PartnerProof> findByRoleInAndPartnerIdEquals(
+      @NonNull List<PresentationExchangeRole> role,
+      @NonNull UUID partnerId,
+      @NonNull Pageable pageable);
 
     void updateState(@Id UUID id, PresentationExchangeState state);
 

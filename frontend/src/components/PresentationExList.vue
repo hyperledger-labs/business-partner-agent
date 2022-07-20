@@ -8,11 +8,16 @@
 
 <template>
   <v-container>
+    <v-progress-linear
+      v-if="isLoadingPresExRecords"
+      indeterminate
+    ></v-progress-linear>
     <v-data-table
+      :loading="isLoadingPresExRecords"
       :hide-default-footer="hideFooter"
       :headers="headers"
-      :items="items"
-      options.sync="pageOptions"
+      :items="presentationExchangeRecords"
+      :options.sync="options"
       :server-items-length="totalNumberOfElements"
       sort-by="updatedAt"
       sort-desc
@@ -146,6 +151,7 @@ import {
   AriesProofExchange,
   PageOptions,
   PresentationRequestCredentials,
+  partnerService,
   proofExService,
 } from "@/services";
 import { EventBus } from "@/main";
@@ -160,24 +166,20 @@ import PresentationRecordV2 from "@/components/PresentationRecordV2.vue";
 import VBpaButton from "@/components/BpaButton";
 export default {
   props: {
-    value: Array,
     openItemById: String,
     partnerId: String,
-    pageOptions: {},
-    totalNumberOfElements: Number,
-    hideFooter: Boolean,
   },
   mounted() {
     // Open Item directly. Is used for links from notifications/activity
     if (this.openItemById) {
       // FIXME: items observable is typically not resolved yet. Then items is empty
-      const item = this.items.find(
-        (index: AriesProofExchange) => index.id === this.openItemById
+      const item = this.presentationExchangeRecords.find(
+        (item: AriesProofExchange) => item.id === this.openItemById
       );
       if (item) {
         this.openItem(item);
       } else {
-        // Load record separately if items have not been resolved
+        // Load record separately if presentationExchangeRecords have not been resolved
         proofExService.getProofExRecord(this.openItemById).then((resp) => {
           if (resp.data) {
             this.openItem(resp.data);
@@ -195,27 +197,33 @@ export default {
       isBusy: false,
       // hideFooter: true,
       // totalNumberOfElements: 0,
+      isLoadingPresExRecords: true,
+      presentationExchangeRecords: new Array<AriesProofExchange>(),
+      options: {},
+      totalNumberOfElements: 0,
+      hideFooter: false,
       isWaitingForMatchingCreds: false,
       declineReasonText: "",
     };
   },
-  computed: {
-    items: {
-      get() {
-        return this.value;
-      },
-      set(value: AriesProofExchange[]) {
-        this.$emit("input", value);
+  watch: {
+    dialog(visible: boolean) {
+      if (visible) {
+        this.$store.commit("presentationNotificationSeen", {
+          id: this.record.id,
+        });
+        if (this.record.state === "request_received") {
+          this.getMatchingCredentials();
+        }
+      }
+    },
+    options: {
+      handler() {
+        this.loadPresentationRecords();
       },
     },
-    // options: {
-    //   get() {
-    //     return this.pageOptions;
-    //   },
-    //   set(pageOptions: PageOptions) {
-    //     this.$emit("input", pageOptions);
-    //   },
-    // },
+  },
+  computed: {
     headers() {
       return [
         {
@@ -274,6 +282,28 @@ export default {
     closeDialog() {
       this.declineReasonText = "";
       this.dialog = false;
+    },
+    async loadPresentationRecords() {
+      console.log("Getting presentation records...");
+      this.isLoadingPresExRecords = true;
+      this.presentationExchangeRecords = [];
+      const params = PageOptions.toUrlSearchParams(this.options);
+      try {
+        const response = await partnerService.getPresentationExRecords(
+          this.partnerId,
+          params
+        );
+        console.log("######## presExLog:", response);
+        if (response.status === 200) {
+          const { itemsPerPage } = this.options;
+          this.presentationExchangeRecords = response.data.content;
+          this.totalNumberOfElements = response.data.totalSize;
+          this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
+        }
+      } catch (error) {
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
+      }
+      this.isLoadingPresExRecords = false;
     },
     async approve() {
       const referents = this.prepareReferents();
@@ -350,10 +380,10 @@ export default {
       try {
         const resp = await proofExService.deleteProofExRecord(this.record.id);
         if (resp.status === 200) {
-          const index = this.items.findIndex(
+          const index = this.presentationExchangeRecords.findIndex(
             (item: AriesProofExchange) => item.id === this.record.id
           );
-          this.items.splice(index, 1);
+          this.presentationExchangeRecords.splice(index, 1);
           EventBus.$emit(
             "success",
             this.$t("component.presentationExList.eventSuccessDelete")
@@ -481,18 +511,6 @@ export default {
             this.record.canBeFulfilled = result.data.match;
             this.isWaitingForMatchingCreds = false;
           });
-      }
-    },
-  },
-  watch: {
-    dialog(visible: boolean) {
-      if (visible) {
-        this.$store.commit("presentationNotificationSeen", {
-          id: this.record.id,
-        });
-        if (this.record.state === "request_received") {
-          this.getMatchingCredentials();
-        }
       }
     },
   },

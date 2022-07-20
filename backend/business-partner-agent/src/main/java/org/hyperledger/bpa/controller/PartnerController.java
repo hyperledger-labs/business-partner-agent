@@ -33,6 +33,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
@@ -239,15 +241,16 @@ public class PartnerController {
      * List proof exchange records
      *
      * @param pc              {@link PaginationCommand}
-     * @param id {@link UUID} the partner id
+     * @param id              {@link UUID} the partner id
+     * @param role            {@link PresentationExchangeRole}
      * @return HTTP status
      */
-    @Get("/{id}/proof-exchanges")
+    @Get("/{id}/proof-exchanges{?pc*}")
     public HttpResponse<Page<AriesProofExchange>> getPartnerProofs(
       @Valid @Nullable PaginationCommand pc,
-      @Nullable UUID id
-    ) {
-        return HttpResponse.ok(proofM.listPartnerProofs(id,
+      @Parameter(description = "verifier or prover") @Nullable @QueryValue PresentationExchangeRole role,
+      @Parameter(description = "partner id") @Nullable @QueryValue UUID id) {
+        return HttpResponse.ok(proofM.listPartnerProofs(role, id,
           pc != null? pc.toPageable() : Pageable.unpaged()));
     }
 

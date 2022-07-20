@@ -453,13 +453,17 @@ public class ProofManager {
 
     // CRUD methods
 
-    public Page<AriesProofExchange> listPartnerProofs(@NonNull UUID partnerId, @NonNull Pageable pageable) {
-      Page<PartnerProof> pExchanges = pProofRepo.findByPartnerIdOrderByRole(partnerId, pageable);
-      return pExchanges.map(conv::toAPIObject);
-
-//      return pProofRepo.findByPartnerIdOrderByRole(partnerId).stream()
-//                .map(conv::toAPIObject)
-//                .collect(Collectors.toList());
+//    public List<AriesProofExchange> listPartnerProofs(@NonNull UUID partnerId, @NonNull Pageable pageable) {
+//      List<PartnerProof> pExchanges = pProofRepo.findByPartnerIdOrderByRole(partnerId, pageable);
+//      return pExchanges.map(conv::toAPIObject);
+//    }
+    public Page<AriesProofExchange> listPartnerProofs(
+      @Nullable PresentationExchangeRole role,
+      @NonNull UUID partnerId,
+      @NonNull Pageable pageable){
+      List<PresentationExchangeRole> roles = role == null ? List.of(PresentationExchangeRole.values()) : List.of(role);
+      Page<PartnerProof> pExchanges = pProofRepo.findByRoleInAndPartnerIdEquals(roles, partnerId, pageable);
+      return pExchanges.map(AriesProofExchange::from);
     }
 
     public AriesProofExchange getPartnerProofById(@NonNull UUID id) {
