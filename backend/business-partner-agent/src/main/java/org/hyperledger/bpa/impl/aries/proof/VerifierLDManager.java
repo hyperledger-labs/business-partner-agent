@@ -32,11 +32,13 @@ import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPACondition;
+import org.hyperledger.bpa.persistence.model.prooftemplate.BPASchemaRestrictions;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Singleton
 public class VerifierLDManager extends BaseLDManager {
@@ -71,12 +73,8 @@ public class VerifierLDManager extends BaseLDManager {
                 .build();
     }
 
-    // TODO handle trusted issuer restriction
-    // holder and verifier side
-    // $path.issuer  const
-
     private V2DIFProofRequest.PresentationDefinition.InputDescriptors groupToDescriptor(BPAAttributeGroup group) {
-        Map<UUID, DIFField> fields = buildDifFieldsFromCondition(group.nameToCondition());
+        Map<UUID, DIFField> fields = buildDifFieldsFromGroup(group);
         SchemaAPI schemaAPI = schemaService.getSchema(group.getSchemaId()).orElseThrow();
         String expandedType = schemaAPI.getExpandedType() == null
                 ? ctx.resolve(schemaAPI.getSchemaId(), schemaAPI.getLdType())
@@ -96,10 +94,25 @@ public class VerifierLDManager extends BaseLDManager {
                 .build();
     }
 
-    private Map<UUID, DIFField> buildDifFieldsFromCondition(@NonNull Map<String, BPACondition> nameToCondition) {
-        return nameToCondition.entrySet()
+    private Map<UUID, DIFField> buildDifFieldsFromGroup(@NonNull BPAAttributeGroup group) {
+        Map<UUID, DIFField> issuerRestrictions = group.getSchemaLevelRestrictions()
+                .stream()
+                .map(BPASchemaRestrictions::getIssuerDid)
+                .map(issuerDid -> pair("issuer", DIFField.Filter.builder()
+                        ._const(issuerDid)
+                        .build()))
+                .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+
+        Map<String, BPACondition> nameToCondition = group.nameToCondition();
+        Map<UUID, DIFField> fieldRestrictions = nameToCondition.entrySet()
                 .stream()
                 .map(e -> pair(e.getKey(), e.getValue() != null ? e.getValue().toDifFieldFilter() : null))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+
+        return Stream.of(issuerRestrictions, fieldRestrictions)
+                .flatMap(map -> map.entrySet().stream())
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue));
     }
 }

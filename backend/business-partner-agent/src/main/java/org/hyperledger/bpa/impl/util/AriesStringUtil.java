@@ -31,7 +31,7 @@ public class AriesStringUtil {
 
     private static final Pattern DID_KEY_PATTERN = Pattern.compile("z[a-km-zA-HJ-NP-Z1-9]+");
     private static final String DID_KEY = "did:key:";
-    private static final String DID_INDY = "did:key:";
+    private static final String DID_INDY = "did:indy:";
     private static final String DID_SOV = "did:sov:";
 
     /**
@@ -186,19 +186,6 @@ public class AriesStringUtil {
         } catch (IllegalArgumentException e) {
             return false;
         }
-    }
-
-    public static RevocationInfo revocationEventToRevocationInfo(@NonNull String threadId) {
-        RevocationInfo.RevocationInfoBuilder b = RevocationInfo.builder();
-        if (StringUtils.isNotEmpty(threadId)) {
-            String[] parts = threadId.split("::");
-            if (parts.length != 3) {
-                throw new IllegalArgumentException("Not a valid revocation notification");
-            }
-            b.revRegId(parts[1]);
-            b.credRevId(parts[2]);
-        }
-        return b.build();
     }
 
     @Data

@@ -114,14 +114,6 @@ class AriesStringUtilTest {
     }
 
     @Test
-    void testParseRevocationNotification() {
-        assertEquals("test", AriesStringUtil.revocationEventToRevocationInfo("indy::test::12").getRevRegId());
-        assertEquals("12", AriesStringUtil.revocationEventToRevocationInfo("indy::test::12").getCredRevId());
-        assertThrows(IllegalArgumentException.class,
-                () -> AriesStringUtil.revocationEventToRevocationInfo("12:foo:1::12"));
-    }
-
-    @Test
     void testIsDidKey() {
         assertFalse(AriesStringUtil.isDidKey("did:key:äää"));
         assertFalse(AriesStringUtil.isDidKey("zUC7FswgVt61TDM5y88uM"));

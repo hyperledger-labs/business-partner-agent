@@ -33,7 +33,8 @@ import java.util.stream.Collectors;
 
 public class LDConverter {
 
-    private static final String PATH = "$.credentialSubject.";
+    private static final String CREDENTIAL_SUBJECT = "$.credentialSubject.";
+    private static final String ISSUER = "$.issuer.";
 
     public static PresentProofRequest.ProofRequest difToIndyProofRequest(@NonNull V2DIFProofRequest proofRequest) {
         Map<String, PresentProofRequest.ProofRequest.ProofRequestedAttributes> requestedAttributes = new HashMap<>();
@@ -91,9 +92,7 @@ public class LDConverter {
                         typeToValue = new TypeToValue(null, null);
                     }
                     if (typeToValue.type != null && typeToValue.value != null) {
-                        List<String> paths = f.getPath().stream()
-                                .map(path -> path.replace(PATH, ""))
-                                .collect(Collectors.toList());
+                        List<String> paths = pathToAttributes(f.getPath());
                         if (CollectionUtils.isNotEmpty(paths)) {
                             paths.forEach(p -> {
                                 PresentProofRequest.ProofRequest.ProofRequestedPredicates
@@ -121,9 +120,7 @@ public class LDConverter {
                 .map(id -> {
                     List<String> names = id.getConstraints().getFields().stream()
                             .filter(f -> f.getFilter() == null || f.getFilter().get_const() != null)
-                            .map(f -> f.getPath().stream()
-                                    .map(path -> path.replace(PATH, ""))
-                                    .collect(Collectors.toList()))
+                            .map(f -> pathToAttributes(f.getPath()))
                             .flatMap(Collection::stream)
                             .collect(Collectors.toList());
                     if (CollectionUtils.isNotEmpty(names)) {
@@ -155,12 +152,13 @@ public class LDConverter {
         PresentProofRequest.ProofRequest.ProofRestrictions.ProofRestrictionsBuilder b = PresentProofRequest.ProofRequest.ProofRestrictions
                 .builder();
         id.getConstraints().getFields().forEach(f -> {
-            String path = f.getPath().stream()
-                    .map(p -> p.replace(PATH, ""))
-                    .findFirst()
-                    .orElse(null);
+            String path = pathToAttributes(f.getPath()).stream().findFirst().orElse(null);
             if (path != null && f.getFilter() != null && f.getFilter().get_const() != null) {
                 b.addAttributeValueRestriction(path, (String) f.getFilter().get_const());
+            }
+            boolean issuerDid = f.getPath().stream().anyMatch(p -> p.startsWith(ISSUER));
+            if (issuerDid && f.getFilter() != null && f.getFilter().get_const() != null) {
+                b.issuerDid((String) f.getFilter().get_const());
             }
         });
         return List.of(b
@@ -178,6 +176,16 @@ public class LDConverter {
                 .filter(uri -> !StringUtils.contains(uri, "VerifiableCredential"))
                 .findFirst()
                 .orElse(null);
+    }
+
+    private static List<String> pathToAttributes(@Nullable List<String> paths) {
+        if (paths == null) {
+            return List.of();
+        }
+        return paths.stream()
+                .filter(path -> path.startsWith(CREDENTIAL_SUBJECT))
+                .map(path -> path.replace(CREDENTIAL_SUBJECT, ""))
+                .collect(Collectors.toList());
     }
 
     record Counter(AtomicInteger counter) {

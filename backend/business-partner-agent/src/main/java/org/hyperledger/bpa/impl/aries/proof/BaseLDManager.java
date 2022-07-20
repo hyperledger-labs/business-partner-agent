@@ -30,7 +30,9 @@ import java.util.stream.Collectors;
 
 public abstract class BaseLDManager {
 
-    private static final String DEFAULT_PATH = "$.credentialSubject.";
+    private static final String START_PATH = "$.";
+
+    private static final String CREDENTIAL_SUBJECT_PATH = START_PATH + "credentialSubject.";
 
     List<DIFHolder> buildDifHolder(@NonNull Set<UUID> fields) {
         return fields
@@ -45,7 +47,7 @@ public abstract class BaseLDManager {
         UUID key = UUID.randomUUID();
         DIFField f = DIFField.builder()
                 .id(key.toString())
-                .path(List.of(DEFAULT_PATH + path))
+                .path(List.of("issuer".equals(path) ? START_PATH + path : CREDENTIAL_SUBJECT_PATH + path))
                 .filter(filter)
                 .build();
         return new ImmutablePair<>(key, f);
