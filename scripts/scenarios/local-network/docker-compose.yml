@@ -56,7 +56,6 @@ services:
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY1_HTTP_PORT} \
         --webhook-url http://bpa1:${BPA1_PORT}/log \
-        --genesis-url '${ACAPY_GENESIS_URL}' \
         --endpoint ${ACAPY1_ENDPOINT} \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \
         --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' \
@@ -142,7 +141,6 @@ services:
         --arg-file acapy-static-args.yml \
         --inbound-transport http '0.0.0.0' ${ACAPY2_HTTP_PORT} \
         --webhook-url http://bpa2:${BPA2_PORT}/log \
-        --genesis-url '${ACAPY_GENESIS_URL}' \
         --endpoint ${ACAPY2_ENDPOINT} \
         --wallet-name '${ACAPY_WALLET_DATABASE}' \
         --wallet-key '${ACAPY_WALLET_ENCRYPTION_KEY}' \
