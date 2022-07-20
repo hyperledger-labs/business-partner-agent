@@ -17,7 +17,7 @@
       <v-card-text>
         <proof-templates-list show-checkboxes v-model="selectedProofTemplate">
         </proof-templates-list>
-        <template>
+        <div>
           <v-card-actions>
             <v-layout align-center align-end justify-end>
               <v-switch
@@ -41,7 +41,7 @@
               </v-bpa-button>
             </v-layout>
           </v-card-actions>
-        </template>
+        </div>
       </v-card-text>
     </v-card>
   </v-container>

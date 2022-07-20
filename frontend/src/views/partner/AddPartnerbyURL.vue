@@ -110,7 +110,7 @@
                 :size="400"
                 level="H"
               ></qrcode-vue>
-              <template>
+              <div>
                 <v-expansion-panels class="mt-4">
                   <v-expansion-panel>
                     <v-expansion-panel-header>
@@ -150,7 +150,7 @@
                     </v-expansion-panel-content>
                   </v-expansion-panel>
                 </v-expansion-panels>
-              </template>
+              </div>
             </div>
           </v-col>
         </v-row>

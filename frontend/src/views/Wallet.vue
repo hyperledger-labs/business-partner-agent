@@ -48,7 +48,7 @@
       <v-card-actions>
         <v-menu>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn              
+            <v-btn
               v-bind="attrs"
               color="primary"
               dark

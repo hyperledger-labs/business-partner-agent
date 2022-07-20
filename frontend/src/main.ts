@@ -27,7 +27,7 @@ Vue.component("vue-json-pretty", VueJsonPretty);
 
 //Vue.use(vue_moment);
 
-//TODO uncomment line to activate global filters when app is created 
+//TODO uncomment line to activate global filters when app is created
 //with vue3 function createApp()
 //app.config.globalProperties.$filters = filters;
 
