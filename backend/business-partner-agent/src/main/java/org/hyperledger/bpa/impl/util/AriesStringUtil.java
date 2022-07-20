@@ -67,9 +67,12 @@ public class AriesStringUtil {
      * @param qualifier fallback qualifier if the provided did is unqualified
      * @return qualified did
      */
-    public static String qualifyDidIfNeeded(@Nullable String did, @NonNull String qualifier) {
+    public static String qualifyDidIfNeeded(@Nullable String did, @Nullable String qualifier) {
         if (did == null) {
             return null;
+        }
+        if (qualifier == null) {
+            return did;
         }
         return did.startsWith("did:") ? did : qualifier + did;
     }
