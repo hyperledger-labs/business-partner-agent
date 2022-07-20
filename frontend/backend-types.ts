@@ -1094,6 +1094,7 @@ export interface components {
       issuerDid?: string[] | null;
     };
     RuntimeConfig: {
+      ledger?: string;
       agentName?: string;
       uptime?: string;
       messageTrigger?: components["schemas"]["MessageTrigger"][];
