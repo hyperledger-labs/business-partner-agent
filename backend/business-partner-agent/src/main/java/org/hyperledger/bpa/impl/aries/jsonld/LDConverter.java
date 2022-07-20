@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 public class LDConverter {
 
     private static final String CREDENTIAL_SUBJECT = "$.credentialSubject.";
-    private static final String ISSUER = "$.issuer.";
+    private static final String ISSUER = "$.issuer";
 
     public static PresentProofRequest.ProofRequest difToIndyProofRequest(@NonNull V2DIFProofRequest proofRequest) {
         Map<String, PresentProofRequest.ProofRequest.ProofRequestedAttributes> requestedAttributes = new HashMap<>();
@@ -78,7 +78,8 @@ public class LDConverter {
                 if (filter != null) {
                     TypeToValue typeToValue;
                     if (filter.getMinimum() != null) {
-                        typeToValue = new TypeToValue(IndyProofReqPredSpec.PTypeEnum.GREATER_THAN_OR_EQUAL_TO, filter.getMinimum());
+                        typeToValue = new TypeToValue(IndyProofReqPredSpec.PTypeEnum.GREATER_THAN_OR_EQUAL_TO,
+                                filter.getMinimum());
                     } else if (filter.getMaximum() != null) {
                         typeToValue = new TypeToValue(IndyProofReqPredSpec.PTypeEnum.LESS_THAN_OR_EQUAL_TO,
                                 filter.getMaximum());
@@ -95,8 +96,7 @@ public class LDConverter {
                         List<String> paths = pathToAttributes(f.getPath());
                         if (CollectionUtils.isNotEmpty(paths)) {
                             paths.forEach(p -> {
-                                PresentProofRequest.ProofRequest.ProofRequestedPredicates
-                                        .ProofRequestedPredicatesBuilder rp = PresentProofRequest.ProofRequest.ProofRequestedPredicates
+                                PresentProofRequest.ProofRequest.ProofRequestedPredicates.ProofRequestedPredicatesBuilder rp = PresentProofRequest.ProofRequest.ProofRequestedPredicates
                                         .builder();
                                 rp.name(p);
                                 rp.pType(typeToValue.type);
