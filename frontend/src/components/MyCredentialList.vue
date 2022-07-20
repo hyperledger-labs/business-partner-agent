@@ -102,7 +102,7 @@ import NewMessageIcon from "@/components/NewMessageIcon.vue";
 import { AriesCredential, MyDocumentAPI, Page, PageOptions } from "@/services";
 import { AxiosResponse } from "axios";
 import { appAxios } from "@/services/interceptors";
-import { RawLocation } from "vue-router";
+import { RouteLocationRaw } from "vue-router";
 
 export default {
   props: {
@@ -214,7 +214,7 @@ export default {
     open(documentOrCredential: AriesCredential | MyDocumentAPI) {
       console.log("Open Document:", documentOrCredential);
       if (this.type === "document") {
-        const documentLocation: RawLocation = {
+        const documentLocation: RouteLocationRaw = {
           name: "Document",
           params: {
             id: documentOrCredential.id,
