@@ -71,6 +71,10 @@ public class VerifierLDManager extends BaseLDManager {
                 .build();
     }
 
+    // TODO handle trusted issuer restriction
+    // holder and verifier side
+    // $path.issuer  const
+
     private V2DIFProofRequest.PresentationDefinition.InputDescriptors groupToDescriptor(BPAAttributeGroup group) {
         Map<UUID, DIFField> fields = buildDifFieldsFromCondition(group.nameToCondition());
         SchemaAPI schemaAPI = schemaService.getSchema(group.getSchemaId()).orElseThrow();
