@@ -17,6 +17,7 @@
  */
 package org.hyperledger.bpa.impl.aries.proof;
 
+import io.micronaut.context.annotation.Value;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -29,6 +30,7 @@ import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.impl.aries.jsonld.LDContextResolver;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
+import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPACondition;
@@ -42,6 +44,9 @@ import java.util.stream.Stream;
 
 @Singleton
 public class VerifierLDManager extends BaseLDManager {
+
+    @Value("${bpa.did.prefix}")
+    String didPrefix;
 
     @Inject
     AriesClient ac;
@@ -99,7 +104,10 @@ public class VerifierLDManager extends BaseLDManager {
                 .stream()
                 .map(BPASchemaRestrictions::getIssuerDid)
                 .map(issuerDid -> pair("issuer", DIFField.Filter.builder()
-                        ._const(issuerDid)
+                        // TODO anoncreds need unqualified DID,
+                        //  dif needs it qualified, currently the UI model always strips the qualifier
+                        //  so we add it again. This will not work with did:indy
+                        ._const(AriesStringUtil.qualifyDidIfNeeded(issuerDid, didPrefix))
                         .build()))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 

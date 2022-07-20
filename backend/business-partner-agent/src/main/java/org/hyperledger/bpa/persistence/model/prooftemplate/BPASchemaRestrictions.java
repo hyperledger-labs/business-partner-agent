@@ -78,7 +78,7 @@ public class BPASchemaRestrictions {
                         .schemaVersion(StringUtils.trimToNull(other.getSchemaVersion()))
                         .schemaIssuerDid(AriesStringUtil.getLastSegmentOrNull(other.getSchemaIssuerDid()))
                         .credentialDefinitionId(StringUtils.trimToNull(other.getCredentialDefinitionId()))
-                        .issuerDid(StringUtils.trimToNull(other.getIssuerDid()))
+                        .issuerDid(AriesStringUtil.getLastSegmentOrNull(other.getIssuerDid()))
                         .build())
                 .orElse(null);
     }
