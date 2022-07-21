@@ -43,7 +43,7 @@ import java.util.UUID;
 
 @MicronautTest
 @ExtendWith(MockitoExtension.class)
-public class ProverLDManagerTest extends RunWithAries {
+public class VerifierLDManagerAcaPyTest extends RunWithAries {
 
     @Mock
     SchemaService schema;
