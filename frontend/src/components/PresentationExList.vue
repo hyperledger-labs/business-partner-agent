@@ -13,7 +13,6 @@
       indeterminate
     ></v-progress-linear>
     <v-data-table
-      :loading="isLoadingPresExRecords"
       :hide-default-footer="hideFooter"
       :headers="headers"
       :items="presentationExchangeRecords"
@@ -234,11 +233,13 @@ export default {
         },
         {
           text: this.$t("component.presentationExList.table.label"),
-          value: "label",
+          value: "proofRequest.name",
+          sortable: false,
         },
         {
           text: this.$t("component.presentationExList.table.role"),
           value: "role",
+          sortable: false,
         },
         {
           text: this.$t("component.presentationExList.table.updatedAt"),
@@ -247,6 +248,7 @@ export default {
         {
           text: this.$t("component.presentationExList.table.state"),
           value: "state",
+          sortable: false,
         },
       ];
     },
@@ -299,6 +301,7 @@ export default {
           this.presentationExchangeRecords = response.data.content;
           this.totalNumberOfElements = response.data.totalSize;
           this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
+          this.$emit("presRawData", this.presentationExchangeRecords);
         }
       } catch (error) {
         EventBus.$emit("error", this.$axiosErrorMessage(error));

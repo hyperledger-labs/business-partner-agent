@@ -149,6 +149,7 @@
         v-bind:partnerId="this.id"
         v-bind:openItemById="this.presExId"
         @changed="refreshPresentationRecords"
+        @presRawData="getRecords"
       />
       <v-card-actions>
         <v-bpa-button small color="secondary" @click="sendPresentation">{{
@@ -164,10 +165,9 @@
             class="grey--text text--darken-2 font-weight-medium bg-light"
             >{{ $t("showRawData") }}</v-expansion-panel-header
           >
-          <!--          TODO: wichtigkeit im dev meeting bereden. do it with references.-->
-          <!--          <v-expansion-panel-content class="bg-light">-->
-          <!--            <vue-json-pretty :data="presentationExRecords"></vue-json-pretty>-->
-          <!--          </v-expansion-panel-content>-->
+          <v-expansion-panel-content class="bg-light">
+            <vue-json-pretty :data="presentationExRecords"></vue-json-pretty>
+          </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
     </v-card>
@@ -380,6 +380,9 @@ export default {
     },
     refreshPresentationRecords() {
       this.$refs.presExList.loadPresentationRecords();
+    },
+    getRecords(presExRecords: AriesProofExchange[]) {
+      this.presentationExRecords = presExRecords;
     },
     refreshIssuedCredentialRecords() {
       this.$refs.credExList.loadCredentials();
