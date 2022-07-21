@@ -193,6 +193,7 @@
         v-bind:partnerId="id"
         v-bind:openItemById="credExId"
         @changed="refreshIssuedCredentialRecords"
+        @credRawData="getCreds"
       ></CredExList>
       <v-card-actions>
         <v-dialog v-model="issueCredentialDialog" persistent max-width="600px">
@@ -236,6 +237,17 @@
           }}</v-bpa-button
         >
       </v-card-actions>
+      <v-expansion-panels v-if="expertMode" accordion flat>
+        <v-expansion-panel>
+          <v-expansion-panel-header
+            class="grey--text text--darken-2 font-weight-medium bg-light"
+            >{{ $t("showRawData") }}</v-expansion-panel-header
+          >
+          <v-expansion-panel-content class="bg-light">
+            <vue-json-pretty :data="credExRecords"></vue-json-pretty>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
     </v-card>
 
     <v-dialog v-model="attentionPartnerStateDialog" max-width="600px">
@@ -270,6 +282,7 @@ import { getPartnerState } from "@/utils/partnerUtils";
 import { EventBus } from "@/main";
 import {
   AriesProofExchange,
+  CredEx,
   PartnerAPI,
   PartnerCredential,
   partnerService,
@@ -323,6 +336,7 @@ export default {
       },
       rawData: {} as PartnerAPI,
       credentials: new Array<PartnerCredential>(),
+      credExRecords: new Array<CredEx>(),
       presentationExRecords: new Array<AriesProofExchange>(),
       PartnerStates: PartnerStates,
       issueCredentialDialog: false,
@@ -386,6 +400,9 @@ export default {
     },
     refreshIssuedCredentialRecords() {
       this.$refs.credExList.loadCredentials();
+    },
+    getCreds(credExRecords: CredEx[]) {
+      this.credExRecords = credExRecords;
     },
     requestCredential() {
       if (this.isActive) {

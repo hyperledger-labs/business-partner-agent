@@ -469,6 +469,7 @@ export default {
           this.exchanges = response.data.content;
           this.totalNumberOfElements = response.data.totalSize;
           this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
+          this.$emit("credRawData", this.exchanges);
         }
       } catch (error) {
         EventBus.$emit("error", this.$axiosErrorMessage(error));
