@@ -24,7 +24,6 @@ import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hyperledger.acy_py.generated.model.DIFOptions;
-import org.hyperledger.aries.AriesClient;
 import org.hyperledger.aries.api.jsonld.ProofType;
 import org.hyperledger.aries.api.present_proof_v2.DIFField;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
@@ -48,9 +47,6 @@ public class VerifierLDManager extends BaseLDManager {
 
     @Value("${bpa.did.prefix}")
     String didPrefix;
-
-    @Inject
-    AriesClient ac;
 
     @Inject
     SchemaService schemaService;
@@ -100,13 +96,13 @@ public class VerifierLDManager extends BaseLDManager {
                 .build();
     }
 
-    protected Map<UUID, DIFField> buildDifFieldsFromGroup(@NonNull BPAAttributeGroup group) {
+    private Map<UUID, DIFField> buildDifFieldsFromGroup(@NonNull BPAAttributeGroup group) {
         Map<UUID, DIFField> issuerRestrictions = group.getSchemaLevelRestrictions()
                 .stream()
                 .map(BPASchemaRestrictions::getIssuerDid)
                 .filter(StringUtils::isNotEmpty)
                 .map(issuerDid -> pair("issuer", DIFField.Filter.builder()
-                        // TODO anoncreds need unqualified DID,
+                        // TODO anoncreds need unqualified DIDs,
                         //  dif needs it qualified, currently the UI model always strips the qualifier
                         //  so we add it again. This will not work with did:indy
                         ._const(AriesStringUtil.qualifyDidIfNeeded(issuerDid, didPrefix))
