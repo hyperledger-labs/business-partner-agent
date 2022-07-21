@@ -21,6 +21,7 @@ import io.micronaut.context.annotation.Value;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hyperledger.acy_py.generated.model.DIFOptions;
 import org.hyperledger.aries.AriesClient;
@@ -99,10 +100,11 @@ public class VerifierLDManager extends BaseLDManager {
                 .build();
     }
 
-    private Map<UUID, DIFField> buildDifFieldsFromGroup(@NonNull BPAAttributeGroup group) {
+    protected Map<UUID, DIFField> buildDifFieldsFromGroup(@NonNull BPAAttributeGroup group) {
         Map<UUID, DIFField> issuerRestrictions = group.getSchemaLevelRestrictions()
                 .stream()
                 .map(BPASchemaRestrictions::getIssuerDid)
+                .filter(StringUtils::isNotEmpty)
                 .map(issuerDid -> pair("issuer", DIFField.Filter.builder()
                         // TODO anoncreds need unqualified DID,
                         //  dif needs it qualified, currently the UI model always strips the qualifier
