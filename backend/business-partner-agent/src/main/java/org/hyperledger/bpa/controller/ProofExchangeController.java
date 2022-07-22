@@ -19,8 +19,6 @@ package org.hyperledger.bpa.controller;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
-import io.micronaut.data.model.Page;
-import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
@@ -28,7 +26,6 @@ import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.validation.Validated;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
@@ -46,7 +43,6 @@ import org.hyperledger.bpa.controller.api.partner.SendProofRequest;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsIndy;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestCredentialsLD;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
-import org.hyperledger.bpa.persistence.model.PartnerProof;
 
 import javax.validation.Valid;
 import java.util.List;

@@ -24,7 +24,6 @@ import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.query.builder.sql.Dialect;
-import io.micronaut.data.repository.CrudRepository;
 import io.micronaut.data.repository.PageableRepository;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
@@ -34,7 +33,6 @@ import org.hyperledger.bpa.persistence.model.PartnerProof;
 import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
