@@ -194,8 +194,6 @@ export default {
       },
       dialog: false,
       isBusy: false,
-      // hideFooter: true,
-      // totalNumberOfElements: 0,
       isLoadingPresExRecords: true,
       presentationExchangeRecords: new Array<AriesProofExchange>(),
       options: {},
@@ -233,7 +231,7 @@ export default {
         },
         {
           text: this.$t("component.presentationExList.table.label"),
-          value: "proofRequest.name",
+          value: "label",
           sortable: false,
         },
         {

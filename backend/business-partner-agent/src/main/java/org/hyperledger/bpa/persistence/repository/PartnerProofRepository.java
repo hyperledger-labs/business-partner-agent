@@ -29,7 +29,6 @@ import io.micronaut.data.repository.PageableRepository;
 import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.aries.api.jsonld.VerifiablePresentation;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
-import org.hyperledger.aries.api.present_proof.PresentationExchangeRole;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
 import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
@@ -63,18 +62,7 @@ public interface PartnerProofRepository extends PageableRepository<PartnerProof,
 
     @NonNull
     @Join(value = "proofTemplate", type = Join.Type.LEFT_FETCH)
-    List<PartnerProof> findByPartnerId(UUID partnerId);
-
-    @NonNull
-    @Join(value = "proofTemplate", type = Join.Type.LEFT_FETCH)
-    List<PartnerProof> findByPartnerIdOrderByRole(UUID partnerId);
-
-    @NonNull
-    @Join(value = "proofTemplate", type = Join.Type.LEFT_FETCH)
-    Page<PartnerProof> findByRoleInAndPartnerIdEquals(
-      @NonNull List<PresentationExchangeRole> role,
-      @NonNull UUID partnerId,
-      @NonNull Pageable pageable);
+    Page<PartnerProof> findByPartnerId(@NonNull UUID partnerId, @NonNull Pageable pageable);
 
     void updateState(@Id UUID id, PresentationExchangeState state);
 

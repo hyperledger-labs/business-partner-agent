@@ -22,6 +22,8 @@ import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -50,6 +52,7 @@ import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.activity.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
+import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
@@ -62,6 +65,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -81,6 +85,9 @@ public class ConnectionManager {
 
     @Inject
     PartnerProofRepository partnerProofRepo;
+
+    @Inject
+    Converter conv;
 
     @Inject
     HolderCredExRepository holderCredExRepo;
@@ -393,8 +400,8 @@ public class ConnectionManager {
         }
 
         holderCredExRepo.setPartnerIdToNull(partner.getId());
-        final List<PartnerProof> proofs = partnerProofRepo.findByPartnerId(partner.getId());
-        if (CollectionUtils.isNotEmpty(proofs)) {
+        final Page<PartnerProof> proofs = partnerProofRepo.findByPartnerId(partner.getId(), Pageable.unpaged());
+        if (CollectionUtils.isNotEmpty(proofs.getContent())) {
             partnerProofRepo.deleteAll(proofs);
         }
         eventPublisher.publishEventAsync(PartnerRemovedEvent.builder().partner(partner).build());

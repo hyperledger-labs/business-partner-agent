@@ -242,15 +242,13 @@ public class PartnerController {
      *
      * @param pc              {@link PaginationCommand}
      * @param id              {@link UUID} the partner id
-     * @param role            {@link PresentationExchangeRole}
      * @return HTTP status
      */
     @Get("/{id}/proof-exchanges{?pc*}")
     public HttpResponse<Page<AriesProofExchange>> getPartnerProofs(
       @Valid @Nullable PaginationCommand pc,
-      @Parameter(description = "verifier or prover") @Nullable @QueryValue PresentationExchangeRole role,
       @Parameter(description = "partner id") @Nullable @QueryValue UUID id) {
-        return HttpResponse.ok(proofM.listPartnerProofs(role, id,
+        return HttpResponse.ok(proofM.listPartnerProofs(id,
           pc != null? pc.toPageable() : Pageable.unpaged()));
     }
 
