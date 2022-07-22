@@ -13,7 +13,6 @@
       indeterminate
     ></v-progress-linear>
     <v-data-table
-      :loading="isLoadingCredentials"
       :hide-default-footer="hideFooter"
       :headers="headers"
       :items="exchanges"
