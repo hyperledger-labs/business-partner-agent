@@ -21,9 +21,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hyperledger.aries.api.ExchangeVersion;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 public class RequestCredentialRequest {
-    public String documentId;
+    public UUID documentId;
     public ExchangeVersion exchangeVersion;
 }

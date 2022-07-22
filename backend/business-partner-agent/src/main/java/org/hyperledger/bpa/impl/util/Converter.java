@@ -310,7 +310,7 @@ public class Converter {
         ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest> pr = Objects
                 .requireNonNullElseGet(p.getProofRequest(),
                         ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest>::new);
-        if (p.typeIsIndy()) {
+        if (p.typeIsIndy() && pr.getIndy() != null) {
             PresentProofRequest.ProofRequest indy = pr.getIndy();
             if (!"proof-request".equals(indy.getName())) {
                 return indy.getName();

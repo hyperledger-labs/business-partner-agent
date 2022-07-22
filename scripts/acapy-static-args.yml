@@ -1,5 +1,5 @@
 # connection behaviour
-public-invites: true
+public-invites: true # use public did
 auto-accept-invites: false
 auto-accept-requests: false
 monitor-ping: true # enables the connection status in the ui

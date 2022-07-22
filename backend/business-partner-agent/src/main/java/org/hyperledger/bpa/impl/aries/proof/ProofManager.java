@@ -188,7 +188,7 @@ public class ProofManager {
     public void sendProofProposal(@NonNull UUID partnerId, @NonNull UUID myCredentialId,
             @Nullable ExchangeVersion version) {
         partnerRepo.findById(partnerId).ifPresent(p -> holderCredExRepo.findById(myCredentialId).ifPresent(c -> {
-            if (StringUtils.isNotEmpty(p.getConnectionId())) {
+            if (StringUtils.isEmpty(p.getConnectionId())) {
                 throw new WrongApiUsageException(ms.getMessage("api.partner.no.connection"));
             }
             ExchangeVersion v = VersionHelper.determineVersion(version, c);

@@ -136,7 +136,8 @@ public class IssuerManager extends CredentialManagerBase {
     /**
      * Revocation only works for indy credentials. Json-ld credentials are currently
      * (February '22) not revocable, there is an ongoing discussion to use
-     * <a href="https://w3c-ccg.github.io/vc-status-rl-2020">vc-status-rl-2020</a> for this.
+     * <a href="https://w3c-ccg.github.io/vc-status-rl-2020">vc-status-rl-2020</a>
+     * for this.
      *
      * @param id bpa credential exchange id.
      * @return {@link CredEx}

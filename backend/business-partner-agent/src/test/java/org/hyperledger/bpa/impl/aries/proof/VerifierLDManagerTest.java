@@ -47,8 +47,8 @@ public class VerifierLDManagerTest {
     void testPrepareRequestWithIssuerRestriction() {
         UUID schemaDbId = UUID.randomUUID();
         Mockito.when(schemaService.getSchema(schemaDbId)).thenReturn(Optional.of(SchemaAPI.builder()
-                        .id(schemaDbId)
-                        .expandedType("some-type")
+                .id(schemaDbId)
+                .expandedType("some-type")
                 .build()));
 
         V2DIFProofRequest difProofRequest = ld.prepareRequest(BPAProofTemplate.builder()

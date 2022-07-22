@@ -103,8 +103,8 @@ public class VerifierLDManager extends BaseLDManager {
                 .filter(StringUtils::isNotEmpty)
                 .map(issuerDid -> pair("issuer", DIFField.Filter.builder()
                         // TODO anoncreds need unqualified DIDs,
-                        //  dif needs it qualified, currently the UI model always strips the qualifier
-                        //  so we add it again. This will not work with did:indy
+                        // dif needs it qualified, currently the UI model always strips the qualifier
+                        // so we add it again. This will not work with did:indy
                         ._const(AriesStringUtil.qualifyDidIfNeeded(issuerDid, didPrefix))
                         .build()))
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
