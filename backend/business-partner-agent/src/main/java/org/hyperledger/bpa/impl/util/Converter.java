@@ -328,7 +328,7 @@ public class Converter {
                     return defaultLabel;
                 }).orElse(defaultLabel);
             }
-        } else if (p.typeIsJsonLd()) {
+        } else if (p.typeIsJsonLd() && pr.getJsonLD() != null) {
             V2DIFProofRequest ld = pr.getJsonLD();
             String name = ld.getPresentationDefinition() != null ? ld.getPresentationDefinition().getName() : null;
             if (StringUtils.isNotEmpty(name)) {
