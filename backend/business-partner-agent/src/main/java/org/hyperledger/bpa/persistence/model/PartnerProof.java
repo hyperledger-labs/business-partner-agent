@@ -59,10 +59,6 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
     @AutoPopulated
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "partner_id")
-    private Partner partner;
-
     @DateCreated
     private Instant createdAt;
 
@@ -103,13 +99,22 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
     @TypeDef(type = DataType.JSON, converter = ProofRequestPayloadConverter.class)
     private ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest> proofRequest;
 
+    @TypeDef(type = DataType.JSON)
+    private StateToTimestamp<PresentationExchangeState> stateToTimestamp;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Column(name = "partner_id")
+    private Partner partner;
+
     /** set when verifier */
     @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
     private BPAProofTemplate proofTemplate;
 
-    @TypeDef(type = DataType.JSON)
-    private StateToTimestamp<PresentationExchangeState> stateToTimestamp;
+    /** set when sending a presentation proposal */
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    private BPACredentialExchange credentialExchange;
 
     // extends lombok builder
     public static class PartnerProofBuilder {

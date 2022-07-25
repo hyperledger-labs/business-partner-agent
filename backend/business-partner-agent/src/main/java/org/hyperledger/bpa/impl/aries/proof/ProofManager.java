@@ -24,6 +24,8 @@ import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.acy_py.generated.model.V10PresentationProblemReportRequest;
@@ -51,6 +53,7 @@ import org.hyperledger.bpa.impl.aries.credential.CredentialInfoResolver;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
 import org.hyperledger.bpa.impl.util.Converter;
+import org.hyperledger.bpa.persistence.model.BPACredentialExchange;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
@@ -122,7 +125,8 @@ public class ProofManager {
             Partner p = partnerRepo.findById(partnerId).orElseThrow(EntityNotFoundException::new);
             if (version.isV1()) {
                 ac.presentProofSendRequest(proofRequest)
-                        .ifPresent(persistProof(p, proofTemplate, CredentialType.INDY));
+                        .ifPresent(persistProof(PersistProofCmd.builder()
+                                .partner(p).type(CredentialType.INDY).proofTemplate(proofTemplate).build()));
             } else {
                 ac.presentProofV2SendRequest(V20PresSendRequestRequest
                         .builder()
@@ -132,7 +136,8 @@ public class ProofManager {
                                 .build())
                         .build())
                         .map(V20PresExRecordToV1Converter::toV1)
-                        .ifPresent(persistProof(p, proofTemplate, CredentialType.INDY));
+                        .ifPresent(persistProof(PersistProofCmd.builder()
+                                .partner(p).type(CredentialType.INDY).proofTemplate(proofTemplate).build()));
             }
         } catch (IOException e) {
             throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
@@ -149,7 +154,8 @@ public class ProofManager {
                             .dif(ldVerifier.prepareRequest(proofTemplate))
                             .build())
                     .build())
-                    .ifPresent(persistProof(p, proofTemplate, CredentialType.JSON_LD));
+                    .ifPresent(persistProof(PersistProofCmd.builder()
+                            .partner(p).type(CredentialType.JSON_LD).proofTemplate(proofTemplate).build()));
         } catch (IOException e) {
             throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
         }
@@ -175,10 +181,10 @@ public class ProofManager {
                         .buildForAllAttributes(partner.getConnectionId(),
                                 Set.copyOf(schema.getAttrNames()), req.buildRestrictions());
                 ac.presentProofSendRequest(proofRequest).ifPresent(
-                        persistProof(partner, null, CredentialType.INDY));
+                        persistProof(PersistProofCmd.builder().partner(partner).type(CredentialType.INDY).build()));
             } else {
                 ac.presentProofSendRequest(req.getRequestRaw().toString()).ifPresent(
-                        persistProof(partner, null, CredentialType.INDY));
+                        persistProof(PersistProofCmd.builder().partner(partner).type(CredentialType.INDY).build()));
             }
         } catch (IOException e) {
             throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
@@ -199,17 +205,20 @@ public class ProofManager {
                     if (v.isV1()) {
                         ac.presentProofSendProposal(
                                 PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred))
-                                .ifPresent(persistProof(p, null, CredentialType.INDY));
+                                .ifPresent(persistProof(PersistProofCmd.builder()
+                                        .partner(p).type(CredentialType.INDY).credentialExchange(c).build()));
                     } else if (v.isV2()) {
                         ac.presentProofV2SendProposal(PresentProofProposalBuilder.v2IndyFromCredential(
                                 p.getConnectionId(), cred, AriesStringUtil.schemaGetName(cred.getSchemaId())))
                                 .map(V20PresExRecordToV1Converter::toV1)
-                                .ifPresent(persistProof(p, null, CredentialType.INDY));
+                                .ifPresent(persistProof(PersistProofCmd.builder()
+                                        .partner(p).type(CredentialType.INDY).credentialExchange(c).build()));
                     }
                 } else if (c.typeIsJsonLd()) {
                     V20PresProposalRequest proofProposal = ldProver.prepareProposal(p.getConnectionId(), c);
                     ac.presentProofV2SendProposal(proofProposal)
-                            .ifPresent(persistProof(p, null, CredentialType.JSON_LD));
+                            .ifPresent(persistProof(PersistProofCmd.builder()
+                                    .partner(p).type(CredentialType.JSON_LD).credentialExchange(c).build()));
                 }
             } catch (IOException e) {
                 throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
@@ -217,21 +226,21 @@ public class ProofManager {
         }));
     }
 
-    private Consumer<BasePresExRecord> persistProof(
-            @NonNull Partner partner, @Nullable BPAProofTemplate proofTemplate, @NonNull CredentialType type) {
+    private Consumer<BasePresExRecord> persistProof(@NonNull PersistProofCmd cmd) {
         return exchange -> {
             final PartnerProof pp = PartnerProof
                     .builder()
-                    .partner(partner)
                     .state(exchange.getState())
-                    .type(type)
+                    .type(cmd.type)
                     .presentationExchangeId(exchange.getPresentationExchangeId())
                     .role(exchange.getRole())
                     .threadId(exchange.getThreadId())
                     .proofRequest(ExchangePayload.buildForProofRequest(exchange))
-                    .proofTemplate(proofTemplate)
+                    .proofTemplate(cmd.proofTemplate)
                     .exchangeVersion(exchange.getVersion())
                     .pushStateChange(exchange.getState(), Instant.now())
+                    .partner(cmd.partner)
+                    .credentialExchange(cmd.credentialExchange)
                     .build();
             pProofRepo.save(pp);
             eventPublisher.publishEventAsync(PresentationRequestSentEvent.builder()
@@ -482,5 +491,23 @@ public class ProofManager {
             }
             pProofRepo.deleteById(id);
         });
+    }
+
+    @Data
+    private static final class PersistProofCmd {
+        private Partner partner;
+        private BPAProofTemplate proofTemplate;
+        private CredentialType type;
+        private BPACredentialExchange credentialExchange;
+
+        @Builder
+        public PersistProofCmd(
+                @NonNull Partner partner, @Nullable BPAProofTemplate proofTemplate,
+                @NonNull CredentialType type, @Nullable BPACredentialExchange credentialExchange) {
+            this.partner= partner;
+            this.proofTemplate = proofTemplate;
+            this.type = type;
+            this.credentialExchange = credentialExchange;
+        }
     }
 }
