@@ -6,6 +6,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { app } from "@/main";
 import axios, { AxiosRequestConfig } from "axios";
 import Vue from "vue";
 
@@ -19,9 +20,9 @@ export function appAxios(timeout = 0) {
   const axiosOptions: AxiosRequestConfig = {
     timeout: timeout,
   };
-  if (Vue.prototype.$config) {
+  if (app.config.globalProperties.$apiBaseUrl) {
     // any other options we can set here?
-    axiosOptions.baseURL = Vue.prototype.$apiBaseUrl;
+    axiosOptions.baseURL = app.config.globalProperties.$apiBaseUrl;
   }
 
   const instance = axios.create(axiosOptions);

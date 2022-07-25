@@ -22,13 +22,16 @@ import filters from "@/filters";
 import "vue-json-pretty/lib/styles.css";
 import vue_moment from "vue-moment";
 import { RuntimeConfig, settingsService } from "@/services";
+import axios from "axios";
+import VueAxios from "vue-axios";
 
 //Vue.component("vue-json-pretty", VueJsonPretty);
 
 const app = createApp(App)
   .use(i18n)
   .use(router)
-  .use(store);
+  .use(store)
+  .use(VueAxios, axios); // 👈
 //.use(vuetify);
 
 app.config.globalProperties.$filters = filters;
