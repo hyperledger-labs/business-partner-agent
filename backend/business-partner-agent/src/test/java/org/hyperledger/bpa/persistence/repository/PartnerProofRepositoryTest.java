@@ -36,9 +36,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @MicronautTest
 class PartnerProofRepositoryTest {
 
-    Instant timestamp =  Instant.ofEpochMilli(1631770000000L);
+    private Instant timestamp =  Instant.ofEpochMilli(1631770000000L);
 
-    Integer counter = 0;
+    private Integer counter = 0;
 
     @Inject
     PartnerProofRepository repo;
@@ -95,10 +95,6 @@ class PartnerProofRepositoryTest {
 
       assertEquals(2, repo.findByPartnerId(
         pp.getPartnerId(), Pageable.from(8, 5)).getNumberOfElements());
-
-//      assertEquals(2, repo.findByPartnerId(
-//        pp.getPartnerId(), Pageable.from(8, 5)));
-
     }
 
     public PartnerProof createDummyPresEx(PartnerProof partnerProof) {

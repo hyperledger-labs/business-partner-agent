@@ -35,7 +35,6 @@ import org.hyperledger.aries.api.jsonld.VerifiableCredential;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
-import org.hyperledger.bpa.controller.api.PaginationCommand;
 import org.hyperledger.bpa.controller.api.issuer.DeclineExchangeRequest;
 import org.hyperledger.bpa.controller.api.partner.ApproveProofRequest;
 import org.hyperledger.bpa.controller.api.partner.RequestProofRequest;
@@ -153,22 +152,6 @@ public class ProofExchangeController {
         AriesProofExchange pProof = proofM.getPartnerProofById(id);
         return HttpResponse.ok(pProof);
     }
-    /**
-     * List proof exchange records with pagination params
-     *
-     * @param pc        {@link PaginationCommand}
-     * @param id        partner id
-     * @return list of {@link AriesProofExchange}
-     */
-//    @Get("/{?pc*}")
-//    public HttpResponse<Page<AriesProofExchange>> listPresentationExRecords(
-//      @Valid @Nullable PaginationCommand pc,
-//      @Parameter(description = "partner id")
-//      @PathVariable
-//      @QueryValue UUID id){
-//      return HttpResponse.ok(proofM.listPartnerProofs(id,
-//        pc != null ? pc.toPageable() : Pageable.unpaged()));
-//    }
 
     /**
      * Aries: Deletes a proof exchange by id

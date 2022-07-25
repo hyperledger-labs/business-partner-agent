@@ -52,7 +52,6 @@ import org.hyperledger.bpa.controller.api.partner.CreatePartnerInvitationRequest
 import org.hyperledger.bpa.impl.activity.DidResolver;
 import org.hyperledger.bpa.impl.activity.PartnerCredDefLookup;
 import org.hyperledger.bpa.impl.util.AriesStringUtil;
-import org.hyperledger.bpa.impl.util.Converter;
 import org.hyperledger.bpa.impl.util.TimeUtil;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
@@ -84,9 +83,6 @@ public class ConnectionManager {
 
     @Inject
     PartnerProofRepository partnerProofRepo;
-
-    @Inject
-    Converter conv;
 
     @Inject
     HolderCredExRepository holderCredExRepo;

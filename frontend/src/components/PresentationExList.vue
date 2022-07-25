@@ -237,7 +237,6 @@ export default {
         {
           text: this.$t("component.presentationExList.table.role"),
           value: "role",
-          sortable: false,
         },
         {
           text: this.$t("component.presentationExList.table.updatedAt"),
@@ -246,7 +245,6 @@ export default {
         {
           text: this.$t("component.presentationExList.table.state"),
           value: "state",
-          sortable: false,
         },
       ];
     },
@@ -284,7 +282,6 @@ export default {
       this.dialog = false;
     },
     async loadPresentationRecords() {
-      console.log("Getting presentation records...");
       this.isLoadingPresExRecords = true;
       this.presentationExchangeRecords = [];
       const params = PageOptions.toUrlSearchParams(this.options);
@@ -293,7 +290,6 @@ export default {
           this.partnerId,
           params
         );
-        console.log("######## presExLog:", response);
         if (response.status === 200) {
           const { itemsPerPage } = this.options;
           this.presentationExchangeRecords = response.data.content;
