@@ -492,7 +492,7 @@ export default {
         navigator.language.split("-")[0] ||
         process.env.VUE_APP_I18N_LOCALE ||
         "en";
-      i18n.locale = locale;
+      i18n.global.locale.value = locale;
       this.$vuetify.lang.current = locale;
 
       // Load up an alternate favicon

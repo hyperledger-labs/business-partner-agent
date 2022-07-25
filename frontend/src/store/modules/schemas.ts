@@ -59,7 +59,7 @@ export default {
             // Create empty organizational profile - necessary for initial setup
             schemas.unshift({
               type: CredentialTypes.PROFILE.type as CredentialType,
-              label: i18n
+              label: i18n.global
                 .t("component.profile.organizationalProfile.title")
                 .toString(),
             });

@@ -25,7 +25,11 @@ import { RuntimeConfig, settingsService } from "@/services";
 
 //Vue.component("vue-json-pretty", VueJsonPretty);
 
-const app = createApp(App).use(i18n).use(router).use(store).use(vuetify);
+const app = createApp(App)
+  .use(i18n)
+  .use(router)
+  .use(store);
+//.use(vuetify);
 
 app.config.globalProperties.$filters = filters;
 
@@ -115,19 +119,14 @@ app.use(VueNativeSock, socketApi, {
     app.config.globalProperties.$config = config;
   }
 
-  const locale =
-    localStorage.getItem("locale") ||
-    navigator.language.split("-")[0] ||
-    process.env.VUE_APP_I18N_LOCALE ||
-    "en";
-  // this.$vuetify.lang.current = locale;
+  // this.$vuetify.lang.current = locale; TODO
 
   console.log("setting i18n...");
-  app.config.globalProperties.$i18n.locale = locale;
-  app.config.globalProperties.$fallbackLocale =
+  i18n.global.locale.value = app.config.globalProperties.$config.locale;
+  i18n.global.fallbackLocale.value =
     app.config.globalProperties.$config.fallbackLocale;
   console.log(
-    `i18n.locale = ${app.config.globalProperties.$i18n.locale}, i18n.fallbackLocale = ${app.config.globalProperties.$i18n.fallbackLocale}`
+    `i18n.locale = ${i18n.global.locale.value}, i18n.fallbackLocale = ${i18n.global.fallbackLocale.value}`
   );
 
   app.provide("$axiosErrorMessage", function (error: any) {
@@ -148,7 +147,7 @@ app.use(VueNativeSock, socketApi, {
     // but in err.response.statusText is a bit more understandable... "Not Found"
     // do we want to use the status text before the default message?
     if (error.response) {
-      return app.config.globalProperties.$t("error.axios", {
+      return i18n.global.t("error.axios", {
         statusText: error.response.statusText,
       });
     }
