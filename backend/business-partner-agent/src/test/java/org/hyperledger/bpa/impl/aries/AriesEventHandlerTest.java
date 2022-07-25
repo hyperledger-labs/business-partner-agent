@@ -171,7 +171,7 @@ class AriesEventHandlerTest extends BaseTest {
         proofRepo.save(PartnerProof
                 .builder()
                 .type(CredentialType.INDY)
-                .partnerId(p.getId())
+                .partner(p)
                 .presentationExchangeId(exReqSent.getPresentationExchangeId())
                 .threadId(exReqSent.getThreadId())
                 .proofRequest(ExchangePayload.indy(exReqSent.getPresentationRequest()))

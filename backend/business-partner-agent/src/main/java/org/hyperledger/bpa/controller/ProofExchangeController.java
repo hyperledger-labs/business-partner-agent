@@ -68,7 +68,7 @@ public class ProofExchangeController {
      */
     @Get("/{id}/matching-credentials")
     public HttpResponse<List<PresentationRequestCredentialsIndy>> getMatchingCredentials(@PathVariable UUID id) {
-        List<PresentationRequestCredentialsIndy> mc = proofM.getMatchingCredentials(id);
+        List<PresentationRequestCredentialsIndy> mc = proofM.getMatchingIndyCredentials(id);
         return HttpResponse.ok(mc);
     }
 

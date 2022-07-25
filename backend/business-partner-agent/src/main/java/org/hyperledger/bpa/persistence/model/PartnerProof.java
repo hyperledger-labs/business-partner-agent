@@ -59,8 +59,9 @@ public class PartnerProof extends StateChangeDecorator<PartnerProof, Presentatio
     @AutoPopulated
     private UUID id;
 
-    // TODO one to many
-    private UUID partnerId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Column(name = "partner_id")
+    private Partner partner;
 
     @DateCreated
     private Instant createdAt;

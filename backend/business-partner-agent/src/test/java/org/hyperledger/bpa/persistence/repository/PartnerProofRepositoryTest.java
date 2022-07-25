@@ -22,13 +22,13 @@ import jakarta.inject.Inject;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
 import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -38,11 +38,16 @@ class PartnerProofRepositoryTest {
     @Inject
     PartnerProofRepository repo;
 
+    @Inject
+    PartnerRepository partnerRepo;
+
     @Test
     void testUpdateProof() {
+        Partner dbP = partnerRepo
+                .save(Partner.builder().did("dummy").alias("alias").ariesSupport(Boolean.FALSE).build());
         PartnerProof pp = PartnerProof
                 .builder()
-                .partnerId(UUID.randomUUID())
+                .partner(dbP)
                 .presentationExchangeId("pres-1")
                 .type(CredentialType.INDY)
                 .build();
@@ -54,14 +59,17 @@ class PartnerProofRepositoryTest {
 
         PartnerProof updated = repo.findById(pp.getId()).orElseThrow();
         assertEquals(PresentationExchangeState.VERIFIED, updated.getState());
+        assertEquals(dbP.getId(), pp.getPartner().getId());
     }
 
     @Test
     void testExchangeStateDecorator() {
+        Partner dbP = partnerRepo
+                .save(Partner.builder().did("dummy").alias("alias").ariesSupport(Boolean.FALSE).build());
         PartnerProof pp = PartnerProof
                 .builder()
                 .type(CredentialType.INDY)
-                .partnerId(UUID.randomUUID())
+                .partner(dbP)
                 .presentationExchangeId("pres-1")
                 .pushStateChange(PresentationExchangeState.PROPOSAL_SENT, Instant.ofEpochMilli(1631760000000L))
                 .build();

@@ -24,6 +24,7 @@ import jakarta.inject.Inject;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
+import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
 import org.hyperledger.bpa.persistence.model.prooftemplate.*;
 import org.hyperledger.bpa.testutil.SchemaMockFactory;
@@ -54,6 +55,9 @@ class BPAProofTemplateRepositoryTest {
 
     @Inject
     SchemaMockFactory.SchemaMock schemaMock;
+
+    @Inject
+    PartnerRepository partnerRepo;
 
     @BeforeEach
     public void setup() {
@@ -130,6 +134,8 @@ class BPAProofTemplateRepositoryTest {
 
     @Test
     void testThatPartnerProofResolvesItsTemplate() {
+        Partner dbP = partnerRepo
+                .save(Partner.builder().did("dummy").alias("alias").ariesSupport(Boolean.FALSE).build());
         BPAProofTemplate.BPAProofTemplateBuilder proofTemplateBuilder = getBpaProofTemplateBuilder();
         BPAProofTemplate proofTemplateToSave = proofTemplateBuilder
                 .build();
@@ -137,7 +143,7 @@ class BPAProofTemplateRepositoryTest {
         BPAProofTemplate savedTemplate = repo.save(proofTemplateToSave);
         System.out.println(savedTemplate);
         PartnerProof proof = proofRepository.save(PartnerProof.builder()
-                .partnerId(UUID.randomUUID())
+                .partner(dbP)
                 .presentationExchangeId("presentationExchangeId")
                 .proofTemplate(savedTemplate)
                 .type(CredentialType.INDY)
@@ -148,6 +154,8 @@ class BPAProofTemplateRepositoryTest {
 
     @Test
     void testThatDeletionIsConstrainedToUnusedTemplates() {
+        Partner dbP = partnerRepo
+                .save(Partner.builder().did("dummy").alias("alias").ariesSupport(Boolean.FALSE).build());
         BPAProofTemplate.BPAProofTemplateBuilder proofTemplateBuilder = getBpaProofTemplateBuilder();
         BPAProofTemplate proofTemplateToSave = proofTemplateBuilder
                 .build();
@@ -155,7 +163,7 @@ class BPAProofTemplateRepositoryTest {
         BPAProofTemplate savedTemplate = repo.save(proofTemplateToSave);
         System.out.println(savedTemplate);
         PartnerProof proof = proofRepository.save(PartnerProof.builder()
-                .partnerId(UUID.randomUUID())
+                .partner(dbP)
                 .presentationExchangeId("presentationExchangeId")
                 .proofTemplate(savedTemplate)
                 .type(CredentialType.INDY)

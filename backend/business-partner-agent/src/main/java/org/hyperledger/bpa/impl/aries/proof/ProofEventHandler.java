@@ -34,6 +34,7 @@ import org.hyperledger.bpa.api.notification.PresentationRequestDeclinedEvent;
 import org.hyperledger.bpa.api.notification.PresentationRequestReceivedEvent;
 import org.hyperledger.bpa.config.BPAMessageSource;
 import org.hyperledger.bpa.impl.util.TimeUtil;
+import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
 import org.hyperledger.bpa.persistence.model.converter.ExchangePayload;
 import org.hyperledger.bpa.persistence.repository.PartnerProofRepository;
@@ -41,7 +42,6 @@ import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
 import java.time.Instant;
 import java.util.Objects;
-import java.util.UUID;
 
 @Slf4j
 @Singleton
@@ -100,7 +100,7 @@ public class ProofEventHandler {
                 },
                 () -> partnerRepo.findByConnectionId(exchange.getConnectionId())
                         .ifPresentOrElse(
-                                p -> pProofRepo.save(defaultProof(p.getId(), exchange)),
+                                p -> pProofRepo.save(defaultProof(p, exchange)),
                                 () -> log.warn("Received exchange event that does not match any connection")));
     }
 
@@ -108,11 +108,11 @@ public class ProofEventHandler {
      * Handles all events that are either acked or verified connectionless proofs
      * are currently not handled
      *
-     * @param p {@link BasePresExRecord}
+     * @param presExRecord {@link BasePresExRecord}
      */
-    private void handleAckedOrVerified(BasePresExRecord p) {
-        pProofRepo.findByPresentationExchangeId(p.getPresentationExchangeId()).ifPresent(pp -> {
-            PartnerProof savedProof = proofManager.handleAckedOrVerifiedProofEvent(p, pp);
+    private void handleAckedOrVerified(BasePresExRecord presExRecord) {
+        pProofRepo.findByPresentationExchangeId(presExRecord.getPresentationExchangeId()).ifPresent(pp -> {
+            PartnerProof savedProof = proofManager.handleAckedOrVerifiedProofEvent(presExRecord, pp);
             eventPublisher.publishEventAsync(PresentationRequestCompletedEvent.builder()
                     .partnerProof(savedProof)
                     .build());
@@ -146,7 +146,7 @@ public class ProofEventHandler {
                             }
                         }, () -> {
                             // case: proof request from other BPA
-                            final PartnerProof pp = defaultProof(p.getId(), proof);
+                            final PartnerProof pp = defaultProof(p, proof);
                             pProofRepo.save(pp);
                             eventPublisher.publishEventAsync(PresentationRequestReceivedEvent.builder()
                                     .partnerProof(pp)
@@ -179,18 +179,18 @@ public class ProofEventHandler {
     /**
      * Build db proof representation with all mandatory fields that are required
      *
-     * @param partnerId the partner id
+     * @param partner {@link Partner}
      * @param proof     {@link BasePresExRecord}
      * @return {@link PartnerProof}
      */
-    private PartnerProof defaultProof(@NonNull UUID partnerId, @NonNull BasePresExRecord proof) {
+    private PartnerProof defaultProof(@NonNull Partner partner, @NonNull BasePresExRecord proof) {
         Instant ts = TimeUtil.fromISOInstant(proof.getUpdatedAt());
         ExchangePayload<PresentProofRequest.ProofRequest, V2DIFProofRequest> pr = ExchangePayload
                 .buildForProofRequest(proof);
         CredentialType type = Objects.requireNonNull(pr).getType();
         return PartnerProof
                 .builder()
-                .partnerId(partnerId)
+                .partner(partner)
                 .state(proof.getState())
                 .presentationExchangeId(proof.getPresentationExchangeId())
                 .threadId(proof.getThreadId())

@@ -119,9 +119,10 @@ public class ProofManager {
             // that was not part of the template and set during proof request creation.
             // using null for issuerId and schemaId because the template could have multiple
             // of each.
+            Partner p = partnerRepo.findById(partnerId).orElseThrow(EntityNotFoundException::new);
             if (version.isV1()) {
                 ac.presentProofSendRequest(proofRequest)
-                        .ifPresent(persistProof(partnerId, proofTemplate, CredentialType.INDY));
+                        .ifPresent(persistProof(p, proofTemplate, CredentialType.INDY));
             } else {
                 ac.presentProofV2SendRequest(V20PresSendRequestRequest
                         .builder()
@@ -131,7 +132,7 @@ public class ProofManager {
                                 .build())
                         .build())
                         .map(V20PresExRecordToV1Converter::toV1)
-                        .ifPresent(persistProof(partnerId, proofTemplate, CredentialType.INDY));
+                        .ifPresent(persistProof(p, proofTemplate, CredentialType.INDY));
             }
         } catch (IOException e) {
             throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
@@ -148,7 +149,7 @@ public class ProofManager {
                             .dif(ldVerifier.prepareRequest(proofTemplate))
                             .build())
                     .build())
-                    .ifPresent(persistProof(partnerId, proofTemplate, CredentialType.JSON_LD));
+                    .ifPresent(persistProof(p, proofTemplate, CredentialType.JSON_LD));
         } catch (IOException e) {
             throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
         }
@@ -174,10 +175,10 @@ public class ProofManager {
                         .buildForAllAttributes(partner.getConnectionId(),
                                 Set.copyOf(schema.getAttrNames()), req.buildRestrictions());
                 ac.presentProofSendRequest(proofRequest).ifPresent(
-                        persistProof(partnerId, null, CredentialType.INDY));
+                        persistProof(partner, null, CredentialType.INDY));
             } else {
                 ac.presentProofSendRequest(req.getRequestRaw().toString()).ifPresent(
-                        persistProof(partnerId, null, CredentialType.INDY));
+                        persistProof(partner, null, CredentialType.INDY));
             }
         } catch (IOException e) {
             throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
@@ -198,17 +199,17 @@ public class ProofManager {
                     if (v.isV1()) {
                         ac.presentProofSendProposal(
                                 PresentProofProposalBuilder.fromCredential(p.getConnectionId(), cred))
-                                .ifPresent(persistProof(partnerId, null, CredentialType.INDY));
+                                .ifPresent(persistProof(p, null, CredentialType.INDY));
                     } else if (v.isV2()) {
                         ac.presentProofV2SendProposal(PresentProofProposalBuilder.v2IndyFromCredential(
                                 p.getConnectionId(), cred, AriesStringUtil.schemaGetName(cred.getSchemaId())))
                                 .map(V20PresExRecordToV1Converter::toV1)
-                                .ifPresent(persistProof(partnerId, null, CredentialType.INDY));
+                                .ifPresent(persistProof(p, null, CredentialType.INDY));
                     }
                 } else if (c.typeIsJsonLd()) {
                     V20PresProposalRequest proofProposal = ldProver.prepareProposal(p.getConnectionId(), c);
                     ac.presentProofV2SendProposal(proofProposal)
-                            .ifPresent(persistProof(partnerId, null, CredentialType.JSON_LD));
+                            .ifPresent(persistProof(p, null, CredentialType.JSON_LD));
                 }
             } catch (IOException e) {
                 throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
@@ -217,11 +218,11 @@ public class ProofManager {
     }
 
     private Consumer<BasePresExRecord> persistProof(
-            @NonNull UUID partnerId, @Nullable BPAProofTemplate proofTemplate, @NonNull CredentialType type) {
+            @NonNull Partner partner, @Nullable BPAProofTemplate proofTemplate, @NonNull CredentialType type) {
         return exchange -> {
             final PartnerProof pp = PartnerProof
                     .builder()
-                    .partnerId(partnerId)
+                    .partner(partner)
                     .state(exchange.getState())
                     .type(type)
                     .presentationExchangeId(exchange.getPresentationExchangeId())
@@ -240,7 +241,7 @@ public class ProofManager {
     }
 
     // manual proof request flow
-    public List<PresentationRequestCredentialsIndy> getMatchingCredentials(@NonNull UUID partnerProofId) {
+    public List<PresentationRequestCredentialsIndy> getMatchingIndyCredentials(@NonNull UUID partnerProofId) {
         PartnerProof partnerProof = pProofRepo.findById(partnerProofId).orElseThrow(EntityNotFoundException::new);
         return getMatchingIndyCredentials(partnerProof.getPresentationExchangeId(), partnerProof.getExchangeVersion())
                 .map(pres -> pres.stream().map(rec -> PresentationRequestCredentialsIndy
