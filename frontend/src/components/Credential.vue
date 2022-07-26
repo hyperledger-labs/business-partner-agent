@@ -46,7 +46,7 @@
         <v-text-field
           v-if="intDoc.issuedAt"
           :label="$t('component.credential.issuedAt')"
-          :value="$options.filters.moment(intDoc.issuedAt, 'YYYY-MM-DD HH:mm')"
+          :value="dateTime(intDoc.issuedAt, 'YYYY-MM-DD HH:mm')"
           disabled
           outlined
           dense
@@ -79,6 +79,7 @@
 <script lang="ts">
 import * as textUtils from "@/utils/textUtils";
 import { MyDocumentAPI, SchemaAPI } from "@/services";
+import moment from "moment";
 
 export default {
   props: {
@@ -229,6 +230,9 @@ export default {
           this.origIntDoc[key] = { ...this.intDoc[key] };
         }
       });
+    },
+    dateTime(date: number) {
+      return moment(date).format("YYYY-MM-DD");
     },
   },
 };

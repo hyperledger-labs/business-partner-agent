@@ -16,10 +16,9 @@ import i18n from "./plugins/i18n";
 import vuetify from "./plugins/vuetify";
 import router from "./router";
 import store from "./store";
-import filters from "@/filters"
+import filters from "@/filters";
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
-import vue_moment from "vue-moment";
 import { RuntimeConfig, settingsService } from "@/services";
 import axios from "axios";
 import VueAxios from "vue-axios";
@@ -31,11 +30,9 @@ const app = createApp(App)
   .use(VueAxios, axios);
 //.use(vuetify);
 
-app.component("vue-json-pretty", VueJsonPretty)
+app.component("vue-json-pretty", VueJsonPretty);
 
 app.config.globalProperties.$filters = filters;
-
-//Vue.use(vue_moment);
 
 const apiBaseUrl = process.env.VUE_APP_API_BASE_URL
   ? process.env.VUE_APP_API_BASE_URL
