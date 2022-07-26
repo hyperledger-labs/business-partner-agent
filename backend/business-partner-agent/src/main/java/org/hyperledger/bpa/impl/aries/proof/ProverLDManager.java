@@ -107,32 +107,63 @@ public class ProverLDManager extends BaseLDManager {
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
+    void acceptDifCredentialsFromProposal(@NonNull V20PresExRecord dif, @NonNull String referent) {
+        V2DIFProofRequest pr = dif
+                .resolveDifPresentationRequest()
+                .resetHolderConstraints();
+        if (pr.getPresentationDefinition() != null
+                && CollectionUtils.isNotEmpty(pr.getPresentationDefinition().getInputDescriptors())) {
+            // see prepareProposal(), proposals always use a single input descriptor
+            V2DIFProofRequest.PresentationDefinition.InputDescriptors id = pr.getPresentationDefinition()
+                    .getInputDescriptors().get(0);
+            accept(
+                    dif.getPresentationExchangeId(),
+                    V20PresSpecByFormatRequest.builder()
+                            .dif(DIFPresSpec.builder()
+                                    .issuerId(identity.getMyDid())
+                                    .presentationDefinition(pr.getPresentationDefinition())
+                                    .recordIds(Map.of(id.getId(), List.of(referent)))
+                                    .build())
+                            .build());
+        }
+    }
+
     void acceptSelectedDifCredentials(@NonNull V20PresExRecord dif, @Nullable List<String> referents) {
+        List<VerifiableCredential.VerifiableCredentialMatch> matches = matches(dif.getPresentationExchangeId());
+        Map<String, List<String>> singleMatches = matches.stream()
+                .filter(m -> CollectionUtils.isEmpty(referents) || referents.contains(m.getRecordId()))
+                .map(m -> new AbstractMap.SimpleEntry<>(LDContextHelper.findSchemaId(m), List.of(m.getRecordId())))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        if (CollectionUtils.isNotEmpty(singleMatches)) {
+            // set holder to null
+            V2DIFProofRequest presentationRequest = dif
+                    .resolveDifPresentationRequest()
+                    .resetHolderConstraints();
+            accept(
+                    dif.getPresentationExchangeId(),
+                    V20PresSpecByFormatRequest.builder()
+                            .dif(DIFPresSpec.builder()
+                                    .issuerId(identity.getMyDid())
+                                    .presentationDefinition(presentationRequest.getPresentationDefinition())
+                                    .recordIds(singleMatches)
+                                    .build())
+                            .build());
+        }
+    }
+
+    private void accept(@NonNull String presentationExchangeId, @NonNull V20PresSpecByFormatRequest req) {
         try {
-            List<VerifiableCredential.VerifiableCredentialMatch> matches = ac.presentProofV2RecordsCredentialsDif(
-                    dif.getPresentationExchangeId(), null)
-                    .orElseThrow();
-            Map<String, List<String>> singleMatches = matches.stream()
-                    .filter(m -> CollectionUtils.isEmpty(referents) || referents.contains(m.getRecordId()))
-                    .map(m -> new AbstractMap.SimpleEntry<>(LDContextHelper.findSchemaId(m), List.of(m.getRecordId())))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-            if (CollectionUtils.isNotEmpty(singleMatches)) {
-                // set holder to null
-                V2DIFProofRequest presentationRequest = dif
-                        .resolveDifPresentationRequest()
-                        .resetHolderConstraints();
-                ac.presentProofV2RecordsSendPresentation(
-                        dif.getPresentationExchangeId(),
-                        V20PresSpecByFormatRequest.builder()
-                                .dif(DIFPresSpec.builder()
-                                        .issuerId(identity.getMyDid())
-                                        .presentationDefinition(presentationRequest.getPresentationDefinition())
-                                        .recordIds(singleMatches)
-                                        .build())
-                                .build());
-            }
+            ac.presentProofV2RecordsSendPresentation(presentationExchangeId, req);
         } catch (IOException e) {
-            log.error(ms.getMessage("acapy.unavailable"), e);
+            throw new NetworkException(e.getMessage());
+        }
+    }
+
+    private List<VerifiableCredential.VerifiableCredentialMatch> matches(@NonNull String presentationExchangeId) {
+        try {
+            return ac.presentProofV2RecordsCredentialsDif(presentationExchangeId, null).orElseThrow();
+        } catch (IOException e) {
+            throw new NetworkException(e.getMessage());
         }
     }
 }

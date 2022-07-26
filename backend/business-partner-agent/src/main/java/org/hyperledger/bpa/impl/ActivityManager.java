@@ -128,8 +128,9 @@ public class ActivityManager {
     public void completeCredentialOfferedTask(@NonNull AriesCredential credential) {
         partnerRepo.findByConnectionId(credential.getConnectionId()).ifPresent(partner -> activityRepository
                 .findByLinkIdAndTypeAndRole(credential.getId(),
-                ActivityType.CREDENTIAL_EXCHANGE,
-                ActivityRole.CREDENTIAL_EXCHANGE_HOLDER).ifPresentOrElse(activity -> {
+                        ActivityType.CREDENTIAL_EXCHANGE,
+                        ActivityRole.CREDENTIAL_EXCHANGE_HOLDER)
+                .ifPresentOrElse(activity -> {
                     activity.setState(ActivityState.CREDENTIAL_EXCHANGE_ACCEPTED);
                     activity.setCompleted(true);
                     activityRepository.update(activity);
@@ -173,8 +174,9 @@ public class ActivityManager {
     public void addCredentialIssuedActivity(@NonNull AriesCredential credential) {
         partnerRepo.findByConnectionId(credential.getConnectionId()).ifPresent(partner -> activityRepository
                 .findByLinkIdAndTypeAndRole(credential.getId(),
-                ActivityType.CREDENTIAL_EXCHANGE,
-                ActivityRole.CREDENTIAL_EXCHANGE_ISSUER).ifPresentOrElse(activity -> {
+                        ActivityType.CREDENTIAL_EXCHANGE,
+                        ActivityRole.CREDENTIAL_EXCHANGE_ISSUER)
+                .ifPresentOrElse(activity -> {
                     activity.setState(ActivityState.CREDENTIAL_EXCHANGE_SENT);
                     activity.setCompleted(true);
                     activityRepository.update(activity);
@@ -201,29 +203,29 @@ public class ActivityManager {
     }
 
     private void notifyCredentialIssuerActivity(@NonNull AriesCredential credential, ActivityState state) {
-        partnerRepo.findByConnectionId(credential.getConnectionId()).ifPresent(partner -> activityRepository.
-                findByLinkIdAndTypeAndRole(credential.getId(),
-                ActivityType.CREDENTIAL_EXCHANGE,
-                ActivityRole.CREDENTIAL_EXCHANGE_ISSUER).ifPresentOrElse(activity -> {
-                    activity.setState(state);
-                    activity.setCompleted(true);
-                    activityRepository.update(activity);
-                    eventPublisher
-                            .publishEventAsync(ActivityNotificationEvent.builder().activity(activity).build());
-                },
-                        () -> {
-                            Activity a = Activity.builder()
-                                    .linkId(credential.getId())
-                                    .partner(partner)
-                                    .type(ActivityType.CREDENTIAL_EXCHANGE)
-                                    .role(ActivityRole.CREDENTIAL_EXCHANGE_ISSUER)
-                                    .state(state)
-                                    .completed(true)
-                                    .build();
-                            activityRepository.save(a);
+        partnerRepo.findByConnectionId(credential.getConnectionId())
+                .ifPresent(partner -> activityRepository.findByLinkIdAndTypeAndRole(credential.getId(),
+                        ActivityType.CREDENTIAL_EXCHANGE,
+                        ActivityRole.CREDENTIAL_EXCHANGE_ISSUER).ifPresentOrElse(activity -> {
+                            activity.setState(state);
+                            activity.setCompleted(true);
+                            activityRepository.update(activity);
                             eventPublisher
-                                    .publishEventAsync(ActivityNotificationEvent.builder().activity(a).build());
-                        }));
+                                    .publishEventAsync(ActivityNotificationEvent.builder().activity(activity).build());
+                        },
+                                () -> {
+                                    Activity a = Activity.builder()
+                                            .linkId(credential.getId())
+                                            .partner(partner)
+                                            .type(ActivityType.CREDENTIAL_EXCHANGE)
+                                            .role(ActivityRole.CREDENTIAL_EXCHANGE_ISSUER)
+                                            .state(state)
+                                            .completed(true)
+                                            .build();
+                                    activityRepository.save(a);
+                                    eventPublisher
+                                            .publishEventAsync(ActivityNotificationEvent.builder().activity(a).build());
+                                }));
     }
 
     public void addPartnerAddedActivity(@NonNull Partner partner) {

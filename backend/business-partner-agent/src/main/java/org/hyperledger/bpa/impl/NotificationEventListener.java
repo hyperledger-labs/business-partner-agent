@@ -218,7 +218,7 @@ public class NotificationEventListener {
     public void onPresentationRequestCompletedEvent(PresentationRequestCompletedEvent event) {
         log.debug("onPresentationRequestCompletedEvent");
         // we have the partner id, but not the partner, will need to look up partner...
-        PartnerAPI p = conv .toAPIObject(event.getPartnerProof().getPartner());
+        PartnerAPI p = conv.toAPIObject(event.getPartnerProof().getPartner());
 
         WebSocketMessageBody message;
         if (PresentationExchangeRole.PROVER.equals(event.getPartnerProof().getRole())) {

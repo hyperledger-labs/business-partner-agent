@@ -25,6 +25,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.aries.api.present_proof.BasePresExRecord;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
+import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeState;
 import org.hyperledger.aries.api.present_proof_v2.V20PresExRecord;
 import org.hyperledger.aries.api.present_proof_v2.V2DIFProofRequest;
@@ -141,7 +142,12 @@ public class ProofEventHandler {
                                 }
                                 pProofRepo.update(pProof);
                                 if (proof.isNotAutoPresent()) {
-                                    proofManager.presentProofAcceptSelected(proof, null, pProof.getExchangeVersion());
+                                    if (proof instanceof V20PresExRecord dif) {
+                                        proofManager.acceptDifCredentialsFromProposal(dif, pProof);
+                                    } else if (proof instanceof PresentationExchangeRecord indy) {
+                                        proofManager.acceptSelectedIndyCredentials(null, pProof.getExchangeVersion(),
+                                                indy);
+                                    }
                                 }
                             }
                         }, () -> {
@@ -180,7 +186,7 @@ public class ProofEventHandler {
      * Build db proof representation with all mandatory fields that are required
      *
      * @param partner {@link Partner}
-     * @param proof     {@link BasePresExRecord}
+     * @param proof   {@link BasePresExRecord}
      * @return {@link PartnerProof}
      */
     private PartnerProof defaultProof(@NonNull Partner partner, @NonNull BasePresExRecord proof) {

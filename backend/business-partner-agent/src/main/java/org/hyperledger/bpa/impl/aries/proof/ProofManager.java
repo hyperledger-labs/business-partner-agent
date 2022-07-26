@@ -353,9 +353,18 @@ public class ProofManager {
                 ldProver.acceptSelectedDifCredentials(dif, referents);
             }
         }
+        throw new WrongApiUsageException();
     }
 
-    private void acceptSelectedIndyCredentials(@Nullable List<String> referents, @NonNull ExchangeVersion version,
+    void acceptDifCredentialsFromProposal(@NonNull V20PresExRecord dif, @Nullable PartnerProof partnerProof) {
+        if (partnerProof != null
+                && partnerProof.getCredentialExchange() != null
+                && partnerProof.getCredentialExchange().getReferent() != null) {
+            ldProver.acceptDifCredentialsFromProposal(dif, partnerProof.getCredentialExchange().getReferent());
+        }
+    }
+
+    void acceptSelectedIndyCredentials(@Nullable List<String> referents, @NonNull ExchangeVersion version,
             @NonNull PresentationExchangeRecord presentationExchangeRecord) {
         getMatchingIndyCredentials(presentationExchangeRecord.getPresentationExchangeId(), version)
                 .ifPresentOrElse(creds -> {
@@ -504,7 +513,7 @@ public class ProofManager {
         public PersistProofCmd(
                 @NonNull Partner partner, @Nullable BPAProofTemplate proofTemplate,
                 @NonNull CredentialType type, @Nullable BPACredentialExchange credentialExchange) {
-            this.partner= partner;
+            this.partner = partner;
             this.proofTemplate = proofTemplate;
             this.type = type;
             this.credentialExchange = credentialExchange;

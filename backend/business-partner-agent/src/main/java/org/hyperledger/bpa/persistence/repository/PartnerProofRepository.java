@@ -52,6 +52,7 @@ public interface PartnerProofRepository extends CrudRepository<PartnerProof, UUI
     @NonNull
     @Join(value = "proofTemplate", type = Join.Type.LEFT_FETCH)
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    @Join(value = "credentialExchange", type = Join.Type.LEFT_FETCH)
     Optional<PartnerProof> findByPresentationExchangeId(String presentationExchangeId);
 
     @NonNull
