@@ -7,7 +7,6 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.bpa.api.notification.*;
-import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
 import java.util.List;
 

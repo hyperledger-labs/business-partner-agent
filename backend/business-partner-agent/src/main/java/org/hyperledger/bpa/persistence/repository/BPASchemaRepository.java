@@ -39,8 +39,7 @@ public interface BPASchemaRepository extends CrudRepository<BPASchema, UUID> {
     @Override
     @NonNull
     @Join(value = "restrictions", type = Join.Type.LEFT_FETCH)
-    @Join(value = "credentialDefinitions", type =
-            Join.Type.LEFT_FETCH)
+    @Join(value = "credentialDefinitions", type = Join.Type.LEFT_FETCH)
     Iterable<BPASchema> findAll();
 
     List<BPASchema> findByType(CredentialType type);
