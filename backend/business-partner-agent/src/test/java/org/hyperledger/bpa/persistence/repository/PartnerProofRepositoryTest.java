@@ -89,80 +89,55 @@ class PartnerProofRepositoryTest {
     @Test
     void testGetPresentationExchangeListByPartnerId(){
       PartnerProof pp = createRandomPartnerProof();
-      int numberOfPresExRecords = 42;
-      for(int i = 1; i<numberOfPresExRecords; i++) {
-        repo.save(createDummyPresEx(pp));
-      }
+      repo.save(createDummyPresEx(pp, "pres-b"));
+      repo.save(createDummyPresEx(pp, "pres-c"));
+      repo.save(createDummyPresEx(pp, "pres-d"));
+      repo.save(createDummyPresEx(pp, "pres-e"));
+      repo.save(createDummyPresEx(pp, "pres-f"));
+      repo.save(createDummyPresEx(pp, "pres-g"));
+      repo.save(createDummyPresEx(pp, "pres-h"));
+      repo.save(createDummyPresEx(pp, "pres-i"));
+      repo.save(createDummyPresEx(pp, "pres-j"));
+      repo.save(createDummyPresEx(pp, "pres-k"));
 
-//      Sort newSort = new Sort.Order("presentationExchangeId", Sort.Order.Direction.DESC);
-      Sort.Order newOrder = new Sort.Order("presentationExchangeId", Sort.Order.Direction.DESC, true);
+      assertEquals(3, repo.findByPartnerId(
+        pp.getPartnerId(), Pageable.from(0, 5)).getTotalPages());
 
-      assertEquals(9, repo.findByPartnerId(
-        pp.getPartnerId(), Pageable.from(2, 5)).getTotalPages());
-
-      assertEquals(2, repo.findByPartnerId(
-        pp.getPartnerId(), Pageable.from(8, 5)).getNumberOfElements());
-
-      assertEquals("pres-1", repo.findByPartnerId(
-        pp.getPartnerId(), Pageable.from(0,5).order("presentationExchangeId",
-          Sort.Order.Direction.ASC))
+      assertEquals("pres-k",
+        repo.findByPartnerId(pp.getPartnerId(),
+          Pageable.from(0, 5)
+            .order("presentationExchangeId",
+              Sort.Order.Direction.DESC))
         .getContent()
         .get(0)
         .getPresentationExchangeId());
 
-      assertEquals("pres-9", repo.findByPartnerId(
-          pp.getPartnerId(), Pageable.from(0,5).order(newOrder))
-        .getContent()
-        .get(0)
-        .getPresentationExchangeId()
-        .toString());
-
-      assertEquals("pres-42", repo.findByPartnerId(
-          pp.getPartnerId(), Pageable.from(1,5).order("presentationExchangeId",
-            Sort.Order.Direction.DESC))
+      assertEquals("pres-f",
+        repo.findByPartnerId(pp.getPartnerId(),
+            Pageable.from(1, 5)
+              .order("presentationExchangeId",
+                Sort.Order.Direction.DESC))
         .getContent()
         .get(0)
         .getPresentationExchangeId());
 
-      assertEquals("pres-38", repo.findByPartnerId(
-          pp.getPartnerId(), Pageable.from(2,5).order("presentationExchangeId",
-            Sort.Order.Direction.DESC))
+      assertEquals("pres-a", repo.findByPartnerId(pp.getPartnerId(),
+          Pageable.from(2, 5)
+            .order("presentationExchangeId",
+              Sort.Order.Direction.DESC))
         .getContent()
         .get(0)
         .getPresentationExchangeId());
-
-      assertEquals("pres-33", repo.findByPartnerId(
-          pp.getPartnerId(), Pageable.from(3,5).order("presentationExchangeId",
-            Sort.Order.Direction.DESC))
-        .getContent()
-        .get(0)
-        .getPresentationExchangeId());
-
-      assertEquals("pres-29", repo.findByPartnerId(
-          pp.getPartnerId(), Pageable.from(4,5).order("presentationExchangeId",
-            Sort.Order.Direction.DESC))
-        .getContent()
-        .get(0)
-        .getPresentationExchangeId());
-
-      assertEquals("pres-24", repo.findByPartnerId(
-          pp.getPartnerId(), Pageable.from(5,5).order("presentationExchangeId",
-            Sort.Order.Direction.DESC))
-        .getContent()
-        .get(0)
-        .getPresentationExchangeId());
-
     }
 
-    public PartnerProof createDummyPresEx(PartnerProof partnerProof) {
-      counter += 1;
+    public PartnerProof createDummyPresEx(PartnerProof partnerProof, String pesId) {
       return PartnerProof
         .builder()
         .id(partnerProof.getId())
         .partnerId(partnerProof.getPartnerId())
         .state(partnerProof.getState())
         .proofRequest(partnerProof.getProofRequest())
-        .presentationExchangeId("pres-" + counter)
+        .presentationExchangeId(pesId)
         .role(partnerProof.getRole())
         .type(partnerProof.getType())
         .problemReport(partnerProof.getProblemReport())
@@ -174,12 +149,11 @@ class PartnerProofRepositoryTest {
     }
 
     public PartnerProof createRandomPartnerProof() {
-      counter += 1;
       return repo.save(PartnerProof
         .builder()
         .type(CredentialType.INDY)
         .partnerId(UUID.randomUUID())
-        .presentationExchangeId("pres-" + counter)
+        .presentationExchangeId("pres-a")
         .pushStateChange(PresentationExchangeState.PROPOSAL_SENT, timestamp)
         .build());
     }
