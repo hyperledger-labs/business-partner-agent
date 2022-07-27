@@ -343,9 +343,9 @@ public class ProofManager {
         }
     }
 
-    void presentProofAcceptSelected(@NonNull BasePresExRecord presExRecord,
+    private void presentProofAcceptSelected(@NonNull BasePresExRecord presExRecord,
             @Nullable List<String> referents, @NonNull ExchangeVersion version) {
-        if (presExRecord.stateIsRequestReceived()) {
+        if (presExRecord.roleIsProverAndRequestReceived()) {
             if (presExRecord instanceof PresentationExchangeRecord indy) {
                 acceptSelectedIndyCredentials(referents, version, indy);
             } else if (presExRecord instanceof V20PresExRecord dif) {
