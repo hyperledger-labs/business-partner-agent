@@ -259,16 +259,15 @@ public class ProofManager {
                 .orElse(List.of());
     }
 
-    // TODO aggregate the result into a model that adheres to some basic dif proof
     // exchange functionality
-    public List<PresentationRequestCredentialsIndy.CredentialInfo> getMatchingLDCredentials(
-            @NonNull UUID partnerProofId) {
+    public List<PresentationRequestCredentialsIndy> getMatchingLDCredentials(@NonNull UUID partnerProofId) {
         PartnerProof partnerProof = pProofRepo.findById(partnerProofId).orElseThrow(EntityNotFoundException::new);
         try {
             return ac.presentProofV2RecordsCredentialsDif(partnerProof.getPresentationExchangeId(), null)
                     .orElseThrow()
                     .stream()
                     .map(match -> credentialInfoResolver.populateCredentialInfo(match))
+                    .map(i -> PresentationRequestCredentialsIndy.builder().credentialInfo(i).build())
                     .collect(Collectors.toList());
         } catch (IOException e) {
             throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
@@ -352,8 +351,9 @@ public class ProofManager {
             } else if (presExRecord instanceof V20PresExRecord dif) {
                 ldProver.acceptSelectedDifCredentials(dif, referents);
             }
+        } else {
+            throw new WrongApiUsageException(ms.getMessage("api.present.proof.wrong.state"));
         }
-        throw new WrongApiUsageException();
     }
 
     void acceptDifCredentialsFromProposal(@NonNull V20PresExRecord dif, @Nullable PartnerProof partnerProof) {

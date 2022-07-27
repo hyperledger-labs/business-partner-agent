@@ -43,7 +43,6 @@ import org.hyperledger.bpa.impl.aries.proof.ProofManager;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Controller("/api/proof-exchanges")
@@ -68,17 +67,12 @@ public class ProofExchangeController {
      */
     @Get("/{id}/matching-credentials")
     public HttpResponse<List<PresentationRequestCredentialsIndy>> getMatchingCredentials(@PathVariable UUID id) {
-        List<PresentationRequestCredentialsIndy> mc = proofM.getMatchingIndyCredentials(id);
-        return HttpResponse.ok(mc);
+        return HttpResponse.ok(proofM.getMatchingIndyCredentials(id));
     }
 
     @Get("/{id}/matching-credentials-ld")
-    public HttpResponse<List<PresentationRequestCredentialsIndy>> getMatchingLDCredentials(
-            @PathVariable UUID id) {
-        List<PresentationRequestCredentialsIndy.CredentialInfo> mc = proofM.getMatchingLDCredentials(id);
-        return HttpResponse
-                .ok(mc.stream().map(i -> PresentationRequestCredentialsIndy.builder().credentialInfo(i).build())
-                        .collect(Collectors.toList()));
+    public HttpResponse<List<PresentationRequestCredentialsIndy>> getMatchingLDCredentials(@PathVariable UUID id) {
+        return HttpResponse.ok(proofM.getMatchingLDCredentials(id));
     }
 
     /**

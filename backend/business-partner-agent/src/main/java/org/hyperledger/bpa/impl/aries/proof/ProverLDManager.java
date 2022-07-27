@@ -107,6 +107,7 @@ public class ProverLDManager extends BaseLDManager {
                 .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
+    // respond to a presentation request that is based on a proposal this agent sent
     void acceptDifCredentialsFromProposal(@NonNull V20PresExRecord dif, @NonNull String referent) {
         V2DIFProofRequest pr = dif
                 .resolveDifPresentationRequest()
