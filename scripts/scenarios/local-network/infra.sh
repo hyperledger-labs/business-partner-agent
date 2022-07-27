@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-export VON_FOLDER=von-network
-export SCRIPT_PATH=./$VON_FOLDER/manage
+export VON_FOLDER=von-network2
+export SCRIPT_PATH=${0%\/*}/$VON_FOLDER/manage
 
 # -----------------------------------------------------------------------------------------------------------------
 # Functions:

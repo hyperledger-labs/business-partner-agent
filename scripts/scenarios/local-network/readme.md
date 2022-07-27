@@ -5,7 +5,7 @@
 Windows/Mac
 ```
 cp ./.env-example ./.env
-./start_infra.sh
+./infra.sh start
 export LEDGER_URL=http://localhost:9000
 ./register-dids.sh
 docker-compose up 
@@ -27,6 +27,12 @@ This folder enables easy setup of an entire isolated network for local developme
 
   Some code simple modifications can be hotloaded into the application while it's running, see [Debugging](../DEBUGGING.md). 
 
+  You can restart the local von-network by running
+  `./infra.sh stop` and
+  `./infra.sh start`. This will keep the ledger including registered DIDs, schemas, etc. 
+  If you want to restart from scratch with a new ledger, run
+  `./infra.sh prune`.
+
 ## Wiping Clean
 
   If you want to nuke your storage and start from scratch. You simply need to delete to the database volumes and generate and register new acapy-seeds, don't worry about the ledger, everything is uniquely identified, so old stuff will be there, but won't interact with your refreshed wallets and seeds. 
@@ -38,7 +44,7 @@ This folder enables easy setup of an entire isolated network for local developme
   ./register-dids.sh
   ...
   ``` 
-  followed by whatever startup commmand you are using (e.g. `docker-compose up`), this assumes you didn't tear down the resolver or von-network, if you did, just run `./start_infra.sh` first.
+  followed by whatever startup commmand you are using (e.g. `docker-compose up`), this assumes you didn't tear down the resolver or von-network, if you did, just run `./infra.sh start` first.
   
 
 ## Building
