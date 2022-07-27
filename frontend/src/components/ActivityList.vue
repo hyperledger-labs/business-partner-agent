@@ -42,13 +42,15 @@
       }}</v-bpa-button>
     </v-layout>
     <v-data-table
-      :hide-default-footer="items.length < 10"
+      :hide-default-footer="hideFooter"
       :loading="isBusy"
       :headers="headers"
       :items="items"
+      :options.sync="options"
+      :server-items-length="totalNumberOfElements"
+      sort-by="updatedAt"
+      sort-desc
       single-select
-      :sort-by="['updatedAt']"
-      :sort-desc="[true]"
       @click:row="openItem"
     >
       <template v-slot:[`item.indicator`]="{ item }">
@@ -83,9 +85,14 @@
 import { EventBus } from "@/main";
 import { ActivityRoles, ActivityStates, ActivityTypes } from "@/constants";
 import VBpaButton from "@/components/BpaButton";
-import activitiesService from "@/services/activities-service";
 import NewMessageIcon from "@/components/NewMessageIcon.vue";
-import { ActivityItem, ActivityType, PartnerAPI } from "@/services";
+import {
+  ActivityItem,
+  ActivityType,
+  PartnerAPI,
+  activitiesService,
+  PageOptions,
+} from "@/services";
 
 export default {
   name: "ActivityList",
@@ -108,7 +115,6 @@ export default {
     this.filter = undefined;
     this.filterValue = undefined;
     this.filterValueList = [];
-    this.fetchItems();
   },
   data: () => {
     return {
@@ -117,6 +123,9 @@ export default {
       filter: undefined as { text: string; value: string },
       filterValue: undefined as { text: string; value: string },
       filterValueList: new Array<{ text: string; value: string }>(),
+      hideFooter: false,
+      options: {},
+      totalNumberOfElements: 0,
     };
   },
   watch: {
@@ -132,6 +141,11 @@ export default {
           });
         }
       }
+    },
+    options: {
+      handler() {
+        this.fetchItems();
+      },
     },
   },
   computed: {
@@ -182,27 +196,32 @@ export default {
     },
   },
   methods: {
-    fetchItems() {
+    async fetchItems() {
+      this.isBusy = true;
+      this.items = [];
       let filter;
       if (this.filter && this.filterValue) {
         filter = { name: this.filter.value, value: this.filterValue.value };
       }
-      activitiesService
-        .listActivities(this.tasks, this.activities, filter)
-        .then((result) => {
-          if (Object.prototype.hasOwnProperty.call(result, "data")) {
-            this.isBusy = false;
-            this.items = result.data;
-          }
-        })
-        .catch((error) => {
-          this.isBusy = false;
-          if (error.response.status === 404) {
-            this.items = [];
-          } else {
-            EventBus.$emit("error", this.$axiosErrorMessage(error));
-          }
-        });
+      const params = PageOptions.toUrlSearchParams(this.options);
+      try {
+        const response = await activitiesService.listActivities(
+          this.tasks,
+          this.activities,
+          filter,
+          params
+        );
+        if (response.status === 200) {
+          const { itemsPerPage } = this.options;
+          this.items = response.data.content;
+          this.totalNumberOfElements = response.data.totalSize;
+          this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
+        }
+      } catch (error) {
+        this.items = [];
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
+      }
+      this.isBusy = false;
     },
     openItem(item: ActivityItem) {
       // if we click on it, mark it seen...
