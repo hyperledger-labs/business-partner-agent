@@ -39,8 +39,6 @@ class PartnerProofRepositoryTest {
 
     private Instant timestamp =  Instant.ofEpochMilli(1631760000000L);
 
-    private Integer counter = 0;
-
     @Inject
     PartnerProofRepository repo;
 
@@ -144,7 +142,7 @@ class PartnerProofRepositoryTest {
         .exchangeVersion(partnerProof.getExchangeVersion())
         .stateToTimestamp(partnerProof.getStateToTimestamp())
         .valid(partnerProof.getValid())
-        .updatedAt(timestamp.plusSeconds(counter))
+        .updatedAt(timestamp.plusSeconds(1))
         .build();
     }
 

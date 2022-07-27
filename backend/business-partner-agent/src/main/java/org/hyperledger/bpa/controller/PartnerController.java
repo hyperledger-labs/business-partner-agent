@@ -245,7 +245,7 @@ public class PartnerController {
     @Get("/{id}/proof-exchanges{?pc*}")
     public HttpResponse<Page<AriesProofExchange>> getPartnerProofs(
       @Valid @Nullable PaginationCommand pc,
-      @Parameter(description = "partner id") @Nullable @QueryValue UUID id) {
+      @Parameter(description = "partner id") @PathVariable UUID id) {
         return HttpResponse.ok(proofM.listPartnerProofs(id,
           pc != null? pc.toPageable() : Pageable.unpaged()));
     }
