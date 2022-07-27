@@ -43,8 +43,6 @@ services:
     depends_on:
       - bpa-wallet-db1
     entrypoint: /bin/bash
-    #environment:
-      # - RUST_LOG=debug
     command: [
         "-c",
         "sleep 15;
