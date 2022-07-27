@@ -18,6 +18,8 @@
 package org.hyperledger.bpa.impl;
 
 import io.micronaut.context.event.ApplicationEventPublisher;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -35,9 +37,7 @@ import org.hyperledger.bpa.persistence.model.PartnerProof;
 import org.hyperledger.bpa.persistence.repository.ActivityRepository;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @NoArgsConstructor
@@ -55,32 +55,35 @@ public class ActivityManager {
     @Inject
     ApplicationEventPublisher eventPublisher;
 
-    public List<ActivityItem> getItems(ActivitySearchParameters parameters) {
-        List<Activity> activities;
+    public Page<ActivityItem> getItems(
+      ActivitySearchParameters parameters,
+      @NonNull Pageable pageable) {
+        Page<Activity> activities;
 
         if (parameters.getActivity() && parameters.getTask()) {
             if (parameters.getType() != null) {
-                activities = activityRepository.findByTypeOrderByUpdatedAt(parameters.getType());
+                activities = activityRepository.findByType(parameters.getType(), pageable);
             } else {
-                activities = activityRepository.listOrderByUpdatedAtDesc();
+                activities = activityRepository.listOrderByUpdatedAt(pageable);
             }
         } else if (parameters.getTask()) {
             if (parameters.getType() != null) {
                 activities = activityRepository
-                        .findByTypeAndCompletedFalseOrderByUpdatedAtDesc(parameters.getType());
+                        .findByTypeAndCompletedFalse(parameters.getType(), pageable);
             } else {
-                activities = activityRepository.findByCompletedFalseOrderByUpdatedAtDesc();
+                activities = activityRepository.findByCompletedFalse(pageable);
             }
         } else {
             if (parameters.getType() != null) {
                 activities = activityRepository
-                        .findByTypeAndCompletedTrueOrderByUpdatedAtDesc(parameters.getType());
+                        .findByTypeAndCompletedTrue(parameters.getType(), pageable);
             } else {
-                activities = activityRepository.findByCompletedTrueOrderByUpdatedAtDesc();
+                activities = activityRepository.findByCompletedTrue(pageable);
             }
         }
 
-        return activities.stream().map(this::convert).collect(Collectors.toList());
+        return activities.map(this::convert);
+//          stream().map(this::convert).collect(Collectors.toList());
     }
 
     public void addPartnerRequestReceivedTask(@NonNull Partner partner) {

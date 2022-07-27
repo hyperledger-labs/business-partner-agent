@@ -7,6 +7,7 @@
  */
 
 export { default as adminService } from "./admin-service";
+export { default as activitiesService } from "./activities-service";
 export { default as issuerService } from "./issuer-service";
 export { default as partnerService } from "./partner-service";
 export { default as proofExService } from "./proof-ex-service";

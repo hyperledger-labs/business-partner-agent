@@ -20,41 +20,43 @@ package org.hyperledger.bpa.persistence.repository;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.data.annotation.Join;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.query.builder.sql.Dialect;
-import io.micronaut.data.repository.CrudRepository;
+import io.micronaut.data.repository.PageableRepository;
 import org.hyperledger.bpa.controller.api.activity.ActivityRole;
 import org.hyperledger.bpa.controller.api.activity.ActivityType;
 import org.hyperledger.bpa.persistence.model.Activity;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface ActivityRepository extends CrudRepository<Activity, UUID> {
+public interface ActivityRepository extends PageableRepository<Activity, UUID> {
 
     Optional<Activity> findByLinkIdAndTypeAndRole(@NonNull UUID linkId,
             @NonNull ActivityType type,
             @NonNull ActivityRole role);
 
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
-    List<Activity> listOrderByUpdatedAtDesc();
+    Page<Activity> listOrderByUpdatedAt(@NonNull Pageable pageable);
+
+    @NonNull
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    Page<Activity> findByType(@NonNull ActivityType type, @NonNull Pageable pageable);
 
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
-    List<Activity> findByTypeOrderByUpdatedAt(@NonNull ActivityType type);
+    Page<Activity> findByCompletedFalse(@NonNull Pageable pageable);
 
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
-    List<Activity> findByCompletedFalseOrderByUpdatedAtDesc();
+    Page<Activity> findByTypeAndCompletedFalse(@NonNull ActivityType type, @NonNull Pageable pageable);
 
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
-    List<Activity> findByTypeAndCompletedFalseOrderByUpdatedAtDesc(@NonNull ActivityType type);
+    Page<Activity> findByCompletedTrue(@NonNull Pageable pageable);
 
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)
-    List<Activity> findByCompletedTrueOrderByUpdatedAtDesc();
-
-    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
-    List<Activity> findByTypeAndCompletedTrueOrderByUpdatedAtDesc(@NonNull ActivityType type);
+    Page<Activity> findByTypeAndCompletedTrue(@NonNull ActivityType type, @NonNull Pageable pageable);
 
     Long countByCompletedFalse();
 

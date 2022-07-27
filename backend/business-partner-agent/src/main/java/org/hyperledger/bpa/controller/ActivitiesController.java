@@ -17,6 +17,9 @@
  */
 package org.hyperledger.bpa.controller;
 
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
@@ -27,12 +30,12 @@ import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
+import org.hyperledger.bpa.controller.api.PaginationCommand;
 import org.hyperledger.bpa.controller.api.activity.ActivityItem;
 import org.hyperledger.bpa.controller.api.activity.ActivitySearchParameters;
 import org.hyperledger.bpa.impl.ActivityManager;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @Controller("/api/activities")
 @Tag(name = "Activities")
@@ -46,12 +49,16 @@ public class ActivitiesController {
     /**
      * List Items, if no filters return all
      *
+     * @param pc          {@link PaginationCommand}
      * @param parameters ActivitySearchParameters Filters for list
      * @return list of {@link ActivityItem}
      */
-    @Get
-    public HttpResponse<List<ActivityItem>> listActivities(@RequestBean @Valid ActivitySearchParameters parameters) {
-        return HttpResponse.ok(activityManager.getItems(parameters));
+    @Get("/{?pc*}")
+    public HttpResponse<Page<ActivityItem>> listActivities(
+      @Valid @Nullable PaginationCommand pc,
+      @RequestBean @Valid ActivitySearchParameters parameters) {
+        return HttpResponse.ok(activityManager.getItems(parameters,
+          pc !=null? pc.toPageable(): Pageable.unpaged()));
     }
 
 }
