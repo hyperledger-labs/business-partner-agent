@@ -263,8 +263,14 @@ public class SchemaService {
                     dbSchema -> log.debug("Schema with id {} already exists", schema.getId()),
                     () -> {
                         try {
-                            SchemaAPI schemaAPI = addIndySchema(schema.getId(), schema.getLabel(),
-                                    schema.getDefaultAttributeName());
+                            SchemaAPI schemaAPI;
+                            if (CredentialType.JSON_LD.equals(schema.getType())) {
+                                schemaAPI = addJsonLDSchema(schema.getId(), schema.getLabel(),
+                                        schema.getDefaultAttributeName(), schema.getLdType(), schema.getAttributes());
+                            } else {
+                                schemaAPI = addIndySchema(schema.getId(), schema.getLabel(),
+                                        schema.getDefaultAttributeName());
+                            }
                             if (schemaAPI != null) {
                                 restrictionsManager.addRestriction(
                                         schemaAPI.getId(), schema.getRestrictions());
