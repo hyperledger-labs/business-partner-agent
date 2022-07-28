@@ -33,9 +33,9 @@
         <v-tooltip top>
           <template v-slot:activator="{ on, attrs }">
             <v-btn
+              v-bind="attrs"
               icon
               x-small
-              v-bind="attrs"
               v-on="on"
               @click="copyDid"
               @mouseout="reset"
@@ -134,10 +134,10 @@
 <script lang="ts">
 import { EventBus } from "@/main";
 import TextFieldColorPicker from "@/components/helper/TextFieldColorPicker.vue";
-import i18n from "@/plugins/i18n";
 import { LocaleMetaType } from "@/views/settings/locale-meta-type";
 import { BPAStats } from "@/services";
 import { VuetifyThemeItem } from "vuetify/types/services/theme";
+import i18n from "@/plugins/i18n";
 
 export default {
   name: "Settings",
@@ -151,7 +151,7 @@ export default {
       status: {} as BPAStats,
       isLoading: true,
       selectedLocale: {
-        locale: i18n.locale,
+        locale: i18n.global.locale,
       },
       isEditingColor: false,
       isEditingColorIcons: false,
@@ -193,8 +193,8 @@ export default {
       ];
     },
     availableLocales() {
-      return i18n.availableLocales.map((availableLocale) => {
-        const { meta } = i18n.getLocaleMessage(
+      return this.$i18n.availableLocales.map((availableLocale: any) => {
+        const { meta } = this.$i18n.getLocaleMessage(
           availableLocale
         ) as unknown as LocaleMetaType;
 
@@ -245,7 +245,7 @@ export default {
   },
   methods: {
     changeLanguage(locale: string) {
-      i18n.locale = locale;
+      this.$i18n.locale = locale;
       this.$vuetify.lang.current = locale;
       localStorage.setItem("locale", locale);
       EventBus.$emit("title", this.$t("view.settings.title"));

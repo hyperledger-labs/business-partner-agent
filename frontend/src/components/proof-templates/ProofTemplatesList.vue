@@ -30,7 +30,7 @@ create new ones
       @click:row="viewProofTemplate"
     >
       <template v-slot:[`item.createdAt`]="{ item }">
-        {{ item.createdAt | formatDateLong }}
+        {{ $filters.formatDateLong(item.createdAt) }}
       </template>
     </v-data-table>
   </v-container>

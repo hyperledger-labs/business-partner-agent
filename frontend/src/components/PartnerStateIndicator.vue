@@ -10,8 +10,8 @@
   <span>
     <v-tooltip right>
       <template v-slot:activator="{ on, attrs }">
-        <v-icon x-small class="ml-2" :color="color" v-bind="attrs" v-on="on"
-          >$vuetify.icons.partnerState</v-icon
+        <v-icon v-bind="attrs" x-small class="ml-2" :color="color" v-on="on">
+          $vuetify.icons.partnerState</v-icon
         >
       </template>
       <span

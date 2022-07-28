@@ -8,7 +8,7 @@
 
 import "@/assets/scss/style.scss";
 
-import Vue from "vue";
+import Vue, { createApp } from "vue";
 import { AxiosResponse } from "axios";
 import VueNativeSock from "vue-native-websocket";
 import App from "./App.vue";
@@ -16,16 +16,23 @@ import i18n from "./plugins/i18n";
 import vuetify from "./plugins/vuetify";
 import router from "./router";
 import store from "./store";
-import "@/filters";
-
+import filters from "@/filters";
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
-import vue_moment from "vue-moment";
 import { RuntimeConfig, settingsService } from "@/services";
+import axios from "axios";
+import VueAxios from "vue-axios";
 
-Vue.component("vue-json-pretty", VueJsonPretty);
+const app = createApp(App)
+  .use(i18n)
+  .use(router)
+  .use(store)
+  .use(VueAxios, axios);
+//.use(vuetify);
 
-Vue.use(vue_moment);
+app.component("vue-json-pretty", VueJsonPretty);
+
+app.config.globalProperties.$filters = filters;
 
 const apiBaseUrl = process.env.VUE_APP_API_BASE_URL
   ? process.env.VUE_APP_API_BASE_URL
@@ -44,7 +51,15 @@ if (process.env.NODE_ENV === "development") {
   });
 }
 
-Vue.use(VueNativeSock, socketApi, {
+app.config.globalProperties.$apiBaseUrl = apiBaseUrl;
+app.config.globalProperties.$config = {
+  ledger: "iil",
+  title: process.env.VUE_APP_TITLE || "Business Partner Agent",
+  locale: process.env.VUE_APP_I18N_LOCALE || "en",
+  fallbackLocale: process.env.VUE_APP_I18N_FALLBACK_LOCALE || "en",
+};
+
+app.use(VueNativeSock, socketApi, {
   store: store,
   format: "json",
   reconnection: true,
@@ -71,14 +86,8 @@ Vue.use(VueNativeSock, socketApi, {
   },
 });
 
-Vue.prototype.$apiBaseUrl = apiBaseUrl;
-Vue.config.productionTip = false;
-Vue.prototype.$config = {
-  ledger: "iil",
-  title: process.env.VUE_APP_TITLE || "Business Partner Agent",
-  locale: process.env.VUE_APP_I18N_LOCALE || "en",
-  fallbackLocale: process.env.VUE_APP_I18N_FALLBACK_LOCALE || "en",
-};
+// removed in vue3
+// Vue.config.productionTip = false;
 
 // We need to load the configuration before the Vue application, so we can use the UX configuration
 (async () => {
@@ -91,26 +100,31 @@ Vue.prototype.$config = {
   } catch (error) {
     console.error(error);
   }
-
+  let config;
   if (Object.prototype.hasOwnProperty.call(result, "data")) {
-    Vue.prototype.$config = result?.data;
-    const ledgerPrefix = Vue.prototype.$config.ledgerPrefix;
+    config = result?.data;
+
+    const ledgerPrefix = config.ledgerPrefix;
     const splitted = ledgerPrefix.split(":");
-    Vue.prototype.$config.ledger = splitted[splitted.length - 2];
+    config.ledger = splitted[splitted.length - 2];
     if (result?.data.ux) {
-      Object.assign(Vue.prototype.$config.ux, result.data.ux);
+      Object.assign(config.ux, result.data.ux);
       console.log("...Configuration loaded");
     }
+    app.config.globalProperties.$config = config;
   }
 
+  // this.$vuetify.lang.current = locale; TODO
+
   console.log("setting i18n...");
-  i18n.locale = Vue.prototype.$config.locale;
-  i18n.fallbackLocale = Vue.prototype.$config.fallbackLocale;
+  i18n.global.locale.value = app.config.globalProperties.$config.locale;
+  i18n.global.fallbackLocale.value =
+    app.config.globalProperties.$config.fallbackLocale;
   console.log(
-    `i18n.locale = ${i18n.locale}, i18n.fallbackLocale = ${i18n.fallbackLocale}`
+    `i18n.locale = ${i18n.global.locale.value}, i18n.fallbackLocale = ${i18n.global.fallbackLocale.value}`
   );
 
-  Vue.prototype.$axiosErrorMessage = function (error: any) {
+  app.provide("$axiosErrorMessage", function (error: any) {
     console.error(error);
     if (!error) return "";
     // exceptions thrown from micronaut (ex. WrongApiUsageExceptionHandler)
@@ -128,11 +142,13 @@ Vue.prototype.$config = {
     // but in err.response.statusText is a bit more understandable... "Not Found"
     // do we want to use the status text before the default message?
     if (error.response) {
-      return i18n.t("error.axios", { statusText: error.response.statusText });
+      return i18n.global.t("error.axios", {
+        statusText: error.response.statusText,
+      });
     }
     if (error.message) return error.message;
     return error.toString();
-  };
+  });
 
   store.dispatch("loadSchemas");
   store.dispatch("loadPartners");
@@ -145,16 +161,10 @@ Vue.prototype.$config = {
 
   console.log("Create the Vue application");
 
-  new Vue({
-    vuetify,
-    router,
-    store,
-    i18n,
-    render: (h) => h(App),
-  }).$mount("#app");
+  app.mount("#app");
 })();
 
 const EventBus = new Vue();
-export { EventBus, apiBaseUrl };
+export { EventBus, apiBaseUrl, app };
 
 export { default as axios } from "axios";

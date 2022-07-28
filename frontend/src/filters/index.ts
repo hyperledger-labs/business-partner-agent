@@ -5,7 +5,6 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-import Vue from "vue";
 import moment from "moment";
 
 /**
@@ -14,7 +13,7 @@ import moment from "moment";
  * @param {Date, String, Long} value A date object
  * @returns {String} A string representation of `value`
  */
-export function formatDate(value: string) {
+export function formatDate(value: string): string {
   if (value) {
     return moment(value).format("YYYY-MM-DD");
   }
@@ -48,7 +47,19 @@ export function capitalize(string: string) {
 //
 // {{ expression | filter }}
 //
-Vue.filter("formatDate", formatDate);
-Vue.filter("formatDateLong", formatDateLong);
-Vue.filter("credentialTag", credentialTag);
-Vue.filter("capitalize", capitalize);
+const filters = {
+  formatDate(value: string) {
+    return formatDate(value);
+  },
+  formatDateLong(value: string | number) {
+    return formatDateLong(value);
+  },
+  credentialTag(credentialDefinitionId: string) {
+    return credentialTag(credentialDefinitionId);
+  },
+  capitalize(string: string) {
+    return capitalize(string);
+  },
+};
+
+export default filters;

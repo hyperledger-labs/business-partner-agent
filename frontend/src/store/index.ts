@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import Vue from "vue";
-import Vuex from "vuex";
+import { createStore } from "vuex";
 import {
   chat,
   notifications,
@@ -25,9 +24,7 @@ import {
   status,
 } from "@/store/modules";
 
-Vue.use(Vuex);
-
-const store = new Vuex.Store({
+const store = createStore({
   modules: {
     taa,
     socketEvents,

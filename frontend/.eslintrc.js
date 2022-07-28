@@ -35,6 +35,7 @@ module.exports = {
     "unicorn/prevent-abbreviations": "off",
     "@typescript-eslint/ban-ts-comment": "warn",
     "@typescript-eslint/no-explicit-any": "off",
+    "vue/no-v-for-template-key": "off", //TODO remove line when upgraded to vue3
   },
   overrides: [
     {

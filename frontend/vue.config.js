@@ -6,10 +6,29 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 process.env.VUE_APP_VERSION = require("./package.json").version;
+const { defineConfig } = require("@vue/cli-service");
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 module.exports = {
+  chainWebpack: (config) => {
+    config.resolve.alias.set("vue", "@vue/compat");
+
+    config.module
+      .rule("vue")
+      .use("vue-loader")
+      .tap((options) => {
+        return {
+          ...options,
+          compilerOptions: {
+            compatConfig: {
+              MODE: 2,
+            },
+          },
+        };
+      });
+  },
   devServer: {
-    disableHostCheck: true,
+    allowedHosts: "all",
     proxy: {
       "^/api/*": {
         target: "http://localhost:8080",
@@ -28,5 +47,11 @@ module.exports = {
   },
   configureWebpack: {
     devtool: "source-map",
+    plugins: [new NodePolyfillPlugin()],
+    optimization: {
+      splitChunks: {
+        chunks: "all",
+      },
+    },
   },
 };

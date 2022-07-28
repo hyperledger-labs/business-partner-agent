@@ -14,7 +14,7 @@
       v-model="inputValue"
       :headers="headers"
       :items="data"
-      :options.sync="options"
+      :options="options"
       :server-items-length="totalNumberOfElements"
       :show-select="selectable"
       single-select
@@ -36,24 +36,27 @@
           "
           v-bind:class="{ 'font-weight-medium': !item.new }"
         >
-          {{ item.credentialDefinitionId | credentialTag | capitalize }}
+          {{
+            $filters
+              .credentialTag(item.credentialDefinitionId)
+              .capitalize(item.credentialDefinitionId)
+          }}
         </div>
-
         <div v-else v-bind:class="{ 'font-weight-medium': item.new }">
           {{ item.typeLabel }}
         </div>
       </template>
 
       <template v-slot:[`item.createdAt`]="{ item }">
-        {{ item.createdAt | formatDateLong }}
+        {{ $filters.formatDateLong(item.createdAt) }}
       </template>
 
       <template v-slot:[`item.updatedAt`]="{ item }">
-        {{ item.updatedAt | formatDateLong }}
+        {{ $filters.formatDateLong(item.updatedAt) }}
       </template>
 
       <template v-slot:[`item.issuedAt`]="{ item }">
-        {{ item.issuedAt | formatDateLong }}
+        {{ $filters.formatDateLong(item.issuedAt) }}
       </template>
 
       <template v-slot:[`item.revoked`]="{ item }">
@@ -99,7 +102,7 @@ import NewMessageIcon from "@/components/NewMessageIcon.vue";
 import { AriesCredential, MyDocumentAPI, Page, PageOptions } from "@/services";
 import { AxiosResponse } from "axios";
 import { appAxios } from "@/services/interceptors";
-import { RawLocation } from "vue-router";
+import { RouteLocationRaw } from "vue-router";
 
 export default {
   props: {
@@ -211,7 +214,7 @@ export default {
     open(documentOrCredential: AriesCredential | MyDocumentAPI) {
       console.log("Open Document:", documentOrCredential);
       if (this.type === "document") {
-        const documentLocation: RawLocation = {
+        const documentLocation: RouteLocationRaw = {
           name: "Document",
           params: {
             id: documentOrCredential.id,

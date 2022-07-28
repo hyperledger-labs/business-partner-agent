@@ -5,4 +5,4 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-export * from "./i18n-helper";
+// export * from "./i18n-helper";

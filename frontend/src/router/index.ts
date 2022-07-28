@@ -7,7 +7,14 @@
  */
 
 import Vue from "vue";
-import VueRouter, { RouteConfig } from "vue-router";
+import {
+  createRouter,
+  createWebHistory,
+  RouteLocation,
+  RouteRecordRaw,
+} from "vue-router";
+import * as VueRouter from "vue-router";
+
 import Dashboard from "@/views/Dashboard.vue";
 import Identity from "@/views/Identity.vue";
 import PublicProfile from "@/views/PublicProfile.vue";
@@ -37,9 +44,7 @@ import RequestPresentationCreateProofTemplate from "@/views/RequestPresentationC
 import RequestCredential from "@/views/RequestCredential.vue";
 import RequestCredentialCreateDocument from "@/views/RequestCredentialCreateDocument.vue";
 
-Vue.use(VueRouter);
-
-const routes: RouteConfig[] = [
+const routes = [
   {
     path: "/",
     name: "Dashboard",
@@ -202,17 +207,17 @@ const routes: RouteConfig[] = [
   },
 ];
 
-const router = new VueRouter({
-  mode: "history",
-  routes,
-  scrollBehavior: function (to) {
+const router = createRouter({
+  history: createWebHistory(),
+  scrollBehavior(to: RouteLocation) {
     if (to.hash) {
       return {
-        selector: to.hash,
-        offset: { x: 0, y: 100 },
+        el: "to.hash",
+        offset: { left: 0, top: 100 },
       };
     }
   },
+  routes: routes as RouteRecordRaw[],
 });
 
 export default router;

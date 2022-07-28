@@ -1,72 +1,77 @@
-/*
- * Copyright (c) 2020-2022 - for information on the respective copyright owner
- * see the NOTICE file and/or the repository at
- * https://github.com/hyperledger-labs/business-partner-agent
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-import {
-  createLocalVue,
-  mount,
-  shallowMount,
-  ThisTypedShallowMountOptions,
-  Wrapper,
-} from "@vue/test-utils";
-import VueI18n from "vue-i18n";
-import localeEnglish from "@/locales/en.json";
-import localeGerman from "@/locales/de.json";
-import localePolish from "@/locales/pl.json";
-import Vue from "vue";
-import Vuetify from "vuetify";
+// /*
+//  * Copyright (c) 2020-2022 - for information on the respective copyright owner
+//  * see the NOTICE file and/or the repository at
+//  * https://github.com/hyperledger-labs/business-partner-agent
+//  *
+//  * SPDX-License-Identifier: Apache-2.0
+//  */
+// import {
+//   mount,
+//   shallowMount,
+//   ThisTypedShallowMountOptions,
+//   Wrapper,
+// } from "@vue/test-utils";
+// import VueI18n from "vue-i18n";
+// import localeEnglish from "@/locales/en.json";
+// import localeGerman from "@/locales/de.json";
+// import localePolish from "@/locales/pl.json";
+// import Vue, { createApp, useAttrs } from "vue";
+// import Vuetify from "vuetify";
+// import { createI18n } from "vue-i18n";
+// import { config } from '@vue/test-utils'
 
-export function shallowMountWithI18n(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  component: any,
-  options?: ThisTypedShallowMountOptions<Vue>
-): Wrapper<Vue> {
-  const localVue = createLocalVue();
-  localVue.use(VueI18n);
-  localVue.use(Vuetify);
+// config.renderStubDefaultSlot = true
 
-  const i18n = new VueI18n({
-    locale: "en",
-    fallbackLocale: "en",
-    messages: {
-      en: localeEnglish,
-      de: localeGerman,
-      pl: localePolish,
-    },
-  });
+// export function shallowMountWithI18n(
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   component: any,
+//   options?: ThisTypedShallowMountOptions<Vue>
+// ): Wrapper<Vue> {
+//   const localVue = createApp(App);
 
-  return shallowMount(component, {
-    i18n,
-    localVue,
-    ...options,
-  });
-}
+//   const i18n = createI18n({
+//     allowComposition: true,
+//     legacy: false,
+//     locale: "en",
+//     fallbackLocale: "en",
+//     messages: {
+//       en: localeEnglish,
+//       de: localeGerman,
+//       pl: localePolish,
+//     },
+//   });
 
-export function mountWithI18n(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  component: any,
-  options?: ThisTypedShallowMountOptions<Vue>
-): Wrapper<Vue> {
-  const localVue = createLocalVue();
-  localVue.use(VueI18n);
-  localVue.use(Vuetify);
+//   localVue.use(Vuetify).use(i18n);
 
-  const i18n = new VueI18n({
-    locale: "en",
-    fallbackLocale: "en",
-    messages: {
-      en: localeEnglish,
-      de: localeGerman,
-      pl: localePolish,
-    },
-  });
+//   return shallowMount(component, {
+//     i18n,
+//     localVue,
+//     ...options,
+//   });
+// }
 
-  return mount(component, {
-    i18n,
-    localVue,
-    ...options,
-  });
-}
+// export function mountWithI18n(
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   component: any,
+//   options?: ThisTypedShallowMountOptions<Vue>
+// ): Wrapper<Vue> {
+//   const localVue = createLocalVue();
+//   localVue.use(VueI18n);
+//   localVue.use(Vuetify);
+
+//   const i18n = new VueI18n({
+//     locale: "en",
+//     fallbackLocale: "en",
+//     messages: {
+//       en: localeEnglish,
+//       de: localeGerman,
+//       pl: localePolish,
+//     },
+//   });
+
+//   return mount(component, {
+//     i18n,
+//     localVue,
+//     ...options,
+//   });
+// }

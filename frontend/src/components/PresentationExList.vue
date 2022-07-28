@@ -34,11 +34,13 @@
       </template>
 
       <template v-slot:[`item.role`]="{ item }">
-        {{ item.role | capitalize }}
+        {{ $filters.capitalize(item.role) }}
       </template>
       <template v-slot:[`item.state`]="{ item }">
         <span>
-          {{ (item.state ? item.state.replace("_", " ") : "") | capitalize }}
+          {{
+            $filters.capitalize(item.state ? item.state.replace("_", " ") : "")
+          }}
           <v-icon v-if="item.valid" color="green" class="iconHeight"
             >$vuetify.icons.check</v-icon
           >
@@ -53,10 +55,10 @@
           <v-tooltip v-if="item.problemReport" top>
             <template v-slot:activator="{ on, attrs }">
               <v-icon
+                v-bind="attrs"
                 color="error"
                 small
                 class="iconHeight"
-                v-bind="attrs"
                 v-on="on"
               >
                 $vuetify.icons.connectionAlert
@@ -67,7 +69,7 @@
         </span>
       </template>
       <template v-slot:[`item.updatedAt`]="{ item }">
-        {{ item.updatedAt | formatDateLong }}
+        {{ $filters.formatDateLong(item.updatedAt) }}
       </template>
     </v-data-table>
     <v-dialog v-if="dialog" v-model="dialog" scrollable max-width="1000px">

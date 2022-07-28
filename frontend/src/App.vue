@@ -230,7 +230,7 @@
       <v-spacer></v-spacer>
       <v-tooltip bottom>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn icon v-bind="attrs" v-on="on" @click="copyDid">
+          <v-btn v-bind="attrs" icon v-on="on" @click="copyDid">
             <v-icon>$vuetify.icons.identity</v-icon>
           </v-btn>
         </template>
@@ -492,7 +492,7 @@ export default {
         navigator.language.split("-")[0] ||
         process.env.VUE_APP_I18N_LOCALE ||
         "en";
-      i18n.locale = locale;
+      i18n.global.locale.value = locale;
       this.$vuetify.lang.current = locale;
 
       // Load up an alternate favicon

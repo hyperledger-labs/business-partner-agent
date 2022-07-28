@@ -32,7 +32,7 @@
           >
           <v-dialog v-model="updatePartnerDialog" max-width="600px">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on" color="primary">
+              <v-btn v-bind="attrs" icon v-on="on" color="primary">
                 <v-icon dark>$vuetify.icons.pencil</v-icon>
               </v-btn>
             </template>
@@ -46,8 +46,8 @@
           <v-tooltip top>
             <template v-slot:activator="{ on, attrs }">
               <v-bpa-button
-                color="primary"
                 v-bind="attrs"
+                color="primary"
                 v-on="on"
                 icon
                 @click="refreshPartner()"
@@ -198,7 +198,7 @@
       <v-card-actions>
         <v-dialog v-model="issueCredentialDialog" persistent max-width="600px">
           <template v-slot:activator="{ on, attrs }">
-            <v-bpa-button color="secondary" small v-bind="attrs" v-on="on">{{
+            <v-bpa-button v-bind="attrs" color="secondary" small v-on="on">{{
               $t("view.partner.credentialExchanges.button.issueCredential")
             }}</v-bpa-button>
           </template>

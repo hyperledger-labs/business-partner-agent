@@ -45,8 +45,8 @@
         </v-list-item>
         <v-list-item class="mt-4">
           <v-text-field
+            v-bind:value="$filters.formatDateLong(proofTemplate.createdAt)"
             id="proofTemplateCreatedAt"
-            v-bind:value="proofTemplate.createdAt | formatDateLong"
             readonly
             dense
             :label="$t('view.proofTemplate.view.createdAt')"

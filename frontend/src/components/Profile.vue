@@ -14,8 +14,8 @@
         <v-tooltip top>
           <template v-slot:activator="{ on, attrs }">
             <v-card-subtitle
-              class="pa-0 ma-0 ml-auto"
               v-bind="attrs"
+              class="pa-0 ma-0 ml-auto"
               v-on="on"
               @click="copyDid"
               @mouseout="reset"
@@ -41,11 +41,11 @@
         </v-layout>
       </v-card-actions>
     </v-card>
-    <v-card class="my-4" v-for="item in credentials" v-bind:key="item.id">
-      <v-card-title class="bg-light"
-        ><span v-if="item.type === CredentialTypes.UNKNOWN.type">{{
-          item.credentialDefinitionId | credentialTag
-        }}</span>
+    <v-card v-bind:key="item.id" class="my-4" v-for="item in credentials">
+      <v-card-title class="bg-light">
+        <span v-if="item.type === CredentialTypes.UNKNOWN.type">
+          {{ $filters.credentialTag(item.credentialDefinitionId) }}
+        </span>
         <span v-else>{{ item.typeLabel }}</span></v-card-title
       >
       <v-container>
@@ -56,7 +56,7 @@
               class="text-caption mt-1 ml-1"
             >
               {{ $t("component.profile.credential.verifiedByLabel") }}
-              {{ item.issuer | truncate }}
+              {{ $filters.truncate(item.issuer) }}
             </v-row>
             <v-row
               v-if="item.credentialData && item.credentialData.validFrom"
@@ -64,7 +64,7 @@
             >
               <v-icon small class="mt-1 ml-1 mr-2">{{ validFrom }}</v-icon>
               <span class="text-caption mt-1">{{
-                item.credentialData.validFrom | formatDate
+                $filters.formatDate(item.credentialData.validFrom)
               }}</span>
             </v-row>
             <v-row
@@ -73,7 +73,7 @@
             >
               <v-icon small class="mt-1 ml-1 mr-2">{{ validUntil }}</v-icon>
               <span class="text-caption mt-1">{{
-                item.credentialData.validUntil | formatDate
+                $filters.formatDate(item.credentialData.validUntil)
               }}</span>
             </v-row>
           </v-col>

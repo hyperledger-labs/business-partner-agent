@@ -12,11 +12,11 @@
       <v-tooltip right>
         <template v-slot:activator="{ on, attrs }">
           <v-icon
+            v-bind="attrs"
             small
             :color="color"
             v-show="show"
             :class="{ newIconCredential: isCredential }"
-            v-bind="attrs"
             v-on="on"
             >$vuetify.icons.newMessage</v-icon
           >

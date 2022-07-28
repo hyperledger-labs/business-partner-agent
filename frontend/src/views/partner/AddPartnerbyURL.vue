@@ -110,7 +110,7 @@
                 :size="400"
                 level="H"
               ></qrcode-vue>
-              <template>
+              <div>
                 <v-expansion-panels class="mt-4">
                   <v-expansion-panel>
                     <v-expansion-panel-header>
@@ -134,9 +134,9 @@
                           <v-tooltip top>
                             <template v-slot:activator="{ on, attrs }">
                               <v-btn
+                                v-bind="attrs"
                                 class="mr-0"
                                 icon
-                                v-bind="attrs"
                                 v-on="on"
                                 @click="copyInvitationURL"
                               >
@@ -150,7 +150,7 @@
                     </v-expansion-panel-content>
                   </v-expansion-panel>
                 </v-expansion-panels>
-              </template>
+              </div>
             </div>
           </v-col>
         </v-row>

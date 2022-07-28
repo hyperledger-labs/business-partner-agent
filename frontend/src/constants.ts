@@ -135,93 +135,107 @@ export const ActivityTypes: Readonly<{
 }> = Object.freeze({
   CONNECTION_REQUEST: {
     value: "CONNECTION_REQUEST",
-    label: i18n.t("constants.activityTypes.connectionRequest"),
+    label: i18n.global.t("constants.activityTypes.connectionRequest"),
   },
   CREDENTIAL_EXCHANGE: {
     value: "CREDENTIAL_EXCHANGE",
-    label: i18n.t("constants.activityTypes.credentialExchange"),
+    label: i18n.global.t("constants.activityTypes.credentialExchange"),
   },
   PRESENTATION_EXCHANGE: {
     value: "PRESENTATION_EXCHANGE",
-    label: i18n.t("constants.activityTypes.presentationExchange"),
+    label: i18n.global.t("constants.activityTypes.presentationExchange"),
   },
 });
 
 export const ActivityStates = Object.freeze({
   CONNECTION_REQUEST_ACCEPTED: {
     value: "connection_request_accepted",
-    label: i18n.t("constants.activityStates.connectionRequest.accepted"),
+    label: i18n.global.t("constants.activityStates.connectionRequest.accepted"),
   },
   CONNECTION_REQUEST_RECEIVED: {
     value: "connection_request_received",
-    label: i18n.t("constants.activityStates.connectionRequest.received"),
+    label: i18n.global.t("constants.activityStates.connectionRequest.received"),
   },
   CONNECTION_REQUEST_SENT: {
     value: "connection_request_sent",
-    label: i18n.t("constants.activityStates.connectionRequest.sent"),
+    label: i18n.global.t("constants.activityStates.connectionRequest.sent"),
   },
   CREDENTIAL_EXCHANGE_ACCEPTED: {
     value: "credential_exchange_accepted",
-    label: i18n.t("constants.activityStates.credentialExchange.accepted"),
+    label: i18n.global.t(
+      "constants.activityStates.credentialExchange.accepted"
+    ),
   },
   CREDENTIAL_EXCHANGE_DECLINED: {
     value: "credential_exchange_declined",
-    label: i18n.t("constants.activityStates.credentialExchange.declined"),
+    label: i18n.global.t(
+      "constants.activityStates.credentialExchange.declined"
+    ),
   },
   CREDENTIAL_EXCHANGE_RECEIVED: {
     value: "credential_exchange_received",
-    label: i18n.t("constants.activityStates.credentialExchange.received"),
+    label: i18n.global.t(
+      "constants.activityStates.credentialExchange.received"
+    ),
   },
   CREDENTIAL_EXCHANGE_PROBLEM: {
     value: "credential_exchange_problem",
-    label: i18n.t("constants.activityStates.credentialExchange.problem"),
+    label: i18n.global.t("constants.activityStates.credentialExchange.problem"),
   },
   CREDENTIAL_EXCHANGE_SENT: {
     value: "credential_exchange_sent",
-    label: i18n.t("constants.activityStates.credentialExchange.sent"),
+    label: i18n.global.t("constants.activityStates.credentialExchange.sent"),
   },
   PRESENTATION_EXCHANGE_ACCEPTED: {
     value: "presentation_exchange_accepted",
-    label: i18n.t("constants.activityStates.presentationExchange.accepted"),
+    label: i18n.global.t(
+      "constants.activityStates.presentationExchange.accepted"
+    ),
   },
   PRESENTATION_EXCHANGE_DECLINED: {
     value: "presentation_exchange_declined",
-    label: i18n.t("constants.activityStates.presentationExchange.declined"),
+    label: i18n.global.t(
+      "constants.activityStates.presentationExchange.declined"
+    ),
   },
   PRESENTATION_EXCHANGE_RECEIVED: {
     value: "presentation_exchange_received",
-    label: i18n.t("constants.activityStates.presentationExchange.received"),
+    label: i18n.global.t(
+      "constants.activityStates.presentationExchange.received"
+    ),
   },
   PRESENTATION_EXCHANGE_SENT: {
     value: "presentation_exchange_sent",
-    label: i18n.t("constants.activityStates.presentationExchange.sent"),
+    label: i18n.global.t("constants.activityStates.presentationExchange.sent"),
   },
 });
 
 export const ActivityRoles = Object.freeze({
   CONNECTION_REQUEST_SENDER: {
     value: "connection_request_sender",
-    label: i18n.t("constants.activityRoles.connectionRequest.sender"),
+    label: i18n.global.t("constants.activityRoles.connectionRequest.sender"),
   },
   CONNECTION_REQUEST_RECIPIENT: {
     value: "connection_request_recipient",
-    label: i18n.t("constants.activityRoles.connectionRequest.recipient"),
+    label: i18n.global.t("constants.activityRoles.connectionRequest.recipient"),
   },
   CREDENTIAL_EXCHANGE_HOLDER: {
     value: "credential_exchange_holder",
-    label: i18n.t("constants.activityRoles.credentialExchange.holder"),
+    label: i18n.global.t("constants.activityRoles.credentialExchange.holder"),
   },
   CREDENTIAL_EXCHANGE_ISSUER: {
     value: "credential_exchange_issuer",
-    label: i18n.t("constants.activityRoles.credentialExchange.issuer"),
+    label: i18n.global.t("constants.activityRoles.credentialExchange.issuer"),
   },
   PRESENTATION_EXCHANGE_PROVER: {
     value: "presentation_exchange_prover",
-    label: i18n.t("constants.activityRoles.presentationExchange.prover"),
+    label: i18n.global.t("constants.activityRoles.presentationExchange.prover"),
   },
   PRESENTATION_EXCHANGE_VERIFIER: {
     value: "presentation_exchange_verifier",
-    label: i18n.t("constants.activityRoles.presentationExchange.verifier"),
+    label: i18n.global.t(
+      "constants.activityRoles.presentationExchange.verifier"
+    ),
   },
 });
 
