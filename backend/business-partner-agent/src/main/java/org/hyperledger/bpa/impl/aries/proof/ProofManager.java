@@ -473,10 +473,10 @@ public class ProofManager {
 
     // CRUD methods
     public Page<AriesProofExchange> listPartnerProofs(
-      @NonNull UUID partnerId,
-      @NonNull Pageable pageable){
-      Page<PartnerProof> pExchanges = pProofRepo.findByPartnerId(partnerId, pageable);
-      return pExchanges.map(conv::toAPIObject);
+            @NonNull UUID partnerId,
+            @NonNull Pageable pageable) {
+        Page<PartnerProof> pExchanges = pProofRepo.findByPartnerId(partnerId, pageable);
+        return pExchanges.map(conv::toAPIObject);
     }
 
     public AriesProofExchange getPartnerProofById(@NonNull UUID id) {

@@ -238,16 +238,16 @@ public class PartnerController {
     /**
      * List proof exchange records
      *
-     * @param pc              {@link PaginationCommand}
-     * @param id              {@link UUID} the partner id
+     * @param pc {@link PaginationCommand}
+     * @param id {@link UUID} the partner id
      * @return HTTP status
      */
     @Get("/{id}/proof-exchanges{?pc*}")
     public HttpResponse<Page<AriesProofExchange>> getPartnerProofs(
-      @Valid @Nullable PaginationCommand pc,
-      @Parameter(description = "partner id") @PathVariable UUID id) {
+            @Valid @Nullable PaginationCommand pc,
+            @Parameter(description = "partner id") @PathVariable UUID id) {
         return HttpResponse.ok(proofM.listPartnerProofs(id,
-          pc != null? pc.toPageable() : Pageable.unpaged()));
+                pc != null ? pc.toPageable() : Pageable.unpaged()));
     }
 
     /**

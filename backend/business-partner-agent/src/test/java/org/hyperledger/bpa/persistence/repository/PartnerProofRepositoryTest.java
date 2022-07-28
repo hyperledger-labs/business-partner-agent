@@ -110,26 +110,26 @@ class PartnerProofRepositoryTest {
 
         assertEquals("pres-k",
                 repo.findByPartnerId(pp.getPartner().getId(),
-                                Pageable.from(0, 5)
-                                        .order("presentationExchangeId",
-                                                Sort.Order.Direction.DESC))
+                        Pageable.from(0, 5)
+                                .order("presentationExchangeId",
+                                        Sort.Order.Direction.DESC))
                         .getContent()
                         .get(0)
                         .getPresentationExchangeId());
 
         assertEquals("pres-f",
                 repo.findByPartnerId(pp.getPartner().getId(),
-                                Pageable.from(1, 5)
-                                        .order("presentationExchangeId",
-                                                Sort.Order.Direction.DESC))
+                        Pageable.from(1, 5)
+                                .order("presentationExchangeId",
+                                        Sort.Order.Direction.DESC))
                         .getContent()
                         .get(0)
                         .getPresentationExchangeId());
 
         assertEquals("pres-a", repo.findByPartnerId(pp.getPartner().getId(),
-                        Pageable.from(2, 5)
-                                .order("presentationExchangeId",
-                                        Sort.Order.Direction.DESC))
+                Pageable.from(2, 5)
+                        .order("presentationExchangeId",
+                                Sort.Order.Direction.DESC))
                 .getContent()
                 .get(0)
                 .getPresentationExchangeId());
