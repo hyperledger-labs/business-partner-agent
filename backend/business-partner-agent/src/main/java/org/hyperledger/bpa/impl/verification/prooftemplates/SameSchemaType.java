@@ -15,17 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hyperledger.bpa.controller.api.proof;
+package org.hyperledger.bpa.impl.verification.prooftemplates;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import javax.validation.Constraint;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class PresentationRequestCredentialsLD {
-    private boolean match;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.TYPE_USE;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ TYPE_USE, FIELD, })
+@Constraint(validatedBy = {})
+public @interface SameSchemaType {
 }

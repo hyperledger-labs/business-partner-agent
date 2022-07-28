@@ -10,6 +10,7 @@ import { appAxios } from "@/services/interceptors";
 import { ApiRoutes } from "@/constants";
 import { AxiosResponse } from "axios";
 import {
+  CredentialType,
   PresentationRequestVersion,
   ProofTemplate,
 } from "@/services/types-services";
@@ -23,9 +24,13 @@ export default {
     return appAxios().get(`${ApiRoutes.PROOF_TEMPLATES}/${id}`);
   },
 
-  getKnownConditionOperators(): Promise<AxiosResponse<string[]>> {
+  getKnownConditionOperators(
+    type: CredentialType
+  ): Promise<AxiosResponse<string[]>> {
+    const params = new URLSearchParams([["type", type]]);
     return appAxios().get(
-      `${ApiRoutes.PROOF_TEMPLATES}/known-condition-operators`
+      `${ApiRoutes.PROOF_TEMPLATES}/known-condition-operators`,
+      { params }
     );
   },
 

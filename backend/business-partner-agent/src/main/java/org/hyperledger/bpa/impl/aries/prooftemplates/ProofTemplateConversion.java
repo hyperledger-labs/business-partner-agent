@@ -83,8 +83,8 @@ public class ProofTemplateConversion {
                 .build();
     }
 
-    private Optional<String> resolveLedgerSchemaId(String databaseSchemaId) {
-        return schemaService.getSchema(UUID.fromString(databaseSchemaId)).map(SchemaAPI::getSchemaId);
+    private Optional<String> resolveLedgerSchemaId(UUID databaseSchemaId) {
+        return schemaService.getSchema(databaseSchemaId).map(SchemaAPI::getSchemaId);
     }
 
     @NonNull

@@ -230,7 +230,7 @@ public class PartnerController {
             @Body RequestCredentialRequest credReq) {
         credM.sendCredentialProposal(
                 id,
-                UUID.fromString(credReq.getDocumentId()),
+                credReq.getDocumentId(),
                 credReq.getExchangeVersion());
         return HttpResponse.ok();
     }
@@ -238,16 +238,16 @@ public class PartnerController {
     /**
      * List proof exchange records
      *
-     * @param pc              {@link PaginationCommand}
-     * @param id              {@link UUID} the partner id
+     * @param pc {@link PaginationCommand}
+     * @param id {@link UUID} the partner id
      * @return HTTP status
      */
     @Get("/{id}/proof-exchanges{?pc*}")
     public HttpResponse<Page<AriesProofExchange>> getPartnerProofs(
-      @Valid @Nullable PaginationCommand pc,
-      @Parameter(description = "partner id") @PathVariable UUID id) {
+            @Valid @Nullable PaginationCommand pc,
+            @Parameter(description = "partner id") @PathVariable UUID id) {
         return HttpResponse.ok(proofM.listPartnerProofs(id,
-          pc != null? pc.toPageable() : Pageable.unpaged()));
+                pc != null ? pc.toPageable() : Pageable.unpaged()));
     }
 
     /**
@@ -288,7 +288,7 @@ public class PartnerController {
         if (req.isRequestBySchema() && StringUtils.isEmpty(req.getRequestBySchema().getSchemaId())) {
             throw new WrongApiUsageException(msg.getMessage("api.partner.proof.request.no.schema.id"));
         }
-        proofM.sendPresentProofRequest(id, req);
+        proofM.sendPresentProofRequestIndy(id, req);
         return HttpResponse.ok();
     }
 

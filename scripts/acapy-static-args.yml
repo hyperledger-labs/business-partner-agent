@@ -1,5 +1,5 @@
 # connection behaviour
-public-invites: true
+public-invites: true # use public did
 auto-accept-invites: false
 auto-accept-requests: false
 monitor-ping: true # enables the connection status in the ui
@@ -48,5 +48,4 @@ outbound-transport: http
 log-level: info
 
 # multi ledger support
-# currently, there is an issue with the tails file failing to upload if this is enabled
 genesis-transactions-list: './genesis-transaction-list.yml'

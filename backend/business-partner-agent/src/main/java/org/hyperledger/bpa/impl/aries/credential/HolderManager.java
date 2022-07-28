@@ -50,7 +50,6 @@ import org.hyperledger.bpa.api.exception.PartnerException;
 import org.hyperledger.bpa.api.notification.CredentialAddedEvent;
 import org.hyperledger.bpa.api.notification.CredentialOfferedEvent;
 import org.hyperledger.bpa.impl.activity.LabelStrategy;
-import org.hyperledger.bpa.impl.aries.jsonld.HolderLDManager;
 import org.hyperledger.bpa.impl.aries.jsonld.VPManager;
 import org.hyperledger.bpa.impl.aries.wallet.Identity;
 import org.hyperledger.bpa.impl.util.Converter;

@@ -51,9 +51,8 @@ class TagRepositoryTest {
                 .build();
         Tag saved = tagRepo.save(tag);
 
-        final Optional<Tag> byName = tagRepo.findByName(tagName);
-        assertTrue(byName.isPresent());
-        assertEquals(saved.getId(), byName.get().getId());
+        Tag byName = tagRepo.findByName(tagName).orElseThrow();
+        assertEquals(saved.getId(), byName.getId());
     }
 
     @Test
@@ -79,11 +78,10 @@ class TagRepositoryTest {
                         .tags(Set.of(tag))
                         .build());
 
-        Optional<Tag> dbTag = tagRepo.findByName(MY_TAG);
+        Tag dbTag = tagRepo.findByName(MY_TAG).orElseThrow();
 
-        assertTrue(dbTag.isPresent());
-        assertEquals(MY_TAG, dbTag.get().getName());
-        assertEquals(partner.getId(), dbTag.get().getPartners().stream().iterator().next().getId());
+        assertEquals(MY_TAG, dbTag.getName());
+        assertEquals(partner.getId(), dbTag.getPartners().stream().iterator().next().getId());
     }
 
     @Test
@@ -96,16 +94,14 @@ class TagRepositoryTest {
         Partner partner = buildPartnerWithoutTag().build();
         partnerRepo.save(partner);
 
-        Optional<Partner> dbP = partnerRepo.findById(partner.getId());
-        assertTrue(dbP.isPresent());
-        tagRepo.createPartnerToTagMapping(dbP.get().getId(), tag.getId());
+        Partner dbP = partnerRepo.findById(partner.getId()).orElseThrow();
+        tagRepo.createPartnerToTagMapping(dbP.getId(), tag.getId());
 
-        dbP = partnerRepo.findById(partner.getId());
+        dbP = partnerRepo.findById(partner.getId()).orElseThrow();
         assertEquals(1, tagRepo.count());
         assertEquals(1, partnerRepo.count());
-        assertTrue(dbP.isPresent());
-        assertFalse(dbP.get().getTags().isEmpty());
-        assertEquals(MY_TAG, dbP.get().getTags().iterator().next().getName());
+        assertFalse(dbP.getTags().isEmpty());
+        assertEquals(MY_TAG, dbP.getTags().iterator().next().getName());
     }
 
     @Test
@@ -156,17 +152,15 @@ class TagRepositoryTest {
                         .tags(tags)
                         .build());
 
-        Optional<Partner> dbPartner = partnerRepo.findById(partner.getId());
-        assertTrue(dbPartner.isPresent());
-        assertEquals(tags, dbPartner.get().getTags());
+        Partner dbPartner = partnerRepo.findById(partner.getId()).orElseThrow();
+        assertEquals(tags, dbPartner.getTags());
 
-        partnerRepo.update(dbPartner.get().setTags(empty));
-        tagRepo.deletePartnerToTagMapping(dbPartner.get().getId(), tag.getId());
-        dbPartner = partnerRepo.findById(partner.getId());
-        assertTrue(dbPartner.isPresent());
+        partnerRepo.update(dbPartner.setTags(empty));
+        tagRepo.deletePartnerToTagMapping(dbPartner.getId(), tag.getId());
+        dbPartner = partnerRepo.findById(partner.getId()).orElseThrow();
         // Tag should be removed from partner, but tag should not be removed from tag
         // repo
-        assertEquals(empty, dbPartner.get().getTags());
+        assertEquals(empty, dbPartner.getTags());
         Optional<Tag> reloadedTag = tagRepo.findById(tag.getId());
         assertTrue(reloadedTag.isPresent());
         assertEquals(tag.getId(), reloadedTag.get().getId());
@@ -187,15 +181,13 @@ class TagRepositoryTest {
                         .tags(tags)
                         .build());
 
-        Optional<Tag> myTag = tagRepo.findByName(MY_TAG);
-        assertTrue(myTag.isPresent());
-        assertEquals(1, myTag.get().getPartners().size());
+        Tag myTag = tagRepo.findByName(MY_TAG).orElseThrow();
+        assertEquals(1, myTag.getPartners().size());
 
         partnerRepo.deleteByPartnerId(partner.getId());
 
-        myTag = tagRepo.findByName(MY_TAG);
-        assertTrue(myTag.isPresent());
-        assertEquals(0, myTag.get().getPartners().size());
+        myTag = tagRepo.findByName(MY_TAG).orElseThrow();
+        assertEquals(0, myTag.getPartners().size());
     }
 
     @Test
@@ -206,9 +198,8 @@ class TagRepositoryTest {
                 .isReadOnly(Boolean.TRUE)
                 .build());
         tagRepo.updateNameById(t1.getId(), "foo");
-        Optional<Tag> dbTag = tagRepo.findById(t1.getId());
-        assertTrue(dbTag.isPresent());
-        assertEquals("foo", dbTag.get().getName());
+        Tag dbTag = tagRepo.findById(t1.getId()).orElseThrow();
+        assertEquals("foo", dbTag.getName());
     }
 
     @Test

@@ -67,9 +67,7 @@ export default {
     id: string,
     content: SendProofRequest
   ): Promise<AxiosResponse<void>> {
-    return appAxios().post(`${ApiRoutes.PARTNERS}/${id}/proof-send`, {
-      content: content,
-    });
+    return appAxios().post(`${ApiRoutes.PARTNERS}/${id}/proof-send`, content);
   },
 
   sendMessage(

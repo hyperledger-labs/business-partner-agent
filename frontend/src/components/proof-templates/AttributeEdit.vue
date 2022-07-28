@@ -76,6 +76,7 @@ export default {
   name: "AttributeEdit",
   props: {
     value: {},
+    type: String,
   },
   data: () => {
     return {
@@ -85,9 +86,11 @@ export default {
   },
   mounted() {
     // load condition operators (>, <, ==, etc)
-    proofTemplateService.getKnownConditionOperators().then((result) => {
-      this.operators.push("", ...result.data);
-    });
+    proofTemplateService
+      .getKnownConditionOperators(this.type)
+      .then((result) => {
+        this.operators.push("", ...result.data);
+      });
   },
   computed: {
     attributeGroup: {

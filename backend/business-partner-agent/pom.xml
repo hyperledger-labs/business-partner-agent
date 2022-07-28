@@ -59,6 +59,11 @@
             <artifactId>micronaut-data-jdbc</artifactId>
             <version>${micronaut.data.version}</version>
             <exclusions>
+                <!-- micronaut-data >= 3.5.0 -->
+                <exclusion>
+                    <groupId>javax.transaction</groupId>
+                    <artifactId>javax.transaction-api</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>jakarta.transaction</groupId>
                     <artifactId>jakarta.transaction-api</artifactId>
@@ -128,7 +133,7 @@
         <dependency>
             <groupId>network.idu.acapy</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.7.25</version>
+            <version>0.7.26</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>
@@ -155,7 +160,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>5.7.1</version>
+            <version>5.7.2</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
@@ -367,7 +372,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-dependency-plugin</artifactId>
-                        <version>3.3.0</version>
+                        <version>${maven.dependency.plugin.version}</version>
                         <executions>
                             <execution>
                                 <id>copy</id>

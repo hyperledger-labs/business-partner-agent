@@ -21,12 +21,11 @@ import io.micronaut.test.annotation.MockBean;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.present_proof.PresentProofRequest;
 import org.hyperledger.bpa.RunWithAries;
-import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateConversion;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
-import org.hyperledger.bpa.persistence.model.BPASchema;
 import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.repository.PartnerRepository;
+import org.hyperledger.bpa.testutil.SchemaMockFactory;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
@@ -46,6 +45,8 @@ public class ProofTemplateConversionTestBase extends RunWithAries {
     @Inject
     ProofTemplateConversion proofTemplateConversion;
     @Inject
+    SchemaMockFactory.SchemaMock schemaMock;
+    @Inject
     Clock clock;
 
     @MockBean(SchemaService.class)
@@ -64,14 +65,7 @@ public class ProofTemplateConversionTestBase extends RunWithAries {
     }
 
     protected UUID prepareSchemaWithAttributes(String ledgerSchemaId, String... attributes) {
-        UUID schemaId = UUID.randomUUID();
-        Mockito.when(schemaService.getSchema(schemaId))
-                .thenReturn(Optional.of(SchemaAPI.builder().schemaId(ledgerSchemaId).id(schemaId).build()));
-        Mockito.when(schemaService.getSchemaFor(ledgerSchemaId))
-                .thenReturn(Optional.of(BPASchema.builder().schemaId(ledgerSchemaId).id(schemaId).build()));
-        Mockito.when(schemaService.getSchemaAttributeNames(ledgerSchemaId))
-                .thenReturn(Set.of(attributes));
-        return schemaId;
+        return schemaMock.prepareSchemaWithAttributes(ledgerSchemaId, attributes);
     }
 
     protected void prepareConnectionId(String connectionId) {

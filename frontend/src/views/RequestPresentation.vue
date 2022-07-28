@@ -22,6 +22,10 @@
             <v-layout align-center align-end justify-end>
               <v-switch
                 v-if="expertMode"
+                :disabled="
+                  this.selectedProofTemplate.length > 0 &&
+                  'INDY' !== this.selectedProofTemplate[0].type
+                "
                 v-model="useV2Exchange"
                 :label="$t('button.useV2')"
               ></v-switch>

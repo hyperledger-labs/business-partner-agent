@@ -20,6 +20,7 @@ package org.hyperledger.bpa.persistence.model.prooftemplate;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.micronaut.core.annotation.Introspected;
 import lombok.*;
+import org.hyperledger.aries.api.present_proof_v2.DIFField;
 import org.hyperledger.bpa.controller.api.prooftemplates.ValueCondition;
 import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondition;
 
@@ -42,5 +43,17 @@ public class BPACondition {
 
     public static BPACondition fromRepresentation(ValueCondition condition) {
         return new BPACondition(condition.getOperator(), condition.getValue());
+    }
+
+    public DIFField.Filter toDifFieldFilter() {
+        DIFField.Filter.FilterBuilder b = DIFField.Filter.builder();
+        switch (operator) {
+        case EQUALS -> b._const(value);
+        case LESS_THAN -> b.exclusiveMaximum(value);
+        case GREATER_THAN -> b.exclusiveMinimum(value);
+        case LESS_THAN_OR_EQUAL_TO -> b.maximum(value);
+        case GREATER_THAN_OR_EQUAL_TO -> b.minimum(value);
+        }
+        return b.build();
     }
 }

@@ -34,7 +34,8 @@ import java.util.Optional;
 /**
  * Sets HTTP security headers on all frontend related calls.
  */
-@Filter({ "/*", "classpath:public", "/js/**", "/css/**", "/fonts/**", "/img/**" })
+@Filter({ "/*", "classpath:public", "/js/**", "/css/**", "/fonts/**", "/img/**", "/app/**", "/user/signin",
+        "/views/**" })
 public class FrontendSecurityHeaderFilter implements HttpServerFilter {
 
     @Property(name = "bpa.allowed.hosts")

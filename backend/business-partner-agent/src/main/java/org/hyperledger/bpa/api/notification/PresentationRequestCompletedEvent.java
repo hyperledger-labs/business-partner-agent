@@ -28,7 +28,5 @@ import org.hyperledger.bpa.persistence.model.PartnerProof;
 @AllArgsConstructor
 @Getter
 public class PresentationRequestCompletedEvent {
-
     private PartnerProof partnerProof;
-
 }

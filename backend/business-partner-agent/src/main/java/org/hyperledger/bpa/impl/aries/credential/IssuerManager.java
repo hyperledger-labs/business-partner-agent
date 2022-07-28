@@ -48,7 +48,6 @@ import org.hyperledger.bpa.config.RuntimeConfig;
 import org.hyperledger.bpa.controller.api.issuer.CredEx;
 import org.hyperledger.bpa.controller.api.issuer.CredentialOfferRequest;
 import org.hyperledger.bpa.controller.api.issuer.IssueCredentialRequest;
-import org.hyperledger.bpa.impl.aries.jsonld.IssuerLDManager;
 import org.hyperledger.bpa.impl.aries.jsonld.LDContextHelper;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.util.TimeUtil;
@@ -136,8 +135,9 @@ public class IssuerManager extends CredentialManagerBase {
 
     /**
      * Revocation only works for indy credentials. Json-ld credentials are currently
-     * (February '22) not revocable, there is an ongoing discussion to use:
-     * https://w3c-ccg.github.io/vc-status-rl-2020/ for this.
+     * (February '22) not revocable, there is an ongoing discussion to use
+     * <a href="https://w3c-ccg.github.io/vc-status-rl-2020">vc-status-rl-2020</a>
+     * for this.
      *
      * @param id bpa credential exchange id.
      * @return {@link CredEx}

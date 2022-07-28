@@ -19,6 +19,7 @@ package org.hyperledger.bpa.testutil;
 
 import io.micronaut.context.annotation.Bean;
 import io.micronaut.context.annotation.Factory;
+import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPASchema;
@@ -37,7 +38,8 @@ public class SchemaMockFactory {
             UUID schemaId = UUID.randomUUID();
             if (attributes.length > 0) {
                 Mockito.when(schemaService.getSchema(schemaId))
-                        .thenReturn(Optional.of(SchemaAPI.builder().schemaId(ledgerSchemaId).id(schemaId).build()));
+                        .thenReturn(Optional.of(SchemaAPI.builder()
+                                .schemaId(ledgerSchemaId).id(schemaId).type(CredentialType.INDY).build()));
                 Mockito.when(schemaService.getSchemaFor(ledgerSchemaId))
                         .thenReturn(Optional.of(BPASchema.builder().schemaId(ledgerSchemaId).id(schemaId).build()));
                 Mockito.when(schemaService.getSchemaAttributeNames(ledgerSchemaId))
@@ -50,6 +52,7 @@ public class SchemaMockFactory {
                 Mockito.when(schemaService.getSchemaAttributeNames(ledgerSchemaId))
                         .thenReturn(Set.of());
             }
+            Mockito.when(schemaService.distinctSchemaType(Mockito.anyList())).thenReturn(true);
             return schemaId;
         };
     }

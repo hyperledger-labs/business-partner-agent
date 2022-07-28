@@ -24,16 +24,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.hyperledger.bpa.api.aries.SchemaAPI;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.impl.util.Pair;
-import org.hyperledger.bpa.impl.verification.prooftemplates.DistinctAttributeNames;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeCondition;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidAttributeGroup;
-import org.hyperledger.bpa.impl.verification.prooftemplates.ValidBPASchemaId;
+import org.hyperledger.bpa.impl.verification.prooftemplates.*;
+import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttribute;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPAAttributeGroup;
 import org.hyperledger.bpa.persistence.model.prooftemplate.BPACondition;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Factory
 public class ValidatorFactory {
@@ -60,13 +59,24 @@ public class ValidatorFactory {
     }
 
     @Singleton
-    ConstraintValidator<ValidBPASchemaId, CharSequence> schemaIdValidator(SchemaService schemaService) {
+    ConstraintValidator<ValidBPASchemaId, UUID> schemaIdValidator(SchemaService schemaService) {
         return (value, annotationMetadata, context) -> Optional.ofNullable(value)
-                .map(String::valueOf)
-                .filter(this::isUUID)
-                .map(UUID::fromString)
                 .flatMap(schemaService::getSchema)
                 .isPresent();
+    }
+
+    @Singleton
+    ConstraintValidator<SameSchemaType, BPAProofTemplate> sameSchemaType(SchemaService schemaService) {
+        return (value, annotationMetadata, context) -> {
+            if (value == null || value.getAttributeGroups() == null) {
+                return true;
+            }
+            List<UUID> ids = value.streamAttributeGroups()
+                    .map(BPAAttributeGroup::getSchemaId)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+            return ids.isEmpty() || schemaService.distinctSchemaType(ids);
+        };
     }
 
     // TODO find a way to validate single list entries in isolation. This shows the
@@ -88,8 +98,6 @@ public class ValidatorFactory {
             if (value != null) {
                 Optional<Predicate<String>> attributeInSchema = Optional.of(value)
                         .map(BPAAttributeGroup::getSchemaId)
-                        .filter(this::isUUID)
-                        .map(UUID::fromString)
                         .flatMap(schemaService::getSchema)
                         .map(SchemaAPI::getSchemaId)
                         .map(schemaId -> schemaService

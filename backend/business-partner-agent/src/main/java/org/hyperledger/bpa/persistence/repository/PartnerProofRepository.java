@@ -52,6 +52,8 @@ public interface PartnerProofRepository extends PageableRepository<PartnerProof,
 
     @NonNull
     @Join(value = "proofTemplate", type = Join.Type.LEFT_FETCH)
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    @Join(value = "credentialExchange", type = Join.Type.LEFT_FETCH)
     Optional<PartnerProof> findByPresentationExchangeId(String presentationExchangeId);
 
     @NonNull
@@ -61,8 +63,6 @@ public interface PartnerProofRepository extends PageableRepository<PartnerProof,
     @NonNull
     @Join(value = "proofTemplate", type = Join.Type.LEFT_FETCH)
     Page<PartnerProof> findByPartnerId(@NonNull UUID partnerId, @NonNull Pageable pageable);
-
-    void updateState(@Id UUID id, PresentationExchangeState state);
 
     void updateProblemReport(@Id UUID id, String problemReport);
 

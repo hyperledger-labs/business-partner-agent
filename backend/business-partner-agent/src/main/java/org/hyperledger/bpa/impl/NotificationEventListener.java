@@ -30,9 +30,8 @@ import org.hyperledger.bpa.config.ActivityLogConfig;
 import org.hyperledger.bpa.controller.api.WebSocketMessageBody;
 import org.hyperledger.bpa.impl.messaging.websocket.MessageService;
 import org.hyperledger.bpa.impl.util.Converter;
+import org.hyperledger.bpa.persistence.model.Partner;
 import org.hyperledger.bpa.persistence.model.PartnerProof;
-
-import java.util.Optional;
 
 /**
  * Notifications send via websocket
@@ -219,24 +218,24 @@ public class NotificationEventListener {
     public void onPresentationRequestCompletedEvent(PresentationRequestCompletedEvent event) {
         log.debug("onPresentationRequestCompletedEvent");
         // we have the partner id, but not the partner, will need to look up partner...
-        partnerManager.getPartnerById(event.getPartnerProof().getPartnerId()).ifPresent(p -> {
-            WebSocketMessageBody message;
-            if (PresentationExchangeRole.PROVER.equals(event.getPartnerProof().getRole())) {
-                message = WebSocketMessageBody.notificationEvent(
-                        WebSocketMessageBody.WebSocketMessageType.ON_PRESENTATION_PROVED,
-                        event.getPartnerProof().getId().toString(),
-                        conv.toAPIObject(event.getPartnerProof()),
-                        p);
-            } else {
-                message = WebSocketMessageBody.notificationEvent(
-                        WebSocketMessageBody.WebSocketMessageType.ON_PRESENTATION_VERIFIED,
-                        event.getPartnerProof().getId().toString(),
-                        conv.toAPIObject(event.getPartnerProof()),
-                        p);
-            }
-            activityManager.completePresentationExchangeTask(event.getPartnerProof());
-            messageService.sendMessage(message);
-        });
+        PartnerAPI p = conv.toAPIObject(event.getPartnerProof().getPartner());
+
+        WebSocketMessageBody message;
+        if (PresentationExchangeRole.PROVER.equals(event.getPartnerProof().getRole())) {
+            message = WebSocketMessageBody.notificationEvent(
+                    WebSocketMessageBody.WebSocketMessageType.ON_PRESENTATION_PROVED,
+                    event.getPartnerProof().getId().toString(),
+                    conv.toAPIObject(event.getPartnerProof()),
+                    p);
+        } else {
+            message = WebSocketMessageBody.notificationEvent(
+                    WebSocketMessageBody.WebSocketMessageType.ON_PRESENTATION_VERIFIED,
+                    event.getPartnerProof().getId().toString(),
+                    conv.toAPIObject(event.getPartnerProof()),
+                    p);
+        }
+        activityManager.completePresentationExchangeTask(event.getPartnerProof());
+        messageService.sendMessage(message);
     }
 
     @EventListener
@@ -311,22 +310,19 @@ public class NotificationEventListener {
 
     private void handlePresentationRequestEvent(@NonNull PartnerProof partnerProof,
             WebSocketMessageBody.WebSocketMessageType messageType) {
-        Optional<PartnerAPI> partnerAPI = partnerManager.getPartnerById(partnerProof.getPartnerId());
-        if (partnerAPI.isPresent()) {
-            PartnerAPI p = partnerAPI.get();
+        Partner partner = partnerProof.getPartner();
 
-            activityManager.addPresentationExchangeTask(partnerProof);
+        activityManager.addPresentationExchangeTask(partnerProof);
 
-            // only notify if this is a task (requires manual intervention)
-            if (activityLogConfig.getPresentationExchangeStatesForTasks().contains(partnerProof.getState())) {
-                // we have the partner id, but not the partner, will need to look up partner...
-                WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
-                        messageType,
-                        partnerProof.getId().toString(),
-                        conv.toAPIObject(partnerProof),
-                        p);
-                messageService.sendMessage(message);
-            }
+        // only notify if this is a task (requires manual intervention)
+        if (activityLogConfig.getPresentationExchangeStatesForTasks().contains(partnerProof.getState())) {
+            // we have the partner id, but not the partner, will need to look up partner...
+            WebSocketMessageBody message = WebSocketMessageBody.notificationEvent(
+                    messageType,
+                    partnerProof.getId().toString(),
+                    conv.toAPIObject(partnerProof),
+                    conv.toAPIObject(partner));
+            messageService.sendMessage(message);
         }
     }
 

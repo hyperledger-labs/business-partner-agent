@@ -73,16 +73,20 @@ class DidResolverTest extends BaseTest {
 
     @Test
     void testIgnoreOutgoingConnection() {
-        PartnerProof pp = PartnerProof.builder().build();
-        when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.FALSE).build()));
+        PartnerProof pp = PartnerProof
+                .builder()
+                .partner(Partner.builder().incoming(Boolean.FALSE).build())
+                .build();
         didResolver.resolveDid(pp, buildIdentifiers(crSchemaId));
         verify(ur, never()).getDidDocument(any());
     }
 
     @Test
     void testIgnoreIncomingConnectionWithPublicDid() {
-        PartnerProof pp = PartnerProof.builder().build();
-        when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.TRUE).build()));
+        PartnerProof pp = PartnerProof
+                .builder()
+                .partner(Partner.builder().incoming(Boolean.TRUE).build())
+                .build();
         when(ur.getDidDocument(any())).thenReturn(Optional.of(new DIDDocument()));
         didResolver.resolveDid(pp, buildIdentifiers(crSchemaId));
         verify(partnerLookup, never()).lookupPartner(any());
@@ -91,12 +95,12 @@ class DidResolverTest extends BaseTest {
     @Test
     void testIgnoreMissingDid() {
         PartnerProof pp = PartnerProof.builder()
+                .partner(Partner.builder().incoming(Boolean.TRUE).build())
                 .proof(ExchangePayload.indy(Map.of("other", PresentationExchangeRecord.RevealedAttributeGroup
                         .builder()
                         .revealedAttribute("something", "not-a-did")
                         .build())))
                 .build();
-        when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.TRUE).build()));
         when(ur.getDidDocument(any())).thenReturn(Optional.of(new DIDDocument()));
         didResolver.resolveDid(pp, buildIdentifiers(crSchemaId));
         verify(partnerLookup, never()).lookupPartner(any());
@@ -105,17 +109,16 @@ class DidResolverTest extends BaseTest {
     @Test
     void testResolveDidAndUpdatePartner() {
         PartnerProof pp = PartnerProof.builder()
+                .partner(Partner.builder().incoming(Boolean.TRUE).build())
                 .proof(ExchangePayload.indy(Map.of("did", PresentationExchangeRecord.RevealedAttributeGroup
                         .builder()
                         .revealedAttribute("did", "did:dummy")
                         .build())))
                 .build();
-        when(partnerRepo.findById(any())).thenReturn(Optional.of(Partner.builder().incoming(Boolean.TRUE).build()));
         when(ur.getDidDocument(any())).thenReturn(Optional.empty());
         when(partnerLookup.lookupPartner(any())).thenReturn(new PartnerAPI());
         didResolver.resolveDid(pp, buildIdentifiers(crSchemaId));
 
-        verify(partnerRepo, times(1)).findById(any());
         verify(partnerRepo, times(1)).update(any());
         verify(ur, times(1)).getDidDocument(any());
         verify(partnerLookup, times(1)).lookupPartner(any());

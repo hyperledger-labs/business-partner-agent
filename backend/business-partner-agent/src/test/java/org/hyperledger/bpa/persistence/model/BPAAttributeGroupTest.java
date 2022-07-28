@@ -55,10 +55,10 @@ class BPAAttributeGroupTest {
     @Test
     void testThatSchemaIdIsCheckedForExistenceInSchemaService() {
         UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId");
-        BPAAttributeGroup sut = BPAAttributeGroup.builder().schemaId(schemaId.toString()).build();
+        BPAAttributeGroup sut = BPAAttributeGroup.builder().schemaId(schemaId).build();
         Set<ConstraintViolation<BPAAttributeGroup>> constraintViolations = validator.validate(sut);
         Assertions.assertEquals(1, constraintViolations.size());
-        Assertions.assertEquals(schemaId.toString(),
+        Assertions.assertEquals(schemaId,
                 constraintViolations.stream().findFirst().map(ConstraintViolation::getInvalidValue).orElse(null));
     }
 
@@ -66,7 +66,7 @@ class BPAAttributeGroupTest {
     void testThatAttributeNamesAreCheckedAgainstSchemaFromSchemaService() {
         UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId", "surname", "lastname");
         BPAAttributeGroup sut = BPAAttributeGroup.builder()
-                .schemaId(schemaId.toString())
+                .schemaId(schemaId)
                 .attribute(BPAAttribute.builder()
                         .name("fullname")
                         .build())
@@ -87,7 +87,7 @@ class BPAAttributeGroupTest {
     void testThatAttributesNamesAreDistinct() {
         UUID schemaId = schemaMock.prepareSchemaWithAttributes("mySchemaId", "fullname");
         BPAAttributeGroup sut = BPAAttributeGroup.builder()
-                .schemaId(schemaId.toString())
+                .schemaId(schemaId)
                 .attribute(BPAAttribute.builder()
                         .name("fullname")
                         .build())
@@ -116,7 +116,7 @@ class BPAAttributeGroupTest {
                 .operator(ValueOperators.GREATER_THAN)
                 .build();
         BPAAttributeGroup sut = BPAAttributeGroup.builder()
-                .schemaId(schemaId.toString())
+                .schemaId(schemaId)
                 .attribute(BPAAttribute.builder()
                         .name("myAttributeName")
                         .condition(invalidCondition)
