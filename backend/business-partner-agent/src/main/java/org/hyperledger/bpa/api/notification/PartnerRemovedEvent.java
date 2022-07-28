@@ -27,7 +27,7 @@ import org.hyperledger.bpa.persistence.model.Partner;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class PartnerRemovedEvent {
+public class PartnerRemovedEvent extends Event implements PartnerEvent {
 
     private Partner partner;
 }

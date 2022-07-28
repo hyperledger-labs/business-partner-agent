@@ -31,8 +31,9 @@ public class BPASchemaRepositoryTest {
     BPASchemaRepository schemaRepository;
 
     @Test
-    void testSetDefaultAttribute(){
-        BPASchema schema1 = BPASchema.builder().schemaId("testSchema").schemaAttributeName("name").defaultAttributeName("name").type(CredentialType.INDY).build();
+    void testSetDefaultAttribute() {
+        BPASchema schema1 = BPASchema.builder().schemaId("testSchema").schemaAttributeName("name")
+                .defaultAttributeName("name").type(CredentialType.INDY).build();
         schema1 = schemaRepository.save(schema1);
         BPASchema schema2 = schemaRepository.findById(schema1.getId()).orElseThrow();
         Assertions.assertEquals(schema1.getId(), schema2.getId());

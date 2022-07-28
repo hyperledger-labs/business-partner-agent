@@ -17,18 +17,9 @@
  */
 package org.hyperledger.bpa.api.notification;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hyperledger.bpa.persistence.model.Partner;
 
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-public class PartnerRequestReceivedEvent extends Event implements PartnerEvent {
+public interface PartnerEvent {
 
-    private Partner partner;
-
+    Partner getPartner();
 }
