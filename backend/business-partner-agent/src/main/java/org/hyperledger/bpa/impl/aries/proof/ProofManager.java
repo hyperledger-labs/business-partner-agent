@@ -196,8 +196,9 @@ public class ProofManager {
     // send presentation offer to partner based on a wallet credential
     public void sendProofProposal(@NonNull UUID partnerId, @NonNull UUID myCredentialId,
             @Nullable ExchangeVersion version) {
-        partnerRepo.findById(partnerId).ifPresent(p -> holderCredExRepo.findById(myCredentialId).ifPresent(c -> {
-            if (StringUtils.isEmpty(p.getConnectionId())) {
+        holderCredExRepo.findByIdAndPartnerId(myCredentialId, partnerId).ifPresent(c -> {
+            Partner p = c.getPartner();
+            if (p == null || StringUtils.isEmpty(p.getConnectionId())) {
                 throw new WrongApiUsageException(ms.getMessage("api.partner.no.connection"));
             }
             ExchangeVersion v = VersionHelper.determineVersion(version, c);
@@ -225,7 +226,7 @@ public class ProofManager {
             } catch (IOException e) {
                 throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
             }
-        }));
+        });
     }
 
     private Consumer<BasePresExRecord> persistProof(@NonNull PersistProofCmd cmd) {
@@ -280,10 +281,14 @@ public class ProofManager {
             @NonNull String presentationExchangeId, @NonNull ExchangeVersion version) {
         try {
             Optional<List<PresentationRequestCredentials>> matches;
+            // TODO this allows for paging, but there is no easy way to expose this in the UI
+            PresentationRequestCredentialsFilter filter = PresentationRequestCredentialsFilter.builder()
+                    .count("100")
+                    .build();
             if (version.isV1()) {
-                matches = ac.presentProofRecordsCredentials(presentationExchangeId);
+                matches = ac.presentProofRecordsCredentials(presentationExchangeId, filter);
             } else {
-                matches = ac.presentProofV2RecordsCredentials(presentationExchangeId, null);
+                matches = ac.presentProofV2RecordsCredentials(presentationExchangeId, filter);
             }
             return matches;
         } catch (IOException e) {

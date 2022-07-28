@@ -62,7 +62,10 @@ public interface HolderCredExRepository extends PageableRepository<BPACredential
 
     Optional<BPACredentialExchange> findByReferent(String referent);
 
-    List<BPACredentialExchange> findByPartnerId(UUID partnerId);
+    List<BPACredentialExchange> findByPartnerId(@NonNull UUID id);
+
+    @Join(value = "partner", type = Join.Type.LEFT_FETCH)
+    Optional<BPACredentialExchange> findByIdAndPartnerId(@NonNull UUID id, @NonNull UUID partnerId);
 
     @Join(value = "schema", type = Join.Type.LEFT_FETCH)
     @Join(value = "partner", type = Join.Type.LEFT_FETCH)

@@ -88,6 +88,7 @@ class HolderCredExRepositoryTest extends BaseTest {
 
         final List<BPACredentialExchange> byPartnerId = holderCredExRepo.findByPartnerId(p.getId());
         assertEquals(2, byPartnerId.size());
+        assertTrue(holderCredExRepo.findByIdAndPartnerId(ex1.getId(), p.getId()).isPresent());
 
         Number updated = holderCredExRepo.setPartnerIdToNull(p.getId());
         assertEquals(2, updated.intValue());
