@@ -17,6 +17,8 @@
  */
 package org.hyperledger.bpa.persistence.repository;
 
+import io.micronaut.data.model.Pageable;
+import io.micronaut.data.model.Sort;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.hyperledger.aries.api.present_proof.PresentationExchangeRecord;
@@ -35,10 +37,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @MicronautTest
 class PartnerProofRepositoryTest {
 
+    private Instant timestamp =  Instant.ofEpochMilli(1631760000000L);
+
     @Inject
     PartnerProofRepository repo;
 
-    @Test
+  @Test
     void testUpdateProof() {
         PartnerProof pp = PartnerProof
                 .builder()
@@ -80,4 +84,75 @@ class PartnerProofRepositoryTest {
                 pp.getStateToTimestamp().toApi().keySet().toArray()[2]);
     }
 
+    @Test
+    void testGetPresentationExchangeListByPartnerId(){
+      PartnerProof pp = createRandomPartnerProof();
+      repo.save(createDummyPresEx(pp, "pres-b"));
+      repo.save(createDummyPresEx(pp, "pres-c"));
+      repo.save(createDummyPresEx(pp, "pres-d"));
+      repo.save(createDummyPresEx(pp, "pres-e"));
+      repo.save(createDummyPresEx(pp, "pres-f"));
+      repo.save(createDummyPresEx(pp, "pres-g"));
+      repo.save(createDummyPresEx(pp, "pres-h"));
+      repo.save(createDummyPresEx(pp, "pres-i"));
+      repo.save(createDummyPresEx(pp, "pres-j"));
+      repo.save(createDummyPresEx(pp, "pres-k"));
+
+      assertEquals(3, repo.findByPartnerId(
+        pp.getPartnerId(), Pageable.from(0, 5)).getTotalPages());
+
+      assertEquals("pres-k",
+        repo.findByPartnerId(pp.getPartnerId(),
+          Pageable.from(0, 5)
+            .order("presentationExchangeId",
+              Sort.Order.Direction.DESC))
+        .getContent()
+        .get(0)
+        .getPresentationExchangeId());
+
+      assertEquals("pres-f",
+        repo.findByPartnerId(pp.getPartnerId(),
+            Pageable.from(1, 5)
+              .order("presentationExchangeId",
+                Sort.Order.Direction.DESC))
+        .getContent()
+        .get(0)
+        .getPresentationExchangeId());
+
+      assertEquals("pres-a", repo.findByPartnerId(pp.getPartnerId(),
+          Pageable.from(2, 5)
+            .order("presentationExchangeId",
+              Sort.Order.Direction.DESC))
+        .getContent()
+        .get(0)
+        .getPresentationExchangeId());
+    }
+
+    public PartnerProof createDummyPresEx(PartnerProof partnerProof, String pesId) {
+      return PartnerProof
+        .builder()
+        .id(partnerProof.getId())
+        .partnerId(partnerProof.getPartnerId())
+        .state(partnerProof.getState())
+        .proofRequest(partnerProof.getProofRequest())
+        .presentationExchangeId(pesId)
+        .role(partnerProof.getRole())
+        .type(partnerProof.getType())
+        .problemReport(partnerProof.getProblemReport())
+        .exchangeVersion(partnerProof.getExchangeVersion())
+        .stateToTimestamp(partnerProof.getStateToTimestamp())
+        .valid(partnerProof.getValid())
+        .updatedAt(timestamp.plusSeconds(1))
+        .build();
+    }
+
+    public PartnerProof createRandomPartnerProof() {
+      return repo.save(PartnerProof
+        .builder()
+        .type(CredentialType.INDY)
+        .partnerId(UUID.randomUUID())
+        .presentationExchangeId("pres-a")
+        .pushStateChange(PresentationExchangeState.PROPOSAL_SENT, timestamp)
+        .build());
+    }
 }
