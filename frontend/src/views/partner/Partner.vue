@@ -143,15 +143,13 @@
           </v-bpa-button>
         </v-layout>
       </v-card-title>
-      <v-progress-linear
-        v-if="isLoadingPresExRecords"
-        indeterminate
-      ></v-progress-linear>
       <PresentationExList
+        ref="presExList"
         v-if="isReady"
-        v-model="presentationExRecords"
-        v-bind:openItemById="presExId"
+        v-bind:partnerId="this.id"
+        v-bind:openItemById="this.presExId"
         @changed="refreshPresentationRecords"
+        @presRawData="getRecords"
       />
       <v-card-actions>
         <v-bpa-button small color="secondary" @click="sendPresentation">{{
@@ -195,6 +193,7 @@
         v-bind:partnerId="id"
         v-bind:openItemById="credExId"
         @changed="refreshIssuedCredentialRecords"
+        @credRawData="getCreds"
       ></CredExList>
       <v-card-actions>
         <v-dialog v-model="issueCredentialDialog" persistent max-width="600px">
@@ -238,6 +237,17 @@
           }}</v-bpa-button
         >
       </v-card-actions>
+      <v-expansion-panels v-if="expertMode" accordion flat>
+        <v-expansion-panel>
+          <v-expansion-panel-header
+            class="grey--text text--darken-2 font-weight-medium bg-light"
+            >{{ $t("showRawData") }}</v-expansion-panel-header
+          >
+          <v-expansion-panel-content class="bg-light">
+            <vue-json-pretty :data="credExRecords"></vue-json-pretty>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
     </v-card>
 
     <v-dialog v-model="attentionPartnerStateDialog" max-width="600px">
@@ -272,6 +282,7 @@ import { getPartnerState } from "@/utils/partnerUtils";
 import { EventBus } from "@/main";
 import {
   AriesProofExchange,
+  CredEx,
   PartnerAPI,
   PartnerCredential,
   partnerService,
@@ -306,7 +317,6 @@ export default {
   created() {
     EventBus.$emit("title", this.$t("view.partner.title"));
     this.getPartner();
-    this.getPresentationRecords();
     this.$store.commit("partnerNotificationSeen", { id: this.id });
   },
   data: () => {
@@ -314,7 +324,6 @@ export default {
       isReady: false,
       isBusy: false,
       isLoading: true,
-      isLoadingPresExRecords: true,
       attentionPartnerStateDialog: false,
       updatePartnerDialog: false,
       goTo: {},
@@ -327,6 +336,7 @@ export default {
       },
       rawData: {} as PartnerAPI,
       credentials: new Array<PartnerCredential>(),
+      credExRecords: new Array<CredEx>(),
       presentationExRecords: new Array<AriesProofExchange>(),
       PartnerStates: PartnerStates,
       issueCredentialDialog: false,
@@ -383,28 +393,16 @@ export default {
       }
     },
     refreshPresentationRecords() {
-      this.getPresentationRecords();
+      this.$refs.presExList.loadPresentationRecords();
     },
-    getPresentationRecords() {
-      console.log("Getting presentation records...");
-      this.isLoadingPresExRecords = true;
-      partnerService
-        .getPresentationExRecords(this.id)
-        .then((result) => {
-          this.isLoadingPresExRecords = false;
-          if (Object.prototype.hasOwnProperty.call(result, "data")) {
-            let data = result.data;
-            console.log(data);
-            this.presentationExRecords = data;
-          }
-        })
-        .catch((error) => {
-          this.isLoadingPresExRecords = false;
-          console.error(error);
-        });
+    getRecords(presExRecords: AriesProofExchange[]) {
+      this.presentationExRecords = presExRecords;
     },
     refreshIssuedCredentialRecords() {
       this.$refs.credExList.loadCredentials();
+    },
+    getCreds(credExRecords: CredEx[]) {
+      this.credExRecords = credExRecords;
     },
     requestCredential() {
       if (this.isActive) {

@@ -18,6 +18,8 @@
 package org.hyperledger.bpa.controller;
 
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
@@ -35,6 +37,7 @@ import org.hyperledger.bpa.api.PartnerAPI;
 import org.hyperledger.bpa.api.aries.AriesProofExchange;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.controller.api.PaginationCommand;
 import org.hyperledger.bpa.controller.api.partner.*;
 import org.hyperledger.bpa.controller.api.proof.PresentationRequestVersion;
 import org.hyperledger.bpa.impl.PartnerManager;
@@ -47,6 +50,7 @@ import org.hyperledger.bpa.impl.aries.proof.ProofManager;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateManager;
 import org.hyperledger.bpa.persistence.model.ChatMessage;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -234,12 +238,16 @@ public class PartnerController {
     /**
      * List proof exchange records
      *
-     * @param id {@link UUID} the partner id
+     * @param pc              {@link PaginationCommand}
+     * @param id              {@link UUID} the partner id
      * @return HTTP status
      */
-    @Get("/{id}/proof-exchanges")
-    public HttpResponse<List<AriesProofExchange>> getPartnerProofs(@PathVariable UUID id) {
-        return HttpResponse.ok(proofM.listPartnerProofs(id));
+    @Get("/{id}/proof-exchanges{?pc*}")
+    public HttpResponse<Page<AriesProofExchange>> getPartnerProofs(
+      @Valid @Nullable PaginationCommand pc,
+      @Parameter(description = "partner id") @PathVariable UUID id) {
+        return HttpResponse.ok(proofM.listPartnerProofs(id,
+          pc != null? pc.toPageable() : Pageable.unpaged()));
     }
 
     /**
