@@ -80,7 +80,7 @@ public class BPACredentialExchange
     private BPACredentialDefinition credDef;
 
     @Nullable
-    @OneToOne
+    @ManyToOne
     private Partner partner;
 
     @Builder.Default
