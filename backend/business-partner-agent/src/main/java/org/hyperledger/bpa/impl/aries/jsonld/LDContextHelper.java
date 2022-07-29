@@ -18,6 +18,9 @@
 package org.hyperledger.bpa.impl.aries.jsonld;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -87,18 +90,22 @@ public class LDContextHelper {
         if (!issuer) {
             document.put("id", identity.getMyDid());
         }
+        String ldType = Objects.requireNonNull(bpaSchema.getLdType());
+        JsonObject subject = GsonConfig.defaultConfig().toJsonTree(document).getAsJsonObject();
+        JsonArray subjectType = new JsonArray();
+        subjectType.add(ldType);
+        subject.add("type", subjectType);
         return V2CredentialExchangeFree.V20CredFilter.builder()
                 .ldProof(V2CredentialExchangeFree.LDProofVCDetail.builder()
                         .credential(VerifiableCredential.builder()
                                 .context(List.of(CredentialType.JSON_LD.getContext().get(0), bpaSchema.getSchemaId()))
-                                .credentialSubject(GsonConfig.defaultConfig().toJsonTree(document).getAsJsonObject())
+                                .credentialSubject(subject)
                                 .issuanceDate(TimeUtil.toISOInstantTruncated(Instant.now()))
                                 .issuer(issuer ? identity.getMyDid() : findIssuerDidOrFallback(bpaSchema))
-                                .type(List.of(CredentialType.JSON_LD.getType().get(0),
-                                        Objects.requireNonNull(bpaSchema.getLdType())))
+                                .type(List.of(CredentialType.JSON_LD.getType().get(0), ldType))
                                 .build())
                         .options(V2CredentialExchangeFree.LDProofVCDetailOptions.builder()
-                                // TODO expose key type to user
+                                // TODO expose key ldType to user
                                 .proofType(ProofType.Ed25519Signature2018)
                                 .build())
                         .build())
