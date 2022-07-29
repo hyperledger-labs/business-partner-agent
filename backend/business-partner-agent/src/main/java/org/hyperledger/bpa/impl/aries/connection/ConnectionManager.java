@@ -373,7 +373,7 @@ public class ConnectionManager {
                         .connectionId(connectionId)
                         .build()).ifPresent(records -> records.forEach(record -> {
                             try {
-                                ac.presentProofRecordsRemove(record.getPresentationExchangeId());
+                                ac.presentProofV2RecordsRemove(record.getPresentationExchangeId());
                             } catch (IOException | AriesException e) {
                                 log.error("Could not delete v2 presentation exchange record: {}",
                                         record.getPresentationExchangeId(), e);
