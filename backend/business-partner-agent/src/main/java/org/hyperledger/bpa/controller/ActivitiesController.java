@@ -49,16 +49,16 @@ public class ActivitiesController {
     /**
      * List Items, if no filters return all
      *
-     * @param pc          {@link PaginationCommand}
+     * @param pc         {@link PaginationCommand}
      * @param parameters ActivitySearchParameters Filters for list
      * @return list of {@link ActivityItem}
      */
     @Get("/{?pc*}")
     public HttpResponse<Page<ActivityItem>> listActivities(
-      @Valid @Nullable PaginationCommand pc,
-      @RequestBean @Valid ActivitySearchParameters parameters) {
+            @Valid @Nullable PaginationCommand pc,
+            @RequestBean @Valid ActivitySearchParameters parameters) {
         return HttpResponse.ok(activityManager.getItems(parameters,
-          pc !=null? pc.toPageable(): Pageable.unpaged()));
+                pc != null ? pc.toPageable() : Pageable.unpaged()));
     }
 
 }

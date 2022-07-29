@@ -30,14 +30,17 @@ export default {
   },
 
   // Query used only for partners that can issue credentials of specified schema
-  getPartners(schemaId?: string): Promise<AxiosResponse<PartnerAPI[]>> {
+  getPartners(
+    schemaId?: string,
+    params: URLSearchParams = new URLSearchParams()
+  ): Promise<AxiosResponse<Page<PartnerAPI[]>>> {
     let query = "";
-
     if (schemaId && schemaId.length > 0) {
       query = `?schemaId=${schemaId}`;
     }
-
-    return appAxios().get(`${ApiRoutes.PARTNERS}${query}`);
+    return appAxios().get(`${ApiRoutes.PARTNERS}${query}`, {
+      params: params,
+    });
   },
 
   getPartnerById(id: string): Promise<AxiosResponse<PartnerAPI>> {

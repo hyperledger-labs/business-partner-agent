@@ -29,9 +29,11 @@ export default {
         .then((result) => {
           if (result.status === 200) {
             // filter out partners that are only at the invitation stage, we can't do anything until they accept.
-            const partners: PartnerAPI[] = result.data.filter((partner) => {
-              return partner.state !== PartnerStates.INVITATION.value;
-            });
+            const partners: PartnerAPI[] = result.data.content.filter(
+              (partner) => {
+                return partner.state !== PartnerStates.INVITATION.value;
+              }
+            );
 
             context.commit("setPartnerSelectList", partners);
           }

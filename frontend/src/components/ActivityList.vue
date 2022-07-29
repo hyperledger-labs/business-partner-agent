@@ -123,7 +123,7 @@ export default {
       filter: undefined as { text: string; value: string },
       filterValue: undefined as { text: string; value: string },
       filterValueList: new Array<{ text: string; value: string }>(),
-      hideFooter: false,
+      hideFooter: true,
       options: {},
       totalNumberOfElements: 0,
     };
@@ -218,7 +218,6 @@ export default {
           this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
         }
       } catch (error) {
-        this.items = [];
         EventBus.$emit("error", this.$axiosErrorMessage(error));
       }
       this.isBusy = false;
