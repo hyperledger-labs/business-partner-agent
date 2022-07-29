@@ -18,7 +18,6 @@
 package org.hyperledger.bpa.impl;
 
 import io.micronaut.context.event.ApplicationEventPublisher;
-import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
@@ -57,7 +56,7 @@ public class ActivityManager {
     ApplicationEventPublisher eventPublisher;
 
     public Page<ActivityItem> getItems(
-            @Nullable ActivitySearchParameters parameters,
+            @NonNull ActivitySearchParameters parameters,
             @NonNull Pageable pageable) {
         Page<Activity> activities;
 
