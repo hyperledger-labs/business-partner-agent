@@ -196,9 +196,8 @@ public class ProofManager {
     // send presentation offer to partner based on a wallet credential
     public void sendProofProposal(@NonNull UUID partnerId, @NonNull UUID myCredentialId,
             @Nullable ExchangeVersion version) {
-        holderCredExRepo.findByIdAndPartnerId(myCredentialId, partnerId).ifPresent(c -> {
-            Partner p = c.getPartner();
-            if (p == null || StringUtils.isEmpty(p.getConnectionId())) {
+        partnerRepo.findById(partnerId).ifPresent(p -> holderCredExRepo.findById(myCredentialId).ifPresent(c -> {
+            if (StringUtils.isEmpty(p.getConnectionId())) {
                 throw new WrongApiUsageException(ms.getMessage("api.partner.no.connection"));
             }
             ExchangeVersion v = VersionHelper.determineVersion(version, c);
@@ -226,7 +225,7 @@ public class ProofManager {
             } catch (IOException e) {
                 throw new NetworkException(ms.getMessage("acapy.unavailable"), e);
             }
-        });
+        }));
     }
 
     private Consumer<BasePresExRecord> persistProof(@NonNull PersistProofCmd cmd) {
