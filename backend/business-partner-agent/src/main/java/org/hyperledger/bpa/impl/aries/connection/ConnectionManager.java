@@ -368,6 +368,8 @@ public class ConnectionManager {
                                         record.getPresentationExchangeId(), e);
                             }
                         }));
+                // TODO needed, but needs new client release
+                /**
                 ac.presentProofV2Records(V2PresentProofRecordsFilter
                         .builder()
                         .connectionId(connectionId)
@@ -379,6 +381,7 @@ public class ConnectionManager {
                                         record.getPresentationExchangeId(), e);
                             }
                         }));
+                 */
                 ac.issueCredentialRecords(IssueCredentialRecordsFilter
                         .builder()
                         .connectionId(connectionId)
