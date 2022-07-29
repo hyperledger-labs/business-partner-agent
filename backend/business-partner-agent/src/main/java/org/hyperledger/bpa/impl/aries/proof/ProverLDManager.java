@@ -19,11 +19,11 @@ package org.hyperledger.bpa.impl.aries.proof;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
-import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hyperledger.acy_py.generated.model.DIFOptions;
 import org.hyperledger.aries.AriesClient;
@@ -105,7 +105,7 @@ public class ProverLDManager extends BaseLDManager {
         return ldAttributes.entrySet()
                 .stream()
                 .filter(e -> StringUtils.isNotEmpty(e.getValue()))
-                .filter(e -> !"type".equalsIgnoreCase(e.getKey()))
+                .filter(e -> !StringUtils.equalsIgnoreCase("type", e.getKey()))
                 .map(e -> pair(e.getKey(), DIFField.Filter.builder()
                         ._const(e.getValue())
                         .build()))
