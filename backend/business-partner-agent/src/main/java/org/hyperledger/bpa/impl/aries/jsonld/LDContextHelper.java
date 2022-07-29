@@ -19,7 +19,6 @@ package org.hyperledger.bpa.impl.aries.jsonld;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Inject;
@@ -105,7 +104,7 @@ public class LDContextHelper {
                                 .type(List.of(CredentialType.JSON_LD.getType().get(0), ldType))
                                 .build())
                         .options(V2CredentialExchangeFree.LDProofVCDetailOptions.builder()
-                                // TODO expose key ldType to user
+                                // TODO expose key type to user
                                 .proofType(ProofType.Ed25519Signature2018)
                                 .build())
                         .build())
