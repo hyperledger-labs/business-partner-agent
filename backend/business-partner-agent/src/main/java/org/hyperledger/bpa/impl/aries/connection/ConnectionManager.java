@@ -41,6 +41,7 @@ import org.hyperledger.aries.api.out_of_band.CreateInvitationFilter;
 import org.hyperledger.aries.api.out_of_band.InvitationCreateRequest;
 import org.hyperledger.aries.api.out_of_band.ReceiveInvitationFilter;
 import org.hyperledger.aries.api.present_proof.PresentProofRecordsFilter;
+import org.hyperledger.aries.api.present_proof_v2.V2PresentProofRecordsFilter;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.InvitationException;
 import org.hyperledger.bpa.api.exception.NetworkException;
@@ -364,6 +365,17 @@ public class ConnectionManager {
                                 ac.presentProofRecordsRemove(record.getPresentationExchangeId());
                             } catch (IOException | AriesException e) {
                                 log.error("Could not delete presentation exchange record: {}",
+                                        record.getPresentationExchangeId(), e);
+                            }
+                        }));
+                ac.presentProofV2Records(V2PresentProofRecordsFilter
+                        .builder()
+                        .connectionId(connectionId)
+                        .build()).ifPresent(records -> records.forEach(record -> {
+                            try {
+                                ac.presentProofRecordsRemove(record.getPresentationExchangeId());
+                            } catch (IOException | AriesException e) {
+                                log.error("Could not delete v2 presentation exchange record: {}",
                                         record.getPresentationExchangeId(), e);
                             }
                         }));

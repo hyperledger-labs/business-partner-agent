@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Schema configuration bean that maps the default schema configuration.
- * see: schemas.yml
+ * Schema configuration bean that maps the default schema configuration. see:
+ * schemas.yml
  */
 @EachProperty("bpa.schemas")
 @Data

@@ -281,7 +281,8 @@ public class ProofManager {
             @NonNull String presentationExchangeId, @NonNull ExchangeVersion version) {
         try {
             Optional<List<PresentationRequestCredentials>> matches;
-            // TODO this allows for paging, but there is no easy way to expose this in the UI
+            // TODO this allows for paging, but there is no easy way to expose this in the
+            // UI
             PresentationRequestCredentialsFilter filter = PresentationRequestCredentialsFilter.builder()
                     .count("100")
                     .build();
