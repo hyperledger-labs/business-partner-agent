@@ -19,6 +19,7 @@ package org.hyperledger.bpa.impl.aries.proof;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.CollectionUtils;
+import io.micronaut.core.util.StringUtils;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.NonNull;
@@ -56,12 +57,14 @@ public class ProverLDManager extends BaseLDManager {
 
         Map<UUID, DIFField> fields = buildDifFields(credEx.credentialAttributesToMap());
 
-        String name = credEx.getSchema() != null ? credEx.getSchema().resolveSchemaLabelEscaped()
+        String descriptorId = credEx.getSchema() != null ? credEx.getSchema().resolveSchemaLabelEscaped()
                 : UUID.randomUUID().toString();
+        String descriptorName = credEx.getSchema() != null ? credEx.getSchema().resolveSchemaLabel()
+                : descriptorId;
         V2DIFProofRequest.PresentationDefinition.InputDescriptors id1 = V2DIFProofRequest.PresentationDefinition.InputDescriptors
                 .builder()
-                .id(name)
-                .name(name)
+                .id(descriptorId)
+                .name(descriptorName)
                 .schema(referentToDescriptor(Objects.requireNonNull(credEx.getReferent())))
                 .constraints(V2DIFProofRequest.PresentationDefinition.Constraints.builder()
                         .isHolder(buildDifHolder(fields.keySet()))
@@ -101,6 +104,8 @@ public class ProverLDManager extends BaseLDManager {
     private Map<UUID, DIFField> buildDifFields(@NonNull Map<String, String> ldAttributes) {
         return ldAttributes.entrySet()
                 .stream()
+                .filter(e -> StringUtils.isNotEmpty(e.getValue()))
+                .filter(e -> !"type".equalsIgnoreCase(e.getKey()))
                 .map(e -> pair(e.getKey(), DIFField.Filter.builder()
                         ._const(e.getValue())
                         .build()))
