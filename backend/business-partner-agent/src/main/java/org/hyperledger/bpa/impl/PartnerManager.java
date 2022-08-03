@@ -85,6 +85,11 @@ public class PartnerManager {
         return partners;
     }
 
+    public Page<PartnerAPI> getPartnerByInvitation(
+          @NonNull Pageable pageable){
+      return repo.findByStateNotEquals(ConnectionState.INVITATION, pageable).map(converter::toAPIObject);
+    }
+
     public Optional<PartnerAPI> getPartnerById(@NonNull UUID id) {
         return repo.findById(id).map(converter::toAPIObject);
     }

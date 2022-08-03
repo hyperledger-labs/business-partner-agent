@@ -26,8 +26,10 @@
         show-all-headers
         :indicateNew="true"
         :showInvitations="showInvitations"
+        ref="partnerList"
         :refresh="refresh"
         @refreshed="refresh = false"
+        @changed="refreshPartners"
       />
       <v-card-actions>
         <v-btn
@@ -79,6 +81,11 @@ export default {
       refresh: false,
       showInvitations: false,
     };
+  },
+  methods: {
+    refreshPartners() {
+      this.$refs.partnerList.fetch();
+    },
   },
 };
 </script>

@@ -95,15 +95,20 @@ public class PartnerController {
      *
      * @param pc       {@link PaginationCommand}
      * @param schemaId Filter Partners by schema id
+     * @param showInvitations Filter Partners by connection state
      * @return list of partners
      */
     @Get("{?pc*}")
     public HttpResponse<Page<PartnerAPI>> getPartners(@Valid @Nullable PaginationCommand pc,
-            @Parameter(description = "schema id") @Nullable @QueryValue String schemaId) {
+            @Parameter(description = "schema id") @Nullable @QueryValue String schemaId,
+            @QueryValue boolean showInvitations) {
         if (StringUtils.isNotBlank(schemaId)) {
             List<PartnerAPI> issuersFor = credLookup.getIssuersFor(schemaId);
             return HttpResponse
                     .ok(Page.of(issuersFor, pc != null ? pc.toPageable() : Pageable.unpaged(), issuersFor.size()));
+        }
+        if (!showInvitations){
+          return HttpResponse.ok(pm.getPartnerByInvitation(pc != null ? pc.toPageable() : Pageable.unpaged()));
         }
         return HttpResponse.ok(pm.getPartners(pc != null ? pc.toPageable() : Pageable.unpaged()));
     }

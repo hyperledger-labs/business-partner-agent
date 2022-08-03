@@ -13,7 +13,7 @@
       v-model="selected"
       :loading="isBusy"
       :headers="headers"
-      :items="filteredData"
+      :items="items"
       :show-select="selectable"
       :options.sync="options"
       :server-items-length="totalNumberOfElements"
@@ -144,13 +144,13 @@ export default {
     expertMode() {
       return this.$store.getters.getExpertMode;
     },
-    filteredData() {
-      return !this.showInvitations
-        ? this.items.filter((partner: PartnerAPI & { address: string }) => {
-            return partner.state !== PartnerStates.INVITATION.value;
-          })
-        : this.items;
-    },
+    // filteredData() {
+    //   return !this.showInvitations
+    //     ? this.items.filter((partner: PartnerAPI & { address: string }) => {
+    //         return partner.state !== PartnerStates.INVITATION.value;
+    //       })
+    //     : this.items;
+    // },
     partnerNotifications() {
       return this.$store.getters.partnerNotifications;
     },
@@ -192,6 +192,7 @@ export default {
       try {
         const response = await partnerService.getPartners(
           this.onlyIssuersForSchema,
+          this.showInvitations,
           params
         );
         if (response.status === 200) {

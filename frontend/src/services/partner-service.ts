@@ -32,12 +32,14 @@ export default {
   // Query used only for partners that can issue credentials of specified schema
   getPartners(
     schemaId?: string,
+    showInvitations?: string,
     params: URLSearchParams = new URLSearchParams()
   ): Promise<AxiosResponse<Page<PartnerAPI[]>>> {
     let query = "";
-    if (schemaId && schemaId.length > 0) {
-      query = `?schemaId=${schemaId}`;
-    }
+    query =
+      schemaId && schemaId.length > 0
+        ? `?schemaId=${schemaId}&showInvitations=${showInvitations}`
+        : `?showInvitations=${showInvitations}`;
     return appAxios().get(`${ApiRoutes.PARTNERS}${query}`, {
       params: params,
     });
@@ -92,6 +94,16 @@ export default {
   ): Promise<AxiosResponse<Page<AriesProofExchange[]>>> {
     params.set("partnerId", id);
     return appAxios().get(`${ApiRoutes.PARTNERS}/${id}/proof-exchanges`, {
+      params: params,
+    });
+  },
+  // getPartnersByInvitation(
+  getPartnersByInvitation(
+    invitation: string,
+    params: URLSearchParams = new URLSearchParams()
+  ): Promise<AxiosResponse<Page<PartnerAPI[]>>> {
+    const query = `invitations=${invitation}`;
+    return appAxios().get(`${ApiRoutes.PARTNERS}?${query}`, {
       params: params,
     });
   },

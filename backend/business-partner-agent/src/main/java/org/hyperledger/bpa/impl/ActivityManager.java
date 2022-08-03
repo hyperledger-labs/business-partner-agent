@@ -83,7 +83,6 @@ public class ActivityManager {
         }
 
         return activities.map(this::convert);
-//          stream().map(this::convert).collect(Collectors.toList());
     }
 
     public void addPartnerRequestReceivedTask(@NonNull Partner partner) {
