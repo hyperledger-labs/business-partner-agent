@@ -16,6 +16,18 @@ bpa:
       restrictions:
         - issuerDid: "${bpa.did.prefix}5mwQSWnRePrZ3oF67C4KqD"
           label: "Commercial Register"
+    permanent-resident:
+      id: "https://w3id.org/citizenship/v1"
+      type: "json_ld"
+      label: "Permanent Resident"
+      defaultAttributeName: "givenName"
+      ldType: "PermanentResident"
+      attributes:
+        - "givenName"
+        - "familyName"
+        - "gender"
+        - "birthCountry"
+        - "birthDate"
   tags:
     - "myInitTag"
     - "myOtherInitTag"

@@ -367,6 +367,18 @@ public class ConnectionManager {
                                         record.getPresentationExchangeId(), e);
                             }
                         }));
+                // TODO needed, but needs new client release
+//                ac.presentProofV2Records(V2PresentProofRecordsFilter
+//                        .builder()
+//                        .connectionId(connectionId)
+//                        .build()).ifPresent(records -> records.forEach(record -> {
+//                            try {
+//                                ac.presentProofV2RecordsRemove(record.getPresentationExchangeId());
+//                            } catch (IOException | AriesException e) {
+//                                log.error("Could not delete v2 presentation exchange record: {}",
+//                                        record.getPresentationExchangeId(), e);
+//                            }
+//                        }));
                 ac.issueCredentialRecords(IssueCredentialRecordsFilter
                         .builder()
                         .connectionId(connectionId)
