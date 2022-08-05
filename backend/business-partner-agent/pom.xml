@@ -59,14 +59,9 @@
             <artifactId>micronaut-data-jdbc</artifactId>
             <version>${micronaut.data.version}</version>
             <exclusions>
-                <!-- micronaut-data >= 3.5.0 -->
                 <exclusion>
                     <groupId>javax.transaction</groupId>
                     <artifactId>javax.transaction-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>jakarta.transaction</groupId>
-                    <artifactId>jakarta.transaction-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -112,7 +107,7 @@
         <dependency><!-- Overwrite for jakarta-annotations-api -->
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-annotations-api</artifactId>
-            <version>10.1.0-M16</version>
+            <version>10.1.0-M17</version>
         </dependency>
 
         <!-- Logging -->
@@ -133,7 +128,7 @@
         <dependency>
             <groupId>network.idu.acapy</groupId>
             <artifactId>aries-client-python</artifactId>
-            <version>0.7.26</version>
+            <version>0.7.27-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.hyperledger.business-partner-agent</groupId>
@@ -452,7 +447,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.2.0</version>
+                        <version>3.3.0</version>
                         <executions>
                             <execution>
                                 <id>copy-frontend-resources</id>

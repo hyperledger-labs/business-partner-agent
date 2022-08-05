@@ -112,8 +112,12 @@ public class OOBCredentialOffer {
 
         Map<String, String> document = conv.toStringMap(req.getDocument());
 
-        V1CredentialFreeOfferHelper.CredentialFreeOffer freeOffer = h
-                .buildFreeOffer(dbCredDef.getCredentialDefinitionId(), document);
+        V1CredentialFreeOfferHelper.CredentialFreeOffer freeOffer;
+        if (req.exchangeIsV1()) {
+            freeOffer = h.buildFreeOffer(dbCredDef.getCredentialDefinitionId(), document);
+        } else {
+            freeOffer = h.buildFreeOfferIndyV2(dbCredDef.getCredentialDefinitionId(), document);
+        }
 
         log.debug("{}", GsonConfig.defaultNoEscaping().toJson(freeOffer));
 

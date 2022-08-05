@@ -17,12 +17,14 @@
  */
 package org.hyperledger.bpa.controller.api.issuer;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.micronaut.core.annotation.Introspected;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hyperledger.aries.api.ExchangeVersion;
 import org.hyperledger.bpa.persistence.model.Tag;
 
 import javax.validation.constraints.NotBlank;
@@ -46,4 +48,11 @@ public class IssueOOBCredentialRequest {
     @JsonRawValue
     @Schema(example = "{}")
     private JsonNode document;
+
+    private ExchangeVersion exchangeVersion;
+
+    @JsonIgnore
+    public boolean exchangeIsV1() {
+        return exchangeVersion == null || ExchangeVersion.V1.equals(exchangeVersion);
+    }
 }

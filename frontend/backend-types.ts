@@ -23,11 +23,7 @@ export interface paths {
     get: operations["getRuntimeConfig"];
   };
   "/api/admin/endpoints/register": {
-    /**
-     * Trigger the backend to write configured endpoints to the ledger. TAA digest
-     *  has to be passed to explicitly confirm prior TTA acceptance by the user for
-     *  this ledger interaction / session.
-     */
+    /** Trigger the backend to write configured endpoints to the ledger. TAA digest has to be passed to explicitly confirm prior TTA acceptance by the user for this ledger interaction / session. */
     post: operations["registerEndpoints"];
   };
   "/api/admin/endpoints/registrationRequired": {
@@ -44,10 +40,7 @@ export interface paths {
     get: operations["getSchema"];
     /** Update a schema configuration */
     put: operations["updateSchema"];
-    /**
-     * Removes a schema configuration. Doing so means the BPA will not process
-     *  requests containing this schema id anymore.
-     */
+    /** Removes a schema configuration. Doing so means the BPA will not process requests containing this schema id anymore. */
     delete: operations["removeSchema"];
   };
   "/api/admin/schema/{id}/trustedIssuer": {
@@ -109,17 +102,11 @@ export interface paths {
     get: operations["getCredentialExchange"];
   };
   "/api/issuer/exchanges/{id}/decline-proposal": {
-    /**
-     * Manual credential exchange: Issuer declines credential proposal received from
-     *  the holder
-     */
+    /** Manual credential exchange: Issuer declines credential proposal received from the holder */
     put: operations["declineCredentialExchange"];
   };
   "/api/issuer/exchanges/{id}/re-issue": {
-    /**
-     * Send holder a new credential offer based on an existing (revoked) exchange
-     *  record
-     */
+    /** Send holder a new credential offer based on an existing (revoked) exchange record */
     post: operations["reIssueCredential"];
   };
   "/api/issuer/exchanges/{id}/revoke": {
@@ -127,17 +114,11 @@ export interface paths {
     put: operations["revokeCredential"];
   };
   "/api/issuer/exchanges/{id}/send-offer": {
-    /**
-     * Manual credential exchange step two: Issuer sends credential counter offer to
-     *  holder (in reference to a proposal)
-     */
+    /** Manual credential exchange step two: Issuer sends credential counter offer to holder (in reference to a proposal) */
     put: operations["sendCredentialOffer"];
   };
   "/api/issuer/issue-credential/oob-attachment": {
-    /**
-     * Issue OOB credential step 1 - prepares credential offer and returns URL for
-     *  use within the barcode
-     */
+    /** Issue OOB credential step 1 - prepares credential offer and returns URL for use within the barcode */
     post: operations["issueCredentialConnectionLess"];
   };
   "/api/issuer/issue-credential/send": {
@@ -229,11 +210,7 @@ export interface paths {
     get: operations["getPartnerProofs"];
   };
   "/api/partners/{id}/proof-request": {
-    /**
-     * Request proof from partner
-     *
-     *               ProofExchangeController#requestProof
-     */
+    /** Request proof from partner */
     post: operations["requestProof"];
   };
   "/api/partners/{id}/proof-request/{templateId}": {
@@ -241,11 +218,7 @@ export interface paths {
     put: operations["invokeProofRequestByTemplate"];
   };
   "/api/partners/{id}/proof-send": {
-    /**
-     * Send proof to partner
-     *
-     *               ProofExchangeController#sendProof
-     */
+    /** Send proof to partner */
     post: operations["sendProof"];
   };
   "/api/partners/{id}/refresh": {
@@ -271,10 +244,7 @@ export interface paths {
     post: operations["declinePresentProofRequest"];
   };
   "/api/proof-exchanges/{id}/matching-credentials": {
-    /**
-     * Manual proof exchange flow. Get matching wallet credentials before sending or
-     *  declining the proof request.
-     */
+    /** Manual proof exchange flow. Get matching wallet credentials before sending or declining the proof request. */
     get: operations["getMatchingCredentials"];
   };
   "/api/proof-exchanges/{id}/matching-credentials-ld": {
@@ -317,10 +287,7 @@ export interface paths {
     delete: operations["deleteCredential"];
   };
   "/api/wallet/credential/{id}/accept-offer": {
-    /**
-     * Manual credential exchange step four: Holder accepts credential offer from
-     *  issuer
-     */
+    /** Manual credential exchange step four: Holder accepts credential offer from issuer */
     put: operations["acceptCredentialOffer"];
   };
   "/api/wallet/credential/{id}/decline-offer": {
@@ -699,6 +666,7 @@ export interface components {
       invitation: components["schemas"]["InvitationMessage"];
       invitationId: string;
       invitationUrl: string;
+      oobId: string;
       state: string;
       trace: boolean;
       updatedAt: string;
@@ -741,6 +709,29 @@ export interface components {
        * @example {}
        */
       document?: { [key: string]: unknown }[];
+      exchangeVersion?: components["schemas"]["ExchangeVersion"];
+    };
+    JsonArray: components["schemas"]["JsonElement"] & {
+      empty?: boolean;
+      asNumber?: components["schemas"]["Number"];
+      asString?: string;
+      /** Format: double */
+      asDouble?: number;
+      asBigDecimal?: number;
+      asBigInteger?: number;
+      /** Format: float */
+      asFloat?: number;
+      /** Format: int64 */
+      asLong?: number;
+      /** Format: int32 */
+      asInt?: number;
+      /** Format: byte */
+      asByte?: string;
+      /** @deprecated */
+      asCharacter?: string;
+      /** Format: int32 */
+      asShort?: number;
+      asBoolean?: boolean;
     };
     JsonElement: {
       jsonArray?: boolean;
@@ -748,7 +739,7 @@ export interface components {
       jsonPrimitive?: boolean;
       jsonNull?: boolean;
       asJsonObject?: components["schemas"]["JsonObject"];
-      asJsonArray?: { [key: string]: unknown }[];
+      asJsonArray?: components["schemas"]["JsonArray"];
       asJsonPrimitive?: components["schemas"]["JsonPrimitive"];
       asJsonNull?: components["schemas"]["JsonNull"];
       asBoolean?: boolean;
@@ -879,6 +870,41 @@ export interface components {
     };
     Number: { [key: string]: unknown };
     Object: { [key: string]: unknown };
+    Page_AriesCredential_: components["schemas"]["Slice_AriesCredential_"] & {
+      /** Format: int64 */
+      totalSize: number;
+      /** Format: int32 */
+      totalPages?: number;
+    };
+    Page_AriesProofExchange_: components["schemas"]["Slice_AriesProofExchange_"] & {
+      /** Format: int64 */
+      totalSize: number;
+      /** Format: int32 */
+      totalPages?: number;
+    };
+    Page_CredEx_: components["schemas"]["Slice_CredEx_"] & {
+      /** Format: int64 */
+      totalSize: number;
+      /** Format: int32 */
+      totalPages?: number;
+    };
+    Page_MyDocumentAPI_: components["schemas"]["Slice_MyDocumentAPI_"] & {
+      /** Format: int64 */
+      totalSize: number;
+      /** Format: int32 */
+      totalPages?: number;
+    };
+    Pageable: components["schemas"]["Sort"] & {
+      /** Format: int32 */
+      number?: number;
+      /** Format: int32 */
+      size: number;
+      /** Format: int64 */
+      offset?: number;
+      sort: components["schemas"]["Sort"];
+      unpaged?: boolean;
+      sorted?: boolean;
+    };
     PaginationCommand: {
       /** Format: int32 */
       size?: number;
@@ -902,10 +928,7 @@ export interface components {
       lastSeen?: string | null;
       /** @description The fully qualified did like did:sov:123 */
       did?: string;
-      /**
-       * @description If the partner supports aries, set if the partner has an endpoint that
-       *  supports did communication
-       */
+      /** @description If the partner supports aries, set if the partner has an endpoint that supports did communication */
       ariesSupport?: boolean;
       /** @description aries connection id */
       connectionId?: string | null;
@@ -913,10 +936,7 @@ export interface components {
       state?: components["schemas"]["ConnectionState"] | null;
       /** @description history of aries connection states - excluding ping */
       stateToTimestamp?: unknown;
-      /**
-       * @description aries connection label, if incoming connection set by the partner via the
-       *  --label flag, or through rest overwrite
-       */
+      /** @description aries connection label, if incoming connection set by the partner via the --label flag, or through rest overwrite */
       label?: string | null;
       /** @description The partners alias or name, always set by a user in the UI */
       alias?: string | null;
@@ -928,31 +948,18 @@ export interface components {
       trustPing?: boolean | null;
       /** @description Aries OOB invitation message id */
       invitationMsgId?: string | null;
-      /**
-       * @description The Partners Public Profile VerifiablePresentation to be used in the
-       *  PartnerAPI
-       */
+      /** @description The Partners Public Profile VerifiablePresentation to be used in the PartnerAPI */
       verifiablePresentation?:
         | components["schemas"]["VerifiablePresentation_VerifiableCredential.VerifiableIndyCredential_"]
         | null;
       /** @description credential offer or proof request when using OOB invitations with attachments */
       invitationRecord?: components["schemas"]["InvitationRecord"] | null;
-      /**
-       * @description Serialized PartnerCredentialType to allow filtering partners by
-       *  supported credentials
-       */
+      /** @description Serialized PartnerCredentialType to allow filtering partners by supported credentials */
       supportedCredentials?: { [key: string]: unknown } | null;
       tags?: components["schemas"]["Tag"][];
     };
     PartnerAPI: {
-      /**
-       * @description Virtual partner name field that is calculated from the state of the Partner
-       *  in the following order: 1. Alias set by a user (set when creating the
-       *  connection, or editable when clicking on the pencil in the partners details)
-       *  2. Legal Name from public profile if set 3. aca-py label, --label flag or
-       *  overwritten when creating the connection with the label option 4. did, public
-       *  or peer
-       */
+      /** @description Virtual partner name field that is calculated from the state of the Partner in the following order: 1. Alias set by a user (set when creating the connection, or editable when clicking on the pencil in the partners details) 2. Legal Name from public profile if set 3. aca-py label, --label flag or overwritten when creating the connection with the label option 4. did, public or peer */
       name?: string;
       id?: string;
       /** Format: int64 */
@@ -1076,6 +1083,7 @@ export interface components {
     /** @enum {string} */
     ProofType: "Ed25519Signature2018" | "BbsBlsSignature2020";
     RequestCredentialRequest: {
+      /** Format: uuid */
       documentId?: string;
       exchangeVersion?: components["schemas"]["ExchangeVersion"];
     };
@@ -1178,6 +1186,70 @@ export interface components {
       myCredentialId?: string;
       exchangeVersion?: components["schemas"]["ExchangeVersion"];
     };
+    Slice_AriesCredential_: {
+      content: components["schemas"]["AriesCredential"][];
+      pageable: components["schemas"]["Pageable"];
+      /** Format: int32 */
+      pageNumber?: number;
+      /** Format: int64 */
+      offset?: number;
+      /** Format: int32 */
+      size?: number;
+      empty?: boolean;
+      /** Format: int32 */
+      numberOfElements?: number;
+    };
+    Slice_AriesProofExchange_: {
+      content: components["schemas"]["AriesProofExchange"][];
+      pageable: components["schemas"]["Pageable"];
+      /** Format: int32 */
+      pageNumber?: number;
+      /** Format: int64 */
+      offset?: number;
+      /** Format: int32 */
+      size?: number;
+      empty?: boolean;
+      /** Format: int32 */
+      numberOfElements?: number;
+    };
+    Slice_CredEx_: {
+      content: components["schemas"]["CredEx"][];
+      pageable: components["schemas"]["Pageable"];
+      /** Format: int32 */
+      pageNumber?: number;
+      /** Format: int64 */
+      offset?: number;
+      /** Format: int32 */
+      size?: number;
+      empty?: boolean;
+      /** Format: int32 */
+      numberOfElements?: number;
+    };
+    Slice_MyDocumentAPI_: {
+      content: components["schemas"]["MyDocumentAPI"][];
+      pageable: components["schemas"]["Pageable"];
+      /** Format: int32 */
+      pageNumber?: number;
+      /** Format: int64 */
+      offset?: number;
+      /** Format: int32 */
+      size?: number;
+      empty?: boolean;
+      /** Format: int32 */
+      numberOfElements?: number;
+    };
+    Sort: {
+      sorted?: boolean;
+      orderBy: components["schemas"]["Sort.Order"][];
+    };
+    "Sort.Order": {
+      ignoreCase: boolean;
+      direction: components["schemas"]["Sort.Order.Direction"];
+      property: string;
+      ascending?: boolean;
+    };
+    /** @enum {string} */
+    "Sort.Order.Direction": "ASC" | "DESC";
     "StateChangeDecorator.StateToTimestamp_ConnectionState_": {
       stateToTimestamp?: { [key: string]: string };
     };
@@ -1299,7 +1371,6 @@ export interface components {
 
 export interface operations {
   getDid: {
-    parameters: {};
     responses: {
       /** getDid 200 response */
       200: {
@@ -1329,7 +1400,6 @@ export interface operations {
   };
   /** Get runtime configuration */
   getRuntimeConfig: {
-    parameters: {};
     responses: {
       /** RuntimeConfig */
       200: {
@@ -1339,13 +1409,8 @@ export interface operations {
       };
     };
   };
-  /**
-   * Trigger the backend to write configured endpoints to the ledger. TAA digest
-   *  has to be passed to explicitly confirm prior TTA acceptance by the user for
-   *  this ledger interaction / session.
-   */
+  /** Trigger the backend to write configured endpoints to the ledger. TAA digest has to be passed to explicitly confirm prior TTA acceptance by the user for this ledger interaction / session. */
   registerEndpoints: {
-    parameters: {};
     responses: {
       /** HttpResponse */
       200: unknown;
@@ -1358,7 +1423,6 @@ export interface operations {
     };
   };
   isEndpointsWriteRequired: {
-    parameters: {};
     responses: {
       /** true if endpoint registration is required */
       200: {
@@ -1370,7 +1434,6 @@ export interface operations {
   };
   /** List configured schemas */
   listSchemas: {
-    parameters: {};
     responses: {
       /** list of SchemaAPI */
       200: {
@@ -1382,7 +1445,6 @@ export interface operations {
   };
   /** Import an existing indy or json-ld schema as schema configuration */
   addSchema: {
-    parameters: {};
     responses: {
       /** HttpResponse */
       200: {
@@ -1438,10 +1500,7 @@ export interface operations {
       };
     };
   };
-  /**
-   * Removes a schema configuration. Doing so means the BPA will not process
-   *  requests containing this schema id anymore.
-   */
+  /** Removes a schema configuration. Doing so means the BPA will not process requests containing this schema id anymore. */
   removeSchema: {
     parameters: {
       path: {
@@ -1523,7 +1582,6 @@ export interface operations {
   };
   /** Get TAA record (digest, text, version) */
   getTAARecord: {
-    parameters: {};
     responses: {
       /** TAARecord */
       200: {
@@ -1535,7 +1593,6 @@ export interface operations {
   };
   /** List configured tags */
   listTags: {
-    parameters: {};
     responses: {
       /** list of TagAPI */
       200: {
@@ -1547,7 +1604,6 @@ export interface operations {
   };
   /** Add a tag */
   addTag: {
-    parameters: {};
     responses: {
       /** HttpResponse */
       200: {
@@ -1623,7 +1679,6 @@ export interface operations {
   };
   /** Create a connection-invitation */
   requestConnectionInvitation: {
-    parameters: {};
     responses: {
       /** APICreateInvitationResponse */
       200: {
@@ -1641,7 +1696,6 @@ export interface operations {
   };
   /** Receive / accept invitation */
   acceptInvitation: {
-    parameters: {};
     responses: {
       /** MutableHttpResponse */
       200: {
@@ -1659,7 +1713,6 @@ export interface operations {
   };
   /** Check invitation (receive) */
   checkInvitation: {
-    parameters: {};
     responses: {
       /** MutableHttpResponse */
       200: {
@@ -1677,7 +1730,6 @@ export interface operations {
   };
   /** List credential definitions, items that I can issue */
   listCredDefs: {
-    parameters: {};
     responses: {
       /** list of SchemaAPI */
       200: {
@@ -1689,7 +1741,6 @@ export interface operations {
   };
   /** Create a new indy credential definition, and send it to the ledger */
   createCredDef: {
-    parameters: {};
     responses: {
       /** CredDef */
       200: {
@@ -1734,7 +1785,7 @@ export interface operations {
       /** list of CredEx */
       200: {
         content: {
-          "application/json": components["schemas"]["CredEx"][];
+          "application/json": components["schemas"]["Page_CredEx_"];
         };
       };
     };
@@ -1755,10 +1806,7 @@ export interface operations {
       };
     };
   };
-  /**
-   * Manual credential exchange: Issuer declines credential proposal received from
-   *  the holder
-   */
+  /** Manual credential exchange: Issuer declines credential proposal received from the holder */
   declineCredentialExchange: {
     parameters: {
       path: {
@@ -1777,10 +1825,7 @@ export interface operations {
       };
     };
   };
-  /**
-   * Send holder a new credential offer based on an existing (revoked) exchange
-   *  record
-   */
+  /** Send holder a new credential offer based on an existing (revoked) exchange record */
   reIssueCredential: {
     parameters: {
       path: {
@@ -1810,10 +1855,7 @@ export interface operations {
       };
     };
   };
-  /**
-   * Manual credential exchange step two: Issuer sends credential counter offer to
-   *  holder (in reference to a proposal)
-   */
+  /** Manual credential exchange step two: Issuer sends credential counter offer to holder (in reference to a proposal) */
   sendCredentialOffer: {
     parameters: {
       path: {
@@ -1836,12 +1878,8 @@ export interface operations {
       };
     };
   };
-  /**
-   * Issue OOB credential step 1 - prepares credential offer and returns URL for
-   *  use within the barcode
-   */
+  /** Issue OOB credential step 1 - prepares credential offer and returns URL for use within the barcode */
   issueCredentialConnectionLess: {
-    parameters: {};
     responses: {
       /** APICreateInvitationResponse */
       200: {
@@ -1859,7 +1897,6 @@ export interface operations {
   };
   /** Auto credential exchange: Issuer sends credential to holder */
   issueCredential: {
-    parameters: {};
     responses: {
       /** HttpResponse */
       200: {
@@ -1877,7 +1914,6 @@ export interface operations {
   };
   /** Create a new schema on the indy ledger and import it */
   createSchema: {
-    parameters: {};
     responses: {
       /** SchemaAPI */
       200: {
@@ -1895,7 +1931,6 @@ export interface operations {
   };
   /** Manual trigger to send an invitation url by email */
   sendInvitationMail: {
-    parameters: {};
     responses: {
       /** HTTP status */
       200: unknown;
@@ -1909,7 +1944,6 @@ export interface operations {
   };
   /** List message templates */
   listMessageTemplates: {
-    parameters: {};
     responses: {
       /** list of MessageTemplateCmd.ApiMessageTemplate */
       200: {
@@ -1921,7 +1955,6 @@ export interface operations {
   };
   /** Add new message template */
   addMessageTemplate: {
-    parameters: {};
     responses: {
       /** MessageTemplateCmd.ApiMessageTemplate */
       200: {
@@ -1971,7 +2004,6 @@ export interface operations {
   };
   /** List message trigger configuration */
   listMessageTrigger: {
-    parameters: {};
     responses: {
       /** list of MessageTriggerConfigCmd.ApiTriggerConfig */
       200: {
@@ -1983,7 +2015,6 @@ export interface operations {
   };
   /** ASdd new message trigger configuration */
   addMessageTrigger: {
-    parameters: {};
     responses: {
       /** MessageTriggerConfigCmd.TriggerConfigRequest */
       200: {
@@ -2033,7 +2064,6 @@ export interface operations {
   };
   /** List user info */
   listUserInfo: {
-    parameters: {};
     responses: {
       /** list of MessageUserInfoCmd.ApiUserInfo */
       200: {
@@ -2045,7 +2075,6 @@ export interface operations {
   };
   /** Add new user info configuration */
   addUserInfo: {
-    parameters: {};
     responses: {
       /** MessageUserInfoCmd.ApiUserInfo */
       200: {
@@ -2112,7 +2141,6 @@ export interface operations {
   };
   /** Add a new partner */
   addPartner: {
-    parameters: {};
     responses: {
       /** PartnerAPI */
       200: {
@@ -2292,8 +2320,12 @@ export interface operations {
   /** List proof exchange records */
   getPartnerProofs: {
     parameters: {
+      query: {
+        /** PaginationCommand */
+        pc?: components["schemas"]["PaginationCommand"] | null;
+      };
       path: {
-        /** UUID the partner id */
+        /** partner id */
         id: string;
       };
     };
@@ -2301,16 +2333,12 @@ export interface operations {
       /** HTTP status */
       200: {
         content: {
-          "application/json": components["schemas"]["AriesProofExchange"][];
+          "application/json": components["schemas"]["Page_AriesProofExchange_"];
         };
       };
     };
   };
-  /**
-   * Request proof from partner
-   *
-   *               ProofExchangeController#requestProof
-   */
+  /** Request proof from partner */
   requestProof: {
     parameters: {
       path: {
@@ -2350,11 +2378,7 @@ export interface operations {
       };
     };
   };
-  /**
-   * Send proof to partner
-   *
-   *               ProofExchangeController#sendProof
-   */
+  /** Send proof to partner */
   sendProof: {
     parameters: {
       path: {
@@ -2392,7 +2416,6 @@ export interface operations {
   };
   /** Request proof from partner */
   requestProof_1: {
-    parameters: {};
     responses: {
       /** HTTP status */
       200: unknown;
@@ -2406,7 +2429,6 @@ export interface operations {
   };
   /** Send proof to partner */
   sendProof_1: {
-    parameters: {};
     responses: {
       /** HTTP status */
       200: unknown;
@@ -2467,10 +2489,7 @@ export interface operations {
       };
     };
   };
-  /**
-   * Manual proof exchange flow. Get matching wallet credentials before sending or
-   *  declining the proof request.
-   */
+  /** Manual proof exchange flow. Get matching wallet credentials before sending or declining the proof request. */
   getMatchingCredentials: {
     parameters: {
       path: {
@@ -2523,7 +2542,6 @@ export interface operations {
   };
   /** List configured templates */
   listProofTemplates: {
-    parameters: {};
     responses: {
       /** list of ProofTemplate */
       200: {
@@ -2535,7 +2553,6 @@ export interface operations {
   };
   /** Add a new proof template */
   addProofTemplate: {
-    parameters: {};
     responses: {
       /** ProofTemplate */
       200: {
@@ -2553,7 +2570,12 @@ export interface operations {
   };
   /** List configured proof condition operators */
   listKnownConditionOperators: {
-    parameters: {};
+    parameters: {
+      query: {
+        /** CredentialType filter operators by type */
+        type?: components["schemas"]["CredentialType"] | null;
+      };
+    };
     responses: {
       /** list of ValueOperators */
       200: {
@@ -2595,7 +2617,6 @@ export interface operations {
   };
   /** Get simple BPA information and usage statistics */
   getStats: {
-    parameters: {};
     responses: {
       /** BPAStats */
       200: {
@@ -2617,7 +2638,7 @@ export interface operations {
       /** list of AriesCredential */
       200: {
         content: {
-          "application/json": components["schemas"]["AriesCredential"][];
+          "application/json": components["schemas"]["Page_AriesCredential_"];
         };
       };
     };
@@ -2671,10 +2692,7 @@ export interface operations {
       200: unknown;
     };
   };
-  /**
-   * Manual credential exchange step four: Holder accepts credential offer from
-   *  issuer
-   */
+  /** Manual credential exchange step four: Holder accepts credential offer from issuer */
   acceptCredentialOffer: {
     parameters: {
       path: {
@@ -2731,14 +2749,13 @@ export interface operations {
       /** list of MyDocumentAPI */
       200: {
         content: {
-          "application/json": components["schemas"]["Object"][];
+          "application/json": components["schemas"]["Page_MyDocumentAPI_"];
         };
       };
     };
   };
   /** Add a document to the wallet */
   addDocument: {
-    parameters: {};
     responses: {
       /** HttpResponse */
       200: {
@@ -2808,7 +2825,6 @@ export interface operations {
     };
   };
   getMasterdata: {
-    parameters: {};
     responses: {
       /** getMasterdata 200 response */
       200: {

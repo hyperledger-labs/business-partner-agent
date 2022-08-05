@@ -57,14 +57,14 @@
         <log4j2.version>2.18.0</log4j2.version>
         <lombok.version>1.18.24</lombok.version>
         <lombok.maven.plugin.version>1.18.20.0</lombok.maven.plugin.version>
-        <micronaut.version>3.5.3</micronaut.version>
-        <micronaut.data.version>3.4.3</micronaut.data.version>
-        <micronaut.openapi.version>4.4.2</micronaut.openapi.version>
-        <micronaut.security.version>3.6.2</micronaut.security.version>
+        <micronaut.version>3.5.4</micronaut.version>
+        <micronaut.data.version>3.7.2</micronaut.data.version>
+        <micronaut.openapi.version>4.4.3</micronaut.openapi.version>
+        <micronaut.security.version>3.6.3</micronaut.security.version>
         <mockito.version>4.6.1</mockito.version>
         <okhttp.version>4.10.0</okhttp.version>
         <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
-        <pmd.version>6.47.0</pmd.version>
+        <pmd.version>6.48.0</pmd.version>
         <spotbugs.version>4.7.1</spotbugs.version>
         <testcontainers.version>1.17.3</testcontainers.version>
         <!-- Plugin Versions -->
@@ -137,7 +137,7 @@
             <dependency>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-core</artifactId>
-                <version>8.5.13</version>
+                <version>9.0.4</version>
             </dependency>
 
             <!-- Overwrites for vulnerable dependencies -->
@@ -290,7 +290,7 @@
             <plugin>
                 <groupId>net.revelc.code.formatter</groupId>
                 <artifactId>formatter-maven-plugin</artifactId>
-                <version>2.19.0</version>
+                <version>2.20.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -342,7 +342,7 @@
                 <plugin>
                     <groupId>io.micronaut.build</groupId>
                     <artifactId>micronaut-maven-plugin</artifactId>
-                    <version>3.3.1</version>
+                    <version>3.4.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

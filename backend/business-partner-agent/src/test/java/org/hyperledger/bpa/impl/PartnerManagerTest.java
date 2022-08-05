@@ -19,6 +19,7 @@ package org.hyperledger.bpa.impl;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
+import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeRole;
 import org.hyperledger.aries.api.issue_credential_v1.CredentialExchangeState;
 import org.hyperledger.bpa.api.CredentialType;
 import org.hyperledger.bpa.controller.api.partner.UpdatePartnerRequest;
@@ -116,21 +117,42 @@ public class PartnerManagerTest {
         BPASchema schema = schemaRepo.save(BPASchema.builder()
                 .schemaId("mySchema")
                 .schemaAttributeName("test")
-                .type(CredentialType.JSON_LD)
+                .type(CredentialType.INDY)
                 .build());
-        BPACredentialExchange credEx = holderRepo.save(BPACredentialExchange
+        BPACredentialExchange asIssuerSuccess = holderRepo.save(BPACredentialExchange
                 .builder()
                 .partner(p)
                 .schema(schema)
                 .credentialExchangeId("1")
-                .threadId("2")
+                .threadId("1")
                 .state(CredentialExchangeState.CREDENTIAL_ACKED)
                 .build());
+        BPACredentialExchange asHolderSuccess = holderRepo.save(BPACredentialExchange
+                .builder()
+                .partner(p)
+                .schema(schema)
+                .credentialExchangeId("2")
+                .threadId("2")
+                .role(CredentialExchangeRole.HOLDER)
+                .state(CredentialExchangeState.CREDENTIAL_ACKED)
+                .build());
+        BPACredentialExchange asHolderFailure = holderRepo.save(BPACredentialExchange
+                .builder()
+                .partner(p)
+                .schema(schema)
+                .credentialExchangeId("3")
+                .threadId("3")
+                .role(CredentialExchangeRole.HOLDER)
+                .state(CredentialExchangeState.ABANDONED)
+                .build());
+
         partnerManager.removePartnerById(p.getId());
 
         Assertions.assertTrue(partnerRepo.findById(p.getId()).isEmpty());
-        Assertions.assertTrue(holderRepo.findById(credEx.getId()).isEmpty());
-        Assertions.assertEquals(0, holderRepo.count());
+        Assertions.assertTrue(holderRepo.findById(asIssuerSuccess.getId()).isEmpty());
+        Assertions.assertTrue(holderRepo.findById(asHolderFailure.getId()).isEmpty());
+        Assertions.assertNull(holderRepo.findById(asHolderSuccess.getId()).orElseThrow().getPartner());
+        Assertions.assertEquals(1, holderRepo.count());
     }
 
     private void checkTagOnPartner(UUID partnerId, String... tagName) {
