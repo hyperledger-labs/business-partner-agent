@@ -65,9 +65,9 @@ public class OOBPresentationExchange extends OOBBase {
         PresentProofRequest proofRequest = templateManager.templateToIndyProofRequest(req.getTemplateId());
         PresentationFreeOfferHelper.PresentationFreeOffer freeOffer;
         if (req.exchangeIsV1()) {
-            freeOffer= h.buildV1Indy(proofRequest);
+            freeOffer = h.buildV1Indy(proofRequest.getProofRequest());
         } else {
-            freeOffer = h.buildV2Indy(proofRequest);
+            freeOffer = h.buildV2Indy(proofRequest.getProofRequest());
         }
 
         log.debug("{}", GsonConfig.defaultNoEscaping().toJson(freeOffer));

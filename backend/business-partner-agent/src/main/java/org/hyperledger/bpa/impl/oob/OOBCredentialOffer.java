@@ -29,7 +29,6 @@ import org.hyperledger.aries.api.issue_credential_v1.CredentialFreeOfferHelper;
 import org.hyperledger.aries.config.GsonConfig;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
-import org.hyperledger.bpa.controller.InvitationController;
 import org.hyperledger.bpa.controller.api.invitation.APICreateInvitationResponse;
 import org.hyperledger.bpa.controller.api.issuer.IssueOOBCredentialRequest;
 import org.hyperledger.bpa.impl.activity.DocumentValidator;

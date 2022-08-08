@@ -129,8 +129,8 @@ public class ProofExchangeController {
     }
 
     /**
-     * OOB presentation request step 1 - prepares presentation request and returns URL for
-     * use within the barcode
+     * OOB presentation request step 1 - prepares presentation request and returns
+     * URL for use within the barcode
      *
      * @param req {@link RequestOOBPresentationRequest}
      * @return {@link APICreateInvitationResponse}
