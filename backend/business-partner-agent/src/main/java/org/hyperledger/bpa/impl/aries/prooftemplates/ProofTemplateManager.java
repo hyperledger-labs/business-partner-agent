@@ -19,6 +19,8 @@ package org.hyperledger.bpa.impl.aries.prooftemplates;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.exceptions.DataAccessException;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import lombok.AllArgsConstructor;
@@ -29,6 +31,7 @@ import org.hyperledger.bpa.api.exception.DataPersistenceException;
 import org.hyperledger.bpa.api.exception.EntityNotFoundException;
 import org.hyperledger.bpa.api.exception.WrongApiUsageException;
 import org.hyperledger.bpa.config.BPAMessageSource;
+import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.impl.aries.proof.ProofManager;
 import org.hyperledger.bpa.impl.aries.schema.SchemaService;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
@@ -39,8 +42,6 @@ import org.hyperledger.bpa.persistence.repository.BPAProofTemplateRepository;
 import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 @AllArgsConstructor
 @Singleton
@@ -91,8 +92,10 @@ public class ProofTemplateManager {
         return repo.save(template);
     }
 
-    public Stream<BPAProofTemplate> listProofTemplates() {
-        return StreamSupport.stream(repo.findAll().spliterator(), false);
+    public Page<ProofTemplate> listProofTemplates(@Nullable String name, @NonNull Pageable pageable) {
+        Page<ProofTemplate> proofTemplates;
+        proofTemplates = repo.findByNameLike(name, pageable).map(BPAProofTemplate::toRepresentation);
+        return proofTemplates;
     }
 
     public void removeProofTemplate(@NonNull UUID templateId) {

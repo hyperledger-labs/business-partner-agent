@@ -137,7 +137,7 @@ Vue.prototype.$config = {
   store.dispatch("loadSchemas");
   store.dispatch("loadPartners");
   store.dispatch("loadTags");
-  store.dispatch("loadProofTemplates");
+  // store.dispatch("loadProofTemplates");
   store.dispatch("loadPartnerSelectList");
   store.dispatch("loadCredDefSelectList");
   await store.dispatch("loadSettings");

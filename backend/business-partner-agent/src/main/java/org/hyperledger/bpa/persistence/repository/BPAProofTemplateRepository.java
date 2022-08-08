@@ -17,13 +17,22 @@
  */
 package org.hyperledger.bpa.persistence.repository;
 
+import io.micronaut.context.annotation.Executable;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.query.builder.sql.Dialect;
-import io.micronaut.data.repository.CrudRepository;
+import io.micronaut.data.repository.PageableRepository;
+import lombok.NonNull;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 
 import java.util.UUID;
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-public interface BPAProofTemplateRepository extends CrudRepository<BPAProofTemplate, UUID> {
+public interface BPAProofTemplateRepository extends PageableRepository<BPAProofTemplate, UUID> {
+
+//  @Query("SELECT *, COUNT (*) FROM bpa_proof_template WHERE name LIKE name")
+  @Executable
+  Page<BPAProofTemplate> findByNameLike(@Nullable String name, @NonNull Pageable pageable);
 }

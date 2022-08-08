@@ -18,6 +18,8 @@
 package org.hyperledger.bpa.controller;
 
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.scheduling.TaskExecutors;
@@ -28,17 +30,16 @@ import io.micronaut.validation.Validated;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import org.hyperledger.bpa.api.CredentialType;
+import org.hyperledger.bpa.controller.api.PaginationCommand;
 import org.hyperledger.bpa.controller.api.prooftemplates.ProofTemplate;
 import org.hyperledger.bpa.impl.aries.prooftemplates.ProofTemplateManager;
 import org.hyperledger.bpa.persistence.model.BPAProofTemplate;
 import org.hyperledger.bpa.persistence.model.prooftemplate.ValueOperators;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Controller("/api/proof-templates")
 @Tag(name = "Proof Template Management")
@@ -53,15 +54,20 @@ public class ProofTemplateController {
     /**
      * List configured templates
      *
+     * @param pc        {@link PaginationCommand}
      * @return list of {@link ProofTemplate}
      */
-    @Get
-    public HttpResponse<List<ProofTemplate>> listProofTemplates() {
+    @Get("{?pc*}")
+    public HttpResponse<Page<ProofTemplate>> listProofTemplates(
+            @Nullable String name,
+            @Valid @Nullable PaginationCommand pc) {
         return HttpResponse.ok(
-                proofTemplateManager.listProofTemplates()
-                        .map(BPAProofTemplate::toRepresentation)
-                        .collect(Collectors.toList()));
+                proofTemplateManager.listProofTemplates(
+                  name,
+                  pc != null ? pc.toPageable() : Pageable.unpaged()));
     }
+//    @Get
+//    public HttpResponse<Page>
 
     /**
      * Get template by id

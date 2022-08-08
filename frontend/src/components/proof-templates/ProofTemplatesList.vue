@@ -15,17 +15,22 @@ create new ones
       v-model="search"
       append-icon="$vuetify.icons.search"
       :label="$t('app.search')"
+      @change="updateProofTemplates"
       single-line
       hide-details
     ></v-text-field>
     <v-data-table
+      :hide-default-footer="hideFooter"
+      :server-items-length="totalNumberOfElements"
+      :options.sync="options"
       v-model="inputValue"
-      :loading="isLoading"
+      :loading="isBusy"
       :show-select="showCheckboxes"
-      :hide-default-footer="proofTemplates.length < 10"
       :headers="headers"
       :items="proofTemplates"
       :search="search"
+      sort-by="createdAt"
+      sort-desc
       single-select
       @click:row="viewProofTemplate"
     >
@@ -38,11 +43,15 @@ create new ones
 <script lang="ts">
 import store from "@/store";
 import { EventBus } from "@/main";
-import { ProofTemplate, proofTemplateService } from "@/services";
+import {
+  Page,
+  PageOptions,
+  ProofTemplate,
+  proofTemplateService,
+} from "@/services";
 
 export default {
   props: {
-    isLoading: Boolean,
     showCheckboxes: {
       type: Boolean,
       default: false,
@@ -55,10 +64,24 @@ export default {
       dialog: false,
       proofTemplate: {},
       dirty: false,
+      isBusy: true,
+      hideFooter: true,
+      totalNumberOfElements: 0,
+      options: {},
     };
   },
+  watch: {
+    options: {
+      handler() {
+        this.updateProofTemplates();
+      },
+    },
+  },
+
+  // TODO: Store dispatch abkoppeln ähnlich wie bei den anderen componenten.
   created() {
-    this.$store.dispatch("loadProofTemplates");
+    // this.$store.dispatch("loadProofTemplates");
+    this.updateProofTemplates();
   },
   computed: {
     headers() {
@@ -73,11 +96,11 @@ export default {
         },
       ];
     },
-    proofTemplates: {
-      get() {
-        return this.$store.getters.getProofTemplates;
-      },
-    },
+    // proofTemplates: {
+    //   get() {
+    //     return this.$store.getters.getProofTemplates;
+    //   },
+    // },
     inputValue: {
       get() {
         return this.value;
@@ -88,6 +111,26 @@ export default {
     },
   },
   methods: {
+    async updateProofTemplates() {
+      this.isBusy = true;
+      this.proofTemplates = [];
+      const params = PageOptions.toUrlSearchParams(this.options);
+      try {
+        const response = await proofTemplateService.getProofTemplates(
+          this.search,
+          params
+        );
+        if (response.status === 200) {
+          const { itemsPerPage } = this.options;
+          this.proofTemplates = response.data.content;
+          this.totalNumberOfElements = response.data.totalSize;
+          this.hideFooter = this.totalNumberOfElements <= itemsPerPage;
+        }
+      } catch (error) {
+        EventBus.$emit("error", this.$axiosErrorMessage(error));
+      }
+      this.isBusy = false;
+    },
     openItem(proofTemplate: ProofTemplate) {
       this.dialog = true;
       this.dirty = false;
@@ -96,7 +139,8 @@ export default {
     onClosed() {
       this.dialog = false;
       if (this.dirty) {
-        store.dispatch("loadProofTemplates");
+        // store.dispatch("loadProofTemplates");
+        this.updateProofTemplates();
         this.$emit("changed");
       }
       this.dirty = false;
@@ -126,7 +170,8 @@ export default {
           }
 
           // reload proof templates
-          this.$store.dispatch("loadProofTemplates");
+          // this.$store.dispatch("loadProofTemplates");
+          this.updateProofTemplates();
         })
         .catch((error) => {
           EventBus.$emit("error", this.$axiosErrorMessage(error));

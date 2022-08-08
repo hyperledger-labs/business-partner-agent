@@ -5,7 +5,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
-import { ProofTemplate } from "@/services";
+import { Page, PageOptions, ProofTemplate } from "@/services";
 import proofTemplateService from "@/services/proof-template-service";
 import { EventBus } from "@/main";
 import { IStateProofTemplates } from "@/store/state-type";
@@ -23,10 +23,11 @@ export default {
   },
   actions: {
     async loadProofTemplates(context: any) {
+      const params = PageOptions.toUrlSearchParams(this.$options);
       proofTemplateService
-        .getProofTemplates()
+        .getProofTemplates("", params) // this has to be updated
         .then((result) => {
-          const proofTemplates: ProofTemplate[] = result.data;
+          const proofTemplates: Page<ProofTemplate[]> = result.data;
 
           context.commit("setProofTemplates", proofTemplates);
         })
